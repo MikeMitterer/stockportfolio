@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build output
+dist/
+dist-ssr/
+build/
+*.local
+
+# Vite / Vue
+.vite/
+.turbo/
+stats.html
+
+# Editors
+.vscode/*
+!.vscode/settings.json.example
+!.vscode/extensions.json
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+logs/
+*.log
+
+# Test / coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Docker build metadata
+docker/.last-build-tag
+docker/logs/
+
+# Local libs (symlinks, not tracked)
+.libs/
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
