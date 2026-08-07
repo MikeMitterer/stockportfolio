@@ -629,11 +629,15 @@ export
 
 **Pflicht:**
 
-- `src/domain/rebalancing.ts` — Datensatz aus dem Excel als Fixture,
-  Ergebnisse (Marktwert, IST-%, Bänder, Vorschlag, Delta) müssen 1:1 stimmen.
-  Toleranz für Float-Rundung: `expect(x).toBeCloseTo(y, 2)`.
-- `src/domain/warnings.ts` — jede Warning-Bedingung.
-- `src/domain/formatters.ts` — DE-Locale, tabellarische Zahlen.
+- `src/domain/rebalancing.ts` — pro Formel eine dedizierte Suite mit klaren,
+  minimalen synthetischen Inputs. Edge-Cases explizit (Division durch 0,
+  fehlende Kurse, disabled Positionen, Cash-Handling, Vorzeichen). Der
+  Aggregator wird mit einem kleinen konstruierten Portfolio (2–3 Positionen)
+  geprüft, bei dem die Arithmetik im Kopf nachvollziehbar bleibt. **Kein**
+  Regression-Test gegen die Excel-Zahlen (fragil — jede Rundungsänderung
+  würde rot).
+- `src/domain/warnings.ts` — jede Warning-Bedingung mit gezieltem Trigger.
+- `src/domain/formatters.ts` — DE-Locale, Vorzeichen, Cent-Stellen.
 
 **Empfohlen:**
 
@@ -642,14 +646,6 @@ export
 **Nicht MVP:**
 
 - Component-/E2E-Tests (Playwright etc.).
-
-### Excel-Fixture
-
-Das Excel-File wird als Test-Fixture verwendet:
-
-- `tests/fixtures/excel-portfolio.ts` enthält die extrahierten Zellwerte
-  (Positionen, Bestand, Kurse, Ziele, Bänder) und die erwarteten Ergebnisse.
-- Ein Regression-Test lädt das Fixture und vergleicht mit `computeRebalancing`.
 
 [↑ Übersicht](#übersicht)
 

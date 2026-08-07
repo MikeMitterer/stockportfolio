@@ -104,9 +104,15 @@ export function unitsDelta(
   return (targetEur - actualEur) / quote.price
 }
 
-/** Rundet auf 10^(-place). place=-2 → auf 100er, place=-3 → auf 1000er. */
+/**
+ * Rundet analog zu Excel `ROUND(value, place)`:
+ * - place = 0 → auf Ganze
+ * - place = -2 → auf 100er
+ * - place = -3 → auf 1000er
+ * - place = 2 → auf 2 Nachkommastellen
+ */
 export function roundToPlace(value: number, place: number): number {
-  const factor = Math.pow(10, place)
+  const factor = Math.pow(10, -place)
   return Math.round(value / factor) * factor
 }
 

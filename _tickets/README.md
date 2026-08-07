@@ -22,7 +22,7 @@ laufen, T-08/T-09/T-10 sind unabhängig voneinander.
 |---|---|---|
 | T-01 | Scaffolding — Vue 3 + Vite + TS + Tailwind + Naive UI + Pinia | — |
 | T-02 | Makefile + BashLib/MakeLib-Setup + `.env.example` | T-01 |
-| T-03 | Domain-Modul — reine Rebalancing-Funktionen + Vitest-Regression gegen Excel | T-01 |
+| T-03 | Domain-Modul — Vitest-Tests je Formel (Edge-Cases + kleine synthetische Portfolios; keine Excel-Regression) | T-01 |
 | T-04 | API-Client für StockInfo + typisierte Response-Modelle | T-01 |
 | T-05 | Persistenz — IndexedDB-Schema + Pinia-Stores | T-01 |
 | T-06 | UI-Shell — vue-router, vue-i18n, Naive UI Theme, Topbar | T-01 |
