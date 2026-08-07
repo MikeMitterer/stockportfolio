@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
 import { RouterLink, useRoute } from 'vue-router'
 
-const props = defineProps<{
+defineProps<{
   isDark: boolean
   lastRefreshLabel?: string
 }>()
@@ -79,11 +79,11 @@ const isActive = (name: string): boolean => route.name === name
           <template #icon>
             <NIcon>
               <svg v-if="isDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="4"/>
-                <path stroke-linecap="round" d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>
+                <circle cx="12" cy="12" r="4" />
+                <path stroke-linecap="round" d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" />
               </svg>
               <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
               </svg>
             </NIcon>
           </template>

@@ -12,11 +12,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: false,
+    setupFiles: ['tests/setup.ts'],
     include: ['tests/**/*.spec.ts', 'src/**/*.spec.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/domain/**', 'src/composables/**'],
+      include: ['src/domain/**', 'src/stores/**', 'src/db/**', 'src/api/**'],
     },
   },
 })

@@ -8,12 +8,19 @@ import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import { eur, eurCent, integer, percent } from '@/domain/formatters'
 import type { PositionResult } from '@/domain/rebalancing'
-import type { Bands } from '@/types/portfolio'
+import type { Bands, Position } from '@/types/portfolio'
 
 const props = defineProps<{
   rows: PositionResult[]
   bands: Bands
   total: number
+}>()
+
+const emit = defineEmits<{
+  (event: 'update', id: string, changes: Partial<Position>): void
+  (event: 'apply-trade', id: string, tradeUnits: number): void
+  (event: 'remove', id: string): void
+  (event: 'refresh', id: string): void
 }>()
 
 const { t } = useI18n()
@@ -27,7 +34,15 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     type: 'expand',
     expandable: () => true,
     renderExpand: (row) =>
-      h(PositionDrilldown, { row, total: props.total, bands: props.bands }),
+      h(PositionDrilldown, {
+        row,
+        total: props.total,
+        bands: props.bands,
+        onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
+        onApplyTrade: (id: string, units: number) => emit('apply-trade', id, units),
+        onRemove: (id: string) => emit('remove', id),
+        onRefresh: (id: string) => emit('refresh', id),
+      }),
   },
   {
     title: t('table.symbol'),

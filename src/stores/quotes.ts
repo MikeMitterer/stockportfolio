@@ -1,16 +1,19 @@
 /**
- * Composable zum Laden und Cachen von Kursen.
+ * Pinia-Store für Kurse.
  *
- * Kapselt Reactive-State, Fehlerbehandlung und Concurrency-Begrenzung.
- * Komponenten sehen kein `fetch` und keinen `ApiError`.
+ * Hält den Kurs-Cache im Speicher, persistiert ihn nach IndexedDB und lädt
+ * ihn beim Start zurück — dadurch zeigt die App sofort die zuletzt bekannten
+ * Preise, statt auf das Netzwerk zu warten.
  */
 
-import { ref, shallowRef, type Ref } from 'vue'
+import { defineStore } from 'pinia'
+import { ref, shallowRef } from 'vue'
 import { consola } from 'consola'
 import { ApiError } from '@/api/errors'
 import { toQuoteCacheEntry } from '@/api/mappers'
-import type { StockInfoClient } from '@/api/client'
+import { QuoteCacheRepository } from '@/db/repository'
 import { quoteKey } from '@/domain/rebalancing'
+import type { StockInfoClient } from '@/api/client'
 import type { Position, QuoteCacheEntry, QuoteMap } from '@/types/portfolio'
 
 /** Maximale Anzahl gleichzeitiger Kursabfragen — schont die API. */
@@ -23,35 +26,36 @@ export interface QuoteFailure {
   reason: string
 }
 
-export interface UseQuotesReturn {
-  quotes: Ref<QuoteMap>
-  loading: Ref<boolean>
-  failures: Ref<QuoteFailure[]>
-  lastRefreshAt: Ref<string | null>
-  loadQuotes: (positions: Position[]) => Promise<void>
-  refreshOne: (position: Position) => Promise<void>
-}
+export const useQuotesStore = defineStore('quotes', () => {
+  const repository = new QuoteCacheRepository()
 
-/**
- * @param client Injizierter API-Client (DI — in Tests durch Mock ersetzbar).
- */
-export function useQuotes(client: StockInfoClient): UseQuotesReturn {
   const quotes = shallowRef<QuoteMap>(new Map())
   const loading = ref<boolean>(false)
   const failures = ref<QuoteFailure[]>([])
   const lastRefreshAt = ref<string | null>(null)
 
+  /** Lädt den persistierten Cache — zeigt sofort Werte, bevor das Netz antwortet. */
+  async function hydrate(): Promise<void> {
+    const cached = await repository.loadAll()
+    if (cached.size === 0) return
+
+    quotes.value = cached
+    lastRefreshAt.value = newestFetchedAt(cached)
+  }
+
   /**
    * Lädt Kurse für alle kursrelevanten Positionen.
-   * Cash wird übersprungen, Fehler einzelner Papiere brechen den Rest nicht ab.
+   * Cash wird übersprungen; ein Fehlschlag bricht die übrigen nicht ab.
    */
-  async function loadQuotes(positions: Position[]): Promise<void> {
+  async function loadQuotes(client: StockInfoClient, positions: Position[]): Promise<void> {
     const relevant = positions.filter(
       (position) => position.enabled && position.group !== 'cash',
     )
     if (relevant.length === 0) {
       quotes.value = new Map()
+      failures.value = []
       lastRefreshAt.value = new Date().toISOString()
+      await repository.replaceAll(quotes.value)
       return
     }
 
@@ -59,10 +63,8 @@ export function useQuotes(client: StockInfoClient): UseQuotesReturn {
     failures.value = []
 
     try {
-      const results = await mapWithConcurrency(
-        relevant,
-        MAX_CONCURRENT_REQUESTS,
-        (position) => fetchOne(client, position),
+      const results = await mapWithConcurrency(relevant, MAX_CONCURRENT_REQUESTS, (position) =>
+        fetchOne(client, position),
       )
 
       const nextQuotes: QuoteMap = new Map()
@@ -72,6 +74,9 @@ export function useQuotes(client: StockInfoClient): UseQuotesReturn {
         if (result.entry) {
           nextQuotes.set(result.key, result.entry)
         } else {
+          // Alten Kurs behalten, damit ein Ausfall keine Lücke reißt.
+          const previous = quotes.value.get(result.key)
+          if (previous) nextQuotes.set(result.key, { ...previous, stale: true })
           nextFailures.push({
             key: result.key,
             symbol: result.symbol,
@@ -83,9 +88,10 @@ export function useQuotes(client: StockInfoClient): UseQuotesReturn {
       quotes.value = nextQuotes
       failures.value = nextFailures
       lastRefreshAt.value = new Date().toISOString()
+      await repository.replaceAll(nextQuotes)
 
       if (nextFailures.length > 0) {
-        consola.warn('useQuotes: Kurse teilweise nicht geladen', {
+        consola.warn('quotes: Kurse teilweise nicht geladen', {
           failed: nextFailures.length,
           total: relevant.length,
         })
@@ -96,7 +102,7 @@ export function useQuotes(client: StockInfoClient): UseQuotesReturn {
   }
 
   /** Lädt den Kurs einer einzelnen Position neu (Server-Refresh erzwungen). */
-  async function refreshOne(position: Position): Promise<void> {
+  async function refreshOne(client: StockInfoClient, position: Position): Promise<void> {
     if (position.group === 'cash') return
 
     const key = quoteKey(position)
@@ -105,13 +111,15 @@ export function useQuotes(client: StockInfoClient): UseQuotesReturn {
         ? await client.refreshByIsin(position.isin)
         : await client.getQuoteBySymbol(position.symbol)
 
+      const entry = toQuoteCacheEntry(response)
       const next = new Map(quotes.value)
-      next.set(key, toQuoteCacheEntry(response))
+      next.set(key, entry)
       quotes.value = next
       failures.value = failures.value.filter((failure) => failure.key !== key)
+      await repository.put(key, entry)
     } catch (error) {
       const reason = error instanceof ApiError ? error.detail : 'Unbekannter Fehler'
-      consola.error('useQuotes: Einzel-Refresh fehlgeschlagen', {
+      consola.error('quotes: Einzel-Refresh fehlgeschlagen', {
         symbol: position.symbol,
         reason,
       })
@@ -122,7 +130,16 @@ export function useQuotes(client: StockInfoClient): UseQuotesReturn {
     }
   }
 
-  return { quotes, loading, failures, lastRefreshAt, loadQuotes, refreshOne }
+  return { quotes, loading, failures, lastRefreshAt, hydrate, loadQuotes, refreshOne }
+})
+
+/** Jüngster `fetchedAt`-Zeitstempel einer Cache-Map. */
+function newestFetchedAt(quotes: QuoteMap): string | null {
+  let newest: string | null = null
+  for (const entry of quotes.values()) {
+    if (!newest || entry.fetchedAt > newest) newest = entry.fetchedAt
+  }
+  return newest
 }
 
 interface FetchOutcome {

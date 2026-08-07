@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   NCard,
@@ -9,13 +9,21 @@ import {
   NSelect,
   NSwitch,
   NButton,
-  NTag,
+  NPopconfirm,
 } from 'naive-ui'
-import { eur, eurCent, eurSigned, integer, number, percent, percentSigned } from '@/domain/formatters'
+import {
+  eur,
+  eurCent,
+  eurSigned,
+  integer,
+  number,
+  percent,
+  percentSigned,
+} from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { PositionResult } from '@/domain/rebalancing'
-import type { AssetGroup, Bands } from '@/types/portfolio'
+import type { AssetGroup, Bands, Position } from '@/types/portfolio'
 
 const props = defineProps<{
   row: PositionResult
@@ -23,10 +31,16 @@ const props = defineProps<{
   bands: Bands
 }>()
 
+const emit = defineEmits<{
+  (event: 'update', id: string, changes: Partial<Position>): void
+  (event: 'apply-trade', id: string, tradeUnits: number): void
+  (event: 'remove', id: string): void
+  (event: 'refresh', id: string): void
+}>()
+
 const { t } = useI18n()
 
-// Trade-Simulator (nur lokaler State im Preview)
-const tradeUnits = ref<number>(0)
+const isCash = computed(() => props.row.position.group === 'cash')
 
 const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
   { label: t('groups.stocks'), value: 'stocks' },
@@ -35,24 +49,78 @@ const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
   { label: t('groups.cash'), value: 'cash' },
 ])
 
-// Simulated after-trade values (client-side only, don't persist)
+// ─── Trade-Simulator ────────────────────────────────────────────────────────
+
+const tradeUnits = ref<number>(0)
+
+// Beim Wechsel auf eine andere Position den Simulator zurücksetzen.
+watch(
+  () => props.row.position.id,
+  () => {
+    tradeUnits.value = 0
+  },
+)
+
 const simulatedUnits = computed(() => props.row.position.units + tradeUnits.value)
-const simulatedMv = computed(() => {
-  if (props.row.position.group === 'cash') return simulatedUnits.value
+
+const simulatedMarketValue = computed(() => {
+  if (isCash.value) return simulatedUnits.value
   if (!props.row.quote) return 0
   return simulatedUnits.value * props.row.quote.price
 })
+
 const simulatedActualPercent = computed(() =>
-  props.total > 0 ? (simulatedMv.value * 100) / props.total : 0,
+  props.total > 0 ? (simulatedMarketValue.value * 100) / props.total : 0,
 )
+
 const simulatedRelativeDelta = computed(() => {
   if (props.row.targetValue === 0) return 0
-  return ((simulatedMv.value - props.row.targetValue) * 100) / props.row.targetValue
+  return ((simulatedMarketValue.value - props.row.targetValue) * 100) / props.row.targetValue
 })
+
 const simulatedTradeEuro = computed(() => {
-  if (!props.row.quote) return tradeUnits.value
+  if (isCash.value) return tradeUnits.value
+  if (!props.row.quote) return 0
   return tradeUnits.value * props.row.quote.price
 })
+
+const canApplyTrade = computed(() => tradeUnits.value !== 0 && simulatedUnits.value >= 0)
+
+function applyTrade(): void {
+  if (!canApplyTrade.value) return
+  emit('apply-trade', props.row.position.id, tradeUnits.value)
+  tradeUnits.value = 0
+}
+
+// ─── Editieren — jede Änderung geht direkt raus ─────────────────────────────
+
+function updateUnits(value: number | null): void {
+  if (value === null) return
+  emit('update', props.row.position.id, { units: value })
+}
+
+function updateTargetPercent(value: number | null): void {
+  if (value === null) return
+  emit('update', props.row.position.id, { targetPercent: value })
+}
+
+function updateDisplayName(value: string): void {
+  emit('update', props.row.position.id, { displayName: value })
+}
+
+function updateGroup(value: AssetGroup): void {
+  emit('update', props.row.position.id, { group: value })
+}
+
+function updateEnabled(value: boolean): void {
+  emit('update', props.row.position.id, { enabled: value })
+}
+
+function updateNotes(value: string): void {
+  emit('update', props.row.position.id, { notes: value })
+}
+
+// ─── Links ──────────────────────────────────────────────────────────────────
 
 const meldefondUrl = computed(() =>
   props.row.position.isin
@@ -67,11 +135,19 @@ const extraetfUrl = computed(() =>
 )
 
 const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
+
+const optimalUnits = computed(() =>
+  props.row.quote && props.row.quote.price > 0
+    ? Math.round(props.row.targetValue / props.row.quote.price)
+    : null,
+)
+
+const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
 </script>
 
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
-    <!-- ─── Position editieren ────────────────────────────────────────── -->
+    <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
     <NCard :bordered="false" size="small" class="!bg-neutral-900/60">
       <template #header>
         <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
@@ -80,24 +156,40 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
       <div class="flex flex-col gap-3">
         <div class="grid grid-cols-2 gap-3">
           <label class="flex flex-col gap-1 text-xs">
-            <span class="text-neutral-400">{{ t('table.units') }}</span>
+            <span class="text-neutral-400">
+              {{ isCash ? 'Betrag (€)' : t('table.units') }}
+            </span>
             <NInputNumber
               :value="row.position.units"
-              :precision="row.position.group === 'cash' ? 2 : 0"
+              :precision="isCash ? 2 : 0"
+              :min="0"
+              :step="isCash ? 100 : 1"
               size="small"
-              readonly
+              @update:value="updateUnits"
             />
           </label>
 
           <label class="flex flex-col gap-1 text-xs">
             <span class="text-neutral-400">{{ t('table.targetPercent') }}</span>
-            <NInputNumber :value="row.position.targetPercent" :precision="2" size="small" readonly />
+            <NInputNumber
+              :value="row.position.targetPercent"
+              :precision="2"
+              :min="0"
+              :max="100"
+              :step="0.5"
+              size="small"
+              @update:value="updateTargetPercent"
+            />
           </label>
         </div>
 
         <label class="flex flex-col gap-1 text-xs">
           <span class="text-neutral-400">{{ t('drilldown.displayName') }}</span>
-          <NInput :value="row.position.displayName" size="small" readonly />
+          <NInput
+            :value="row.position.displayName"
+            size="small"
+            @update:value="updateDisplayName"
+          />
         </label>
 
         <div class="grid grid-cols-2 gap-3">
@@ -107,14 +199,18 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
               :value="row.position.group"
               :options="groupOptions"
               size="small"
-              disabled
+              @update:value="updateGroup"
             />
           </label>
 
           <label class="flex flex-col gap-1 text-xs">
             <span class="text-neutral-400">{{ t('drilldown.enabled') }}</span>
             <div class="pt-1">
-              <NSwitch :value="row.position.enabled" size="small" disabled />
+              <NSwitch
+                :value="row.position.enabled"
+                size="small"
+                @update:value="updateEnabled"
+              />
             </div>
           </label>
         </div>
@@ -126,17 +222,25 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
             type="textarea"
             :rows="2"
             size="small"
-            readonly
+            @update:value="updateNotes"
           />
         </label>
 
-        <div class="text-xs text-neutral-500 italic">
-          Editieren wird in T-05 (Pinia + IndexedDB) aktiviert — hier nur Vorschau.
+        <div class="flex items-center gap-2 pt-1">
+          <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
+            Kurs neu laden
+          </NButton>
+          <NPopconfirm @positive-click="emit('remove', row.position.id)">
+            <template #trigger>
+              <NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton>
+            </template>
+            Position „{{ row.position.displayName }}" wirklich löschen?
+          </NPopconfirm>
         </div>
       </div>
     </NCard>
 
-    <!-- ─── Trade-Simulator + Zahlen ─────────────────────────────────── -->
+    <!-- ─── Trade-Simulator ──────────────────────────────────────────── -->
     <NCard :bordered="false" size="small" class="!bg-neutral-900/60">
       <template #header>
         <span class="text-sm font-medium">{{ t('drilldown.tradeSimulator') }}</span>
@@ -147,8 +251,8 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
           <span class="text-neutral-400">{{ t('drilldown.tradeSimulatorHint') }}</span>
           <NInputNumber
             v-model:value="tradeUnits"
-            :precision="row.position.group === 'cash' ? 2 : 0"
-            :step="row.position.group === 'cash' ? 100 : 1"
+            :precision="isCash ? 2 : 0"
+            :step="isCash ? 100 : 1"
             size="small"
           />
         </label>
@@ -160,7 +264,10 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
           </div>
           <div class="flex justify-between">
             <span class="text-neutral-400">Trade-Wert</span>
-            <span class="tabular-nums" :class="tradeUnits >= 0 ? 'text-red-300' : 'text-emerald-300'">
+            <span
+              class="tabular-nums"
+              :class="tradeUnits >= 0 ? 'text-red-300' : 'text-emerald-300'"
+            >
               {{ eurSigned(-simulatedTradeEuro) }}
             </span>
           </div>
@@ -175,7 +282,7 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
           </div>
         </div>
 
-        <NButton size="small" type="primary" disabled>
+        <NButton size="small" type="primary" :disabled="!canApplyTrade" @click="applyTrade">
           {{ t('drilldown.tradeApply') }}
         </NButton>
       </div>
@@ -219,16 +326,17 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
         </div>
         <div>
           <div class="text-neutral-400">{{ t('drilldown.deltaEuro') }}</div>
-          <div class="tabular-nums" :class="row.suggestion === 'buy' ? 'text-red-300' : row.suggestion === 'sell' ? 'text-red-300' : 'text-emerald-300'">
-            {{ eurSigned(row.targetValue - row.marketValue) }}
+          <div
+            class="tabular-nums"
+            :class="row.suggestion === 'ok' ? 'text-emerald-300' : 'text-red-300'"
+          >
+            {{ eurSigned(deltaEuro) }}
           </div>
         </div>
 
-        <div>
+        <div v-if="optimalUnits !== null">
           <div class="text-neutral-400">{{ t('drilldown.optimalUnits') }}</div>
-          <div class="tabular-nums">
-            {{ row.quote ? integer(Math.round(row.targetValue / row.quote.price)) : '—' }}
-          </div>
+          <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
         </div>
         <div>
           <div class="text-neutral-400">Δ Bestand (Stück)</div>
@@ -242,8 +350,7 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
           <div class="text-neutral-400">TER</div>
           <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
         </div>
-
-        <div v-if="row.quote" class="col-span-2">
+        <div v-if="row.quote">
           <div class="text-neutral-400">Kurs-Stand</div>
           <div class="tabular-nums">{{ quoteAge }}</div>
         </div>
@@ -267,8 +374,7 @@ const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
           >
             extraetf.com ↗
           </a>
-          <div class="ml-auto flex items-center gap-2">
-            <NTag size="small" :bordered="false">Status</NTag>
+          <div class="ml-auto">
             <SuggestionBadge :suggestion="row.suggestion" :near="row.isNearBand" />
           </div>
         </div>

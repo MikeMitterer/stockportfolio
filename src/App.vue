@@ -9,9 +9,9 @@ import {
   darkTheme,
 } from 'naive-ui'
 import AppTopbar from '@/components/AppTopbar.vue'
-import { useSharedQuotes } from '@/composables/useSharedQuotes'
 import { useRelativeTime } from '@/composables/useRelativeTime'
-import { MOCK_PORTFOLIO } from '@/mock/portfolio'
+import { usePortfolioStore } from '@/stores/portfolio'
+import { useQuotesStore } from '@/stores/quotes'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const STORAGE_KEY = 'stockportfolio.theme'
@@ -20,9 +20,12 @@ const isDark = ref<boolean>(true)
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 
-const { loading, lastRefreshAt, loadQuotes } = useSharedQuotes(client)
+const portfolioStore = usePortfolioStore()
+const quotesStore = useQuotesStore()
+
+const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
-const refreshLabel = computed(() => (loading.value ? '…' : ageLabel.value))
+const refreshLabel = computed(() => (quotesStore.loading ? '…' : ageLabel.value))
 
 onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -45,7 +48,8 @@ function toggleTheme(): void {
 }
 
 function refresh(): void {
-  void loadQuotes(MOCK_PORTFOLIO.positions)
+  if (!client) return
+  void quotesStore.loadQuotes(client, portfolioStore.positions)
 }
 </script>
 
