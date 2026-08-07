@@ -2,8 +2,9 @@
  * Mock-Portfolio auf Basis der Excel-Vorlage (Rebalancing-v2-Claude.xlsx).
  * Werte beim Preview-Ticket eingelesen; siehe Design-Doc §2.
  *
- * Nach dem Anschluss an IndexedDB + API wird das hier nicht mehr benutzt —
- * dient nur der ersten UI-Preview.
+ * Seit T-04 kommen die **Kurse** aus der StockInfo-API — `MOCK_QUOTES` dient
+ * nur noch als Fallback für Tests und Offline-Entwicklung. Die **Positionen**
+ * wandern in T-05 nach IndexedDB.
  */
 
 import type { Portfolio, QuoteCacheEntry, QuoteMap, Settings } from '@/types/portfolio'
@@ -116,7 +117,10 @@ export const MOCK_PORTFOLIO: Portfolio = {
   ],
 }
 
-/** Mock-Kurse — nachgebildet aus den cached Values im Excel. */
+/**
+ * Fallback-Kurse — nachgebildet aus den cached Values im Excel.
+ * Werden nur verwendet, solange die API keine echten Kurse geliefert hat.
+ */
 export const MOCK_QUOTES: QuoteMap = new Map<string, QuoteCacheEntry>([
   [
     'IE00B3RBWM25',

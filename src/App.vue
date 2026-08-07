@@ -1,11 +1,28 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { computed, inject, ref, watch, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
-import { NConfigProvider, NMessageProvider, NDialogProvider, NLoadingBarProvider, darkTheme } from 'naive-ui'
+import {
+  NConfigProvider,
+  NMessageProvider,
+  NDialogProvider,
+  NLoadingBarProvider,
+  darkTheme,
+} from 'naive-ui'
 import AppTopbar from '@/components/AppTopbar.vue'
+import { useSharedQuotes } from '@/composables/useSharedQuotes'
+import { useRelativeTime } from '@/composables/useRelativeTime'
+import { MOCK_PORTFOLIO } from '@/mock/portfolio'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const STORAGE_KEY = 'stockportfolio.theme'
 const isDark = ref<boolean>(true)
+
+const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
+if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
+
+const { loading, lastRefreshAt, loadQuotes } = useSharedQuotes(client)
+const ageLabel = useRelativeTime(lastRefreshAt)
+const refreshLabel = computed(() => (loading.value ? '…' : ageLabel.value))
 
 onMounted(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -14,17 +31,21 @@ onMounted(() => {
   }
 })
 
-watch(isDark, (dark) => {
-  localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light')
-  document.documentElement.classList.toggle('dark', dark)
-}, { immediate: true })
+watch(
+  isDark,
+  (dark) => {
+    localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light')
+    document.documentElement.classList.toggle('dark', dark)
+  },
+  { immediate: true },
+)
 
 function toggleTheme(): void {
   isDark.value = !isDark.value
 }
 
 function refresh(): void {
-  // Preview: kein Refresh, kommt in T-04 (API-Client) + T-05 (Store)
+  void loadQuotes(MOCK_PORTFOLIO.positions)
 }
 </script>
 
@@ -36,7 +57,12 @@ function refresh(): void {
           <div
             class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors"
           >
-            <AppTopbar :is-dark="isDark" @toggle-theme="toggleTheme" @refresh="refresh" />
+            <AppTopbar
+              :is-dark="isDark"
+              :last-refresh-label="refreshLabel"
+              @toggle-theme="toggleTheme"
+              @refresh="refresh"
+            />
             <RouterView />
           </div>
         </NDialogProvider>

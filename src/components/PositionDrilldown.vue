@@ -12,6 +12,7 @@ import {
   NTag,
 } from 'naive-ui'
 import { eur, eurCent, eurSigned, integer, number, percent, percentSigned } from '@/domain/formatters'
+import { formatAge } from '@/composables/useRelativeTime'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands } from '@/types/portfolio'
@@ -64,6 +65,8 @@ const extraetfUrl = computed(() =>
     ? `https://extraetf.com/de/etf-profile/${props.row.position.isin}`
     : null,
 )
+
+const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
 </script>
 
 <template>
@@ -238,6 +241,11 @@ const extraetfUrl = computed(() =>
         <div v-if="row.quote?.ter != null">
           <div class="text-neutral-400">TER</div>
           <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
+        </div>
+
+        <div v-if="row.quote" class="col-span-2">
+          <div class="text-neutral-400">Kurs-Stand</div>
+          <div class="tabular-nums">{{ quoteAge }}</div>
         </div>
 
         <div class="col-span-2 md:col-span-3 lg:col-span-4 flex items-center gap-3 pt-2">
