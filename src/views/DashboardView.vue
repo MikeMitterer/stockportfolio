@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink } from 'vue-router'
 import { NDivider, NSpin, NAlert, NEmpty, NButton } from 'naive-ui'
 import KpiCard from '@/components/KpiCard.vue'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
 import { eur, eurSigned, percent } from '@/domain/formatters'
 import { computeRebalancing } from '@/domain/rebalancing'
+import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
+import { useInstrumentsStore } from '@/stores/instruments'
+import { newId } from '@/db/seed'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import type { Position } from '@/types/portfolio'
+import type { InstrumentSummary } from '@/api/types'
+import type { AssetGroup, Position } from '@/types/portfolio'
 
 const { t } = useI18n()
 
@@ -22,6 +25,7 @@ if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 const quotesStore = useQuotesStore()
+const instrumentsStore = useInstrumentsStore()
 
 const loading = computed(() => quotesStore.loading)
 const failures = computed(() => quotesStore.failures)
@@ -71,6 +75,53 @@ const warningsTone = computed<'positive' | 'danger'>(() =>
 const failureSummary = computed(() =>
   failures.value.map((failure) => `${failure.symbol}: ${failure.reason}`).join(' · '),
 )
+
+// ─── Position hinzufügen ──────────────────────────────────────────────────
+
+const showAddDialog = ref<boolean>(false)
+
+/** Schlüssel der bereits enthaltenen Papiere — verhindert Dubletten. */
+const existingKeys = computed(() =>
+  portfolioStore.positions
+    .filter((position) => position.group !== 'cash')
+    .map((position) => position.isin ?? position.symbol),
+)
+
+/** Noch nicht vergebener Ziel-Anteil. */
+const remainingTargetPercent = computed(() => {
+  const assigned = portfolioStore.positions.reduce(
+    (sum, position) => sum + position.targetPercent,
+    0,
+  )
+  return Math.max(0, 100 - assigned)
+})
+
+async function openAddDialog(): Promise<void> {
+  if (!instrumentsStore.loaded && client) await instrumentsStore.load(client)
+  showAddDialog.value = true
+}
+
+async function onAddPosition(payload: {
+  instrument: InstrumentSummary
+  units: number
+  targetPercent: number
+  group: AssetGroup
+}): Promise<void> {
+  const { instrument, units, targetPercent, group } = payload
+
+  await portfolioStore.addPosition({
+    id: newId(),
+    isin: instrument.isin,
+    symbol: instrument.symbol,
+    displayName: instrument.name ?? instrument.symbol,
+    group,
+    units,
+    targetPercent,
+    enabled: true,
+  })
+
+  if (client) await quotesStore.loadQuotes(client, portfolioStore.positions)
+}
 
 // ─── Editier-Aktionen — gehen an den Store, der sofort persistiert ─────────
 
@@ -140,15 +191,17 @@ function toggleGroups(): void {
       <template #extra>
         <div class="flex flex-col items-center gap-3">
           <p class="text-xs text-neutral-500 max-w-sm text-center leading-relaxed">
-            Füge deine Positionen über
-            <RouterLink :to="{ name: 'instruments' }" class="text-sky-400 underline">
-              Instrumente
-            </RouterLink>
-            hinzu — oder lade ein Beispiel-Depot, um die App auszuprobieren.
+            Lege deine erste Position an — oder lade ein Beispiel-Depot, um die
+            App auszuprobieren.
           </p>
-          <NButton size="small" secondary :loading="demoLoading" @click="onLoadDemo">
-            Beispiel-Depot laden
-          </NButton>
+          <div class="flex items-center gap-2">
+            <NButton size="small" type="primary" @click="openAddDialog">
+              {{ t('actions.addPosition') }}
+            </NButton>
+            <NButton size="small" secondary :loading="demoLoading" @click="onLoadDemo">
+              Beispiel-Depot laden
+            </NButton>
+          </div>
         </div>
       </template>
     </NEmpty>
@@ -227,17 +280,22 @@ function toggleGroups(): void {
       <section
         class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
       >
-        <div class="px-5 py-4 flex items-baseline justify-between">
+        <div class="px-5 py-4 flex items-center justify-between gap-4">
           <h2
             class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 font-medium"
           >
             Positionen — Klick auf eine Zeile öffnet Details
           </h2>
-          <div class="text-xs text-neutral-500 tabular-nums">
-            Bänder: −{{ percent(settingsStore.settings.bands.lowerPercent) }} / +{{
-              percent(settingsStore.settings.bands.upperPercent)
-            }}
-            <span v-if="loading" class="ml-2">· lädt …</span>
+          <div class="flex items-center gap-4">
+            <div class="text-xs text-neutral-500 tabular-nums">
+              Bänder: −{{ percent(settingsStore.settings.bands.lowerPercent) }} / +{{
+                percent(settingsStore.settings.bands.upperPercent)
+              }}
+              <span v-if="loading" class="ml-2">· lädt …</span>
+            </div>
+            <NButton size="tiny" secondary @click="openAddDialog">
+              {{ t('actions.addPosition') }}
+            </NButton>
           </div>
         </div>
         <NDivider class="!my-0" />
@@ -253,5 +311,13 @@ function toggleGroups(): void {
         />
       </section>
     </template>
+
+    <AddPositionDialog
+      v-model:show="showAddDialog"
+      :available="instrumentsStore.allowedInstruments"
+      :existing-keys="existingKeys"
+      :remaining-target-percent="remainingTargetPercent"
+      @add="onAddPosition"
+    />
   </div>
 </template>
