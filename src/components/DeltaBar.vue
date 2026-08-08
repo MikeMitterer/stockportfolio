@@ -32,16 +32,18 @@ const state = computed<'ok' | 'near' | 'out'>(() => {
 })
 
 // Statusfarben, nicht Klassenfarben: hier geht es um „im Band / nahe / draußen",
-// nicht um die Assetklasse. Die Sättigung liegt so hoch, dass der Zustand auf
-// einen Blick zu sehen ist, und so tief, dass die Zahl darüber lesbar bleibt.
+// nicht um die Assetklasse.
+//
+// Deckend, nicht halbdurchsichtig: bei Teiltransparenz mischte sich die Fläche
+// darunter ein und die Farbe wirkte ausgewaschen.
 const fillClasses = computed(() => {
   switch (state.value) {
     case 'ok':
-      return 'bg-status-ok/70'
+      return 'bg-status-ok'
     case 'near':
-      return 'bg-status-near/70'
+      return 'bg-status-near'
     case 'out':
-      return 'bg-status-out/70'
+      return 'bg-status-out'
   }
   return ''
 })
@@ -73,41 +75,35 @@ const label = computed(() => percentSigned(props.relativePercent))
 </script>
 
 <template>
-  <div
-    class="relative rounded-md overflow-hidden bg-sunken"
-    :class="compact ? 'h-5' : 'h-6'"
-    role="img"
-    :aria-label="`Delta ${label}`"
-  >
-    <!-- Band-Marker (gepunktete Zonen) -->
+  <!--
+    Zahl **neben** dem Balken, nicht darauf.
+    Bei einem divergierenden Balken läuft die Füllkante genau durch die Mitte —
+    dort stand die Beschriftung und wurde von ihr zerschnitten. Schatten oder
+    Ringe kaschierten das nur und wirkten schmutzig. Nebeneinander ist beides
+    ungestört: der Balken zeigt Richtung und Ausmaß, die Zahl den Wert.
+  -->
+  <div class="flex items-center gap-2" role="img" :aria-label="`Delta ${label}`">
     <div
-      class="absolute top-0 bottom-0 bg-status-ok/10 border-x border-status-ok/40"
-      :style="bandLeftStyle"
-    ></div>
-    <div
-      class="absolute top-0 bottom-0 bg-status-ok/10 border-x border-status-ok/40"
-      :style="bandRightStyle"
-    ></div>
-
-    <!-- Balken-Füllung -->
-    <div
-      class="absolute rounded-sm transition-all"
-      :class="fillClasses"
-      :style="{ ...fillStyle, top: '4px', bottom: '4px' }"
-    ></div>
-
-    <!-- Zentrums-Linie (Ziel) -->
-    <div
-      class="absolute top-0 bottom-0 w-px bg-ink/60 z-10"
-      style="left: 50%"
-    ></div>
-
-    <!-- Label mittig, mit leichtem Text-Shadow für Lesbarkeit über Farben -->
-    <div
-      class="absolute inset-0 flex items-center justify-center text-xs tabular-nums text-ink z-20"
-      style="text-shadow: 0 0 3px rgba(0, 0, 0, 0.7)"
+      class="relative flex-1 rounded-md overflow-hidden bg-sunken"
+      :class="compact ? 'h-4' : 'h-5'"
     >
-      {{ label }}
+      <!-- Bandgrenzen als Striche, ohne Flächenton -->
+      <div class="absolute top-0 bottom-0 border-x border-ink/20" :style="bandLeftStyle"></div>
+      <div class="absolute top-0 bottom-0 border-x border-ink/20" :style="bandRightStyle"></div>
+
+      <!-- Balken-Füllung -->
+      <div
+        class="absolute rounded-sm transition-all"
+        :class="fillClasses"
+        :style="{ ...fillStyle, top: '3px', bottom: '3px' }"
+      ></div>
+
+      <!-- Zentrums-Linie (Ziel) — nur ein Hauch, sie soll den Balken nicht teilen -->
+      <div class="absolute top-0 bottom-0 w-px bg-ink/25 z-10" style="left: 50%"></div>
     </div>
+
+    <span class="w-14 shrink-0 text-right text-xs tabular-nums text-ink-secondary">
+      {{ label }}
+    </span>
   </div>
 </template>
