@@ -1,24 +1,26 @@
 /**
- * Einmaliges Seeding beim Erststart.
+ * Anlegen des Start-Portfolios.
  *
- * Solange es keinen Add-Position-Dialog gibt (T-10), wäre ein leeres
- * Portfolio eine Sackgasse. Deshalb legen wir die Positionen der bisherigen
- * Excel-Vorlage an — Bestände und Ziele kann der Nutzer danach frei ändern.
- *
- * Sobald T-10 steht, kann hier auf ein leeres Portfolio umgestellt werden.
+ * Beim Erststart bekommt der Nutzer ein **leeres** Depot — fremde Bestände
+ * vorzugeben wäre verwirrend, weil sie sich kaum von eigenen Daten
+ * unterscheiden lassen. Wer die App erst ausprobieren will, kann über
+ * `demoPortfolio()` ein ausdrücklich als Beispiel benanntes Depot laden.
  */
 
 import type { Portfolio, Position } from '@/types/portfolio'
 
-/** Positionen der Excel-Vorlage — ohne Kurse, die kommen aus der API. */
-const SEED_POSITIONS: readonly Omit<Position, 'id'>[] = [
+/**
+ * Beispiel-Positionen — echte ISINs, damit Kurse geladen werden, aber
+ * betont runde Stückzahlen, die niemand für einen echten Bestand hält.
+ */
+const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: 'IE00B3RBWM25',
     symbol: 'VGWL.DE',
     displayName: 'Vanguard FTSE All-World',
     group: 'stocks',
-    units: 1217,
-    targetPercent: 36,
+    units: 500,
+    targetPercent: 45,
     enabled: true,
   },
   {
@@ -26,35 +28,8 @@ const SEED_POSITIONS: readonly Omit<Position, 'id'>[] = [
     symbol: 'EQQQ.DE',
     displayName: 'Invesco Nasdaq-100',
     group: 'stocks',
-    units: 29,
-    targetPercent: 6,
-    enabled: true,
-  },
-  {
-    isin: 'US0846707026',
-    symbol: 'BRYN.DE',
-    displayName: 'Berkshire Hathaway',
-    group: 'stocks',
-    units: 112,
-    targetPercent: 9,
-    enabled: true,
-  },
-  {
-    isin: 'IE00B5L8K969',
-    symbol: 'CEBL.DE',
-    displayName: 'iShares MSCI Emerging Markets',
-    group: 'stocks',
-    units: 222,
-    targetPercent: 10,
-    enabled: true,
-  },
-  {
-    isin: 'IE00BQN1K901',
-    symbol: 'CEMS.DE',
-    displayName: 'iShares MSCI EM Small Cap',
-    group: 'stocks',
-    units: 277,
-    targetPercent: 7,
+    units: 50,
+    targetPercent: 15,
     enabled: true,
   },
   {
@@ -62,8 +37,8 @@ const SEED_POSITIONS: readonly Omit<Position, 'id'>[] = [
     symbol: 'IUSN.DE',
     displayName: 'iShares MSCI World Small Cap',
     group: 'stocks',
-    units: 32,
-    targetPercent: 5.5,
+    units: 1000,
+    targetPercent: 10,
     enabled: true,
   },
   {
@@ -71,7 +46,7 @@ const SEED_POSITIONS: readonly Omit<Position, 'id'>[] = [
     symbol: 'IS3M.DE',
     displayName: 'iShares $ Treasury Bond 7-10yr',
     group: 'bonds',
-    units: 74,
+    units: 200,
     targetPercent: 15,
     enabled: true,
   },
@@ -80,8 +55,8 @@ const SEED_POSITIONS: readonly Omit<Position, 'id'>[] = [
     symbol: '4GLD.DE',
     displayName: 'Xetra-Gold',
     group: 'metals',
-    units: 4533,
-    targetPercent: 11,
+    units: 100,
+    targetPercent: 10,
     enabled: true,
   },
   {
@@ -89,21 +64,47 @@ const SEED_POSITIONS: readonly Omit<Position, 'id'>[] = [
     symbol: 'CASH',
     displayName: 'Verrechnungskonto',
     group: 'cash',
-    units: 370,
-    targetPercent: 0.5,
+    units: 5000,
+    targetPercent: 5,
     enabled: true,
   },
 ] as const
 
-/** Erzeugt das Start-Portfolio mit frischen IDs und Zeitstempeln. */
-export function seedPortfolio(): Portfolio {
+/**
+ * Leeres Depot mit einer Cash-Position — die gibt es genau einmal je
+ * Portfolio und sie lässt sich nicht über den Instrumenten-Dialog anlegen.
+ */
+export function emptyPortfolio(name = 'Mein Depot'): Portfolio {
   const now = new Date().toISOString()
   return {
     id: newId(),
-    name: 'Hauptdepot',
+    name,
     createdAt: now,
     updatedAt: now,
-    positions: SEED_POSITIONS.map((position) => ({ ...position, id: newId() })),
+    positions: [
+      {
+        id: newId(),
+        isin: null,
+        symbol: 'CASH',
+        displayName: 'Verrechnungskonto',
+        group: 'cash',
+        units: 0,
+        targetPercent: 0,
+        enabled: true,
+      },
+    ],
+  }
+}
+
+/** Beispiel-Depot zum Ausprobieren — als solches benannt. */
+export function demoPortfolio(): Portfolio {
+  const now = new Date().toISOString()
+  return {
+    id: newId(),
+    name: 'Beispiel-Depot',
+    createdAt: now,
+    updatedAt: now,
+    positions: DEMO_POSITIONS.map((position) => ({ ...position, id: newId() })),
   }
 }
 

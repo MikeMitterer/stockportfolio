@@ -9,7 +9,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
 import { PortfolioRepository } from '@/db/repository'
-import { seedPortfolio } from '@/db/seed'
+import { demoPortfolio, emptyPortfolio } from '@/db/seed'
 import type { Portfolio, Position } from '@/types/portfolio'
 
 export const usePortfolioStore = defineStore('portfolio', () => {
@@ -20,19 +20,24 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
   const positions = computed<Position[]>(() => portfolio.value?.positions ?? [])
 
+  /** Positionen außer der Cash-Zeile — für „ist das Depot leer?". */
+  const hasHoldings = computed<boolean>(() =>
+    positions.value.some((position) => position.group !== 'cash'),
+  )
+
   /**
-   * Lädt das Portfolio. Ist die Datenbank leer, wird einmalig die
-   * Excel-Vorlage geseedet — sonst wäre die App ohne Add-Dialog (T-10)
-   * nicht benutzbar.
+   * Lädt das Portfolio. Ist die Datenbank leer, wird ein **leeres** Depot
+   * angelegt — vorgegebene Bestände ließen sich später kaum von eigenen
+   * Daten unterscheiden. Zum Ausprobieren gibt es `loadDemo()`.
    *
    * @param preferredId Zuletzt aktives Portfolio (aus den Settings).
    */
   async function load(preferredId?: string): Promise<void> {
     if ((await repository.count()) === 0) {
-      const seeded = seedPortfolio()
-      await repository.save(seeded)
-      consola.info('portfolio: Vorlage geseedet', { positions: seeded.positions.length })
-      portfolio.value = seeded
+      const fresh = emptyPortfolio()
+      await repository.save(fresh)
+      consola.info('portfolio: leeres Depot angelegt')
+      portfolio.value = fresh
       loaded.value = true
       return
     }
@@ -40,6 +45,22 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     const all = await repository.findAll()
     portfolio.value = all.find((entry) => entry.id === preferredId) ?? all[0] ?? null
     loaded.value = true
+  }
+
+  /**
+   * Ersetzt das aktive Depot durch das Beispiel-Depot.
+   * Nur aus dem leeren Zustand heraus angeboten, damit niemand versehentlich
+   * eigene Bestände überschreibt.
+   */
+  async function loadDemo(): Promise<void> {
+    const current = portfolio.value
+    const demo = demoPortfolio()
+
+    await repository.save(demo)
+    if (current) await repository.remove(current.id)
+
+    portfolio.value = demo
+    consola.info('portfolio: Beispiel-Depot geladen')
   }
 
   /** Schreibt den aktuellen Stand durch. */
@@ -109,8 +130,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   return {
     portfolio,
     positions,
+    hasHoldings,
     loaded,
     load,
+    loadDemo,
     updatePosition,
     applyTrade,
     addPosition,

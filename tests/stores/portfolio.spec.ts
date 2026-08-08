@@ -36,40 +36,81 @@ function makePosition(overrides: Partial<Position> = {}): Position {
 }
 
 describe('usePortfolioStore — load', () => {
-  it('seedet beim Erststart ein Portfolio', async () => {
+  it('legt beim Erststart ein leeres Depot an — ohne fremde Bestände', async () => {
     const store = usePortfolioStore()
     await store.load()
 
     expect(store.loaded).toBe(true)
     expect(store.portfolio).not.toBeNull()
-    expect(store.positions.length).toBeGreaterThan(0)
+    expect(store.hasHoldings).toBe(false)
   })
 
-  it('seedet nur einmal — der zweite Start lädt das gespeicherte Portfolio', async () => {
+  it('das leere Depot enthält genau eine Cash-Position', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+
+    const cash = store.positions.filter((position) => position.group === 'cash')
+    expect(cash).toHaveLength(1)
+    expect(cash[0]?.units).toBe(0)
+  })
+
+  it('legt nur einmal an — der zweite Start lädt das gespeicherte Depot', async () => {
     const first = usePortfolioStore()
     await first.load()
-    const seededId = first.portfolio?.id
+    const createdId = first.portfolio?.id
 
     setActivePinia(createPinia())
     const second = usePortfolioStore()
     await second.load()
 
-    expect(second.portfolio?.id).toBe(seededId)
+    expect(second.portfolio?.id).toBe(createdId)
     expect(await new PortfolioRepository().count()).toBe(1)
   })
 
   it('behält Änderungen über einen Neustart hinweg', async () => {
     const first = usePortfolioStore()
     await first.load()
-    const positionId = first.positions[0]?.id
-    expect(positionId).toBeDefined()
-    await first.updatePosition(positionId as string, { units: 4242 })
+    await first.addPosition(makePosition({ id: 'keep-me', units: 100 }))
+    await first.updatePosition('keep-me', { units: 4242 })
 
     setActivePinia(createPinia())
     const second = usePortfolioStore()
     await second.load()
 
-    expect(second.positions.find((p) => p.id === positionId)?.units).toBe(4242)
+    expect(second.positions.find((p) => p.id === 'keep-me')?.units).toBe(4242)
+  })
+
+  it('loadDemo ersetzt das leere Depot durch das Beispiel-Depot', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    expect(store.hasHoldings).toBe(false)
+
+    await store.loadDemo()
+
+    expect(store.hasHoldings).toBe(true)
+    expect(store.portfolio?.name).toBe('Beispiel-Depot')
+  })
+
+  it('loadDemo lässt kein verwaistes Depot zurück', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.loadDemo()
+
+    expect(await new PortfolioRepository().count()).toBe(1)
+  })
+
+  it('das Beispiel-Depot überlebt einen Neustart', async () => {
+    const first = usePortfolioStore()
+    await first.load()
+    await first.loadDemo()
+    const demoId = first.portfolio?.id
+
+    setActivePinia(createPinia())
+    const second = usePortfolioStore()
+    await second.load(demoId)
+
+    expect(second.portfolio?.name).toBe('Beispiel-Depot')
+    expect(second.hasHoldings).toBe(true)
   })
 
   it('bevorzugt das übergebene Portfolio, wenn mehrere existieren', async () => {

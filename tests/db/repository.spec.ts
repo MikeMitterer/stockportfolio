@@ -13,7 +13,7 @@ import {
 } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { defaultSettings } from '@/stores/settings'
-import { newId, seedPortfolio } from '@/db/seed'
+import { demoPortfolio, newId } from '@/db/seed'
 import type { Portfolio, QuoteCacheEntry } from '@/types/portfolio'
 
 beforeEach(async () => {
@@ -110,7 +110,7 @@ describe('PortfolioRepository', () => {
 
   it('erhält verschachtelte Positionen beim Rundlauf', async () => {
     const repository = new PortfolioRepository()
-    const portfolio = seedPortfolio()
+    const portfolio = demoPortfolio()
 
     await repository.save(portfolio)
     const loaded = await repository.findById(portfolio.id)

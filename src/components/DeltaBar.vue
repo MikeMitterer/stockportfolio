@@ -31,14 +31,16 @@ const state = computed<'ok' | 'near' | 'out'>(() => {
   return 'ok'
 })
 
+// Gedämpfte Füllung: der Balken zeigt die Richtung, die Zahl darüber bleibt
+// lesbar. Kräftige Flächen würden in einer Tabelle mit vielen Zeilen erschlagen.
 const fillClasses = computed(() => {
   switch (state.value) {
     case 'ok':
-      return 'bg-emerald-500/85'
+      return 'bg-emerald-500/40'
     case 'near':
-      return 'bg-amber-500/85'
+      return 'bg-amber-500/40'
     case 'out':
-      return 'bg-red-500/85'
+      return 'bg-red-500/40'
   }
   return ''
 })

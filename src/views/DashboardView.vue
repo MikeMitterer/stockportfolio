@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NDivider, NSpin, NAlert, NEmpty } from 'naive-ui'
+import { RouterLink } from 'vue-router'
+import { NDivider, NSpin, NAlert, NEmpty, NButton } from 'naive-ui'
 import KpiCard from '@/components/KpiCard.vue'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
@@ -26,7 +27,21 @@ const loading = computed(() => quotesStore.loading)
 const failures = computed(() => quotesStore.failures)
 
 const ready = computed(() => portfolioStore.loaded && settingsStore.loaded)
-const hasPositions = computed(() => portfolioStore.positions.length > 0)
+const hasHoldings = computed(() => portfolioStore.hasHoldings)
+
+const demoLoading = ref<boolean>(false)
+
+/** Lädt das Beispiel-Depot und holt gleich die passenden Kurse. */
+async function onLoadDemo(): Promise<void> {
+  demoLoading.value = true
+  try {
+    await portfolioStore.loadDemo()
+    await settingsStore.setActivePortfolio(portfolioStore.portfolio?.id ?? '')
+    if (client) await quotesStore.loadQuotes(client, portfolioStore.positions)
+  } finally {
+    demoLoading.value = false
+  }
+}
 
 const result = computed(() => {
   const portfolio = portfolioStore.portfolio
@@ -116,11 +131,25 @@ function toggleGroups(): void {
       <NSpin size="large" />
     </div>
 
-    <NEmpty v-else-if="!hasPositions" class="py-24" description="Noch keine Positionen">
+    <!--
+      Leeres Depot: kein Rebalancing möglich, aber auch keine Sackgasse —
+      das Beispiel-Depot lässt die App ausprobieren, ohne dass jemand
+      fremde Bestände für die eigenen hält.
+    -->
+    <NEmpty v-else-if="!hasHoldings" class="py-24" description="Noch keine Wertpapiere im Depot">
       <template #extra>
-        <span class="text-xs text-neutral-500">
-          Der Add-Position-Dialog kommt in T-10.
-        </span>
+        <div class="flex flex-col items-center gap-3">
+          <p class="text-xs text-neutral-500 max-w-sm text-center leading-relaxed">
+            Füge deine Positionen über
+            <RouterLink :to="{ name: 'instruments' }" class="text-sky-400 underline">
+              Instrumente
+            </RouterLink>
+            hinzu — oder lade ein Beispiel-Depot, um die App auszuprobieren.
+          </p>
+          <NButton size="small" secondary :loading="demoLoading" @click="onLoadDemo">
+            Beispiel-Depot laden
+          </NButton>
+        </div>
       </template>
     </NEmpty>
 
