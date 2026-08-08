@@ -23,12 +23,12 @@ const label = computed(() => t(`groups.${props.group.group}`))
 <template>
   <button
     type="button"
-    class="w-full flex items-center gap-3 px-5 py-2.5 text-left bg-neutral-100/60 dark:bg-neutral-800/40 hover:bg-neutral-100 dark:hover:bg-neutral-800/70 transition-colors"
+    class="w-full flex items-center gap-3 px-5 py-2 text-left border-t border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
     :aria-expanded="!collapsed"
     @click="emit('toggle')"
   >
     <svg
-      class="w-3.5 h-3.5 shrink-0 text-neutral-500 transition-transform"
+      class="w-3.5 h-3.5 shrink-0 transition-transform"
       :class="{ '-rotate-90': collapsed }"
       viewBox="0 0 24 24"
       fill="none"
@@ -39,20 +39,20 @@ const label = computed(() => t(`groups.${props.group.group}`))
       <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
     </svg>
 
-    <span class="text-sm font-medium">{{ label }}</span>
-    <span class="text-xs text-neutral-500 tabular-nums">
+    <span class="text-xs uppercase tracking-wide font-medium">{{ label }}</span>
+    <span class="text-xs tabular-nums opacity-60">
       {{ positionCount }}
     </span>
 
     <span class="ml-auto flex items-center gap-5 text-xs tabular-nums">
-      <span class="text-neutral-500 hidden md:inline">{{ eur(group.actualValue) }}</span>
+      <span class="hidden md:inline opacity-70">{{ eur(group.actualValue) }}</span>
       <span>
         {{ percent(group.actualPercent) }}
-        <span class="text-neutral-500">/ {{ percent(group.targetPercent) }}</span>
+        <span class="opacity-60">/ {{ percent(group.targetPercent) }}</span>
       </span>
       <span
         class="hidden sm:inline w-24 text-right"
-        :class="group.deltaEuro >= 0 ? 'text-emerald-500' : 'text-red-400'"
+        :class="group.deltaEuro >= 0 ? 'text-emerald-600/70' : 'text-red-400/80'"
       >
         {{ eurSigned(group.deltaEuro) }}
       </span>

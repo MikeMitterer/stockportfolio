@@ -26,8 +26,11 @@ const targetPosition = computed(() => ({
     <div class="w-32 shrink-0 text-sm font-medium">{{ groupLabel }}</div>
 
     <div class="relative flex-1 h-6 rounded-md bg-neutral-800/70 overflow-hidden">
-      <!-- IST-Balken -->
-      <div class="absolute top-0 bottom-0 left-0 bg-sky-500/70 rounded-md" :style="actualStyle"></div>
+      <!-- IST-Balken — gleiche Behandlung wie in DeltaBar: 4px eingerückt, rounded-sm -->
+      <div
+        class="absolute left-1 rounded-sm bg-sky-500/70 transition-all"
+        :style="{ ...actualStyle, top: '4px', bottom: '4px' }"
+      ></div>
       <!-- Ziel-Marker -->
       <div
         class="absolute top-0 bottom-0 w-0.5 bg-neutral-100 z-10"
