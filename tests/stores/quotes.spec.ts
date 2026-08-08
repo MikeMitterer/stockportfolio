@@ -55,6 +55,7 @@ function makePosition(overrides: Partial<Position> = {}): Position {
     symbol: 'AAA.DE',
     displayName: 'AAA',
     group: 'stocks',
+    kind: 'etf',
     units: 10,
     targetPercent: 50,
     enabled: true,

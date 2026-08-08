@@ -101,6 +101,12 @@ function onKeydown(event: KeyboardEvent): void {
 </script>
 
 <template>
+  <!--
+    Kein Kasten um die Eingabe: nur eine Linie unter der Zahl. Der Wert bleibt
+    dort stehen, wo er auch im Ruhezustand steht — die Zeile springt nicht.
+    Die Spinner-Pfeile sind ausgeblendet (siehe <style>), sie wären in einer
+    schmalen Tabellenzelle nur Gedränge.
+  -->
   <input
     v-if="editing"
     ref="inputRef"
@@ -109,7 +115,7 @@ function onKeydown(event: KeyboardEvent): void {
     :step="precision === 0 ? 1 : 0.5"
     :min="min"
     :max="max"
-    class="w-full bg-neutral-800 text-right tabular-nums rounded px-1.5 py-0.5 outline-none ring-1 ring-sky-500/60"
+    class="inline-number-field w-full bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-b border-sky-400/70 text-sky-200"
     @blur="commit"
     @keydown="onKeydown"
   />
@@ -117,7 +123,7 @@ function onKeydown(event: KeyboardEvent): void {
   <button
     v-else
     type="button"
-    class="w-full text-right tabular-nums rounded px-1.5 py-0.5 transition-colors hover:bg-neutral-800/60"
+    class="w-full text-right tabular-nums px-1.5 py-0.5 border-b border-transparent transition-colors hover:border-neutral-600"
     :class="textClass"
     :disabled="disabled"
     :title="disabled ? undefined : 'Klicken zum Ändern'"
@@ -126,3 +132,16 @@ function onKeydown(event: KeyboardEvent): void {
     {{ display }}
   </button>
 </template>
+
+<style scoped>
+/* Spinner-Pfeile ausblenden — in einer Tabellenzelle nur Ballast. */
+.inline-number-field::-webkit-outer-spin-button,
+.inline-number-field::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.inline-number-field {
+  appearance: textfield;
+}
+</style>

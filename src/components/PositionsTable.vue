@@ -9,7 +9,7 @@ import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import { eur, eurCent, integer, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
-import type { AssetGroup, Bands, Position } from '@/types/portfolio'
+import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
 
 type RowKey = string | number
 
@@ -20,6 +20,8 @@ const props = defineProps<{
   total: number
   /** Summe der Ziel-Anteile über 100 % — färbt die Ziel-Spalte ein. */
   targetsExceeded: boolean
+  /** Konfigurierte externe Verweise (fürs Drilldown). */
+  links: ExternalLink[]
 }>()
 
 const emit = defineEmits<{
@@ -101,6 +103,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         row,
         total: props.total,
         bands: props.bands,
+        links: props.links,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
         onApplyTrade: (id: string, units: number) => emit('apply-trade', id, units),
         onRemove: (id: string) => emit('remove', id),

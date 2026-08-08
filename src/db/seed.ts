@@ -17,6 +17,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: 'IE00B3RBWM25',
     symbol: 'VGWL.DE',
+    kind: 'etf',
     displayName: 'Vanguard FTSE All-World',
     group: 'stocks',
     units: 500,
@@ -26,6 +27,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: 'IE0032077012',
     symbol: 'EQQQ.DE',
+    kind: 'etf',
     displayName: 'Invesco Nasdaq-100',
     group: 'stocks',
     units: 50,
@@ -35,6 +37,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: 'IE00BF4RFH31',
     symbol: 'IUSN.DE',
+    kind: 'etf',
     displayName: 'iShares MSCI World Small Cap',
     group: 'stocks',
     units: 1000,
@@ -44,6 +47,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: 'IE00BCRY6557',
     symbol: 'IS3M.DE',
+    kind: 'etf',
     displayName: 'iShares $ Treasury Bond 7-10yr',
     group: 'bonds',
     units: 200,
@@ -53,6 +57,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: 'DE000A0S9GB0',
     symbol: '4GLD.DE',
+    kind: 'stock',
     displayName: 'Xetra-Gold',
     group: 'metals',
     units: 100,
@@ -62,6 +67,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
   {
     isin: null,
     symbol: 'CASH',
+    kind: null,
     displayName: 'Verrechnungskonto',
     group: 'cash',
     units: 5000,
@@ -86,6 +92,7 @@ export function emptyPortfolio(name = 'Mein Depot'): Portfolio {
         id: newId(),
         isin: null,
         symbol: 'CASH',
+        kind: null,
         displayName: 'Verrechnungskonto',
         group: 'cash',
         units: 0,

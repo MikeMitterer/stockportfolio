@@ -21,14 +21,16 @@ import {
   percentSigned,
 } from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
+import { resolveKind, resolveLinks } from '@/domain/links'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { PositionResult } from '@/domain/rebalancing'
-import type { AssetGroup, Bands, Position } from '@/types/portfolio'
+import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
 
 const props = defineProps<{
   row: PositionResult
   total: number
   bands: Bands
+  links: ExternalLink[]
 }>()
 
 const emit = defineEmits<{
@@ -122,17 +124,17 @@ function updateNotes(value: string): void {
 
 // ─── Links ──────────────────────────────────────────────────────────────────
 
-const meldefondUrl = computed(() =>
-  props.row.position.isin
-    ? `https://my.oekb.at/kapitalmarkt-services/kms-output/fonds-info/sd/af/f?isin=${props.row.position.isin}`
-    : null,
-)
+/** Verweise aus den Einstellungen, gefiltert nach Gattung. */
+const resolvedLinks = computed(() => resolveLinks(props.row.position, props.links))
 
-const extraetfUrl = computed(() =>
-  props.row.position.isin
-    ? `https://extraetf.com/de/etf-profile/${props.row.position.isin}`
-    : null,
-)
+/** Gattung für die Anzeige — Aktie, ETF oder unbekannt. */
+const kind = computed(() => resolveKind(props.row.position))
+
+const kindLabel = computed(() => {
+  if (kind.value === 'etf') return 'ETF'
+  if (kind.value === 'stock') return 'Aktie'
+  return null
+})
 
 const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
 
@@ -355,25 +357,25 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           <div class="tabular-nums">{{ quoteAge }}</div>
         </div>
 
+        <div v-if="kindLabel">
+          <div class="text-neutral-400">Gattung</div>
+          <div>{{ kindLabel }}</div>
+        </div>
+
         <div class="col-span-2 md:col-span-3 lg:col-span-4 flex items-center gap-3 pt-2">
           <a
-            v-if="meldefondUrl"
-            :href="meldefondUrl"
+            v-for="link in resolvedLinks"
+            :key="link.id"
+            :href="link.url"
             target="_blank"
             rel="noopener noreferrer"
             class="text-sky-400 hover:text-sky-300 text-xs underline"
           >
-            {{ t('drilldown.meldefondCheck') }} ↗
+            {{ link.label }} ↗
           </a>
-          <a
-            v-if="extraetfUrl"
-            :href="extraetfUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sky-400 hover:text-sky-300 text-xs underline"
-          >
-            extraetf.com ↗
-          </a>
+          <span v-if="resolvedLinks.length === 0" class="text-xs text-neutral-600">
+            Keine passenden Verweise — unter „Einstellungen" konfigurierbar.
+          </span>
           <div class="ml-auto">
             <SuggestionBadge :suggestion="row.suggestion" :near="row.isNearBand" />
           </div>

@@ -58,6 +58,7 @@ function makePosition(overrides: Partial<Position> = {}): Position {
     symbol: 'TEST.DE',
     displayName: 'Test',
     group: 'stocks',
+    kind: 'etf',
     units: 10,
     targetPercent: 50,
     enabled: true,
@@ -409,6 +410,7 @@ describe('computeRebalancing', () => {
     currentRebalancingBudget: 0,
     currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
+    links: [],
     ui: {
       columns: {
         volatility: false,

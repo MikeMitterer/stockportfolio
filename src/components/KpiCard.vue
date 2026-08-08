@@ -11,28 +11,31 @@ const props = defineProps<{
 const toneClasses = computed(() => {
   switch (props.tone) {
     case 'positive':
-      return 'text-emerald-300'
+      return 'text-emerald-400'
     case 'warning':
-      return 'text-amber-300'
+      return 'text-amber-400'
     case 'danger':
-      return 'text-red-300'
+      return 'text-red-400'
     default:
-      return 'text-neutral-100 dark:text-neutral-100'
+      return 'text-neutral-900 dark:text-neutral-100'
   }
 })
 </script>
 
 <template>
-  <div
-    class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-5 py-4 flex flex-col gap-1"
-  >
-    <div class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 font-medium">
+  <!--
+    Bewusst flach: keine Karte mit Rahmen und Fläche, nur eine Spalte mit
+    feiner Trennlinie. Vier gerahmte Kästen nehmen für vier Zahlen zu viel
+    Platz und Aufmerksamkeit weg von der Tabelle darunter.
+  -->
+  <div class="flex flex-col gap-0.5 px-4 py-2 border-l border-neutral-200 dark:border-neutral-800 first:border-l-0 first:pl-0">
+    <div class="text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
       {{ label }}
     </div>
-    <div class="text-2xl font-semibold tabular-nums" :class="toneClasses">
+    <div class="text-lg font-semibold tabular-nums leading-tight" :class="toneClasses">
       {{ value }}
     </div>
-    <div v-if="hint" class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+    <div v-if="hint" class="text-[11px] text-neutral-500 dark:text-neutral-600 leading-tight">
       {{ hint }}
     </div>
   </div>

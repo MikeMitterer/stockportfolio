@@ -114,6 +114,8 @@ async function onAddPosition(payload: {
     id: newId(),
     isin: instrument.isin,
     symbol: instrument.symbol,
+    // Gattung mitschreiben — sie entscheidet später über die externen Verweise.
+    kind: instrument.type === 'etf' || instrument.type === 'stock' ? instrument.type : null,
     displayName: instrument.name ?? instrument.symbol,
     group,
     units,
@@ -213,8 +215,8 @@ function toggleGroups(): void {
         {{ failures.length }} Kurs(e) konnten nicht geladen werden — {{ failureSummary }}
       </NAlert>
 
-      <!-- KPI-Row -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Kennzahlen -->
+      <section class="grid grid-cols-2 lg:grid-cols-4">
         <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
         <KpiCard
           :label="t('kpi.liquidBuffer')"
@@ -316,6 +318,7 @@ function toggleGroups(): void {
           :bands="settingsStore.settings.bands"
           :total="result.total"
           :targets-exceeded="result.targetsExceeded"
+          :links="settingsStore.settings.links"
           @update="onUpdate"
           @apply-trade="onApplyTrade"
           @remove="onRemove"

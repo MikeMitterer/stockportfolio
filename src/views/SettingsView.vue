@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NCard, NTag, NInputNumber } from 'naive-ui'
+import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { usePortfolioStore } from '@/stores/portfolio'
 
@@ -122,6 +123,18 @@ async function setBudget(value: number | null): Promise<void> {
           />
         </label>
       </div>
+    </NCard>
+
+    <NCard :bordered="false" class="!bg-neutral-100 dark:!bg-neutral-900 mb-4">
+      <template #header>
+        <span class="text-sm font-medium">Externe Verweise</span>
+      </template>
+
+      <ExternalLinkEditor
+        :links="settingsStore.settings.links"
+        @update="settingsStore.setLinks"
+        @reset="settingsStore.resetLinks"
+      />
     </NCard>
 
     <NCard :bordered="false" class="!bg-neutral-100 dark:!bg-neutral-900">
