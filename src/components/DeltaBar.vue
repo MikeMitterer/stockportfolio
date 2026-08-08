@@ -31,16 +31,17 @@ const state = computed<'ok' | 'near' | 'out'>(() => {
   return 'ok'
 })
 
-// Gedämpfte Füllung: der Balken zeigt die Richtung, die Zahl darüber bleibt
-// lesbar. Kräftige Flächen würden in einer Tabelle mit vielen Zeilen erschlagen.
+// Statusfarben, nicht Klassenfarben: hier geht es um „im Band / nahe / draußen",
+// nicht um die Assetklasse. Die Sättigung liegt so hoch, dass der Zustand auf
+// einen Blick zu sehen ist, und so tief, dass die Zahl darüber lesbar bleibt.
 const fillClasses = computed(() => {
   switch (state.value) {
     case 'ok':
-      return 'bg-emerald-500/40'
+      return 'bg-emerald-500/70'
     case 'near':
-      return 'bg-amber-500/40'
+      return 'bg-amber-500/70'
     case 'out':
-      return 'bg-red-500/40'
+      return 'bg-red-500/70'
   }
   return ''
 })

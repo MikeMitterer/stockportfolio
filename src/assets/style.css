@@ -27,6 +27,28 @@ button {
   cursor: pointer;
 }
 
+/*
+ * Farben der Assetklassen.
+ *
+ * Aus einer geprüften kategorialen Palette, in dieser Zuordnung gegen
+ * Farbfehlsichtigkeit validiert (Details in `src/domain/assetColors.ts`).
+ * Die dunklen Werte sind eigene Stufen für die dunkle Fläche, keine
+ * automatische Umkehrung der hellen.
+ */
+:root {
+  --asset-stocks: #2a78d6; /* blau */
+  --asset-bonds: #e87ba4; /* magenta */
+  --asset-metals: #eda100; /* gold */
+  --asset-cash: #1baf7a; /* aqua */
+}
+
+:root.dark {
+  --asset-stocks: #3987e5;
+  --asset-bonds: #d55181;
+  --asset-metals: #c98500;
+  --asset-cash: #199e70;
+}
+
 /* Tabellen-Zahlen: monospaced digits für saubere Ausrichtung */
 .tabular-nums {
   font-variant-numeric: tabular-nums;

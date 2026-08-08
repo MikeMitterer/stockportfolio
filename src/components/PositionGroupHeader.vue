@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { eur, eurSigned, percent } from '@/domain/formatters'
+import { assetColor } from '@/domain/assetColors'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { GroupResult } from '@/domain/rebalancing'
 
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const label = computed(() => t(`groups.${props.group.group}`))
+const color = computed(() => assetColor(props.group.group))
 </script>
 
 <template>
@@ -43,6 +45,13 @@ const label = computed(() => t(`groups.${props.group.group}`))
     >
       <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
     </svg>
+
+    <!-- Farbpunkt wie im Assetklassen-Balken oben — gleiche Klasse, gleiche Farbe -->
+    <span
+      class="inline-block w-1.5 h-1.5 rounded-full shrink-0"
+      :style="{ backgroundColor: color }"
+      aria-hidden="true"
+    ></span>
 
     <span
       class="text-[11px] uppercase tracking-wider transition-colors group-hover:text-neutral-700 dark:group-hover:text-neutral-300"

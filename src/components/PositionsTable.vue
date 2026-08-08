@@ -205,7 +205,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.delta'),
     key: 'delta',
-    width: 260,
+    width: 130,
     render: (row) => h(DeltaBar, { relativePercent: row.relativeDeltaPercent, bands: props.bands }),
   },
   {

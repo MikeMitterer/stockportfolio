@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { eur, eurSigned, percent } from '@/domain/formatters'
+import { assetColor } from '@/domain/assetColors'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { GroupResult } from '@/domain/rebalancing'
 
@@ -12,10 +13,15 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const groupLabel = computed(() => t(`groups.${props.group.group}`))
+const color = computed(() => assetColor(props.group.group))
+
 const barMax = computed(() => Math.max(props.group.actualPercent, props.group.targetPercent, 1))
+
 const actualStyle = computed(() => ({
   width: `${(props.group.actualPercent / barMax.value) * 100}%`,
+  backgroundColor: color.value,
 }))
+
 const targetPosition = computed(() => ({
   left: `${(props.group.targetPercent / barMax.value) * 100}%`,
 }))
@@ -23,15 +29,19 @@ const targetPosition = computed(() => ({
 
 <template>
   <div class="flex items-center gap-4 py-2">
-    <div class="w-32 shrink-0 text-sm font-medium">{{ groupLabel }}</div>
+    <!-- Farbpunkt + Name: die Farbe wiederholt sich in Balken und Tabelle -->
+    <div class="w-36 shrink-0 flex items-center gap-2">
+      <span
+        class="inline-block w-2 h-2 rounded-full shrink-0"
+        :style="{ backgroundColor: color }"
+        aria-hidden="true"
+      ></span>
+      <span class="text-sm font-medium">{{ groupLabel }}</span>
+    </div>
 
     <div class="relative flex-1 h-6 rounded-md bg-neutral-800/70 overflow-hidden">
-      <!-- IST-Balken — gleiche Behandlung wie in DeltaBar: 4px eingerückt, rounded-sm -->
-      <div
-        class="absolute left-1 rounded-sm bg-sky-500/70 transition-all"
-        :style="{ ...actualStyle, top: '4px', bottom: '4px' }"
-      ></div>
-      <!-- Ziel-Marker -->
+      <div class="absolute rounded-sm transition-all" :style="{ ...actualStyle, top: '4px', bottom: '4px', left: '4px' }"></div>
+      <!-- Ziel-Marke -->
       <div
         class="absolute top-0 bottom-0 w-0.5 bg-neutral-100 z-10"
         :style="targetPosition"
