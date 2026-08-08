@@ -84,7 +84,7 @@ const label = computed(() => percentSigned(props.relativePercent))
   -->
   <div class="flex items-center gap-2" role="img" :aria-label="`Delta ${label}`">
     <div
-      class="relative flex-1 overflow-hidden bg-sunken"
+      class="relative flex-1 rounded-sm overflow-hidden bg-sunken"
       :class="compact ? 'h-4' : 'h-5'"
     >
       <!-- Bandgrenzen als Striche, ohne Flächenton -->
