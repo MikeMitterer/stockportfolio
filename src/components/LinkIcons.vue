@@ -47,7 +47,7 @@ function abbreviate(label: string): string {
       rel="noopener noreferrer"
       :title="link.label"
       class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1 rounded text-[10px] font-medium
-             text-neutral-400 border border-neutral-700 hover:text-sky-300 hover:border-sky-500/60
+             text-ink-muted border border-edge hover:text-accent hover:border-accent/60
              transition-colors"
       @click.stop
     >

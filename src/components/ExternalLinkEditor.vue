@@ -56,12 +56,12 @@ function add(): void {
 
 <template>
   <div class="flex flex-col gap-4">
-    <p class="text-xs text-neutral-500 leading-relaxed">
+    <p class="text-xs text-ink-muted leading-relaxed">
       In der Adresse werden
-      <code class="px-1 rounded bg-neutral-200 dark:bg-neutral-800">{isin}</code> und
-      <code class="px-1 rounded bg-neutral-200 dark:bg-neutral-800">{symbol}</code>
+      <code class="px-1 rounded bg-raised">{isin}</code> und
+      <code class="px-1 rounded bg-raised">{symbol}</code>
       ersetzt. „Gilt für" leer lassen heißt: für alle Gattungen. Ein Verweis mit
-      <code class="px-1 rounded bg-neutral-200 dark:bg-neutral-800">{isin}</code>
+      <code class="px-1 rounded bg-raised">{isin}</code>
       erscheint nicht bei Positionen ohne ISIN.
     </p>
 
@@ -105,7 +105,7 @@ function add(): void {
       </div>
     </div>
 
-    <p v-else class="text-xs text-neutral-500">
+    <p v-else class="text-xs text-ink-muted">
       Keine Verweise konfiguriert — im Drilldown erscheinen dann keine externen Links.
     </p>
 

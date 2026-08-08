@@ -197,7 +197,7 @@ function toggleGroups(): void {
     <NEmpty v-else-if="!hasHoldings" class="py-24" description="Noch keine Wertpapiere im Depot">
       <template #extra>
         <div class="flex flex-col items-center gap-3">
-          <p class="text-xs text-neutral-500 max-w-sm text-center leading-relaxed">
+          <p class="text-xs text-ink-muted max-w-sm text-center leading-relaxed">
             Lege deine erste Position an — oder lade ein Beispiel-Depot, um die
             App auszuprobieren.
           </p>
@@ -237,10 +237,10 @@ function toggleGroups(): void {
       </section>
 
       <!-- Gruppen-Balken (ein-/ausklappbar) -->
-      <section class="border-t border-neutral-200 dark:border-neutral-800">
+      <section class="border-t border-edge">
         <button
           type="button"
-          class="w-full flex items-center gap-2 py-2.5 text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+          class="w-full flex items-center gap-2 py-2.5 text-left text-ink-secondary hover:text-ink transition-colors"
           :aria-expanded="!groupsCollapsed"
           aria-controls="dashboard-groups-panel"
           @click="toggleGroups"
@@ -267,7 +267,7 @@ function toggleGroups(): void {
               v-for="group in result.groups"
               :key="group.group"
               class="hidden sm:inline"
-              :class="group.suggestion === 'ok' ? 'text-neutral-500' : 'text-amber-500'"
+              :class="group.suggestion === 'ok' ? 'text-ink-muted' : 'text-status-near'"
             >
               {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
             </span>
@@ -277,7 +277,7 @@ function toggleGroups(): void {
         <div
           v-show="!groupsCollapsed"
           id="dashboard-groups-panel"
-          class="pb-4 flex flex-col divide-y divide-neutral-200/50 dark:divide-neutral-800/50"
+          class="pb-4 flex flex-col divide-y divide-edge-subtle"
         >
           <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
         </div>
@@ -285,11 +285,11 @@ function toggleGroups(): void {
 
       <!-- Positionen -->
       <section
-        class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
+        class="rounded-xl border border-edge bg-card overflow-hidden"
       >
         <div class="px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
           <h2
-            class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 font-medium"
+            class="text-xs uppercase tracking-wide text-ink-secondary font-medium"
           >
             Positionen — Bestand und Ziel sind direkt änderbar
           </h2>
@@ -298,7 +298,7 @@ function toggleGroups(): void {
               :sum="result.targetPercentSum"
               :exceeded="result.targetsExceeded"
             />
-            <div class="text-xs text-neutral-500 tabular-nums">
+            <div class="text-xs text-ink-muted tabular-nums">
               Bänder: −{{ percent(settingsStore.settings.bands.lowerPercent) }} / +{{
                 percent(settingsStore.settings.bands.upperPercent)
               }}

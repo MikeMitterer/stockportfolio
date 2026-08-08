@@ -7,45 +7,47 @@ import {
   NDialogProvider,
   NLoadingBarProvider,
   darkTheme,
+  type GlobalThemeOverrides,
 } from 'naive-ui'
 import AppTopbar from '@/components/AppTopbar.vue'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
+import { useThemeStore } from '@/stores/theme'
+import { buildNaiveOverrides } from '@/theme/naive'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-
-const STORAGE_KEY = 'stockportfolio.theme'
-const isDark = ref<boolean>(true)
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
+const themeStore = useThemeStore()
 
 const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
 const refreshLabel = computed(() => (quotesStore.loading ? '…' : ageLabel.value))
 
+const naiveOverrides = ref<GlobalThemeOverrides>({})
+
+// Das Theme steht schon vor dem ersten Bildaufbau fest — sonst blitzt kurz
+// das falsche auf. Die Naive-Overrides lesen die dann gesetzten Variablen.
+themeStore.init()
+
 onMounted(() => {
-  const stored = localStorage.getItem(STORAGE_KEY)
-  if (stored === 'light' || stored === 'dark') {
-    isDark.value = stored === 'dark'
-  }
+  naiveOverrides.value = buildNaiveOverrides()
 })
 
 watch(
-  isDark,
-  (dark) => {
-    localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light')
-    document.documentElement.classList.toggle('dark', dark)
+  () => themeStore.current,
+  () => {
+    // Erst im nächsten Bild lesen: `data-theme` muss am Element stehen,
+    // bevor `getComputedStyle` die neuen Werte liefert.
+    requestAnimationFrame(() => {
+      naiveOverrides.value = buildNaiveOverrides()
+    })
   },
-  { immediate: true },
 )
-
-function toggleTheme(): void {
-  isDark.value = !isDark.value
-}
 
 function refresh(): void {
   if (!client) return
@@ -54,19 +56,16 @@ function refresh(): void {
 </script>
 
 <template>
-  <NConfigProvider :theme="isDark ? darkTheme : null" inline-theme-disabled>
+  <NConfigProvider
+    :theme="themeStore.isDark ? darkTheme : null"
+    :theme-overrides="naiveOverrides"
+    inline-theme-disabled
+  >
     <NLoadingBarProvider>
       <NMessageProvider>
         <NDialogProvider>
-          <div
-            class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors"
-          >
-            <AppTopbar
-              :is-dark="isDark"
-              :last-refresh-label="refreshLabel"
-              @toggle-theme="toggleTheme"
-              @refresh="refresh"
-            />
+          <div class="min-h-screen bg-page text-ink transition-colors">
+            <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
             <RouterView />
           </div>
         </NDialogProvider>

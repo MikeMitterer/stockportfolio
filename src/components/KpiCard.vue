@@ -11,13 +11,13 @@ const props = defineProps<{
 const toneClasses = computed(() => {
   switch (props.tone) {
     case 'positive':
-      return 'text-emerald-400'
+      return 'text-status-ok'
     case 'warning':
-      return 'text-amber-400'
+      return 'text-status-near'
     case 'danger':
-      return 'text-red-400'
+      return 'text-status-out'
     default:
-      return 'text-neutral-900 dark:text-neutral-100'
+      return 'text-ink'
   }
 })
 </script>
@@ -28,14 +28,14 @@ const toneClasses = computed(() => {
     feiner Trennlinie. Vier gerahmte Kästen nehmen für vier Zahlen zu viel
     Platz und Aufmerksamkeit weg von der Tabelle darunter.
   -->
-  <div class="flex flex-col gap-0.5 px-4 py-2 border-l border-neutral-200 dark:border-neutral-800 first:border-l-0 first:pl-0">
-    <div class="text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+  <div class="flex flex-col gap-0.5 px-4 py-2 border-l border-edge first:border-l-0 first:pl-0">
+    <div class="text-[11px] uppercase tracking-wide text-ink-muted">
       {{ label }}
     </div>
     <div class="text-lg font-semibold tabular-nums leading-tight" :class="toneClasses">
       {{ value }}
     </div>
-    <div v-if="hint" class="text-[11px] text-neutral-500 dark:text-neutral-600 leading-tight">
+    <div v-if="hint" class="text-[11px] text-ink-muted leading-tight">
       {{ hint }}
     </div>
   </div>

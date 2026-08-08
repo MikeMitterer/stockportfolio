@@ -30,10 +30,10 @@ export interface AssetColor {
 
 /** Farbton je Assetklasse — als CSS-Variablen gesetzt, siehe `style.css`. */
 export const ASSET_COLOR_VAR: Record<AssetGroup, string> = {
-  stocks: 'var(--asset-stocks)',
-  bonds: 'var(--asset-bonds)',
-  metals: 'var(--asset-metals)',
-  cash: 'var(--asset-cash)',
+  stocks: 'rgb(var(--asset-stocks))',
+  bonds: 'rgb(var(--asset-bonds))',
+  metals: 'rgb(var(--asset-metals))',
+  cash: 'rgb(var(--asset-cash))',
 }
 
 /** Liefert die CSS-Variable zur Assetklasse. */

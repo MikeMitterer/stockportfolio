@@ -17,30 +17,22 @@ const state = computed<'ok' | 'near' | 'buy' | 'sell'>(() => {
 
 const label = computed(() => t(`suggestion.${state.value}`))
 
-const colorClasses = computed(() => {
-  switch (state.value) {
-    case 'buy':
-      return 'bg-red-500/15 text-red-300 border-red-500/40'
-    case 'sell':
-      return 'bg-red-500/15 text-red-300 border-red-500/40'
-    case 'near':
-      return 'bg-amber-500/15 text-amber-300 border-amber-500/40'
-    case 'ok':
-    default:
-      return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
-  }
-})
-
-const dotClasses = computed(() => {
+/**
+ * Statusfarbe als CSS-Variable statt fester Tailwind-Klasse.
+ *
+ * Feste Klassen wie `text-emerald-300` waren für dunkle Flächen gedacht und
+ * verschwinden im hellen Theme fast. Über die Token bekommt jedes Theme die
+ * Stufe, die auf seiner Fläche trägt.
+ */
+const color = computed(() => {
   switch (state.value) {
     case 'buy':
     case 'sell':
-      return 'bg-red-400'
+      return 'rgb(var(--status-out))'
     case 'near':
-      return 'bg-amber-400'
-    case 'ok':
+      return 'rgb(var(--status-near))'
     default:
-      return 'bg-emerald-400'
+      return 'rgb(var(--status-ok))'
   }
 })
 
@@ -54,9 +46,16 @@ const arrow = computed(() => {
 <template>
   <span
     class="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium tabular-nums"
-    :class="colorClasses"
+    :style="{
+      color,
+      borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,
+      backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
+    }"
   >
-    <span class="inline-block h-1.5 w-1.5 rounded-full" :class="dotClasses"></span>
+    <span
+      class="inline-block h-1.5 w-1.5 rounded-full"
+      :style="{ backgroundColor: color }"
+    ></span>
     <span v-if="arrow" class="leading-none">{{ arrow }}</span>
     <span>{{ label }}</span>
   </span>

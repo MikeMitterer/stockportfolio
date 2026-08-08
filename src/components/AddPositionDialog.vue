@@ -126,7 +126,7 @@ watch(
 
         <template v-else>
           <label class="flex flex-col gap-1 text-sm">
-            <span class="text-neutral-500">Instrument</span>
+            <span class="text-ink-muted">Instrument</span>
             <NSelect
               v-model:value="selectedKey"
               :options="options"
@@ -138,24 +138,24 @@ watch(
           <!-- Kontext zum gewählten Papier, damit die Eingabe nicht blind erfolgt -->
           <div
             v-if="selected"
-            class="rounded-md bg-neutral-950/40 p-3 grid grid-cols-2 gap-x-6 gap-y-2 text-xs"
+            class="rounded-md bg-sunken p-3 grid grid-cols-2 gap-x-6 gap-y-2 text-xs"
           >
             <div>
-              <div class="text-neutral-500">ISIN</div>
+              <div class="text-ink-muted">ISIN</div>
               <div class="tabular-nums">{{ selected.isin ?? '—' }}</div>
             </div>
             <div>
-              <div class="text-neutral-500">Kurs</div>
+              <div class="text-ink-muted">Kurs</div>
               <div class="tabular-nums">
                 {{ selected.latest_price !== null ? eurCent(selected.latest_price) : 'noch keiner' }}
               </div>
             </div>
             <div v-if="selected.ter !== null">
-              <div class="text-neutral-500">TER</div>
+              <div class="text-ink-muted">TER</div>
               <div class="tabular-nums">{{ percent(selected.ter) }}</div>
             </div>
             <div v-if="selected.volatility !== null">
-              <div class="text-neutral-500">Volatilität</div>
+              <div class="text-ink-muted">Volatilität</div>
               <div class="tabular-nums">{{ percent(selected.volatility) }}</div>
             </div>
             <div class="col-span-2">
@@ -168,12 +168,12 @@ watch(
 
           <div class="grid grid-cols-2 gap-4">
             <label class="flex flex-col gap-1 text-sm">
-              <span class="text-neutral-500">{{ t('table.units') }}</span>
+              <span class="text-ink-muted">{{ t('table.units') }}</span>
               <NInputNumber v-model:value="units" :min="0" :precision="0" :step="1" />
             </label>
 
             <label class="flex flex-col gap-1 text-sm">
-              <span class="text-neutral-500">{{ t('table.targetPercent') }}</span>
+              <span class="text-ink-muted">{{ t('table.targetPercent') }}</span>
               <NInputNumber
                 v-model:value="targetPercent"
                 :min="0"
@@ -181,16 +181,16 @@ watch(
                 :precision="2"
                 :step="0.5"
               />
-              <span class="text-xs text-neutral-500">
+              <span class="text-xs text-ink-muted">
                 noch frei: {{ percent(remainingTargetPercent) }}
               </span>
             </label>
           </div>
 
           <label class="flex flex-col gap-1 text-sm">
-            <span class="text-neutral-500">{{ t('drilldown.group') }}</span>
+            <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
             <NSelect v-model:value="group" :options="groupOptions" />
-            <span class="text-xs text-neutral-500">
+            <span class="text-xs text-ink-muted">
               Vorschlag anhand des Namens — bei Bedarf ändern.
             </span>
           </label>

@@ -30,7 +30,7 @@ const color = computed(() => assetColor(props.group.group))
   -->
   <button
     type="button"
-    class="group w-full flex items-center gap-2.5 px-5 py-1.5 text-left text-neutral-500 dark:text-neutral-500"
+    class="group w-full flex items-center gap-2.5 px-5 py-1.5 text-left text-ink-muted"
     :aria-expanded="!collapsed"
     @click="emit('toggle')"
   >
@@ -54,7 +54,7 @@ const color = computed(() => assetColor(props.group.group))
     ></span>
 
     <span
-      class="text-[11px] uppercase tracking-wider transition-colors group-hover:text-neutral-700 dark:group-hover:text-neutral-300"
+      class="text-[11px] uppercase tracking-wider transition-colors group-hover:text-ink"
     >
       {{ label }}
       <span class="tabular-nums opacity-50">{{ positionCount }}</span>
@@ -68,7 +68,7 @@ const color = computed(() => assetColor(props.group.group))
       </span>
       <span
         class="hidden sm:inline w-24 text-right"
-        :class="group.deltaEuro >= 0 ? 'text-emerald-600/60' : 'text-red-400/70'"
+        :class="group.deltaEuro >= 0 ? 'text-status-ok/70' : 'text-status-out/70'"
       >
         {{ eurSigned(group.deltaEuro) }}
       </span>

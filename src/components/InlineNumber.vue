@@ -37,8 +37,8 @@ const draft = ref<string | number>('')
 const inputRef = ref<HTMLInputElement | null>(null)
 
 const textClass = computed(() => {
-  if (props.disabled) return 'text-neutral-600 cursor-default'
-  if (props.invalid) return 'text-red-400'
+  if (props.disabled) return 'text-ink-muted cursor-default'
+  if (props.invalid) return 'text-status-out'
   return ''
 })
 
@@ -115,7 +115,7 @@ function onKeydown(event: KeyboardEvent): void {
     :step="precision === 0 ? 1 : 0.5"
     :min="min"
     :max="max"
-    class="inline-number-field w-full bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-b border-sky-400/70 text-sky-200"
+    class="inline-number-field w-full bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-b border-accent text-ink"
     @blur="commit"
     @keydown="onKeydown"
   />
@@ -123,7 +123,7 @@ function onKeydown(event: KeyboardEvent): void {
   <button
     v-else
     type="button"
-    class="w-full text-right tabular-nums px-1.5 py-0.5 border-b border-transparent transition-colors hover:border-neutral-600"
+    class="w-full text-right tabular-nums px-1.5 py-0.5 border-b border-transparent transition-colors hover:border-edge"
     :class="textClass"
     :disabled="disabled"
     :title="disabled ? undefined : 'Klicken zum Ändern'"

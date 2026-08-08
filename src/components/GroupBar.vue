@@ -39,25 +39,25 @@ const targetPosition = computed(() => ({
       <span class="text-sm font-medium">{{ groupLabel }}</span>
     </div>
 
-    <div class="relative flex-1 h-6 rounded-md bg-neutral-800/70 overflow-hidden">
+    <div class="relative flex-1 h-6 rounded-md bg-sunken overflow-hidden">
       <div class="absolute rounded-sm transition-all" :style="{ ...actualStyle, top: '4px', bottom: '4px', left: '4px' }"></div>
       <!-- Ziel-Marke -->
       <div
-        class="absolute top-0 bottom-0 w-0.5 bg-neutral-100 z-10"
+        class="absolute top-0 bottom-0 w-0.5 bg-ink z-10"
         :style="targetPosition"
         :title="`Ziel: ${percent(group.targetPercent)}`"
       ></div>
     </div>
 
     <div class="w-24 text-right tabular-nums text-sm">{{ percent(group.actualPercent) }}</div>
-    <div class="w-24 text-right tabular-nums text-xs text-neutral-500">
+    <div class="w-24 text-right tabular-nums text-xs text-ink-muted">
       / {{ percent(group.targetPercent) }}
     </div>
-    <div class="w-32 text-right tabular-nums text-xs text-neutral-400">
+    <div class="w-32 text-right tabular-nums text-xs text-ink-muted">
       {{ eur(group.actualValue) }}
     </div>
     <div class="w-32 text-right tabular-nums text-xs">
-      <span :class="group.deltaEuro >= 0 ? 'text-emerald-400' : 'text-red-400'">
+      <span :class="group.deltaEuro >= 0 ? 'text-status-ok' : 'text-status-out'">
         {{ eurSigned(group.deltaEuro) }}
       </span>
     </div>

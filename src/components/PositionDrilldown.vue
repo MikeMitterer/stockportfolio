@@ -158,7 +158,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
     <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-neutral-900/60">
+    <NCard :bordered="false" size="small" class="!bg-raised">
       <template #header>
         <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
       </template>
@@ -166,7 +166,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
       <div class="flex flex-col gap-3">
         <div class="grid grid-cols-2 gap-3">
           <label class="flex flex-col gap-1 text-xs">
-            <span class="text-neutral-400">
+            <span class="text-ink-muted">
               {{ isCash ? 'Betrag (€)' : t('table.units') }}
             </span>
             <NInputNumber
@@ -180,7 +180,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           </label>
 
           <label class="flex flex-col gap-1 text-xs">
-            <span class="text-neutral-400">{{ t('table.targetPercent') }}</span>
+            <span class="text-ink-muted">{{ t('table.targetPercent') }}</span>
             <NInputNumber
               :value="row.position.targetPercent"
               :precision="2"
@@ -194,7 +194,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
         </div>
 
         <label class="flex flex-col gap-1 text-xs">
-          <span class="text-neutral-400">{{ t('drilldown.displayName') }}</span>
+          <span class="text-ink-muted">{{ t('drilldown.displayName') }}</span>
           <NInput
             :value="row.position.displayName"
             size="small"
@@ -204,7 +204,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
 
         <div class="grid grid-cols-2 gap-3">
           <label class="flex flex-col gap-1 text-xs">
-            <span class="text-neutral-400">{{ t('drilldown.group') }}</span>
+            <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
             <NSelect
               :value="row.position.group"
               :options="groupOptions"
@@ -214,7 +214,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           </label>
 
           <label class="flex flex-col gap-1 text-xs">
-            <span class="text-neutral-400">{{ t('drilldown.enabled') }}</span>
+            <span class="text-ink-muted">{{ t('drilldown.enabled') }}</span>
             <div class="pt-1">
               <NSwitch
                 :value="row.position.enabled"
@@ -226,7 +226,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
         </div>
 
         <label class="flex flex-col gap-1 text-xs">
-          <span class="text-neutral-400">{{ t('drilldown.notes') }}</span>
+          <span class="text-ink-muted">{{ t('drilldown.notes') }}</span>
           <NInput
             :value="row.position.notes ?? ''"
             type="textarea"
@@ -251,14 +251,14 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     </NCard>
 
     <!-- ─── Trade-Simulator ──────────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-neutral-900/60">
+    <NCard :bordered="false" size="small" class="!bg-raised">
       <template #header>
         <span class="text-sm font-medium">{{ t('drilldown.tradeSimulator') }}</span>
       </template>
 
       <div class="flex flex-col gap-3">
         <label class="flex flex-col gap-1 text-xs">
-          <span class="text-neutral-400">{{ t('drilldown.tradeSimulatorHint') }}</span>
+          <span class="text-ink-muted">{{ t('drilldown.tradeSimulatorHint') }}</span>
           <NInputNumber
             v-model:value="tradeUnits"
             :precision="isCash ? 2 : 0"
@@ -267,27 +267,27 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           />
         </label>
 
-        <div class="rounded-md bg-neutral-950/40 p-3 flex flex-col gap-2 text-xs">
+        <div class="rounded-md bg-sunken p-3 flex flex-col gap-2 text-xs">
           <div class="flex justify-between">
-            <span class="text-neutral-400">Neuer Bestand</span>
+            <span class="text-ink-muted">Neuer Bestand</span>
             <span class="tabular-nums">{{ integer(simulatedUnits) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-neutral-400">Trade-Wert</span>
+            <span class="text-ink-muted">Trade-Wert</span>
             <span
               class="tabular-nums"
-              :class="tradeUnits >= 0 ? 'text-red-300' : 'text-emerald-300'"
+              :class="tradeUnits >= 0 ? 'text-status-out' : 'text-status-ok'"
             >
               {{ eurSigned(-simulatedTradeEuro) }}
             </span>
           </div>
           <NDivider class="!my-1" />
           <div class="flex justify-between">
-            <span class="text-neutral-400">{{ t('drilldown.projectedActual') }}</span>
+            <span class="text-ink-muted">{{ t('drilldown.projectedActual') }}</span>
             <span class="tabular-nums">{{ percent(simulatedActualPercent) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-neutral-400">{{ t('drilldown.projectedDelta') }}</span>
+            <span class="text-ink-muted">{{ t('drilldown.projectedDelta') }}</span>
             <span class="tabular-nums">{{ percentSigned(simulatedRelativeDelta) }}</span>
           </div>
         </div>
@@ -299,74 +299,74 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     </NCard>
 
     <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-neutral-900/60 lg:col-span-2">
+    <NCard :bordered="false" size="small" class="!bg-raised lg:col-span-2">
       <template #header>
         <span class="text-sm font-medium">Details</span>
       </template>
 
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3 text-xs">
         <div>
-          <div class="text-neutral-400">ISIN</div>
+          <div class="text-ink-muted">ISIN</div>
           <div class="tabular-nums">{{ row.position.isin ?? '—' }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">Symbol</div>
+          <div class="text-ink-muted">Symbol</div>
           <div class="tabular-nums">{{ row.position.symbol }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">Kurs</div>
+          <div class="text-ink-muted">Kurs</div>
           <div class="tabular-nums">{{ row.quote ? eurCent(row.quote.price) : '—' }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">Marktwert</div>
+          <div class="text-ink-muted">Marktwert</div>
           <div class="tabular-nums">{{ eur(row.marketValue) }}</div>
         </div>
 
         <div>
-          <div class="text-neutral-400">{{ t('drilldown.lowerBand') }}</div>
+          <div class="text-ink-muted">{{ t('drilldown.lowerBand') }}</div>
           <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">Ziel-Wert</div>
+          <div class="text-ink-muted">Ziel-Wert</div>
           <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">{{ t('drilldown.upperBand') }}</div>
+          <div class="text-ink-muted">{{ t('drilldown.upperBand') }}</div>
           <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">{{ t('drilldown.deltaEuro') }}</div>
+          <div class="text-ink-muted">{{ t('drilldown.deltaEuro') }}</div>
           <div
             class="tabular-nums"
-            :class="row.suggestion === 'ok' ? 'text-emerald-300' : 'text-red-300'"
+            :class="row.suggestion === 'ok' ? 'text-status-ok' : 'text-status-out'"
           >
             {{ eurSigned(deltaEuro) }}
           </div>
         </div>
 
         <div v-if="optimalUnits !== null">
-          <div class="text-neutral-400">{{ t('drilldown.optimalUnits') }}</div>
+          <div class="text-ink-muted">{{ t('drilldown.optimalUnits') }}</div>
           <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
         </div>
         <div>
-          <div class="text-neutral-400">Δ Bestand (Stück)</div>
+          <div class="text-ink-muted">Δ Bestand (Stück)</div>
           <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
         </div>
         <div v-if="row.quote?.volatility != null">
-          <div class="text-neutral-400">{{ t('drilldown.volatility') }}</div>
+          <div class="text-ink-muted">{{ t('drilldown.volatility') }}</div>
           <div class="tabular-nums">{{ percent(row.quote.volatility) }}</div>
         </div>
         <div v-if="row.quote?.ter != null">
-          <div class="text-neutral-400">TER</div>
+          <div class="text-ink-muted">TER</div>
           <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
         </div>
         <div v-if="row.quote">
-          <div class="text-neutral-400">Kurs-Stand</div>
+          <div class="text-ink-muted">Kurs-Stand</div>
           <div class="tabular-nums">{{ quoteAge }}</div>
         </div>
 
         <div v-if="kindLabel">
-          <div class="text-neutral-400">Gattung</div>
+          <div class="text-ink-muted">Gattung</div>
           <div>{{ kindLabel }}</div>
         </div>
 
@@ -377,11 +377,11 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             :href="link.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sky-400 hover:text-sky-300 text-xs underline"
+            class="text-accent hover:opacity-80 text-xs underline"
           >
             {{ link.label }} ↗
           </a>
-          <span v-if="resolvedLinks.length === 0" class="text-xs text-neutral-600">
+          <span v-if="resolvedLinks.length === 0" class="text-xs text-ink-muted">
             Keine passenden Verweise — unter „Einstellungen" konfigurierbar.
           </span>
           <div class="ml-auto">

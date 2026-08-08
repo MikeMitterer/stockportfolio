@@ -37,11 +37,11 @@ const state = computed<'ok' | 'near' | 'out'>(() => {
 const fillClasses = computed(() => {
   switch (state.value) {
     case 'ok':
-      return 'bg-emerald-500/70'
+      return 'bg-status-ok/70'
     case 'near':
-      return 'bg-amber-500/70'
+      return 'bg-status-near/70'
     case 'out':
-      return 'bg-red-500/70'
+      return 'bg-status-out/70'
   }
   return ''
 })
@@ -74,18 +74,18 @@ const label = computed(() => percentSigned(props.relativePercent))
 
 <template>
   <div
-    class="relative rounded-md overflow-hidden bg-neutral-800/70 dark:bg-neutral-800/70"
+    class="relative rounded-md overflow-hidden bg-sunken"
     :class="compact ? 'h-5' : 'h-6'"
     role="img"
     :aria-label="`Delta ${label}`"
   >
     <!-- Band-Marker (gepunktete Zonen) -->
     <div
-      class="absolute top-0 bottom-0 bg-emerald-500/8 border-x border-emerald-500/40"
+      class="absolute top-0 bottom-0 bg-status-ok/10 border-x border-status-ok/40"
       :style="bandLeftStyle"
     ></div>
     <div
-      class="absolute top-0 bottom-0 bg-emerald-500/8 border-x border-emerald-500/40"
+      class="absolute top-0 bottom-0 bg-status-ok/10 border-x border-status-ok/40"
       :style="bandRightStyle"
     ></div>
 
@@ -98,13 +98,13 @@ const label = computed(() => percentSigned(props.relativePercent))
 
     <!-- Zentrums-Linie (Ziel) -->
     <div
-      class="absolute top-0 bottom-0 w-px bg-neutral-100/60 z-10"
+      class="absolute top-0 bottom-0 w-px bg-ink/60 z-10"
       style="left: 50%"
     ></div>
 
     <!-- Label mittig, mit leichtem Text-Shadow für Lesbarkeit über Farben -->
     <div
-      class="absolute inset-0 flex items-center justify-center text-xs font-medium tabular-nums text-neutral-100 z-20"
+      class="absolute inset-0 flex items-center justify-center text-xs font-medium tabular-nums text-ink z-20"
       style="text-shadow: 0 0 3px rgba(0, 0, 0, 0.7)"
     >
       {{ label }}

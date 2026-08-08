@@ -48,14 +48,14 @@ async function setBudget(value: number | null): Promise<void> {
       <NTag type="warning" size="small" :bordered="false">Teilweise</NTag>
     </div>
 
-    <NCard :bordered="false" class="!bg-neutral-100 dark:!bg-neutral-900 mb-4">
+    <NCard :bordered="false" class="!bg-card mb-4">
       <template #header>
         <span class="text-sm font-medium">Toleranzbänder</span>
       </template>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-neutral-500">{{ t('bands.lower') }} (%)</span>
+          <span class="text-ink-muted">{{ t('bands.lower') }} (%)</span>
           <NInputNumber
             :value="settingsStore.settings.bands.lowerPercent"
             :min="0"
@@ -64,13 +64,13 @@ async function setBudget(value: number | null): Promise<void> {
             :precision="1"
             @update:value="setLowerBand"
           />
-          <span class="text-xs text-neutral-500">
+          <span class="text-xs text-ink-muted">
             Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Kaufen.
           </span>
         </label>
 
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-neutral-500">{{ t('bands.upper') }} (%)</span>
+          <span class="text-ink-muted">{{ t('bands.upper') }} (%)</span>
           <NInputNumber
             :value="settingsStore.settings.bands.upperPercent"
             :min="0"
@@ -79,21 +79,21 @@ async function setBudget(value: number | null): Promise<void> {
             :precision="1"
             @update:value="setUpperBand"
           />
-          <span class="text-xs text-neutral-500">
+          <span class="text-xs text-ink-muted">
             Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Verkaufen.
           </span>
         </label>
       </div>
     </NCard>
 
-    <NCard :bordered="false" class="!bg-neutral-100 dark:!bg-neutral-900 mb-4">
+    <NCard :bordered="false" class="!bg-card mb-4">
       <template #header>
         <span class="text-sm font-medium">Kennzahlen</span>
       </template>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-neutral-500">Save-Asset-Grenze (€)</span>
+          <span class="text-ink-muted">Save-Asset-Grenze (€)</span>
           <NInputNumber
             :value="settingsStore.settings.saveAssetGrenze"
             :min="0"
@@ -103,7 +103,7 @@ async function setBudget(value: number | null): Promise<void> {
         </label>
 
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-neutral-500">Investitionsreserve (%)</span>
+          <span class="text-ink-muted">Investitionsreserve (%)</span>
           <NInputNumber
             :value="settingsStore.settings.investmentReservePercent"
             :min="0"
@@ -114,7 +114,7 @@ async function setBudget(value: number | null): Promise<void> {
         </label>
 
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-neutral-500">Rebalancing-Budget (€)</span>
+          <span class="text-ink-muted">Rebalancing-Budget (€)</span>
           <NInputNumber
             :value="settingsStore.settings.currentRebalancingBudget"
             :min="0"
@@ -125,7 +125,7 @@ async function setBudget(value: number | null): Promise<void> {
       </div>
     </NCard>
 
-    <NCard :bordered="false" class="!bg-neutral-100 dark:!bg-neutral-900 mb-4">
+    <NCard :bordered="false" class="!bg-card mb-4">
       <template #header>
         <span class="text-sm font-medium">Externe Verweise</span>
       </template>
@@ -137,8 +137,8 @@ async function setBudget(value: number | null): Promise<void> {
       />
     </NCard>
 
-    <NCard :bordered="false" class="!bg-neutral-100 dark:!bg-neutral-900">
-      <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+    <NCard :bordered="false" class="!bg-card">
+      <p class="text-sm text-ink-secondary leading-relaxed">
         Portfolio-Verwaltung, Refresh-Verhalten, Anzeige-Spalten, Export/Import und
         API-Health-Check folgen in T-11.
       </p>

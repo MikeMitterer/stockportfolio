@@ -1,0 +1,206 @@
+/**
+ * Farb-Token der sechs Themes.
+ *
+ * Ein Theme legt nur die **Umgebung** fest — Flächen, Text, Ränder, Akzent.
+ * Die Farben der Assetklassen und die Statusfarben tragen Bedeutung und
+ * bleiben über alle Themes gleich: wenn Aktien mal blau und mal grün wären,
+ * müsste man die Zuordnung bei jedem Wechsel neu lernen.
+ *
+ * Die Werte stehen als RGB-Tripel ohne Funktion (`10 10 10` statt `#0a0a0a`).
+ * Nur so greifen Tailwinds Deckkraft-Zusätze (`bg-card/70`); mit Hex-Werten
+ * bleiben solche Flächen unsichtbar. Wer sie direkt verwendet, schreibt
+ * `rgb(var(--surface-card))`.
+ *
+ * Die Assetfarben sind je Theme gegen dessen Fläche geprüft (Nachbarpaare,
+ * ΔE ≥ 8 bei Farbfehlsichtigkeit, ≥ 15 bei Normalsicht). In den hellen Themes
+ * liegen drei Töne unter 3:1 Kontrast — zulässig, weil jeder Balken seinen
+ * Namen ausgeschrieben trägt. Zuordnung oder Reihenfolge ändern heißt: erneut
+ * validieren.
+ */
+
+/* ─── Bedeutungstragende Farben — themeunabhängig ────────────────────────── */
+
+:root {
+  /* Assetklassen (helle Stufen; dunkle Themes überschreiben unten) */
+  --asset-stocks: 42 120 214;
+  --asset-bonds: 232 123 164;
+  --asset-metals: 237 161 0;
+  --asset-cash: 27 175 122;
+
+  /* Status */
+  --status-ok: 27 175 122;
+  --status-near: 217 119 6;
+  --status-out: 220 38 38;
+}
+
+/* ─── classic — dunkel, neutralgrau (Vorgabe) ────────────────────────────── */
+
+:root[data-theme='classic'] {
+  --surface-page: 10 10 10;
+  --surface-card: 23 23 23;
+  --surface-raised: 35 35 35;
+  --surface-sunken: 5 5 5;
+
+  --text-primary: 245 245 245;
+  --text-secondary: 163 163 163;
+  --text-muted: 107 107 107;
+
+  --border-default: 42 42 42;
+  --border-subtle: 31 31 31;
+
+  --accent: 57 135 229;
+  --accent-contrast: 255 255 255;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── ocean — dunkel, blaustichig ────────────────────────────────────────── */
+
+:root[data-theme='ocean'] {
+  --surface-page: 6 19 32;
+  --surface-card: 12 32 54;
+  --surface-raised: 20 48 80;
+  --surface-sunken: 4 13 23;
+
+  --text-primary: 238 244 250;
+  --text-secondary: 147 167 187;
+  --text-muted: 94 114 133;
+
+  --border-default: 30 44 58;
+  --border-subtle: 22 33 44;
+
+  --accent: 56 178 216;
+  --accent-contrast: 4 18 26;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── forest — dunkel, grünstichig ───────────────────────────────────────── */
+
+:root[data-theme='forest'] {
+  --surface-page: 6 20 9;
+  --surface-card: 12 35 19;
+  --surface-raised: 20 54 31;
+  --surface-sunken: 4 14 6;
+
+  --text-primary: 238 246 240;
+  --text-secondary: 151 179 162;
+  --text-muted: 98 122 108;
+
+  --border-default: 30 49 38;
+  --border-subtle: 22 37 28;
+
+  --accent: 76 175 114;
+  --accent-contrast: 4 18 10;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── mangolila — dunkel, pflaume mit Koralle ────────────────────────────── */
+/*
+ * Entspricht dem StockInfo-Backend-Frontend, damit beide Oberflächen als
+ * dieselbe Anwendungsfamilie erkennbar sind.
+ */
+
+:root[data-theme='mangolila'] {
+  --surface-page: 20 16 26;
+  --surface-card: 30 24 39;
+  --surface-raised: 42 33 54;
+  --surface-sunken: 14 11 19;
+
+  --text-primary: 244 241 249;
+  --text-secondary: 165 155 184;
+  --text-muted: 118 109 136;
+
+  --border-default: 52 42 66;
+  --border-subtle: 38 31 49;
+
+  --accent: 232 112 58;
+  --accent-contrast: 20 16 26;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── paper — hell, warmes Off-White ─────────────────────────────────────── */
+
+:root[data-theme='paper'] {
+  --surface-page: 239 231 216;
+  --surface-card: 251 247 239;
+  --surface-raised: 255 255 255;
+  --surface-sunken: 233 228 217;
+
+  --text-primary: 28 26 22;
+  --text-secondary: 87 83 74;
+  --text-muted: 138 132 120;
+
+  --border-default: 221 214 200;
+  --border-subtle: 232 226 214;
+
+  --accent: 42 120 214;
+  --accent-contrast: 255 255 255;
+
+  --asset-stocks: 42 120 214;
+  --asset-bonds: 232 123 164;
+  --asset-metals: 237 161 0;
+  --asset-cash: 27 175 122;
+
+  --status-ok: 22 133 94;
+  --status-near: 180 83 9;
+  --status-out: 198 47 47;
+}
+
+/* ─── mono — hell, nahezu farblos ────────────────────────────────────────── */
+
+:root[data-theme='mono'] {
+  --surface-page: 239 239 239;
+  --surface-card: 247 247 247;
+  --surface-raised: 255 255 255;
+  --surface-sunken: 228 228 228;
+
+  --text-primary: 23 23 23;
+  --text-secondary: 82 82 82;
+  --text-muted: 133 133 133;
+
+  --border-default: 214 214 214;
+  --border-subtle: 227 227 227;
+
+  --accent: 64 64 64;
+  --accent-contrast: 255 255 255;
+
+  --asset-stocks: 42 120 214;
+  --asset-bonds: 232 123 164;
+  --asset-metals: 237 161 0;
+  --asset-cash: 27 175 122;
+
+  --status-ok: 22 133 94;
+  --status-near: 180 83 9;
+  --status-out: 198 47 47;
+}

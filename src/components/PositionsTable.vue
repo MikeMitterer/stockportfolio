@@ -134,7 +134,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             : null,
         ]),
         row.position.group !== 'cash'
-          ? h('span', { class: 'text-xs text-neutral-500 truncate' }, row.position.displayName)
+          ? h('span', { class: 'text-xs text-ink-muted truncate' }, row.position.displayName)
           : null,
       ]),
   },
@@ -164,8 +164,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       row.quote
         ? h('span', { class: 'tabular-nums' }, eurCent(row.quote.price))
         : row.position.group === 'cash'
-          ? h('span', { class: 'tabular-nums text-neutral-500' }, '—')
-          : h('span', { class: 'tabular-nums text-red-400 text-xs' }, t('table.quoteMissing')),
+          ? h('span', { class: 'tabular-nums text-ink-muted' }, '—')
+          : h('span', { class: 'tabular-nums text-status-out text-xs' }, t('table.quoteMissing')),
   },
   {
     title: t('table.marketValue'),

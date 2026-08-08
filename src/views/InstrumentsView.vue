@@ -71,7 +71,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
             ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => 'im Depot')
             : null,
         ]),
-        h('span', { class: 'text-xs text-neutral-500 truncate' }, row.name ?? '—'),
+        h('span', { class: 'text-xs text-ink-muted truncate' }, row.name ?? '—'),
       ]),
   },
   {
@@ -96,7 +96,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     render: (row) =>
       row.latest_price !== null
         ? h('span', { class: 'tabular-nums' }, eurCent(row.latest_price))
-        : h('span', { class: 'tabular-nums text-neutral-500 text-xs' }, 'noch keiner'),
+        : h('span', { class: 'tabular-nums text-ink-muted text-xs' }, 'noch keiner'),
   },
   {
     title: 'TER',
@@ -106,7 +106,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     render: (row) =>
       row.ter !== null
         ? h('span', { class: 'tabular-nums' }, percent(row.ter))
-        : h('span', { class: 'text-neutral-600' }, '—'),
+        : h('span', { class: 'text-ink-muted' }, '—'),
   },
   {
     title: t('drilldown.volatility'),
@@ -117,7 +117,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     render: (row) =>
       row.volatility !== null
         ? h('span', { class: 'tabular-nums' }, percent(row.volatility))
-        : h('span', { class: 'text-neutral-600' }, '—'),
+        : h('span', { class: 'text-ink-muted' }, '—'),
   },
   {
     title: 'Kurspunkte',
@@ -125,7 +125,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     align: 'right',
     width: 110,
     render: (row) =>
-      h('span', { class: 'tabular-nums text-neutral-500' }, integer(row.history_count)),
+      h('span', { class: 'tabular-nums text-ink-muted' }, integer(row.history_count)),
   },
   {
     title: 'In Auswahl',
@@ -151,11 +151,11 @@ onMounted(async () => {
   <div class="max-w-[1400px] mx-auto px-6 py-8">
     <div class="flex items-baseline gap-3 mb-1">
       <h1 class="text-2xl font-semibold">{{ t('views.instrumentsTitle') }}</h1>
-      <span class="text-xs text-neutral-500 tabular-nums">
+      <span class="text-xs text-ink-muted tabular-nums">
         {{ filtered.length }} von {{ instrumentsStore.instruments.length }}
       </span>
     </div>
-    <p class="text-sm text-neutral-500 mb-5">
+    <p class="text-sm text-ink-muted mb-5">
       Der Schalter „In Auswahl" steuert, welche Papiere beim Hinzufügen einer
       Position angeboten werden.
     </p>
