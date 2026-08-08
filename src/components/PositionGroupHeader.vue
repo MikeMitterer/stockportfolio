@@ -20,6 +20,16 @@ const { t } = useI18n()
 
 const label = computed(() => t(`groups.${props.group.group}`))
 const color = computed(() => assetColor(props.group.group))
+
+/**
+ * Hintergrund der Kopfzeile — ein Hauch der Klassenfarbe.
+ *
+ * Bewusst aus derselben Farbe wie der Punkt davor statt aus einem neutralen
+ * Grau: die Zeile hebt sich ab und verstärkt zugleich die Zuordnung, ohne
+ * eine zweite Gestaltungssprache einzuführen. Bei 7 % bleibt es eine
+ * Andeutung — kräftiger las sich die Zeile wie ein Schaltfeld.
+ */
+const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transparent)`)
 </script>
 
 <template>
@@ -31,6 +41,7 @@ const color = computed(() => assetColor(props.group.group))
   <button
     type="button"
     class="group w-full flex items-center gap-2.5 px-5 py-1.5 text-left text-ink-muted"
+    :style="{ backgroundColor: bandColor }"
     :aria-expanded="!collapsed"
     @click="emit('toggle')"
   >
