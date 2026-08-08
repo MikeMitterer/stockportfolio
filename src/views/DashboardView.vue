@@ -148,12 +148,10 @@ function toggleGroups(): void {
       </section>
 
       <!-- Gruppen-Balken (ein-/ausklappbar) -->
-      <section
-        class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
-      >
+      <section class="border-t border-neutral-200 dark:border-neutral-800">
         <button
           type="button"
-          class="w-full flex items-center gap-2 px-5 py-2.5 text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+          class="w-full flex items-center gap-2 py-2.5 text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
           :aria-expanded="!groupsCollapsed"
           aria-controls="dashboard-groups-panel"
           @click="toggleGroups"
@@ -190,7 +188,7 @@ function toggleGroups(): void {
         <div
           v-show="!groupsCollapsed"
           id="dashboard-groups-panel"
-          class="px-5 pb-4 flex flex-col divide-y divide-neutral-200/50 dark:divide-neutral-800/50"
+          class="pb-4 flex flex-col divide-y divide-neutral-200/50 dark:divide-neutral-800/50"
         >
           <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
         </div>
