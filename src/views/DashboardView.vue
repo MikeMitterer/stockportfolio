@@ -167,6 +167,10 @@ onMounted(async () => {
   if (settingsStore.settings.refresh.autoOnLoad && client) {
     await quotesStore.loadQuotes(client, portfolioStore.positions)
   }
+
+  // Ältere Positionen kennen ihre Gattung nicht — jetzt, wo die Kurse da
+  // sind, lässt sie sich ableiten und dauerhaft festhalten.
+  await portfolioStore.backfillKinds(quotesStore.quotes)
 })
 
 watch(groupsCollapsed, (collapsed) => {

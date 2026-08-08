@@ -10,7 +10,7 @@ import { computed, ref } from 'vue'
 import { consola } from 'consola'
 import { PortfolioRepository } from '@/db/repository'
 import { demoPortfolio, emptyPortfolio } from '@/db/seed'
-import type { Portfolio, Position } from '@/types/portfolio'
+import type { InstrumentKind, Portfolio, Position } from '@/types/portfolio'
 
 export const usePortfolioStore = defineStore('portfolio', () => {
   const repository = new PortfolioRepository()
@@ -117,6 +117,40 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     await persist()
   }
 
+  /**
+   * Trägt fehlende Gattungen aus den Kursen nach.
+   *
+   * Positionen, die vor der Einführung von `kind` angelegt wurden, kennen
+   * ihre Gattung nicht — ohne sie bleiben die externen Verweise leer. Sobald
+   * die Kurse da sind, lässt sie sich ableiten und dauerhaft festhalten.
+   *
+   * @param quotes Kurs-Cache (Key = ISIN oder Symbol).
+   * @returns Anzahl der ergänzten Positionen.
+   */
+  async function backfillKinds(quotes: Map<string, { type: string | null }>): Promise<number> {
+    if (!portfolio.value) return 0
+
+    let changed = 0
+    const next = portfolio.value.positions.map((position) => {
+      if (position.kind || position.group === 'cash') return position
+
+      const quote = quotes.get(position.isin ?? position.symbol)
+      const kind: InstrumentKind | null =
+        quote?.type === 'etf' || quote?.type === 'stock' ? quote.type : null
+      if (!kind) return position
+
+      changed += 1
+      return { ...position, kind }
+    })
+
+    if (changed === 0) return 0
+
+    portfolio.value = { ...portfolio.value, positions: next }
+    await persist()
+    consola.info('portfolio: Gattung nachgetragen', { count: changed })
+    return changed
+  }
+
   /** Entfernt eine Position endgültig. */
   async function removePosition(id: string): Promise<void> {
     if (!portfolio.value) return
@@ -138,5 +172,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     applyTrade,
     addPosition,
     removePosition,
+    backfillKinds,
   }
 })

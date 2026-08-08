@@ -225,6 +225,85 @@ describe('usePortfolioStore — applyTrade', () => {
   })
 })
 
+describe('usePortfolioStore — backfillKinds', () => {
+  /**
+   * Der Fall aus der Praxis: Positionen wurden angelegt, bevor es das Feld
+   * `kind` gab. Ohne Gattung blieben ihre externen Verweise leer.
+   */
+  it('trägt die Gattung aus den Kursen nach', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.addPosition(makePosition({ id: 'alt', isin: 'IE111', kind: null }))
+
+    const ergaenzt = await store.backfillKinds(new Map([['IE111', { type: 'etf' }]]))
+
+    expect(ergaenzt).toBe(1)
+    expect(store.positions.find((p) => p.id === 'alt')?.kind).toBe('etf')
+  })
+
+  it('erkennt auch Aktien', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.addPosition(makePosition({ id: 'aktie', isin: 'US084', kind: null }))
+
+    await store.backfillKinds(new Map([['US084', { type: 'stock' }]]))
+
+    expect(store.positions.find((p) => p.id === 'aktie')?.kind).toBe('stock')
+  })
+
+  it('überschreibt eine bereits bekannte Gattung nicht', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.addPosition(makePosition({ id: 'bekannt', isin: 'IE111', kind: 'stock' }))
+
+    const ergaenzt = await store.backfillKinds(new Map([['IE111', { type: 'etf' }]]))
+
+    expect(ergaenzt).toBe(0)
+    expect(store.positions.find((p) => p.id === 'bekannt')?.kind).toBe('stock')
+  })
+
+  it('lässt Cash unangetastet', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+
+    await store.backfillKinds(new Map([['CASH', { type: 'etf' }]]))
+
+    expect(store.positions.find((p) => p.group === 'cash')?.kind).toBeNull()
+  })
+
+  it('ignoriert unbekannte Typen aus der API', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.addPosition(makePosition({ id: 'seltsam', isin: 'XX1', kind: null }))
+
+    const ergaenzt = await store.backfillKinds(new Map([['XX1', { type: 'zertifikat' }]]))
+
+    expect(ergaenzt).toBe(0)
+    expect(store.positions.find((p) => p.id === 'seltsam')?.kind).toBeNull()
+  })
+
+  it('kommt ohne passenden Kurs zurecht', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.addPosition(makePosition({ id: 'ohne', isin: 'IE999', kind: null }))
+
+    expect(await store.backfillKinds(new Map())).toBe(0)
+  })
+
+  it('die nachgetragene Gattung überlebt einen Neustart', async () => {
+    const first = usePortfolioStore()
+    await first.load()
+    await first.addPosition(makePosition({ id: 'alt', isin: 'IE111', kind: null }))
+    await first.backfillKinds(new Map([['IE111', { type: 'etf' }]]))
+
+    setActivePinia(createPinia())
+    const second = usePortfolioStore()
+    await second.load()
+
+    expect(second.positions.find((p) => p.id === 'alt')?.kind).toBe('etf')
+  })
+})
+
 describe('usePortfolioStore — add/remove', () => {
   it('fügt eine Position hinzu', async () => {
     const store = usePortfolioStore()

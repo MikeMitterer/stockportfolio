@@ -89,6 +89,8 @@ export interface QuoteCacheEntry {
   symbol: string
   price: number
   currency: string
+  /** Gattung laut API (`etf` | `stock`) — Rückfall für Positionen ohne `kind`. */
+  type: string | null
   volatility: number | null
   name: string | null
   ter: number | null

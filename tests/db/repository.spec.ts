@@ -43,6 +43,7 @@ function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
     symbol: 'AAA.DE',
     price: 100,
     currency: 'EUR',
+    type: 'etf',
     volatility: null,
     name: null,
     ter: null,

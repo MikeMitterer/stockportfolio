@@ -7,6 +7,7 @@ import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
+import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
@@ -113,14 +114,25 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.symbol'),
     key: 'symbol',
-    width: 240,
+    width: 260,
     render: (row) =>
-      h('div', { class: 'flex flex-col' }, [
-        h(
-          'span',
-          { class: 'font-medium text-sm' },
-          row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
-        ),
+      h('div', { class: 'flex flex-col gap-0.5' }, [
+        // Kürzel und Verweis-Symbole in einer Zeile — die Links gehören zum
+        // Papier, nicht in eine eigene Spalte, die die Tabelle breiter macht.
+        h('div', { class: 'flex items-center gap-2' }, [
+          h(
+            'span',
+            { class: 'font-medium text-sm' },
+            row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
+          ),
+          row.position.group !== 'cash'
+            ? h(LinkIcons, {
+                position: row.position,
+                links: props.links,
+                quoteType: row.quote?.type,
+              })
+            : null,
+        ]),
         row.position.group !== 'cash'
           ? h('span', { class: 'text-xs text-neutral-500 truncate' }, row.position.displayName)
           : null,

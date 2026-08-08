@@ -40,6 +40,7 @@ function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
     symbol: 'TEST.DE',
     price: 100,
     currency: 'EUR',
+    type: 'etf',
     volatility: null,
     name: null,
     ter: null,

@@ -124,11 +124,19 @@ function updateNotes(value: string): void {
 
 // ─── Links ──────────────────────────────────────────────────────────────────
 
-/** Verweise aus den Einstellungen, gefiltert nach Gattung. */
-const resolvedLinks = computed(() => resolveLinks(props.row.position, props.links))
+/**
+ * Verweise aus den Einstellungen, gefiltert nach Gattung.
+ *
+ * Der Kurs-Typ dient als Rückfall: Positionen, die vor der Einführung von
+ * `kind` angelegt wurden, haben das Feld nicht — ihre Gattung kommt dann
+ * aus dem Kurs.
+ */
+const resolvedLinks = computed(() =>
+  resolveLinks(props.row.position, props.links, props.row.quote?.type),
+)
 
 /** Gattung für die Anzeige — Aktie, ETF oder unbekannt. */
-const kind = computed(() => resolveKind(props.row.position))
+const kind = computed(() => resolveKind(props.row.position, props.row.quote?.type))
 
 const kindLabel = computed(() => {
   if (kind.value === 'etf') return 'ETF'
