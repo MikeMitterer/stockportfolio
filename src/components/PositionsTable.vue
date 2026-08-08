@@ -125,6 +125,16 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             { class: 'font-medium text-sm' },
             row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
           ),
+          !row.isActive
+            ? h(
+                'span',
+                {
+                  class:
+                    'text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-edge text-ink-muted',
+                },
+                'inaktiv',
+              )
+            : null,
           row.position.group !== 'cash'
             ? h(LinkIcons, {
                 position: row.position,
@@ -181,7 +191,10 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     align: 'right',
     width: 90,
     sorter: (a, b) => a.actualPercent - b.actualPercent,
-    render: (row) => h('span', { class: 'tabular-nums' }, percent(row.actualPercent)),
+    render: (row) =>
+      row.isActive
+        ? h('span', { class: 'tabular-nums' }, percent(row.actualPercent))
+        : h('span', { class: 'tabular-nums text-ink-muted' }, '—'),
   },
   {
     title: t('table.targetPercent'),
@@ -206,14 +219,20 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     title: t('table.delta'),
     key: 'delta',
     width: 180,
-    render: (row) => h(DeltaBar, { relativePercent: row.relativeDeltaPercent, bands: props.bands }),
+    render: (row) =>
+      row.isActive
+        ? h(DeltaBar, { relativePercent: row.relativeDeltaPercent, bands: props.bands })
+        : h('span', { class: 'text-ink-muted text-xs' }, '—'),
   },
   {
     title: t('table.status'),
     key: 'status',
     align: 'center',
     width: 130,
-    render: (row) => h(SuggestionBadge, { suggestion: row.suggestion, near: row.isNearBand }),
+    render: (row) =>
+      row.isActive
+        ? h(SuggestionBadge, { suggestion: row.suggestion, near: row.isNearBand })
+        : h('span', { class: 'text-ink-muted text-xs' }, 'zählt nicht mit'),
   },
 ])
 </script>
@@ -237,7 +256,11 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         :bordered="false"
         :single-line="false"
         size="small"
-        :row-props="() => ({ style: 'cursor: pointer;' })"
+        :row-props="
+          (row: PositionResult) => ({
+            style: row.isActive ? 'cursor: pointer;' : 'cursor: pointer; opacity: 0.55;',
+          })
+        "
       />
     </template>
   </div>

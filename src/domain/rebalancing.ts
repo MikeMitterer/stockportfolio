@@ -144,6 +144,14 @@ export interface PositionResult {
   unitsDelta: number
   relativeDeltaPercent: number
   isNearBand: boolean
+  /**
+   * Zählt die Position in die Berechnung?
+   *
+   * Deaktivierte Positionen erscheinen weiterhin in der Liste — sonst wären
+   * sie nach dem Abschalten unerreichbar und ließen sich nie wieder
+   * einschalten. In Summen, Anteile und Vorschläge gehen sie aber nicht ein.
+   */
+  isActive: boolean
 }
 
 export interface GroupResult {
@@ -206,28 +214,48 @@ export function computeRebalancing(
   const total = totalValue(portfolio, quotes, settings.totalRounding)
   const bands = settings.bands
 
-  const rows: PositionResult[] = portfolio.positions
-    .filter((position) => position.enabled)
-    .map((position) => {
-      const quote = quoteFor(position, quotes)
-      const mv = marketValue(position, quote)
-      const target = targetValue(position, total)
-      const low = lowerBand(target, bands)
-      const high = upperBand(target, bands)
+  // Auch deaktivierte Positionen kommen in die Liste: wer eine abschaltet,
+  // muss sie wiederfinden können. Ihre Kennzahlen bleiben leer, damit klar
+  // ist, dass sie nirgends mitzählen.
+  const rows: PositionResult[] = portfolio.positions.map((position) => {
+    const quote = quoteFor(position, quotes)
+    const mv = marketValue(position, quote)
+
+    if (!position.enabled) {
       return {
         position,
         quote,
         marketValue: mv,
-        actualPercent: actualPercent(mv, total),
-        targetValue: target,
-        lowerBand: low,
-        upperBand: high,
-        suggestion: suggestion(mv, low, high),
-        unitsDelta: unitsDelta(mv, target, quote),
-        relativeDeltaPercent: relativeDeltaPercent(mv, target),
-        isNearBand: isNearBand(mv, low, high, target),
+        actualPercent: 0,
+        targetValue: 0,
+        lowerBand: 0,
+        upperBand: 0,
+        suggestion: 'ok' as Suggestion,
+        unitsDelta: 0,
+        relativeDeltaPercent: 0,
+        isNearBand: false,
+        isActive: false,
       }
-    })
+    }
+
+    const target = targetValue(position, total)
+    const low = lowerBand(target, bands)
+    const high = upperBand(target, bands)
+    return {
+      position,
+      quote,
+      marketValue: mv,
+      actualPercent: actualPercent(mv, total),
+      targetValue: target,
+      lowerBand: low,
+      upperBand: high,
+      suggestion: suggestion(mv, low, high),
+      unitsDelta: unitsDelta(mv, target, quote),
+      relativeDeltaPercent: relativeDeltaPercent(mv, target),
+      isNearBand: isNearBand(mv, low, high, target),
+      isActive: true,
+    }
+  })
 
   const groups: GroupResult[] = GROUPS.map((group) => {
     const actualValue = groupMarketValue(group, portfolio, quotes)

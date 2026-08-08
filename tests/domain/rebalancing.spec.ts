@@ -498,7 +498,7 @@ describe('computeRebalancing', () => {
     expect(stockGroup?.suggestion).toBe('sell')
   })
 
-  it('ignoriert disabled Positionen im Total UND in den Rows', () => {
+  it('lässt disabled Positionen aus dem Total heraus', () => {
     const disabled: Portfolio = {
       ...portfolio,
       positions: portfolio.positions.map((position) =>
@@ -507,7 +507,62 @@ describe('computeRebalancing', () => {
     }
     const result = computeRebalancing(disabled, quotes, settings)
     expect(result.total).toBe(1_100) // 1000 Stock + 100 Cash
-    expect(result.rows.map((row) => row.position.id)).toEqual(['a', 'c'])
+  })
+
+  /**
+   * Der Fall aus der Praxis: eine Position wurde deaktiviert und verschwand
+   * daraufhin ganz aus der Liste — damit war der Schalter unerreichbar und
+   * sie ließ sich nie wieder einschalten. Sie muss sichtbar bleiben.
+   */
+  it('zeigt disabled Positionen weiterhin in den Rows an', () => {
+    const disabled: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'b' ? { ...position, enabled: false } : position,
+      ),
+    }
+    const result = computeRebalancing(disabled, quotes, settings)
+
+    expect(result.rows.map((row) => row.position.id)).toEqual(['a', 'b', 'c'])
+    expect(result.rows.find((row) => row.position.id === 'b')?.isActive).toBe(false)
+  })
+
+  it('markiert aktive Positionen als aktiv', () => {
+    const result = computeRebalancing(portfolio, quotes, settings)
+    expect(result.rows.every((row) => row.isActive)).toBe(true)
+  })
+
+  it('lässt bei disabled Positionen die Kennzahlen leer', () => {
+    const disabled: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'a' ? { ...position, enabled: false } : position,
+      ),
+    }
+    const row = computeRebalancing(disabled, quotes, settings).rows.find(
+      (entry) => entry.position.id === 'a',
+    )
+
+    expect(row?.actualPercent).toBe(0)
+    expect(row?.targetValue).toBe(0)
+    expect(row?.relativeDeltaPercent).toBe(0)
+    expect(row?.isNearBand).toBe(false)
+  })
+
+  it('zeigt bei disabled Positionen weiterhin den Marktwert', () => {
+    // Der Wert ist Information, kein Rechenbeitrag — er hilft beim
+    // Wiedereinschalten.
+    const disabled: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'a' ? { ...position, enabled: false } : position,
+      ),
+    }
+    const row = computeRebalancing(disabled, quotes, settings).rows.find(
+      (entry) => entry.position.id === 'a',
+    )
+
+    expect(row?.marketValue).toBe(1_000)
   })
 
   it('Invariante: Summe aller Row-Marktwerte = Summe der Group-Werte', () => {
