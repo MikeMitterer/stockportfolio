@@ -213,6 +213,23 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   padding-bottom: 10px;
 }
 
+/*
+ * Tabelle auf die Fläche des Containers legen.
+ *
+ * Naive UI gibt Zellen und Kopfzeile eine eigene Hintergrundfarbe. Die
+ * Gruppen-Kopfzeilen liegen aber zwischen den Tabellen und zeigen daher die
+ * Container-Farbe — sichtbar heller als die Zeilen. Mit transparenten Zellen
+ * liegt alles auf derselben Fläche und der Unterschied verschwindet.
+ */
+:deep(.n-data-table),
+:deep(.n-data-table-th),
+:deep(.n-data-table-td),
+:deep(.n-data-table-wrapper),
+:deep(.n-data-table-base-table),
+:deep(.n-data-table-table) {
+  background-color: transparent;
+}
+
 /* Kopfzeile nur einmal ganz oben zeigen — die Gruppen darunter erben sie visuell. */
 .flex > :not(:first-of-type) :deep(.n-data-table-thead) {
   display: none;
