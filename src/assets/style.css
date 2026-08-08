@@ -4,13 +4,27 @@
 
 /*
  * Tailwinds Preflight ist deaktiviert (damit Naive-UI-Defaults intakt bleiben).
- * Dadurch greifen die Browser-Vorgaben — u.a. unterstrichene Links. Für
- * Navigations-Links ist das unerwünscht; echte Inhalts-Links setzen `underline`
- * bei Bedarf selbst.
+ * Dadurch greifen die Browser-Vorgaben für nackte Elemente — unterstrichene
+ * Links und, weniger offensichtlich, ein grauer `buttonface`-Hintergrund samt
+ * Rahmen auf jedem `<button>`.
+ *
+ * Beides hier zurücknehmen. Naive UIs eigene Komponenten sind nicht betroffen:
+ * sie setzen ihre Farben über Klassen (`.n-button`), die diese
+ * Element-Selektoren in der Spezifität schlagen.
  */
 a {
   text-decoration: none;
   color: inherit;
+}
+
+button {
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
 }
 
 /* Tabellen-Zahlen: monospaced digits für saubere Ausrichtung */
