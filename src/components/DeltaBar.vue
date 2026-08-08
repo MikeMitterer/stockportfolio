@@ -84,7 +84,7 @@ const label = computed(() => percentSigned(props.relativePercent))
   -->
   <div class="flex items-center gap-2" role="img" :aria-label="`Delta ${label}`">
     <div
-      class="relative flex-1 rounded-md overflow-hidden bg-sunken"
+      class="relative flex-1 overflow-hidden bg-sunken"
       :class="compact ? 'h-4' : 'h-5'"
     >
       <!-- Bandgrenzen als Striche, ohne Flächenton -->
@@ -93,7 +93,7 @@ const label = computed(() => percentSigned(props.relativePercent))
 
       <!-- Balken-Füllung -->
       <div
-        class="absolute rounded-sm transition-all"
+        class="absolute transition-all"
         :class="fillClasses"
         :style="{ ...fillStyle, top: '3px', bottom: '3px' }"
       ></div>
