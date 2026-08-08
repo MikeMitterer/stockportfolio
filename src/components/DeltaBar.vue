@@ -104,7 +104,7 @@ const label = computed(() => percentSigned(props.relativePercent))
 
     <!-- Label mittig, mit leichtem Text-Shadow für Lesbarkeit über Farben -->
     <div
-      class="absolute inset-0 flex items-center justify-center text-xs font-medium tabular-nums text-ink z-20"
+      class="absolute inset-0 flex items-center justify-center text-xs tabular-nums text-ink z-20"
       style="text-shadow: 0 0 3px rgba(0, 0, 0, 0.7)"
     >
       {{ label }}
