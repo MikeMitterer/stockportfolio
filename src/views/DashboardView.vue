@@ -8,6 +8,7 @@ import PositionsTable from '@/components/PositionsTable.vue'
 import { eur, eurSigned, percent } from '@/domain/formatters'
 import { computeRebalancing } from '@/domain/rebalancing'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
+import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
@@ -280,13 +281,17 @@ function toggleGroups(): void {
       <section
         class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
       >
-        <div class="px-5 py-4 flex items-center justify-between gap-4">
+        <div class="px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
           <h2
             class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 font-medium"
           >
-            Positionen — Klick auf eine Zeile öffnet Details
+            Positionen — Bestand und Ziel sind direkt änderbar
           </h2>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-5">
+            <TargetAllocationBar
+              :sum="result.targetPercentSum"
+              :exceeded="result.targetsExceeded"
+            />
             <div class="text-xs text-neutral-500 tabular-nums">
               Bänder: −{{ percent(settingsStore.settings.bands.lowerPercent) }} / +{{
                 percent(settingsStore.settings.bands.upperPercent)
@@ -298,12 +303,19 @@ function toggleGroups(): void {
             </NButton>
           </div>
         </div>
+
+        <NAlert v-if="result.targetsExceeded" type="error" :bordered="false" class="mx-5 mb-3">
+          Die Ziel-Anteile summieren sich auf {{ percent(result.targetPercentSum) }} — mehr
+          als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht
+          schlüssig.
+        </NAlert>
         <NDivider class="!my-0" />
         <PositionsTable
           :rows="result.rows"
           :groups="result.groups"
           :bands="settingsStore.settings.bands"
           :total="result.total"
+          :targets-exceeded="result.targetsExceeded"
           @update="onUpdate"
           @apply-trade="onApplyTrade"
           @remove="onRemove"

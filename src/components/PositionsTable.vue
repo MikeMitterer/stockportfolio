@@ -6,6 +6,7 @@ import DeltaBar from '@/components/DeltaBar.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
+import InlineNumber from '@/components/InlineNumber.vue'
 import { eur, eurCent, integer, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, Position } from '@/types/portfolio'
@@ -17,6 +18,8 @@ const props = defineProps<{
   groups: GroupResult[]
   bands: Bands
   total: number
+  /** Summe der Ziel-Anteile über 100 % — färbt die Ziel-Spalte ein. */
+  targetsExceeded: boolean
 }>()
 
 const emit = defineEmits<{
@@ -124,11 +127,18 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     title: t('table.units'),
     key: 'units',
     align: 'right',
-    width: 100,
+    width: 110,
     render: (row) =>
-      row.position.group === 'cash'
-        ? h('span', { class: 'tabular-nums text-neutral-500' }, '—')
-        : h('span', { class: 'tabular-nums' }, integer(row.position.units)),
+      h(InlineNumber, {
+        value: row.position.units,
+        display:
+          row.position.group === 'cash'
+            ? eur(row.position.units)
+            : integer(row.position.units),
+        precision: row.position.group === 'cash' ? 2 : 0,
+        min: 0,
+        onCommit: (units: number) => emit('update', row.position.id, { units }),
+      }),
   },
   {
     title: t('table.price'),
@@ -162,9 +172,20 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     title: t('table.targetPercent'),
     key: 'targetPercent',
     align: 'right',
-    width: 90,
+    width: 110,
     render: (row) =>
-      h('span', { class: 'tabular-nums text-neutral-400' }, percent(row.position.targetPercent)),
+      h(InlineNumber, {
+        value: row.position.targetPercent,
+        display: percent(row.position.targetPercent),
+        precision: 2,
+        min: 0,
+        max: 100,
+        // Bei überzogener Ziel-Summe alle Ziel-Zellen einfärben — der Fehler
+        // liegt in der Summe, nicht in einer einzelnen Zeile.
+        invalid: props.targetsExceeded,
+        onCommit: (targetPercent: number) =>
+          emit('update', row.position.id, { targetPercent }),
+      }),
   },
   {
     title: t('table.delta'),

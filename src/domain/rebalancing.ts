@@ -171,7 +171,18 @@ export interface RebalancingResult {
   groups: GroupResult[]
   rows: PositionResult[]
   liquidity: LiquidityResult
+  /** Summe aller Ziel-Anteile in Prozent — soll 100 ergeben. */
+  targetPercentSum: number
+  /** Über 100 % verteilt: die Ziele widersprechen sich. */
+  targetsExceeded: boolean
   computedAt: string
+}
+
+/** Summe der Ziel-Anteile aller aktiven Positionen. */
+export function targetPercentSum(portfolio: Portfolio): number {
+  return portfolio.positions
+    .filter((position) => position.enabled)
+    .reduce((sum, position) => sum + position.targetPercent, 0)
 }
 
 const GROUPS: readonly AssetGroup[] = ['stocks', 'bonds', 'metals', 'cash'] as const
@@ -257,12 +268,17 @@ export function computeRebalancing(
     sellForReserve,
   }
 
+  const assignedTarget = targetPercentSum(portfolio)
+
   return {
     total,
     rounding: settings.totalRounding,
     groups,
     rows,
     liquidity,
+    targetPercentSum: assignedTarget,
+    // Kleine Rundungsreste (0.1 %-Punkte) sind kein Fehler — erst darüber.
+    targetsExceeded: assignedTarget > 100.001,
     computedAt: new Date().toISOString(),
   }
 }

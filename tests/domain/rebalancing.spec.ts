@@ -17,6 +17,7 @@ import {
   relativeDeltaPercent,
   roundToPlace,
   suggestion,
+  targetPercentSum,
   targetValue,
   totalValue,
   unitsDelta,
@@ -350,6 +351,43 @@ describe('totalValue', () => {
   })
 })
 
+// ─── targetPercentSum ───────────────────────────────────────────────────────
+
+describe('targetPercentSum', () => {
+  function portfolioWith(targets: { percent: number; enabled?: boolean }[]): Portfolio {
+    return {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: targets.map((entry, index) =>
+        makePosition({
+          id: `p-${index}`,
+          targetPercent: entry.percent,
+          enabled: entry.enabled ?? true,
+        }),
+      ),
+    }
+  }
+
+  it('summiert die Ziel-Anteile', () => {
+    expect(targetPercentSum(portfolioWith([{ percent: 60 }, { percent: 40 }]))).toBe(100)
+  })
+
+  it('zählt deaktivierte Positionen nicht mit', () => {
+    const portfolio = portfolioWith([{ percent: 60 }, { percent: 40, enabled: false }])
+    expect(targetPercentSum(portfolio)).toBe(60)
+  })
+
+  it('liefert 0 für ein leeres Portfolio', () => {
+    expect(targetPercentSum(portfolioWith([]))).toBe(0)
+  })
+
+  it('kann über 100 laufen — das Erkennen ist Sache des Aufrufers', () => {
+    expect(targetPercentSum(portfolioWith([{ percent: 80 }, { percent: 50 }]))).toBe(130)
+  })
+})
+
 // ─── computeRebalancing (Aggregator-Sanity) ─────────────────────────────────
 
 describe('computeRebalancing', () => {
@@ -474,6 +512,60 @@ describe('computeRebalancing', () => {
     const rowSum = result.rows.reduce((sum, row) => sum + row.marketValue, 0)
     const groupSum = result.groups.reduce((sum, group) => sum + group.actualValue, 0)
     expect(rowSum).toBeCloseTo(groupSum, 6)
+  })
+
+  it('meldet die Ziel-Summe im Ergebnis', () => {
+    // 70 + 20 + 10 = 100
+    const result = computeRebalancing(portfolio, quotes, settings)
+    expect(result.targetPercentSum).toBe(100)
+    expect(result.targetsExceeded).toBe(false)
+  })
+
+  it('markiert eine Ziel-Summe über 100 % als überzogen', () => {
+    const overAllocated: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'a' ? { ...position, targetPercent: 95 } : position,
+      ),
+    }
+    // 95 + 20 + 10 = 125
+    const result = computeRebalancing(overAllocated, quotes, settings)
+    expect(result.targetPercentSum).toBe(125)
+    expect(result.targetsExceeded).toBe(true)
+  })
+
+  it('eine Ziel-Summe unter 100 % gilt nicht als überzogen', () => {
+    const underAllocated: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'a' ? { ...position, targetPercent: 50 } : position,
+      ),
+    }
+    const result = computeRebalancing(underAllocated, quotes, settings)
+    expect(result.targetPercentSum).toBe(80)
+    expect(result.targetsExceeded).toBe(false)
+  })
+
+  it('duldet Rundungsreste knapp über 100 %', () => {
+    // 33.34 * 3 = 100.02 — das ist kein Konfigurationsfehler.
+    const rounded: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) => ({ ...position, targetPercent: 33.34 })),
+    }
+    const result = computeRebalancing(rounded, quotes, settings)
+    expect(result.targetPercentSum).toBeCloseTo(100.02, 2)
+    expect(result.targetsExceeded).toBe(true)
+  })
+
+  it('deaktivierte Positionen zählen nicht in die Ziel-Summe', () => {
+    const withDisabled: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'a' ? { ...position, enabled: false } : position,
+      ),
+    }
+    const result = computeRebalancing(withDisabled, quotes, settings)
+    expect(result.targetPercentSum).toBe(30)
   })
 
   it('leeres Portfolio → Total 0, keine Rows, alle Groups leer', () => {
