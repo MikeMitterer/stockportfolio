@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Tailwinds Preflight ist deaktiviert (damit Naive-UI-Defaults intakt bleiben).
+ * Dadurch greifen die Browser-Vorgaben — u.a. unterstrichene Links. Für
+ * Navigations-Links ist das unerwünscht; echte Inhalts-Links setzen `underline`
+ * bei Bedarf selbst.
+ */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* Tabellen-Zahlen: monospaced digits für saubere Ausrichtung */
 .tabular-nums {
   font-variant-numeric: tabular-nums;

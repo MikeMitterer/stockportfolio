@@ -78,11 +78,11 @@ const label = computed(() => percentSigned(props.relativePercent))
   >
     <!-- Band-Marker (gepunktete Zonen) -->
     <div
-      class="absolute top-0 bottom-0 bg-emerald-500/8 border-x border-dashed border-emerald-500/40"
+      class="absolute top-0 bottom-0 bg-emerald-500/8 border-x border-emerald-500/40"
       :style="bandLeftStyle"
     ></div>
     <div
-      class="absolute top-0 bottom-0 bg-emerald-500/8 border-x border-dashed border-emerald-500/40"
+      class="absolute top-0 bottom-0 bg-emerald-500/8 border-x border-emerald-500/40"
       :style="bandRightStyle"
     ></div>
 

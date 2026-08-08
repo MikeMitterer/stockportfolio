@@ -153,13 +153,13 @@ function toggleGroups(): void {
       >
         <button
           type="button"
-          class="w-full flex items-center gap-2 px-5 py-4 text-left hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40 transition-colors"
+          class="w-full flex items-center gap-2 px-5 py-2.5 text-left text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
           :aria-expanded="!groupsCollapsed"
           aria-controls="dashboard-groups-panel"
           @click="toggleGroups"
         >
           <svg
-            class="w-4 h-4 text-neutral-500 transition-transform"
+            class="w-3.5 h-3.5 transition-transform"
             :class="{ '-rotate-90': groupsCollapsed }"
             viewBox="0 0 24 24"
             fill="none"
@@ -169,20 +169,28 @@ function toggleGroups(): void {
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
           </svg>
-          <h2
-            class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 font-medium"
+          <h2 class="text-xs uppercase tracking-wide font-medium">Assetklassen</h2>
+
+          <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
+          <span
+            v-if="groupsCollapsed"
+            class="ml-auto flex items-center gap-3 text-xs tabular-nums"
           >
-            Assetklassen
-          </h2>
-          <span v-if="groupsCollapsed" class="ml-auto text-xs text-neutral-500 tabular-nums">
-            {{ result.groups.length }} Gruppen
+            <span
+              v-for="group in result.groups"
+              :key="group.group"
+              class="hidden sm:inline"
+              :class="group.suggestion === 'ok' ? 'text-neutral-500' : 'text-amber-500'"
+            >
+              {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
+            </span>
           </span>
         </button>
 
         <div
           v-show="!groupsCollapsed"
           id="dashboard-groups-panel"
-          class="px-5 pb-4 flex flex-col divide-y divide-neutral-200/50 dark:divide-neutral-800/50 border-t border-neutral-200/50 dark:border-neutral-800/50"
+          class="px-5 pb-4 flex flex-col divide-y divide-neutral-200/50 dark:divide-neutral-800/50"
         >
           <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
         </div>
@@ -208,6 +216,7 @@ function toggleGroups(): void {
         <NDivider class="!my-0" />
         <PositionsTable
           :rows="result.rows"
+          :groups="result.groups"
           :bands="settingsStore.settings.bands"
           :total="result.total"
           @update="onUpdate"
