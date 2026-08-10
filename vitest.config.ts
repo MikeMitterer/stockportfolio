@@ -3,6 +3,11 @@ import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
+  // Dieselbe Konstante wie im Bündel — sonst bricht jeder Test, der eine
+  // Komponente mit Versionsanzeige einhängt.
+  define: {
+    __APP_VERSION__: JSON.stringify('test'),
+  },
   plugins: [vue()],
   resolve: {
     alias: {

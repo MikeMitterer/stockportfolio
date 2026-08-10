@@ -1,5 +1,5 @@
 /**
- * Erreichbarkeit und Zustand der StockInfo-API.
+ * Pinia-Store für Erreichbarkeit und Zustand der StockInfo-API.
  *
  * Die App hängt vollständig an dieser Gegenstelle: ohne sie keine Kurse und
  * damit keine einzige Kennzahl. Steht etwas nicht, soll man hier nachsehen
@@ -7,32 +7,21 @@
  * Klartext. Die stammt aus `VITE_STOCKINFO_API_URL` und wird beim Bauen
  * eingesetzt; im Container zeigt sie, welches Backend das Abbild wirklich
  * anspricht.
+ *
+ * Bewusst ein Store und kein Composable: Statuszeile und Einstellungen zeigen
+ * denselben Zustand. Zwei Instanzen hätten getrennt geprüft und sich
+ * widersprechen können.
  */
 
-import { ref, type Ref } from 'vue'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import { consola } from 'consola'
 import { ApiError } from '@/api/errors'
 import type { StockInfoClient } from '@/api/client'
 
 export type ApiState = 'unknown' | 'checking' | 'online' | 'offline'
 
-export interface ApiStatus {
-  state: Ref<ApiState>
-  /** Meldung der Gegenstelle, z.B. `ok`. */
-  status: Ref<string | null>
-  version: Ref<string | null>
-  /** Dauer der letzten Anfrage in Millisekunden. */
-  latencyMs: Ref<number | null>
-  /** Zeitpunkt der letzten Prüfung als ISO-String. */
-  checkedAt: Ref<string | null>
-  error: Ref<string | null>
-  check: () => Promise<void>
-}
-
-/**
- * @param client Der injizierte API-Client; `null`, wenn keiner bereitsteht.
- */
-export function useApiStatus(client: StockInfoClient | null): ApiStatus {
+export const useApiStatusStore = defineStore('apiStatus', () => {
   const state = ref<ApiState>('unknown')
   const status = ref<string | null>(null)
   const version = ref<string | null>(null)
@@ -40,7 +29,12 @@ export function useApiStatus(client: StockInfoClient | null): ApiStatus {
   const checkedAt = ref<string | null>(null)
   const error = ref<string | null>(null)
 
-  async function check(): Promise<void> {
+  /**
+   * Fragt `/health` ab.
+   *
+   * @param client Der injizierte API-Client; `null`, wenn keiner bereitsteht.
+   */
+  async function check(client: StockInfoClient | null): Promise<void> {
     if (!client) {
       state.value = 'offline'
       error.value = 'Kein API-Client verfügbar'
@@ -80,4 +74,4 @@ export function useApiStatus(client: StockInfoClient | null): ApiStatus {
   }
 
   return { state, status, version, latencyMs, checkedAt, error, check }
-}
+})

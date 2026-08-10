@@ -10,7 +10,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useThemeStore } from '@/stores/theme'
 import { THEME_IDS, THEMES } from '@/theme/themes'
-import { useApiStatus } from '@/composables/useApiStatus'
+import { useApiStatusStore } from '@/stores/apiStatus'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
@@ -33,7 +33,7 @@ onMounted(async () => {
   await quotesStore.hydrate()
   // Ungefragt prüfen: Wer diese Seite öffnet, will den Zustand sehen, nicht
   // erst einen Knopf suchen.
-  await api.check()
+  await api.check(client)
 })
 
 async function setLowerBand(value: number | null): Promise<void> {
@@ -99,8 +99,8 @@ const themes = THEME_IDS.map((id) => THEMES[id])
 // ─── Status der Gegenstelle ─────────────────────────────────────────────────
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
-const api = useApiStatus(client)
-const apiCheckedAgo = useRelativeTime(api.checkedAt)
+const api = useApiStatusStore()
+const apiCheckedAgo = useRelativeTime(computed(() => api.checkedAt))
 
 /** Die Adresse aus `VITE_STOCKINFO_API_URL`, wie sie beim Bauen gesetzt wurde. */
 const apiUrl = computed(() => client?.url ?? '—')
@@ -301,8 +301,8 @@ const API_STATE_LABEL: Record<string, string> = {
               <NButton
                 size="small"
                 secondary
-                :loading="api.state.value === 'checking'"
-                @click="api.check()"
+                :loading="api.state === 'checking'"
+                @click="api.check(client)"
               >
                 Erneut prüfen
               </NButton>
@@ -332,50 +332,50 @@ const API_STATE_LABEL: Record<string, string> = {
               <span
                 class="inline-block h-2 w-2 rounded-full shrink-0"
                 :class="{
-                  'bg-status-ok': api.state.value === 'online',
-                  'bg-status-out': api.state.value === 'offline',
-                  'bg-ink-muted': api.state.value !== 'online' && api.state.value !== 'offline',
+                  'bg-status-ok': api.state === 'online',
+                  'bg-status-out': api.state === 'offline',
+                  'bg-ink-muted': api.state !== 'online' && api.state !== 'offline',
                 }"
                 aria-hidden="true"
               ></span>
               <span
                 :class="
-                  api.state.value === 'online'
+                  api.state === 'online'
                     ? 'text-status-ok'
-                    : api.state.value === 'offline'
+                    : api.state === 'offline'
                       ? 'text-status-out'
                       : 'text-ink-muted'
                 "
               >
-                {{ API_STATE_LABEL[api.state.value] }}
+                {{ API_STATE_LABEL[api.state] }}
               </span>
-              <span v-if="api.status.value" class="text-ink-muted">
-                — meldet „{{ api.status.value }}"
+              <span v-if="api.status" class="text-ink-muted">
+                — meldet „{{ api.status }}"
               </span>
             </dd>
 
-            <template v-if="api.version.value">
+            <template v-if="api.version">
               <dt class="text-ink-muted">Version</dt>
-              <dd class="tabular-nums">{{ api.version.value }}</dd>
+              <dd class="tabular-nums">{{ api.version }}</dd>
             </template>
 
-            <template v-if="api.latencyMs.value !== null">
+            <template v-if="api.latencyMs !== null">
               <dt class="text-ink-muted">Antwortzeit</dt>
-              <dd class="tabular-nums">{{ api.latencyMs.value }} ms</dd>
+              <dd class="tabular-nums">{{ api.latencyMs }} ms</dd>
             </template>
 
-            <template v-if="api.checkedAt.value">
+            <template v-if="api.checkedAt">
               <dt class="text-ink-muted">Geprüft</dt>
               <dd class="text-ink-secondary">{{ apiCheckedAgo }}</dd>
             </template>
 
-            <template v-if="api.error.value">
+            <template v-if="api.error">
               <dt class="text-ink-muted">Grund</dt>
-              <dd class="text-status-out">{{ api.error.value }}</dd>
+              <dd class="text-status-out">{{ api.error }}</dd>
             </template>
           </dl>
 
-          <p v-if="api.state.value === 'offline'" class="mt-4 text-xs text-ink-muted leading-relaxed">
+          <p v-if="api.state === 'offline'" class="mt-4 text-xs text-ink-muted leading-relaxed">
             Ohne die API gibt es keine Kurse und damit keine Kennzahlen. Die
             zuletzt geladenen Kurse bleiben gespeichert und werden weiter
             verwendet — erkennbar am Alter in der Kopfzeile.

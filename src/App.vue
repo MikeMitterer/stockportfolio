@@ -10,6 +10,7 @@ import {
   darkTheme,
   type GlobalThemeOverrides,
 } from 'naive-ui'
+import AppStatusBar from '@/components/AppStatusBar.vue'
 import AppTopbar from '@/components/AppTopbar.vue'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -66,9 +67,16 @@ function refresh(): void {
       <NMessageProvider>
         <NDialogProvider>
           <NNotificationProvider :max="3">
-            <div class="min-h-screen bg-page text-ink transition-colors">
+            <!--
+              Spaltenlayout über die volle Höhe, damit die Statuszeile auch bei
+              kurzen Seiten unten steht statt mitten im Bild zu enden.
+            -->
+            <div class="min-h-screen flex flex-col bg-page text-ink transition-colors">
               <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
-              <RouterView />
+              <div class="flex-1">
+                <RouterView />
+              </div>
+              <AppStatusBar />
             </div>
           </NNotificationProvider>
         </NDialogProvider>

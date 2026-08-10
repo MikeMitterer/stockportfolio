@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin, type ViteDevServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import { readFileSync } from 'node:fs'
 
 /**
  * Startet den Dev-Server neu, wenn sich die Tailwind- oder PostCSS-Konfiguration
@@ -30,7 +31,19 @@ function restartOnStyleConfigChange(): Plugin {
   }
 }
 
+/**
+ * Version aus der package.json — eine Quelle, kein zweiter Ort zum Pflegen.
+ * Landet als Konstante im Bündel und steht damit auch im Container zur
+ * Verfügung, wo es keine package.json gibt.
+ */
+const packageVersion: string = JSON.parse(
+  readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'),
+).version
+
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(packageVersion),
+  },
   plugins: [vue(), restartOnStyleConfigChange()],
   resolve: {
     alias: {
