@@ -95,6 +95,25 @@ function clearPlan(): void {
   targets.value = {}
 }
 
+/**
+ * Liquide Zeilen, die die offene Lücke schließen könnten.
+ *
+ * Leer, sobald der Plan gedeckt ist — dann gibt es nichts zu entscheiden.
+ */
+const coverageOptions = computed<{ id: string; label: string; units: number }[]>(() => {
+  if (!plan.value) return []
+  return plan.value.rows
+    .filter((row) => row.coverageUnits !== null)
+    .map((row) => ({
+      id: row.current.position.id,
+      label:
+        row.current.position.group === 'cash'
+          ? row.current.position.displayName
+          : row.current.position.symbol,
+      units: row.coverageUnits as number,
+    }))
+})
+
 // ─── Meldungen ──────────────────────────────────────────────────────────────
 //
 // Als Toast, nicht im Seitenfluss: Über der Tabelle schoben die Meldungen sie
@@ -224,6 +243,34 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">geht auf</template>
             <template v-else>bleibt übrig</template>
           </span>
+        </div>
+
+        <!--
+          Die Deckungsvorschläge gehören zum Plan als Ganzem, nicht in die
+          einzelne Zeile: In der Zelle wuchs die Zeile um den Knopf und schrumpfte
+          beim Anklicken wieder — die Tabelle sprang bei jeder Eingabe. Hier
+          stehen sie neben der Lücke, die sie schließen sollen, und die feste
+          Höhe verhindert auch beim Erscheinen jeden Versatz.
+        -->
+        <div class="flex flex-col gap-0.5 min-h-[3.75rem]">
+          <span class="text-[11px] uppercase tracking-wide text-ink-muted">Decken aus</span>
+          <div v-if="coverageOptions.length > 0" class="flex flex-wrap items-center gap-1.5 pt-0.5">
+            <button
+              v-for="option in coverageOptions"
+              :key="option.id"
+              type="button"
+              class="rounded-full border border-edge px-2 py-0.5 text-xs tabular-nums
+                     text-accent transition-colors hover:border-accent"
+              :title="`${option.label}: ${integer(option.units)} Stück in den Plan übernehmen`"
+              @click="setTrade(option.id, option.units)"
+            >
+              {{ option.label }} {{ integer(option.units) }}
+            </button>
+          </div>
+          <span v-else class="text-sm text-ink-muted pt-1">
+            {{ planHasEntries ? 'nichts offen' : '—' }}
+          </span>
+          <span class="text-[11px] text-ink-muted">Cash und Geldmarkt</span>
         </div>
 
         <div class="flex flex-col gap-0.5">
@@ -405,25 +452,9 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                       :display="row.tradeUnits === 0 ? '—' : integer(row.tradeUnits)"
                       :precision="row.current.position.group === 'cash' ? 2 : 0"
                       :min="-row.current.position.units"
+                      :empty-value="0"
                       @commit="(units: number) => setTrade(row.current.position.id, units)"
                     />
-                    <!--
-                      Deckungsvorschlag, nur bei Cash und Geldmarkt und nur
-                      solange etwas offen ist: Wer für 100.000 € nachkauft,
-                      will nicht selbst ausrechnen, wie viele Stück Geldmarkt
-                      das sind. Deckt eine Zeile die Lücke nicht ganz, zeigt
-                      die nächste den Rest.
-                    -->
-                    <button
-                      v-if="row.coverageUnits !== null"
-                      type="button"
-                      class="mt-0.5 block w-full text-right text-[11px] text-accent
-                             underline decoration-dotted"
-                      title="Übernimmt genau die Stückzahl, die zur Deckung fehlt"
-                      @click="setTrade(row.current.position.id, row.coverageUnits)"
-                    >
-                      {{ integer(row.coverageUnits) }} decken
-                    </button>
                   </td>
 
                   <td

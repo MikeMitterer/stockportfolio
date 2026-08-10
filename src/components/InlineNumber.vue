@@ -18,6 +18,17 @@ const props = defineProps<{
   /** Hebt den Wert farblich hervor, z.B. bei ungültiger Ziel-Summe. */
   invalid?: boolean
   disabled?: boolean
+  /**
+   * Wert, den ein geleertes Feld übernimmt. Ohne diese Angabe wird ein leeres
+   * Feld verworfen.
+   *
+   * Der Unterschied hängt daran, was Leere in der jeweiligen Spalte bedeutet.
+   * Beim Bestand nichts — wer das Feld leert und wegklickt, will seine 500
+   * Stück nicht auf null setzen. Bei einer geplanten Stückzahl dagegen heißt
+   * leer genau das: kein Trade. Dort ist es zumutbar, „0" tippen zu müssen,
+   * hier war es eine Schikane.
+   */
+  emptyValue?: number
 }>()
 
 const emit = defineEmits<{
@@ -54,15 +65,15 @@ async function startEdit(): Promise<void> {
 /**
  * Liest den Entwurfswert als Zahl — akzeptiert Komma als Dezimaltrenner.
  *
- * Ein leeres Feld ergibt `NaN`, nicht 0: Wer den Wert löscht und wegklickt,
- * will die Position nicht auf null setzen. `Number('')` wäre 0 — genau der
- * stille Datenverlust, den wir nicht wollen.
+ * Ein leeres Feld ergibt `emptyValue`, sonst `NaN` (und damit kein Commit).
+ * `Number('')` wäre 0 — stiller Datenverlust in jeder Spalte, in der Leere
+ * nichts bedeutet.
  */
 function parseDraft(): number {
   const raw = draft.value
   if (typeof raw === 'number') return raw
   const trimmed = raw.trim()
-  if (trimmed === '') return Number.NaN
+  if (trimmed === '') return props.emptyValue ?? Number.NaN
   return Number(trimmed.replace(',', '.'))
 }
 

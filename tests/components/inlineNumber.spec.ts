@@ -154,7 +154,40 @@ describe('InlineNumber — Grenzen und Sonderfälle', () => {
   })
 
   it('setzt den Wert nicht auf 0, wenn das Feld geleert wird', async () => {
+    // Ohne `emptyValue` bedeutet Leere nichts — der Bestand bleibt stehen.
     const wrapper = makeWrapper()
+    const input = await openEditor(wrapper)
+
+    await input.setValue('')
+    await input.trigger('blur')
+
+    expect(wrapper.emitted('commit')).toBeUndefined()
+  })
+
+  it('übernimmt bei gesetztem emptyValue den Ersatzwert für ein leeres Feld', async () => {
+    // In der Kauf/Verkauf-Spalte heißt leer „kein Trade" — dort erst „0"
+    // tippen zu müssen, um etwas zu löschen, war eine Schikane.
+    const wrapper = makeWrapper({ value: 500, min: -1000, emptyValue: 0 })
+    const input = await openEditor(wrapper)
+
+    await input.setValue('')
+    await input.trigger('blur')
+
+    expect(wrapper.emitted('commit')).toEqual([[0]])
+  })
+
+  it('gilt auch für Enter, nicht nur fürs Wegklicken', async () => {
+    const wrapper = makeWrapper({ value: 500, min: -1000, emptyValue: 0 })
+    const input = await openEditor(wrapper)
+
+    await input.setValue('')
+    await input.trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper.emitted('commit')).toEqual([[0]])
+  })
+
+  it('meldet nichts, wenn der Ersatzwert schon dasteht', async () => {
+    const wrapper = makeWrapper({ value: 0, min: -1000, emptyValue: 0 })
     const input = await openEditor(wrapper)
 
     await input.setValue('')
