@@ -122,12 +122,16 @@ const coverageOptions = computed<{ id: string; label: string; units: number }[]>
 
 const notification = useNotification()
 
+/** Zähler aus den Einstellungen; 0 lässt Meldungen stehen. */
+const notificationSeconds = computed(() => settingsStore.settings.ui.notificationSeconds)
+
 useStateNotification(
   notification,
   computed(() => plan.value?.underfunded ?? false),
   {
     title: 'Plan nicht gedeckt',
     type: 'error',
+    seconds: notificationSeconds,
     content: () =>
       `Für die geplanten Käufe fehlen ${eur(-(plan.value?.netCashFlow ?? 0))}. ` +
       'Verkaufe ein Papier oder entnimm aus Cash bzw. Geldmarkt — trage die ' +
@@ -138,6 +142,7 @@ useStateNotification(
 useStateNotification(notification, targetSumOff, {
   title: 'Ziele ergeben nicht 100 %',
   type: 'warning',
+  seconds: notificationSeconds,
   content: () =>
     `Die Ziele ergeben zusammen ${percent(plan.value?.targetSum ?? 0)} statt 100 %. ` +
     'Was eine Position zusätzlich bekommen soll, muss eine andere abgeben.',
@@ -149,6 +154,7 @@ useStateNotification(
   {
     title: 'Sicherheitspuffer unterschritten',
     type: 'warning',
+    seconds: notificationSeconds,
     content: () =>
       `Der Plan senkt Cash und Geldmarkt auf ${eur(plan.value?.liquidAfter ?? 0)} und ` +
       `unterschreitet damit den Sicherheitspuffer von ` +

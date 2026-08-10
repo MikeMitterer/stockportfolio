@@ -167,3 +167,30 @@ describe('useSettingsStore — Verweise', () => {
     expect(oekb?.appliesTo).toEqual(['etf'])
   })
 })
+
+describe('withDefaults — Meldungs-Zähler', () => {
+  it('gibt neuen Datensätzen einen Zähler', () => {
+    expect(withDefaults({ activePortfolioId: 'p1' }).ui.notificationSeconds).toBeGreaterThan(0)
+  })
+
+  it('behält eine gespeicherte 0 — Meldungen sollen dann stehen bleiben', () => {
+    // 0 ist ein gültiger Wert, kein „nicht gesetzt". Ein `||`-Rückfall hätte
+    // ihn stillschweigend überschrieben.
+    const alt: Partial<Settings> = {
+      activePortfolioId: 'p1',
+      ui: { columns: defaultSettings('p1').ui.columns, notificationSeconds: 0 },
+    }
+    expect(withDefaults(alt).ui.notificationSeconds).toBe(0)
+  })
+
+  it('ergänzt den Zähler bei Einstellungen aus einer älteren Fassung', () => {
+    // Solche Datensätze kennen nur `columns`.
+    const alt = {
+      activePortfolioId: 'p1',
+      ui: { columns: defaultSettings('p1').ui.columns },
+    } as unknown as Partial<Settings>
+    expect(withDefaults(alt).ui.notificationSeconds).toBe(
+      defaultSettings('p1').ui.notificationSeconds,
+    )
+  })
+})

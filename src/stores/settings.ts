@@ -71,6 +71,8 @@ export function defaultSettings(activePortfolioId: string): Settings {
         deltaMax: false,
         deltaPercentAbs: false,
       },
+      // Lang genug zum Lesen, kurz genug, um beim Tippen nicht zu stören.
+      notificationSeconds: 8,
     },
   }
 }
@@ -103,7 +105,10 @@ export function withDefaults(stored: Partial<Settings>): Settings {
     refresh: { ...base.refresh, ...stored.refresh },
     securityBuffer: buffer,
     links: stored.links?.length ? stored.links : base.links,
-    ui: { columns: { ...base.ui.columns, ...stored.ui?.columns } },
+    ui: {
+      columns: { ...base.ui.columns, ...stored.ui?.columns },
+      notificationSeconds: stored.ui?.notificationSeconds ?? base.ui.notificationSeconds,
+    },
   }
 }
 

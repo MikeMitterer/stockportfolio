@@ -102,6 +102,14 @@ export interface Settings {
       deltaMax: boolean
       deltaPercentAbs: boolean
     }
+    /**
+     * Sekunden, nach denen sich eine Meldung von selbst ausblendet.
+     *
+     * `0` heißt: stehen lassen, bis die Ursache behoben ist oder der Nutzer
+     * wegklickt. Unabhängig davon verschwindet jede Meldung sofort, sobald ihr
+     * Grund entfällt — der Zähler beendet nur das Warten darauf.
+     */
+    notificationSeconds: number
   }
 }
 

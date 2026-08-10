@@ -422,6 +422,7 @@ describe('computeRebalancing', () => {
         deltaMax: false,
         deltaPercentAbs: false,
       },
+      notificationSeconds: 0,
     },
   }
 
@@ -694,6 +695,7 @@ describe('computeLiquidity', () => {
           deltaMax: false,
           deltaPercentAbs: false,
         },
+        notificationSeconds: 0,
       },
     }
   }

@@ -62,6 +62,7 @@ const SETTINGS: Settings = {
       deltaMax: false,
       deltaPercentAbs: false,
     },
+    notificationSeconds: 0,
   },
 }
 

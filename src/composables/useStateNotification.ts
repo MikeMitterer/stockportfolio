@@ -7,10 +7,15 @@
  * Sekunden verschwindet, wäre also gelogen; eine Meldung im Fluss der Seite
  * verschiebt dafür beim Tippen die Tabelle.
  *
- * Deshalb hier beides: Der Toast erscheint, wenn der Zustand eintritt, bleibt
- * offen, solange er anhält, und verschwindet von selbst, sobald die Ursache
- * behoben ist. Wegklicken geht jederzeit — er kommt dann erst wieder, wenn der
- * Zustand zwischendurch weg war.
+ * Deshalb hier beides: Der Toast erscheint, wenn der Zustand eintritt, und
+ * verschwindet von selbst, sobald die Ursache behoben ist. Zusätzlich läuft
+ * ein Zähler, nach dem er sich ausblendet, auch wenn der Zustand noch besteht
+ * — sonst steht er einem beim Tippen dauerhaft im Weg. Wer ihn lieber stehen
+ * hat, stellt den Zähler auf 0.
+ *
+ * Ausgeblendet heißt nicht erledigt: Der Zustand steht weiterhin im Kopf der
+ * Seite („nicht gedeckt"), und sobald er zwischendurch weg war und wiederkehrt,
+ * meldet sich der Toast erneut.
  */
 
 import { onUnmounted, watch, type Ref } from 'vue'
@@ -22,12 +27,17 @@ export interface StateNotificationOptions {
   /** Fließtext — wird bei jeder Änderung neu ausgewertet. */
   content: () => string
   type: 'error' | 'warning' | 'info'
+  /**
+   * Sekunden bis zum selbsttätigen Ausblenden; `0` lässt den Toast stehen.
+   * Als Ref, damit eine Änderung in den Einstellungen sofort greift.
+   */
+  seconds: Ref<number>
 }
 
 /**
  * @param notification Naive-UI-API aus `useNotification()`.
  * @param active       Zustand; `true` zeigt den Toast.
- * @param options      Aussehen und Text.
+ * @param options      Aussehen, Text und Zähler.
  */
 export function useStateNotification(
   notification: NotificationApi,
@@ -35,17 +45,48 @@ export function useStateNotification(
   options: StateNotificationOptions,
 ): void {
   let handle: NotificationReactive | null = null
+  let ticker: ReturnType<typeof setInterval> | null = null
 
-  /** Der Nutzer hat weggeklickt — nicht sofort wieder aufpoppen. */
+  /** Der Toast ist weg — nicht sofort wieder aufpoppen. */
   let dismissed = false
 
+  function stopTicker(): void {
+    if (ticker !== null) clearInterval(ticker)
+    ticker = null
+  }
+
   function close(): void {
+    stopTicker()
     handle?.destroy()
     handle = null
   }
 
+  /** Zählt sichtbar herunter und blendet am Ende aus. */
+  function startTicker(): void {
+    stopTicker()
+    const total = Math.round(options.seconds.value)
+    if (total <= 0) return
+
+    let remaining = total
+    const show = (): void => {
+      if (handle) handle.meta = `schließt in ${remaining} s`
+    }
+    show()
+
+    ticker = setInterval(() => {
+      remaining -= 1
+      if (remaining <= 0) {
+        // Wie ein Wegklicken: Der Zustand bleibt, die Meldung geht.
+        dismissed = true
+        close()
+        return
+      }
+      show()
+    }, 1000)
+  }
+
   watch(
-    [active, options.content],
+    [active, options.content, options.seconds],
     ([isActive, text]) => {
       if (!isActive) {
         close()
@@ -55,7 +96,8 @@ export function useStateNotification(
 
       if (handle) {
         // Nur den Text nachziehen — ein neuer Toast für dieselbe Ursache
-        // würde bei jedem Tastendruck erneut aufspringen.
+        // würde bei jedem Tastendruck erneut aufspringen. Der Zähler läuft
+        // dabei weiter, sonst ließe er sich durch Tippen endlos verlängern.
         handle.content = text
         return
       }
@@ -66,15 +108,16 @@ export function useStateNotification(
         title: options.title,
         content: text,
         type: options.type,
-        // Fehler verschwinden nicht von selbst: Wer sie übersieht, plant
-        // mit einer Zahl, die nicht aufgeht.
-        duration: undefined,
+        // Kein `duration`: Der Zähler unten macht das sichtbar und lässt sich
+        // in den Einstellungen abschalten.
         closable: true,
         onClose: () => {
           dismissed = true
+          stopTicker()
           handle = null
         },
       })
+      startTicker()
     },
     { immediate: true },
   )

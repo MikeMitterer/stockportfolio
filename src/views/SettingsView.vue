@@ -78,6 +78,13 @@ const securityBufferEuro = computed(() =>
   resolveSecurityBuffer(settingsStore.settings.securityBuffer, total.value),
 )
 
+async function setNotificationSeconds(value: number | null): Promise<void> {
+  if (value === null) return
+  await settingsStore.patch({
+    ui: { ...settingsStore.settings.ui, notificationSeconds: value },
+  })
+}
+
 async function setReservePercent(value: number | null): Promise<void> {
   if (value === null) return
   await settingsStore.patch({ investmentReservePercent: value })
@@ -192,6 +199,31 @@ async function setBudget(value: number | null): Promise<void> {
             :step="10000"
             @update:value="setBudget"
           />
+        </label>
+
+        <!--
+          Meldungen sind Zustände, keine Ereignisse: Sie verschwinden ohnehin,
+          sobald ihre Ursache behoben ist. Der Zähler beendet nur das Warten
+          darauf — beim Eintippen von Stückzahlen stand sonst dauerhaft ein
+          Kasten im Weg.
+        -->
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-ink-muted">Meldungen ausblenden nach (s)</span>
+          <NInputNumber
+            :value="settingsStore.settings.ui.notificationSeconds"
+            :min="0"
+            :max="120"
+            :step="1"
+            @update:value="setNotificationSeconds"
+          />
+          <span class="text-xs text-ink-muted">
+            <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
+              Bleiben stehen, bis die Ursache behoben ist oder du sie wegklickst.
+            </template>
+            <template v-else>
+              Blenden sich selbst aus — früher, wenn die Ursache vorher wegfällt.
+            </template>
+          </span>
         </label>
       </div>
     </NCard>
