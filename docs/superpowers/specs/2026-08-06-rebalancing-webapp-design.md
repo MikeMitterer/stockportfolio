@@ -1,6 +1,6 @@
 # Rebalancing-WebApp — Design-Spec
 
-**Status:** Draft (review pending)
+**Status:** Umgesetzt in 0.1.0 — Abweichungen siehe Ticket-Board (`_tickets/README.md`)
 **Datum:** 2026-08-06
 **Autor:** MM + Claude (Brainstorming-Session)
 **Ziel:** Nachbau der Excel-Datei `Rebalancing-v2-Claude.xlsx` als Vue 3 WebApp mit
