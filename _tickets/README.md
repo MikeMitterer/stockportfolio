@@ -32,5 +32,5 @@ laufen, T-08/T-09/T-10 sind unabhängig voneinander.
 | T-10 | Instruments-View + Add-Position-Dialog | T-04 + T-05 + T-06 |
 | T-11 | Settings-View + Export/Import + Health-Check | T-05 + T-06 |
 | T-12 | Warnings + Toast + leere/Fehler-Zustände | T-07 |
-| T-13 | Docker — Multi-Stage-Dockerfile + nginx.conf + `docker/build.sh` | T-01 |
+| T-13 | Docker — Multi-Stage-Image + nginx-Drop-in + `docker/build.sh` — [erledigt](solved/T-13-docker.md) | T-01 |
 | T-14 | Version-Bump auf `0.1.0` + finale README/Docs | alle |
