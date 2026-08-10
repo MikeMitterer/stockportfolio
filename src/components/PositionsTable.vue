@@ -27,7 +27,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update', id: string, changes: Partial<Position>): void
-  (event: 'apply-trade', id: string, tradeUnits: number): void
   (event: 'remove', id: string): void
   (event: 'refresh', id: string): void
 }>()
@@ -106,7 +105,6 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         bands: props.bands,
         links: props.links,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
-        onApplyTrade: (id: string, units: number) => emit('apply-trade', id, units),
         onRemove: (id: string) => emit('remove', id),
         onRefresh: (id: string) => emit('refresh', id),
       }),
@@ -227,7 +225,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.status'),
     key: 'status',
-    align: 'center',
+    // Links statt mittig: bei wechselnden Beschriftungen („OK", „Kaufen",
+    // „Verkaufen") wandert ein zentrierter Badge von Zeile zu Zeile hin und her.
+    align: 'left',
     width: 130,
     render: (row) =>
       row.isActive

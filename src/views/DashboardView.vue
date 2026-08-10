@@ -135,10 +135,6 @@ async function onUpdate(id: string, changes: Partial<Position>): Promise<void> {
   // Ziel und Anzeige-Felder nicht — daher kein Reload hier.
 }
 
-async function onApplyTrade(id: string, tradeUnits: number): Promise<void> {
-  await portfolioStore.applyTrade(id, tradeUnits)
-}
-
 async function onRemove(id: string): Promise<void> {
   await portfolioStore.removePosition(id)
 }
@@ -338,7 +334,6 @@ function toggleGroups(): void {
           :targets-exceeded="result.targetsExceeded"
           :links="settingsStore.settings.links"
           @update="onUpdate"
-          @apply-trade="onApplyTrade"
           @remove="onRemove"
           @refresh="onRefreshOne"
         />

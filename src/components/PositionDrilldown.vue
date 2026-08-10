@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   NCard,
-  NDivider,
   NInputNumber,
   NInput,
   NSelect,
@@ -18,7 +17,6 @@ import {
   integer,
   number,
   percent,
-  percentSigned,
 } from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
 import { resolveKind, resolveLinks } from '@/domain/links'
@@ -35,7 +33,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update', id: string, changes: Partial<Position>): void
-  (event: 'apply-trade', id: string, tradeUnits: number): void
   (event: 'remove', id: string): void
   (event: 'refresh', id: string): void
 }>()
@@ -51,49 +48,6 @@ const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
   { label: t('groups.moneymarket'), value: 'moneymarket' },
   { label: t('groups.cash'), value: 'cash' },
 ])
-
-// ─── Trade-Simulator ────────────────────────────────────────────────────────
-
-const tradeUnits = ref<number>(0)
-
-// Beim Wechsel auf eine andere Position den Simulator zurücksetzen.
-watch(
-  () => props.row.position.id,
-  () => {
-    tradeUnits.value = 0
-  },
-)
-
-const simulatedUnits = computed(() => props.row.position.units + tradeUnits.value)
-
-const simulatedMarketValue = computed(() => {
-  if (isCash.value) return simulatedUnits.value
-  if (!props.row.quote) return 0
-  return simulatedUnits.value * props.row.quote.price
-})
-
-const simulatedActualPercent = computed(() =>
-  props.total > 0 ? (simulatedMarketValue.value * 100) / props.total : 0,
-)
-
-const simulatedRelativeDelta = computed(() => {
-  if (props.row.targetValue === 0) return 0
-  return ((simulatedMarketValue.value - props.row.targetValue) * 100) / props.row.targetValue
-})
-
-const simulatedTradeEuro = computed(() => {
-  if (isCash.value) return tradeUnits.value
-  if (!props.row.quote) return 0
-  return tradeUnits.value * props.row.quote.price
-})
-
-const canApplyTrade = computed(() => tradeUnits.value !== 0 && simulatedUnits.value >= 0)
-
-function applyTrade(): void {
-  if (!canApplyTrade.value) return
-  emit('apply-trade', props.row.position.id, tradeUnits.value)
-  tradeUnits.value = 0
-}
 
 // ─── Editieren — jede Änderung geht direkt raus ─────────────────────────────
 
@@ -157,7 +111,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
 </script>
 
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+  <div class="flex flex-col gap-4 p-4">
     <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
     <NCard :bordered="false" size="small" class="!bg-raised">
       <template #header>
@@ -251,56 +205,8 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
       </div>
     </NCard>
 
-    <!-- ─── Trade-Simulator ──────────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-raised">
-      <template #header>
-        <span class="text-sm font-medium">{{ t('drilldown.tradeSimulator') }}</span>
-      </template>
-
-      <div class="flex flex-col gap-3">
-        <label class="flex flex-col gap-1 text-xs">
-          <span class="text-ink-muted">{{ t('drilldown.tradeSimulatorHint') }}</span>
-          <NInputNumber
-            v-model:value="tradeUnits"
-            :precision="isCash ? 2 : 0"
-            :step="isCash ? 100 : 1"
-            size="small"
-          />
-        </label>
-
-        <div class="rounded-md bg-sunken p-3 flex flex-col gap-2 text-xs">
-          <div class="flex justify-between">
-            <span class="text-ink-muted">Neuer Bestand</span>
-            <span class="tabular-nums">{{ integer(simulatedUnits) }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-ink-muted">Trade-Wert</span>
-            <span
-              class="tabular-nums"
-              :class="tradeUnits >= 0 ? 'text-status-out' : 'text-status-ok'"
-            >
-              {{ eurSigned(-simulatedTradeEuro) }}
-            </span>
-          </div>
-          <NDivider class="!my-1" />
-          <div class="flex justify-between">
-            <span class="text-ink-muted">{{ t('drilldown.projectedActual') }}</span>
-            <span class="tabular-nums">{{ percent(simulatedActualPercent) }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-ink-muted">{{ t('drilldown.projectedDelta') }}</span>
-            <span class="tabular-nums">{{ percentSigned(simulatedRelativeDelta) }}</span>
-          </div>
-        </div>
-
-        <NButton size="small" type="primary" :disabled="!canApplyTrade" @click="applyTrade">
-          {{ t('drilldown.tradeApply') }}
-        </NButton>
-      </div>
-    </NCard>
-
     <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-raised lg:col-span-2">
+    <NCard :bordered="false" size="small" class="!bg-raised">
       <template #header>
         <span class="text-sm font-medium">Details</span>
       </template>

@@ -61,7 +61,7 @@ const targetPosition = computed(() => ({
         {{ eurSigned(group.deltaEuro) }}
       </span>
     </div>
-    <div class="w-24 flex justify-end">
+    <div class="w-28 flex justify-start">
       <SuggestionBadge :suggestion="group.suggestion" />
     </div>
   </div>

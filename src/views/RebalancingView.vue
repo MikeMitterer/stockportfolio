@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NAlert, NButton, NEmpty, NPopconfirm, NSpin } from 'naive-ui'
+import { NAlert, NButton, NEmpty, NPopconfirm, NSpin, NTooltip, useMessage } from 'naive-ui'
 import AllocationAfterBar from '@/components/AllocationAfterBar.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
@@ -16,6 +16,7 @@ import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
 const { t } = useI18n()
+const message = useMessage()
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 
@@ -78,10 +79,20 @@ function acceptSuggestion(positionId: string, units: number): void {
  * Danach ist der Plan leer — er ist ausgeführt, nicht mehr geplant.
  */
 async function applyPlan(): Promise<void> {
-  for (const [positionId, units] of Object.entries(trades.value)) {
-    if (units !== 0) await portfolioStore.applyTrade(positionId, units)
+  const gebucht = Object.entries(trades.value).filter(([, units]) => units !== 0)
+
+  for (const [positionId, units] of gebucht) {
+    await portfolioStore.applyTrade(positionId, units)
   }
   clearPlan()
+
+  // Ohne Rückmeldung sieht es aus, als sei nichts geschehen: der Plan ist leer,
+  // die Bestände haben sich aber geändert.
+  message.success(
+    gebucht.length === 1
+      ? '1 Position gebucht — die Bestände sind aktualisiert.'
+      : `${gebucht.length} Positionen gebucht — die Bestände sind aktualisiert.`,
+  )
 }
 
 // ─── Gliederung nach Assetklasse ────────────────────────────────────────────
@@ -185,13 +196,19 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
             Plan leeren
           </NButton>
-          <NPopconfirm :disabled="!planHasEntries" @positive-click="applyPlan">
+          <NPopconfirm @positive-click="applyPlan">
             <template #trigger>
               <NButton size="small" type="primary" :disabled="!planHasEntries">
                 Plan übernehmen
               </NButton>
             </template>
-            Die geplanten Stückzahlen werden auf die Bestände gebucht. Fortfahren?
+            <div class="max-w-xs text-sm">
+              Die geplanten Stückzahlen werden auf die Bestände gebucht — so als
+              hättest du die Aufträge ausgeführt. Der Plan ist danach leer.
+              <div class="mt-2 text-xs text-ink-muted">
+                Das bucht nur in dieser App. Es wird nichts an eine Bank gesendet.
+              </div>
+            </div>
           </NPopconfirm>
         </div>
       </section>
@@ -229,12 +246,27 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                 <th class="text-right font-medium px-2 py-1.5">Kurs</th>
                 <th class="text-right font-medium px-2 py-1.5">IST %</th>
                 <th class="text-right font-medium px-2 py-1.5">Ziel %</th>
-                <th class="text-right font-medium px-2 py-1.5">Vorschlag</th>
+                <th class="text-right font-medium px-2 py-1.5">
+                  <NTooltip trigger="hover">
+                    <template #trigger>
+                      <span class="border-b border-dotted border-ink-muted cursor-help">
+                        Vorschlag
+                      </span>
+                    </template>
+                    <div class="max-w-xs text-sm">
+                      Verteilt das Geld, das dieser Plan bereits frei gemacht hat,
+                      nach dem Anteil der Position am Ziel ihrer Assetklasse.
+                      Solange nichts verkauft oder aus Cash bzw. Geldmarkt
+                      entnommen wurde, steht hier nichts. Anklicken übernimmt den
+                      Wert in die Eingabe.
+                    </div>
+                  </NTooltip>
+                </th>
                 <th class="text-right font-medium px-2 py-1.5 w-32">Kauf / Verkauf</th>
                 <th class="text-right font-medium px-2 py-1.5 w-28">Wert</th>
                 <th class="text-left font-medium px-2 py-1.5 w-56">Anteil nachher</th>
                 <th class="text-right font-medium px-2 py-1.5">Abw. Ziel</th>
-                <th class="text-center font-medium px-4 py-1.5">Status</th>
+                <th class="text-left font-medium px-4 py-1.5 w-32">Status</th>
               </tr>
             </thead>
 
@@ -351,7 +383,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
                   </td>
 
-                  <td class="px-4 py-1 text-center">
+                  <td class="px-4 py-1">
                     <SuggestionBadge :suggestion="row.suggestionAfter" />
                   </td>
                 </tr>

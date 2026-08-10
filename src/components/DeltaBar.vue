@@ -48,23 +48,6 @@ const fillClasses = computed(() => {
   return ''
 })
 
-// Band-Zonen (Toleranzbereiche) — links -lowerPercent, rechts +upperPercent
-const bandLeftStyle = computed(() => {
-  const width = (props.bands.lowerPercent / MAX_SCALE) * 50
-  return {
-    right: '50%',
-    width: `${width}%`,
-  }
-})
-
-const bandRightStyle = computed(() => {
-  const width = (props.bands.upperPercent / MAX_SCALE) * 50
-  return {
-    left: '50%',
-    width: `${width}%`,
-  }
-})
-
 const fillStyle = computed(() => {
   return isPositive.value
     ? { left: '50%', width: halfWidth.value }
@@ -88,22 +71,19 @@ const label = computed(() => percentSigned(props.relativePercent))
       :class="compact ? 'h-4' : 'h-5'"
     >
       <!--
-        Bandgrenzen: je Band nur die **Außenkante**.
-        Mit `border-x` zeichnete jedes Band auch seine Innenkante — beide lagen
-        auf der Mitte und stapelten sich dort mit der Ziel-Linie zu drei
-        Strichen übereinander.
-      -->
-      <div class="absolute top-0 bottom-0 border-l border-ink/20" :style="bandLeftStyle"></div>
-      <div class="absolute top-0 bottom-0 border-r border-ink/20" :style="bandRightStyle"></div>
+        Nur **eine** Linie: das Ziel.
 
-      <!-- Balken-Füllung -->
+        Vorher markierten zusätzlich beide Bandgrenzen ihre Kanten — zusammen
+        mit der Ziel-Linie ergab das ein Strichmuster im Balken. Die Information
+        war ohnehin doppelt: ob die Position im Band liegt, sagt bereits die
+        Farbe der Füllung (grün, gelb, rot).
+      -->
       <div
         class="absolute transition-all"
         :class="fillClasses"
         :style="{ ...fillStyle, top: '3px', bottom: '3px' }"
       ></div>
 
-      <!-- Zentrums-Linie (Ziel) — nur ein Hauch, sie soll den Balken nicht teilen -->
       <div class="absolute top-0 bottom-0 w-px bg-ink/25 z-10" style="left: 50%"></div>
     </div>
 
