@@ -115,7 +115,7 @@ function onKeydown(event: KeyboardEvent): void {
     :step="precision === 0 ? 1 : 0.5"
     :min="min"
     :max="max"
-    class="inline-number-field w-full bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-b border-accent text-ink"
+    class="inline-number-field block w-full min-w-0 bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-0 border-b border-solid border-accent text-ink"
     @blur="commit"
     @keydown="onKeydown"
   />
@@ -123,7 +123,7 @@ function onKeydown(event: KeyboardEvent): void {
   <button
     v-else
     type="button"
-    class="w-full text-right tabular-nums px-1.5 py-0.5 border-b border-transparent transition-colors hover:border-edge"
+    class="block w-full min-w-0 text-right tabular-nums px-1.5 py-0.5 border-0 border-b border-solid border-transparent transition-colors hover:border-edge"
     :class="textClass"
     :disabled="disabled"
     :title="disabled ? undefined : 'Klicken zum Ändern'"
@@ -143,5 +143,7 @@ function onKeydown(event: KeyboardEvent): void {
 
 .inline-number-field {
   appearance: textfield;
+  /* Zahlenfelder bringen eine Eigenbreite mit — sie würde die Spalte sprengen. */
+  width: 100%;
 }
 </style>

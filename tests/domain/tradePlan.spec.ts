@@ -193,6 +193,100 @@ describe('computeTradePlan — Anteil nach dem Trade', () => {
   })
 })
 
+describe('computeTradePlan — Abweichung vom Ziel', () => {
+  /**
+   * Der Fall aus der Praxis: Ziel 10 %, nach dem Rebalancing 9,5 % — nicht
+   * exakt getroffen, aber innerhalb der Bänder und damit in Ordnung.
+   */
+  function targetSetup() {
+    const portfolio: Portfolio = {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: [
+        // Ziel 10 % von 10.000 € = 1.000 €; Kurs 100 € → 10 Stück wären exakt
+        makePosition({ id: 'ziel', isin: 'Z', symbol: 'Z.DE', units: 0, targetPercent: 10 }),
+        makePosition({ id: 'rest', isin: 'R', symbol: 'R.DE', units: 100, targetPercent: 90 }),
+      ],
+    }
+    const quotes: QuoteMap = new Map([
+      ['Z', makeQuote({ isin: 'Z', price: 100 })],
+      ['R', makeQuote({ isin: 'R', price: 100 })],
+    ])
+    const result = computeRebalancing(portfolio, quotes, SETTINGS)
+    return { portfolio, result }
+  }
+
+  it('meldet die Abweichung in Prozentpunkten', () => {
+    const { portfolio, result } = targetSetup()
+    // Gesamt 10.000 €. 9 Stück kaufen → 900 € = 9,0 % bei Ziel 10 % → −1,0 %-Punkte
+    const plan = computeTradePlan(result.rows, { ziel: 9 }, result.total, SETTINGS.bands, portfolio, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+
+    expect(row?.percentAfter).toBeCloseTo(9, 6)
+    expect(row?.deviationAfter).toBeCloseTo(-1, 6)
+  })
+
+  it('meldet die Abweichung auch relativ zum Ziel', () => {
+    const { portfolio, result } = targetSetup()
+    // −1,0 von 10 sind −10 % relativ
+    const plan = computeTradePlan(result.rows, { ziel: 9 }, result.total, SETTINGS.bands, portfolio, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+
+    expect(row?.relativeDeviationAfter).toBeCloseTo(-10, 6)
+  })
+
+  it('Ziel knapp verfehlt, aber im Band → gilt als in Ordnung', () => {
+    const { portfolio, result } = targetSetup()
+    // 9,5 Stück gibt es nicht; 9 Stück = 9,0 % bei Band 9,0 % bis 12,0 %
+    const plan = computeTradePlan(result.rows, { ziel: 9 }, result.total, SETTINGS.bands, portfolio, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+
+    expect(row?.inBandAfter).toBe(true)
+    expect(row?.suggestionAfter).toBe('ok')
+    // Die Abweichung bleibt sichtbar — sie ist nur kein Fehler.
+    expect(row?.deviationAfter).not.toBe(0)
+  })
+
+  it('Ziel deutlich verfehlt und außerhalb des Bandes → nicht in Ordnung', () => {
+    const { portfolio, result } = targetSetup()
+    // 5 Stück = 500 € = 5,0 %, unteres Band liegt bei 9,0 %
+    const plan = computeTradePlan(result.rows, { ziel: 5 }, result.total, SETTINGS.bands, portfolio, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+
+    expect(row?.inBandAfter).toBe(false)
+    expect(row?.suggestionAfter).toBe('buy')
+  })
+
+  it('Ziel exakt getroffen → Abweichung null', () => {
+    const { portfolio, result } = targetSetup()
+    const plan = computeTradePlan(result.rows, { ziel: 10 }, result.total, SETTINGS.bands, portfolio, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+
+    expect(row?.deviationAfter).toBeCloseTo(0, 6)
+    expect(row?.inBandAfter).toBe(true)
+  })
+
+  it('Ziel 0 % führt nicht zu einer Division durch null', () => {
+    const { portfolio } = targetSetup()
+    const ohneZiel: Portfolio = {
+      ...portfolio,
+      positions: portfolio.positions.map((position) =>
+        position.id === 'ziel' ? { ...position, targetPercent: 0 } : position,
+      ),
+    }
+    const neu = computeRebalancing(ohneZiel, new Map([
+      ['Z', makeQuote({ isin: 'Z', price: 100 })],
+      ['R', makeQuote({ isin: 'R', price: 100 })],
+    ]), SETTINGS)
+    const plan = computeTradePlan(neu.rows, { ziel: 5 }, neu.total, SETTINGS.bands, ohneZiel, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+
+    expect(row?.relativeDeviationAfter).toBe(0)
+  })
+})
+
 describe('computeTradePlan — Deckung', () => {
   /**
    * Es gibt kein abstraktes Budget mehr. Jeder gekaufte Euro muss im Plan

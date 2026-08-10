@@ -5,8 +5,15 @@ import type { Config } from 'tailwindcss'
  * - Naive liefert Komponenten (Table, Card, Modal, Form, …) und deren Theme
  * - Tailwind übernimmt Layout und Utility-Klassen
  *
- * `preflight` ist deaktiviert, damit Tailwind Naive-UI-Defaults nicht
- * überschreibt; die nötigen Rücknahmen stehen in `assets/style.css`.
+ * `preflight` ist **aktiv**. Es war zunächst abgeschaltet, um Naive UI nicht
+ * zu stören — das hat aber die Browser-Vorgaben durchgelassen und drei
+ * getrennte Fehler verursacht: grauer Hintergrund auf jedem `<button>`,
+ * unterstrichene Navigations-Links, eingelassener Rahmen auf jedem `<input>`,
+ * der zudem die Spaltenbreite sprengte. Jede Rücknahme von Hand fing nur das
+ * jeweils bemerkte Symptom.
+ *
+ * Naive UI setzt seine Farben und Rahmen über Klassen, die Preflights
+ * Element-Selektoren in der Spezifität schlagen.
  *
  * Die Farben verweisen auf die Theme-Token (`theme/tokens.css`), die als
  * RGB-Tripel vorliegen — nur so greifen Deckkraft-Zusätze wie `bg-card/70`.
@@ -16,9 +23,6 @@ import type { Config } from 'tailwindcss'
  */
 export default {
   content: ['./index.html', './src/**/*.{vue,ts,tsx}'],
-  corePlugins: {
-    preflight: false,
-  },
   theme: {
     extend: {
       colors: {

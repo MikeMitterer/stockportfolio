@@ -45,6 +45,23 @@ export interface TradePlanRow {
   upperBandPercent: number
   /** Status nach Ausführung — landet die Position im Band? */
   suggestionAfter: Suggestion
+  /**
+   * Abweichung vom Ziel nach dem Trade, in **Prozentpunkten**.
+   * Ziel 10 %, danach 9,5 % → −0,5.
+   */
+  deviationAfter: number
+  /**
+   * Dieselbe Abweichung **relativ zum Ziel**, in Prozent.
+   * Darauf sind die Toleranzbänder definiert: −0,5 von 10 sind −5 %.
+   */
+  relativeDeviationAfter: number
+  /**
+   * Liegt der Anteil nach dem Trade im Band?
+   *
+   * Das Ziel muss nicht exakt getroffen werden — innerhalb der Bänder ist
+   * der Zustand in Ordnung, auch wenn eine Abweichung bleibt.
+   */
+  inBandAfter: boolean
   /** Unverbindlicher Vorschlag in Stück, aus den freigemachten Mitteln (Excel AC). */
   suggestedUnits: number
 }
@@ -146,6 +163,8 @@ export function computeTradePlan(
       const percentAfter = total > 0 ? (marketValueAfter * 100) / total : 0
 
       const target = row.position.targetPercent
+      const lowerPct = target * (1 - bands.lowerPercent / 100)
+      const upperPct = target * (1 + bands.upperPercent / 100)
 
       return {
         current: row,
@@ -156,13 +175,16 @@ export function computeTradePlan(
         marketValueAfter,
         percentAfter,
         targetPercent: target,
-        lowerBandPercent: target * (1 - bands.lowerPercent / 100),
-        upperBandPercent: target * (1 + bands.upperPercent / 100),
+        lowerBandPercent: lowerPct,
+        upperBandPercent: upperPct,
         suggestionAfter: suggestion(
           marketValueAfter,
           lowerBand(targetValue(row.position, total), bands),
           upperBand(targetValue(row.position, total), bands),
         ),
+        deviationAfter: percentAfter - target,
+        relativeDeviationAfter: target === 0 ? 0 : ((percentAfter - target) * 100) / target,
+        inBandAfter: percentAfter >= lowerPct && percentAfter <= upperPct,
         // Verteilt, was der Plan bislang freigemacht hat. Solange nichts
         // verkauft oder entnommen wurde, gibt es auch nichts vorzuschlagen.
         suggestedUnits: suggestedUnitsFor(

@@ -6,7 +6,7 @@ import AllocationAfterBar from '@/components/AllocationAfterBar.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { assetColor } from '@/domain/assetColors'
-import { eur, eurCent, eurSigned, integer, percent } from '@/domain/formatters'
+import { eur, eurCent, eurSigned, integer, percent, percentSigned } from '@/domain/formatters'
 import { computeRebalancing, type GroupResult } from '@/domain/rebalancing'
 import { computeTradePlan, hasTrades, type TradeMap } from '@/domain/tradePlan'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -103,6 +103,14 @@ const groupedRows = computed<RenderedGroup[]>(() => {
 
 function bandColor(group: AssetGroup): string {
   return `color-mix(in srgb, ${assetColor(group)} 7%, transparent)`
+}
+
+/**
+ * Abweichung vom Ziel in Prozentpunkten, für die Anzeige.
+ * „Ziel 10 %, danach 9,5 %" wird zu „−0,5 %-P".
+ */
+function deviationLabel(row: NonNullable<typeof plan.value>['rows'][number]): string {
+  return `${percentSigned(row.deviationAfter).replace(' %', '')} %-P`
 }
 
 /** Kurs je Stück — für die Anzeige in der Zeile. */
@@ -220,10 +228,12 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                 <th class="text-right font-medium px-2 py-1.5">Bestand</th>
                 <th class="text-right font-medium px-2 py-1.5">Kurs</th>
                 <th class="text-right font-medium px-2 py-1.5">IST %</th>
+                <th class="text-right font-medium px-2 py-1.5">Ziel %</th>
                 <th class="text-right font-medium px-2 py-1.5">Vorschlag</th>
-                <th class="text-right font-medium px-2 py-1.5">Kauf / Verkauf</th>
-                <th class="text-right font-medium px-2 py-1.5">Wert</th>
-                <th class="text-left font-medium px-2 py-1.5 w-64">Anteil nachher</th>
+                <th class="text-right font-medium px-2 py-1.5 w-32">Kauf / Verkauf</th>
+                <th class="text-right font-medium px-2 py-1.5 w-28">Wert</th>
+                <th class="text-left font-medium px-2 py-1.5 w-56">Anteil nachher</th>
+                <th class="text-right font-medium px-2 py-1.5">Abw. Ziel</th>
                 <th class="text-center font-medium px-4 py-1.5">Status</th>
               </tr>
             </thead>
@@ -231,7 +241,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             <tbody>
               <template v-for="entry in groupedRows" :key="entry.group.group">
                 <tr :style="{ backgroundColor: bandColor(entry.group.group) }">
-                  <td colspan="9" class="px-4 py-1">
+                  <td colspan="11" class="px-4 py-1">
                     <span class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-ink-muted">
                       <span
                         class="inline-block w-1.5 h-1.5 rounded-full"
@@ -274,6 +284,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
 
                   <td class="px-2 py-1 text-right tabular-nums text-ink-secondary">
                     {{ percent(row.current.actualPercent) }}
+                  </td>
+
+                  <td class="px-2 py-1 text-right tabular-nums text-ink-muted">
+                    {{ percent(row.targetPercent) }}
                   </td>
 
                   <!-- Vorschlag: unverbindlich, per Klick übernehmbar -->
@@ -324,6 +338,19 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     />
                   </td>
 
+                  <!--
+                    Abweichung vom Ziel nach dem Trade. Das Ziel muss nicht
+                    exakt getroffen werden — solange der Anteil im Band liegt,
+                    ist der Zustand in Ordnung, deshalb hier gedämpft statt rot.
+                  -->
+                  <td
+                    class="px-2 py-1 text-right tabular-nums"
+                    :class="row.inBandAfter ? 'text-ink-muted' : 'text-status-out'"
+                    :title="`${percentSigned(row.relativeDeviationAfter)} relativ zum Ziel`"
+                  >
+                    {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
+                  </td>
+
                   <td class="px-4 py-1 text-center">
                     <SuggestionBadge :suggestion="row.suggestionAfter" />
                   </td>
@@ -334,7 +361,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             <!-- Bilanz des Plans -->
             <tfoot>
               <tr class="border-t border-edge">
-                <td colspan="6" class="px-4 py-2 text-right text-xs uppercase tracking-wide text-ink-muted">
+                <td colspan="7" class="px-4 py-2 text-right text-xs uppercase tracking-wide text-ink-muted">
                   Geht der Plan auf?
                 </td>
                 <td
@@ -345,7 +372,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                 >
                   {{ eurSigned(plan.netCashFlow) }}
                 </td>
-                <td class="px-2 py-2 text-xs text-ink-muted" colspan="2">
+                <td class="px-2 py-2 text-xs text-ink-muted" colspan="3">
                   <template v-if="!planHasEntries">Noch nichts geplant.</template>
                   <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">
                     Käufe und Verkäufe gleichen sich aus.
