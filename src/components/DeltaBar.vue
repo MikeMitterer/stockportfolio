@@ -87,9 +87,14 @@ const label = computed(() => percentSigned(props.relativePercent))
       class="relative flex-1 rounded-sm overflow-hidden bg-sunken"
       :class="compact ? 'h-4' : 'h-5'"
     >
-      <!-- Bandgrenzen als Striche, ohne Flächenton -->
-      <div class="absolute top-0 bottom-0 border-x border-ink/20" :style="bandLeftStyle"></div>
-      <div class="absolute top-0 bottom-0 border-x border-ink/20" :style="bandRightStyle"></div>
+      <!--
+        Bandgrenzen: je Band nur die **Außenkante**.
+        Mit `border-x` zeichnete jedes Band auch seine Innenkante — beide lagen
+        auf der Mitte und stapelten sich dort mit der Ziel-Linie zu drei
+        Strichen übereinander.
+      -->
+      <div class="absolute top-0 bottom-0 border-l border-ink/20" :style="bandLeftStyle"></div>
+      <div class="absolute top-0 bottom-0 border-r border-ink/20" :style="bandRightStyle"></div>
 
       <!-- Balken-Füllung -->
       <div
