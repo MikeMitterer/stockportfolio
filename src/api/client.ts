@@ -124,9 +124,35 @@ async function readErrorDetail(response: Response): Promise<string> {
   return response.statusText || 'Unbekannter Fehler'
 }
 
-/** Base-URL aus der Umgebung, mit Fallback auf die Produktions-Instanz. */
+/**
+ * Zur Laufzeit eingespielte Konfiguration.
+ *
+ * Wird im Container vom Entrypoint nach `config.js` geschrieben; im Betrieb
+ * ohne Container liefert die Datei aus `public/` einen leeren Wert.
+ */
+declare global {
+  interface Window {
+    __STOCKPORTFOLIO_CONFIG__?: { apiUrl?: string }
+  }
+}
+
+/**
+ * Base-URL der API.
+ *
+ * Drei Quellen, in dieser Reihenfolge:
+ *
+ * 1. `config.js` — vom Container-Entrypoint aus `STOCKINFO_API_URL` erzeugt.
+ *    Ohne diesen Schritt wäre die Adresse ins Bündel gebacken und dasselbe
+ *    Abbild ließe sich nicht auf ein anderes Backend richten; für jede
+ *    Umgebung bräuchte es einen eigenen Build.
+ * 2. `VITE_STOCKINFO_API_URL` aus dem `.env` — der Wert zur Bauzeit, damit
+ *    Entwicklung und Vorschau ohne Container auskommen.
+ * 3. Die Produktions-Instanz als letzte Rückfallebene.
+ */
 export function apiBaseUrl(): string {
-  return import.meta.env.VITE_STOCKINFO_API_URL ?? 'https://stockinfo.int.mikemitterer.at'
+  const runtime = globalThis.window?.__STOCKPORTFOLIO_CONFIG__?.apiUrl
+  if (runtime) return runtime
+  return import.meta.env.VITE_STOCKINFO_API_URL || 'https://stockinfo.int.mikemitterer.at'
 }
 
 /** Injection-Key für den Client (Vue provide/inject). */

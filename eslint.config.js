@@ -35,7 +35,9 @@ const browserGlobals = {
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', '.vite/**', 'coverage/**'],
+    // public/ wird unverändert ausgeliefert und nicht übersetzt — config.js
+    // ist bewusst eine schlichte Browser-Datei ohne Modul-Kontext.
+    ignores: ['dist/**', 'node_modules/**', '.vite/**', 'coverage/**', 'public/**'],
   },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],

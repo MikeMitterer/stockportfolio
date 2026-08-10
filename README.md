@@ -28,3 +28,46 @@ npm run dev                # http://localhost:5173
 | `npm run typecheck` | Nur `vue-tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run test` | Vitest |
+
+## Docker
+
+```bash
+make docker-build          # baut mangolila/stockportfolio:<git-tag>
+make docker-samples        # zeigt fertige `docker run`-Befehle
+```
+
+Der Build braucht einen Git-Tag und einen sauberen Working-Tree
+(`make tag-patch`). Gebaut wird mehrstufig: Node erzeugt das Bündel, ausgeliefert
+wird es von nginx — das fertige Abbild wiegt rund 80 MB und enthält keine
+Node-Laufzeit.
+
+### API-Adresse
+
+Sie steckt **nicht** im Abbild. Beim Start schreibt der Entrypoint
+`STOCKINFO_API_URL` nach `config.js`, von wo die App sie liest. Dasselbe Abbild
+lässt sich damit auf ein anderes Backend richten, ohne neu gebaut zu werden:
+
+```bash
+docker run --rm -p 8080:80 \
+    -e STOCKINFO_API_URL=https://stockinfo.int.mikemitterer.at \
+    mangolila/stockportfolio
+```
+
+Ohne die Variable gilt der Wert, der beim Bauen aus `VITE_STOCKINFO_API_URL`
+ins Bündel kam. Welche Adresse tatsächlich gilt, steht in der App unter
+*Einstellungen → Status*.
+
+### Unraid
+
+Im Docker-Reiter „Add Container", dann:
+
+| Feld | Wert |
+|---|---|
+| Repository | `mangolila/stockportfolio` |
+| Port | Container `80` → Host nach Wahl |
+| Variable | `STOCKINFO_API_URL` = Adresse der StockInfo-Instanz |
+
+Es gibt keine Volumes — die App speichert alles im Browser (IndexedDB), nicht
+im Container. Ein Update ist damit ein reines „Pull & Restart", Daten gehen
+dabei nicht verloren. WebUI-Verweis und Symbol bringt das Abbild als Label mit,
+der Healthcheck färbt den Zustand im Docker-Reiter.

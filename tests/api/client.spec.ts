@@ -3,8 +3,8 @@
  * Kein echtes Netzwerk — `fetch` wird injiziert.
  */
 
-import { describe, expect, it, vi } from 'vitest'
-import { StockInfoClient } from '@/api/client'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { apiBaseUrl, StockInfoClient } from '@/api/client'
 import { ApiError } from '@/api/errors'
 
 /** Baut eine fetch-Attrappe, die eine JSON-Antwort liefert. */
@@ -138,5 +138,28 @@ describe('StockInfoClient — Erfolgsfall', () => {
     const client = new StockInfoClient('https://example.test', jsonFetch(payload))
 
     await expect(client.getInstruments()).resolves.toHaveLength(2)
+  })
+})
+
+describe('apiBaseUrl', () => {
+  afterEach(() => {
+    delete window.__STOCKPORTFOLIO_CONFIG__
+  })
+
+  it('bevorzugt die Laufzeit-Konfiguration', () => {
+    // Der Container schreibt sie beim Start — sonst wäre die Adresse ins
+    // Bündel gebacken und jedes Backend bräuchte einen eigenen Build.
+    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: 'https://api.laufzeit.test' }
+    expect(apiBaseUrl()).toBe('https://api.laufzeit.test')
+  })
+
+  it('ignoriert eine leere Laufzeit-Adresse', () => {
+    // Genau das steht in der Platzhalter-Datei für die Entwicklung.
+    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: '' }
+    expect(apiBaseUrl()).not.toBe('')
+  })
+
+  it('fällt ohne jede Angabe auf die Produktions-Instanz zurück', () => {
+    expect(apiBaseUrl()).toMatch(/^https:\/\//)
   })
 })

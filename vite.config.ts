@@ -59,6 +59,11 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
+    // Nicht 'assets': Die App hat seit der Umbenennung eine eigene Route
+    // /assets, und ein Ordner gleichen Namens im Ausgabeverzeichnis fängt
+    // deren Adresse ab — im Container endete ein Reload dort in einem 301
+    // auf /assets/ und danach im 404.
+    assetsDir: 'static',
     target: 'es2022',
     sourcemap: true,
     rollupOptions: {

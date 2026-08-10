@@ -1,0 +1,24 @@
+# Was nicht in den Build-Kontext gehört.
+#
+# node_modules ist der wichtigste Eintrag: Ohne ihn würde der lokale Ordner
+# (samt macOS-Binaries) ins Abbild kopiert und den `npm ci`-Layer entwerten.
+node_modules
+dist
+coverage
+.vite
+.eslintcache
+
+.git
+.idea
+.claude
+.libs
+
+docker/logs
+docker/.last-build-tag
+
+# Die lokale .env würde die Adresse aus der Entwicklung ins Abbild backen.
+# Gesetzt wird sie beim Start (STOCKINFO_API_URL) oder per --build-arg.
+.env
+
+_tickets
+docs
