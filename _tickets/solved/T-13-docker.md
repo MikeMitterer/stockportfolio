@@ -1,50 +1,61 @@
-# T-13 · Docker — Multi-Stage-Image, nginx-Drop-in, `docker/build.sh`
+# T-13 · Docker — Multi-Stage-Image, `docker/build.sh`
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | done | ~90 min | Auslieferung | — |
+| root | done | ~2 h | Auslieferung | — |
 
 **Löst:** Die App als Container, lauffähig unter Unraid. Node baut, nginx liefert
 aus; die API-Adresse wird erst beim Start gesetzt, nicht ins Bündel gebacken.
 
 ---
 
-## Warum überhaupt ein Server mit Konfiguration
+## Warum Hash-Modus — und wozu dann noch eine Konfiguration
 
-Ein gebautes Vue-Projekt ist ein Ordner mit Dateien — irgendetwas muss sie über
+Ein gebautes Vue-Projekt ist ein Ordner mit Dateien; irgendetwas muss sie über
 HTTP ausliefern. Die Frage war, ob dieses Etwas konfiguriert werden muss.
 
-Gemessen, nicht vermutet: `nginx:1.27-alpine` mit `COPY dist`, sonst nichts.
+**Routing: nein, seit dem Hash-Modus.** Im History-Modus sind `/rebalancing`
+und `/settings` echte Adressen. Gemessen an `nginx` mit `COPY dist`, sonst
+nichts:
 
-| Adresse | Antwort |
-|---|---|
-| `/` | 200 |
-| `/rebalancing` | **404** |
-| `/settings` | **404** |
+| Adresse | History-Modus | Hash-Modus |
+|---|---|---|
+| `/` | 200 | 200 |
+| `/rebalancing` | **404** | entfällt (`/#/rebalancing`) |
+| `/settings` | **404** | entfällt (`/#/settings`) |
 
-Der Router läuft im History-Modus (`createWebHistory`), die Adressen sind also
-echt. Vue kann sie erst auflösen, wenn die App geladen ist — die *erste*
-Anfrage geht an den Server, und der kennt keine Datei `/rebalancing`. Ohne
-Rückfall auf die `index.html` ist jeder Reload auf einer Unterseite ein 404.
+Vue kann eine Adresse erst auflösen, wenn die App geladen ist — die *erste*
+Anfrage geht an den Server, und der kennt keine Datei `/rebalancing`. Mit dem
+Hash sieht der Server nur noch `/`. Preis: sichtbar andere Adressen.
 
-Nötig sind daher 21 Zeilen in `docker/default.conf` — ein Drop-in nach
-`conf.d/`, keine Ablösung der mitgelieferten `nginx.conf`: Worker, MIME-Typen
-und Logging bringt das Abbild mit.
+**Caching: ja, nachweislich.** Ohne Konfiguration schickt nginx zur
+`index.html` nur `Last-Modified` und `ETag`, kein `Cache-Control`. Beim ersten
+Container-Update im Test trat prompt der Fehlerfall ein — der Browser behielt
+die alte `index.html` und forderte
 
-Die einzige Alternative, die den Rückfall wirklich überflüssig macht, ist der
-Hash-Modus des Routers (`/#/rebalancing`). Das ändert alle Adressen sichtbar —
-bewusst nicht gewählt.
+    /assets/SettingsView-DdN9l9cx.js   → 404
 
-## Fund nebenbei: `/assets` kollidierte mit dem Ausgabeordner
+während das neue Abbild `SettingsView-B1XN8Lc1.js` enthielt. Die App blieb beim
+Seitenwechsel stehen, bis jemand hart neu lud. Der Drop-in setzt deshalb
+`no-cache` für alles außer den gehashten Bündel-Dateien — mit Routing hat er
+nichts zu tun.
 
-Seit der Umbenennung von „Instrumente" zu „Assets" hat die App eine Route
-`/assets`. Vite legt seine gebündelten Dateien standardmäßig ebenfalls unter
-`dist/assets/` ab. Im Container beantwortete nginx `/assets` mit einem 301 auf
-`/assets/` und danach mit einem 404 — die Seite war beim Reload nicht
-erreichbar. Der Ausgabeordner heißt jetzt `static/` (`build.assetsDir`).
+Gegenprobe nach dem Fix: Abbild neu gebaut, Container ersetzt, **normaler**
+Reload — der Browser lud das neue Bündel (`index-CygF5NJa.js`).
 
-Im Dev-Server fiel das nicht auf: Dort beantwortet Vite unbekannte Pfade selbst
-mit der `index.html`.
+## Basis-Abbilder
+
+Debian statt Alpine: `node:22-bookworm-slim` zum Bauen, `nginx:1.27-bookworm`
+zum Ausliefern. Kostet Größe (287 MB statt 82 MB auf Alpine), dafür dieselbe
+libc und dieselben Werkzeuge wie überall sonst.
+
+## Fund nebenbei: leeres Depot meldete falsch
+
+Beim ersten Start im Container — frischer Ursprung, also leere IndexedDB —
+erschien sofort „Ziele ergeben nicht 100 %". Bei einem leeren Depot ist die
+Summe naturgemäß 0; die Warnung wäre das Erste gewesen, was ein neuer Nutzer
+sieht, für einen Zustand, den er nicht herbeigeführt hat. Jetzt unterdrückt,
+solange keine Wertpapiere im Depot sind.
 
 ## Verify
 
@@ -54,15 +65,16 @@ Legende: ✅ live bestätigt · ➖ keine Live-Verifikation.
 |---|---|---|:--:|---|
 | 1 | `docker/build.sh --help` | Base-Image aus dem **letzten** `FROM`, Target, Plattform, Laufzeit-Hinweis | ✅ | |
 | 2 | `docker/build.sh --build` | Läuft durch, taggt `mangolila/stockportfolio:<tag>` + `latest`, schreibt `.last-build-tag` | ✅ | |
-| 3 | Image-Größe | 81,8 MB — keine Node-Laufzeit im Auslieferungs-Abbild | ✅ | |
-| 4 | `docker run` | `/`, `/rebalancing`, `/assets`, `/settings`, `/healthz` → alle 200 | ✅ | |
-| 5 | `config.js` | Enthält den Wert aus `STOCKINFO_API_URL`, `Cache-Control: no-store` | ✅ | |
-| 6 | `index.html` | `Cache-Control: no-cache` — nach einem Update kein altes Bündel | ✅ | |
-| 7 | `/static/*.js` | `public, max-age=31536000, immutable` (Hash im Dateinamen) | ✅ | |
+| 3 | Image-Größe | 287 MB (Debian) — keine Node-Laufzeit im Auslieferungs-Abbild | ✅ | |
+| 4 | `docker run` | `/` → 200; Navigation und Deep-Link `/#/settings` im Browser geprüft | ✅ | |
+| 5 | `config.js` | Enthält den Wert aus `STOCKINFO_API_URL` | ✅ | |
+| 6 | `index.html` | `Cache-Control: no-cache` | ✅ | |
+| 7 | `/assets/*.js` | `public, max-age=31536000, immutable` (Hash im Dateinamen) | ✅ | |
 | 8 | Ohne `STOCKINFO_API_URL` | Log meldet den Rückfall auf den Build-Wert | ✅ | |
-| 9 | Healthcheck | `wget --spider /healthz`, Zustand im Docker-Reiter | ✅ | |
-| 10 | Unraid-Labels | `net.unraid.docker.webui` / `.icon` gesetzt | ➖¹ | |
-| 11 | `--push` | Registry-Ziele ghcr / dockerhub / ecr | ➖² | |
+| 9 | Healthcheck | `curl /`, Container meldet `healthy` | ✅ | |
+| 10 | Update-Pfad | Abbild neu gebaut, Container ersetzt, **normaler** Reload lädt das neue Bündel | ✅ | |
+| 11 | Unraid-Labels | `net.unraid.docker.webui` / `.icon` gesetzt | ➖¹ | |
+| 12 | `--push` | Registry-Ziele ghcr / dockerhub / ecr | ➖² | |
 
 ¹ Nur im Abbild geprüft, nicht auf einer Unraid-Instanz ausgeführt.
 ² Kein Push ausgelöst — dafür bräuchte es die Registry-Zugangsdaten.
@@ -78,4 +90,6 @@ Legende: ✅ live bestätigt · ➖ keine Live-Verifikation.
 - **nginx läuft als root** (Master; die Worker als `nginx`) — das
   Standardverhalten des Abbilds. Es gibt keine Volumes, damit auch keine
   Rechteprobleme auf gemappten Pfaden. Wenn non-root gewünscht ist, kostet das
-  einen Port über 1024 plus `su-exec` im Entrypoint.
+  einen Port über 1024 plus `gosu` im Entrypoint.
+- **Alte Lesezeichen.** Adressen ohne Hash (`/settings`) landen seit der
+  Umstellung auf der Startseite statt auf der gemeinten Seite.

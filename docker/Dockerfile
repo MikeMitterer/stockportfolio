@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ─── Stage 1: Bündel bauen ────────────────────────────────────────────────────
-FROM node:22-alpine AS build
+FROM node:22-bookworm-slim AS build
 
 WORKDIR /app
 
@@ -22,11 +22,11 @@ ENV VITE_STOCKINFO_API_URL=${VITE_STOCKINFO_API_URL}
 RUN npm run build
 
 # ─── Stage 2: Ausliefern ──────────────────────────────────────────────────────
-FROM nginx:1.27-alpine
+#
+# Der Drop-in regelt nur das Caching, kein Routing: Dank Hash-Modus sieht der
+# Server ohnehin nur "/". Warum er trotzdem nötig ist, steht in der Datei.
+FROM nginx:1.27-bookworm
 
-# Ergänzung zur mitgelieferten Konfiguration, keine Ablösung: Worker,
-# MIME-Typen und Logging bringt das Abbild mit. Der Drop-in regelt nur, was es
-# nicht wissen kann — siehe Kommentar in der Datei.
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
@@ -47,10 +47,10 @@ LABEL org.opencontainers.image.title="StockPortfolio" \
       net.unraid.docker.webui="http://[IP]:[PORT:80]" \
       net.unraid.docker.icon="https://raw.githubusercontent.com/MikeMitterer/StockPortfolio/main/public/favicon.svg"
 
-# wget statt curl — busybox bringt es mit, curl müsste nachinstalliert werden.
-# Der Healthcheck färbt unter Unraid den Zustand im Docker-Reiter.
+# Der Healthcheck färbt unter Unraid den Zustand im Docker-Reiter. Geprüft wird
+# die index.html — einen eigenen /healthz gäbe es ohne Konfiguration nicht.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD wget --quiet --spider http://localhost/healthz || exit 1
+    CMD curl -fsS http://localhost/ >/dev/null || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

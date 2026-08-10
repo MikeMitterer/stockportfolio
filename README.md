@@ -37,9 +37,15 @@ make docker-samples        # zeigt fertige `docker run`-Befehle
 ```
 
 Der Build braucht einen Git-Tag und einen sauberen Working-Tree
-(`make tag-patch`). Gebaut wird mehrstufig: Node erzeugt das Bündel, ausgeliefert
-wird es von nginx — das fertige Abbild wiegt rund 80 MB und enthält keine
-Node-Laufzeit.
+(`make tag-patch`). Gebaut wird mehrstufig auf Debian-Basis: `node:22-bookworm-slim`
+erzeugt das Bündel, ausgeliefert wird es von `nginx:1.27-bookworm`. Das
+Auslieferungs-Abbild enthält keine Node-Laufzeit.
+
+Der Router arbeitet im Hash-Modus (`/#/rebalancing`), damit der Server nichts
+über die Adressen der App wissen muss. Die mitgelieferte nginx-Konfiguration
+wird nur um Cache-Regeln ergänzt — ohne sie liefert der Browser nach einem
+Update weiter die alte `index.html` aus und findet die darin genannten
+Bündel-Dateien nicht mehr.
 
 ### API-Adresse
 

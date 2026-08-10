@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -28,6 +28,18 @@ const routes: RouteRecordRaw[] = [
 ]
 
 export const router = createRouter({
-  history: createWebHistory(),
+  /*
+   * Hash-Modus, nicht History.
+   *
+   * Im History-Modus sind /rebalancing und /settings echte Adressen: Der erste
+   * Aufruf geht an den Server, der dort keine Datei findet — jeder Reload auf
+   * einer Unterseite endete im 404, sofern der Server nicht auf die index.html
+   * zurückfällt. Das erzwang eine Server-Konfiguration.
+   *
+   * Mit dem Hash sieht der Server immer nur „/". Die Anwendung läuft damit
+   * unter jedem beliebigen Dateiserver, ohne dass dieser etwas von ihr wissen
+   * muss. Preis dafür sind die Adressen: /#/rebalancing statt /rebalancing.
+   */
+  history: createWebHashHistory(),
   routes,
 })

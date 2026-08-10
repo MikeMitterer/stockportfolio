@@ -325,13 +325,13 @@ push() {
 declare -a samples=(
 "# StockPortfolio starten — API-Adresse zur Laufzeit setzen ||
 \t     docker run --name ${NAME} \\
-\t         --rm -p 8080:8080 \\
+\t         --rm -p 8080:80 \\
 \t         -e STOCKINFO_API_URL=https://stockinfo.int.mikemitterer.at \\
 \t         ${NAMESPACE}/${NAME}
 "
 "# Gegen eine lokale API — der Container braucht die Host-Adresse ||
 \t     docker run --name ${NAME} \\
-\t         --rm -p 8080:8080 \\
+\t         --rm -p 8080:80 \\
 \t         -e STOCKINFO_API_URL=http://host.docker.internal:8000 \\
 \t         ${NAMESPACE}/${NAME}
 "

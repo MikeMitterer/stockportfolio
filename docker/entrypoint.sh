@@ -2,6 +2,8 @@
 #------------------------------------------------------------------------------
 # entrypoint.sh — Laufzeit-Konfiguration schreiben, dann nginx starten
 #
+# Der einzige Grund, warum es dieses Script gibt: die API-Adresse.
+#
 # Die App ist ein statisches Bündel: Alles, was Vite zur Bauzeit kennt, steckt
 # darin fest. Die Adresse der StockInfo-API darf aber nicht feststecken — sonst
 # bräuchte jede Umgebung ein eigenes Abbild. Unter Unraid wird sie im

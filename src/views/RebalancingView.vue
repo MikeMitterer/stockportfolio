@@ -78,8 +78,15 @@ const planHasEntries = computed(
 )
 
 /** Weichen die probeweisen Ziele in Summe von 100 % ab? */
+/**
+ * Weichen die Ziele in Summe von 100 % ab?
+ *
+ * Nicht im leeren Depot: Dort ist die Summe naturgemäß 0, und eine Warnung
+ * darüber wäre die erste Meldung, die ein neuer Nutzer zu sehen bekäme — für
+ * einen Zustand, den er gar nicht herbeigeführt hat.
+ */
 const targetSumOff = computed(
-  () => plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
+  () => hasHoldings.value && plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
 )
 
 function setTrade(positionId: string, units: number): void {
