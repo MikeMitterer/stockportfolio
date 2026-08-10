@@ -9,6 +9,8 @@ import { eur, eurSigned, percent } from '@/domain/formatters'
 import { computeRebalancing } from '@/domain/rebalancing'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
+import PositionCardList from '@/components/PositionCardList.vue'
+import { useIsCompact } from '@/composables/useIsCompact'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
@@ -27,6 +29,9 @@ const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 const quotesStore = useQuotesStore()
 const instrumentsStore = useInstrumentsStore()
+
+// Unter 768 px tritt die Leseansicht an die Stelle der Tabelle.
+const isCompact = useIsCompact()
 
 const loading = computed(() => quotesStore.loading)
 const failures = computed(() => quotesStore.failures)
@@ -183,7 +188,7 @@ function toggleGroups(): void {
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-6 py-6 flex flex-col gap-6">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col gap-4 md:gap-6">
     <!-- Erst-Ladezustand -->
     <div v-if="!ready" class="flex items-center justify-center py-24">
       <NSpin size="large" />
@@ -220,7 +225,7 @@ function toggleGroups(): void {
       </NAlert>
 
       <!-- Kennzahlen -->
-      <section class="grid grid-cols-2 lg:grid-cols-4">
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
         <KpiCard
           :label="t('kpi.liquidBuffer')"
@@ -236,8 +241,12 @@ function toggleGroups(): void {
         <KpiCard :label="t('kpi.warnings')" :value="warningsValue" :tone="warningsTone" />
       </section>
 
-      <!-- Gruppen-Balken (ein-/ausklappbar) -->
-      <section class="border-t border-edge">
+      <!--
+        Gruppen-Balken (ein-/ausklappbar). Auf schmalen Bildschirmen
+        ausgeblendet: die Gruppen-Trenner der Kartenliste zeigen dieselben
+        Zahlen, und die Balkenzeile bräuchte hier acht Spalten Platz.
+      -->
+      <section class="hidden md:block border-t border-edge">
         <button
           type="button"
           class="w-full flex items-center gap-2 py-2.5 text-left text-ink-secondary hover:text-ink transition-colors"
@@ -287,14 +296,15 @@ function toggleGroups(): void {
       <section
         class="rounded-xl border border-edge bg-card overflow-hidden"
       >
-        <div class="px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
+        <div class="px-4 md:px-5 py-3 md:py-4 flex items-center justify-between gap-4 flex-wrap">
           <h2
             class="text-xs uppercase tracking-wide text-ink-secondary font-medium"
           >
-            Positionen — Bestand und Ziel sind direkt änderbar
+            {{ isCompact ? 'Positionen' : 'Positionen — Bestand und Ziel sind direkt änderbar' }}
           </h2>
           <div class="flex items-center gap-5">
             <TargetAllocationBar
+              v-if="!isCompact"
               :sum="result.targetPercentSum"
               :exceeded="result.targetsExceeded"
             />
@@ -304,7 +314,7 @@ function toggleGroups(): void {
               }}
               <span v-if="loading" class="ml-2">· lädt …</span>
             </div>
-            <NButton size="tiny" secondary @click="openAddDialog">
+            <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
               {{ t('actions.addPosition') }}
             </NButton>
           </div>
@@ -316,7 +326,15 @@ function toggleGroups(): void {
           schlüssig.
         </NAlert>
         <NDivider class="!my-0" />
+        <PositionCardList
+          v-if="isCompact"
+          :rows="result.rows"
+          :groups="result.groups"
+          :bands="settingsStore.settings.bands"
+        />
+
         <PositionsTable
+          v-else
           :rows="result.rows"
           :groups="result.groups"
           :bands="settingsStore.settings.bands"

@@ -49,7 +49,7 @@ const isActive = (name: string): boolean => route.name === name
 
 <template>
   <header class="sticky top-0 z-40 border-b border-edge bg-page/90 backdrop-blur">
-    <div class="max-w-[1400px] mx-auto flex items-center gap-6 px-6 h-14">
+    <div class="max-w-[1400px] mx-auto flex items-center gap-3 md:gap-6 px-4 md:px-6 h-14">
       <!-- Plakette + Wortmarke, wie im Backend-Frontend -->
       <RouterLink :to="{ name: 'dashboard' }" class="flex items-center gap-2.5 hover:opacity-90">
         <span
@@ -71,7 +71,9 @@ const isActive = (name: string): boolean => route.name === name
             <path d="M15 7h4v4" />
           </svg>
         </span>
-        <span class="font-semibold text-lg tracking-tight">{{ t('app.title') }}</span>
+        <span class="hidden sm:inline font-semibold text-lg tracking-tight">
+          {{ t('app.title') }}
+        </span>
       </RouterLink>
 
       <nav class="flex items-center gap-1">
@@ -89,7 +91,8 @@ const isActive = (name: string): boolean => route.name === name
           <NIcon :size="15">
             <component :is="ICONS[item.name]" />
           </NIcon>
-          <span>{{ item.label }}</span>
+          <span class="hidden md:inline">{{ item.label }}</span>
+          <span class="sr-only md:hidden">{{ item.label }}</span>
           <!-- Aktiver Eintrag: Unterstrich in Akzentfarbe, wie im Backend -->
           <span
             v-if="isActive(item.name)"
@@ -99,7 +102,7 @@ const isActive = (name: string): boolean => route.name === name
       </nav>
 
       <div class="ml-auto flex items-center gap-3">
-        <span v-if="lastRefreshLabel" class="text-xs text-ink-muted tabular-nums">
+        <span v-if="lastRefreshLabel" class="hidden sm:inline text-xs text-ink-muted tabular-nums">
           {{ lastRefreshLabel }}
         </span>
 
@@ -116,7 +119,7 @@ const isActive = (name: string): boolean => route.name === name
               </svg>
             </NIcon>
           </template>
-          {{ t('actions.refresh') }}
+          <span class="hidden md:inline">{{ t('actions.refresh') }}</span>
         </NButton>
 
         <ThemeSwitcher />
