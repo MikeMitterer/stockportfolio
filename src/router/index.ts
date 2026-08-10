@@ -7,6 +7,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/DashboardView.vue'),
   },
   {
+    path: '/rebalancing',
+    name: 'rebalancing',
+    component: () => import('@/views/RebalancingView.vue'),
+  },
+  {
     path: '/instruments',
     name: 'instruments',
     component: () => import('@/views/InstrumentsView.vue'),

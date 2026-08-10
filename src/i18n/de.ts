@@ -6,6 +6,7 @@ export const de = {
   },
   nav: {
     dashboard: 'Dashboard',
+    rebalancing: 'Rebalancing',
     instruments: 'Instrumente',
     settings: 'Einstellungen',
   },

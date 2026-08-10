@@ -24,6 +24,11 @@ const ICONS: Record<string, Component> = {
       h('rect', { x: 10, y: 7, width: 4, height: 13, rx: 1 }),
       h('rect', { x: 17, y: 4, width: 4, height: 16, rx: 1 }),
     ]),
+  rebalancing: () =>
+    h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
+      h('path', { d: 'M4 7h11M4 7l3-3M4 7l3 3', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+      h('path', { d: 'M20 17H9M20 17l-3-3M20 17l-3 3', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    ]),
   instruments: () =>
     h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
       h('circle', { cx: 12, cy: 12, r: 9 }),
@@ -40,6 +45,7 @@ const ICONS: Record<string, Component> = {
 
 const navItems = computed(() => [
   { name: 'dashboard', label: t('nav.dashboard') },
+  { name: 'rebalancing', label: t('nav.rebalancing') },
   { name: 'instruments', label: t('nav.instruments') },
   { name: 'settings', label: t('nav.settings') },
 ])
