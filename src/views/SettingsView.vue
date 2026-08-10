@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
+import { NButton, NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
 import { eur } from '@/domain/formatters'
 import { computeRebalancing, resolveSecurityBuffer } from '@/domain/rebalancing'
@@ -10,6 +10,9 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useThemeStore } from '@/stores/theme'
 import { THEME_IDS, THEMES } from '@/theme/themes'
+import { useApiStatus } from '@/composables/useApiStatus'
+import { useRelativeTime } from '@/composables/useRelativeTime'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
@@ -28,6 +31,9 @@ onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
   await quotesStore.hydrate()
+  // Ungefragt prüfen: Wer diese Seite öffnet, will den Zustand sehen, nicht
+  // erst einen Knopf suchen.
+  await api.check()
 })
 
 async function setLowerBand(value: number | null): Promise<void> {
@@ -89,6 +95,22 @@ async function setNotificationSeconds(value: number | null): Promise<void> {
 }
 
 const themes = THEME_IDS.map((id) => THEMES[id])
+
+// ─── Status der Gegenstelle ─────────────────────────────────────────────────
+
+const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
+const api = useApiStatus(client)
+const apiCheckedAgo = useRelativeTime(api.checkedAt)
+
+/** Die Adresse aus `VITE_STOCKINFO_API_URL`, wie sie beim Bauen gesetzt wurde. */
+const apiUrl = computed(() => client?.url ?? '—')
+
+const API_STATE_LABEL: Record<string, string> = {
+  unknown: 'noch nicht geprüft',
+  checking: 'wird geprüft …',
+  online: 'erreichbar',
+  offline: 'nicht erreichbar',
+}
 </script>
 
 <template>
@@ -271,6 +293,96 @@ const themes = THEME_IDS.map((id) => THEMES[id])
         </NCard>
       </NTabPane>
 
+      <NTabPane name="status" tab="Status">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-sm font-medium">StockInfo-API</span>
+              <NButton
+                size="small"
+                secondary
+                :loading="api.state.value === 'checking'"
+                @click="api.check()"
+              >
+                Erneut prüfen
+              </NButton>
+            </div>
+          </template>
+
+          <dl class="grid grid-cols-1 sm:grid-cols-[10rem_minmax(0,1fr)] gap-x-6 gap-y-3 text-sm">
+            <dt class="text-ink-muted">Adresse</dt>
+            <dd class="break-all">
+              <!--
+                Im Klartext und anklickbar: Im Container entscheidet sich beim
+                Bauen, welches Backend das Abbild anspricht — das sieht man
+                sonst nirgends.
+              -->
+              <a
+                :href="apiUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-accent hover:opacity-80"
+              >
+                {{ apiUrl }}
+              </a>
+            </dd>
+
+            <dt class="text-ink-muted">Zustand</dt>
+            <dd class="flex items-center gap-2">
+              <span
+                class="inline-block h-2 w-2 rounded-full shrink-0"
+                :class="{
+                  'bg-status-ok': api.state.value === 'online',
+                  'bg-status-out': api.state.value === 'offline',
+                  'bg-ink-muted': api.state.value !== 'online' && api.state.value !== 'offline',
+                }"
+                aria-hidden="true"
+              ></span>
+              <span
+                :class="
+                  api.state.value === 'online'
+                    ? 'text-status-ok'
+                    : api.state.value === 'offline'
+                      ? 'text-status-out'
+                      : 'text-ink-muted'
+                "
+              >
+                {{ API_STATE_LABEL[api.state.value] }}
+              </span>
+              <span v-if="api.status.value" class="text-ink-muted">
+                — meldet „{{ api.status.value }}"
+              </span>
+            </dd>
+
+            <template v-if="api.version.value">
+              <dt class="text-ink-muted">Version</dt>
+              <dd class="tabular-nums">{{ api.version.value }}</dd>
+            </template>
+
+            <template v-if="api.latencyMs.value !== null">
+              <dt class="text-ink-muted">Antwortzeit</dt>
+              <dd class="tabular-nums">{{ api.latencyMs.value }} ms</dd>
+            </template>
+
+            <template v-if="api.checkedAt.value">
+              <dt class="text-ink-muted">Geprüft</dt>
+              <dd class="text-ink-secondary">{{ apiCheckedAgo }}</dd>
+            </template>
+
+            <template v-if="api.error.value">
+              <dt class="text-ink-muted">Grund</dt>
+              <dd class="text-status-out">{{ api.error.value }}</dd>
+            </template>
+          </dl>
+
+          <p v-if="api.state.value === 'offline'" class="mt-4 text-xs text-ink-muted leading-relaxed">
+            Ohne die API gibt es keine Kurse und damit keine Kennzahlen. Die
+            zuletzt geladenen Kurse bleiben gespeichert und werden weiter
+            verwendet — erkennbar am Alter in der Kopfzeile.
+          </p>
+        </NCard>
+      </NTabPane>
+
       <NTabPane name="links" tab="Verweise">
         <NCard :bordered="false" class="!bg-card">
           <template #header>
@@ -288,8 +400,8 @@ const themes = THEME_IDS.map((id) => THEMES[id])
 
     <NCard :bordered="false" class="!bg-card">
       <p class="text-sm text-ink-secondary leading-relaxed">
-        Portfolio-Verwaltung, Refresh-Verhalten, Anzeige-Spalten, Export/Import und
-        API-Health-Check folgen in T-11.
+        Portfolio-Verwaltung, Refresh-Verhalten, Anzeige-Spalten und Export/Import
+        folgen in T-11.
       </p>
     </NCard>
   </div>

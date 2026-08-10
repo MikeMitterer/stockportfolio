@@ -32,6 +32,11 @@ export class StockInfoClient {
     this.fetchFn = fetchFn
   }
 
+  /** Die konfigurierte Basis-URL — für die Status-Anzeige. */
+  get url(): string {
+    return this.baseUrl
+  }
+
   /** Katalog aller bekannten Instrumente. */
   async getInstruments(): Promise<InstrumentSummary[]> {
     return this.request<InstrumentSummary[]>('/instruments')
