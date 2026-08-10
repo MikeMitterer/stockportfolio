@@ -51,7 +51,7 @@ export function defaultSettings(activePortfolioId: string): Settings {
     activePortfolioId,
     totalRounding: -3,
     bands: { lowerPercent: 6, upperPercent: 15 },
-    saveAssetGrenze: 170_000,
+    securityBuffer: 170_000,
     investmentReservePercent: 10,
     currentRebalancingBudget: 230_000,
     currency: 'EUR',
@@ -79,11 +79,17 @@ export function defaultSettings(activePortfolioId: string): Settings {
  */
 export function withDefaults(stored: Partial<Settings>): Settings {
   const base = defaultSettings(stored.activePortfolioId ?? '')
+
+  // `saveAssetGrenze` hieß bis T-18 so; den Wert übernehmen, damit niemand
+  // seinen Puffer verliert.
+  const legacyBuffer = (stored as { saveAssetGrenze?: number }).saveAssetGrenze
+
   return {
     ...base,
     ...stored,
     bands: { ...base.bands, ...stored.bands },
     refresh: { ...base.refresh, ...stored.refresh },
+    securityBuffer: stored.securityBuffer ?? legacyBuffer ?? base.securityBuffer,
     links: stored.links?.length ? stored.links : base.links,
     ui: { columns: { ...base.ui.columns, ...stored.ui?.columns } },
   }

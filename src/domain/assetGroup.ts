@@ -8,6 +8,22 @@
 
 import type { AssetGroup } from '@/types/portfolio'
 
+/**
+ * Namensbestandteile, die auf geldmarktnahe Papiere hindeuten.
+ * Werden **vor** den Anleihe-Hinweisen geprüft: „Ultrashort Bond" ist beides,
+ * gehört aber zum Geldmarkt.
+ */
+const MONEY_MARKET_HINTS = [
+  'ultrashort',
+  'ultra short',
+  'money market',
+  'geldmarkt',
+  'overnight',
+  't-bill',
+  'treasury bill',
+  'floating rate',
+] as const
+
 /** Namensbestandteile, die auf eine Anleihe hindeuten. */
 const BOND_HINTS = [
   'bond',
@@ -44,6 +60,7 @@ export function suggestAssetGroup(name: string | null, type: string | null): Ass
   const haystack = (name ?? '').toLowerCase()
 
   if (METAL_HINTS.some((hint) => haystack.includes(hint))) return 'metals'
+  if (MONEY_MARKET_HINTS.some((hint) => haystack.includes(hint))) return 'moneymarket'
   if (BOND_HINTS.some((hint) => haystack.includes(hint))) return 'bonds'
 
   // Ohne Namenshinweis bleibt nur der Typ — beides landet bei Aktien/ETFs.

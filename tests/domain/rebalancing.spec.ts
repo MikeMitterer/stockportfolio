@@ -8,6 +8,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   actualPercent,
+  computeLiquidity,
   computeRebalancing,
   isNearBand,
   lowerBand,
@@ -406,7 +407,7 @@ describe('computeRebalancing', () => {
     activePortfolioId: 'p1',
     totalRounding: 0,
     bands: { lowerPercent: 10, upperPercent: 20 },
-    saveAssetGrenze: 0,
+    securityBuffer: 0,
     investmentReservePercent: 0,
     currentRebalancingBudget: 0,
     currency: 'EUR',
@@ -475,7 +476,7 @@ describe('computeRebalancing', () => {
   it('gibt für jede AssetGroup ein Group-Result zurück (auch wenn leer)', () => {
     const result = computeRebalancing(portfolio, quotes, settings)
     const groupNames = result.groups.map((group) => group.group)
-    expect(groupNames).toEqual(['stocks', 'bonds', 'metals', 'cash'])
+    expect(groupNames).toEqual(['stocks', 'bonds', 'metals', 'moneymarket', 'cash'])
     const metals = result.groups.find((group) => group.group === 'metals')
     expect(metals?.actualValue).toBe(0)
     expect(metals?.targetPercent).toBe(0)
@@ -635,5 +636,125 @@ describe('computeRebalancing', () => {
       expect(group.actualValue).toBe(0)
       expect(group.targetPercent).toBe(0)
     })
+  })
+})
+
+// ─── Liquidität und Investitionsreserve ─────────────────────────────────────
+
+describe('computeLiquidity', () => {
+  /**
+   * Der fachliche Kern: nur Geldmarkt und Cash sind verfügbar.
+   * Laufzeit-Anleihen zählen **nicht** mit — sie sind zwar Anleihen, taugen
+   * aber nicht als Reserve für einen Nachkauf.
+   */
+  function portfolioWith(entries: { group: Position['group']; units: number }[]): Portfolio {
+    return {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: entries.map((entry, index) =>
+        makePosition({
+          id: `p-${index}`,
+          isin: `ISIN${index}`,
+          group: entry.group,
+          units: entry.units,
+        }),
+      ),
+    }
+  }
+
+  const quotes: QuoteMap = new Map(
+    Array.from({ length: 6 }, (_, index) => [
+      `ISIN${index}`,
+      makeQuote({ isin: `ISIN${index}`, price: 1 }),
+    ]),
+  )
+
+  function settingsWithBuffer(buffer: number): Settings {
+    return {
+      activePortfolioId: 'p1',
+      totalRounding: 0,
+      bands: { lowerPercent: 10, upperPercent: 20 },
+      securityBuffer: buffer,
+      investmentReservePercent: 0,
+      currentRebalancingBudget: 0,
+      currency: 'EUR',
+      refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
+      links: [],
+      ui: {
+        columns: {
+          volatility: false,
+          optimalUnits: false,
+          groupSharePercent: false,
+          deltaEuro: false,
+          deltaMax: false,
+          deltaPercentAbs: false,
+        },
+      },
+    }
+  }
+
+  it('zählt Geldmarkt und Cash als verfügbare Liquidität', () => {
+    const portfolio = portfolioWith([
+      { group: 'moneymarket', units: 300 },
+      { group: 'cash', units: 200 },
+    ])
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(0), 1000)
+
+    expect(result.liquidAssets).toBe(500)
+  })
+
+  it('zählt Laufzeit-Anleihen NICHT zur Liquidität', () => {
+    const portfolio = portfolioWith([
+      { group: 'bonds', units: 900 },
+      { group: 'cash', units: 100 },
+    ])
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(0), 1000)
+
+    expect(result.liquidAssets).toBe(100)
+  })
+
+  it('zieht den Sicherheitspuffer ab', () => {
+    const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(200), 1000)
+
+    expect(result.investmentReserve).toBe(300)
+  })
+
+  it('wird negativ, wenn der Puffer noch nicht erreicht ist', () => {
+    const portfolio = portfolioWith([{ group: 'cash', units: 100 }])
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(500), 1000)
+
+    expect(result.investmentReserve).toBe(-400)
+  })
+
+  it('liefert die Reserve auch als Anteil am Gesamtwert', () => {
+    const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(200), 1000)
+
+    expect(result.investmentReservePercent).toBe(30)
+  })
+
+  it('gibt den Puffer zur Anzeige mit zurück', () => {
+    const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
+    expect(computeLiquidity(portfolio, quotes, settingsWithBuffer(170_000), 1000).securityBuffer).toBe(
+      170_000,
+    )
+  })
+
+  it('ignoriert deaktivierte Positionen', () => {
+    const portfolio: Portfolio = {
+      ...portfolioWith([
+        { group: 'cash', units: 500 },
+        { group: 'moneymarket', units: 300 },
+      ]),
+    }
+    portfolio.positions = portfolio.positions.map((position, index) =>
+      index === 1 ? { ...position, enabled: false } : position,
+    )
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(0), 1000)
+
+    expect(result.liquidAssets).toBe(500)
   })
 })

@@ -25,6 +25,7 @@
   --asset-stocks: 42 120 214;
   --asset-bonds: 232 123 164;
   --asset-metals: 237 161 0;
+  --asset-moneymarket: 74 58 167;
   --asset-cash: 27 175 122;
 
   /* Status */
@@ -54,6 +55,7 @@
   --asset-stocks: 57 135 229;
   --asset-bonds: 213 81 129;
   --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
   --asset-cash: 25 158 112;
 
   --status-ok: 25 158 112;
@@ -82,6 +84,7 @@
   --asset-stocks: 57 135 229;
   --asset-bonds: 213 81 129;
   --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
   --asset-cash: 25 158 112;
 
   --status-ok: 25 158 112;
@@ -110,6 +113,7 @@
   --asset-stocks: 57 135 229;
   --asset-bonds: 213 81 129;
   --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
   --asset-cash: 25 158 112;
 
   --status-ok: 25 158 112;
@@ -142,6 +146,7 @@
   --asset-stocks: 57 135 229;
   --asset-bonds: 213 81 129;
   --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
   --asset-cash: 25 158 112;
 
   --status-ok: 25 158 112;
@@ -170,6 +175,7 @@
   --asset-stocks: 42 120 214;
   --asset-bonds: 232 123 164;
   --asset-metals: 237 161 0;
+  --asset-moneymarket: 74 58 167;
   --asset-cash: 27 175 122;
 
   --status-ok: 22 133 94;
@@ -198,6 +204,7 @@
   --asset-stocks: 42 120 214;
   --asset-bonds: 232 123 164;
   --asset-metals: 237 161 0;
+  --asset-moneymarket: 74 58 167;
   --asset-cash: 27 175 122;
 
   --status-ok: 22 133 94;

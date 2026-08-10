@@ -23,11 +23,11 @@ afterEach(async () => {
 
 describe('withDefaults', () => {
   it('ergänzt fehlende Verweise', () => {
-    const alt = { activePortfolioId: 'p1', saveAssetGrenze: 5000 } as Partial<Settings>
+    const alt = { activePortfolioId: 'p1', securityBuffer: 5000 } as Partial<Settings>
     const merged = withDefaults(alt)
 
     expect(merged.links.length).toBeGreaterThan(0)
-    expect(merged.saveAssetGrenze).toBe(5000)
+    expect(merged.securityBuffer).toBe(5000)
   })
 
   it('behält vorhandene Werte bei', () => {
@@ -55,6 +55,22 @@ describe('withDefaults', () => {
     const merged = withDefaults({ refresh: { autoOnLoad: false } as Settings['refresh'] })
     expect(merged.refresh.autoOnLoad).toBe(false)
     expect(merged.refresh.staleAfterMinutes).toBe(60)
+  })
+
+  it('übernimmt den alten Feldnamen saveAssetGrenze als Sicherheitspuffer', () => {
+    // Bis T-18 hieß das Feld so. Wer die App vorher genutzt hat, darf seinen
+    // Puffer nicht verlieren.
+    const alt = { activePortfolioId: 'p1', saveAssetGrenze: 42_000 } as Partial<Settings>
+    expect(withDefaults(alt).securityBuffer).toBe(42_000)
+  })
+
+  it('der neue Feldname hat Vorrang vor dem alten', () => {
+    const beide = {
+      activePortfolioId: 'p1',
+      securityBuffer: 10_000,
+      saveAssetGrenze: 42_000,
+    } as Partial<Settings>
+    expect(withDefaults(beide).securityBuffer).toBe(10_000)
   })
 
   it('kommt mit einem völlig leeren Datensatz zurecht', () => {

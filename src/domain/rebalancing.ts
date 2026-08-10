@@ -167,10 +167,44 @@ export interface GroupResult {
 }
 
 export interface LiquidityResult {
-  liquidBuffer: number
-  liquidBufferPercent: number
-  targetReserveEuro: number
-  sellForReserve: number
+  /** Geldmarkt + Cash — die tatsächlich verfügbare Liquidität. */
+  liquidAssets: number
+  /** Betrag, der als Sicherheit unangetastet bleiben soll. */
+  securityBuffer: number
+  /**
+   * Was höchstens investiert werden kann: verfügbare Liquidität abzüglich
+   * Sicherheitspuffer. Negativ heißt, der Puffer ist noch nicht erreicht.
+   */
+  investmentReserve: number
+  /** Dieselbe Zahl als Anteil am Gesamtvermögen. */
+  investmentReservePercent: number
+}
+
+/**
+ * Berechnet die Liquiditätskennzahlen.
+ *
+ * Nur Geldmarkt und Cash zählen als verfügbar — Laufzeit-Anleihen nicht.
+ * Sie sind zwar Anleihen, aber weder kurzfristig noch schwankungsarm genug,
+ * um als Reserve für einen Nachkauf zu dienen.
+ */
+export function computeLiquidity(
+  portfolio: Portfolio,
+  quotes: QuoteMap,
+  settings: Settings,
+  total: number,
+): LiquidityResult {
+  const liquidAssets =
+    groupMarketValue('moneymarket', portfolio, quotes) +
+    groupMarketValue('cash', portfolio, quotes)
+
+  const investmentReserve = liquidAssets - settings.securityBuffer
+
+  return {
+    liquidAssets,
+    securityBuffer: settings.securityBuffer,
+    investmentReserve,
+    investmentReservePercent: actualPercent(investmentReserve, total),
+  }
 }
 
 export interface RebalancingResult {
@@ -193,7 +227,14 @@ export function targetPercentSum(portfolio: Portfolio): number {
     .reduce((sum, position) => sum + position.targetPercent, 0)
 }
 
-const GROUPS: readonly AssetGroup[] = ['stocks', 'bonds', 'metals', 'cash'] as const
+// Geldmarkt steht neben Cash: beide zusammen bilden die Investitionsreserve.
+const GROUPS: readonly AssetGroup[] = [
+  'stocks',
+  'bonds',
+  'metals',
+  'moneymarket',
+  'cash',
+] as const
 
 /** Ziel-% der Gruppe = Summe der Ziel-% der Sub-Positionen. */
 function groupTargetPercent(group: AssetGroup, portfolio: Portfolio): number {
@@ -276,25 +317,7 @@ export function computeRebalancing(
     }
   })
 
-  const bondsValue = groupMarketValue('bonds', portfolio, quotes)
-  const cashValue = groupMarketValue('cash', portfolio, quotes)
-  const liquidBuffer = bondsValue + cashValue - settings.saveAssetGrenze
-  const targetReserveEuro = roundToPlace(
-    (total * settings.investmentReservePercent) / 100,
-    -4,
-  )
-  const bondsTarget = (total * groupTargetPercent('bonds', portfolio)) / 100
-  const sellForReserve = roundToPlace(
-    bondsTarget + cashValue - settings.saveAssetGrenze - targetReserveEuro,
-    -4,
-  )
-
-  const liquidity: LiquidityResult = {
-    liquidBuffer,
-    liquidBufferPercent: actualPercent(liquidBuffer, total),
-    targetReserveEuro,
-    sellForReserve,
-  }
+  const liquidity = computeLiquidity(portfolio, quotes, settings, total)
 
   const assignedTarget = targetPercentSum(portfolio)
 

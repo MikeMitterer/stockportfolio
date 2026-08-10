@@ -59,12 +59,8 @@ const result = computed(() => {
   return computeRebalancing(portfolio, quotesStore.quotes, settingsStore.settings)
 })
 
-const targetReserveHint = computed(() =>
-  t('kpi.targetReserveHint', { percent: settingsStore.settings.investmentReservePercent }),
-)
-
 const liquidityTone = computed<'positive' | 'warning' | 'danger'>(() => {
-  const buffer = result.value?.liquidity.liquidBuffer ?? 0
+  const buffer = result.value?.liquidity.investmentReserve ?? 0
   if (buffer >= 0) return 'positive'
   if (buffer > -50_000) return 'warning'
   return 'danger'
@@ -228,15 +224,15 @@ function toggleGroups(): void {
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
         <KpiCard
-          :label="t('kpi.liquidBuffer')"
-          :value="eurSigned(result.liquidity.liquidBuffer)"
-          :hint="t('kpi.liquidBufferHint')"
+          :label="t('kpi.investmentReserve')"
+          :value="eurSigned(result.liquidity.investmentReserve)"
+          :hint="t('kpi.investmentReserveHint')"
           :tone="liquidityTone"
         />
         <KpiCard
-          :label="t('kpi.targetReserve')"
-          :value="eur(result.liquidity.targetReserveEuro)"
-          :hint="targetReserveHint"
+          :label="t('kpi.investmentReservePercent')"
+          :value="percent(result.liquidity.investmentReservePercent)"
+          :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
         />
         <KpiCard :label="t('kpi.warnings')" :value="warningsValue" :tone="warningsTone" />
       </section>

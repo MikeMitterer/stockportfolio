@@ -25,6 +25,7 @@ export const de = {
     stocks: 'Aktien / ETFs',
     bonds: 'Anleihen',
     metals: 'Edelmetalle',
+    moneymarket: 'Geldmarkt',
     cash: 'Cash',
   },
   suggestion: {
@@ -35,10 +36,10 @@ export const de = {
   },
   kpi: {
     total: 'Gesamtwert',
-    liquidBuffer: 'Liquiditäts-Puffer',
-    liquidBufferHint: 'Anleihen + Cash − Save-Assets-Grenze',
-    targetReserve: 'Ziel-Investitionsreserve',
-    targetReserveHint: '{percent} % vom Gesamtwert',
+    investmentReserve: 'Investitionsreserve',
+    investmentReserveHint: 'Geldmarkt + Cash − Sicherheitspuffer',
+    investmentReservePercent: 'Reserve in %',
+    securityBufferHint: 'Sicherheitspuffer: {buffer}',
     warnings: 'Warnungen',
     warningsNone: 'Keine',
   },

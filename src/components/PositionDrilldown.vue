@@ -48,6 +48,7 @@ const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
   { label: t('groups.stocks'), value: 'stocks' },
   { label: t('groups.bonds'), value: 'bonds' },
   { label: t('groups.metals'), value: 'metals' },
+  { label: t('groups.moneymarket'), value: 'moneymarket' },
   { label: t('groups.cash'), value: 'cash' },
 ])
 

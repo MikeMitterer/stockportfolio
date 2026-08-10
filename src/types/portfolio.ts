@@ -3,7 +3,14 @@
  * Referenz: docs/superpowers/specs/2026-08-06-rebalancing-webapp-design.md §5.
  */
 
-export type AssetGroup = 'stocks' | 'bonds' | 'metals' | 'cash'
+/**
+ * Assetklassen.
+ *
+ * `moneymarket` steht für geldmarktnahe Papiere (z.B. Ultrashort-Bond-ETFs).
+ * Sie zählen zusammen mit Cash zur verfügbaren Liquidität und damit zur
+ * Investitionsreserve — Laufzeit-Anleihen (`bonds`) tun das nicht.
+ */
+export type AssetGroup = 'stocks' | 'bonds' | 'metals' | 'moneymarket' | 'cash'
 
 export type Suggestion = 'buy' | 'sell' | 'ok'
 
@@ -66,7 +73,8 @@ export interface Settings {
   activePortfolioId: string
   totalRounding: number
   bands: Bands
-  saveAssetGrenze: number
+  /** Betrag, der als Sicherheit unangetastet bleiben soll. */
+  securityBuffer: number
   investmentReservePercent: number
   currentRebalancingBudget: number
   currency: 'EUR'

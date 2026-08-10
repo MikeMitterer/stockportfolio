@@ -33,6 +33,7 @@ export const ASSET_COLOR_VAR: Record<AssetGroup, string> = {
   stocks: 'rgb(var(--asset-stocks))',
   bonds: 'rgb(var(--asset-bonds))',
   metals: 'rgb(var(--asset-metals))',
+  moneymarket: 'rgb(var(--asset-moneymarket))',
   cash: 'rgb(var(--asset-cash))',
 }
 

@@ -47,6 +47,7 @@ export default {
           stocks: 'rgb(var(--asset-stocks) / <alpha-value>)',
           bonds: 'rgb(var(--asset-bonds) / <alpha-value>)',
           metals: 'rgb(var(--asset-metals) / <alpha-value>)',
+          moneymarket: 'rgb(var(--asset-moneymarket) / <alpha-value>)',
           cash: 'rgb(var(--asset-cash) / <alpha-value>)',
         },
 

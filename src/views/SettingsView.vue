@@ -25,9 +25,9 @@ async function setUpperBand(value: number | null): Promise<void> {
   await settingsStore.setBands({ ...settingsStore.settings.bands, upperPercent: value })
 }
 
-async function setSaveAssetGrenze(value: number | null): Promise<void> {
+async function setSecurityBuffer(value: number | null): Promise<void> {
   if (value === null) return
-  await settingsStore.patch({ saveAssetGrenze: value })
+  await settingsStore.patch({ securityBuffer: value })
 }
 
 async function setReservePercent(value: number | null): Promise<void> {
@@ -93,12 +93,12 @@ async function setBudget(value: number | null): Promise<void> {
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">Save-Asset-Grenze (€)</span>
+          <span class="text-ink-muted">Sicherheitspuffer (€)</span>
           <NInputNumber
-            :value="settingsStore.settings.saveAssetGrenze"
+            :value="settingsStore.settings.securityBuffer"
             :min="0"
             :step="10000"
-            @update:value="setSaveAssetGrenze"
+            @update:value="setSecurityBuffer"
           />
         </label>
 
