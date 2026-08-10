@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NAlert, NButton, NEmpty, NPopconfirm, NSpin, NTooltip, useMessage } from 'naive-ui'
+import { NAlert, NButton, NEmpty, NSpin, NTooltip } from 'naive-ui'
 import AllocationAfterBar from '@/components/AllocationAfterBar.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
@@ -16,7 +16,6 @@ import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
 const { t } = useI18n()
-const message = useMessage()
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 
@@ -72,27 +71,6 @@ function clearPlan(): void {
 /** Übernimmt den Vorschlag einer Zeile in den Plan. */
 function acceptSuggestion(positionId: string, units: number): void {
   setTrade(positionId, units)
-}
-
-/**
- * Schreibt den Plan in die Bestände.
- * Danach ist der Plan leer — er ist ausgeführt, nicht mehr geplant.
- */
-async function applyPlan(): Promise<void> {
-  const gebucht = Object.entries(trades.value).filter(([, units]) => units !== 0)
-
-  for (const [positionId, units] of gebucht) {
-    await portfolioStore.applyTrade(positionId, units)
-  }
-  clearPlan()
-
-  // Ohne Rückmeldung sieht es aus, als sei nichts geschehen: der Plan ist leer,
-  // die Bestände haben sich aber geändert.
-  message.success(
-    gebucht.length === 1
-      ? '1 Position gebucht — die Bestände sind aktualisiert.'
-      : `${gebucht.length} Positionen gebucht — die Bestände sind aktualisiert.`,
-  )
 }
 
 // ─── Gliederung nach Assetklasse ────────────────────────────────────────────
@@ -192,24 +170,18 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           </span>
         </div>
 
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto flex items-center gap-3">
+          <!--
+            Der Plan bucht bewusst nichts. Er dient dem Durchrechnen; die
+            Aufträge gibt der Nutzer bei seiner Bank auf und pflegt die
+            Bestände danach im Dashboard nach.
+          -->
+          <span class="text-[11px] text-ink-muted max-w-[16rem] leading-tight">
+            Der Plan rechnet nur — Bestände ändert er nicht.
+          </span>
           <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
             Plan leeren
           </NButton>
-          <NPopconfirm @positive-click="applyPlan">
-            <template #trigger>
-              <NButton size="small" type="primary" :disabled="!planHasEntries">
-                Plan übernehmen
-              </NButton>
-            </template>
-            <div class="max-w-xs text-sm">
-              Die geplanten Stückzahlen werden auf die Bestände gebucht — so als
-              hättest du die Aufträge ausgeführt. Der Plan ist danach leer.
-              <div class="mt-2 text-xs text-ink-muted">
-                Das bucht nur in dieser App. Es wird nichts an eine Bank gesendet.
-              </div>
-            </div>
-          </NPopconfirm>
         </div>
       </section>
 

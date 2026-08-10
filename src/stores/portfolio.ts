@@ -93,20 +93,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     await persist()
   }
 
-  /**
-   * Bucht einen Trade auf den Bestand.
-   *
-   * @param id         ID der Position.
-   * @param tradeUnits Positiv = Kauf, negativ = Verkauf.
-   */
-  async function applyTrade(id: string, tradeUnits: number): Promise<void> {
-    const position = positions.value.find((entry) => entry.id === id)
-    if (!position) return
-
-    const nextUnits = position.units + tradeUnits
-    await updatePosition(id, { units: Math.max(0, nextUnits) })
-  }
-
   /** Fügt eine Position hinzu. */
   async function addPosition(position: Position): Promise<void> {
     if (!portfolio.value) return
@@ -169,7 +155,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     load,
     loadDemo,
     updatePosition,
-    applyTrade,
     addPosition,
     removePosition,
     backfillKinds,
