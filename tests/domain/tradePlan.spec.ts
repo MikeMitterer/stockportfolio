@@ -47,7 +47,7 @@ const SETTINGS: Settings = {
   activePortfolioId: 'p1',
   totalRounding: 0,
   bands: { lowerPercent: 10, upperPercent: 20 },
-  securityBuffer: 0,
+  securityBuffer: { mode: 'absolute', value: 0 },
   investmentReservePercent: 0,
   currentRebalancingBudget: 0,
   currency: 'EUR',

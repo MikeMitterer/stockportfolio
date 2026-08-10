@@ -23,11 +23,14 @@ afterEach(async () => {
 
 describe('withDefaults', () => {
   it('ergänzt fehlende Verweise', () => {
-    const alt = { activePortfolioId: 'p1', securityBuffer: 5000 } as Partial<Settings>
+    const alt: Partial<Settings> = {
+      activePortfolioId: 'p1',
+      securityBuffer: { mode: 'absolute', value: 5000 },
+    }
     const merged = withDefaults(alt)
 
     expect(merged.links.length).toBeGreaterThan(0)
-    expect(merged.securityBuffer).toBe(5000)
+    expect(merged.securityBuffer).toEqual({ mode: 'absolute', value: 5000 })
   })
 
   it('behält vorhandene Werte bei', () => {
@@ -61,16 +64,28 @@ describe('withDefaults', () => {
     // Bis T-18 hieß das Feld so. Wer die App vorher genutzt hat, darf seinen
     // Puffer nicht verlieren.
     const alt = { activePortfolioId: 'p1', saveAssetGrenze: 42_000 } as Partial<Settings>
-    expect(withDefaults(alt).securityBuffer).toBe(42_000)
+    expect(withDefaults(alt).securityBuffer).toEqual({ mode: 'absolute', value: 42_000 })
   })
 
   it('der neue Feldname hat Vorrang vor dem alten', () => {
     const beide = {
       activePortfolioId: 'p1',
-      securityBuffer: 10_000,
+      securityBuffer: { mode: 'absolute', value: 10_000 },
       saveAssetGrenze: 42_000,
     } as Partial<Settings>
-    expect(withDefaults(beide).securityBuffer).toBe(10_000)
+    expect(withDefaults(beide).securityBuffer).toEqual({ mode: 'absolute', value: 10_000 })
+  })
+
+  it('deutet einen blanken Zahlenwert als festen Betrag', () => {
+    // Bis T-20 war der Puffer eine nackte Zahl — und die war immer in Euro.
+    const alt = { activePortfolioId: 'p1', securityBuffer: 7000 } as unknown as Partial<Settings>
+    expect(withDefaults(alt).securityBuffer).toEqual({ mode: 'absolute', value: 7000 })
+  })
+
+  it('legt ohne gespeicherten Puffer keinen Betrag fest', () => {
+    // Jede Vorgabe wäre geraten: Ein fester Betrag ist für das eine Depot die
+    // Hälfte und für das nächste ein Vielfaches.
+    expect(withDefaults({ activePortfolioId: 'p1' }).securityBuffer.value).toBe(0)
   })
 
   it('kommt mit einem völlig leeren Datensatz zurecht', () => {

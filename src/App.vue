@@ -4,6 +4,7 @@ import { RouterView } from 'vue-router'
 import {
   NConfigProvider,
   NMessageProvider,
+  NNotificationProvider,
   NDialogProvider,
   NLoadingBarProvider,
   darkTheme,
@@ -64,10 +65,12 @@ function refresh(): void {
     <NLoadingBarProvider>
       <NMessageProvider>
         <NDialogProvider>
-          <div class="min-h-screen bg-page text-ink transition-colors">
-            <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
-            <RouterView />
-          </div>
+          <NNotificationProvider :max="3">
+            <div class="min-h-screen bg-page text-ink transition-colors">
+              <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
+              <RouterView />
+            </div>
+          </NNotificationProvider>
         </NDialogProvider>
       </NMessageProvider>
     </NLoadingBarProvider>

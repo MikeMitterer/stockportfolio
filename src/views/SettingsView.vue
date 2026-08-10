@@ -1,18 +1,30 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NCard, NTag, NInputNumber } from 'naive-ui'
+import { NCard, NTag, NInputNumber, NSelect } from 'naive-ui'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
+import { eur } from '@/domain/formatters'
+import { computeRebalancing, resolveSecurityBuffer } from '@/domain/rebalancing'
 import { useSettingsStore } from '@/stores/settings'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { useQuotesStore } from '@/stores/quotes'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
+const quotesStore = useQuotesStore()
+
+/** Gesamtvermögen — nur als Bezugsgröße für die Puffer-Vorschau. */
+const total = computed(() => {
+  const portfolio = portfolioStore.portfolio
+  if (!portfolio) return 0
+  return computeRebalancing(portfolio, quotesStore.quotes, settingsStore.settings).total
+})
 
 onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
+  await quotesStore.hydrate()
 })
 
 async function setLowerBand(value: number | null): Promise<void> {
@@ -25,10 +37,46 @@ async function setUpperBand(value: number | null): Promise<void> {
   await settingsStore.setBands({ ...settingsStore.settings.bands, upperPercent: value })
 }
 
-async function setSecurityBuffer(value: number | null): Promise<void> {
+async function setSecurityBufferValue(value: number | null): Promise<void> {
   if (value === null) return
-  await settingsStore.patch({ securityBuffer: value })
+  await settingsStore.patch({
+    securityBuffer: { ...settingsStore.settings.securityBuffer, value },
+  })
 }
+
+/**
+ * Wechselt die Einheit und rechnet den Wert um.
+ *
+ * Die Zahl unverändert stehen zu lassen wäre falsch: Aus 170.000 € würden
+ * 170.000 % — ein Wert, den niemand gemeint hat. Umgerechnet bleibt der Puffer
+ * im Moment des Wechsels derselbe Betrag und skaliert ab dann mit dem Depot.
+ */
+async function setSecurityBufferMode(mode: 'percent' | 'absolute'): Promise<void> {
+  const current = settingsStore.settings.securityBuffer
+  if (current.mode === mode) return
+
+  const euro = resolveSecurityBuffer(current, total.value)
+  const value =
+    mode === 'percent'
+      // Ohne Gesamtvermögen gibt es keinen Bezug — dann lieber zurück auf null
+      // als eine Division durch null.
+      ? total.value > 0
+        ? Number(((euro * 100) / total.value).toFixed(2))
+        : 0
+      : Math.round(euro)
+
+  await settingsStore.patch({ securityBuffer: { mode, value } })
+}
+
+const bufferModeOptions = [
+  { label: '% vom Gesamtwert', value: 'percent' as const },
+  { label: 'Fester Betrag (€)', value: 'absolute' as const },
+]
+
+/** Puffer in Euro — bei Prozent-Modus aus dem aktuellen Gesamtwert. */
+const securityBufferEuro = computed(() =>
+  resolveSecurityBuffer(settingsStore.settings.securityBuffer, total.value),
+)
 
 async function setReservePercent(value: number | null): Promise<void> {
   if (value === null) return
@@ -92,14 +140,37 @@ async function setBudget(value: number | null): Promise<void> {
       </template>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <!--
+          Zwei Lesarten des Puffers, beide gültig: ein Notgroschen ist ein
+          fester Betrag und wächst nicht mit dem Depot; ein Liquiditätsanteil
+          ist ein Prozentsatz. Statt eine Auslegung zu erzwingen, steht die
+          Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
+        -->
         <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">Sicherheitspuffer (€)</span>
-          <NInputNumber
-            :value="settingsStore.settings.securityBuffer"
-            :min="0"
-            :step="10000"
-            @update:value="setSecurityBuffer"
-          />
+          <span class="text-ink-muted">Sicherheitspuffer</span>
+          <div class="flex gap-2">
+            <NInputNumber
+              class="flex-1"
+              :value="settingsStore.settings.securityBuffer.value"
+              :min="0"
+              :step="settingsStore.settings.securityBuffer.mode === 'percent' ? 1 : 1000"
+              @update:value="setSecurityBufferValue"
+            />
+            <NSelect
+              class="w-44 shrink-0"
+              :value="settingsStore.settings.securityBuffer.mode"
+              :options="bufferModeOptions"
+              @update:value="setSecurityBufferMode"
+            />
+          </div>
+          <span class="text-xs text-ink-muted">
+            <template v-if="settingsStore.settings.securityBuffer.value === 0">
+              Nicht festgelegt — die ganze Liquidität gilt als Reserve.
+            </template>
+            <template v-else>
+              Entspricht derzeit {{ eur(securityBufferEuro) }}.
+            </template>
+          </span>
         </label>
 
         <label class="flex flex-col gap-1 text-sm">

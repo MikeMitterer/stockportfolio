@@ -225,9 +225,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.status'),
     key: 'status',
-    // Links statt mittig: bei wechselnden Beschriftungen („OK", „Kaufen",
-    // „Verkaufen") wandert ein zentrierter Badge von Zeile zu Zeile hin und her.
-    align: 'left',
+    // Zentriert ist wieder möglich, seit das Badge eine feste Breite hat.
+    // Vorher wanderte es bei wechselnden Beschriftungen von Zeile zu Zeile.
+    align: 'center',
     width: 130,
     render: (row) =>
       row.isActive

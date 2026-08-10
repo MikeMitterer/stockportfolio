@@ -6,6 +6,15 @@ import type { Suggestion } from '@/types/portfolio'
 const props = defineProps<{
   suggestion: Suggestion
   near?: boolean
+  /**
+   * Ruhige Variante ohne Pille — für die Gruppen-Kopfzeilen.
+   *
+   * Dieselbe Pille im Kopf **und** in jeder Zeile darunter ergab eine Spalte
+   * aus lauter gerahmten Kapseln; nichts trat mehr hervor. Der Kopf fasst nur
+   * zusammen, die Zeilen sind das Handlungssignal — also bekommt der Kopf
+   * bloß Punkt und Wort in der Statusfarbe.
+   */
+  plain?: boolean
 }>()
 
 const { t } = useI18n()
@@ -45,12 +54,17 @@ const arrow = computed(() => {
 
 <template>
   <span
-    class="inline-flex w-[4.5rem] items-center justify-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium tabular-nums"
-    :style="{
-      color,
-      borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,
-      backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
-    }"
+    class="inline-flex w-[4.5rem] items-center justify-center gap-1 text-xs font-medium tabular-nums"
+    :class="plain ? '' : 'rounded-full border px-2 py-0.5'"
+    :style="
+      plain
+        ? { color }
+        : {
+          color,
+          borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,
+          backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
+        }
+    "
   >
     <span
       class="inline-block h-1.5 w-1.5 rounded-full"

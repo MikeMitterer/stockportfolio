@@ -69,12 +69,25 @@ export interface ExternalLink {
   enabled: boolean
 }
 
+/**
+ * Der Betrag, der als Sicherheit unangetastet bleiben soll.
+ *
+ * Zwei Lesarten, beide berechtigt: Wer den Puffer als Notgroschen versteht
+ * („drei Monatsausgaben"), meint einen festen Betrag — der wächst nicht mit
+ * dem Depot. Wer ihn als Teil der Aufteilung versteht, meint einen Anteil.
+ * Deshalb die Wahl statt einer aufgezwungenen Auslegung.
+ */
+export interface SecurityBuffer {
+  /** `percent` = Anteil am Gesamtvermögen, `absolute` = fester Betrag in Euro. */
+  mode: 'percent' | 'absolute'
+  value: number
+}
+
 export interface Settings {
   activePortfolioId: string
   totalRounding: number
   bands: Bands
-  /** Betrag, der als Sicherheit unangetastet bleiben soll. */
-  securityBuffer: number
+  securityBuffer: SecurityBuffer
   investmentReservePercent: number
   currentRebalancingBudget: number
   currency: 'EUR'

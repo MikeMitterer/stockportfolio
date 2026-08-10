@@ -83,8 +83,8 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
       >
         {{ eurSigned(group.deltaEuro) }}
       </span>
-      <span class="w-28 flex justify-start">
-        <SuggestionBadge :suggestion="group.suggestion" />
+      <span class="w-28 flex justify-center">
+        <SuggestionBadge :suggestion="group.suggestion" plain />
       </span>
     </span>
   </button>

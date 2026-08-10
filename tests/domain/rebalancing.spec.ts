@@ -407,7 +407,7 @@ describe('computeRebalancing', () => {
     activePortfolioId: 'p1',
     totalRounding: 0,
     bands: { lowerPercent: 10, upperPercent: 20 },
-    securityBuffer: 0,
+    securityBuffer: { mode: 'absolute', value: 0 },
     investmentReservePercent: 0,
     currentRebalancingBudget: 0,
     currency: 'EUR',
@@ -671,12 +671,15 @@ describe('computeLiquidity', () => {
     ]),
   )
 
-  function settingsWithBuffer(buffer: number): Settings {
+  function settingsWithBuffer(
+    buffer: number,
+    mode: 'percent' | 'absolute' = 'absolute',
+  ): Settings {
     return {
       activePortfolioId: 'p1',
       totalRounding: 0,
       bands: { lowerPercent: 10, upperPercent: 20 },
-      securityBuffer: buffer,
+      securityBuffer: { mode, value: buffer },
       investmentReservePercent: 0,
       currentRebalancingBudget: 0,
       currency: 'EUR',
@@ -734,6 +737,31 @@ describe('computeLiquidity', () => {
     const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(200), 1000)
 
     expect(result.investmentReservePercent).toBe(30)
+  })
+
+  it('rechnet den Puffer im Prozent-Modus aus dem Gesamtvermögen', () => {
+    // 10 % von 1.000 € sind 100 € — bei 500 € Cash bleiben 400 € Reserve.
+    const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
+    const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(10, 'percent'), 1000)
+
+    expect(result.securityBuffer).toBe(100)
+    expect(result.investmentReserve).toBe(400)
+  })
+
+  it('wächst der Prozent-Puffer mit dem Gesamtvermögen', () => {
+    const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
+    const settings = settingsWithBuffer(10, 'percent')
+
+    expect(computeLiquidity(portfolio, quotes, settings, 1000).securityBuffer).toBe(100)
+    expect(computeLiquidity(portfolio, quotes, settings, 2000).securityBuffer).toBe(200)
+  })
+
+  it('lässt den festen Puffer vom Gesamtvermögen unberührt', () => {
+    const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
+    const settings = settingsWithBuffer(100, 'absolute')
+
+    expect(computeLiquidity(portfolio, quotes, settings, 1000).securityBuffer).toBe(100)
+    expect(computeLiquidity(portfolio, quotes, settings, 9999).securityBuffer).toBe(100)
   })
 
   it('gibt den Puffer zur Anzeige mit zurück', () => {

@@ -7,7 +7,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { SettingsRepository } from '@/db/repository'
-import type { Bands, ExternalLink, Settings } from '@/types/portfolio'
+import type { Bands, ExternalLink, SecurityBuffer, Settings } from '@/types/portfolio'
 
 /**
  * Voreingestellte externe Verweise.
@@ -51,7 +51,12 @@ export function defaultSettings(activePortfolioId: string): Settings {
     activePortfolioId,
     totalRounding: -3,
     bands: { lowerPercent: 6, upperPercent: 15 },
-    securityBuffer: 170_000,
+    // Kein erfundener Betrag: Wie viel jemand als Notgroschen stehen lassen
+    // will, hängt an seinem Leben, nicht an seinem Depot — jede Vorgabe wäre
+    // geraten und im Zweifel absurd (ein fester Betrag ist für das eine Depot
+    // die Hälfte, für das nächste ein Vielfaches). Null heißt schlicht „noch
+    // nicht festgelegt"; die Reserve ist dann Geldmarkt + Cash.
+    securityBuffer: { mode: 'percent', value: 0 },
     investmentReservePercent: 10,
     currentRebalancingBudget: 230_000,
     currency: 'EUR',
@@ -81,15 +86,22 @@ export function withDefaults(stored: Partial<Settings>): Settings {
   const base = defaultSettings(stored.activePortfolioId ?? '')
 
   // `saveAssetGrenze` hieß bis T-18 so; den Wert übernehmen, damit niemand
-  // seinen Puffer verliert.
-  const legacyBuffer = (stored as { saveAssetGrenze?: number }).saveAssetGrenze
+  // seinen Puffer verliert. Bis T-20 war der Puffer außerdem eine blanke Zahl
+  // — die war immer ein fester Betrag.
+  const legacy = (stored as { saveAssetGrenze?: number }).saveAssetGrenze
+  const storedBuffer = stored.securityBuffer as SecurityBuffer | number | undefined
+  const buffer: SecurityBuffer =
+    typeof storedBuffer === 'number'
+      ? { mode: 'absolute', value: storedBuffer }
+      : (storedBuffer ??
+        (typeof legacy === 'number' ? { mode: 'absolute', value: legacy } : base.securityBuffer))
 
   return {
     ...base,
     ...stored,
     bands: { ...base.bands, ...stored.bands },
     refresh: { ...base.refresh, ...stored.refresh },
-    securityBuffer: stored.securityBuffer ?? legacyBuffer ?? base.securityBuffer,
+    securityBuffer: buffer,
     links: stored.links?.length ? stored.links : base.links,
     ui: { columns: { ...base.ui.columns, ...stored.ui?.columns } },
   }

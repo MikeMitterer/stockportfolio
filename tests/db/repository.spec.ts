@@ -150,11 +150,11 @@ describe('SettingsRepository', () => {
     const repository = new SettingsRepository()
 
     await repository.save(defaultSettings('p-1'))
-    await repository.save({ ...defaultSettings('p-2'), securityBuffer: 999 })
+    await repository.save({ ...defaultSettings('p-2'), securityBuffer: { mode: 'absolute', value: 999 } })
 
     const loaded = await repository.load()
     expect(loaded?.activePortfolioId).toBe('p-2')
-    expect(loaded?.securityBuffer).toBe(999)
+    expect(loaded?.securityBuffer).toEqual({ mode: 'absolute', value: 999 })
   })
 })
 

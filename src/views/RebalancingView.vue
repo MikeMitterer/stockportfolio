@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NAlert, NButton, NEmpty, NSpin, NTooltip } from 'naive-ui'
+import { NButton, NEmpty, NSpin, NTooltip, useNotification } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
@@ -17,6 +17,7 @@ import {
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
+import { useStateNotification } from '@/composables/useStateNotification'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
@@ -67,7 +68,7 @@ const plan = computed(() => {
     trades.value,
     result.value.total,
     settingsStore.settings.bands,
-    settingsStore.settings.securityBuffer,
+    result.value.liquidity.securityBuffer,
     targets.value,
   )
 })
@@ -93,6 +94,48 @@ function clearPlan(): void {
   trades.value = {}
   targets.value = {}
 }
+
+// ─── Meldungen ──────────────────────────────────────────────────────────────
+//
+// Als Toast, nicht im Seitenfluss: Über der Tabelle schoben die Meldungen sie
+// beim Tippen nach unten, unter der Tabelle waren sie im kleinen Fenster
+// außer Sicht. Der Toast bleibt sichtbar, solange die Ursache besteht.
+
+const notification = useNotification()
+
+useStateNotification(
+  notification,
+  computed(() => plan.value?.underfunded ?? false),
+  {
+    title: 'Plan nicht gedeckt',
+    type: 'error',
+    content: () =>
+      `Für die geplanten Käufe fehlen ${eur(-(plan.value?.netCashFlow ?? 0))}. ` +
+      'Verkaufe ein Papier oder entnimm aus Cash bzw. Geldmarkt — trage die ' +
+      'Entnahme dort als negative Zahl ein.',
+  },
+)
+
+useStateNotification(notification, targetSumOff, {
+  title: 'Ziele ergeben nicht 100 %',
+  type: 'warning',
+  content: () =>
+    `Die Ziele ergeben zusammen ${percent(plan.value?.targetSum ?? 0)} statt 100 %. ` +
+    'Was eine Position zusätzlich bekommen soll, muss eine andere abgeben.',
+})
+
+useStateNotification(
+  notification,
+  computed(() => plan.value?.bufferBreached ?? false),
+  {
+    title: 'Sicherheitspuffer unterschritten',
+    type: 'warning',
+    content: () =>
+      `Der Plan senkt Cash und Geldmarkt auf ${eur(plan.value?.liquidAfter ?? 0)} und ` +
+      `unterschreitet damit den Sicherheitspuffer von ` +
+      `${eur(result.value?.liquidity.securityBuffer ?? 0)}.`,
+  },
+)
 
 // ─── Gliederung nach Assetklasse ────────────────────────────────────────────
 
@@ -252,7 +295,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                 <th class="text-right font-medium px-2 py-1.5 w-28">Wert</th>
                 <th class="text-left font-medium px-2 py-1.5 w-56">Anteil nachher</th>
                 <th class="text-right font-medium px-2 py-1.5">Abw. Ziel</th>
-                <th class="text-left font-medium px-4 py-1.5 w-32">Status</th>
+                <th class="text-center font-medium px-4 py-1.5 w-32">Status</th>
               </tr>
             </thead>
 
@@ -407,7 +450,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
                   </td>
 
-                  <td class="px-4 py-1">
+                  <td class="px-4 py-1 text-center">
                     <SuggestionBadge :suggestion="row.suggestionAfter" />
                   </td>
                 </tr>
@@ -445,34 +488,6 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           </table>
         </div>
       </section>
-
-      <!--
-        Warnungen **unter** der Tabelle.
-
-        Darüber verschoben sie bei jeder Eingabe die ganze Tabelle nach unten —
-        genau während man Zahlen eintippt. Unten wächst der Block ins Leere.
-        Dass etwas nicht stimmt, sagt außerdem schon die Bilanz im Kopf.
-      -->
-      <NAlert v-if="plan.underfunded" type="error" :bordered="false">
-        Für die geplanten Käufe fehlen {{ eur(-plan.netCashFlow) }}. Verkaufe ein
-        Papier oder entnimm aus Cash bzw. Geldmarkt — trage die Entnahme dort als
-        negative Zahl ein.
-      </NAlert>
-
-      <!--
-        Probeweise Ziele dürfen sich verschieben, aber nicht die Summe sprengen:
-        was eine Position mehr bekommt, muss eine andere abgeben.
-      -->
-      <NAlert v-if="targetSumOff" type="warning" :bordered="false">
-        Die Ziele ergeben zusammen {{ percent(plan.targetSum) }} statt 100 %.
-        Was eine Position zusätzlich bekommen soll, muss eine andere abgeben.
-      </NAlert>
-
-      <NAlert v-if="plan.bufferBreached" type="warning" :bordered="false">
-        Der Plan senkt Cash und Geldmarkt auf {{ eur(plan.liquidAfter) }} und
-        unterschreitet damit den Sicherheitspuffer von
-        {{ eur(settingsStore.settings.securityBuffer) }}.
-      </NAlert>
     </template>
   </div>
 </template>

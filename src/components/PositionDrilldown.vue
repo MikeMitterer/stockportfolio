@@ -120,10 +120,10 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     ist der aufgeklappte Bereich rund halb so hoch.
   -->
   <div
-    class="grid grid-cols-1 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] gap-3 p-3 items-start"
+    class="grid grid-cols-1 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] gap-3 p-3"
   >
     <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-raised">
+    <NCard :bordered="false" size="small" class="!bg-raised h-full">
       <template #header>
         <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
       </template>
@@ -216,7 +216,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     </NCard>
 
     <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-raised">
+    <NCard :bordered="false" size="small" class="!bg-raised h-full">
       <template #header>
         <span class="text-sm font-medium">Details</span>
       </template>

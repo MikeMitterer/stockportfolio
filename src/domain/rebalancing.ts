@@ -6,6 +6,7 @@
  */
 
 import type {
+  SecurityBuffer,
   AssetGroup,
   Bands,
   Portfolio,
@@ -166,6 +167,16 @@ export interface GroupResult {
   deltaEuro: number
 }
 
+/**
+ * Rechnet den Sicherheitspuffer in Euro um.
+ *
+ * @param buffer Einstellung — Anteil oder fester Betrag.
+ * @param total  Gesamtvermögen, Bezugsgröße im Prozent-Modus.
+ */
+export function resolveSecurityBuffer(buffer: SecurityBuffer, total: number): number {
+  return buffer.mode === 'percent' ? (total * buffer.value) / 100 : buffer.value
+}
+
 export interface LiquidityResult {
   /** Geldmarkt + Cash — die tatsächlich verfügbare Liquidität. */
   liquidAssets: number
@@ -197,11 +208,12 @@ export function computeLiquidity(
     groupMarketValue('moneymarket', portfolio, quotes) +
     groupMarketValue('cash', portfolio, quotes)
 
-  const investmentReserve = liquidAssets - settings.securityBuffer
+  const securityBuffer = resolveSecurityBuffer(settings.securityBuffer, total)
+  const investmentReserve = liquidAssets - securityBuffer
 
   return {
     liquidAssets,
-    securityBuffer: settings.securityBuffer,
+    securityBuffer,
     investmentReserve,
     investmentReservePercent: actualPercent(investmentReserve, total),
   }
