@@ -8,22 +8,72 @@
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { DEFAULT_THEME, isThemeId, THEMES, type ThemeId } from '@/theme/themes'
+import {
+  DEFAULT_DARK_THEME,
+  DEFAULT_LIGHT_THEME,
+  isThemeId,
+  THEMES,
+  type ThemeId,
+} from '@/theme/themes'
 
 const STORAGE_KEY = 'stockportfolio.theme'
 
 /**
+ * Zugriff auf den localStorage, der auch ohne ihn auskommt.
+ *
+ * Im privaten Modus mancher Browser und bei blockierten Cookies wirft schon
+ * der bloße Zugriff. Das Theme ist eine Bequemlichkeit — dafür soll die App
+ * nicht beim Start stehen bleiben.
+ */
+function readStorage(key: string): string | null {
+  try {
+    return window.localStorage?.getItem(key) ?? null
+  } catch {
+    return null
+  }
+}
+
+function writeStorage(key: string, value: string): void {
+  try {
+    window.localStorage?.setItem(key, value)
+  } catch {
+    // Dann eben nur für diese Sitzung.
+  }
+}
+
+/**
+ * Fragt das Betriebssystem, ob es dunkel eingestellt ist.
+ *
+ * Ältere Umgebungen und die Testumgebung kennen `matchMedia` nicht — dort
+ * gilt dunkel, weil die App überwiegend dunkle Themes mitbringt.
+ */
+export function prefersDark(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return true
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+/** Vorgabe für den allerersten Start — richtet sich nach dem System. */
+export function systemTheme(): ThemeId {
+  return prefersDark() ? DEFAULT_DARK_THEME : DEFAULT_LIGHT_THEME
+}
+
+/**
  * Liest das gespeicherte Theme.
  *
- * Übersetzt dabei die alten Werte des früheren Hell/Dunkel-Schalters, damit
+ * Ohne gespeicherte Wahl entscheidet die Systemeinstellung: Wer sein System
+ * hell betreibt, soll nicht von einer dunklen Oberfläche begrüßt werden. Die
+ * Wahl greift nur beim ersten Mal — ab der ersten eigenen Auswahl gilt diese,
+ * auch wenn das System später wechselt.
+ *
+ * Übersetzt außerdem die alten Werte des früheren Hell/Dunkel-Schalters, damit
  * niemand nach dem Update vor einer unerwarteten Oberfläche sitzt.
  */
 export function readStoredTheme(): ThemeId {
-  const stored = localStorage.getItem(STORAGE_KEY)
+  const stored = readStorage(STORAGE_KEY)
   if (isThemeId(stored)) return stored
-  if (stored === 'dark') return 'classic'
-  if (stored === 'light') return 'paper'
-  return DEFAULT_THEME
+  if (stored === 'dark') return DEFAULT_DARK_THEME
+  if (stored === 'light') return DEFAULT_LIGHT_THEME
+  return systemTheme()
 }
 
 /** Setzt das Theme am Wurzelelement — die Tokens hängen an `data-theme`. */
@@ -34,7 +84,7 @@ export function applyTheme(theme: ThemeId): void {
 }
 
 export const useThemeStore = defineStore('theme', () => {
-  const current = ref<ThemeId>(DEFAULT_THEME)
+  const current = ref<ThemeId>(systemTheme())
 
   const info = computed(() => THEMES[current.value])
   const isDark = computed(() => info.value.isDark)
@@ -47,7 +97,7 @@ export const useThemeStore = defineStore('theme', () => {
   function setTheme(theme: ThemeId): void {
     current.value = theme
     applyTheme(theme)
-    localStorage.setItem(STORAGE_KEY, theme)
+    writeStorage(STORAGE_KEY, theme)
   }
 
   return { current, info, isDark, init, setTheme }

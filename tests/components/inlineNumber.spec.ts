@@ -207,3 +207,40 @@ describe('InlineNumber — Grenzen und Sonderfälle', () => {
     expect(wrapper.emitted('commit')).toHaveLength(1)
   })
 })
+
+describe('InlineNumber — Löschkreuz', () => {
+  /** Das Kreuz ist der zweite Knopf; der erste zeigt den Wert. */
+  const clearButton = (wrapper: ReturnType<typeof mount>) =>
+    wrapper.findAll('button').find((button) => button.attributes('aria-label') === 'Wert löschen')
+
+  it('zeigt kein Kreuz, wo Leere nichts bedeutet', () => {
+    // Ohne `emptyValue` gäbe es nichts, worauf zurückgesetzt werden könnte.
+    expect(clearButton(makeWrapper())).toBeUndefined()
+  })
+
+  it('zeigt ein Kreuz, sobald ein Wert drinsteht', () => {
+    expect(clearButton(makeWrapper({ value: 42, emptyValue: 0 }))).toBeDefined()
+  })
+
+  it('zeigt kein Kreuz, wenn der Wert schon leer ist', () => {
+    expect(clearButton(makeWrapper({ value: 0, emptyValue: 0 }))).toBeUndefined()
+  })
+
+  it('zeigt kein Kreuz bei deaktivierter Zelle', () => {
+    expect(clearButton(makeWrapper({ value: 42, emptyValue: 0, disabled: true }))).toBeUndefined()
+  })
+
+  it('setzt beim Klick auf den Leerwert zurück', async () => {
+    const wrapper = makeWrapper({ value: 42, min: -100, emptyValue: 0 })
+    await clearButton(wrapper)?.trigger('click')
+
+    expect(wrapper.emitted('commit')).toEqual([[0]])
+  })
+
+  it('öffnet dabei keinen Editor', async () => {
+    const wrapper = makeWrapper({ value: 42, min: -100, emptyValue: 0 })
+    await clearButton(wrapper)?.trigger('click')
+
+    expect(wrapper.find('input').exists()).toBe(false)
+  })
+})

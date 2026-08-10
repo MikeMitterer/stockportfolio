@@ -7,7 +7,7 @@ export const de = {
   nav: {
     dashboard: 'Dashboard',
     rebalancing: 'Rebalancing',
-    instruments: 'Instrumente',
+    instruments: 'Assets',
     settings: 'Einstellungen',
   },
   actions: {
@@ -93,9 +93,9 @@ export const de = {
     never: 'noch nie',
   },
   views: {
-    instrumentsTitle: 'Instrumente',
+    instrumentsTitle: 'Assets',
     instrumentsComingSoon:
-      'Hier wird bald der Katalog aller Papiere aus /instruments angezeigt — inkl. Whitelist-Toggle für die Portfolio-Auswahl.',
+      'Hier wird bald der Katalog aller Papiere aus dem StockInfo-API angezeigt — inkl. Whitelist-Toggle für die Portfolio-Auswahl.',
     settingsTitle: 'Einstellungen',
     settingsComingSoon:
       'Bänder, Save-Asset-Grenze, Investitionsreserve, Portfolio-Verwaltung, Refresh-Verhalten, Anzeige-Spalten, Export/Import und API-Health-Check kommen hier hinein.',

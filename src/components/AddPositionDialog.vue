@@ -122,7 +122,7 @@ watch(
       <div class="flex flex-col gap-4">
         <NAlert v-if="selectable.length === 0" type="info" :bordered="false">
           Alle freigegebenen Papiere sind bereits im Depot. Weitere lassen sich
-          unter „Instrumente" freischalten.
+          unter „Assets" freischalten.
         </NAlert>
 
         <template v-else>

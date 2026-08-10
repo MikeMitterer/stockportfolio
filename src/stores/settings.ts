@@ -57,8 +57,6 @@ export function defaultSettings(activePortfolioId: string): Settings {
     // die Hälfte, für das nächste ein Vielfaches). Null heißt schlicht „noch
     // nicht festgelegt"; die Reserve ist dann Geldmarkt + Cash.
     securityBuffer: { mode: 'percent', value: 0 },
-    investmentReservePercent: 10,
-    currentRebalancingBudget: 230_000,
     currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: defaultLinks(),

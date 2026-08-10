@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NCard, NTag, NInputNumber, NSelect } from 'naive-ui'
+import { NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
 import { eur } from '@/domain/formatters'
 import { computeRebalancing, resolveSecurityBuffer } from '@/domain/rebalancing'
 import { useSettingsStore } from '@/stores/settings'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
+import { useThemeStore } from '@/stores/theme'
+import { THEME_IDS, THEMES } from '@/theme/themes'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
+const themeStore = useThemeStore()
 
 /** Gesamtvermögen — nur als Bezugsgröße für die Puffer-Vorschau. */
 const total = computed(() => {
@@ -85,15 +88,7 @@ async function setNotificationSeconds(value: number | null): Promise<void> {
   })
 }
 
-async function setReservePercent(value: number | null): Promise<void> {
-  if (value === null) return
-  await settingsStore.patch({ investmentReservePercent: value })
-}
-
-async function setBudget(value: number | null): Promise<void> {
-  if (value === null) return
-  await settingsStore.patch({ currentRebalancingBudget: value })
-}
+const themes = THEME_IDS.map((id) => THEMES[id])
 </script>
 
 <template>
@@ -103,142 +98,193 @@ async function setBudget(value: number | null): Promise<void> {
       <NTag type="warning" size="small" :bordered="false">Teilweise</NTag>
     </div>
 
-    <NCard :bordered="false" class="!bg-card mb-4">
-      <template #header>
-        <span class="text-sm font-medium">Toleranzbänder</span>
-      </template>
+    <!--
+      Gegliedert statt gestapelt: Rechenvorgaben, Aussehen und Verweise haben
+      nichts miteinander zu tun; untereinander ergaben sie eine lange Seite,
+      auf der man scrollen musste, um überhaupt zu sehen, was es gibt.
+    -->
+    <NTabs type="line" animated>
+      <NTabPane name="calc" tab="Berechnung">
+        <!-- Zwei Spalten: beide Karten sind schmal, nebeneinander spart Höhe. -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+          <NCard :bordered="false" class="!bg-card">
+            <template #header>
+              <span class="text-sm font-medium">Toleranzbänder</span>
+            </template>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">{{ t('bands.lower') }} (%)</span>
-          <NInputNumber
-            :value="settingsStore.settings.bands.lowerPercent"
-            :min="0"
-            :max="100"
-            :step="1"
-            :precision="1"
-            @update:value="setLowerBand"
-          />
-          <span class="text-xs text-ink-muted">
-            Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Kaufen.
-          </span>
-        </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-ink-muted">{{ t('bands.lower') }} (%)</span>
+                <NInputNumber
+                  :value="settingsStore.settings.bands.lowerPercent"
+                  :min="0"
+                  :max="100"
+                  :step="1"
+                  :precision="1"
+                  @update:value="setLowerBand"
+                />
+                <span class="text-xs text-ink-muted">
+                  Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Kaufen.
+                </span>
+              </label>
 
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">{{ t('bands.upper') }} (%)</span>
-          <NInputNumber
-            :value="settingsStore.settings.bands.upperPercent"
-            :min="0"
-            :max="100"
-            :step="1"
-            :precision="1"
-            @update:value="setUpperBand"
-          />
-          <span class="text-xs text-ink-muted">
-            Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Verkaufen.
-          </span>
-        </label>
-      </div>
-    </NCard>
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-ink-muted">{{ t('bands.upper') }} (%)</span>
+                <NInputNumber
+                  :value="settingsStore.settings.bands.upperPercent"
+                  :min="0"
+                  :max="100"
+                  :step="1"
+                  :precision="1"
+                  @update:value="setUpperBand"
+                />
+                <span class="text-xs text-ink-muted">
+                  Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Verkaufen.
+                </span>
+              </label>
+            </div>
+          </NCard>
 
-    <NCard :bordered="false" class="!bg-card mb-4">
-      <template #header>
-        <span class="text-sm font-medium">Kennzahlen</span>
-      </template>
+          <NCard :bordered="false" class="!bg-card">
+            <template #header>
+              <span class="text-sm font-medium">Kennzahlen</span>
+            </template>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <!--
-          Zwei Lesarten des Puffers, beide gültig: ein Notgroschen ist ein
-          fester Betrag und wächst nicht mit dem Depot; ein Liquiditätsanteil
-          ist ein Prozentsatz. Statt eine Auslegung zu erzwingen, steht die
-          Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
-        -->
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">Sicherheitspuffer</span>
-          <div class="flex gap-2">
-            <NInputNumber
-              class="flex-1"
-              :value="settingsStore.settings.securityBuffer.value"
-              :min="0"
-              :step="settingsStore.settings.securityBuffer.mode === 'percent' ? 1 : 1000"
-              @update:value="setSecurityBufferValue"
-            />
-            <NSelect
-              class="w-44 shrink-0"
-              :value="settingsStore.settings.securityBuffer.mode"
-              :options="bufferModeOptions"
-              @update:value="setSecurityBufferMode"
-            />
+            <div class="grid grid-cols-1 gap-6">
+              <!--
+              Zwei Lesarten des Puffers, beide gültig: ein Notgroschen ist ein
+              fester Betrag und wächst nicht mit dem Depot; ein Liquiditätsanteil
+              ist ein Prozentsatz. Statt eine Auslegung zu erzwingen, steht die
+              Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
+            -->
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-ink-muted">Sicherheitspuffer</span>
+                <div class="flex gap-2">
+                  <NInputNumber
+                    class="flex-1"
+                    :value="settingsStore.settings.securityBuffer.value"
+                    :min="0"
+                    :step="settingsStore.settings.securityBuffer.mode === 'percent' ? 1 : 1000"
+                    @update:value="setSecurityBufferValue"
+                  />
+                  <NSelect
+                    class="w-44 shrink-0"
+                    :value="settingsStore.settings.securityBuffer.mode"
+                    :options="bufferModeOptions"
+                    @update:value="setSecurityBufferMode"
+                  />
+                </div>
+                <span class="text-xs text-ink-muted">
+                  <template v-if="settingsStore.settings.securityBuffer.value === 0">
+                    Nicht festgelegt — die ganze Liquidität gilt als Reserve.
+                  </template>
+                  <template v-else>
+                    Entspricht derzeit {{ eur(securityBufferEuro) }}.
+                  </template>
+                </span>
+              </label>
+
+              <!--
+              Meldungen sind Zustände, keine Ereignisse: Sie verschwinden ohnehin,
+              sobald ihre Ursache behoben ist. Der Zähler beendet nur das Warten
+              darauf — beim Eintippen von Stückzahlen stand sonst dauerhaft ein
+              Kasten im Weg.
+            -->
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-ink-muted">Meldungen ausblenden nach (s)</span>
+                <NInputNumber
+                  :value="settingsStore.settings.ui.notificationSeconds"
+                  :min="0"
+                  :max="120"
+                  :step="1"
+                  @update:value="setNotificationSeconds"
+                />
+                <span class="text-xs text-ink-muted">
+                  <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
+                    Bleiben stehen, bis die Ursache behoben ist oder du sie wegklickst.
+                  </template>
+                  <template v-else>
+                    Blenden sich selbst aus — früher, wenn die Ursache vorher wegfällt.
+                  </template>
+                </span>
+              </label>
+            </div>
+          </NCard>
+        </div>
+      </NTabPane>
+
+      <NTabPane name="theme" tab="Darstellung">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <span class="text-sm font-medium">Theme</span>
+          </template>
+
+          <!--
+            Kacheln statt Auswahlliste: Ein Theme wählt man nach dem Aussehen,
+            nicht nach dem Namen. Die Vorschau zeigt Fläche, Karte, Text und
+            Akzentfarbe — dieselben vier Farben, die die Oberfläche prägen.
+          -->
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <button
+              v-for="theme in themes"
+              :key="theme.id"
+              type="button"
+              class="flex flex-col gap-2 rounded-lg border p-3 text-left transition-colors"
+              :class="
+                themeStore.current === theme.id
+                  ? 'border-accent'
+                  : 'border-edge hover:border-ink-muted'
+              "
+              :aria-pressed="themeStore.current === theme.id"
+              @click="themeStore.setTheme(theme.id)"
+            >
+              <span
+                class="flex h-12 items-center gap-1.5 rounded-md px-2"
+                :style="{ backgroundColor: theme.preview.page }"
+              >
+                <span
+                  class="h-8 flex-1 rounded"
+                  :style="{ backgroundColor: theme.preview.card }"
+                ></span>
+                <span
+                  class="h-8 w-2 rounded"
+                  :style="{ backgroundColor: theme.preview.ink }"
+                ></span>
+                <span
+                  class="h-8 w-4 rounded"
+                  :style="{ backgroundColor: theme.preview.accent }"
+                ></span>
+              </span>
+
+              <span class="flex items-center gap-2">
+                <span class="text-sm font-medium">{{ theme.label }}</span>
+                <span
+                  v-if="themeStore.current === theme.id"
+                  class="text-[10px] uppercase tracking-wide text-accent"
+                >
+                  aktiv
+                </span>
+              </span>
+              <span class="text-xs text-ink-muted leading-tight">{{ theme.hint }}</span>
+            </button>
           </div>
-          <span class="text-xs text-ink-muted">
-            <template v-if="settingsStore.settings.securityBuffer.value === 0">
-              Nicht festgelegt — die ganze Liquidität gilt als Reserve.
-            </template>
-            <template v-else>
-              Entspricht derzeit {{ eur(securityBufferEuro) }}.
-            </template>
-          </span>
-        </label>
+        </NCard>
+      </NTabPane>
 
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">Investitionsreserve (%)</span>
-          <NInputNumber
-            :value="settingsStore.settings.investmentReservePercent"
-            :min="0"
-            :max="100"
-            :step="1"
-            @update:value="setReservePercent"
+      <NTabPane name="links" tab="Verweise">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <span class="text-sm font-medium">Externe Verweise</span>
+          </template>
+
+          <ExternalLinkEditor
+            :links="settingsStore.settings.links"
+            @update="settingsStore.setLinks"
+            @reset="settingsStore.resetLinks"
           />
-        </label>
-
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">Rebalancing-Budget (€)</span>
-          <NInputNumber
-            :value="settingsStore.settings.currentRebalancingBudget"
-            :min="0"
-            :step="10000"
-            @update:value="setBudget"
-          />
-        </label>
-
-        <!--
-          Meldungen sind Zustände, keine Ereignisse: Sie verschwinden ohnehin,
-          sobald ihre Ursache behoben ist. Der Zähler beendet nur das Warten
-          darauf — beim Eintippen von Stückzahlen stand sonst dauerhaft ein
-          Kasten im Weg.
-        -->
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-ink-muted">Meldungen ausblenden nach (s)</span>
-          <NInputNumber
-            :value="settingsStore.settings.ui.notificationSeconds"
-            :min="0"
-            :max="120"
-            :step="1"
-            @update:value="setNotificationSeconds"
-          />
-          <span class="text-xs text-ink-muted">
-            <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
-              Bleiben stehen, bis die Ursache behoben ist oder du sie wegklickst.
-            </template>
-            <template v-else>
-              Blenden sich selbst aus — früher, wenn die Ursache vorher wegfällt.
-            </template>
-          </span>
-        </label>
-      </div>
-    </NCard>
-
-    <NCard :bordered="false" class="!bg-card mb-4">
-      <template #header>
-        <span class="text-sm font-medium">Externe Verweise</span>
-      </template>
-
-      <ExternalLinkEditor
-        :links="settingsStore.settings.links"
-        @update="settingsStore.setLinks"
-        @reset="settingsStore.resetLinks"
-      />
-    </NCard>
+        </NCard>
+      </NTabPane>
+    </NTabs>
 
     <NCard :bordered="false" class="!bg-card">
       <p class="text-sm text-ink-secondary leading-relaxed">

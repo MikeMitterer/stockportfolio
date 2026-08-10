@@ -3,7 +3,6 @@ import { computed, h, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
 import { RouterLink, useRoute } from 'vue-router'
-import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 
 defineProps<{
   lastRefreshLabel?: string
@@ -127,8 +126,6 @@ const isActive = (name: string): boolean => route.name === name
           </template>
           <span class="hidden md:inline">{{ t('actions.refresh') }}</span>
         </NButton>
-
-        <ThemeSwitcher />
       </div>
     </div>
   </header>

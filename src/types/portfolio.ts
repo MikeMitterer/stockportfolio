@@ -88,8 +88,6 @@ export interface Settings {
   totalRounding: number
   bands: Bands
   securityBuffer: SecurityBuffer
-  investmentReservePercent: number
-  currentRebalancingBudget: number
   currency: 'EUR'
   refresh: { autoOnLoad: boolean; staleAfterMinutes: number }
   links: ExternalLink[]

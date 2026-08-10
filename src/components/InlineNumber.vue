@@ -31,6 +31,14 @@ const props = defineProps<{
   emptyValue?: number
 }>()
 
+/**
+ * Ein Klick-Ziel zum Leeren gibt es nur dort, wo Leere überhaupt etwas
+ * bedeutet — und nur, wenn gerade etwas drinsteht.
+ */
+const clearable = computed(
+  () => props.emptyValue !== undefined && !props.disabled && props.value !== props.emptyValue,
+)
+
 const emit = defineEmits<{
   (event: 'commit', value: number): void
 }>()
@@ -94,6 +102,13 @@ function cancel(): void {
   editing.value = false
 }
 
+/** Setzt auf den Leerwert zurück, ohne den Editor zu öffnen. */
+function clear(): void {
+  if (props.emptyValue === undefined) return
+  editing.value = false
+  emit('commit', props.emptyValue)
+}
+
 /**
  * Ein einziger Tastatur-Handler statt zweier `@keydown`-Modifier-Varianten:
  * die kompilieren beide auf `onKeydown` und haben sich gegenseitig gestört.
@@ -113,37 +128,61 @@ function onKeydown(event: KeyboardEvent): void {
 
 <template>
   <!--
-    Kein Kasten um die Eingabe: nur eine Linie unter der Zahl. Der Wert bleibt
-    dort stehen, wo er auch im Ruhezustand steht — die Zeile springt nicht.
-    Die Spinner-Pfeile sind ausgeblendet (siehe <style>), sie wären in einer
-    schmalen Tabellenzelle nur Gedränge.
+    Umschließender Rahmen nur zur Verankerung des Löschkreuzes: Es liegt
+    absolut über der Zelle, damit weder Zeilenhöhe noch Spaltenbreite davon
+    abhängen, ob gerade ein Wert drinsteht.
   -->
-  <input
-    v-if="editing"
-    ref="inputRef"
-    v-model="draft"
-    type="number"
-    :step="precision === 0 ? 1 : 0.5"
-    :min="min"
-    :max="max"
-    class="inline-number-field block w-full min-w-0 bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-0 border-b border-solid border-accent text-ink"
-    @blur="commit"
-    @keydown="onKeydown"
-  />
+  <div class="relative group/inline">
+    <!--
+      Kein Kasten um die Eingabe: nur eine Linie unter der Zahl. Der Wert bleibt
+      dort stehen, wo er auch im Ruhezustand steht — die Zeile springt nicht.
+      Die Spinner-Pfeile sind ausgeblendet (siehe <style>), sie wären in einer
+      schmalen Tabellenzelle nur Gedränge.
+    -->
+    <input
+      v-if="editing"
+      ref="inputRef"
+      v-model="draft"
+      type="number"
+      :step="precision === 0 ? 1 : 0.5"
+      :min="min"
+      :max="max"
+      class="inline-number-field block w-full min-w-0 bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-0 border-b border-solid border-accent text-ink"
+      @blur="commit"
+      @keydown="onKeydown"
+    />
 
-  <button
-    v-else
-    type="button"
-    class="block w-full min-w-0 text-right tabular-nums px-1.5 py-0.5 border-0 border-b border-solid border-transparent transition-colors hover:border-edge"
-    :class="textClass"
-    :disabled="disabled"
-    :title="disabled ? undefined : 'Klicken zum Ändern'"
-    @click.stop="startEdit"
-  >
-    {{ display }}
-  </button>
+    <button
+      v-else
+      type="button"
+      class="block w-full min-w-0 text-right tabular-nums px-1.5 py-0.5 border-0 border-b border-solid border-transparent transition-colors hover:border-edge"
+      :class="textClass"
+      :disabled="disabled"
+      :title="disabled ? undefined : 'Klicken zum Ändern'"
+      @click.stop="startEdit"
+    >
+      {{ display }}
+    </button>
+
+    <!--
+      Links, wo die rechtsbündige Zahl nicht hinreicht. Blass, bis die Maus
+      über der Zelle steht — sonst stünde in jeder Zeile ein Kreuz und die
+      Tabelle sähe aus wie ein Formular.
+    -->
+    <button
+      v-if="clearable && !editing"
+      type="button"
+      class="absolute left-0 top-1/2 -translate-y-1/2 leading-none px-1 text-ink-muted
+             opacity-0 transition-opacity hover:text-status-out
+             group-hover/inline:opacity-100 focus-visible:opacity-100"
+      title="Wert löschen"
+      aria-label="Wert löschen"
+      @click.stop="clear"
+    >
+      &times;
+    </button>
+  </div>
 </template>
-
 <style scoped>
 /* Spinner-Pfeile ausblenden — in einer Tabellenzelle nur Ballast. */
 .inline-number-field::-webkit-outer-spin-button,

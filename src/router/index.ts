@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/RebalancingView.vue'),
   },
   {
-    path: '/instruments',
+    path: '/assets',
     name: 'instruments',
     component: () => import('@/views/InstrumentsView.vue'),
   },
