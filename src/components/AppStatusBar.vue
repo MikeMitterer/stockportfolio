@@ -80,30 +80,19 @@ const version = __APP_VERSION__
            px-4 md:px-6 py-1.5 text-[11px] text-ink-muted"
   >
     <div class="max-w-[1400px] mx-auto flex items-center gap-x-4 gap-y-1 flex-wrap">
-      <span class="font-medium text-ink-secondary">StockPortfolio</span>
-      <span class="tabular-nums">v{{ version }}</span>
-
-      <span class="hidden sm:inline opacity-40">·</span>
-
-      <!--
-        Anklickbar statt bloß informativ: Wer hier ein rotes Licht sieht, will
-        als Nächstes wissen, woran es liegt — und genau das steht im
-        Status-Tab.
-      -->
-      <button
-        type="button"
-        class="flex items-center gap-1.5 transition-colors hover:text-ink"
-        :title="`${STATE_LABEL[apiStatus.state]} — Details in den Einstellungen`"
-        @click="router.push('/settings')"
-      >
-        <span class="inline-block h-1.5 w-1.5 rounded-full shrink-0" :class="dotClass"></span>
-        <span :class="apiStatus.state === 'offline' ? 'text-status-out' : ''">
-          {{ host }}
-        </span>
-        <span v-if="apiStatus.version" class="opacity-60 tabular-nums">
-          {{ apiStatus.version }}
-        </span>
-      </button>
+      <!-- Links: Herkunft und was gerade im Depot steht. -->
+      <span>
+        <span class="font-medium text-ink-secondary">StockPortfolio</span>
+        powered by
+        <a
+          href="https://www.mangolila.at/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent hover:opacity-80"
+        >
+          MangoLila
+        </a>
+      </span>
 
       <span class="hidden sm:inline opacity-40">·</span>
 
@@ -111,20 +100,43 @@ const version = __APP_VERSION__
         {{ positionCount }} {{ positionCount === 1 ? 'Position' : 'Positionen' }}
       </span>
 
-      <!--
-        Das Alter der Kurse ist die wichtigste Zahl hier: Jede Kennzahl der App
-        hängt daran. Deshalb rechts, wo der Blick am Ende landet.
-      -->
-      <span class="ml-auto flex items-center gap-3">
-        <span v-if="failureCount > 0" class="text-status-out">
-          {{ failureCount }} Kurs{{ failureCount === 1 ? '' : 'e' }} fehlen
+      <span class="hidden sm:inline opacity-40">·</span>
+
+      <!-- Das Alter der Kurse: Jede Kennzahl der App hängt daran. -->
+      <span>
+        Kurse
+        <span class="text-ink-secondary tabular-nums">
+          {{ quotesStore.loading ? 'werden geladen …' : quoteAge }}
         </span>
-        <span>
-          Kurse
-          <span class="text-ink-secondary tabular-nums">
-            {{ quotesStore.loading ? 'werden geladen …' : quoteAge }}
+      </span>
+
+      <span v-if="failureCount > 0" class="text-status-out">
+        {{ failureCount }} Kurs{{ failureCount === 1 ? '' : 'e' }} fehlen
+      </span>
+
+      <!-- Rechts: der technische Stand — Version und Zustand der Gegenstelle. -->
+      <span class="ml-auto flex items-center gap-4">
+        <span class="tabular-nums">v{{ version }}</span>
+
+        <!--
+          Anklickbar statt bloß informativ: Wer hier ein rotes Licht sieht, will
+          als Nächstes wissen, woran es liegt — und genau das steht im
+          Status-Tab.
+        -->
+        <button
+          type="button"
+          class="flex items-center gap-1.5 transition-colors hover:text-ink"
+          :title="`${STATE_LABEL[apiStatus.state]} — Details in den Einstellungen`"
+          @click="router.push('/settings')"
+        >
+          <span class="inline-block h-1.5 w-1.5 rounded-full shrink-0" :class="dotClass"></span>
+          <span :class="apiStatus.state === 'offline' ? 'text-status-out' : ''">
+            {{ host }}
           </span>
-        </span>
+          <span v-if="apiStatus.version" class="opacity-60 tabular-nums">
+            {{ apiStatus.version }}
+          </span>
+        </button>
       </span>
     </div>
   </footer>

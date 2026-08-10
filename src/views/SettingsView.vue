@@ -293,6 +293,19 @@ const API_STATE_LABEL: Record<string, string> = {
         </NCard>
       </NTabPane>
 
+      <NTabPane name="links" tab="Verweise">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <span class="text-sm font-medium">Externe Verweise</span>
+          </template>
+
+          <ExternalLinkEditor
+            :links="settingsStore.settings.links"
+            @update="settingsStore.setLinks"
+            @reset="settingsStore.resetLinks"
+          />
+        </NCard>
+      </NTabPane>
       <NTabPane name="status" tab="Status">
         <NCard :bordered="false" class="!bg-card">
           <template #header>
@@ -382,20 +395,6 @@ const API_STATE_LABEL: Record<string, string> = {
           </p>
         </NCard>
       </NTabPane>
-
-      <NTabPane name="links" tab="Verweise">
-        <NCard :bordered="false" class="!bg-card">
-          <template #header>
-            <span class="text-sm font-medium">Externe Verweise</span>
-          </template>
-
-          <ExternalLinkEditor
-            :links="settingsStore.settings.links"
-            @update="settingsStore.setLinks"
-            @reset="settingsStore.resetLinks"
-          />
-        </NCard>
-      </NTabPane>
     </NTabs>
 
     <NCard :bordered="false" class="!bg-card">
@@ -406,3 +405,24 @@ const API_STATE_LABEL: Record<string, string> = {
     </NCard>
   </div>
 </template>
+
+<style scoped>
+/*
+ * Status ganz nach rechts, abgesetzt von den übrigen Reitern.
+ *
+ * Die drei linken sind zum Einstellen da, Status ist zum Nachsehen — der
+ * Abstand macht den Unterschied sichtbar, statt ihn nur in die Reihenfolge
+ * zu legen.
+ *
+ * `nth-last-child(2)`, nicht `last-of-type`: Naive UI hängt hinter den
+ * letzten Reiter noch ein `.n-tabs-scroll-padding` — ebenfalls ein `div`,
+ * auf das `last-of-type` gezielt hätte.
+ */
+:deep(.n-tabs-wrapper) {
+  width: 100%;
+}
+
+:deep(.n-tabs-tab-wrapper:nth-last-child(2)) {
+  margin-left: auto;
+}
+</style>
