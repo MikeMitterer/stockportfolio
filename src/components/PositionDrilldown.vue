@@ -111,15 +111,25 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 p-4">
+  <!--
+    Zwei Spalten statt zweier gestapelter Karten über die volle Breite.
+
+    Das Formular braucht nur so viel Platz wie seine Felder — über die ganze
+    Tabellenbreite gezogen standen darin einzelne Eingaben mit meterlangem
+    Leerraum daneben, und die Details rutschten unter den Falz. Nebeneinander
+    ist der aufgeklappte Bereich rund halb so hoch.
+  -->
+  <div
+    class="grid grid-cols-1 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] gap-3 p-3 items-start"
+  >
     <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
     <NCard :bordered="false" size="small" class="!bg-raised">
       <template #header>
         <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
       </template>
 
-      <div class="flex flex-col gap-3">
-        <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <label class="flex flex-col gap-1 text-xs">
             <span class="text-ink-muted">
               {{ isCash ? 'Betrag (€)' : t('table.units') }}
@@ -157,7 +167,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           />
         </label>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2">
           <label class="flex flex-col gap-1 text-xs">
             <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
             <NSelect
@@ -191,7 +201,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           />
         </label>
 
-        <div class="flex items-center gap-2 pt-1">
+        <div class="flex items-center gap-2">
           <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
             Kurs neu laden
           </NButton>
@@ -211,7 +221,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
         <span class="text-sm font-medium">Details</span>
       </template>
 
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3 text-xs">
+      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-2 text-xs">
         <div>
           <div class="text-ink-muted">ISIN</div>
           <div class="tabular-nums">{{ row.position.isin ?? '—' }}</div>
@@ -277,7 +287,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           <div>{{ kindLabel }}</div>
         </div>
 
-        <div class="col-span-2 md:col-span-3 lg:col-span-4 flex items-center gap-3 pt-2">
+        <div class="col-span-2 md:col-span-3 xl:col-span-4 flex items-center gap-3 pt-1">
           <a
             v-for="link in resolvedLinks"
             :key="link.id"

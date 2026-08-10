@@ -29,11 +29,14 @@ export const de = {
     moneymarket: 'Geldmarkt',
     cash: 'Cash',
   },
+  // Bewusst englische Kürzel, auch im deutschen UI: „Kaufen"/„Verkaufen"
+  // sind unterschiedlich lang und ließen die Spalte von Zeile zu Zeile
+  // wandern. Buy/Sell/OK sind kurz, gleich lang und im Börsenkontext geläufig.
   suggestion: {
-    buy: 'Kaufen',
-    sell: 'Verkaufen',
+    buy: 'Buy',
+    sell: 'Sell',
     ok: 'OK',
-    near: 'Nahe Band',
+    near: 'Near',
   },
   kpi: {
     total: 'Gesamtwert',

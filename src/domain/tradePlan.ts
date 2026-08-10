@@ -13,7 +13,6 @@ import {
   marketValue,
   quoteFor,
   suggestion,
-  targetValue,
   upperBand,
   type PositionResult,
 } from './rebalancing'
@@ -21,6 +20,16 @@ import type { Bands, Portfolio, QuoteMap, Suggestion } from '@/types/portfolio'
 
 /** Geplante Stückzahlen je Position (`+` kaufen, `−` verkaufen). */
 export type TradeMap = Record<string, number>
+
+/**
+ * Probeweise Ziel-Anteile je Position, **nur für die Simulation**.
+ *
+ * Wer eine Position als Geldquelle nutzt, obwohl sie auf Ziel steht, ändert
+ * damit seine Aufteilung — ohne angepasstes Ziel zeigt die Zeile hinterher
+ * dauerhaft „Kaufen". Hier lässt sich das durchspielen; das echte Ziel im
+ * Depot bleibt unberührt, bis die Trades tatsächlich ausgeführt sind.
+ */
+export type TargetMap = Record<string, number>
 
 export interface TradePlanRow {
   /** Ausgangslage der Position — Marktwert, Ziel, Bänder, aktueller Status. */
@@ -38,8 +47,10 @@ export interface TradePlanRow {
   marketValueAfter: number
   /** Anteil am Gesamtvermögen nach Ausführung — die Kernzahl (Excel AF). */
   percentAfter: number
-  /** Ziel-Anteil in Prozent, zum Vergleich. */
+  /** Ziel-Anteil in Prozent, zum Vergleich — ggf. der probeweise gesetzte. */
   targetPercent: number
+  /** Ist `targetPercent` ein Probewert und nicht das Ziel aus dem Depot? */
+  targetOverridden: boolean
   /** Bandgrenzen als Anteil am Gesamtvermögen (Excel AE / AG). */
   lowerBandPercent: number
   upperBandPercent: number
@@ -56,14 +67,31 @@ export interface TradePlanRow {
    */
   relativeDeviationAfter: number
   /**
+   * Abweichung **vor** dem Trade, ebenfalls relativ zum Ziel.
+   *
+   * Eigene Zahl statt der aus `current`: bei probeweise gesetztem Ziel muss
+   * sich auch die Ausgangslage auf dieses Ziel beziehen, sonst vergleicht die
+   * Anzeige zwei verschiedene Maßstäbe.
+   */
+  relativeDeviationBefore: number
+  /**
    * Liegt der Anteil nach dem Trade im Band?
    *
    * Das Ziel muss nicht exakt getroffen werden — innerhalb der Bänder ist
    * der Zustand in Ordnung, auch wenn eine Abweichung bleibt.
    */
   inBandAfter: boolean
-  /** Unverbindlicher Vorschlag in Stück, aus den freigemachten Mitteln (Excel AC). */
-  suggestedUnits: number
+  /**
+   * Stückzahl, die zum Ziel fehlt (`+`) oder zu viel ist (`−`).
+   *
+   * Anders als ein Vorschlag aus einem Budget hängt das von nichts ab außer
+   * Bestand, Kurs und Ziel — die Zahl steht also von Anfang an da.
+   *
+   * Nützliche Eigenschaft: Summieren sich die Ziel-Anteile auf 100 %, heben
+   * sich die Deltas in Euro gegenseitig auf. Wer allen Deltas folgt, bekommt
+   * einen Plan, der von selbst aufgeht.
+   */
+  deltaUnits: number
 }
 
 export interface TradePlanResult {
@@ -88,36 +116,8 @@ export interface TradePlanResult {
   reserveAvailable: number
   /** Anteil-Summe nach Ausführung — sollte nahe 100 % liegen. */
   percentAfterSum: number
-}
-
-/**
- * Vorschlag in Stück für eine Position.
- *
- * Verteilt die im Plan freigemachten Mittel nach dem Anteil, den die
- * Position innerhalb ihrer Gruppe am Ziel hat, und rechnet ihn in Stück um
- * (Excel AC). Auf ganze Stück gerundet — Bruchteile lassen sich nicht kaufen.
- * Die **Eingabe** ist davon unberührt und nimmt jede Stückzahl an.
- *
- * @param budget       Zur Verfügung stehender Betrag.
- * @param groupShare   Anteil der Position am Gruppen-Ziel, in Prozent.
- * @param price        Kurs je Stück.
- */
-export function suggestedUnitsFor(budget: number, groupShare: number, price: number): number {
-  if (price <= 0 || budget <= 0) return 0
-  return Math.round((budget * groupShare) / 100 / price)
-}
-
-/** Anteil einer Position am Ziel ihrer Gruppe, in Prozent. */
-export function groupSharePercent(
-  position: { group: string; targetPercent: number },
-  portfolio: Portfolio,
-): number {
-  const groupTarget = portfolio.positions
-    .filter((entry) => entry.enabled && entry.group === position.group)
-    .reduce((sum, entry) => sum + entry.targetPercent, 0)
-
-  if (groupTarget === 0) return 0
-  return (position.targetPercent * 100) / groupTarget
+  /** Summe der (ggf. probeweisen) Ziel-Anteile — muss weiterhin 100 % ergeben. */
+  targetSum: number
 }
 
 /**
@@ -132,26 +132,17 @@ export function groupSharePercent(
  * @param trades         Geplante Stückzahlen je Positions-ID.
  * @param total          Gesamtvermögen — Bezugsgröße für alle Prozentangaben.
  * @param bands          Toleranzbänder.
- * @param portfolio      Für die Gruppenanteile der Vorschläge.
  * @param securityBuffer Betrag, der als Sicherheit stehen bleiben soll.
+ * @param targetOverrides Probeweise Ziele; leer heißt: Ziele aus dem Depot.
  */
 export function computeTradePlan(
   rows: PositionResult[],
   trades: TradeMap,
   total: number,
   bands: Bands,
-  portfolio: Portfolio,
   securityBuffer: number,
+  targetOverrides: TargetMap = {},
 ): TradePlanResult {
-  // Zuerst die Zuflüsse ermitteln — sie sind die Grundlage für die Vorschläge.
-  const inflow = rows
-    .filter((row) => row.isActive)
-    .reduce((sum, row) => {
-      const units = trades[row.position.id] ?? 0
-      const flow = -units * priceOfRow(row)
-      return flow > 0 ? sum + flow : sum
-    }, 0)
-
   const planRows: TradePlanRow[] = rows
     .filter((row) => row.isActive)
     .map((row) => {
@@ -162,7 +153,9 @@ export function computeTradePlan(
       const marketValueAfter = row.position.group === 'cash' ? unitsAfter : unitsAfter * price
       const percentAfter = total > 0 ? (marketValueAfter * 100) / total : 0
 
-      const target = row.position.targetPercent
+      const override = targetOverrides[row.position.id]
+      const target = override ?? row.position.targetPercent
+      const targetEur = (target * total) / 100
       const lowerPct = target * (1 - bands.lowerPercent / 100)
       const upperPct = target * (1 + bands.upperPercent / 100)
 
@@ -175,23 +168,20 @@ export function computeTradePlan(
         marketValueAfter,
         percentAfter,
         targetPercent: target,
+        targetOverridden: override !== undefined,
         lowerBandPercent: lowerPct,
         upperBandPercent: upperPct,
         suggestionAfter: suggestion(
           marketValueAfter,
-          lowerBand(targetValue(row.position, total), bands),
-          upperBand(targetValue(row.position, total), bands),
+          lowerBand(targetEur, bands),
+          upperBand(targetEur, bands),
         ),
         deviationAfter: percentAfter - target,
         relativeDeviationAfter: target === 0 ? 0 : ((percentAfter - target) * 100) / target,
+        relativeDeviationBefore:
+          target === 0 ? 0 : ((row.actualPercent - target) * 100) / target,
         inBandAfter: percentAfter >= lowerPct && percentAfter <= upperPct,
-        // Verteilt, was der Plan bislang freigemacht hat. Solange nichts
-        // verkauft oder entnommen wurde, gibt es auch nichts vorzuschlagen.
-        suggestedUnits: suggestedUnitsFor(
-          inflow,
-          groupSharePercent(row.position, portfolio),
-          price,
-        ),
+        deltaUnits: price > 0 ? Math.round((targetEur - row.marketValue) / price) : 0,
       }
     })
 
@@ -227,6 +217,7 @@ export function computeTradePlan(
     bufferBreached: liquidAfter < securityBuffer - 0.001,
     reserveAvailable: Math.max(0, liquidBefore - securityBuffer),
     percentAfterSum: planRows.reduce((sum, row) => sum + row.percentAfter, 0),
+    targetSum: planRows.reduce((sum, row) => sum + row.targetPercent, 0),
   }
 }
 
@@ -238,6 +229,11 @@ function priceOfRow(row: PositionResult): number {
 
 /** Leert den Plan. */
 export function emptyTrades(): TradeMap {
+  return {}
+}
+
+/** Verwirft alle probeweisen Ziele. */
+export function emptyTargets(): TargetMap {
   return {}
 }
 

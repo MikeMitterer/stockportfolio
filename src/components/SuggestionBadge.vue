@@ -45,7 +45,7 @@ const arrow = computed(() => {
 
 <template>
   <span
-    class="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium tabular-nums"
+    class="inline-flex w-[4.5rem] items-center justify-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium tabular-nums"
     :style="{
       color,
       borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,

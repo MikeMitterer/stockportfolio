@@ -7,11 +7,22 @@ import type { Bands } from '@/types/portfolio'
  * Divergierender Balken um die 0-%-Linie (= Ziel).
  * Skala ist relativ zum Ziel, hart geclippt bei ±MAX_SCALE %.
  * Faktisches Delta bleibt in der Textzahl korrekt.
+ *
+ * Derselbe Balken dient auf dem Dashboard dem Ist-Zustand und im Rebalancing
+ * dem Zustand nach dem geplanten Trade — dort mit `before` als zweiter Marke
+ * und einer eigenen Beschriftung. Eine Abweichung soll überall gleich aussehen.
  */
 const props = defineProps<{
   relativePercent: number
   bands: Bands
   compact?: boolean
+  /**
+   * Ausgangslage als blasse Marke, ebenfalls relativ zum Ziel.
+   * Nur im Rebalancing gesetzt — dort zeigt sie, was der Plan bewegt.
+   */
+  before?: number | null
+  /** Ersetzt die Delta-Zahl rechts, etwa durch den Anteil am Gesamtvermögen. */
+  label?: string
 }>()
 
 const MAX_SCALE = 50 // ±50 % vom Ziel = 100 % Balkenlänge
@@ -54,7 +65,13 @@ const fillStyle = computed(() => {
     : { right: '50%', width: halfWidth.value }
 })
 
-const label = computed(() => percentSigned(props.relativePercent))
+/** Position der Ausgangs-Marke auf derselben Skala; Mitte = Ziel. */
+const beforeStyle = computed(() => {
+  const value = Math.max(-MAX_SCALE, Math.min(MAX_SCALE, props.before ?? 0))
+  return { left: `${(50 + (value / MAX_SCALE) * 50).toFixed(2)}%` }
+})
+
+const text = computed(() => props.label ?? percentSigned(props.relativePercent))
 </script>
 
 <template>
@@ -65,7 +82,7 @@ const label = computed(() => percentSigned(props.relativePercent))
     Ringe kaschierten das nur und wirkten schmutzig. Nebeneinander ist beides
     ungestört: der Balken zeigt Richtung und Ausmaß, die Zahl den Wert.
   -->
-  <div class="flex items-center gap-2" role="img" :aria-label="`Delta ${label}`">
+  <div class="flex items-center gap-2" role="img" :aria-label="`Delta ${text}`">
     <div
       class="relative flex-1 rounded-sm overflow-hidden bg-sunken"
       :class="compact ? 'h-4' : 'h-5'"
@@ -85,10 +102,16 @@ const label = computed(() => percentSigned(props.relativePercent))
       ></div>
 
       <div class="absolute top-0 bottom-0 w-px bg-ink/25 z-10" style="left: 50%"></div>
+
+      <div
+        v-if="before !== null && before !== undefined"
+        class="absolute top-0 bottom-0 w-px border-l border-dashed border-ink/40 z-10"
+        :style="beforeStyle"
+      ></div>
     </div>
 
     <span class="w-14 shrink-0 text-right text-xs tabular-nums text-ink-secondary">
-      {{ label }}
+      {{ text }}
     </span>
   </div>
 </template>

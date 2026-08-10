@@ -2,13 +2,18 @@
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NAlert, NButton, NEmpty, NSpin, NTooltip } from 'naive-ui'
-import AllocationAfterBar from '@/components/AllocationAfterBar.vue'
+import DeltaBar from '@/components/DeltaBar.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { assetColor } from '@/domain/assetColors'
 import { eur, eurCent, eurSigned, integer, percent, percentSigned } from '@/domain/formatters'
 import { computeRebalancing, type GroupResult } from '@/domain/rebalancing'
-import { computeTradePlan, hasTrades, type TradeMap } from '@/domain/tradePlan'
+import {
+  computeTradePlan,
+  hasTrades,
+  type TargetMap,
+  type TradeMap,
+} from '@/domain/tradePlan'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
@@ -45,6 +50,15 @@ onMounted(async () => {
 
 const trades = ref<TradeMap>({})
 
+/**
+ * Probeweise Ziele — leben nur in diesem Tab.
+ *
+ * Das Rebalancing ist eine Simulation. Ins Depot wandert eine Zieländerung
+ * erst, wenn die Trades wirklich durch sind; das macht man dann selbst im
+ * Dashboard. Bis dahin darf hier nichts am Bestand oder am Ziel hängen bleiben.
+ */
+const targets = ref<TargetMap>({})
+
 const plan = computed(() => {
   const portfolio = portfolioStore.portfolio
   if (!portfolio || !result.value) return null
@@ -53,24 +67,31 @@ const plan = computed(() => {
     trades.value,
     result.value.total,
     settingsStore.settings.bands,
-    portfolio,
     settingsStore.settings.securityBuffer,
+    targets.value,
   )
 })
 
-const planHasEntries = computed(() => hasTrades(trades.value))
+const planHasEntries = computed(
+  () => hasTrades(trades.value) || Object.keys(targets.value).length > 0,
+)
+
+/** Weichen die probeweisen Ziele in Summe von 100 % ab? */
+const targetSumOff = computed(
+  () => plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
+)
 
 function setTrade(positionId: string, units: number): void {
   trades.value = { ...trades.value, [positionId]: units }
 }
 
-function clearPlan(): void {
-  trades.value = {}
+function setTarget(positionId: string, targetPercent: number): void {
+  targets.value = { ...targets.value, [positionId]: targetPercent }
 }
 
-/** Übernimmt den Vorschlag einer Zeile in den Plan. */
-function acceptSuggestion(positionId: string, units: number): void {
-  setTrade(positionId, units)
+function clearPlan(): void {
+  trades.value = {}
+  targets.value = {}
 }
 
 // ─── Gliederung nach Assetklasse ────────────────────────────────────────────
@@ -95,11 +116,13 @@ function bandColor(group: AssetGroup): string {
 }
 
 /**
- * Abweichung vom Ziel in Prozentpunkten, für die Anzeige.
- * „Ziel 10 %, danach 9,5 %" wird zu „−0,5 %-P".
+ * Abweichung vom Ziel, für die Anzeige: „Ziel 10 %, danach 9,5 %" → „−0,5 %".
+ *
+ * Gemeint sind Prozentpunkte, aber der Zusatz „%-P" stand als Fachkürzel in
+ * jeder Zeile, ohne etwas zu klären — die Spaltenüberschrift sagt es bereits.
  */
 function deviationLabel(row: NonNullable<typeof plan.value>['rows'][number]): string {
-  return `${percentSigned(row.deviationAfter).replace(' %', '')} %-P`
+  return percentSigned(row.deviationAfter)
 }
 
 /** Kurs je Stück — für die Anzeige in der Zeile. */
@@ -177,25 +200,14 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             Bestände danach im Dashboard nach.
           -->
           <span class="text-[11px] text-ink-muted max-w-[16rem] leading-tight">
-            Der Plan rechnet nur — Bestände ändert er nicht.
+            Alles hier ist Simulation — weder Bestände noch Ziele werden
+            geändert.
           </span>
           <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
             Plan leeren
           </NButton>
         </div>
       </section>
-
-      <NAlert v-if="plan.underfunded" type="error" :bordered="false">
-        Für die geplanten Käufe fehlen {{ eur(-plan.netCashFlow) }}. Verkaufe ein
-        Papier oder entnimm aus Cash bzw. Geldmarkt — trage die Entnahme dort als
-        negative Zahl ein.
-      </NAlert>
-
-      <NAlert v-if="plan.bufferBreached" type="warning" :bordered="false">
-        Der Plan senkt Cash und Geldmarkt auf {{ eur(plan.liquidAfter) }} und
-        unterschreitet damit den Sicherheitspuffer von
-        {{ eur(settingsStore.settings.securityBuffer) }}.
-      </NAlert>
 
       <!-- ─── Der Plan ─────────────────────────────────────────────────── -->
       <section class="rounded-xl border border-edge bg-card overflow-hidden">
@@ -222,15 +234,17 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   <NTooltip trigger="hover">
                     <template #trigger>
                       <span class="border-b border-dotted border-ink-muted cursor-help">
-                        Vorschlag
+                        Delta
                       </span>
                     </template>
                     <div class="max-w-xs text-sm">
-                      Verteilt das Geld, das dieser Plan bereits frei gemacht hat,
-                      nach dem Anteil der Position am Ziel ihrer Assetklasse.
-                      Solange nichts verkauft oder aus Cash bzw. Geldmarkt
-                      entnommen wurde, steht hier nichts. Anklicken übernimmt den
-                      Wert in die Eingabe.
+                      Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen.
+                      Anklicken übernimmt den Wert in die Eingabe.
+                      <div class="mt-2 text-xs">
+                        Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle
+                        Deltas gegenseitig auf — wer allen folgt, bekommt einen
+                        Plan, der von selbst aufgeht.
+                      </div>
                     </div>
                   </NTooltip>
                 </th>
@@ -290,20 +304,53 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     {{ percent(row.current.actualPercent) }}
                   </td>
 
-                  <td class="px-2 py-1 text-right tabular-nums text-ink-muted">
-                    {{ percent(row.targetPercent) }}
+                  <!--
+                    Ziel probeweise änderbar — nur in dieser Simulation.
+                    Wer eine Position als Geldquelle nutzt, obwohl sie auf Ziel
+                    steht, ändert damit seine Aufteilung; ohne angepasstes Ziel
+                    stünde die Zeile hinterher dauerhaft auf „Kaufen". Der
+                    Punkt markiert den Probewert.
+                  -->
+                  <td class="px-2 py-1">
+                    <div class="flex items-center gap-1">
+                      <span
+                        class="w-1.5 h-1.5 rounded-full shrink-0"
+                        :class="row.targetOverridden ? 'bg-accent' : 'bg-transparent'"
+                        :title="
+                          row.targetOverridden
+                            ? `Probeweise geändert — im Depot steht ${percent(
+                              row.current.position.targetPercent,
+                            )}`
+                            : ''
+                        "
+                        aria-hidden="true"
+                      ></span>
+                      <InlineNumber
+                        class="flex-1"
+                        :value="row.targetPercent"
+                        :display="percent(row.targetPercent)"
+                        :precision="2"
+                        :min="0"
+                        :max="100"
+                        @commit="
+                          (targetPercent: number) =>
+                            setTarget(row.current.position.id, targetPercent)
+                        "
+                      />
+                    </div>
                   </td>
 
-                  <!-- Vorschlag: unverbindlich, per Klick übernehmbar -->
+                  <!-- Delta bis zum Ziel — per Klick übernehmbar -->
                   <td class="px-2 py-1 text-right">
                     <button
-                      v-if="row.suggestedUnits !== 0"
+                      v-if="row.deltaUnits !== 0"
                       type="button"
-                      class="tabular-nums text-xs text-ink-muted hover:text-accent underline decoration-dotted"
-                      title="Vorschlag übernehmen"
-                      @click="acceptSuggestion(row.current.position.id, row.suggestedUnits)"
+                      class="tabular-nums text-xs underline decoration-dotted"
+                      :class="row.deltaUnits > 0 ? 'text-status-ok' : 'text-status-out'"
+                      title="In die Eingabe übernehmen"
+                      @click="setTrade(row.current.position.id, row.deltaUnits)"
                     >
-                      {{ integer(row.suggestedUnits) }}
+                      {{ row.deltaUnits > 0 ? '+' : '' }}{{ integer(row.deltaUnits) }}
                     </button>
                     <span v-else class="text-ink-muted text-xs">—</span>
                   </td>
@@ -333,12 +380,17 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   </td>
 
                   <td class="px-2 py-1">
-                    <AllocationAfterBar
-                      :percent-after="row.percentAfter"
-                      :percent-before="row.current.actualPercent"
-                      :target-percent="row.targetPercent"
-                      :lower-band-percent="row.lowerBandPercent"
-                      :upper-band-percent="row.upperBandPercent"
+                    <!--
+                      Derselbe Balken wie auf dem Dashboard: Mitte ist das
+                      Ziel. Zusätzlich die gestrichelte Marke der Ausgangslage
+                      und statt des Deltas der Anteil am Gesamtvermögen.
+                    -->
+                    <DeltaBar
+                      :relative-percent="row.relativeDeviationAfter"
+                      :before="row.relativeDeviationBefore"
+                      :bands="settingsStore.settings.bands"
+                      :label="percent(row.percentAfter)"
+                      compact
                     />
                   </td>
 
@@ -393,6 +445,34 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           </table>
         </div>
       </section>
+
+      <!--
+        Warnungen **unter** der Tabelle.
+
+        Darüber verschoben sie bei jeder Eingabe die ganze Tabelle nach unten —
+        genau während man Zahlen eintippt. Unten wächst der Block ins Leere.
+        Dass etwas nicht stimmt, sagt außerdem schon die Bilanz im Kopf.
+      -->
+      <NAlert v-if="plan.underfunded" type="error" :bordered="false">
+        Für die geplanten Käufe fehlen {{ eur(-plan.netCashFlow) }}. Verkaufe ein
+        Papier oder entnimm aus Cash bzw. Geldmarkt — trage die Entnahme dort als
+        negative Zahl ein.
+      </NAlert>
+
+      <!--
+        Probeweise Ziele dürfen sich verschieben, aber nicht die Summe sprengen:
+        was eine Position mehr bekommt, muss eine andere abgeben.
+      -->
+      <NAlert v-if="targetSumOff" type="warning" :bordered="false">
+        Die Ziele ergeben zusammen {{ percent(plan.targetSum) }} statt 100 %.
+        Was eine Position zusätzlich bekommen soll, muss eine andere abgeben.
+      </NAlert>
+
+      <NAlert v-if="plan.bufferBreached" type="warning" :bordered="false">
+        Der Plan senkt Cash und Geldmarkt auf {{ eur(plan.liquidAfter) }} und
+        unterschreitet damit den Sicherheitspuffer von
+        {{ eur(settingsStore.settings.securityBuffer) }}.
+      </NAlert>
     </template>
   </div>
 </template>
