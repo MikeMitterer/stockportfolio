@@ -67,14 +67,6 @@ export interface TradePlanRow {
    */
   relativeDeviationAfter: number
   /**
-   * Abweichung **vor** dem Trade, ebenfalls relativ zum Ziel.
-   *
-   * Eigene Zahl statt der aus `current`: bei probeweise gesetztem Ziel muss
-   * sich auch die Ausgangslage auf dieses Ziel beziehen, sonst vergleicht die
-   * Anzeige zwei verschiedene Maßstäbe.
-   */
-  relativeDeviationBefore: number
-  /**
    * Liegt der Anteil nach dem Trade im Band?
    *
    * Das Ziel muss nicht exakt getroffen werden — innerhalb der Bänder ist
@@ -92,6 +84,18 @@ export interface TradePlanRow {
    * einen Plan, der von selbst aufgeht.
    */
   deltaUnits: number
+  /**
+   * Stückzahl, die der Plan bei **dieser** Position insgesamt hätte, wenn sie
+   * die offene Deckungslücke schließen soll. `null` heißt: kommt nicht in
+   * Frage — entweder ist der Plan gedeckt, die Position ist nicht liquide,
+   * oder der Bestand reicht nicht mehr.
+   *
+   * Gedacht für den Fall „ich kaufe zwei Papiere für 100.000 € nach — wie
+   * viele Stück Geldmarkt muss ich dafür verkaufen?". Der Vorschlag steht in
+   * jeder liquiden Zeile und bezieht sich stets auf die **aktuell** offene
+   * Lücke: Deckt der Geldmarkt sie nicht ganz ab, zeigt Cash danach den Rest.
+   */
+  coverageUnits: number | null
 }
 
 export interface TradePlanResult {
@@ -143,7 +147,7 @@ export function computeTradePlan(
   securityBuffer: number,
   targetOverrides: TargetMap = {},
 ): TradePlanResult {
-  const planRows: TradePlanRow[] = rows
+  const planRows: Omit<TradePlanRow, 'coverageUnits'>[] = rows
     .filter((row) => row.isActive)
     .map((row) => {
       const price = priceOfRow(row)
@@ -178,8 +182,6 @@ export function computeTradePlan(
         ),
         deviationAfter: percentAfter - target,
         relativeDeviationAfter: target === 0 ? 0 : ((percentAfter - target) * 100) / target,
-        relativeDeviationBefore:
-          target === 0 ? 0 : ((row.actualPercent - target) * 100) / target,
         inBandAfter: percentAfter >= lowerPct && percentAfter <= upperPct,
         deltaUnits: price > 0 ? Math.round((targetEur - row.marketValue) / price) : 0,
       }
@@ -207,8 +209,16 @@ export function computeTradePlan(
     )
     .reduce((sum, row) => sum + row.marketValue, 0)
 
+  // Deckungsvorschläge erst jetzt: Sie hängen an der Lücke des **ganzen**
+  // Plans, die vor der letzten Zeile noch nicht feststeht.
+  const shortfall = outlay - proceeds
+  const rowsWithCoverage = planRows.map((row) => ({
+    ...row,
+    coverageUnits: coverageUnitsFor(row, shortfall),
+  }))
+
   return {
-    rows: planRows,
+    rows: rowsWithCoverage,
     netCashFlow: proceeds - outlay,
     proceeds,
     outlay,
@@ -219,6 +229,34 @@ export function computeTradePlan(
     percentAfterSum: planRows.reduce((sum, row) => sum + row.percentAfter, 0),
     targetSum: planRows.reduce((sum, row) => sum + row.targetPercent, 0),
   }
+}
+
+/**
+ * Was diese Zeile insgesamt verkaufen müsste, um die Lücke zu schließen.
+ *
+ * Aufgerundet: Eine halbe Anteilsscheine gibt es nicht, und abgerundet bliebe
+ * die Lücke offen. Begrenzt durch den Bestand — mehr als vorhanden lässt sich
+ * nicht verkaufen; den Rest muss dann eine andere Zeile tragen.
+ */
+function coverageUnitsFor(
+  row: Omit<TradePlanRow, 'coverageUnits'>,
+  shortfall: number,
+): number | null {
+  const group = row.current.position.group
+  if (group !== 'cash' && group !== 'moneymarket') return null
+  if (shortfall <= 0.001) return null
+
+  const price = priceOfRow(row.current)
+  if (price <= 0) return null
+
+  // Was nach den bereits geplanten Trades noch dasteht.
+  const available = row.unitsAfter
+  if (available <= 0) return null
+
+  const needed = group === 'cash' ? shortfall : Math.ceil(shortfall / price)
+  const taken = Math.min(needed, available)
+
+  return row.tradeUnits - taken
 }
 
 /** Kurs je Stück; Cash rechnet mit 1, weil `units` dort der Betrag ist. */

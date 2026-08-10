@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { computeRebalancing } from '@/domain/rebalancing'
-import { computeTradePlan, hasTrades } from '@/domain/tradePlan'
+import { computeTradePlan, hasTrades, type TradePlanResult } from '@/domain/tradePlan'
 import type { Portfolio, Position, QuoteCacheEntry, QuoteMap, Settings } from '@/types/portfolio'
 
 function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
@@ -594,5 +594,144 @@ describe('computeTradePlan — probeweise Ziele', () => {
     )
     expect(mitAnpassung.targetSum).toBeCloseTo(100, 6)
     expect(mitAnpassung.rows.every((row) => row.inBandAfter)).toBe(true)
+  })
+})
+
+describe('computeTradePlan — Deckungsvorschlag', () => {
+  /** Aktie, Geldmarkt und Cash — der Fall „Nachkauf muss finanziert werden". */
+  function liquiditySetup() {
+    const portfolio: Portfolio = {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: [
+        makePosition({ id: 'aktie', isin: 'A', units: 10, targetPercent: 40 }),
+        makePosition({
+          id: 'geldmarkt',
+          isin: 'G',
+          group: 'moneymarket',
+          units: 30,
+          targetPercent: 40,
+        }),
+        makePosition({
+          id: 'cash',
+          isin: null,
+          symbol: 'CASH',
+          group: 'cash',
+          units: 500,
+          targetPercent: 20,
+        }),
+      ],
+    }
+    const quotes: QuoteMap = new Map([
+      ['A', makeQuote({ isin: 'A', price: 100 })],
+      ['G', makeQuote({ isin: 'G', price: 100 })],
+    ])
+    return computeRebalancing(portfolio, quotes, SETTINGS)
+  }
+
+  const coverageOf = (plan: TradePlanResult, id: string): number | null =>
+    plan.rows.find((row) => row.current.position.id === id)?.coverageUnits ?? null
+
+  it('schlägt nichts vor, solange der Plan gedeckt ist', () => {
+    const result = liquiditySetup()
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
+
+    expect(coverageOf(plan, 'geldmarkt')).toBeNull()
+    expect(coverageOf(plan, 'cash')).toBeNull()
+  })
+
+  it('nennt die Stückzahl, die den Kauf deckt', () => {
+    // 5 Stück Aktie à 100 € = 500 € Lücke → 5 Stück Geldmarkt à 100 €.
+    const result = liquiditySetup()
+    const plan = computeTradePlan(result.rows, { aktie: 5 }, result.total, SETTINGS.bands, 0)
+
+    expect(coverageOf(plan, 'geldmarkt')).toBe(-5)
+  })
+
+  it('rechnet bei Cash mit dem Betrag statt mit Stücken', () => {
+    const result = liquiditySetup()
+    const plan = computeTradePlan(result.rows, { aktie: 4 }, result.total, SETTINGS.bands, 0)
+
+    expect(coverageOf(plan, 'cash')).toBe(-400)
+  })
+
+  it('rundet auf, damit die Lücke wirklich geschlossen wird', () => {
+    // 1 Stück à 100 € gegen Geldmarkt-Kurs 100 € geht auf; bei 250 € Lücke
+    // wären 2,5 Stück nötig — verkauft werden müssen 3.
+    const portfolio: Portfolio = {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: [
+        makePosition({ id: 'aktie', isin: 'A', units: 10, targetPercent: 50 }),
+        makePosition({
+          id: 'geldmarkt',
+          isin: 'G',
+          group: 'moneymarket',
+          units: 30,
+          targetPercent: 50,
+        }),
+      ],
+    }
+    const quotes: QuoteMap = new Map([
+      ['A', makeQuote({ isin: 'A', price: 250 })],
+      ['G', makeQuote({ isin: 'G', price: 100 })],
+    ])
+    const result = computeRebalancing(portfolio, quotes, SETTINGS)
+    const plan = computeTradePlan(result.rows, { aktie: 1 }, result.total, SETTINGS.bands, 0)
+
+    expect(coverageOf(plan, 'geldmarkt')).toBe(-3)
+  })
+
+  it('verkauft nie mehr, als die Position hergibt', () => {
+    // 100 Stück Aktie = 10.000 € Lücke, der Geldmarkt hat nur 30 Stück.
+    const result = liquiditySetup()
+    const plan = computeTradePlan(result.rows, { aktie: 100 }, result.total, SETTINGS.bands, 0)
+
+    expect(coverageOf(plan, 'geldmarkt')).toBe(-30)
+  })
+
+  it('zeigt in der nächsten Zeile den Rest, wenn eine Quelle nicht reicht', () => {
+    // Geldmarkt trägt 30 Stück = 3.000 €; von 10.000 € bleiben 7.000 € offen,
+    // aber Cash hat nur 500 € — es bleibt gedeckelt und der Plan meldet weiter.
+    const result = liquiditySetup()
+    const plan = computeTradePlan(
+      result.rows,
+      { aktie: 100, geldmarkt: -30 },
+      result.total,
+      SETTINGS.bands,
+      0,
+    )
+
+    expect(coverageOf(plan, 'geldmarkt')).toBeNull() // nichts mehr da
+    expect(coverageOf(plan, 'cash')).toBe(-500)
+    expect(plan.underfunded).toBe(true)
+  })
+
+  it('gilt nur für Cash und Geldmarkt — Aktien sind keine Deckung', () => {
+    const result = liquiditySetup()
+    const plan = computeTradePlan(result.rows, { aktie: 5 }, result.total, SETTINGS.bands, 0)
+
+    expect(coverageOf(plan, 'aktie')).toBeNull()
+  })
+
+  it('schließt die Lücke, wenn man den Vorschlag übernimmt', () => {
+    const result = liquiditySetup()
+    const erst = computeTradePlan(result.rows, { aktie: 5 }, result.total, SETTINGS.bands, 0)
+    const uebernommen = coverageOf(erst, 'geldmarkt') as number
+
+    const danach = computeTradePlan(
+      result.rows,
+      { aktie: 5, geldmarkt: uebernommen },
+      result.total,
+      SETTINGS.bands,
+      0,
+    )
+
+    expect(danach.underfunded).toBe(false)
+    expect(danach.netCashFlow).toBeCloseTo(0, 6)
   })
 })

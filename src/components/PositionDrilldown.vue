@@ -20,7 +20,6 @@ import {
 } from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
 import { resolveKind, resolveLinks } from '@/domain/links'
-import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
 
@@ -301,9 +300,6 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           <span v-if="resolvedLinks.length === 0" class="text-xs text-ink-muted">
             Keine passenden Verweise — unter „Einstellungen" konfigurierbar.
           </span>
-          <div class="ml-auto">
-            <SuggestionBadge :suggestion="row.suggestion" :near="row.isNearBand" />
-          </div>
         </div>
       </div>
     </NCard>

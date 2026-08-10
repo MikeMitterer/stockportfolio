@@ -9,18 +9,13 @@ import type { Bands } from '@/types/portfolio'
  * Faktisches Delta bleibt in der Textzahl korrekt.
  *
  * Derselbe Balken dient auf dem Dashboard dem Ist-Zustand und im Rebalancing
- * dem Zustand nach dem geplanten Trade — dort mit `before` als zweiter Marke
- * und einer eigenen Beschriftung. Eine Abweichung soll überall gleich aussehen.
+ * dem Zustand nach dem geplanten Trade — dort mit eigener Beschriftung. Eine
+ * Abweichung soll überall gleich aussehen.
  */
 const props = defineProps<{
   relativePercent: number
   bands: Bands
   compact?: boolean
-  /**
-   * Ausgangslage als blasse Marke, ebenfalls relativ zum Ziel.
-   * Nur im Rebalancing gesetzt — dort zeigt sie, was der Plan bewegt.
-   */
-  before?: number | null
   /** Ersetzt die Delta-Zahl rechts, etwa durch den Anteil am Gesamtvermögen. */
   label?: string
 }>()
@@ -65,12 +60,6 @@ const fillStyle = computed(() => {
     : { right: '50%', width: halfWidth.value }
 })
 
-/** Position der Ausgangs-Marke auf derselben Skala; Mitte = Ziel. */
-const beforeStyle = computed(() => {
-  const value = Math.max(-MAX_SCALE, Math.min(MAX_SCALE, props.before ?? 0))
-  return { left: `${(50 + (value / MAX_SCALE) * 50).toFixed(2)}%` }
-})
-
 const text = computed(() => props.label ?? percentSigned(props.relativePercent))
 </script>
 
@@ -94,6 +83,11 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
         mit der Ziel-Linie ergab das ein Strichmuster im Balken. Die Information
         war ohnehin doppelt: ob die Position im Band liegt, sagt bereits die
         Farbe der Füllung (grün, gelb, rot).
+
+        Aus demselben Grund ist auch die Marke für „Anteil vorher" wieder weg:
+        ohne geplanten Trade lag sie exakt auf der Füllkante und ergab dort mit
+        der Ziel-Linie erneut ein Strichbündel. Was der Plan bewegt, steht in
+        den Spalten „Kauf / Verkauf" und „Abw. Ziel".
       -->
       <div
         class="absolute transition-all"
@@ -102,12 +96,6 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
       ></div>
 
       <div class="absolute top-0 bottom-0 w-px bg-ink/25 z-10" style="left: 50%"></div>
-
-      <div
-        v-if="before !== null && before !== undefined"
-        class="absolute top-0 bottom-0 w-px border-l border-dashed border-ink/40 z-10"
-        :style="beforeStyle"
-      ></div>
     </div>
 
     <span class="w-14 shrink-0 text-right text-xs tabular-nums text-ink-secondary">

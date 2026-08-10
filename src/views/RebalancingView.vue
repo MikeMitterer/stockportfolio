@@ -407,6 +407,23 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                       :min="-row.current.position.units"
                       @commit="(units: number) => setTrade(row.current.position.id, units)"
                     />
+                    <!--
+                      Deckungsvorschlag, nur bei Cash und Geldmarkt und nur
+                      solange etwas offen ist: Wer für 100.000 € nachkauft,
+                      will nicht selbst ausrechnen, wie viele Stück Geldmarkt
+                      das sind. Deckt eine Zeile die Lücke nicht ganz, zeigt
+                      die nächste den Rest.
+                    -->
+                    <button
+                      v-if="row.coverageUnits !== null"
+                      type="button"
+                      class="mt-0.5 block w-full text-right text-[11px] text-accent
+                             underline decoration-dotted"
+                      title="Übernimmt genau die Stückzahl, die zur Deckung fehlt"
+                      @click="setTrade(row.current.position.id, row.coverageUnits)"
+                    >
+                      {{ integer(row.coverageUnits) }} decken
+                    </button>
                   </td>
 
                   <td
@@ -425,12 +442,11 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   <td class="px-2 py-1">
                     <!--
                       Derselbe Balken wie auf dem Dashboard: Mitte ist das
-                      Ziel. Zusätzlich die gestrichelte Marke der Ausgangslage
-                      und statt des Deltas der Anteil am Gesamtvermögen.
+                      Ziel, statt des Deltas steht der Anteil am Gesamtvermögen
+                      daneben.
                     -->
                     <DeltaBar
                       :relative-percent="row.relativeDeviationAfter"
-                      :before="row.relativeDeviationBefore"
                       :bands="settingsStore.settings.bands"
                       :label="percent(row.percentAfter)"
                       compact
