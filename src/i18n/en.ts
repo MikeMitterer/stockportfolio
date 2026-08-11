@@ -384,6 +384,10 @@ export const en: MessageSchema = {
       'A portfolio is meant to have a certain allocation. Prices keep shifting it, but not every deviation calls for action: rebalancing on every percentage point costs fees and taxes for a precision that is gone again the next day.',
     bandsBody2:
       'The bands draw a line. Only when a share deviates from its target by more than the lower or upper band does the status switch to Buy or Sell. Relative, that is: with a target of 10 % and a lower band of 6 %, action starts at 9.4 % — not at 4 %.',
+    bandsDelta:
+      'The delta column shows this deviation — relative to the target, not in percentage points. The difference is not hair-splitting: with a target of 10 %, −10 % does not mean “down to zero” but a tenth below the target value, that is 9 %. In percentage points, −10 would indeed be zero.',
+    bandsDelta2:
+      'The relative reading makes one band mean the same for every position. With a target of 45 %, 6 percentage points would be about an eighth of the position; with a target of 5 %, more than all of it — the same number would mean something different in every row. As a share of the target, “6 %” is the same call to action everywhere.',
     bandsBody3:
       'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up. A share that has fallen means you can buy in cheaply; one that has risen only means something went well.',
     bandsBody4:

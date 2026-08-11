@@ -29,6 +29,8 @@ const { t } = useI18n()
       <h2 class="text-lg font-medium">{{ t('method.bandsHeading') }}</h2>
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsBody') }}</p>
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsBody2') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsDelta') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsDelta2') }}</p>
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsBody3') }}</p>
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsBody4') }}</p>
     </section>

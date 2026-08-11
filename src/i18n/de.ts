@@ -383,6 +383,10 @@ export const de = {
       'Ein Depot soll eine bestimmte Aufteilung haben. Kurse verschieben sie laufend, aber nicht jede Abweichung ist ein Handlungsbedarf: Wer bei jedem Prozentpunkt umschichtet, zahlt Gebühren und Steuern für eine Genauigkeit, die am nächsten Tag wieder dahin ist.',
     bandsBody2:
       'Die Bänder ziehen eine Grenze. Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das untere oder obere Band abweicht, springt der Status auf Buy oder Sell. Relativ heißt: Bei einem Ziel von 10 % und einem unteren Band von 6 % beginnt der Handlungsbedarf bei 9,4 % — nicht bei 4 %.',
+    bandsDelta:
+      'Die Delta-Spalte zeigt diese Abweichung — relativ zum Ziel, nicht in Prozentpunkten. Der Unterschied ist keine Spitzfindigkeit: Bei einem Ziel von 10 % heißt −10 % nicht „bei null angekommen", sondern ein Zehntel unter dem Zielwert, also 9 %. In Prozentpunkten gerechnet wären −10 dagegen tatsächlich null.',
+    bandsDelta2:
+      'Relativ gerechnet wird, damit ein Band für jede Position dasselbe bedeutet. Bei einem Ziel von 45 % wären 6 Prozentpunkte gut ein Achtel der Position, bei einem Ziel von 5 % mehr als die ganze — dieselbe Zahl hieße an jeder Zeile etwas anderes. Als Anteil des Ziels ist „6 %" überall derselbe Handlungsbedarf.',
     bandsBody3:
       'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben. Ein gefallener Anteil bedeutet, dass man günstig nachkaufen kann; ein gestiegener bedeutet nur, dass etwas gut gelaufen ist.',
     bandsBody4:

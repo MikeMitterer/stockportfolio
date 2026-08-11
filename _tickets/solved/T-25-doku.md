@@ -54,6 +54,18 @@ Ansichten. Das bläht auf und wird beim zweiten Besuch weggeklickt.
 | 6 | Rebalancing | Fragezeichen an „Decken aus" | ✅ | |
 | 7 | Beide Sprachen | Erklärungen und Methodenseite vollständig übersetzt | ✅ | |
 
+## Nachgetragen
+
+- **„Mehr dazu" war kein Verweis.** Im Tooltip stand ein `span`, der aussah wie
+  einer und beim Klick nichts tat — navigiert hat nur das Fragezeichen selbst.
+  Jetzt ein echter Knopf, und `keep-alive-on-hover` sorgt dafür, dass der
+  Tooltip offen bleibt, bis die Maus ihn erreicht hat.
+- **Relativ oder Prozentpunkte** — der Unterschied steht jetzt ausdrücklich im
+  Abschnitt „Toleranzbänder": Bei einem Ziel von 10 % heißt −10 % nicht „bei
+  null", sondern 9 %. Und warum überhaupt relativ gerechnet wird: Bei einem
+  Ziel von 45 % wären 6 Prozentpunkte ein Achtel der Position, bei 5 % mehr als
+  die ganze — dieselbe Zahl hieße in jeder Zeile etwas anderes.
+
 ## Offen
 
 - Der Delta-Hinweis steckt viermal im DOM — je Gruppentabelle einmal. Sichtbar

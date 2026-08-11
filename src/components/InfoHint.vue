@@ -30,7 +30,11 @@ function openMethod(): void {
 </script>
 
 <template>
-  <NTooltip trigger="hover" :style="{ maxWidth: '22rem' }">
+  <!--
+    `keep-alive-on-hover` ist entscheidend: Ohne das verschwindet der Tooltip,
+    sobald die Maus ihn erreicht — und „Mehr dazu" wäre nicht anklickbar.
+  -->
+  <NTooltip trigger="hover" keep-alive-on-hover :style="{ maxWidth: '22rem' }">
     <template #trigger>
       <!--
         Klein und blass: Der Hinweis darf die Zahl daneben nicht überstrahlen.
@@ -51,7 +55,19 @@ function openMethod(): void {
 
     <div class="text-sm leading-relaxed">
       {{ text }}
-      <span v-if="anchor" class="mt-1 block text-xs text-accent">{{ t('method.more') }}</span>
+      <!--
+        Ein echter Knopf, kein Text, der wie einer aussieht. Vorher stand hier
+        ein `span` — er sah aus wie ein Verweis, war aber keiner, und ein Klick
+        darauf tat nichts.
+      -->
+      <button
+        v-if="anchor"
+        type="button"
+        class="mt-1 block text-xs text-accent underline decoration-dotted hover:opacity-80"
+        @click="openMethod"
+      >
+        {{ t('method.more') }}
+      </button>
     </div>
   </NTooltip>
 </template>
