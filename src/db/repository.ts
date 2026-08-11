@@ -5,7 +5,7 @@
  * `idb` taucht außerhalb von `src/db/` nirgends auf.
  */
 
-import { getDb, SETTINGS_KEY, type AllowlistEntry } from './schema'
+import { allowlistId, getDb, SETTINGS_KEY, type AllowlistEntry } from './schema'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 /**
@@ -103,41 +103,72 @@ export class QuoteCacheRepository {
 }
 
 export class AllowlistRepository {
-  /** Whitelist als Map (Key → enabled). */
-  async loadAll(): Promise<Map<string, boolean>> {
+  /**
+   * Whitelist eines Depots als Map (Key → freigegeben).
+   *
+   * Je Depot, nicht global: Welche Papiere für ein Kinderdepot in Frage
+   * kommen, ist eine andere Menge als beim eigenen.
+   *
+   * @param portfolioId Kennung des Depots.
+   */
+  async loadAll(portfolioId: string): Promise<Map<string, boolean>> {
     const db = await getDb()
-    const rows = await db.getAll('instrumentAllowlist')
+    const rows = await db.getAllFromIndex('instrumentAllowlist', 'byPortfolio', portfolioId)
     return new Map(rows.map((row) => [row.key, row.enabled]))
   }
 
-  /** Setzt den Status eines Instruments. */
-  async setEnabled(key: string, enabled: boolean): Promise<void> {
+  /** Setzt den Status eines Instruments in einem Depot. */
+  async setEnabled(portfolioId: string, key: string, enabled: boolean): Promise<void> {
     const db = await getDb()
-    const entry: AllowlistEntry = { key, enabled }
+    const entry: AllowlistEntry = { id: allowlistId(portfolioId, key), portfolioId, key, enabled }
     await db.put('instrumentAllowlist', entry)
   }
 
   /**
-   * Ersetzt die Whitelist vollständig — für das Einspielen einer Sicherung.
+   * Ersetzt die Whitelist eines Depots vollständig — für Sicherungen.
    *
-   * Erst leeren, dann schreiben: Ein Zusammenführen ließe Einträge stehen,
-   * die in der Sicherung bewusst nicht mehr vorkommen.
+   * Erst die Einträge dieses Depots löschen, dann schreiben: Ein
+   * Zusammenführen ließe Einträge stehen, die in der Sicherung bewusst nicht
+   * mehr vorkommen. Andere Depots bleiben unberührt.
    *
-   * @param entries Neue Whitelist (Key → freigegeben).
+   * @param portfolioId Kennung des Depots.
+   * @param entries     Neue Whitelist (Key → freigegeben).
    */
-  async replaceAll(entries: Map<string, boolean>): Promise<void> {
+  async replaceAll(portfolioId: string, entries: Map<string, boolean>): Promise<void> {
     const db = await getDb()
     const tx = db.transaction('instrumentAllowlist', 'readwrite')
-    await tx.store.clear()
+    const index = tx.store.index('byPortfolio')
+
+    for (const key of await index.getAllKeys(portfolioId)) {
+      await tx.store.delete(key)
+    }
     for (const [key, enabled] of entries) {
-      await tx.store.put({ key, enabled })
+      await tx.store.put({ id: allowlistId(portfolioId, key), portfolioId, key, enabled })
     }
     await tx.done
   }
 
-  /** Anzahl der Einträge — um „noch nie befüllt" zu erkennen. */
-  async count(): Promise<number> {
+  /**
+   * Entfernt die Whitelist eines Depots — beim Löschen des Depots.
+   *
+   * Ohne das blieben die Einträge für immer liegen; sichtbar wären sie nie
+   * wieder, weil es das Depot nicht mehr gibt.
+   */
+  async removeForPortfolio(portfolioId: string): Promise<void> {
     const db = await getDb()
-    return db.count('instrumentAllowlist')
+    const tx = db.transaction('instrumentAllowlist', 'readwrite')
+    const index = tx.store.index('byPortfolio')
+
+    for (const key of await index.getAllKeys(portfolioId)) {
+      await tx.store.delete(key)
+    }
+    await tx.done
+  }
+
+  /** Anzahl der Einträge eines Depots — um „noch nie befüllt" zu erkennen. */
+  async count(portfolioId: string): Promise<number> {
+    const db = await getDb()
+    return db.countFromIndex('instrumentAllowlist', 'byPortfolio', portfolioId)
   }
 }
+

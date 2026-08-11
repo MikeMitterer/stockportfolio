@@ -8,7 +8,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
-import { PortfolioRepository } from '@/db/repository'
+import { AllowlistRepository, PortfolioRepository } from '@/db/repository'
 import { demoPortfolio, emptyPortfolio } from '@/db/seed'
 import type { InstrumentKind, Portfolio, Position } from '@/types/portfolio'
 
@@ -22,6 +22,7 @@ export interface PortfolioSummary {
 
 export const usePortfolioStore = defineStore('portfolio', () => {
   const repository = new PortfolioRepository()
+  const allowlistRepository = new AllowlistRepository()
 
   const portfolio = ref<Portfolio | null>(null)
   const loaded = ref<boolean>(false)
@@ -126,6 +127,9 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     }
 
     await repository.remove(id)
+    // Die Whitelist gehört zum Depot — ohne dieses Aufräumen bliebe sie für
+    // immer liegen, sichtbar nie wieder.
+    await allowlistRepository.removeForPortfolio(id)
     await refreshList()
 
     // Wer das aktive Depot löscht, landet beim nächsten in der Liste.
@@ -148,7 +152,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     const demo = demoPortfolio()
 
     await repository.save(demo)
-    if (current) await repository.remove(current.id)
+    if (current) {
+      await repository.remove(current.id)
+      await allowlistRepository.removeForPortfolio(current.id)
+    }
 
     portfolio.value = demo
     await refreshList()
@@ -263,7 +270,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     const current = portfolio.value
 
     await repository.save(next)
-    if (current && current.id !== next.id) await repository.remove(current.id)
+    if (current && current.id !== next.id) {
+      await repository.remove(current.id)
+      await allowlistRepository.removeForPortfolio(current.id)
+    }
 
     portfolio.value = next
     await refreshList()

@@ -85,9 +85,12 @@ wechseln und löschen — etwa eines für die Kinder oder eine Variante zum
 Durchrechnen. Gerechnet wird immer nur mit dem aktiven; sein Name steht in der
 Statuszeile, damit keine Zahl mehrdeutig bleibt.
 
-Toleranzbänder, Sicherheitspuffer und Darstellung gelten für alle Depots
-gemeinsam — sie beschreiben die Methode, nicht das einzelne Depot. Eine
-Sicherung enthält immer nur das aktive.
+Was zum Depot gehört: Bestände, Ziele **und die Auswahl der Assets**. Welche
+Papiere für ein Kinderdepot in Frage kommen, ist eine andere Menge als beim
+eigenen. Toleranzbänder, Sicherheitspuffer und Darstellung gelten dagegen für
+alle Depots gemeinsam — sie beschreiben die Methode, nicht das einzelne Depot.
+
+Eine Sicherung enthält immer nur das aktive Depot, samt dessen Asset-Auswahl.
 
 ## Setup
 

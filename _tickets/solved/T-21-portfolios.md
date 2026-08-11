@@ -12,13 +12,30 @@ nicht. Anlegen, Umbenennen, Wechseln und Löschen stehen jetzt unter
 
 ## Was für alle gilt und was nicht
 
-Bestände sind je Depot. Toleranzbänder, Sicherheitspuffer, Themes und Verweise
-gelten **gemeinsam**: Sie beschreiben die Methode, nicht das einzelne Depot.
-Wer für die Kinder andere Bänder will, hätte sonst zwei Stellen zu pflegen, an
-denen dasselbe steht.
+Je Depot: Bestände, Ziele **und die Freigabeliste der Assets**. Gemeinsam:
+Toleranzbänder, Sicherheitspuffer, Themes und Verweise — sie beschreiben die
+Methode, nicht das einzelne Depot.
+
+Die Freigabeliste hatte ich zunächst falsch einsortiert, nämlich zu den
+gemeinsamen Einstellungen. Sie gehört zum Depot: Welche Papiere für ein
+Kinderdepot in Frage kommen, ist eine andere Menge als beim eigenen. Die
+Korrektur kostete eine Schema-Migration (siehe unten).
 
 Eine Sicherung enthält immer nur das aktive Depot. Sie beim Einspielen auf
 alle anzuwenden wäre nicht zu erklären.
+
+## Schema-Migration auf Version 2
+
+Die Whitelist lag unter dem blanken Instrument-Schlüssel. Jetzt liegt sie
+unter `<portfolioId>::<key>`, mit einem Index auf das Depot.
+
+Die vorhandenen Einträge wandern beim Öffnen zum ersten Depot — dem einzigen,
+das es zum Zeitpunkt ihrer Entstehung gab. Sie stillschweigend wegzuwerfen
+wäre die schlechtere Wahl: Wer 20 Papiere ausgeblendet hat, müsste von vorn
+beginnen.
+
+Beim Löschen eines Depots wird seine Liste mitentfernt. Ohne das bliebe sie
+für immer liegen, sichtbar nie wieder.
 
 ## Der Name gehört in die Statuszeile
 
@@ -63,6 +80,9 @@ Legende: ✅ live bestätigt.
 | 9 | Aktives löschen | Wechselt auf das verbleibende, Einstellungen zeigen darauf | ✅ | |
 | 10 | Positionszahl | Zieht nach dem Hinzufügen einer Position nach (Unit-Test) | ✅ | |
 | 11 | Bestände getrennt | Eine Position im ersten Depot taucht im zweiten nicht auf (Unit-Test) | ✅ | |
+| 12 | Migration | Bestehende Datenbank (v1, 2 Einträge) auf v2 gehoben, beide Einträge tragen jetzt das Depot | ✅ | |
+| 13 | Whitelist je Depot | Im neuen Depot alles freigegeben; nach dem Zurückwechseln wieder gesperrt | ✅ | |
+| 14 | Aufräumen | Whitelist eines gelöschten Depots verschwindet mit (Unit-Test) | ✅ | |
 
 ## Offen
 

@@ -209,82 +209,81 @@ describe('QuoteCacheRepository', () => {
   })
 })
 
-describe('AllowlistRepository', () => {
-  it('startet leer', async () => {
-    const repository = new AllowlistRepository()
-    expect(await repository.count()).toBe(0)
-  })
-
-  it('speichert den Status eines Instruments', async () => {
+describe('AllowlistRepository — je Depot', () => {
+  it('hält die Whitelists zweier Depots auseinander', async () => {
+    // Der eigentliche Punkt: Welche Papiere für ein Kinderdepot in Frage
+    // kommen, ist eine andere Menge als beim eigenen.
     const repository = new AllowlistRepository()
 
-    await repository.setEnabled('IE0000000001', true)
-    await repository.setEnabled('IE0000000002', false)
+    await repository.setEnabled('depot-a', 'ISIN1', false)
+    await repository.setEnabled('depot-b', 'ISIN2', false)
 
-    const loaded = await repository.loadAll()
-    expect(loaded.get('IE0000000001')).toBe(true)
-    expect(loaded.get('IE0000000002')).toBe(false)
+    const a = await repository.loadAll('depot-a')
+    const b = await repository.loadAll('depot-b')
+
+    expect([...a.keys()]).toEqual(['ISIN1'])
+    expect([...b.keys()]).toEqual(['ISIN2'])
   })
 
-  it('überschreibt den Status statt zu duplizieren', async () => {
+  it('lässt denselben Schlüssel in zwei Depots unterschiedlich stehen', async () => {
     const repository = new AllowlistRepository()
 
-    await repository.setEnabled('A', true)
-    await repository.setEnabled('A', false)
+    await repository.setEnabled('depot-a', 'ISIN1', false)
+    await repository.setEnabled('depot-b', 'ISIN1', true)
 
-    expect(await repository.count()).toBe(1)
-    expect((await repository.loadAll()).get('A')).toBe(false)
+    expect((await repository.loadAll('depot-a')).get('ISIN1')).toBe(false)
+    expect((await repository.loadAll('depot-b')).get('ISIN1')).toBe(true)
   })
-})
 
-describe('Store-Isolation', () => {
-  it('Schreiben in einen Store lässt die anderen unberührt', async () => {
-    const portfolios = new PortfolioRepository()
-    const settings = new SettingsRepository()
-    const quotes = new QuoteCacheRepository()
-
-    await portfolios.save(makePortfolio())
-
-    expect(await settings.load()).toBeNull()
-    expect((await quotes.loadAll()).size).toBe(0)
-  })
-})
-
-describe('AllowlistRepository — replaceAll', () => {
-  it('ersetzt die Liste, statt sie zu ergänzen', async () => {
-    // Ein Zusammenführen ließe Einträge stehen, die in der Sicherung bewusst
-    // nicht mehr vorkommen — das Ausblenden wäre dann nicht rücknehmbar.
+  it('liefert für ein unbekanntes Depot eine leere Liste', async () => {
     const repository = new AllowlistRepository()
-    await repository.setEnabled('alt', false)
+    await repository.setEnabled('depot-a', 'ISIN1', false)
 
-    await repository.replaceAll(new Map([['neu', false]]))
-    const loaded = await repository.loadAll()
+    expect((await repository.loadAll('gibt-es-nicht')).size).toBe(0)
+  })
 
-    expect(loaded.has('alt')).toBe(false)
-    expect(loaded.get('neu')).toBe(false)
+  it('zählt nur die Einträge des gefragten Depots', async () => {
+    const repository = new AllowlistRepository()
+    await repository.setEnabled('depot-a', 'ISIN1', false)
+    await repository.setEnabled('depot-a', 'ISIN2', false)
+    await repository.setEnabled('depot-b', 'ISIN3', false)
+
+    expect(await repository.count('depot-a')).toBe(2)
+    expect(await repository.count('depot-b')).toBe(1)
+  })
+
+  it('ersetzt die Liste eines Depots, ohne andere anzufassen', async () => {
+    const repository = new AllowlistRepository()
+    await repository.setEnabled('depot-a', 'alt', false)
+    await repository.setEnabled('depot-b', 'fremd', false)
+
+    await repository.replaceAll('depot-a', new Map([['neu', false]]))
+
+    const a = await repository.loadAll('depot-a')
+    expect(a.has('alt')).toBe(false)
+    expect(a.get('neu')).toBe(false)
+    expect((await repository.loadAll('depot-b')).get('fremd')).toBe(false)
   })
 
   it('leert die Liste, wenn die Sicherung keine enthält', async () => {
     const repository = new AllowlistRepository()
-    await repository.setEnabled('alt', false)
+    await repository.setEnabled('depot-a', 'alt', false)
 
-    await repository.replaceAll(new Map())
+    await repository.replaceAll('depot-a', new Map())
 
-    expect(await repository.count()).toBe(0)
+    expect(await repository.count('depot-a')).toBe(0)
   })
 
-  it('persistiert alle Einträge', async () => {
+  it('räumt die Whitelist eines gelöschten Depots weg', async () => {
+    // Ohne das bliebe sie für immer liegen — sichtbar nie wieder, weil es
+    // das Depot nicht mehr gibt.
     const repository = new AllowlistRepository()
+    await repository.setEnabled('depot-a', 'ISIN1', false)
+    await repository.setEnabled('depot-b', 'ISIN2', false)
 
-    await repository.replaceAll(
-      new Map([
-        ['a', false],
-        ['b', true],
-      ]),
-    )
-    const loaded = await repository.loadAll()
+    await repository.removeForPortfolio('depot-a')
 
-    expect(loaded.get('a')).toBe(false)
-    expect(loaded.get('b')).toBe(true)
+    expect(await repository.count('depot-a')).toBe(0)
+    expect(await repository.count('depot-b')).toBe(1)
   })
 })

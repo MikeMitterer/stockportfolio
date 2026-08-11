@@ -3,20 +3,31 @@
  *
  * Der Katalog kommt aus der API und wird nicht persistiert (er ist
  * jederzeit neu abrufbar). Die Whitelist ist eine Nutzerentscheidung und
- * liegt in IndexedDB.
+ * liegt in IndexedDB — **je Depot**: Welche Papiere für ein Kinderdepot in
+ * Frage kommen, ist eine andere Menge als beim eigenen.
  */
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { computed, ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { consola } from 'consola'
 import { ApiError } from '@/api/errors'
 import { cacheKeyOf } from '@/api/mappers'
 import { AllowlistRepository } from '@/db/repository'
+import { usePortfolioStore } from '@/stores/portfolio'
 import type { StockInfoClient } from '@/api/client'
 import type { InstrumentSummary } from '@/api/types'
 
 export const useInstrumentsStore = defineStore('instruments', () => {
   const repository = new AllowlistRepository()
+  const portfolioStore = usePortfolioStore()
+
+  /**
+   * Depot, zu dem die geladene Whitelist gehört.
+   *
+   * Gemerkt, um nach einem Wechsel nicht mit der Liste des vorigen Depots
+   * weiterzuarbeiten — die Freigaben sähen dann richtig aus und wären falsch.
+   */
+  const allowlistFor = ref<string | null>(null)
 
   const instruments = shallowRef<InstrumentSummary[]>([])
   const allowlist = ref<Map<string, boolean>>(new Map())
@@ -50,12 +61,14 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     error.value = null
 
     try {
+      const portfolioId = portfolioStore.portfolio?.id ?? ''
       const [catalogue, stored] = await Promise.all([
         client.getInstruments(),
-        repository.loadAll(),
+        repository.loadAll(portfolioId),
       ])
       instruments.value = catalogue
       allowlist.value = stored
+      allowlistFor.value = portfolioId
       loaded.value = true
     } catch (cause) {
       error.value =
@@ -68,6 +81,9 @@ export const useInstrumentsStore = defineStore('instruments', () => {
 
   /** Schaltet die Freigabe eines Instruments um und persistiert sie. */
   async function toggleAllowed(instrument: InstrumentSummary): Promise<void> {
+    const portfolioId = portfolioStore.portfolio?.id
+    if (!portfolioId) return
+
     const key = keyOf(instrument)
     const next = !isAllowed(instrument)
 
@@ -75,7 +91,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     updated.set(key, next)
     allowlist.value = updated
 
-    await repository.setEnabled(key, next)
+    await repository.setEnabled(portfolioId, key, next)
   }
 
   /**
@@ -84,9 +100,13 @@ export const useInstrumentsStore = defineStore('instruments', () => {
    * @param entries Neue Whitelist (Key → freigegeben).
    */
   async function replaceAllowlist(entries: Map<string, boolean>): Promise<void> {
+    const portfolioId = portfolioStore.portfolio?.id
+    if (!portfolioId) return
+
     allowlist.value = new Map(entries)
-    await repository.replaceAll(entries)
-    consola.info('instruments: Whitelist ersetzt', { count: entries.size })
+    allowlistFor.value = portfolioId
+    await repository.replaceAll(portfolioId, entries)
+    consola.info('instruments: Whitelist ersetzt', { portfolioId, count: entries.size })
   }
 
   /**
@@ -97,12 +117,28 @@ export const useInstrumentsStore = defineStore('instruments', () => {
    * die Whitelist aber sehr wohl.
    */
   async function hydrateAllowlist(): Promise<void> {
-    allowlist.value = await repository.loadAll()
+    const portfolioId = portfolioStore.portfolio?.id ?? ''
+    allowlist.value = await repository.loadAll(portfolioId)
+    allowlistFor.value = portfolioId
   }
+
+  /*
+   * Depot-Wechsel: Die Whitelist gehört zum Depot und muss mitwechseln.
+   * Ohne das zeigte die Assets-Seite die Freigaben des vorigen Depots — sie
+   * sähen richtig aus und wären falsch.
+   */
+  watch(
+    () => portfolioStore.portfolio?.id,
+    async (portfolioId) => {
+      if (!portfolioId || portfolioId === allowlistFor.value) return
+      await hydrateAllowlist()
+    },
+  )
 
   return {
     instruments,
     allowlist,
+    allowlistFor,
     hydrateAllowlist,
     replaceAllowlist,
     allowedInstruments,

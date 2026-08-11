@@ -1,12 +1,16 @@
 /**
  * Unit-Tests für den Instruments-Store.
  * API gemockt, Whitelist gegen `fake-indexeddb`.
+ *
+ * Die Whitelist hängt am aktiven Depot — ohne eines gibt es nichts
+ * freizugeben. Die Tests laden deshalb zuerst ein Depot.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
 import { useInstrumentsStore } from '@/stores/instruments'
+import { usePortfolioStore } from '@/stores/portfolio'
 import { AllowlistRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { ApiError } from '@/api/errors'
@@ -18,6 +22,13 @@ beforeEach(async () => {
   await closeDb()
   await deleteDB(DB_NAME)
 })
+
+/** Legt ein Depot an — die Whitelist braucht eines, an dem sie hängt. */
+async function withPortfolio(): Promise<string> {
+  const portfolios = usePortfolioStore()
+  await portfolios.load()
+  return portfolios.portfolio?.id as string
+}
 
 afterEach(async () => {
   await closeDb()
@@ -90,6 +101,7 @@ describe('useInstrumentsStore — Whitelist', () => {
   })
 
   it('Umschalten sperrt das Instrument', async () => {
+    await withPortfolio()
     const store = useInstrumentsStore()
     const instrument = makeInstrument()
     await store.load(mockClient([instrument]))
@@ -111,31 +123,74 @@ describe('useInstrumentsStore — Whitelist', () => {
     expect(store.isAllowed(instrument)).toBe(true)
   })
 
-  it('die Sperre wird persistiert', async () => {
+  it('die Sperre wird persistiert — unter der Kennung des Depots', async () => {
+    const depotId = await withPortfolio()
     const store = useInstrumentsStore()
     const instrument = makeInstrument()
     await store.load(mockClient([instrument]))
     await store.toggleAllowed(instrument)
 
-    const stored = await new AllowlistRepository().loadAll()
+    const stored = await new AllowlistRepository().loadAll(depotId)
 
     expect(stored.get('IE0000000001')).toBe(false)
   })
 
   it('die Sperre überlebt einen Neustart', async () => {
     const instrument = makeInstrument()
+    const depotId = await withPortfolio()
     const first = useInstrumentsStore()
     await first.load(mockClient([instrument]))
     await first.toggleAllowed(instrument)
 
+    // Wie beim echten Neustart: Erst das Depot laden, dann den Katalog — die
+    // Whitelist hängt am Depot und wäre ohne es leer.
     setActivePinia(createPinia())
+    await usePortfolioStore().load(depotId)
     const second = useInstrumentsStore()
     await second.load(mockClient([instrument]))
 
     expect(second.isAllowed(instrument)).toBe(false)
   })
 
+  it('wechselt die Whitelist mit dem Depot', async () => {
+    // Der Kern der Sache: Die Freigaben des vorigen Depots sähen richtig aus
+    // und wären falsch.
+    const instrument = makeInstrument()
+    const portfolios = usePortfolioStore()
+    await portfolios.load()
+
+    const store = useInstrumentsStore()
+    await store.load(mockClient([instrument]))
+    await store.toggleAllowed(instrument)
+    expect(store.isAllowed(instrument)).toBe(false)
+
+    await portfolios.createPortfolio('Zweites')
+    await store.hydrateAllowlist()
+
+    expect(store.isAllowed(instrument)).toBe(true)
+  })
+
+  it('hält die Sperre je Depot getrennt', async () => {
+    const instrument = makeInstrument()
+    const portfolios = usePortfolioStore()
+    await portfolios.load()
+    const erstesId = portfolios.portfolio?.id as string
+
+    const store = useInstrumentsStore()
+    await store.load(mockClient([instrument]))
+    await store.toggleAllowed(instrument)
+
+    await portfolios.createPortfolio('Zweites')
+    await store.hydrateAllowlist()
+    expect(store.isAllowed(instrument)).toBe(true)
+
+    await portfolios.switchTo(erstesId)
+    await store.hydrateAllowlist()
+    expect(store.isAllowed(instrument)).toBe(false)
+  })
+
   it('sperrt nur das angegebene Instrument', async () => {
+    await withPortfolio()
     const store = useInstrumentsStore()
     const first = makeInstrument({ isin: 'IE0000000001' })
     const second = makeInstrument({ isin: 'IE0000000002' })
@@ -148,13 +203,14 @@ describe('useInstrumentsStore — Whitelist', () => {
   })
 
   it('nutzt das Symbol als Schlüssel, wenn keine ISIN vorliegt', async () => {
+    const depotId = await withPortfolio()
     const store = useInstrumentsStore()
     const instrument = makeInstrument({ isin: null, symbol: 'NOISIN.DE' })
     await store.load(mockClient([instrument]))
 
     await store.toggleAllowed(instrument)
 
-    const stored = await new AllowlistRepository().loadAll()
+    const stored = await new AllowlistRepository().loadAll(depotId)
     expect(stored.get('NOISIN.DE')).toBe(false)
   })
 })

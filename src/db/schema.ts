@@ -9,15 +9,29 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 export const DB_NAME = 'stockportfolio'
-export const DB_VERSION = 1
+export const DB_VERSION = 2
 
 /** Fester Schlüssel des Settings-Singletons. */
 export const SETTINGS_KEY = 'default'
 
-/** Eintrag der Instrument-Whitelist. */
+/**
+ * Eintrag der Instrument-Whitelist.
+ *
+ * Die Whitelist gehört zum Depot, nicht zur App: Welche Papiere für ein
+ * Kinderdepot in Frage kommen, ist eine andere Menge als beim eigenen.
+ * Deshalb der zusammengesetzte Schlüssel — `id` ist `<portfolioId>::<key>`,
+ * die Einzelteile stehen daneben, damit sich je Depot filtern lässt.
+ */
 export interface AllowlistEntry {
+  id: string
+  portfolioId: string
   key: string
   enabled: boolean
+}
+
+/** Baut den zusammengesetzten Schlüssel eines Whitelist-Eintrags. */
+export function allowlistId(portfolioId: string, key: string): string {
+  return `${portfolioId}::${key}`
 }
 
 export interface StockPortfolioDB extends DBSchema {
@@ -36,6 +50,7 @@ export interface StockPortfolioDB extends DBSchema {
   instrumentAllowlist: {
     key: string
     value: AllowlistEntry
+    indexes: { byPortfolio: string }
   }
 }
 
@@ -48,13 +63,41 @@ let dbPromise: Promise<IDBPDatabase<StockPortfolioDB>> | null = null
  */
 export function getDb(): Promise<IDBPDatabase<StockPortfolioDB>> {
   dbPromise ??= openDB<StockPortfolioDB>(DB_NAME, DB_VERSION, {
-    upgrade(db, oldVersion) {
+    async upgrade(db, oldVersion, _newVersion, tx) {
       // Version 0 → 1: Initiales Schema.
       if (oldVersion < 1) {
         db.createObjectStore('portfolios', { keyPath: 'id' })
         db.createObjectStore('settings', { keyPath: 'key' })
         db.createObjectStore('quoteCache', { keyPath: 'key' })
         db.createObjectStore('instrumentAllowlist', { keyPath: 'key' })
+      }
+
+      // Version 1 → 2: Die Whitelist bekommt einen Depot-Bezug.
+      //
+      // Bis hier lag sie global — mit mehreren Depots ist das falsch. Die
+      // vorhandenen Einträge gehören dem Depot, das sie angelegt hat; das ist
+      // das einzige, das es damals gab. Sie stillschweigend wegzuwerfen wäre
+      // die schlechtere Wahl: Wer 20 Papiere ausgeblendet hat, müsste von
+      // vorn beginnen.
+      if (oldVersion < 2) {
+        const alt = await tx.objectStore('instrumentAllowlist').getAll()
+        db.deleteObjectStore('instrumentAllowlist')
+        const store = db.createObjectStore('instrumentAllowlist', { keyPath: 'id' })
+        store.createIndex('byPortfolio', 'portfolioId')
+
+        const [erstesDepot] = await tx.objectStore('portfolios').getAllKeys()
+        if (erstesDepot) {
+          for (const entry of alt as { key: string; enabled: boolean }[]) {
+            await tx
+              .objectStore('instrumentAllowlist')
+              .put({
+                id: allowlistId(erstesDepot, entry.key),
+                portfolioId: erstesDepot,
+                key: entry.key,
+                enabled: entry.enabled,
+              })
+          }
+        }
       }
     },
   })
