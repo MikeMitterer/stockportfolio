@@ -53,6 +53,7 @@ const SETTINGS: Settings = {
   links: [],
   ui: {
     notificationSeconds: 0,
+    historyPeriod: 'month',
   },
 }
 

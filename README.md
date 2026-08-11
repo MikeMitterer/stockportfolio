@@ -37,9 +37,11 @@ treffen und behauptet sie auch nicht.
 
 ### Kursverlauf
 
-Jede Zeile zeigt eine kleine Verlaufslinie über einen Monat — sie beantwortet
-eine Frage, die keine Zahl beantwortet: Kommt der Kurs gerade von oben oder
-von unten? Der Zeitraum steht im Spaltenkopf.
+Jede Zeile zeigt eine kleine Verlaufslinie — sie beantwortet eine Frage, die
+keine Zahl beantwortet: Kommt der Kurs gerade von oben oder von unten? Der
+Zeitraum steht im Spaltenkopf und ist unter *Einstellungen → Darstellung*
+wählbar: ein Monat, eine Woche oder ein Tag. „Ein Tag" zeigt keinen Verlauf,
+sondern die Veränderung vom letzten Handelstag auf heute.
 
 In der aufgeklappten Zeile steht ein Diagramm mit Achsen: links die Kurse,
 rechts dieselben Linien als Veränderung seit Beginn des Zeitraums — zwei

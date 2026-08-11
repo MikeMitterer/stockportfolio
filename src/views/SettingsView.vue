@@ -22,6 +22,8 @@ import { useQuotesStore } from '@/stores/quotes'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useThemeStore } from '@/stores/theme'
 import { LOCALE_IDS, LOCALES, useLocaleStore } from '@/stores/locale'
+import { HISTORY_PERIODS, HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
+import type { HistoryPeriod } from '@/types/portfolio'
 import { THEME_IDS, THEMES } from '@/theme/themes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useRelativeTime } from '@/composables/useRelativeTime'
@@ -104,6 +106,10 @@ const securityBufferEuro = computed(() =>
   resolveSecurityBuffer(settingsStore.settings.securityBuffer, total.value),
 )
 
+async function setHistoryPeriod(value: HistoryPeriod): Promise<void> {
+  await settingsStore.patch({ ui: { ...settingsStore.settings.ui, historyPeriod: value } })
+}
+
 async function setNotificationSeconds(value: number | null): Promise<void> {
   if (value === null) return
   await settingsStore.patch({
@@ -113,6 +119,7 @@ async function setNotificationSeconds(value: number | null): Promise<void> {
 
 const themes = THEME_IDS.map((id) => THEMES[id])
 const locales = LOCALE_IDS.map((id) => LOCALES[id])
+const historyPeriods = HISTORY_PERIODS.map((id) => HISTORY_PERIOD_INFO[id])
 
 // ─── Status der Gegenstelle ─────────────────────────────────────────────────
 
@@ -326,6 +333,29 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                 {{ t(`settings.themeHints.${theme.id}`) }}
               </span>
             </button>
+          </div>
+        </NCard>
+
+        <NCard :bordered="false" class="!bg-card mt-4">
+          <template #header>
+            <span class="text-sm font-medium">{{ t('history.periodHeading') }}</span>
+          </template>
+
+          <div class="flex flex-col gap-2">
+            <NButtonGroup size="small">
+              <NButton
+                v-for="entry in historyPeriods"
+                :key="entry.id"
+                :type="entry.id === settingsStore.settings.ui.historyPeriod ? 'primary' : 'default'"
+                :secondary="entry.id !== settingsStore.settings.ui.historyPeriod"
+                @click="setHistoryPeriod(entry.id)"
+              >
+                {{ t(`history.periodNames.${entry.id}`) }}
+              </NButton>
+            </NButtonGroup>
+            <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
+              {{ t('history.periodHint') }}
+            </span>
           </div>
         </NCard>
       </NTabPane>

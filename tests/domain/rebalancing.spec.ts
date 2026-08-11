@@ -415,6 +415,7 @@ describe('computeRebalancing', () => {
     links: [],
     ui: {
       notificationSeconds: 0,
+      historyPeriod: 'month',
     },
   }
 
@@ -678,6 +679,7 @@ describe('computeLiquidity', () => {
       links: [],
       ui: {
         notificationSeconds: 0,
+        historyPeriod: 'month',
       },
     }
   }
@@ -817,7 +819,7 @@ describe('Fremdwährung', () => {
     currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
-    ui: { notificationSeconds: 0 },
+    ui: { notificationSeconds: 0, historyPeriod: 'month' },
   }
 
   it('erkennt eine abweichende Notierungswährung', () => {

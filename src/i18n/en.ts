@@ -117,12 +117,15 @@ export const en: MessageSchema = {
 
   history: {
     heading: 'Price history',
-    columnTitle: 'History 1M',
-    lastMonth: 'last month',
+    columnTitle: 'History {period}',
+    short: { d1: '1D', w1: '1W', m1: '1M', m3: '3M', y1: '1Y', max: 'Max' },
+    periodNames: { day: 'One day', week: 'One week', month: 'One month' },
+    periodHeading: 'History in the table',
+    periodHint:
+      'Period of the small line next to the price. “One day” shows no line but the change from the last trading day to today.',
     none: 'No history available for this instrument.',
     sinceStart: '{value} since start',
     axisHint: 'Prices on the left, change since {date} on the right.',
-    periods: { m1: '1M', m3: '3M', y1: '1Y', max: 'Max' },
   },
 
   currency: {

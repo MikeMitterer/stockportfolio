@@ -63,6 +63,9 @@ export function defaultSettings(activePortfolioId: string): Settings {
     ui: {
       // Lang genug zum Lesen, kurz genug, um beim Tippen nicht zu stören.
       notificationSeconds: 8,
+      // Ein Monat als Vorgabe: kurz genug für die aktuelle Bewegung, lang
+      // genug, dass ein einzelner Tag nicht das ganze Bild bestimmt.
+      historyPeriod: 'month',
     },
   }
 }
@@ -97,6 +100,7 @@ export function withDefaults(stored: Partial<Settings>): Settings {
     links: stored.links?.length ? stored.links : base.links,
     ui: {
       notificationSeconds: stored.ui?.notificationSeconds ?? base.ui.notificationSeconds,
+      historyPeriod: stored.ui?.historyPeriod ?? base.ui.historyPeriod,
     },
   }
 }

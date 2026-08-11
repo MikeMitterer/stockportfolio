@@ -42,10 +42,10 @@ const historyStore = useHistoryStore()
 const period = ref<Period>('3m')
 
 const PERIODS = computed<{ value: Period; label: string }[]>(() => [
-  { value: '1m', label: t('history.periods.m1') },
-  { value: '3m', label: t('history.periods.m3') },
-  { value: '1y', label: t('history.periods.y1') },
-  { value: 'max', label: t('history.periods.max') },
+  { value: '1m', label: t('history.short.m1') },
+  { value: '3m', label: t('history.short.m3') },
+  { value: '1y', label: t('history.short.y1') },
+  { value: 'max', label: t('history.short.max') },
 ])
 
 /**

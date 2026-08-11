@@ -100,8 +100,19 @@ export interface Settings {
      * Grund entfällt — der Zähler beendet nur das Warten darauf.
      */
     notificationSeconds: number
+    /**
+     * Zeitraum der Verlaufslinie in der Tabelle.
+     *
+     * `day` ist ein Sonderfall: Zwischen zwei Schlusskursen gibt es keinen
+     * Verlauf, wohl aber eine Veränderung — Gewinn oder Verlust vom letzten
+     * Handelstag auf heute.
+     */
+    historyPeriod: HistoryPeriod
   }
 }
+
+/** Zeitraum der Verlaufslinie in der Positionstabelle. */
+export type HistoryPeriod = 'day' | 'week' | 'month'
 
 export interface QuoteCacheEntry {
   isin: string | null

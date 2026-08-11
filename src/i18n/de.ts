@@ -111,12 +111,15 @@ export const de = {
 
   history: {
     heading: 'Kursverlauf',
-    columnTitle: 'Verlauf 1M',
-    lastMonth: 'letzter Monat',
+    columnTitle: 'Verlauf {period}',
+    short: { d1: '1T', w1: '1W', m1: '1M', m3: '3M', y1: '1J', max: 'Max' },
+    periodNames: { day: 'Ein Tag', week: 'Eine Woche', month: 'Ein Monat' },
+    periodHeading: 'Verlauf in der Tabelle',
+    periodHint:
+      'Zeitraum der kleinen Linie neben dem Kurs. „Ein Tag" zeigt keinen Verlauf, sondern die Veränderung vom letzten Handelstag auf heute.',
     none: 'Für dieses Papier liegt kein Verlauf vor.',
     sinceStart: '{value} seit Beginn',
     axisHint: 'Links die Kurse, rechts die Veränderung seit dem {date}.',
-    periods: { m1: '1M', m3: '3M', y1: '1J', max: 'Max' },
   },
 
   currency: {

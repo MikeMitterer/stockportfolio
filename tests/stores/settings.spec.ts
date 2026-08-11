@@ -178,7 +178,7 @@ describe('withDefaults — Meldungs-Zähler', () => {
     // ihn stillschweigend überschrieben.
     const alt: Partial<Settings> = {
       activePortfolioId: 'p1',
-      ui: { notificationSeconds: 0 },
+      ui: { notificationSeconds: 0, historyPeriod: 'month' },
     }
     expect(withDefaults(alt).ui.notificationSeconds).toBe(0)
   })
@@ -226,5 +226,30 @@ describe('useSettingsStore — replaceAll', () => {
     const stored = await new SettingsRepository().load()
 
     expect(stored?.totalRounding).toBe(0)
+  })
+})
+
+describe('withDefaults — Zeitraum der Verlaufslinie', () => {
+  it('gibt neuen Datensätzen einen Zeitraum', () => {
+    expect(withDefaults({ activePortfolioId: 'p1' }).ui.historyPeriod).toBe('month')
+  })
+
+  it('behält eine gespeicherte Wahl', () => {
+    const alt = {
+      activePortfolioId: 'p1',
+      ui: { notificationSeconds: 8, historyPeriod: 'day' },
+    } as unknown as Partial<Settings>
+
+    expect(withDefaults(alt).ui.historyPeriod).toBe('day')
+  })
+
+  it('ergänzt ihn bei Einstellungen aus einer älteren Fassung', () => {
+    // Solche Datensätze kennen nur den Meldungs-Zähler.
+    const alt = {
+      activePortfolioId: 'p1',
+      ui: { notificationSeconds: 8 },
+    } as unknown as Partial<Settings>
+
+    expect(withDefaults(alt).ui.historyPeriod).toBe('month')
   })
 })

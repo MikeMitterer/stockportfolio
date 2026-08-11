@@ -13,7 +13,9 @@ import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
-import { useHistoryStore } from '@/stores/history'
+import { useHistoryStore, type HistorySeries } from '@/stores/history'
+import { HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
+import { useSettingsStore } from '@/stores/settings'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 type RowKey = string | number
@@ -40,22 +42,45 @@ const { t } = useI18n()
 /**
  * Kursverlauf für die Zeilen.
  *
- * Kurzer Zeitraum: In 90 Pixeln Breite ist ein Jahr nur noch Zickzack. Ein
- * Monat zeigt die Bewegung, um die es hier geht — kommt der Kurs von oben
- * oder von unten?
+ * Kurzer Zeitraum: In 60 Pixeln Breite ist ein Jahr nur noch Zickzack. Welcher
+ * es genau ist, entscheidet der Nutzer in den Einstellungen.
+ *
+ * Für „ein Tag" wird die Woche geholt und daraus nur der letzte Schritt
+ * gezeigt: Zwischen zwei Schlusskursen gibt es keinen Verlauf, wohl aber eine
+ * Veränderung — vom letzten Handelstag auf heute. Ein eigener Abruf dafür
+ * wäre Verschwendung, die Wochendaten enthalten ihn bereits.
  */
-const SPARK_PERIOD = '1m' as const
-
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
 const historyStore = useHistoryStore()
+const settingsStore = useSettingsStore()
 
-// Nachladen, sobald die Zeilen stehen. Der Store holt nur, was fehlt oder von
-// gestern ist — meist kostet das keine einzige Anfrage.
+const sparkPeriod = computed(() => settingsStore.settings.ui.historyPeriod)
+const periodInfo = computed(() => HISTORY_PERIOD_INFO[sparkPeriod.value])
+const apiPeriod = computed(() => periodInfo.value.apiPeriod)
+
+/** Beschriftung der Spalte — der Zeitraum gehört einmal in den Kopf. */
+const periodLabel = computed(() => t(`history.short.${periodInfo.value.shortKey}`))
+
+/**
+ * Punkte für eine Zeile, auf den eingestellten Zeitraum zugeschnitten.
+ *
+ * Nur „ein Tag" schneidet: Dort interessieren der vorige Schluss und der
+ * aktuelle Kurs, nicht die Woche davor.
+ */
+function pointsFor(position: PositionResult['position']): HistorySeries {
+  const series = historyStore.get(position, apiPeriod.value)
+  const { limit } = periodInfo.value
+  if (limit === 0) return series
+  return { ...series, points: series.points.slice(-limit) }
+}
+
+// Nachladen, sobald die Zeilen stehen oder der Zeitraum wechselt. Der Store
+// holt nur, was fehlt oder von gestern ist — meist kostet das keine Anfrage.
 watch(
-  () => props.rows.map((row) => row.position.id).join(','),
+  [() => props.rows.map((row) => row.position.id).join(','), apiPeriod],
   () => {
     for (const row of props.rows) {
-      void historyStore.ensure(client, row.position, SPARK_PERIOD)
+      void historyStore.ensure(client, row.position, apiPeriod.value)
     }
   },
   { immediate: true },
@@ -227,7 +252,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     // Der Zeitraum gehört in den Kopf, nicht in jede Zeile: einmal genannt,
     // kostet er keinen Platz in den Zeilen.
-    title: t('history.columnTitle'),
+    title: () => t('history.columnTitle', { period: periodLabel.value }),
     key: 'history',
     // Schmal gehalten: Die Spalte ist eine Zugabe, keine Hauptzahl — sie darf
     // dem Delta und dem Status keinen Platz wegnehmen.
@@ -236,12 +261,12 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       if (row.position.group === 'cash') {
         return h('span', { class: 'text-ink-muted text-xs' }, '—')
       }
-      const series = historyStore.get(row.position, SPARK_PERIOD)
+      const series = pointsFor(row.position)
       return h(PriceSparkline, {
         points: series.points,
         loading: series.loading,
         width: 62,
-        periodLabel: t('history.lastMonth'),
+        periodLabel: periodLabel.value,
       })
     },
   },
