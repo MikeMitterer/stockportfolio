@@ -8,6 +8,8 @@ import {
   NDialogProvider,
   NLoadingBarProvider,
   darkTheme,
+  dateDeDE,
+  deDE,
   type GlobalThemeOverrides,
 } from 'naive-ui'
 import AppStatusBar from '@/components/AppStatusBar.vue'
@@ -58,7 +60,14 @@ function refresh(): void {
 </script>
 
 <template>
+  <!--
+    Deutsche Locale für Naive UI: Die eingebauten Beschriftungen — etwa
+    „Confirm" / „Cancel" in jeder Rückfrage — kamen sonst englisch heraus,
+    mitten in einer sonst deutschen Oberfläche.
+  -->
   <NConfigProvider
+    :locale="deDE"
+    :date-locale="dateDeDE"
     :theme="themeStore.isDark ? darkTheme : null"
     :theme-overrides="naiveOverrides"
     inline-theme-disabled

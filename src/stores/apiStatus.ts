@@ -13,7 +13,7 @@
  * widersprechen können.
  */
 
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { ApiError } from '@/api/errors'
@@ -75,3 +75,12 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
 
   return { state, status, version, latencyMs, checkedAt, error, check }
 })
+
+/*
+ * Hot-Reload: Ohne diese Zeile behält der Browser beim Speichern die alte
+ * Fassung des Stores. Neue Methoden fehlen dann — der Aufruf läuft ins Leere
+ * und man sucht den Fehler im eigenen Code, obwohl nur ein Neuladen fehlt.
+ */
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useApiStatusStore, import.meta.hot))
+}

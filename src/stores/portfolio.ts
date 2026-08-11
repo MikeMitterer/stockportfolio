@@ -5,7 +5,7 @@
  * IndexedDB — es gibt keinen „Speichern"-Knopf.
  */
 
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
 import { PortfolioRepository } from '@/db/repository'
@@ -137,6 +137,26 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     return changed
   }
 
+  /**
+   * Ersetzt das aktive Depot durch ein eingelesenes.
+   *
+   * Das bisherige wird entfernt, nicht danebengelegt: Zwei Depots mit
+   * derselben Kennung ließen sich nicht auseinanderhalten, und die App zeigt
+   * ohnehin immer nur eines. Aufrufer müssen vorher fragen — hier gibt es
+   * kein Zurück.
+   *
+   * @param next Das einzuspielende Depot.
+   */
+  async function replacePortfolio(next: Portfolio): Promise<void> {
+    const current = portfolio.value
+
+    await repository.save(next)
+    if (current && current.id !== next.id) await repository.remove(current.id)
+
+    portfolio.value = next
+    consola.info('portfolio: Depot ersetzt', { id: next.id, positions: next.positions.length })
+  }
+
   /** Entfernt eine Position endgültig. */
   async function removePosition(id: string): Promise<void> {
     if (!portfolio.value) return
@@ -157,6 +177,16 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     updatePosition,
     addPosition,
     removePosition,
+    replacePortfolio,
     backfillKinds,
   }
 })
+
+/*
+ * Hot-Reload: Ohne diese Zeile behält der Browser beim Speichern die alte
+ * Fassung des Stores. Neue Methoden fehlen dann — der Aufruf läuft ins Leere
+ * und man sucht den Fehler im eigenen Code, obwohl nur ein Neuladen fehlt.
+ */
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(usePortfolioStore, import.meta.hot))
+}

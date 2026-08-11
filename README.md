@@ -73,7 +73,10 @@ Das hat Folgen, die man kennen sollte:
 - „Website-Daten löschen" im Browser löscht auch das Depot.
 - Ein Container-Update kostet nichts — die Daten liegen ja nicht im Container.
 
-Ein Export/Import fehlt noch (siehe [Was noch fehlt](#was-noch-fehlt)).
+Unter *Einstellungen → Daten* gibt es deshalb Sicherung und Wiederherstellung:
+eine JSON-Datei mit Depot und Einstellungen. Kurse sind nicht enthalten — die
+holt die App ohnehin neu. Beim Einspielen wird die Datei erst geprüft und der
+Inhalt gezeigt; überschrieben wird nichts, ohne dass man es bestätigt hat.
 
 ## Setup
 
@@ -191,7 +194,6 @@ Healthcheck färbt den Zustand im Docker-Reiter.
 
 | Thema | Stand |
 |---|---|
-| Export / Import des Depots | offen — bis dahin gibt es kein Backup |
 | Mehrere Portfolios verwalten | offen — das Datenmodell kann es, die Oberfläche nicht |
 | Anzeige-Spalten ein-/ausblendbar | offen — die Einstellung existiert, ohne Oberfläche |
 | Warnung bei nicht-EUR-Positionen | offen — die App rechnet durchgängig in Euro |

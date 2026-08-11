@@ -194,3 +194,40 @@ describe('withDefaults — Meldungs-Zähler', () => {
     )
   })
 })
+
+describe('useSettingsStore — replaceAll', () => {
+  it('übernimmt eingespielte Einstellungen', async () => {
+    const store = useSettingsStore()
+    await store.load('p1')
+
+    await store.replaceAll({
+      ...defaultSettings('p1'),
+      bands: { lowerPercent: 3, upperPercent: 9 },
+    })
+
+    expect(store.settings.bands).toEqual({ lowerPercent: 3, upperPercent: 9 })
+  })
+
+  it('ergänzt Felder, die eine ältere Sicherung noch nicht kannte', async () => {
+    // Sonst scheitert das Einspielen daran, dass die App inzwischen ein Feld
+    // mehr hat — und der Nutzer steht vor undefined.
+    const store = useSettingsStore()
+    await store.load('p1')
+
+    await store.replaceAll({ activePortfolioId: 'p1' } as Partial<Settings>)
+
+    expect(store.settings.links.length).toBeGreaterThan(0)
+    expect(store.settings.ui.notificationSeconds).toBeGreaterThan(0)
+    expect(store.settings.securityBuffer.mode).toBeDefined()
+  })
+
+  it('persistiert die Übernahme', async () => {
+    const store = useSettingsStore()
+    await store.load('p1')
+    await store.replaceAll({ ...defaultSettings('p1'), totalRounding: 0 })
+
+    const stored = await new SettingsRepository().load()
+
+    expect(stored?.totalRounding).toBe(0)
+  })
+})

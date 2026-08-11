@@ -6,7 +6,7 @@
  * sonst blitzt kurz das falsche Theme auf.
  */
 
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import {
   DEFAULT_DARK_THEME,
@@ -102,3 +102,12 @@ export const useThemeStore = defineStore('theme', () => {
 
   return { current, info, isDark, init, setTheme }
 })
+
+/*
+ * Hot-Reload: Ohne diese Zeile behält der Browser beim Speichern die alte
+ * Fassung des Stores. Neue Methoden fehlen dann — der Aufruf läuft ins Leere
+ * und man sucht den Fehler im eigenen Code, obwohl nur ein Neuladen fehlt.
+ */
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useThemeStore, import.meta.hot))
+}

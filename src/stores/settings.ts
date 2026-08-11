@@ -3,7 +3,7 @@
  * Jede Änderung wird direkt nach IndexedDB durchgeschrieben.
  */
 
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { SettingsRepository } from '@/db/repository'
@@ -162,14 +162,40 @@ export const useSettingsStore = defineStore('settings', () => {
     await patch({ activePortfolioId: portfolioId })
   }
 
+  /**
+   * Ersetzt die Einstellungen vollständig — für das Einspielen einer Sicherung.
+   *
+   * Läuft durch `withDefaults`, damit eine ältere Datei nicht daran scheitert,
+   * dass inzwischen ein Feld hinzugekommen ist. Die Kennung des aktiven Depots
+   * kommt aus der Sicherung mit, weil sie sonst auf ein Depot zeigt, das es
+   * nach dem Einspielen nicht mehr gibt.
+   *
+   * @param next Eingelesene Einstellungen, möglicherweise unvollständig.
+   */
+  async function replaceAll(next: Partial<Settings>): Promise<void> {
+    settings.value = withDefaults(next)
+    await repository.save(settings.value)
+    consola.info('settings: Einstellungen ersetzt')
+  }
+
   return {
     settings,
     loaded,
     load,
     patch,
+    replaceAll,
     setBands,
     setActivePortfolio,
     setLinks,
     resetLinks,
   }
 })
+
+/*
+ * Hot-Reload: Ohne diese Zeile behält der Browser beim Speichern die alte
+ * Fassung des Stores. Neue Methoden fehlen dann — der Aufruf läuft ins Leere
+ * und man sucht den Fehler im eigenen Code, obwohl nur ein Neuladen fehlt.
+ */
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useSettingsStore, import.meta.hot))
+}

@@ -2,6 +2,7 @@
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
+import BackupPanel from '@/components/BackupPanel.vue'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
 import { eur } from '@/domain/formatters'
 import { computeRebalancing, resolveSecurityBuffer } from '@/domain/rebalancing'
@@ -306,6 +307,16 @@ const API_STATE_LABEL: Record<string, string> = {
           />
         </NCard>
       </NTabPane>
+      <NTabPane name="data" tab="Daten">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <span class="text-sm font-medium">Sichern und Wiederherstellen</span>
+          </template>
+
+          <BackupPanel />
+        </NCard>
+      </NTabPane>
+
       <NTabPane name="status" tab="Status">
         <NCard :bordered="false" class="!bg-card">
           <template #header>
@@ -396,13 +407,6 @@ const API_STATE_LABEL: Record<string, string> = {
         </NCard>
       </NTabPane>
     </NTabs>
-
-    <NCard :bordered="false" class="!bg-card">
-      <p class="text-sm text-ink-secondary leading-relaxed">
-        Portfolio-Verwaltung, Refresh-Verhalten, Anzeige-Spalten und Export/Import
-        folgen in T-11.
-      </p>
-    </NCard>
   </div>
 </template>
 

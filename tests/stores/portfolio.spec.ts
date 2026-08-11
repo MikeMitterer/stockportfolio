@@ -9,7 +9,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { PortfolioRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { newId } from '@/db/seed'
-import type { Position } from '@/types/portfolio'
+import type { Portfolio, Position } from '@/types/portfolio'
 
 beforeEach(async () => {
   setActivePinia(createPinia())
@@ -208,5 +208,56 @@ describe('usePortfolioStore — add/remove', () => {
     const stored = await new PortfolioRepository().findById(store.portfolio?.id as string)
 
     expect(stored?.positions.some((p) => p.id === id)).toBe(false)
+  })
+})
+
+describe('usePortfolioStore — replacePortfolio', () => {
+  function makeImported(id: string, positions: Position[]): Portfolio {
+    const now = '2026-08-10T18:00:00.000Z'
+    return { id, name: 'Eingespielt', createdAt: now, updatedAt: now, positions }
+  }
+
+  it('übernimmt das eingespielte Depot', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+
+    await store.replacePortfolio(makeImported('neu', [makePosition({ id: 'x', units: 42 })]))
+
+    expect(store.portfolio?.name).toBe('Eingespielt')
+    expect(store.positions.find((p) => p.id === 'x')?.units).toBe(42)
+  })
+
+  it('lässt kein verwaistes Depot zurück', async () => {
+    // Zwei Depots nebeneinander ließen sich in der Oberfläche nicht
+    // auseinanderhalten — sie zeigt immer nur eines.
+    const store = usePortfolioStore()
+    await store.load()
+
+    await store.replacePortfolio(makeImported('neu', []))
+
+    expect(await new PortfolioRepository().count()).toBe(1)
+  })
+
+  it('überlebt einen Neustart', async () => {
+    const first = usePortfolioStore()
+    await first.load()
+    await first.replacePortfolio(makeImported('neu', [makePosition({ id: 'x' })]))
+
+    setActivePinia(createPinia())
+    const second = usePortfolioStore()
+    await second.load('neu')
+
+    expect(second.portfolio?.name).toBe('Eingespielt')
+  })
+
+  it('kommt mit gleicher Kennung zurecht, statt das eigene Depot zu löschen', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const sameId = store.portfolio?.id as string
+
+    await store.replacePortfolio(makeImported(sameId, [makePosition({ id: 'x', units: 7 })]))
+
+    expect(await new PortfolioRepository().count()).toBe(1)
+    expect(store.positions.find((p) => p.id === 'x')?.units).toBe(7)
   })
 })
