@@ -34,6 +34,14 @@ function makePosition(overrides: Partial<Position> = {}): Position {
   }
 }
 
+/** Whitelist mit einem ausgeblendeten Papier — der interessante Fall. */
+function makeAllowlist(): Map<string, boolean> {
+  return new Map([
+    ['IE00B3RBWM25', true],
+    ['US0846707026', false],
+  ])
+}
+
 function makePortfolio(positions: Position[] = [makePosition()]): Portfolio {
   return {
     id: 'depot-1',
@@ -49,6 +57,7 @@ function validRaw(mutate: (data: Record<string, unknown>) => void = () => {}): s
   const backup = buildBackup(
     makePortfolio(),
     defaultSettings('depot-1'),
+    makeAllowlist(),
     '0.1.0',
     '2026-08-10T18:00:00.000Z',
   )
@@ -59,7 +68,7 @@ function validRaw(mutate: (data: Record<string, unknown>) => void = () => {}): s
 
 describe('buildBackup', () => {
   it('kennzeichnet die Datei, damit fremdes JSON nicht durchrutscht', () => {
-    const backup = buildBackup(makePortfolio(), defaultSettings('d'), '0.1.0', 'jetzt')
+    const backup = buildBackup(makePortfolio(), defaultSettings('d'), makeAllowlist(), '0.1.0', 'jetzt')
 
     expect(backup.kind).toBe(BACKUP_KIND)
     expect(backup.schemaVersion).toBe(BACKUP_SCHEMA_VERSION)
@@ -68,7 +77,7 @@ describe('buildBackup', () => {
   it('nimmt Depot und Einstellungen unverändert auf', () => {
     const portfolio = makePortfolio()
     const settings = defaultSettings('depot-1')
-    const backup = buildBackup(portfolio, settings, '0.1.0', 'jetzt')
+    const backup = buildBackup(portfolio, settings, makeAllowlist(), '0.1.0', 'jetzt')
 
     expect(backup.portfolio).toEqual(portfolio)
     expect(backup.settings).toEqual(settings)
@@ -111,7 +120,13 @@ describe('parseBackup — der gute Fall', () => {
       makePosition({ id: 'c', symbol: 'CASH', group: 'cash', isin: null, units: 5000 }),
     ])
     const raw = JSON.stringify(
-      buildBackup(portfolio, defaultSettings('depot-1'), '0.1.0', '2026-08-10T18:00:00.000Z'),
+      buildBackup(
+        portfolio,
+        defaultSettings('depot-1'),
+        makeAllowlist(),
+        '0.1.0',
+        '2026-08-10T18:00:00.000Z',
+      ),
     )
 
     const result = parseBackup(raw)
@@ -251,5 +266,60 @@ describe('parseBackup — was abgelehnt wird', () => {
     expect(result.ok).toBe(false)
     if (result.ok) return
     expect(result.error).toContain('Position 2')
+  })
+})
+
+describe('Freigabeliste', () => {
+  it('kommt als Objekt in die Datei — eine Map überlebt JSON nicht', () => {
+    const backup = buildBackup(
+      makePortfolio(),
+      defaultSettings('d'),
+      makeAllowlist(),
+      '0.1.0',
+      'jetzt',
+    )
+
+    expect(backup.allowlist).toEqual({ IE00B3RBWM25: true, US0846707026: false })
+  })
+
+  it('übersteht den Roundtrip', () => {
+    // Wer aus einem großen Katalog ein Dutzend Papiere ausgeblendet hat, will
+    // das nach einem Gerätewechsel nicht noch einmal tun.
+    const result = parseBackup(validRaw())
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.allowlist).toEqual({ IE00B3RBWM25: true, US0846707026: false })
+  })
+
+  it('fehlt sie, gilt sie als leer — nicht als „nichts erlaubt"', () => {
+    // Genau so sehen Sicherungen aus, die vor dieser Erweiterung entstanden.
+    const result = parseBackup(validRaw((data) => delete data.allowlist))
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.allowlist).toEqual({})
+  })
+
+  it('überspringt unbrauchbare Einträge, statt die Datei abzulehnen', () => {
+    // Ein kaputter Eintrag heißt höchstens: ein Papier taucht wieder auf.
+    // Deswegen die ganze Sicherung zu verweigern stünde in keinem Verhältnis.
+    const result = parseBackup(
+      validRaw((data) => {
+        data.allowlist = { gut: false, kaputt: 'nein', auchGut: true }
+      }),
+    )
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.allowlist).toEqual({ gut: false, auchGut: true })
+  })
+
+  it('nimmt auch eine Liste statt eines Objekts hin, ohne zu werfen', () => {
+    const result = parseBackup(validRaw((data) => (data.allowlist = [1, 2, 3])))
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.allowlist).toEqual({})
   })
 })

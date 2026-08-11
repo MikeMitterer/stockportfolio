@@ -78,9 +78,33 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     await repository.setEnabled(key, next)
   }
 
+  /**
+   * Ersetzt die Whitelist — für das Einspielen einer Sicherung.
+   *
+   * @param entries Neue Whitelist (Key → freigegeben).
+   */
+  async function replaceAllowlist(entries: Map<string, boolean>): Promise<void> {
+    allowlist.value = new Map(entries)
+    await repository.replaceAll(entries)
+    consola.info('instruments: Whitelist ersetzt', { count: entries.size })
+  }
+
+  /**
+   * Lädt nur die Whitelist, ohne den Katalog.
+   *
+   * Die Sicherung lässt sich auch dann einspielen, wenn die Assets-Seite in
+   * dieser Sitzung nie geöffnet wurde — dann steht der Katalog noch nicht,
+   * die Whitelist aber sehr wohl.
+   */
+  async function hydrateAllowlist(): Promise<void> {
+    allowlist.value = await repository.loadAll()
+  }
+
   return {
     instruments,
     allowlist,
+    hydrateAllowlist,
+    replaceAllowlist,
     allowedInstruments,
     loading,
     error,

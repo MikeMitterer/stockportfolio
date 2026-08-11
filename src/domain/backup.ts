@@ -20,6 +20,11 @@ export const BACKUP_KIND = 'stockportfolio-backup'
  * Wird beim Einlesen geprüft. Eine neuere Fassung als die bekannte wird
  * abgelehnt statt geraten: Ein stillschweigend falsch interpretiertes Feld
  * wäre schlimmer als eine klare Fehlermeldung.
+ *
+ * Bleibt bei 1, obwohl die Freigabeliste dazugekommen ist: Das Feld ist rein
+ * additiv. Eine ältere App überliest es, eine neuere kommt ohne es aus. Die
+ * Fassung hochzuzählen würde nur dazu führen, dass eine ältere App eine Datei
+ * ablehnt, die sie problemlos lesen könnte.
  */
 export const BACKUP_SCHEMA_VERSION = 1
 
@@ -31,6 +36,17 @@ export interface Backup {
   exportedAt: string
   portfolio: Portfolio
   settings: Settings
+  /**
+   * Freigabe je Instrument (Key → freigegeben), als Objekt statt als `Map`.
+   *
+   * Auch das ist eine Nutzerentscheidung: Wer aus einem großen Katalog ein
+   * Dutzend Papiere ausgeblendet hat, will das nach einem Gerätewechsel nicht
+   * noch einmal tun.
+   *
+   * Ältere Sicherungen kennen das Feld nicht — dort gilt eine leere Liste,
+   * und leer heißt „nichts ausgeblendet", nicht „nichts erlaubt".
+   */
+  allowlist: Record<string, boolean>
 }
 
 /** Was beim Einlesen herauskommt: entweder Daten oder ein Grund. */
@@ -46,12 +62,14 @@ export type ParseResult =
  *
  * @param portfolio  Das zu sichernde Depot.
  * @param settings   Die zugehörigen Einstellungen.
+ * @param allowlist  Freigabe je Instrument.
  * @param appVersion Fassung der App.
  * @param exportedAt Zeitpunkt als ISO-String.
  */
 export function buildBackup(
   portfolio: Portfolio,
   settings: Settings,
+  allowlist: Map<string, boolean>,
   appVersion: string,
   exportedAt: string,
 ): Backup {
@@ -62,6 +80,7 @@ export function buildBackup(
     exportedAt,
     portfolio,
     settings,
+    allowlist: Object.fromEntries(allowlist),
   }
 }
 
@@ -147,8 +166,27 @@ export function parseBackup(raw: string): ParseResult {
       // (`withDefaults`) — eine ältere Sicherung soll nicht daran scheitern,
       // dass später ein Feld hinzugekommen ist.
       settings: data.settings as unknown as Settings,
+      allowlist: parseAllowlist(data.allowlist),
     },
   }
+}
+
+/**
+ * Liest die Freigabeliste.
+ *
+ * Bewusst nachsichtig statt streng: Ein unbrauchbarer Eintrag bedeutet
+ * höchstens, dass ein Papier in der Auswahl auftaucht, das man ausgeblendet
+ * hatte — ärgerlich, aber ohne Folgen für die Zahlen. Die Sicherung deswegen
+ * ganz abzulehnen stünde in keinem Verhältnis.
+ */
+function parseAllowlist(value: unknown): Record<string, boolean> {
+  if (!isRecord(value)) return {}
+
+  const entries: Record<string, boolean> = {}
+  for (const [key, enabled] of Object.entries(value)) {
+    if (typeof enabled === 'boolean') entries[key] = enabled
+  }
+  return entries
 }
 
 /** Prüft das Depot; gibt bei einem Fehler den Grund als Text zurück. */

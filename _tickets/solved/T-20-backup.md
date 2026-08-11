@@ -12,8 +12,25 @@ neues Gerät hieß bisher: alles weg, ohne Rückweg.
 
 ## Was in die Datei kommt
 
-Depot und Einstellungen. **Keine Kurse** — die sind abgeleitet, jederzeit neu
-abrufbar und in einer Sicherung von gestern ohnehin wertlos.
+Depot, Einstellungen und die Freigabeliste der Assets. **Keine Kurse** — die
+sind abgeleitet, jederzeit neu abrufbar und in einer Sicherung von gestern
+ohnehin wertlos.
+
+Die Freigabeliste ist ebenfalls eine Nutzerentscheidung: Wer aus einem großen
+Katalog ein Dutzend Papiere ausgeblendet hat, will das nach einem
+Gerätewechsel nicht noch einmal tun. Sie steht als Objekt in der Datei, nicht
+als `Map` — die überlebt JSON nicht.
+
+Bei ihr ist die Prüfung bewusst **nachsichtig**, anders als beim Depot: Ein
+unbrauchbarer Eintrag bedeutet höchstens, dass ein Papier in der Auswahl
+wieder auftaucht. Die ganze Sicherung deswegen abzulehnen stünde in keinem
+Verhältnis. Fehlt die Liste ganz — wie in Sicherungen vor dieser Erweiterung —
+gilt sie als leer, und leer heißt „nichts ausgeblendet", nicht „nichts
+erlaubt".
+
+Die Format-Fassung bleibt trotzdem bei 1: Das Feld ist rein additiv. Sie
+hochzuzählen würde nur dazu führen, dass eine ältere App eine Datei ablehnt,
+die sie problemlos lesen könnte.
 
 Die Datei trägt eine Kennung (`stockportfolio-backup`) und eine
 Format-Fassung. Die Kennung fängt den wahrscheinlichsten Fehlgriff ab:
@@ -87,11 +104,12 @@ Legende: ✅ live bestätigt.
 | 9 | Nach dem Einspielen | Kein verwaistes Depot in der Datenbank | ✅ | |
 | 10 | Rückfrage | „Abbrechen" / „Bestätigen" auf Deutsch | ✅ | |
 | 11 | Roundtrip | Export → Import verliert keine Position (Unit-Test) | ✅ | |
+| 12 | Freigabeliste | Zwei Assets ausgeblendet → gesichert → wieder eingeschaltet → eingespielt → wieder ausgeblendet | ✅ | |
+| 13 | Vorschau | weist „Ausgeblendet: 2 Assets" aus | ✅ | |
 
 ## Offen
 
 - **Zusammenführen** gibt es nicht: Eine Sicherung ersetzt, sie ergänzt nicht.
   Für zwei Geräte mit unterschiedlichen Beständen wäre das eine eigene
   Aufgabe — und ohne Konfliktregeln keine gute.
-- Die **Whitelist der Assets** liegt in einer eigenen Tabelle und ist nicht Teil
-  der Sicherung.
+- Die **Kurse** bleiben draußen — sie sind abgeleitet und werden neu geholt.

@@ -249,3 +249,42 @@ describe('Store-Isolation', () => {
     expect((await quotes.loadAll()).size).toBe(0)
   })
 })
+
+describe('AllowlistRepository — replaceAll', () => {
+  it('ersetzt die Liste, statt sie zu ergänzen', async () => {
+    // Ein Zusammenführen ließe Einträge stehen, die in der Sicherung bewusst
+    // nicht mehr vorkommen — das Ausblenden wäre dann nicht rücknehmbar.
+    const repository = new AllowlistRepository()
+    await repository.setEnabled('alt', false)
+
+    await repository.replaceAll(new Map([['neu', false]]))
+    const loaded = await repository.loadAll()
+
+    expect(loaded.has('alt')).toBe(false)
+    expect(loaded.get('neu')).toBe(false)
+  })
+
+  it('leert die Liste, wenn die Sicherung keine enthält', async () => {
+    const repository = new AllowlistRepository()
+    await repository.setEnabled('alt', false)
+
+    await repository.replaceAll(new Map())
+
+    expect(await repository.count()).toBe(0)
+  })
+
+  it('persistiert alle Einträge', async () => {
+    const repository = new AllowlistRepository()
+
+    await repository.replaceAll(
+      new Map([
+        ['a', false],
+        ['b', true],
+      ]),
+    )
+    const loaded = await repository.loadAll()
+
+    expect(loaded.get('a')).toBe(false)
+    expect(loaded.get('b')).toBe(true)
+  })
+})

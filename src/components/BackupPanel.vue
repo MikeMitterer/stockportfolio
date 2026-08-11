@@ -12,6 +12,7 @@ import { eur } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import type { Portfolio } from '@/types/portfolio'
 import { useSettingsStore } from '@/stores/settings'
+import { useInstrumentsStore } from '@/stores/instruments'
 
 /**
  * Sichern und Wiederherstellen.
@@ -27,6 +28,7 @@ import { useSettingsStore } from '@/stores/settings'
 
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
+const instrumentsStore = useInstrumentsStore()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
@@ -62,7 +64,13 @@ function exportBackup(): void {
 
 function exportNow(portfolio: Portfolio): void {
   const exportedAt = new Date().toISOString()
-  const backup = buildBackup(portfolio, settingsStore.settings, __APP_VERSION__, exportedAt)
+  const backup = buildBackup(
+    portfolio,
+    settingsStore.settings,
+    instrumentsStore.allowlist,
+    __APP_VERSION__,
+    exportedAt,
+  )
 
   // Eingerückt geschrieben: Die Datei soll sich im Zweifel auch von Hand lesen
   // und reparieren lassen.
@@ -129,6 +137,7 @@ async function applyPending(): Promise<void> {
       ...backup.settings,
       activePortfolioId: backup.portfolio.id,
     })
+    await instrumentsStore.replaceAllowlist(new Map(Object.entries(backup.allowlist)))
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
     error.value = `Das Einspielen ist fehlgeschlagen: ${reason}`
@@ -146,6 +155,16 @@ async function applyPending(): Promise<void> {
 function discardPending(): void {
   pending.value = null
 }
+
+/**
+ * Wie viele Assets die Sicherung ausblendet.
+ *
+ * Nur die abgeschalteten sind eine Entscheidung — ein Eintrag mit `true`
+ * entspricht dem Normalfall und sagt nichts.
+ */
+const hiddenCount = computed(
+  () => Object.values(pending.value?.allowlist ?? {}).filter((enabled) => !enabled).length,
+)
 
 /** Summe der Bestände zur groben Kontrolle vor dem Überschreiben. */
 const pendingCashTotal = computed(() =>
@@ -205,6 +224,11 @@ const pendingCashTotal = computed(() =>
 
         <dt v-if="pendingCashTotal > 0" class="text-ink-muted">davon Cash</dt>
         <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ eur(pendingCashTotal) }}</dd>
+
+        <dt v-if="hiddenCount > 0" class="text-ink-muted">Ausgeblendet</dt>
+        <dd v-if="hiddenCount > 0" class="tabular-nums">
+          {{ hiddenCount }} {{ hiddenCount === 1 ? 'Asset' : 'Assets' }}
+        </dd>
 
         <dt class="text-ink-muted">Gesichert am</dt>
         <dd>{{ exportedAtLabel }}</dd>

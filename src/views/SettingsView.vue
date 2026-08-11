@@ -9,6 +9,7 @@ import { computeRebalancing, resolveSecurityBuffer } from '@/domain/rebalancing'
 import { useSettingsStore } from '@/stores/settings'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
+import { useInstrumentsStore } from '@/stores/instruments'
 import { useThemeStore } from '@/stores/theme'
 import { THEME_IDS, THEMES } from '@/theme/themes'
 import { useApiStatusStore } from '@/stores/apiStatus'
@@ -19,6 +20,7 @@ const { t } = useI18n()
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
+const instrumentsStore = useInstrumentsStore()
 const themeStore = useThemeStore()
 
 /** Gesamtvermögen — nur als Bezugsgröße für die Puffer-Vorschau. */
@@ -32,6 +34,8 @@ onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
   await quotesStore.hydrate()
+  // Ohne den Katalog, aber mit der Whitelist — die gehört in die Sicherung.
+  await instrumentsStore.hydrateAllowlist()
   // Ungefragt prüfen: Wer diese Seite öffnet, will den Zustand sehen, nicht
   // erst einen Knopf suchen.
   await api.check(client)

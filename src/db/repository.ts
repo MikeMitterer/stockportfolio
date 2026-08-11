@@ -117,6 +117,24 @@ export class AllowlistRepository {
     await db.put('instrumentAllowlist', entry)
   }
 
+  /**
+   * Ersetzt die Whitelist vollständig — für das Einspielen einer Sicherung.
+   *
+   * Erst leeren, dann schreiben: Ein Zusammenführen ließe Einträge stehen,
+   * die in der Sicherung bewusst nicht mehr vorkommen.
+   *
+   * @param entries Neue Whitelist (Key → freigegeben).
+   */
+  async replaceAll(entries: Map<string, boolean>): Promise<void> {
+    const db = await getDb()
+    const tx = db.transaction('instrumentAllowlist', 'readwrite')
+    await tx.store.clear()
+    for (const [key, enabled] of entries) {
+      await tx.store.put({ key, enabled })
+    }
+    await tx.done
+  }
+
   /** Anzahl der Einträge — um „noch nie befüllt" zu erkennen. */
   async count(): Promise<number> {
     const db = await getDb()

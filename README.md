@@ -74,8 +74,8 @@ Das hat Folgen, die man kennen sollte:
 - Ein Container-Update kostet nichts — die Daten liegen ja nicht im Container.
 
 Unter *Einstellungen → Daten* gibt es deshalb Sicherung und Wiederherstellung:
-eine JSON-Datei mit Depot und Einstellungen. Kurse sind nicht enthalten — die
-holt die App ohnehin neu. Beim Einspielen wird die Datei erst geprüft und der
+eine JSON-Datei mit Depot, Einstellungen und der Auswahl ausgeblendeter
+Assets. Kurse sind nicht enthalten — die holt die App ohnehin neu. Beim Einspielen wird die Datei erst geprüft und der
 Inhalt gezeigt; überschrieben wird nichts, ohne dass man es bestätigt hat.
 
 ## Setup
