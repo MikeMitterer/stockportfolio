@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NDivider, NSpin, NAlert, NEmpty, NButton } from 'naive-ui'
+import { NDivider, NSpin, NEmpty, NButton } from 'naive-ui'
 import KpiCard from '@/components/KpiCard.vue'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
-import { eur, eurSigned, percent } from '@/domain/formatters'
+import { counted, eur, eurSigned, percent, pluralize } from '@/domain/formatters'
 import { computeRebalancing } from '@/domain/rebalancing'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
@@ -13,6 +13,7 @@ import PositionCardList from '@/components/PositionCardList.vue'
 import { useIsCompact } from '@/composables/useIsCompact'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
+import { useAppNotification } from '@/composables/useAppNotification'
 import { useQuotesStore } from '@/stores/quotes'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { newId } from '@/db/seed'
@@ -66,12 +67,80 @@ const liquidityTone = computed<'positive' | 'warning' | 'danger'>(() => {
   return 'danger'
 })
 
+/**
+ * Positionen, die in einer anderen Währung notieren als der Basiswährung.
+ *
+ * Sie zählen nicht in die Summen — 10.000 USD plus 10.000 EUR ergibt keine
+ * 20.000 von irgendetwas. Weil sie damit aus jeder Kennzahl verschwinden,
+ * muss der Kopf sie nennen: Ein unsichtbarer Ausschluss ist schlimmer als
+ * eine falsche Summe, weil man ihn nicht einmal suchen kann.
+ */
+const foreignCurrencyRows = computed(() =>
+  (result.value?.rows ?? []).filter((row) => row.excludedReason === 'currency'),
+)
+
+const warningCount = computed(() => failures.value.length + foreignCurrencyRows.value.length)
+
 const warningsValue = computed(() =>
-  failures.value.length === 0 ? t('kpi.warningsNone') : String(failures.value.length),
+  warningCount.value === 0 ? t('kpi.warningsNone') : String(warningCount.value),
 )
 
 const warningsTone = computed<'positive' | 'danger'>(() =>
-  failures.value.length === 0 ? 'positive' : 'danger',
+  warningCount.value === 0 ? 'positive' : 'danger',
+)
+
+// ─── Meldungen ──────────────────────────────────────────────────────────────
+//
+// Als Toast, nicht im Seitenfluss: Eine Meldung über der Tabelle schiebt sie
+// beim Erscheinen nach unten — und zwar genau dann, wenn man gerade liest.
+
+/** Fremdwährungen als Aufzählung, z.B. „BRK.B (USD) · SHOP (CAD)". */
+const foreignCurrencySummary = computed(() =>
+  foreignCurrencyRows.value
+    .map((row) => `${row.position.symbol} (${row.quote?.currency ?? '?'})`)
+    .join(' · '),
+)
+
+const { notify } = useAppNotification()
+
+notify(
+  computed(() => failures.value.length > 0),
+  {
+    title: 'Kurse fehlen',
+    type: 'warning',
+    content: () =>
+      `${counted(failures.value.length, 'Kurs', 'Kurse')} konnten nicht geladen werden — ` +
+      failureSummary.value,
+  },
+)
+
+notify(
+  computed(() => foreignCurrencyRows.value.length > 0),
+  {
+    title: 'Fremde Währung',
+    type: 'warning',
+    content: () => {
+      const count = foreignCurrencyRows.value.length
+      return (
+        `${counted(count, 'Position')} ${pluralize(count, 'notiert', 'notieren')} nicht in ` +
+        `${settingsStore.settings.currency} und ${pluralize(count, 'zählt', 'zählen')} ` +
+        `deshalb nicht mit: ${foreignCurrencySummary.value}. Summen und Anteile beziehen ` +
+        'sich nur auf den Rest — die App rechnet in einer einzigen Währung und wandelt ' +
+        'nichts um.'
+      )
+    },
+  },
+)
+
+notify(
+  computed(() => result.value?.targetsExceeded ?? false),
+  {
+    title: 'Ziele über 100 %',
+    type: 'error',
+    content: () =>
+      `Die Ziel-Anteile summieren sich auf ${percent(result.value?.targetPercentSum ?? 0)} — ` +
+      'mehr als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht schlüssig.',
+  },
 )
 
 const failureSummary = computed(() =>
@@ -212,10 +281,6 @@ function toggleGroups(): void {
 
     <template v-else-if="result">
       <!-- Fehler-Banner bei fehlgeschlagenen Kursen -->
-      <NAlert v-if="failures.length > 0" type="warning" :bordered="false" closable>
-        {{ failures.length }} Kurs(e) konnten nicht geladen werden — {{ failureSummary }}
-      </NAlert>
-
       <!-- Kennzahlen -->
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
@@ -312,11 +377,6 @@ function toggleGroups(): void {
           </div>
         </div>
 
-        <NAlert v-if="result.targetsExceeded" type="error" :bordered="false" class="mx-5 mb-3">
-          Die Ziel-Anteile summieren sich auf {{ percent(result.targetPercentSum) }} — mehr
-          als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht
-          schlüssig.
-        </NAlert>
         <NDivider class="!my-0" />
         <PositionCardList
           v-if="isCompact"

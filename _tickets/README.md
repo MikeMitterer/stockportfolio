@@ -31,7 +31,7 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-09 | Dashboard — Drilldown-Panel | erledigt; der Trade-Simulator wurde zugunsten von T-19 wieder entfernt |
 | T-10 | Assets-View + Add-Position-Dialog | [erledigt](solved/T-10-instruments.md) |
 | T-11 | Settings-View + Export/Import + Health-Check | [erledigt](solved/T-21-portfolios.md) — Bänder, Puffer, Themes, Verweise, Status, [Export/Import](solved/T-20-backup.md) und Depot-Verwaltung |
-| T-12 | Warnings + Toast + leere/Fehler-Zustände | **teilweise** — Toasts mit Zähler und leere Zustände stehen; die Fremdwährungs-Frage ist noch offen (siehe QUESTIONS.md) |
+| T-12 | Warnings + Toast + leere/Fehler-Zustände | [erledigt](solved/T-22-currency.md) |
 | T-13 | Docker — Multi-Stage-Image + `docker/build.sh` | [erledigt](solved/T-13-docker.md) |
 | T-14 | Version-Bump auf `0.1.0` + finale README/Docs | [erledigt](solved/T-14-release.md) |
 
@@ -46,4 +46,5 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-19 | Rebalancing als eigener Tab | [erledigt](solved/T-19-rebalancing-tab.md) |
 | T-20 | Sichern und Wiederherstellen | [erledigt](solved/T-20-backup.md) |
 | T-21 | Verwaltung mehrerer Depots | [erledigt](solved/T-21-portfolios.md) |
+| T-22 | Fremdwährung + Meldungen einheitlich als Toast | [erledigt](solved/T-22-currency.md) |
 | T-UI | Frühe UI-Vorschau | [erledigt](solved/T-UI-preview.md) |

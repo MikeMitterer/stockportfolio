@@ -17,6 +17,71 @@ const EUR_CENT = new Intl.NumberFormat('de-DE', {
   maximumFractionDigits: 2,
 })
 
+/**
+ * Anzahl mit passender Form: „1 Position", „3 Positionen".
+ *
+ * Zusammengeschrieben, weil beides zusammengehört — die Zahl bestimmt die
+ * Form. Getrennt stand in jeder Ansicht dasselbe `count === 1 ? … : …`, und
+ * eine dieser Stellen war irgendwann anders.
+ *
+ * @param count    Anzahl.
+ * @param singular Form für genau eins.
+ * @param plural   Form für alles andere; ohne Angabe `singular` + „en".
+ */
+export function counted(count: number, singular: string, plural?: string): string {
+  return `${INT.format(count)} ${count === 1 ? singular : (plural ?? `${singular}en`)}`
+}
+
+/**
+ * Nur die Form, ohne Zahl — für Sätze, in denen die Zahl woanders steht.
+ *
+ * @param count    Anzahl.
+ * @param singular Form für genau eins.
+ * @param plural   Form für alles andere; ohne Angabe `singular` + „en".
+ */
+export function pluralize(count: number, singular: string, plural?: string): string {
+  return count === 1 ? singular : (plural ?? `${singular}en`)
+}
+
+/**
+ * Formatter je Währung, einmal gebaut und gemerkt.
+ *
+ * `Intl.NumberFormat` zu erzeugen ist teuer genug, dass es sich in einer
+ * Tabellenzelle bemerkbar macht.
+ */
+const byCurrency = new Map<string, Intl.NumberFormat>()
+
+/**
+ * Betrag in einer beliebigen Währung, ohne Nachkommastellen.
+ *
+ * Gebraucht für Positionen, die nicht in der Basiswährung notieren: Ihr
+ * Marktwert ist in ihrer eigenen Währung richtig und darf nicht mit dem
+ * falschen Zeichen danebenstehen — „31.410 €" für einen USD-Betrag ist
+ * schlimmer als gar keine Angabe.
+ *
+ * @param value    Betrag.
+ * @param currency ISO-Code, z.B. `USD`.
+ */
+export function money(value: number, currency: string): string {
+  const code = currency.toUpperCase()
+  let formatter = byCurrency.get(code)
+  if (!formatter) {
+    try {
+      formatter = new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: code,
+        maximumFractionDigits: 0,
+      })
+    } catch {
+      // Unbekannter Code — dann lieber die nackte Zahl mit angehängtem Kürzel
+      // als eine Ausnahme mitten in der Tabelle.
+      return `${INT.format(value)} ${code}`
+    }
+    byCurrency.set(code, formatter)
+  }
+  return formatter.format(value)
+}
+
 const PERCENT = new Intl.NumberFormat('de-DE', {
   style: 'decimal',
   minimumFractionDigits: 1,

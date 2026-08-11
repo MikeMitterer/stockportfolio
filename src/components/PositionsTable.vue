@@ -8,7 +8,7 @@ import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import LinkIcons from '@/components/LinkIcons.vue'
-import { eur, eurCent, integer, percent } from '@/domain/formatters'
+import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
 
@@ -123,7 +123,20 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             { class: 'font-medium text-sm' },
             row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
           ),
-          !row.isActive
+          // Fremde Währung sieht aus wie „inaktiv", ist aber keine
+          // Entscheidung des Nutzers — deshalb eigene Farbe und eigener Text.
+          row.excludedReason === 'currency'
+            ? h(
+                'span',
+                {
+                  class:
+                    'text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-status-out/50 text-status-out',
+                  title: `Notiert in ${row.quote?.currency ?? '?'} — zählt nicht in die Summen`,
+                },
+                row.quote?.currency ?? 'Fremdwährung',
+              )
+            : null,
+          row.excludedReason === 'disabled'
             ? h(
                 'span',
                 {
@@ -170,7 +183,15 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     width: 100,
     render: (row) =>
       row.quote
-        ? h('span', { class: 'tabular-nums' }, eurCent(row.quote.price))
+        ? h(
+            'span',
+            { class: 'tabular-nums' },
+            // Fremde Währung mit ihrem eigenen Zeichen: „628,20 €" für einen
+            // USD-Kurs wäre schlicht falsch.
+            row.excludedReason === 'currency'
+              ? money(row.quote.price, row.quote.currency)
+              : eurCent(row.quote.price),
+          )
         : row.position.group === 'cash'
           ? h('span', { class: 'tabular-nums text-ink-muted' }, '—')
           : h('span', { class: 'tabular-nums text-status-out text-xs' }, t('table.quoteMissing')),
@@ -181,7 +202,14 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     align: 'right',
     width: 130,
     sorter: (a, b) => a.marketValue - b.marketValue,
-    render: (row) => h('span', { class: 'tabular-nums font-medium' }, eur(row.marketValue)),
+    render: (row) =>
+      h(
+        'span',
+        { class: 'tabular-nums font-medium' },
+        row.excludedReason === 'currency' && row.quote
+          ? money(row.marketValue, row.quote.currency)
+          : eur(row.marketValue),
+      ),
   },
   {
     title: t('table.actualPercent'),
@@ -229,10 +257,21 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     // Vorher wanderte es bei wechselnden Beschriftungen von Zeile zu Zeile.
     align: 'center',
     width: 130,
-    render: (row) =>
-      row.isActive
-        ? h(SuggestionBadge, { suggestion: row.suggestion, near: row.isNearBand })
-        : h('span', { class: 'text-ink-muted text-xs' }, 'zählt nicht mit'),
+    render: (row) => {
+      if (row.isActive) {
+        return h(SuggestionBadge, { suggestion: row.suggestion, near: row.isNearBand })
+      }
+      return h(
+        'span',
+        {
+          class:
+            row.excludedReason === 'currency'
+              ? 'text-status-out text-xs'
+              : 'text-ink-muted text-xs',
+        },
+        row.excludedReason === 'currency' ? 'fremde Währung' : 'zählt nicht mit',
+      )
+    },
   },
 ])
 </script>

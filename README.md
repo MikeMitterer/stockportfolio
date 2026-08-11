@@ -24,6 +24,17 @@ Die App beantwortet beides:
   in Euro gegenseitig auf: Wer allen folgt, bekommt einen Plan, der von selbst
   aufgeht.
 
+### Eine Währung
+
+Gerechnet wird in Euro, umgerechnet wird nicht. Notiert ein Papier in einer
+anderen Währung, bleibt seine Zeile sichtbar — mit ihrem eigenen Zeichen und
+einem roten Kürzel — zählt aber in keine Summe und keinen Anteil. 10.000 USD
+plus 10.000 EUR ergibt keine 20.000 von irgendetwas.
+
+Das ist die Notierungs-, nicht die Risikowährung: Ein EUR-notierter MSCI World
+steckt zu zwei Dritteln in US-Dollar. Diese Unterscheidung kann die App nicht
+treffen und behauptet sie auch nicht.
+
 ### Fünf Assetklassen
 
 `Aktien / ETFs`, `Anleihen`, `Edelmetalle`, `Geldmarkt`, `Cash`.
@@ -208,7 +219,8 @@ Healthcheck färbt den Zustand im Docker-Reiter.
 
 | Thema | Stand |
 |---|---|
-| Warnung bei nicht-EUR-Positionen | offen — die App rechnet durchgängig in Euro |
+| Basiswährung außer EUR | offen — hängt an StockInfo (siehe [Anfrage](docs/stockinfo-currency-request.md)) |
+| Umrechnung gemischter Depots | offen — bräuchte Devisenkurse samt Alter |
 | Threshold-Benachrichtigungen | bewusst außerhalb des MVP |
 | CORS gegen die produktive API | ungeprüft — die Origin des Containers muss erlaubt sein |
 

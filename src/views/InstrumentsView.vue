@@ -8,11 +8,11 @@ import {
   NSwitch,
   NTag,
   NSpin,
-  NAlert,
   type DataTableColumns,
 } from 'naive-ui'
 import { eurCent, integer, percent } from '@/domain/formatters'
 import { useInstrumentsStore } from '@/stores/instruments'
+import { useAppNotification } from '@/composables/useAppNotification'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { InstrumentSummary } from '@/api/types'
@@ -145,6 +145,20 @@ onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!instrumentsStore.loaded) await instrumentsStore.load(client)
 })
+
+// Meldung als Toast, wie überall sonst: Ein Kasten über der Tabelle schiebt
+// sie beim Erscheinen nach unten.
+const { notify } = useAppNotification()
+
+notify(
+  computed(() => instrumentsStore.error !== null),
+  {
+    title: 'Assets konnten nicht geladen werden',
+    type: 'error',
+    content: () => instrumentsStore.error ?? '',
+  },
+)
+
 </script>
 
 <template>
@@ -159,10 +173,6 @@ onMounted(async () => {
       Der Schalter „In Auswahl" steuert, welche Papiere beim Hinzufügen einer
       Position angeboten werden.
     </p>
-
-    <NAlert v-if="instrumentsStore.error" type="error" :bordered="false" class="mb-4">
-      {{ instrumentsStore.error }}
-    </NAlert>
 
     <div class="flex flex-wrap gap-3 mb-4">
       <NInput

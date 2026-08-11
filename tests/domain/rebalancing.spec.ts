@@ -8,6 +8,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   actualPercent,
+  groupMarketValue,
+  hasForeignCurrency,
   computeLiquidity,
   computeRebalancing,
   isNearBand,
@@ -766,5 +768,128 @@ describe('computeLiquidity', () => {
     const result = computeLiquidity(portfolio, quotes, settingsWithBuffer(0), 1000)
 
     expect(result.liquidAssets).toBe(500)
+  })
+})
+
+describe('Fremdwährung', () => {
+  /**
+   * Die App rechnet in genau einer Währung. Was nicht hineinpasst, bleibt
+   * sichtbar, zählt aber nicht mit — 10.000 USD plus 10.000 EUR ergibt keine
+   * 20.000 von irgendetwas.
+   */
+
+  function depotMit(
+    entries: { isin: string; group?: Position['group']; enabled?: boolean }[],
+  ): Portfolio {
+    return {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: entries.map((entry, index) =>
+        makePosition({
+          id: `p-${index}`,
+          isin: entry.isin,
+          symbol: entry.isin,
+          group: entry.group ?? 'stocks',
+          units: 100,
+          targetPercent: 50,
+          enabled: entry.enabled ?? true,
+        }),
+      ),
+    }
+  }
+
+  function kurseMit(entries: Record<string, string>): QuoteMap {
+    return new Map(
+      Object.entries(entries).map(([isin, currency]) => [
+        isin,
+        makeQuote({ isin, symbol: isin, price: 10, currency }),
+      ]),
+    )
+  }
+
+  const settings: Settings = {
+    activePortfolioId: 'p1',
+    totalRounding: 0,
+    bands: { lowerPercent: 10, upperPercent: 20 },
+    securityBuffer: { mode: 'absolute', value: 0 },
+    currency: 'EUR',
+    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
+    links: [],
+    ui: { notificationSeconds: 0 },
+  }
+
+  it('erkennt eine abweichende Notierungswährung', () => {
+    expect(hasForeignCurrency(makeQuote({ currency: 'USD' }), 'EUR')).toBe(true)
+    expect(hasForeignCurrency(makeQuote({ currency: 'EUR' }), 'EUR')).toBe(false)
+  })
+
+  it('ignoriert Groß- und Kleinschreibung', () => {
+    // Die API liefert die Währung als Text; auf ihre Schreibweise sollte sich
+    // niemand verlassen müssen.
+    expect(hasForeignCurrency(makeQuote({ currency: 'eur' }), 'EUR')).toBe(false)
+  })
+
+  it('meldet ohne Kurs keine Abweichung', () => {
+    // Dann fehlt schlicht die Angabe — die fehlende Kursmeldung ist bereits
+    // ihr eigener Hinweis, eine zweite wäre Lärm.
+    expect(hasForeignCurrency(null, 'EUR')).toBe(false)
+  })
+
+  it('lässt eine fremde Währung nicht in die Gesamtsumme', () => {
+    const portfolio = depotMit([{ isin: 'E' }, { isin: 'F' }])
+    const quotes = kurseMit({ E: 'EUR', F: 'USD' })
+
+    expect(totalValue(portfolio, quotes, 0, 'EUR')).toBe(1000)
+  })
+
+  it('lässt sie auch nicht in die Gruppensumme', () => {
+    const portfolio = depotMit([{ isin: 'E' }, { isin: 'F' }])
+    const quotes = kurseMit({ E: 'EUR', F: 'USD' })
+
+    expect(groupMarketValue('stocks', portfolio, quotes, 'EUR')).toBe(1000)
+  })
+
+  it('behält die Zeile in der Liste, mit Grund', () => {
+    // Ein unsichtbarer Ausschluss ist schlimmer als eine falsche Summe: Man
+    // kann ihn nicht einmal suchen.
+    const result = computeRebalancing(depotMit([{ isin: 'F' }]), kurseMit({ F: 'USD' }), settings)
+
+    expect(result.rows).toHaveLength(1)
+    expect(result.rows[0]?.isActive).toBe(false)
+    expect(result.rows[0]?.excludedReason).toBe('currency')
+  })
+
+  it('unterscheidet abgeschaltet von fremder Währung', () => {
+    // „Abgeschaltet" ist eine Entscheidung des Nutzers, „fremde Währung" ein
+    // Zustand, den er so nicht gewollt hat.
+    const portfolio = depotMit([{ isin: 'E', enabled: false }, { isin: 'F' }])
+    const result = computeRebalancing(portfolio, kurseMit({ E: 'EUR', F: 'USD' }), settings)
+
+    expect(result.rows[0]?.excludedReason).toBe('disabled')
+    expect(result.rows[1]?.excludedReason).toBe('currency')
+  })
+
+  it('zeigt den Marktwert der Zeile trotzdem an', () => {
+    // In ihrer eigenen Währung ist die Zahl richtig — sie passt nur nicht in
+    // die Summe. Sie zu verstecken hieße, dem Nutzer seine Position zu
+    // unterschlagen.
+    const result = computeRebalancing(depotMit([{ isin: 'F' }]), kurseMit({ F: 'USD' }), settings)
+
+    expect(result.rows[0]?.marketValue).toBe(1000)
+  })
+
+  it('hält die Investitionsreserve frei von fremden Währungen', () => {
+    const portfolio = depotMit([
+      { isin: 'C', group: 'cash' },
+      { isin: 'F', group: 'moneymarket' },
+    ])
+    const quotes = kurseMit({ C: 'EUR', F: 'USD' })
+
+    // Cash zählt mit seinem Betrag (100), der USD-Geldmarkt gar nicht.
+    const result = computeLiquidity(portfolio, quotes, settings, 1000)
+
+    expect(result.liquidAssets).toBe(100)
   })
 })

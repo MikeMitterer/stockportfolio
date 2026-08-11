@@ -5,6 +5,7 @@ import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useRelativeTime } from '@/composables/useRelativeTime'
+import { counted } from '@/domain/formatters'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 /**
@@ -106,8 +107,7 @@ const version = __APP_VERSION__
       <span class="truncate max-w-[14rem]">
         <span v-if="portfolioName" class="text-ink-secondary">{{ portfolioName }}</span>
         <span class="tabular-nums">
-          {{ portfolioName ? ', ' : '' }}{{ positionCount }}
-          {{ positionCount === 1 ? 'Position' : 'Positionen' }}
+          {{ portfolioName ? ', ' : '' }}{{ counted(positionCount, 'Position') }}
         </span>
       </span>
 
@@ -122,7 +122,7 @@ const version = __APP_VERSION__
       </span>
 
       <span v-if="failureCount > 0" class="text-status-out">
-        {{ failureCount }} Kurs{{ failureCount === 1 ? '' : 'e' }} fehlen
+        {{ counted(failureCount, 'Kurs', 'Kurse') }} fehlen
       </span>
 
       <!-- Rechts: der technische Stand — Version und Zustand der Gegenstelle. -->

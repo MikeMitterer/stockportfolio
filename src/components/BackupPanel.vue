@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { NAlert, NButton, NPopconfirm } from 'naive-ui'
+import { NButton, NPopconfirm } from 'naive-ui'
 import { consola } from 'consola'
 import {
   backupFileName,
@@ -8,10 +8,11 @@ import {
   parseBackup,
   type Backup,
 } from '@/domain/backup'
-import { eur } from '@/domain/formatters'
+import { counted, eur } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import type { Portfolio } from '@/types/portfolio'
 import { useSettingsStore } from '@/stores/settings'
+import { useAppNotification } from '@/composables/useAppNotification'
 import { useInstrumentsStore } from '@/stores/instruments'
 
 /**
@@ -146,15 +147,31 @@ async function applyPending(): Promise<void> {
     return
   }
 
-  const count = backup.portfolio.positions.length
   done.value =
-    `Eingespielt: „${backup.portfolio.name}" mit ${count} Position${count === 1 ? '' : 'en'}.`
+    `Eingespielt: „${backup.portfolio.name}" mit ` +
+    `${counted(backup.portfolio.positions.length, 'Position')}.`
   pending.value = null
 }
 
 function discardPending(): void {
   pending.value = null
 }
+
+// Meldungen als Toast, wie überall sonst. Sie erscheinen nach einem Klick und
+// sollen die Karte darunter nicht auseinanderschieben.
+const { notify } = useAppNotification()
+
+notify(computed(() => error.value !== null), {
+  title: 'Sicherung',
+  type: 'error',
+  content: () => error.value ?? '',
+})
+
+notify(computed(() => done.value !== null), {
+  title: 'Erledigt',
+  type: 'info',
+  content: () => done.value ?? '',
+})
 
 /**
  * Wie viele Assets die Sicherung ausblendet.
@@ -200,14 +217,6 @@ const pendingCashTotal = computed(() =>
       />
     </div>
 
-    <NAlert v-if="error" type="error" :bordered="false" closable @close="error = null">
-      {{ error }}
-    </NAlert>
-
-    <NAlert v-if="done" type="success" :bordered="false" closable @close="done = null">
-      {{ done }}
-    </NAlert>
-
     <!--
       Vorschau vor dem Überschreiben. Genannt wird, woran man eine falsche
       Datei erkennt: Name, Alter und Umfang — und was verloren geht.
@@ -227,7 +236,7 @@ const pendingCashTotal = computed(() =>
 
         <dt v-if="hiddenCount > 0" class="text-ink-muted">Ausgeblendet</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">
-          {{ hiddenCount }} {{ hiddenCount === 1 ? 'Asset' : 'Assets' }}
+          {{ counted(hiddenCount, 'Asset', 'Assets') }}
         </dd>
 
         <dt class="text-ink-muted">Gesichert am</dt>
@@ -238,9 +247,7 @@ const pendingCashTotal = computed(() =>
       </dl>
 
       <p class="text-xs text-status-out leading-relaxed">
-        Das aktuelle Depot mit
-        {{ portfolioStore.positions.length }}
-        {{ portfolioStore.positions.length === 1 ? 'Position' : 'Positionen' }}
+        Das aktuelle Depot mit {{ counted(portfolioStore.positions.length, 'Position') }}
         und alle Einstellungen werden dabei ersetzt. Das lässt sich nicht
         rückgängig machen — bei Zweifeln vorher eine eigene Sicherung
         herunterladen.

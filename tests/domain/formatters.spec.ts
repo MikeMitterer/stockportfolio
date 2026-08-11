@@ -4,16 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import {
-  eur,
-  eurCent,
-  eurSigned,
-  integer,
-  number,
-  percent,
-  percentInt,
-  percentSigned,
-} from '@/domain/formatters'
+import { counted, eur, eurCent, eurSigned, integer, money, number, percent, percentInt, percentSigned, pluralize } from '@/domain/formatters'
 
 // Non-breaking-space (U+00A0) — Intl fügt ihn vor „€" ein.
 // String-Vergleiche machen wir daher meist über includes/regex.
@@ -109,5 +100,55 @@ describe('number', () => {
 
   it('gibt ganze Zahlen ohne Komma zurück', () => {
     expect(number(42)).toBe('42')
+  })
+})
+
+describe('money', () => {
+  it('setzt das Zeichen der angegebenen Währung', () => {
+    // Der Grund für die Funktion: „31.410 €" für einen USD-Betrag ist
+    // schlimmer als gar keine Angabe.
+    expect(money(31410, 'USD')).toContain('$')
+    expect(money(31410, 'USD')).not.toContain('€')
+  })
+
+  it('nimmt den Code in beliebiger Schreibweise', () => {
+    expect(money(100, 'usd')).toBe(money(100, 'USD'))
+  })
+
+  it('fällt bei unbekanntem Code auf Zahl plus Kürzel zurück', () => {
+    // Lieber eine schlichte Anzeige als eine Ausnahme mitten in der Tabelle.
+    expect(money(1234, 'XYZZY')).toContain('XYZZY')
+    expect(money(1234, 'XYZZY')).toContain('1.234')
+  })
+
+  it('rundet auf ganze Einheiten, wie die Euro-Anzeige', () => {
+    expect(money(1234.56, 'USD')).not.toContain(',56')
+  })
+})
+
+describe('counted / pluralize', () => {
+  it('setzt Zahl und Form zusammen', () => {
+    expect(counted(1, 'Position')).toBe('1 Position')
+    expect(counted(3, 'Position')).toBe('3 Positionen')
+  })
+
+  it('bildet den Plural ohne Angabe mit „en"', () => {
+    expect(counted(0, 'Position')).toBe('0 Positionen')
+  })
+
+  it('nimmt einen abweichenden Plural entgegen', () => {
+    // Nicht jedes Wort geht auf „en": „Assets", „Kurse".
+    expect(counted(2, 'Asset', 'Assets')).toBe('2 Assets')
+    expect(counted(2, 'Kurs', 'Kurse')).toBe('2 Kurse')
+  })
+
+  it('trennt bei großen Zahlen wie sonst auch', () => {
+    expect(counted(1234, 'Position')).toBe('1.234 Positionen')
+  })
+
+  it('liefert mit pluralize nur die Form', () => {
+    // Für Sätze, in denen die Zahl an anderer Stelle steht.
+    expect(pluralize(1, 'zählt', 'zählen')).toBe('zählt')
+    expect(pluralize(2, 'zählt', 'zählen')).toBe('zählen')
   })
 })

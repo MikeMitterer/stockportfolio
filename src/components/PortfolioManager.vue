@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { NButton, NInput, NPopconfirm, NTag } from 'naive-ui'
 import { consola } from 'consola'
 import { formatAge } from '@/composables/useRelativeTime'
+import { counted } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -118,8 +119,7 @@ function messageOf(cause: unknown): string {
         </NTag>
 
         <span class="text-xs text-ink-muted tabular-nums">
-          {{ entry.positionCount }}
-          {{ entry.positionCount === 1 ? 'Position' : 'Positionen' }}
+          {{ counted(entry.positionCount, 'Position') }}
         </span>
 
         <span class="text-xs text-ink-muted hidden sm:inline">
@@ -153,8 +153,8 @@ function messageOf(cause: unknown): string {
               Der Umfang gehört in die Rückfrage: „Depot löschen?" allein sagt
               nicht, wie viel dabei verloren geht.
             -->
-            „{{ entry.name }}" mit {{ entry.positionCount }}
-            {{ entry.positionCount === 1 ? 'Position' : 'Positionen' }} endgültig löschen?
+            „{{ entry.name }}" mit {{ counted(entry.positionCount, 'Position') }} endgültig
+            löschen?
           </NPopconfirm>
         </div>
       </div>

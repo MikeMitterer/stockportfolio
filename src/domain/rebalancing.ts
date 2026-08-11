@@ -44,9 +44,10 @@ export function groupMarketValue(
   group: AssetGroup,
   portfolio: Portfolio,
   quotes: QuoteMap,
+  baseCurrency = 'EUR',
 ): number {
   return portfolio.positions
-    .filter((position) => position.enabled && position.group === group)
+    .filter((position) => position.group === group && countsIn(position, quotes, baseCurrency))
     .reduce((sum, position) => sum + marketValue(position, quoteFor(position, quotes)), 0)
 }
 
@@ -54,11 +55,58 @@ export function groupMarketValue(
  * Gesamtsumme des Portfolios (Excel I3 = ROUND(K7+K14+K16+K19, -3)).
  * Rundung auf `settings.totalRounding` (z.B. -3 → Tausender).
  */
-export function totalValue(portfolio: Portfolio, quotes: QuoteMap, rounding: number): number {
+export function totalValue(
+  portfolio: Portfolio,
+  quotes: QuoteMap,
+  rounding: number,
+  baseCurrency = 'EUR',
+): number {
   const raw = portfolio.positions
-    .filter((position) => position.enabled)
+    .filter((position) => countsIn(position, quotes, baseCurrency))
     .reduce((sum, position) => sum + marketValue(position, quoteFor(position, quotes)), 0)
   return roundToPlace(raw, rounding)
+}
+
+/**
+ * Notiert das Papier in einer anderen Währung als der Basiswährung?
+ *
+ * Solche Positionen dürfen nicht in die Summen: 10.000 USD plus 10.000 EUR
+ * ergibt keine 20.000 von irgendetwas. Die App rechnet in genau einer Währung
+ * und sagt es, wenn etwas nicht hineinpasst — statt eine Zahl zu zeigen, die
+ * niemand nachrechnen kann.
+ *
+ * Ohne Kurs gilt keine Abweichung: Dann fehlt schlicht die Angabe, und die
+ * fehlende Kursmeldung ist bereits ihr eigener Hinweis.
+ *
+ * Achtung, das ist die **Notierungswährung**, nicht das Währungsrisiko: Ein
+ * EUR-notierter MSCI World steckt zu zwei Dritteln in US-Dollar. Diese
+ * Unterscheidung kann die App nicht treffen und behauptet sie auch nicht.
+ *
+ * @param quote        Kurs der Position, oder `null`.
+ * @param baseCurrency Währung, in der gerechnet wird.
+ */
+export function hasForeignCurrency(
+  quote: QuoteCacheEntry | null,
+  baseCurrency: string,
+): boolean {
+  if (!quote || !quote.currency) return false
+  return quote.currency.toUpperCase() !== baseCurrency.toUpperCase()
+}
+
+/**
+ * Zählt die Position in Summen und Anteile?
+ *
+ * Zwei Gründe schließen sie aus: Der Nutzer hat sie abgeschaltet, oder sie
+ * notiert in einer fremden Währung. Beide Male bleibt die Zeile sichtbar —
+ * unsichtbare Ausschlüsse sind schlimmer als falsche Summen, weil man sie
+ * nicht einmal suchen kann.
+ */
+function countsIn(
+  position: Position,
+  quotes: QuoteMap,
+  baseCurrency: string,
+): boolean {
+  return position.enabled && !hasForeignCurrency(quoteFor(position, quotes), baseCurrency)
 }
 
 /** IST-% am Gesamtvermögen (Excel L = K × 100 / I3). */
@@ -148,11 +196,19 @@ export interface PositionResult {
   /**
    * Zählt die Position in die Berechnung?
    *
-   * Deaktivierte Positionen erscheinen weiterhin in der Liste — sonst wären
-   * sie nach dem Abschalten unerreichbar und ließen sich nie wieder
-   * einschalten. In Summen, Anteile und Vorschläge gehen sie aber nicht ein.
+   * Ausgeschlossene Positionen erscheinen weiterhin in der Liste — sonst
+   * wären sie unerreichbar, und ein unsichtbarer Ausschluss ist schlimmer als
+   * eine falsche Summe: Man kann ihn nicht einmal suchen.
    */
   isActive: boolean
+  /**
+   * Warum die Position nicht mitzählt — `null`, wenn sie es tut.
+   *
+   * Getrennt von `isActive`, weil die Oberfläche den Grund nennen muss:
+   * „abgeschaltet" ist eine Entscheidung des Nutzers, „fremde Währung" ein
+   * Zustand, den er so nicht gewollt hat.
+   */
+  excludedReason: 'disabled' | 'currency' | null
 }
 
 export interface GroupResult {
@@ -205,8 +261,8 @@ export function computeLiquidity(
   total: number,
 ): LiquidityResult {
   const liquidAssets =
-    groupMarketValue('moneymarket', portfolio, quotes) +
-    groupMarketValue('cash', portfolio, quotes)
+    groupMarketValue('moneymarket', portfolio, quotes, settings.currency) +
+    groupMarketValue('cash', portfolio, quotes, settings.currency)
 
   const securityBuffer = resolveSecurityBuffer(settings.securityBuffer, total)
   const investmentReserve = liquidAssets - securityBuffer
@@ -264,7 +320,8 @@ export function computeRebalancing(
   quotes: QuoteMap,
   settings: Settings,
 ): RebalancingResult {
-  const total = totalValue(portfolio, quotes, settings.totalRounding)
+  const baseCurrency = settings.currency
+  const total = totalValue(portfolio, quotes, settings.totalRounding, baseCurrency)
   const bands = settings.bands
 
   // Auch deaktivierte Positionen kommen in die Liste: wer eine abschaltet,
@@ -288,6 +345,25 @@ export function computeRebalancing(
         relativeDeltaPercent: 0,
         isNearBand: false,
         isActive: false,
+        excludedReason: 'disabled',
+      }
+    }
+
+    if (hasForeignCurrency(quote, baseCurrency)) {
+      return {
+        position,
+        quote,
+        marketValue: mv,
+        actualPercent: 0,
+        targetValue: 0,
+        lowerBand: 0,
+        upperBand: 0,
+        suggestion: 'ok' as Suggestion,
+        unitsDelta: 0,
+        relativeDeltaPercent: 0,
+        isNearBand: false,
+        isActive: false,
+        excludedReason: 'currency',
       }
     }
 
@@ -307,11 +383,12 @@ export function computeRebalancing(
       relativeDeltaPercent: relativeDeltaPercent(mv, target),
       isNearBand: isNearBand(mv, low, high, target),
       isActive: true,
+      excludedReason: null,
     }
   })
 
   const groups: GroupResult[] = GROUPS.map((group) => {
-    const actualValue = groupMarketValue(group, portfolio, quotes)
+    const actualValue = groupMarketValue(group, portfolio, quotes, baseCurrency)
     const targetPercent = groupTargetPercent(group, portfolio)
     const target = (total * targetPercent) / 100
     const low = lowerBand(target, bands)
