@@ -8,6 +8,25 @@
 import type { HistoryPoint } from './sparkline'
 
 /**
+ * Rundet eine Schrittweite auf einen ablesbaren Wert.
+ *
+ * Erlaubt sind 1, 2, 2,5, 5 und 10 mal einer Zehnerpotenz — dieselben
+ * Sprünge, die auch auf einem Lineal stehen. Alles andere zwingt zum Rechnen.
+ *
+ * @param raw Rechnerische Schrittweite.
+ */
+function niceStep(raw: number): number {
+  const magnitude = 10 ** Math.floor(Math.log10(raw))
+  const normalized = raw / magnitude
+
+  if (normalized > 5) return 10 * magnitude
+  if (normalized > 2.5) return 5 * magnitude
+  if (normalized > 2) return 2.5 * magnitude
+  if (normalized > 1) return 2 * magnitude
+  return magnitude
+}
+
+/**
  * Teilt einen Wertebereich in runde Schritte.
  *
  * „Rund" heißt: 1, 2, 2,5 oder 5 mal einer Zehnerpotenz. Eine Achse mit
@@ -32,17 +51,7 @@ export function niceTicks(min: number, max: number, targetCount = 4): number[] {
     max += pad
   }
 
-  const rawStep = (max - min) / Math.max(1, targetCount)
-  const magnitude = 10 ** Math.floor(Math.log10(rawStep))
-  const normalized = rawStep / magnitude
-
-  let factor = 1
-  if (normalized > 5) factor = 10
-  else if (normalized > 2.5) factor = 5
-  else if (normalized > 2) factor = 2.5
-  else if (normalized > 1) factor = 2
-
-  const step = factor * magnitude
+  const step = niceStep((max - min) / Math.max(1, targetCount))
   const first = Math.floor(min / step) * step
   const last = Math.ceil(max / step) * step
 

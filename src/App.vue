@@ -9,7 +9,9 @@ import {
   NLoadingBarProvider,
   darkTheme,
   dateDeDE,
+  dateEnUS,
   deDE,
+  enUS,
   type GlobalThemeOverrides,
 } from 'naive-ui'
 import AppStatusBar from '@/components/AppStatusBar.vue'
@@ -17,6 +19,7 @@ import AppTopbar from '@/components/AppTopbar.vue'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
+import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
 import { buildNaiveOverrides } from '@/theme/naive'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
@@ -27,6 +30,7 @@ if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 
 const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
@@ -34,9 +38,18 @@ const refreshLabel = computed(() => (quotesStore.loading ? '…' : ageLabel.valu
 
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
+/*
+ * Naive UI mitziehen: Seine eingebauten Beschriftungen — „Bestätigen",
+ * „Abbrechen" in jeder Rückfrage — kämen sonst deutsch heraus, während die
+ * Oberfläche englisch ist.
+ */
+const naiveLocale = computed(() => (localeStore.current === 'en' ? enUS : deDE))
+const naiveDateLocale = computed(() => (localeStore.current === 'en' ? dateEnUS : dateDeDE))
+
 // Das Theme steht schon vor dem ersten Bildaufbau fest — sonst blitzt kurz
 // das falsche auf. Die Naive-Overrides lesen die dann gesetzten Variablen.
 themeStore.init()
+localeStore.init()
 
 onMounted(() => {
   naiveOverrides.value = buildNaiveOverrides()
@@ -66,8 +79,8 @@ function refresh(): void {
     mitten in einer sonst deutschen Oberfläche.
   -->
   <NConfigProvider
-    :locale="deDE"
-    :date-locale="dateDeDE"
+    :locale="naiveLocale"
+    :date-locale="naiveDateLocale"
     :theme="themeStore.isDark ? darkTheme : null"
     :theme-overrides="naiveOverrides"
     inline-theme-disabled

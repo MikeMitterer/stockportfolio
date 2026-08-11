@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, inject, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useRelativeTime } from '@/composables/useRelativeTime'
-import { counted } from '@/domain/formatters'
+import { integer } from '@/domain/formatters'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 /**
@@ -19,6 +20,8 @@ import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
  * Bewusst leise gehalten: Sie steht dauerhaft im Bild und darf mit den
  * eigentlichen Daten nicht um Aufmerksamkeit ringen.
  */
+
+const { t } = useI18n()
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
 const router = useRouter()
@@ -34,12 +37,12 @@ onMounted(() => {
   if (apiStatus.state === 'unknown') void apiStatus.check(client)
 })
 
-const STATE_LABEL: Record<string, string> = {
-  unknown: 'API ungeprüft',
-  checking: 'API wird geprüft',
-  online: 'API erreichbar',
-  offline: 'API nicht erreichbar',
-}
+const stateLabel = computed<Record<string, string>>(() => ({
+  unknown: t('status.apiUnknown'),
+  checking: t('status.apiChecking'),
+  online: t('status.apiOnline'),
+  offline: t('status.apiOffline'),
+}))
 
 const dotClass = computed(() => {
   switch (apiStatus.state) {
@@ -86,7 +89,7 @@ const version = __APP_VERSION__
       <!-- Links: Herkunft und was gerade im Depot steht. -->
       <span>
         <span class="font-medium text-ink-secondary">StockPortfolio</span>
-        powered by
+        {{ t('status.poweredBy') }}
         <a
           href="https://www.mangolila.at/"
           target="_blank"
@@ -107,7 +110,8 @@ const version = __APP_VERSION__
       <span class="truncate max-w-[14rem]">
         <span v-if="portfolioName" class="text-ink-secondary">{{ portfolioName }}</span>
         <span class="tabular-nums">
-          {{ portfolioName ? ', ' : '' }}{{ counted(positionCount, 'Position') }}
+          {{ portfolioName ? ', ' : ''
+          }}{{ t('units.positions', positionCount, { named: { count: integer(positionCount) } }) }}
         </span>
       </span>
 
@@ -115,19 +119,23 @@ const version = __APP_VERSION__
 
       <!-- Das Alter der Kurse: Jede Kennzahl der App hängt daran. -->
       <span>
-        Kurse
+        {{ t('status.quotes') }}
         <span class="text-ink-secondary tabular-nums">
-          {{ quotesStore.loading ? 'werden geladen …' : quoteAge }}
+          {{ quotesStore.loading ? t('status.quotesLoading') : quoteAge }}
         </span>
       </span>
 
       <span v-if="failureCount > 0" class="text-status-out">
-        {{ counted(failureCount, 'Kurs', 'Kurse') }} fehlen
+        {{
+          t('status.quotesMissing', {
+            quotes: t('units.quotes', failureCount, { named: { count: integer(failureCount) } }),
+          })
+        }}
       </span>
 
       <!-- Rechts: der technische Stand — Version und Zustand der Gegenstelle. -->
       <span class="ml-auto flex items-center gap-4">
-        <span class="tabular-nums">v{{ version }}</span>
+        <span class="tabular-nums">{{ t('common.version', { version }) }}</span>
 
         <!--
           Anklickbar statt bloß informativ: Wer hier ein rotes Licht sieht, will
@@ -137,7 +145,7 @@ const version = __APP_VERSION__
         <button
           type="button"
           class="flex items-center gap-1.5 transition-colors hover:text-ink"
-          :title="`${STATE_LABEL[apiStatus.state]} — Details in den Einstellungen`"
+          :title="t('status.apiDetails', { state: stateLabel[apiStatus.state] })"
           @click="router.push('/settings')"
         >
           <span class="inline-block h-1.5 w-1.5 rounded-full shrink-0" :class="dotClass"></span>

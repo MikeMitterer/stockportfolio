@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 /**
  * Zahl, die in der Tabellenzeile direkt editierbar ist.
@@ -158,7 +161,7 @@ function onKeydown(event: KeyboardEvent): void {
       class="block w-full min-w-0 text-right tabular-nums px-1.5 py-0.5 border-0 border-b border-solid border-transparent transition-colors hover:border-edge"
       :class="textClass"
       :disabled="disabled"
-      :title="disabled ? undefined : 'Klicken zum Ändern'"
+      :title="disabled ? undefined : t('common.edit')"
       @click.stop="startEdit"
     >
       {{ display }}
@@ -175,8 +178,8 @@ function onKeydown(event: KeyboardEvent): void {
       class="absolute left-0 top-1/2 -translate-y-1/2 leading-none px-1 text-ink-muted
              opacity-0 transition-opacity hover:text-status-out
              group-hover/inline:opacity-100 focus-visible:opacity-100"
-      title="Wert löschen"
-      aria-label="Wert löschen"
+      :title="t('common.clear')"
+      :aria-label="t('common.clear')"
       @click.stop="clear"
     >
       &times;

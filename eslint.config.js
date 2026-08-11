@@ -74,4 +74,32 @@ export default [
       'vue/attributes-order': 'off',
     },
   },
+  {
+    /*
+     * Keine sichtbaren Texte direkt im Template.
+     *
+     * Die App war von Anfang an auf vue-i18n ausgelegt — trotzdem ist in jede
+     * neu hinzugekommene Komponente wieder deutscher Text gewandert, und beim
+     * Nachrüsten der zweiten Sprache musste alles einzeln herausgesucht
+     * werden. Diese Regel macht daraus einen Fehler statt einer Fleißaufgabe.
+     *
+     * `allowlist` deckt ab, was keine Sprache hat: Satzzeichen, Einheiten,
+     * Währungszeichen.
+     */
+    files: ['src/**/*.vue'],
+    rules: {
+      'vue/no-bare-strings-in-template': [
+        'error',
+        {
+          allowlist: [
+            '(', ')', ',', '.', '·', '—', '–', '-', '/', '|', '×', '&nbsp;',
+            ':', ';', '!', '?', '%', '€', '$', '+', '±', '↗', '→', '…',
+            // Eigennamen und Code-Platzhalter — die übersetzt niemand.
+            'StockPortfolio', 'MangoLila', 'ISIN', 'TER', 'ETF', 'Symbol',
+            '{isin}', '{symbol}', 'Δ',
+          ],
+        },
+      ],
+    },
+  },
 ]

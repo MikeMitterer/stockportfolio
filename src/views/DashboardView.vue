@@ -264,15 +264,14 @@ function toggleGroups(): void {
       <template #extra>
         <div class="flex flex-col items-center gap-3">
           <p class="text-xs text-ink-muted max-w-sm text-center leading-relaxed">
-            Lege deine erste Position an — oder lade ein Beispiel-Depot, um die
-            App auszuprobieren.
+            {{ t('dashboard.emptyHint') }}
           </p>
           <div class="flex items-center gap-2">
             <NButton size="small" type="primary" @click="openAddDialog">
               {{ t('actions.addPosition') }}
             </NButton>
             <NButton size="small" secondary :loading="demoLoading" @click="onLoadDemo">
-              Beispiel-Depot laden
+              {{ t('dashboard.loadDemo') }}
             </NButton>
           </div>
         </div>
@@ -322,7 +321,7 @@ function toggleGroups(): void {
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
           </svg>
-          <h2 class="text-xs uppercase tracking-wide font-medium">Assetklassen</h2>
+          <h2 class="text-xs uppercase tracking-wide font-medium">{{ t('dashboard.assetClasses') }}</h2>
 
           <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
           <span
@@ -366,10 +365,13 @@ function toggleGroups(): void {
               :exceeded="result.targetsExceeded"
             />
             <div class="text-xs text-ink-muted tabular-nums">
-              Bänder: −{{ percent(settingsStore.settings.bands.lowerPercent) }} / +{{
-                percent(settingsStore.settings.bands.upperPercent)
+              {{
+                t('dashboard.bands', {
+                  lower: percent(settingsStore.settings.bands.lowerPercent),
+                  upper: percent(settingsStore.settings.bands.upperPercent),
+                })
               }}
-              <span v-if="loading" class="ml-2">· lädt …</span>
+              <span v-if="loading" class="ml-2">{{ t('common.loading') }}</span>
             </div>
             <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
               {{ t('actions.addPosition') }}

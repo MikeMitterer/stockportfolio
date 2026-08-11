@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NInput, NSelect, NSwitch, NButton, NPopconfirm } from 'naive-ui'
 import type { ExternalLink, InstrumentKind } from '@/types/portfolio'
+
+const { t } = useI18n()
 
 /**
  * Pflege der externen Verweise.
@@ -57,12 +60,7 @@ function add(): void {
 <template>
   <div class="flex flex-col gap-4">
     <p class="text-xs text-ink-muted leading-relaxed">
-      In der Adresse werden
-      <code class="px-1 rounded bg-raised">{isin}</code> und
-      <code class="px-1 rounded bg-raised">{symbol}</code>
-      ersetzt. „Gilt für" leer lassen heißt: für alle Gattungen. Ein Verweis mit
-      <code class="px-1 rounded bg-raised">{isin}</code>
-      erscheint nicht bei Positionen ohne ISIN.
+      {{ t('links.hint') }}
     </p>
 
     <div v-if="hasLinks" class="flex flex-col gap-3">
@@ -98,24 +96,24 @@ function add(): void {
         />
         <NPopconfirm @positive-click="remove(link.id)">
           <template #trigger>
-            <NButton size="tiny" quaternary type="error">Löschen</NButton>
+            <NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton>
           </template>
-          Verweis „{{ link.label }}" entfernen?
+          {{ t('links.confirmDeleteShort', { label: link.label }) }}
         </NPopconfirm>
       </div>
     </div>
 
     <p v-else class="text-xs text-ink-muted">
-      Keine Verweise konfiguriert — im Drilldown erscheinen dann keine externen Links.
+      {{ t('links.noneConfigured') }}
     </p>
 
     <div class="flex items-center gap-2">
-      <NButton size="small" secondary @click="add">Verweis hinzufügen</NButton>
+      <NButton size="small" secondary @click="add">{{ t('links.add') }}</NButton>
       <NPopconfirm @positive-click="emit('reset')">
         <template #trigger>
-          <NButton size="small" quaternary>Auf Vorgaben zurücksetzen</NButton>
+          <NButton size="small" quaternary>{{ t('links.reset') }}</NButton>
         </template>
-        Alle Verweise durch die Vorgaben ersetzen?
+        {{ t('links.confirmResetShort') }}
       </NPopconfirm>
     </div>
   </div>

@@ -3,8 +3,24 @@ import { createPinia } from 'pinia'
 import App from '@/App.vue'
 import { router } from '@/router'
 import { i18n } from '@/i18n'
+import { readStoredLocale } from '@/stores/locale'
+import { LOCALES } from '@/stores/locale'
+import { setFormatterLocale } from '@/domain/formatters'
 import { apiBaseUrl, StockInfoClient, STOCK_INFO_CLIENT } from '@/api/client'
 import '@/assets/style.css'
+
+/*
+ * Sprache setzen, bevor die App das erste Mal zeichnet.
+ *
+ * Der Store tut dasselbe in `App.vue`, aber erst nach dem ersten Bildaufbau —
+ * bis dahin stünde die Vorgabe auf dem Bildschirm. Für einen Sekundenbruchteil
+ * die falsche Sprache zu zeigen ist genau die Art Kleinigkeit, die man nicht
+ * mehr los wird.
+ */
+const startLocale = readStoredLocale()
+i18n.global.locale.value = startLocale
+setFormatterLocale(LOCALES[startLocale].numberLocale)
+document.documentElement.lang = startLocale
 
 const app = createApp(App)
 

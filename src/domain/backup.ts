@@ -115,6 +115,41 @@ const KINDS: readonly InstrumentKind[] = ['etf', 'stock']
  *
  * @param raw Dateiinhalt als Text.
  */
+/**
+ * Prüft die Hülle der Datei — Kennung und Format-Fassung.
+ *
+ * Getrennt vom Inhalt, weil hier andere Fragen gestellt werden: Ist das
+ * überhaupt unsere Datei, und verstehen wir ihr Format? Erst danach lohnt der
+ * Blick auf die Daten.
+ *
+ * @param data Eingelesenes JSON.
+ * @returns Fehlertext, oder `null` wenn die Hülle stimmt.
+ */
+function checkEnvelope(data: Record<string, unknown>): string | null {
+  if (data.kind !== BACKUP_KIND) {
+    return 'Das ist keine StockPortfolio-Sicherung — die Kennung fehlt oder passt nicht.'
+  }
+  if (typeof data.schemaVersion !== 'number') {
+    return 'Der Datei fehlt die Format-Angabe (schemaVersion).'
+  }
+  if (data.schemaVersion > BACKUP_SCHEMA_VERSION) {
+    return (
+      `Die Datei stammt aus einer neueren Fassung (Format ${data.schemaVersion}, ` +
+      `diese App kennt ${BACKUP_SCHEMA_VERSION}). Bitte die App aktualisieren.`
+    )
+  }
+  return null
+}
+
+/**
+ * Liest und prüft den Inhalt einer Sicherungsdatei.
+ *
+ * Streng statt nachsichtig: Eine halb gelesene Datei würde ein halbes Depot
+ * herstellen, und das fiele erst auf, wenn die Zahlen nicht mehr stimmen. Im
+ * Zweifel lieber ablehnen — die Datei ist ja noch da.
+ *
+ * @param raw Dateiinhalt als Text.
+ */
 export function parseBackup(raw: string): ParseResult {
   let data: unknown
   try {
@@ -127,25 +162,8 @@ export function parseBackup(raw: string): ParseResult {
     return { ok: false, error: 'Die Datei enthält kein Objekt.' }
   }
 
-  if (data.kind !== BACKUP_KIND) {
-    return {
-      ok: false,
-      error: 'Das ist keine StockPortfolio-Sicherung — die Kennung fehlt oder passt nicht.',
-    }
-  }
-
-  if (typeof data.schemaVersion !== 'number') {
-    return { ok: false, error: 'Der Datei fehlt die Format-Angabe (schemaVersion).' }
-  }
-
-  if (data.schemaVersion > BACKUP_SCHEMA_VERSION) {
-    return {
-      ok: false,
-      error:
-        `Die Datei stammt aus einer neueren Fassung (Format ${data.schemaVersion}, ` +
-        `diese App kennt ${BACKUP_SCHEMA_VERSION}). Bitte die App aktualisieren.`,
-    }
-  }
+  const envelopeError = checkEnvelope(data)
+  if (envelopeError) return { ok: false, error: envelopeError }
 
   const portfolio = parsePortfolio(data.portfolio)
   if (typeof portfolio === 'string') return { ok: false, error: portfolio }
@@ -158,7 +176,7 @@ export function parseBackup(raw: string): ParseResult {
     ok: true,
     backup: {
       kind: BACKUP_KIND,
-      schemaVersion: data.schemaVersion,
+      schemaVersion: data.schemaVersion as number,
       appVersion: typeof data.appVersion === 'string' ? data.appVersion : 'unbekannt',
       exportedAt: typeof data.exportedAt === 'string' ? data.exportedAt : '',
       portfolio,

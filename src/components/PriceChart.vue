@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NButton, NButtonGroup, NSpin } from 'naive-ui'
 import { buildSparkline } from '@/domain/sparkline'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
-import { eurCent, money, percentSigned } from '@/domain/formatters'
+import { eurCent, formatterLocale, money, percentSigned } from '@/domain/formatters'
 import { useHistoryStore } from '@/stores/history'
 import type { Period } from '@/api/types'
 import type { StockInfoClient } from '@/api/client'
@@ -28,6 +29,8 @@ const props = defineProps<{
   currency: string
 }>()
 
+const { t } = useI18n()
+
 const historyStore = useHistoryStore()
 
 /**
@@ -38,12 +41,12 @@ const historyStore = useHistoryStore()
  */
 const period = ref<Period>('3m')
 
-const PERIODS: { value: Period; label: string }[] = [
-  { value: '1m', label: '1M' },
-  { value: '3m', label: '3M' },
-  { value: '1y', label: '1J' },
-  { value: 'max', label: 'Max' },
-]
+const PERIODS = computed<{ value: Period; label: string }[]>(() => [
+  { value: '1m', label: t('history.periods.m1') },
+  { value: '3m', label: t('history.periods.m3') },
+  { value: '1y', label: t('history.periods.y1') },
+  { value: 'max', label: t('history.periods.max') },
+])
 
 /**
  * Ränder für die Beschriftung.
@@ -147,8 +150,8 @@ function axisDate(iso: string): string {
   if (Number.isNaN(date.getTime())) return iso
   const long = period.value === '1y' || period.value === 'max'
   return long
-    ? date.toLocaleDateString('de-AT', { month: 'short', year: '2-digit' })
-    : date.toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit' })
+    ? date.toLocaleDateString(formatterLocale(), { month: 'short', year: '2-digit' })
+    : date.toLocaleDateString(formatterLocale(), { day: '2-digit', month: '2-digit' })
 }
 
 /** Betrag in der Währung des Papiers — nicht jedes notiert in Euro. */
@@ -158,7 +161,7 @@ function price(value: number): string {
 
 /** Achsenbeschriftung: knapper als in der Tabelle, sonst wird die Achse breit. */
 function axisPrice(value: number): string {
-  return value.toLocaleString('de-AT', { maximumFractionDigits: value >= 100 ? 0 : 2 })
+  return value.toLocaleString(formatterLocale(), { maximumFractionDigits: value >= 100 ? 0 : 2 })
 }
 
 // ─── Zeiger ─────────────────────────────────────────────────────────────────
@@ -193,7 +196,7 @@ function onLeave(): void {
 
 function fullDate(iso: string): string {
   const date = new Date(iso)
-  return Number.isNaN(date.getTime()) ? iso : date.toLocaleDateString('de-AT')
+  return Number.isNaN(date.getTime()) ? iso : date.toLocaleDateString(formatterLocale())
 }
 
 /**
@@ -227,7 +230,7 @@ watch(
   <div class="flex flex-col gap-2">
     <div class="flex items-center justify-between gap-4 flex-wrap">
       <div class="flex items-baseline gap-3">
-        <span class="text-sm font-medium">Kursverlauf</span>
+        <span class="text-sm font-medium">{{ t('history.heading') }}</span>
         <span
           v-if="line.path"
           class="text-sm tabular-nums"
@@ -357,7 +360,7 @@ watch(
       </svg>
 
       <p v-else class="py-16 text-center text-xs text-ink-muted">
-        {{ series.error ?? 'Für dieses Papier liegt kein Verlauf vor.' }}
+        {{ series.error ?? t('history.none') }}
       </p>
 
       <!--
@@ -377,14 +380,13 @@ watch(
           class="text-[11px] tabular-nums"
           :class="hoveredPoint.change >= 0 ? 'text-status-ok' : 'text-status-out'"
         >
-          {{ percentSigned(hoveredPoint.change) }} seit Beginn
+          {{ t('history.sinceStart', { value: percentSigned(hoveredPoint.change) }) }}
         </div>
       </div>
     </div>
 
     <p v-if="line.path" class="text-[11px] text-ink-muted">
-      Links die Kurse, rechts die Veränderung seit dem
-      {{ fullDate(points[0]?.date ?? '') }}.
+      {{ t('history.axisHint', { date: fullDate(points[0]?.date ?? '') }) }}
     </p>
   </div>
 </template>

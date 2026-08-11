@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { percent } from '@/domain/formatters'
+
+const { t } = useI18n()
 
 /**
  * Zeigt, wie viel des Depots bereits per Ziel-Anteil verplant ist.
@@ -36,7 +39,7 @@ const labelClass = computed(() => {
 
 <template>
   <div class="flex items-center gap-3">
-    <span class="text-xs text-ink-muted shrink-0">Ziel-Verteilung</span>
+    <span class="text-xs text-ink-muted shrink-0">{{ t('dashboard.targetDistribution') }}</span>
 
     <div class="relative h-1.5 w-32 rounded-full bg-sunken overflow-hidden shrink-0">
       <div class="absolute inset-y-0 left-0 rounded-full" :class="fillClass" :style="{ width: fillWidth }"></div>
@@ -50,7 +53,7 @@ const labelClass = computed(() => {
 
     <span class="text-xs tabular-nums shrink-0" :class="labelClass">
       {{ percent(sum) }}
-      <span v-if="exceeded" class="ml-1">· über 100 %</span>
+      <span v-if="exceeded" class="ml-1">{{ t('common.overHundred') }}</span>
     </span>
   </div>
 </template>

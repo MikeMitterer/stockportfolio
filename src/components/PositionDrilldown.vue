@@ -97,8 +97,8 @@ const resolvedLinks = computed(() =>
 const kind = computed(() => resolveKind(props.row.position, props.row.quote?.type))
 
 const kindLabel = computed(() => {
-  if (kind.value === 'etf') return 'ETF'
-  if (kind.value === 'stock') return 'Aktie'
+  if (kind.value === 'etf') return t('dashboard.kindEtf')
+  if (kind.value === 'stock') return t('dashboard.kindStock')
   return null
 })
 
@@ -134,7 +134,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           <div class="grid grid-cols-2 gap-2">
             <label class="flex flex-col gap-1 text-xs">
               <span class="text-ink-muted">
-                {{ isCash ? 'Betrag (€)' : t('table.units') }}
+                {{ isCash ? t('dashboard.amountEuro') : t('table.units') }}
               </span>
               <NInputNumber
                 :value="row.position.units"
@@ -205,13 +205,13 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
 
           <div class="flex items-center gap-2">
             <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
-              Kurs neu laden
+              {{ t('dashboard.reloadQuote') }}
             </NButton>
             <NPopconfirm @positive-click="emit('remove', row.position.id)">
               <template #trigger>
                 <NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton>
               </template>
-              Position „{{ row.position.displayName }}" wirklich löschen?
+              {{ t('dashboard.confirmRemove', { name: row.position.displayName }) }}
             </NPopconfirm>
           </div>
         </div>
@@ -220,7 +220,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
       <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
       <NCard :bordered="false" size="small" class="!bg-raised h-full">
         <template #header>
-          <span class="text-sm font-medium">Details</span>
+          <span class="text-sm font-medium">{{ t('dashboard.details') }}</span>
         </template>
 
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-2 text-xs">
@@ -229,15 +229,15 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             <div class="tabular-nums">{{ row.position.isin ?? '—' }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">Symbol</div>
+            <div class="text-ink-muted">{{ t('table.symbol') }}</div>
             <div class="tabular-nums">{{ row.position.symbol }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">Kurs</div>
+            <div class="text-ink-muted">{{ t('table.price') }}</div>
             <div class="tabular-nums">{{ row.quote ? eurCent(row.quote.price) : '—' }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">Marktwert</div>
+            <div class="text-ink-muted">{{ t('table.marketValue') }}</div>
             <div class="tabular-nums">{{ eur(row.marketValue) }}</div>
           </div>
 
@@ -246,7 +246,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">Ziel-Wert</div>
+            <div class="text-ink-muted">{{ t('dashboard.targetValue') }}</div>
             <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
           </div>
           <div>
@@ -268,7 +268,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">Δ Bestand (Stück)</div>
+            <div class="text-ink-muted">{{ t('dashboard.unitsDelta') }}</div>
             <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
           </div>
           <div v-if="row.quote?.volatility != null">
@@ -280,12 +280,12 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
           </div>
           <div v-if="row.quote">
-            <div class="text-ink-muted">Kurs-Stand</div>
+            <div class="text-ink-muted">{{ t('dashboard.quoteAge') }}</div>
             <div class="tabular-nums">{{ quoteAge }}</div>
           </div>
 
           <div v-if="kindLabel">
-            <div class="text-ink-muted">Gattung</div>
+            <div class="text-ink-muted">{{ t('dashboard.kind') }}</div>
             <div>{{ kindLabel }}</div>
           </div>
 
@@ -301,7 +301,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
               {{ link.label }} ↗
             </a>
             <span v-if="resolvedLinks.length === 0" class="text-xs text-ink-muted">
-              Keine passenden Verweise — unter „Einstellungen" konfigurierbar.
+              {{ t('dashboard.noMatchingLinks') }}
             </span>
           </div>
         </div>

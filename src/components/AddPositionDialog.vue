@@ -121,13 +121,12 @@ watch(
     >
       <div class="flex flex-col gap-4">
         <NAlert v-if="selectable.length === 0" type="info" :bordered="false">
-          Alle freigegebenen Papiere sind bereits im Depot. Weitere lassen sich
-          unter „Assets" freischalten.
+          {{ t('addPosition.allInPortfolio') }}
         </NAlert>
 
         <template v-else>
           <label class="flex flex-col gap-1 text-sm">
-            <span class="text-ink-muted">Instrument</span>
+            <span class="text-ink-muted">{{ t('addPosition.instrument') }}</span>
             <NSelect
               v-model:value="selectedKey"
               :options="options"
@@ -146,7 +145,7 @@ watch(
               <div class="tabular-nums">{{ selected.isin ?? '—' }}</div>
             </div>
             <div>
-              <div class="text-ink-muted">Kurs</div>
+              <div class="text-ink-muted">{{ t('table.price') }}</div>
               <div class="tabular-nums">
                 {{ selected.latest_price !== null ? eurCent(selected.latest_price) : 'noch keiner' }}
               </div>
@@ -156,7 +155,7 @@ watch(
               <div class="tabular-nums">{{ percent(selected.ter) }}</div>
             </div>
             <div v-if="selected.volatility !== null">
-              <div class="text-ink-muted">Volatilität</div>
+              <div class="text-ink-muted">{{ t('addPosition.volatility') }}</div>
               <div class="tabular-nums">{{ percent(selected.volatility) }}</div>
             </div>
             <div class="col-span-2">
@@ -183,7 +182,7 @@ watch(
                 :step="0.5"
               />
               <span class="text-xs text-ink-muted">
-                noch frei: {{ percent(remainingTargetPercent) }}
+                {{ t('addPosition.remaining', { value: percent(remainingTargetPercent) }) }}
               </span>
             </label>
           </div>
@@ -192,12 +191,12 @@ watch(
             <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
             <NSelect v-model:value="group" :options="groupOptions" />
             <span class="text-xs text-ink-muted">
-              Vorschlag anhand des Namens — bei Bedarf ändern.
+              {{ t('addPosition.groupHint') }}
             </span>
           </label>
 
           <NAlert v-if="exceedsTarget" type="warning" :bordered="false">
-            Damit liegt die Summe der Ziel-Anteile über 100 %.
+            {{ t('addPosition.targetExceeds') }}
           </NAlert>
         </template>
       </div>

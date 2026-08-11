@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NButton, NInput, NPopconfirm, NTag } from 'naive-ui'
 import { consola } from 'consola'
 import { formatAge } from '@/composables/useRelativeTime'
-import { counted } from '@/domain/formatters'
+import { formatterLocale, integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -18,6 +19,8 @@ import { useSettingsStore } from '@/stores/settings'
  * und in der Statuszeile. Ohne diese Anzeige wäre jede Zahl der App
  * mehrdeutig, sobald es mehr als ein Depot gibt.
  */
+
+const { t } = useI18n()
 
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
@@ -90,10 +93,7 @@ function messageOf(cause: unknown): string {
 <template>
   <div class="flex flex-col gap-4">
     <p class="text-sm text-ink-secondary leading-relaxed">
-      Mehrere Depots nebeneinander — etwa eines für die Kinder oder eine
-      Variante zum Durchrechnen. Gerechnet wird immer nur mit dem aktiven; sein
-      Name steht in der Statuszeile am unteren Rand. Toleranzbänder,
-      Sicherheitspuffer und Darstellung gelten für alle gemeinsam.
+      {{ t('portfolios.intro') }}
     </p>
 
     <div class="flex flex-col divide-y divide-edge border-y border-edge">
@@ -110,20 +110,20 @@ function messageOf(cause: unknown): string {
           :value="entry.name"
           size="small"
           class="max-w-[18rem]"
-          placeholder="Name des Depots"
+          :placeholder="t('portfolios.namePlaceholder')"
           @update:value="(name: string) => rename(entry.id, name)"
         />
 
         <NTag v-if="entry.id === activeId" type="primary" size="small" :bordered="false">
-          aktiv
+          {{ t('portfolios.active') }}
         </NTag>
 
         <span class="text-xs text-ink-muted tabular-nums">
-          {{ counted(entry.positionCount, 'Position') }}
+          {{ t('units.positions', entry.positionCount, { named: { count: integer(entry.positionCount) } }) }}
         </span>
 
         <span class="text-xs text-ink-muted hidden sm:inline">
-          geändert {{ formatAge(entry.updatedAt) }}
+          {{ t('portfolios.changed', { age: formatAge(entry.updatedAt) }) }}
         </span>
 
         <div class="ml-auto flex items-center gap-2">
@@ -134,7 +134,7 @@ function messageOf(cause: unknown): string {
             :disabled="busy"
             @click="activate(entry.id)"
           >
-            Wechseln
+            {{ t('portfolios.switch') }}
           </NButton>
 
           <NPopconfirm :disabled="!canDelete" @positive-click="remove(entry.id)">
@@ -144,17 +144,23 @@ function messageOf(cause: unknown): string {
                 quaternary
                 type="error"
                 :disabled="!canDelete || busy"
-                :title="canDelete ? undefined : 'Das letzte Depot bleibt bestehen'"
+                :title="canDelete ? undefined : t('portfolios.lastRemains')"
               >
-                Löschen
+                {{ t('actions.delete') }}
               </NButton>
             </template>
             <!--
               Der Umfang gehört in die Rückfrage: „Depot löschen?" allein sagt
               nicht, wie viel dabei verloren geht.
             -->
-            „{{ entry.name }}" mit {{ counted(entry.positionCount, 'Position') }} endgültig
-            löschen?
+            {{
+              t('portfolios.confirmDelete', {
+                name: entry.name,
+                positions: t('units.positions', entry.positionCount, {
+                  named: { count: integer(entry.positionCount) },
+                }),
+              })
+            }}
           </NPopconfirm>
         </div>
       </div>
@@ -165,10 +171,12 @@ function messageOf(cause: unknown): string {
         v-model:value="newName"
         size="small"
         class="max-w-[18rem]"
-        placeholder="Name des neuen Depots"
+        :placeholder="t('portfolios.newPlaceholder')"
         @keydown.enter="create"
       />
-      <NButton size="small" secondary :loading="busy" @click="create">Depot anlegen</NButton>
+      <NButton size="small" secondary :loading="busy" @click="create">
+        {{ t('portfolios.create') }}
+      </NButton>
     </div>
 
     <p v-if="error" class="text-sm text-status-out">{{ error }}</p>

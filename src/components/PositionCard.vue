@@ -51,7 +51,7 @@ const title = computed(() =>
               v-if="!row.isActive"
               class="text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-edge text-ink-muted shrink-0"
             >
-              inaktiv
+              {{ t('currency.inactive') }}
             </span>
           </div>
           <div v-if="!isCash" class="text-xs text-ink-muted truncate">
@@ -66,17 +66,17 @@ const title = computed(() =>
         :near="row.isNearBand"
         class="shrink-0"
       />
-      <span v-else class="text-xs text-ink-muted shrink-0">zählt nicht mit</span>
+      <span v-else class="text-xs text-ink-muted shrink-0">{{ t('currency.notCounted') }}</span>
     </div>
 
     <!-- Basisdaten -->
     <div class="flex items-baseline justify-between gap-3 text-sm">
       <span class="text-ink-muted text-xs tabular-nums">
         <template v-if="!isCash">
-          {{ integer(row.position.units) }} Stk
+          {{ t('common.units', { count: integer(row.position.units) }) }}
           <template v-if="row.quote"> · {{ eurCent(row.quote.price) }}</template>
         </template>
-        <template v-else>Verrechnungskonto</template>
+        <template v-else>{{ row.position.displayName }}</template>
       </span>
       <span class="tabular-nums font-medium">{{ eur(row.marketValue) }}</span>
     </div>

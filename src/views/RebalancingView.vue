@@ -136,36 +136,33 @@ useStateNotification(
   notification,
   computed(() => plan.value?.underfunded ?? false),
   {
-    title: 'Plan nicht gedeckt',
+    title: t('rebalancing.underfundedTitle'),
     type: 'error',
     seconds: notificationSeconds,
     content: () =>
-      `Für die geplanten Käufe fehlen ${eur(-(plan.value?.netCashFlow ?? 0))}. ` +
-      'Verkaufe ein Papier oder entnimm aus Cash bzw. Geldmarkt — trage die ' +
-      'Entnahme dort als negative Zahl ein.',
+      t('rebalancing.underfundedBody', { amount: eur(-(plan.value?.netCashFlow ?? 0)) }),
   },
 )
 
 useStateNotification(notification, targetSumOff, {
-  title: 'Ziele ergeben nicht 100 %',
+  title: t('rebalancing.targetSumTitle'),
   type: 'warning',
   seconds: notificationSeconds,
-  content: () =>
-    `Die Ziele ergeben zusammen ${percent(plan.value?.targetSum ?? 0)} statt 100 %. ` +
-    'Was eine Position zusätzlich bekommen soll, muss eine andere abgeben.',
+  content: () => t('rebalancing.targetSumBody', { sum: percent(plan.value?.targetSum ?? 0) }),
 })
 
 useStateNotification(
   notification,
   computed(() => plan.value?.bufferBreached ?? false),
   {
-    title: 'Sicherheitspuffer unterschritten',
+    title: t('rebalancing.bufferTitle'),
     type: 'warning',
     seconds: notificationSeconds,
     content: () =>
-      `Der Plan senkt Cash und Geldmarkt auf ${eur(plan.value?.liquidAfter ?? 0)} und ` +
-      `unterschreitet damit den Sicherheitspuffer von ` +
-      `${eur(result.value?.liquidity.securityBuffer ?? 0)}.`,
+      t('rebalancing.bufferBody', {
+        liquid: eur(plan.value?.liquidAfter ?? 0),
+        buffer: eur(result.value?.liquidity.securityBuffer ?? 0),
+      }),
   },
 )
 
@@ -177,11 +174,14 @@ interface RenderedGroup {
 }
 
 const groupedRows = computed<RenderedGroup[]>(() => {
-  if (!plan.value || !result.value) return []
-  return result.value.groups
+  const currentPlan = plan.value
+  const currentResult = result.value
+  if (!currentPlan || !currentResult) return []
+
+  return currentResult.groups
     .map((group) => ({
       group,
-      rows: plan.value!.rows.filter((row) => row.current.position.group === group.group),
+      rows: currentPlan.rows.filter((row) => row.current.position.group === group.group),
     }))
     .filter((entry) => entry.rows.length > 0)
 })
@@ -216,7 +216,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
     <NEmpty
       v-else-if="!hasHoldings"
       class="py-24"
-      description="Noch keine Wertpapiere im Depot"
+      :description="t('rebalancing.empty')"
     />
 
     <template v-else-if="plan && result">
@@ -227,23 +227,23 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
       -->
       <section class="flex flex-wrap items-end gap-x-8 gap-y-4">
         <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">Frei gemacht</span>
+          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.freed') }}</span>
           <span class="text-lg font-semibold tabular-nums text-status-ok">
             {{ eur(plan.proceeds) }}
           </span>
-          <span class="text-[11px] text-ink-muted">Verkäufe und Entnahmen</span>
+          <span class="text-[11px] text-ink-muted">{{ t('rebalancing.freedHint') }}</span>
         </div>
 
         <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">Eingesetzt</span>
+          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.spent') }}</span>
           <span class="text-lg font-semibold tabular-nums text-status-out">
             {{ eur(plan.outlay) }}
           </span>
-          <span class="text-[11px] text-ink-muted">Käufe</span>
+          <span class="text-[11px] text-ink-muted">{{ t('rebalancing.spentHint') }}</span>
         </div>
 
         <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">Bilanz</span>
+          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.balance') }}</span>
           <span
             class="text-lg font-semibold tabular-nums"
             :class="plan.underfunded ? 'text-status-out' : 'text-ink'"
@@ -251,10 +251,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             {{ eurSigned(plan.netCashFlow) }}
           </span>
           <span class="text-[11px] text-ink-muted">
-            <template v-if="!planHasEntries">noch nichts geplant</template>
-            <template v-else-if="plan.underfunded">nicht gedeckt</template>
-            <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">geht auf</template>
-            <template v-else>bleibt übrig</template>
+            <template v-if="!planHasEntries">{{ t('rebalancing.nothingPlanned') }}</template>
+            <template v-else-if="plan.underfunded">{{ t('rebalancing.underfunded') }}</template>
+            <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">{{ t('rebalancing.balanced') }}</template>
+            <template v-else>{{ t('rebalancing.leftOver') }}</template>
           </span>
         </div>
 
@@ -266,7 +266,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           Höhe verhindert auch beim Erscheinen jeden Versatz.
         -->
         <div class="flex flex-col gap-0.5 min-h-[3.75rem]">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">Decken aus</span>
+          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.coverFrom') }}</span>
           <div v-if="coverageOptions.length > 0" class="flex flex-wrap items-center gap-1.5 pt-0.5">
             <button
               v-for="option in coverageOptions"
@@ -274,25 +274,25 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
               type="button"
               class="rounded-full border border-edge px-2 py-0.5 text-xs tabular-nums
                      text-accent transition-colors hover:border-accent"
-              :title="`${option.label}: ${integer(option.units)} Stück in den Plan übernehmen`"
+              :title="t('rebalancing.coverTitle', { label: option.label, units: integer(option.units) })"
               @click="setTrade(option.id, option.units)"
             >
               {{ option.label }} {{ integer(option.units) }}
             </button>
           </div>
           <span v-else class="text-sm text-ink-muted pt-1">
-            {{ planHasEntries ? 'nichts offen' : '—' }}
+            {{ planHasEntries ? t('rebalancing.coverNothing') : t('common.none') }}
           </span>
-          <span class="text-[11px] text-ink-muted">Cash und Geldmarkt</span>
+          <span class="text-[11px] text-ink-muted">{{ t('rebalancing.coverHint') }}</span>
         </div>
 
         <div class="flex flex-col gap-0.5">
           <span class="text-[11px] uppercase tracking-wide text-ink-muted">
-            Aus Reserve entnehmbar
+            {{ t('rebalancing.reserve') }}
           </span>
           <span class="text-lg font-semibold tabular-nums">{{ eur(plan.reserveAvailable) }}</span>
           <span class="text-[11px] text-ink-muted">
-            Cash + Geldmarkt über dem Puffer
+            {{ t('rebalancing.reserveHint') }}
           </span>
         </div>
 
@@ -303,11 +303,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             Bestände danach im Dashboard nach.
           -->
           <span class="text-[11px] text-ink-muted max-w-[16rem] leading-tight">
-            Alles hier ist Simulation — weder Bestände noch Ziele werden
-            geändert.
+            {{ t('rebalancing.simulationNote') }}
           </span>
           <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
-            Plan leeren
+            {{ t('rebalancing.clearPlan') }}
           </NButton>
         </div>
       </section>
@@ -316,11 +315,15 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
       <section class="rounded-xl border border-edge bg-card overflow-hidden">
         <div class="px-4 md:px-5 py-3 flex items-baseline justify-between gap-4 flex-wrap">
           <h2 class="text-xs uppercase tracking-wide text-ink-muted font-medium">
-            Verkaufen und kaufen — Stückzahlen eintragen
+            {{ t('rebalancing.heading') }}
           </h2>
           <span class="text-xs text-ink-muted tabular-nums">
-            Bänder: −{{ percent(settingsStore.settings.bands.lowerPercent) }} /
-            +{{ percent(settingsStore.settings.bands.upperPercent) }}
+            {{
+              t('rebalancing.bandsLabel', {
+                lower: percent(settingsStore.settings.bands.lowerPercent),
+                upper: percent(settingsStore.settings.bands.upperPercent),
+              })
+            }}
           </span>
         </div>
 
@@ -328,34 +331,31 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           <table class="w-full text-sm">
             <thead>
               <tr class="text-[11px] uppercase tracking-wide text-ink-muted">
-                <th class="text-left font-medium px-4 py-1.5">Symbol</th>
-                <th class="text-right font-medium px-2 py-1.5">Bestand</th>
-                <th class="text-right font-medium px-2 py-1.5">Kurs</th>
-                <th class="text-right font-medium px-2 py-1.5">IST %</th>
-                <th class="text-right font-medium px-2 py-1.5">Ziel %</th>
+                <th class="text-left font-medium px-4 py-1.5">{{ t('table.symbol') }}</th>
+                <th class="text-right font-medium px-2 py-1.5">{{ t('table.units') }}</th>
+                <th class="text-right font-medium px-2 py-1.5">{{ t('table.price') }}</th>
+                <th class="text-right font-medium px-2 py-1.5">{{ t('table.actualPercent') }}</th>
+                <th class="text-right font-medium px-2 py-1.5">{{ t('table.targetPercent') }}</th>
                 <th class="text-right font-medium px-2 py-1.5">
                   <NTooltip trigger="hover">
                     <template #trigger>
                       <span class="border-b border-dotted border-ink-muted cursor-help">
-                        Delta
+                        {{ t('rebalancing.columns.delta') }}
                       </span>
                     </template>
                     <div class="max-w-xs text-sm">
-                      Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen.
-                      Anklicken übernimmt den Wert in die Eingabe.
-                      <div class="mt-2 text-xs">
-                        Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle
-                        Deltas gegenseitig auf — wer allen folgt, bekommt einen
-                        Plan, der von selbst aufgeht.
-                      </div>
+                      {{ t('rebalancing.deltaTooltip') }}
+                      <div class="mt-2 text-xs">{{ t('rebalancing.deltaTooltipMore') }}</div>
                     </div>
                   </NTooltip>
                 </th>
-                <th class="text-right font-medium px-2 py-1.5 w-32">Kauf / Verkauf</th>
-                <th class="text-right font-medium px-2 py-1.5 w-28">Wert</th>
-                <th class="text-left font-medium px-2 py-1.5 w-56">Anteil nachher</th>
-                <th class="text-right font-medium px-2 py-1.5">Abw. Ziel</th>
-                <th class="text-center font-medium px-4 py-1.5 w-32">Status</th>
+                <th class="text-right font-medium px-2 py-1.5 w-32">{{ t('rebalancing.columns.trade') }}</th>
+                <th class="text-right font-medium px-2 py-1.5 w-28">{{ t('rebalancing.columns.value') }}</th>
+                <th class="text-left font-medium px-2 py-1.5 w-56">
+                  {{ t('rebalancing.columns.shareAfter') }}
+                </th>
+                <th class="text-right font-medium px-2 py-1.5">{{ t('rebalancing.columns.deviation') }}</th>
+                <th class="text-center font-medium px-4 py-1.5 w-32">{{ t('table.status') }}</th>
               </tr>
             </thead>
 
@@ -450,7 +450,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                       type="button"
                       class="tabular-nums text-xs underline decoration-dotted"
                       :class="row.deltaUnits > 0 ? 'text-status-ok' : 'text-status-out'"
-                      title="In die Eingabe übernehmen"
+                      :title="t('rebalancing.adoptDelta')"
                       @click="setTrade(row.current.position.id, row.deltaUnits)"
                     >
                       {{ row.deltaUnits > 0 ? '+' : '' }}{{ integer(row.deltaUnits) }}
@@ -521,7 +521,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             <tfoot>
               <tr class="border-t border-edge">
                 <td colspan="7" class="px-4 py-2 text-right text-xs uppercase tracking-wide text-ink-muted">
-                  Geht der Plan auf?
+                  {{ t('rebalancing.footerQuestion') }}
                 </td>
                 <td
                   class="px-2 py-2 text-right tabular-nums font-semibold"
@@ -532,15 +532,15 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   {{ eurSigned(plan.netCashFlow) }}
                 </td>
                 <td class="px-2 py-2 text-xs text-ink-muted" colspan="3">
-                  <template v-if="!planHasEntries">Noch nichts geplant.</template>
+                  <template v-if="!planHasEntries">{{ t('rebalancing.footerNothing') }}</template>
                   <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">
-                    Käufe und Verkäufe gleichen sich aus.
+                    {{ t('rebalancing.footerBalanced') }}
                   </template>
                   <template v-else-if="plan.netCashFlow < 0">
-                    {{ eur(-plan.netCashFlow) }} kommen aus der Reserve.
+                    {{ t('rebalancing.footerShort', { amount: eur(-plan.netCashFlow) }) }}
                   </template>
                   <template v-else>
-                    {{ eur(plan.netCashFlow) }} bleiben übrig.
+                    {{ t('rebalancing.footerLeftOver', { amount: eur(plan.netCashFlow) }) }}
                   </template>
                 </td>
               </tr>

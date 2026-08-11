@@ -47,15 +47,53 @@ export const useQuotesStore = defineStore('quotes', () => {
    * Lädt Kurse für alle kursrelevanten Positionen.
    * Cash wird übersprungen; ein Fehlschlag bricht die übrigen nicht ab.
    */
+  /**
+   * Sortiert die Antworten in Kurse und Ausfälle.
+   *
+   * Ein Ausfall wirft den alten Kurs nicht weg, sondern markiert ihn als
+   * veraltet — eine Lücke in der Tabelle wäre schlimmer als eine Zahl von
+   * gestern, weil daran jede Kennzahl hängt.
+   *
+   * @param results  Ergebnisse der Einzelabrufe.
+   * @param previous Bisheriger Cache-Stand.
+   */
+  function sortOutcomes(
+    results: FetchOutcome[],
+    previous: QuoteMap,
+  ): { quotes: QuoteMap; failures: QuoteFailure[] } {
+    const nextQuotes: QuoteMap = new Map()
+    const nextFailures: QuoteFailure[] = []
+
+    for (const result of results) {
+      if (result.entry) {
+        nextQuotes.set(result.key, result.entry)
+        continue
+      }
+
+      const known = previous.get(result.key)
+      if (known) nextQuotes.set(result.key, { ...known, stale: true })
+      nextFailures.push({
+        key: result.key,
+        symbol: result.symbol,
+        reason: result.reason ?? 'Unbekannter Fehler',
+      })
+    }
+
+    return { quotes: nextQuotes, failures: nextFailures }
+  }
+
+  /** Übernimmt einen neuen Cache-Stand und schreibt ihn durch. */
+  async function commit(nextQuotes: QuoteMap, nextFailures: QuoteFailure[]): Promise<void> {
+    quotes.value = nextQuotes
+    failures.value = nextFailures
+    lastRefreshAt.value = new Date().toISOString()
+    await repository.replaceAll(nextQuotes)
+  }
+
   async function loadQuotes(client: StockInfoClient, positions: Position[]): Promise<void> {
-    const relevant = positions.filter(
-      (position) => position.enabled && position.group !== 'cash',
-    )
+    const relevant = positions.filter((position) => position.enabled && position.group !== 'cash')
     if (relevant.length === 0) {
-      quotes.value = new Map()
-      failures.value = []
-      lastRefreshAt.value = new Date().toISOString()
-      await repository.replaceAll(quotes.value)
+      await commit(new Map(), [])
       return
     }
 
@@ -66,33 +104,12 @@ export const useQuotesStore = defineStore('quotes', () => {
       const results = await mapWithConcurrency(relevant, MAX_CONCURRENT_REQUESTS, (position) =>
         fetchOne(client, position),
       )
+      const sorted = sortOutcomes(results, quotes.value)
+      await commit(sorted.quotes, sorted.failures)
 
-      const nextQuotes: QuoteMap = new Map()
-      const nextFailures: QuoteFailure[] = []
-
-      results.forEach((result) => {
-        if (result.entry) {
-          nextQuotes.set(result.key, result.entry)
-        } else {
-          // Alten Kurs behalten, damit ein Ausfall keine Lücke reißt.
-          const previous = quotes.value.get(result.key)
-          if (previous) nextQuotes.set(result.key, { ...previous, stale: true })
-          nextFailures.push({
-            key: result.key,
-            symbol: result.symbol,
-            reason: result.reason ?? 'Unbekannter Fehler',
-          })
-        }
-      })
-
-      quotes.value = nextQuotes
-      failures.value = nextFailures
-      lastRefreshAt.value = new Date().toISOString()
-      await repository.replaceAll(nextQuotes)
-
-      if (nextFailures.length > 0) {
+      if (sorted.failures.length > 0) {
         consola.warn('quotes: Kurse teilweise nicht geladen', {
-          failed: nextFailures.length,
+          failed: sorted.failures.length,
           total: relevant.length,
         })
       }

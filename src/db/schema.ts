@@ -5,7 +5,13 @@
  * Repositories in `repository.ts`.
  */
 
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
+import {
+  openDB,
+  type DBSchema,
+  type IDBPDatabase,
+  type IDBPTransaction,
+  type StoreNames,
+} from 'idb'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 export const DB_NAME = 'stockportfolio'
@@ -81,48 +87,68 @@ let dbPromise: Promise<IDBPDatabase<StockPortfolioDB>> | null = null
  *
  * @returns Verbindung zur IndexedDB.
  */
+/**
+ * Legt das Ausgangsschema an.
+ *
+ * @param db Die zu erweiternde Datenbank.
+ */
+function createInitialStores(db: IDBPDatabase<StockPortfolioDB>): void {
+  db.createObjectStore('portfolios', { keyPath: 'id' })
+  db.createObjectStore('settings', { keyPath: 'key' })
+  db.createObjectStore('quoteCache', { keyPath: 'key' })
+  db.createObjectStore('instrumentAllowlist', { keyPath: 'key' })
+}
+
+/**
+ * Gibt der Whitelist einen Depot-Bezug (Version 1 → 2).
+ *
+ * Bis dahin lag sie global — mit mehreren Depots ist das falsch. Die
+ * vorhandenen Einträge gehören dem Depot, das sie angelegt hat; das ist das
+ * einzige, das es damals gab. Sie stillschweigend wegzuwerfen wäre die
+ * schlechtere Wahl: Wer 20 Papiere ausgeblendet hat, müsste von vorn beginnen.
+ *
+ * @param db          Die zu ändernde Datenbank.
+ * @param transaction Die laufende Upgrade-Transaktion.
+ */
+async function scopeAllowlistToPortfolio(
+  db: IDBPDatabase<StockPortfolioDB>,
+  transaction: IDBPTransaction<StockPortfolioDB, StoreNames<StockPortfolioDB>[], 'versionchange'>,
+): Promise<void> {
+  const previous = (await transaction.objectStore('instrumentAllowlist').getAll()) as unknown as {
+    key: string
+    enabled: boolean
+  }[]
+
+  db.deleteObjectStore('instrumentAllowlist')
+  const store = db.createObjectStore('instrumentAllowlist', { keyPath: 'id' })
+  store.createIndex('byPortfolio', 'portfolioId')
+
+  const [firstPortfolio] = await transaction.objectStore('portfolios').getAllKeys()
+  if (!firstPortfolio) return
+
+  for (const entry of previous) {
+    await transaction.objectStore('instrumentAllowlist').put({
+      id: allowlistId(firstPortfolio, entry.key),
+      portfolioId: firstPortfolio,
+      key: entry.key,
+      enabled: entry.enabled,
+    })
+  }
+}
+
+/**
+ * Öffnet die Datenbank (einmalig) und wendet fehlende Migrationen an.
+ *
+ * @returns Verbindung zur IndexedDB.
+ */
 export function getDb(): Promise<IDBPDatabase<StockPortfolioDB>> {
   dbPromise ??= openDB<StockPortfolioDB>(DB_NAME, DB_VERSION, {
-    async upgrade(db, oldVersion, _newVersion, tx) {
-      // Version 0 → 1: Initiales Schema.
-      if (oldVersion < 1) {
-        db.createObjectStore('portfolios', { keyPath: 'id' })
-        db.createObjectStore('settings', { keyPath: 'key' })
-        db.createObjectStore('quoteCache', { keyPath: 'key' })
-        db.createObjectStore('instrumentAllowlist', { keyPath: 'key' })
-      }
+    async upgrade(db, oldVersion, _newVersion, transaction) {
+      if (oldVersion < 1) createInitialStores(db)
+      if (oldVersion < 2) await scopeAllowlistToPortfolio(db, transaction)
 
-      // Version 1 → 2: Die Whitelist bekommt einen Depot-Bezug.
-      //
-      // Bis hier lag sie global — mit mehreren Depots ist das falsch. Die
-      // vorhandenen Einträge gehören dem Depot, das sie angelegt hat; das ist
-      // das einzige, das es damals gab. Sie stillschweigend wegzuwerfen wäre
-      // die schlechtere Wahl: Wer 20 Papiere ausgeblendet hat, müsste von
-      // vorn beginnen.
-      if (oldVersion < 2) {
-        const alt = await tx.objectStore('instrumentAllowlist').getAll()
-        db.deleteObjectStore('instrumentAllowlist')
-        const store = db.createObjectStore('instrumentAllowlist', { keyPath: 'id' })
-        store.createIndex('byPortfolio', 'portfolioId')
-
-        const [erstesDepot] = await tx.objectStore('portfolios').getAllKeys()
-        if (erstesDepot) {
-          for (const entry of alt as { key: string; enabled: boolean }[]) {
-            await tx
-              .objectStore('instrumentAllowlist')
-              .put({
-                id: allowlistId(erstesDepot, entry.key),
-                portfolioId: erstesDepot,
-                key: entry.key,
-                enabled: entry.enabled,
-              })
-          }
-        }
-      }
-
-      // Version 2 → 3: Zwischenspeicher für den Kursverlauf.
-      //
-      // Rein additiv — nichts umzuziehen. Fehlt der Verlauf, wird er geholt.
+      // Version 2 → 3: Zwischenspeicher für den Kursverlauf. Rein additiv —
+      // fehlt der Verlauf, wird er geholt.
       if (oldVersion < 3 && !db.objectStoreNames.contains('dailyHistory')) {
         db.createObjectStore('dailyHistory', { keyPath: 'key' })
       }

@@ -32,6 +32,12 @@ export interface AppNotifier {
   notify: (active: Ref<boolean>, options: AppNotificationOptions) => void
 }
 
+/**
+ * Liefert `notify` mit vorverdrahteter API und Zähler aus den Einstellungen.
+ *
+ * Muss in `setup()` aufgerufen werden — `useNotification` und der Store
+ * brauchen den Komponenten-Kontext.
+ */
 export function useAppNotification(): AppNotifier {
   const notification = useNotification()
   const settingsStore = useSettingsStore()

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NButton, NPopconfirm } from 'naive-ui'
 import { consola } from 'consola'
 import {
@@ -8,7 +9,7 @@ import {
   parseBackup,
   type Backup,
 } from '@/domain/backup'
-import { counted, eur } from '@/domain/formatters'
+import { eur, formatterLocale, integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import type { Portfolio } from '@/types/portfolio'
 import { useSettingsStore } from '@/stores/settings'
@@ -26,6 +27,8 @@ import { useInstrumentsStore } from '@/stores/instruments'
  * sofort das Depot überschreibt, wäre bei einem Fehlgriff nicht mehr
  * zurückzuholen.
  */
+
+const { t } = useI18n()
 
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
@@ -45,7 +48,9 @@ const exportedAtLabel = computed(() => {
   const raw = pending.value?.exportedAt
   if (!raw) return 'unbekannt'
   const date = new Date(raw)
-  return Number.isNaN(date.getTime()) ? 'unbekannt' : date.toLocaleString('de-AT')
+  return Number.isNaN(date.getTime())
+    ? t('backup.unknown')
+    : date.toLocaleString(formatterLocale())
 })
 
 // ─── Sichern ────────────────────────────────────────────────────────────────
@@ -58,7 +63,7 @@ function exportBackup(): void {
     exportNow(portfolio)
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
-    error.value = `Die Sicherung konnte nicht erstellt werden: ${reason}`
+    error.value = t('backup.exportFailed', { reason })
     consola.error('backup: Sichern fehlgeschlagen', { reason })
   }
 }
@@ -86,7 +91,7 @@ function exportNow(portfolio: Portfolio): void {
   anchor.click()
   URL.revokeObjectURL(url)
 
-  done.value = `Gesichert: ${anchor.download}`
+  done.value = t('backup.saved', { file: anchor.download })
   error.value = null
 }
 
@@ -141,15 +146,17 @@ async function applyPending(): Promise<void> {
     await instrumentsStore.replaceAllowlist(new Map(Object.entries(backup.allowlist)))
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
-    error.value = `Das Einspielen ist fehlgeschlagen: ${reason}`
+    error.value = t('backup.importFailed', { reason })
     consola.error('backup: Einspielen fehlgeschlagen', { reason })
     pending.value = null
     return
   }
 
-  done.value =
-    `Eingespielt: „${backup.portfolio.name}" mit ` +
-    `${counted(backup.portfolio.positions.length, 'Position')}.`
+  const count = backup.portfolio.positions.length
+  done.value = t('backup.restored', {
+    name: backup.portfolio.name,
+    positions: t('units.positions', count, { named: { count: integer(count) } }),
+  })
   pending.value = null
 }
 
@@ -162,13 +169,13 @@ function discardPending(): void {
 const { notify } = useAppNotification()
 
 notify(computed(() => error.value !== null), {
-  title: 'Sicherung',
+  title: t('notify.backupTitle'),
   type: 'error',
   content: () => error.value ?? '',
 })
 
 notify(computed(() => done.value !== null), {
-  title: 'Erledigt',
+  title: t('notify.doneTitle'),
   type: 'info',
   content: () => done.value ?? '',
 })
@@ -194,18 +201,15 @@ const pendingCashTotal = computed(() =>
 <template>
   <div class="flex flex-col gap-4">
     <p class="text-sm text-ink-secondary leading-relaxed">
-      Depot und Einstellungen liegen ausschließlich in diesem Browser. Eine
-      Sicherung ist die einzige Möglichkeit, sie auf ein anderes Gerät zu holen
-      oder nach einem gelöschten Website-Speicher zurückzubekommen. Kurse sind
-      nicht enthalten — die holt die App ohnehin neu.
+      {{ t('backup.intro') }}
     </p>
 
     <div class="flex flex-wrap items-center gap-3">
       <NButton type="primary" :disabled="!portfolioStore.portfolio" @click="exportBackup">
-        Sicherung herunterladen
+        {{ t('backup.download') }}
       </NButton>
 
-      <NButton secondary @click="pickFile">Sicherung einspielen …</NButton>
+      <NButton secondary @click="pickFile">{{ t('backup.restore') }}</NButton>
 
       <!-- Unsichtbar: Der Knopf daneben ist das Bedienelement. -->
       <input
@@ -222,45 +226,48 @@ const pendingCashTotal = computed(() =>
       Datei erkennt: Name, Alter und Umfang — und was verloren geht.
     -->
     <div v-if="pending" class="rounded-lg border border-edge bg-raised p-4 flex flex-col gap-3">
-      <span class="text-sm font-medium">Diese Sicherung einspielen?</span>
+      <span class="text-sm font-medium">{{ t('backup.confirmHeading') }}</span>
 
       <dl class="grid grid-cols-[8rem_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-sm">
-        <dt class="text-ink-muted">Depot</dt>
+        <dt class="text-ink-muted">{{ t('backup.portfolio') }}</dt>
         <dd>{{ pending.portfolio.name }}</dd>
 
-        <dt class="text-ink-muted">Positionen</dt>
+        <dt class="text-ink-muted">{{ t('backup.positions') }}</dt>
         <dd class="tabular-nums">{{ positionCount }}</dd>
 
-        <dt v-if="pendingCashTotal > 0" class="text-ink-muted">davon Cash</dt>
+        <dt v-if="pendingCashTotal > 0" class="text-ink-muted">{{ t('backup.ofWhichCash') }}</dt>
         <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ eur(pendingCashTotal) }}</dd>
 
-        <dt v-if="hiddenCount > 0" class="text-ink-muted">Ausgeblendet</dt>
+        <dt v-if="hiddenCount > 0" class="text-ink-muted">{{ t('backup.hidden') }}</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">
-          {{ counted(hiddenCount, 'Asset', 'Assets') }}
+          {{ t('units.assets', hiddenCount, { named: { count: integer(hiddenCount) } }) }}
         </dd>
 
-        <dt class="text-ink-muted">Gesichert am</dt>
+        <dt class="text-ink-muted">{{ t('backup.savedAt') }}</dt>
         <dd>{{ exportedAtLabel }}</dd>
 
-        <dt class="text-ink-muted">App-Fassung</dt>
+        <dt class="text-ink-muted">{{ t('backup.appVersion') }}</dt>
         <dd class="tabular-nums">{{ pending.appVersion }}</dd>
       </dl>
 
       <p class="text-xs text-status-out leading-relaxed">
-        Das aktuelle Depot mit {{ counted(portfolioStore.positions.length, 'Position') }}
-        und alle Einstellungen werden dabei ersetzt. Das lässt sich nicht
-        rückgängig machen — bei Zweifeln vorher eine eigene Sicherung
-        herunterladen.
+        {{
+          t('backup.replaceWarning', {
+            positions: t('units.positions', portfolioStore.positions.length, {
+              named: { count: integer(portfolioStore.positions.length) },
+            }),
+          })
+        }}
       </p>
 
       <div class="flex items-center gap-2">
         <NPopconfirm @positive-click="applyPending">
           <template #trigger>
-            <NButton type="error" size="small">Jetzt ersetzen</NButton>
+            <NButton type="error" size="small">{{ t('backup.replaceNow') }}</NButton>
           </template>
-          Aktuelles Depot wirklich überschreiben?
+          {{ t('backup.confirmReplace') }}
         </NPopconfirm>
-        <NButton size="small" quaternary @click="discardPending">Abbrechen</NButton>
+        <NButton size="small" quaternary @click="discardPending">{{ t('actions.cancel') }}</NButton>
       </div>
     </div>
   </div>

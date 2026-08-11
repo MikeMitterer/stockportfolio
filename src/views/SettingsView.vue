@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
+import { NButton, NButtonGroup, NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
 import BackupPanel from '@/components/BackupPanel.vue'
 import PortfolioManager from '@/components/PortfolioManager.vue'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
@@ -12,6 +12,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useThemeStore } from '@/stores/theme'
+import { LOCALE_IDS, LOCALES, useLocaleStore } from '@/stores/locale'
 import { THEME_IDS, THEMES } from '@/theme/themes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useRelativeTime } from '@/composables/useRelativeTime'
@@ -23,6 +24,7 @@ const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
 const instrumentsStore = useInstrumentsStore()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 
 /** Gesamtvermögen — nur als Bezugsgröße für die Puffer-Vorschau. */
 const total = computed(() => {
@@ -83,10 +85,10 @@ async function setSecurityBufferMode(mode: 'percent' | 'absolute'): Promise<void
   await settingsStore.patch({ securityBuffer: { mode, value } })
 }
 
-const bufferModeOptions = [
-  { label: '% vom Gesamtwert', value: 'percent' as const },
-  { label: 'Fester Betrag (€)', value: 'absolute' as const },
-]
+const bufferModeOptions = computed(() => [
+  { label: t('settings.bufferPercent'), value: 'percent' as const },
+  { label: t('settings.bufferAbsolute'), value: 'absolute' as const },
+])
 
 /** Puffer in Euro — bei Prozent-Modus aus dem aktuellen Gesamtwert. */
 const securityBufferEuro = computed(() =>
@@ -101,6 +103,7 @@ async function setNotificationSeconds(value: number | null): Promise<void> {
 }
 
 const themes = THEME_IDS.map((id) => THEMES[id])
+const locales = LOCALE_IDS.map((id) => LOCALES[id])
 
 // ─── Status der Gegenstelle ─────────────────────────────────────────────────
 
@@ -111,19 +114,19 @@ const apiCheckedAgo = useRelativeTime(computed(() => api.checkedAt))
 /** Die Adresse aus `VITE_STOCKINFO_API_URL`, wie sie beim Bauen gesetzt wurde. */
 const apiUrl = computed(() => client?.url ?? '—')
 
-const API_STATE_LABEL: Record<string, string> = {
-  unknown: 'noch nicht geprüft',
-  checking: 'wird geprüft …',
-  online: 'erreichbar',
-  offline: 'nicht erreichbar',
-}
+const apiStateLabel = computed<Record<string, string>>(() => ({
+  unknown: t('settings.apiStates.unknown'),
+  checking: t('settings.apiStates.checking'),
+  online: t('settings.apiStates.online'),
+  offline: t('settings.apiStates.offline'),
+}))
 </script>
 
 <template>
   <div class="max-w-[1400px] mx-auto px-6 py-8">
     <div class="flex items-center gap-3 mb-4">
       <h1 class="text-2xl font-semibold">{{ t('views.settingsTitle') }}</h1>
-      <NTag type="warning" size="small" :bordered="false">Teilweise</NTag>
+      <NTag type="warning" size="small" :bordered="false">{{ t('views.partial') }}</NTag>
     </div>
 
     <!--
@@ -132,12 +135,12 @@ const API_STATE_LABEL: Record<string, string> = {
       auf der man scrollen musste, um überhaupt zu sehen, was es gibt.
     -->
     <NTabs type="line" animated>
-      <NTabPane name="calc" tab="Berechnung">
+      <NTabPane name="calc" :tab="t('settings.tabs.calc')">
         <!-- Zwei Spalten: beide Karten sind schmal, nebeneinander spart Höhe. -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
           <NCard :bordered="false" class="!bg-card">
             <template #header>
-              <span class="text-sm font-medium">Toleranzbänder</span>
+              <span class="text-sm font-medium">{{ t('settings.bandsHeading') }}</span>
             </template>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -152,7 +155,7 @@ const API_STATE_LABEL: Record<string, string> = {
                   @update:value="setLowerBand"
                 />
                 <span class="text-xs text-ink-muted">
-                  Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Kaufen.
+                  {{ t('settings.lowerHint') }}
                 </span>
               </label>
 
@@ -167,7 +170,7 @@ const API_STATE_LABEL: Record<string, string> = {
                   @update:value="setUpperBand"
                 />
                 <span class="text-xs text-ink-muted">
-                  Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Verkaufen.
+                  {{ t('settings.upperHint') }}
                 </span>
               </label>
             </div>
@@ -175,7 +178,7 @@ const API_STATE_LABEL: Record<string, string> = {
 
           <NCard :bordered="false" class="!bg-card">
             <template #header>
-              <span class="text-sm font-medium">Kennzahlen</span>
+              <span class="text-sm font-medium">{{ t('settings.metricsHeading') }}</span>
             </template>
 
             <div class="grid grid-cols-1 gap-6">
@@ -186,7 +189,7 @@ const API_STATE_LABEL: Record<string, string> = {
               Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
             -->
               <label class="flex flex-col gap-1 text-sm">
-                <span class="text-ink-muted">Sicherheitspuffer</span>
+                <span class="text-ink-muted">{{ t('settings.securityBuffer') }}</span>
                 <div class="flex gap-2">
                   <NInputNumber
                     class="flex-1"
@@ -204,10 +207,10 @@ const API_STATE_LABEL: Record<string, string> = {
                 </div>
                 <span class="text-xs text-ink-muted">
                   <template v-if="settingsStore.settings.securityBuffer.value === 0">
-                    Nicht festgelegt — die ganze Liquidität gilt als Reserve.
+                    {{ t('settings.bufferUnset') }}
                   </template>
                   <template v-else>
-                    Entspricht derzeit {{ eur(securityBufferEuro) }}.
+                    {{ t('settings.bufferEquals', { amount: eur(securityBufferEuro) }) }}
                   </template>
                 </span>
               </label>
@@ -219,7 +222,7 @@ const API_STATE_LABEL: Record<string, string> = {
               Kasten im Weg.
             -->
               <label class="flex flex-col gap-1 text-sm">
-                <span class="text-ink-muted">Meldungen ausblenden nach (s)</span>
+                <span class="text-ink-muted">{{ t('settings.notificationSeconds') }}</span>
                 <NInputNumber
                   :value="settingsStore.settings.ui.notificationSeconds"
                   :min="0"
@@ -229,10 +232,10 @@ const API_STATE_LABEL: Record<string, string> = {
                 />
                 <span class="text-xs text-ink-muted">
                   <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
-                    Bleiben stehen, bis die Ursache behoben ist oder du sie wegklickst.
+                    {{ t('settings.notificationKeep') }}
                   </template>
                   <template v-else>
-                    Blenden sich selbst aus — früher, wenn die Ursache vorher wegfällt.
+                    {{ t('settings.notificationAuto') }}
                   </template>
                 </span>
               </label>
@@ -241,10 +244,37 @@ const API_STATE_LABEL: Record<string, string> = {
         </div>
       </NTabPane>
 
-      <NTabPane name="theme" tab="Darstellung">
+      <NTabPane name="theme" :tab="t('settings.tabs.theme')">
+        <!--
+          Sprache über dem Theme: Sie ändert mehr als das Aussehen — auch
+          Zahlen und Datumsangaben — und wer sie sucht, sucht sie oben.
+        -->
+        <NCard :bordered="false" class="!bg-card mb-4">
+          <template #header>
+            <span class="text-sm font-medium">{{ t('settings.languageHeading') }}</span>
+          </template>
+
+          <div class="flex flex-col gap-2">
+            <NButtonGroup size="small">
+              <NButton
+                v-for="entry in locales"
+                :key="entry.id"
+                :type="entry.id === localeStore.current ? 'primary' : 'default'"
+                :secondary="entry.id !== localeStore.current"
+                @click="localeStore.setLocale(entry.id)"
+              >
+                {{ entry.label }}
+              </NButton>
+            </NButtonGroup>
+            <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
+              {{ t('settings.languageHint') }}
+            </span>
+          </div>
+        </NCard>
+
         <NCard :bordered="false" class="!bg-card">
           <template #header>
-            <span class="text-sm font-medium">Theme</span>
+            <span class="text-sm font-medium">{{ t('settings.themeHeading') }}</span>
           </template>
 
           <!--
@@ -285,24 +315,26 @@ const API_STATE_LABEL: Record<string, string> = {
               </span>
 
               <span class="flex items-center gap-2">
-                <span class="text-sm font-medium">{{ theme.label }}</span>
+                <span class="text-sm font-medium">{{ t(`settings.themeNames.${theme.id}`) }}</span>
                 <span
                   v-if="themeStore.current === theme.id"
                   class="text-[10px] uppercase tracking-wide text-accent"
                 >
-                  aktiv
+                  {{ t('settings.themeActive') }}
                 </span>
               </span>
-              <span class="text-xs text-ink-muted leading-tight">{{ theme.hint }}</span>
+              <span class="text-xs text-ink-muted leading-tight">
+                {{ t(`settings.themeHints.${theme.id}`) }}
+              </span>
             </button>
           </div>
         </NCard>
       </NTabPane>
 
-      <NTabPane name="links" tab="Verweise">
+      <NTabPane name="links" :tab="t('settings.tabs.links')">
         <NCard :bordered="false" class="!bg-card">
           <template #header>
-            <span class="text-sm font-medium">Externe Verweise</span>
+            <span class="text-sm font-medium">{{ t('settings.linksHeading') }}</span>
           </template>
 
           <ExternalLinkEditor
@@ -312,11 +344,11 @@ const API_STATE_LABEL: Record<string, string> = {
           />
         </NCard>
       </NTabPane>
-      <NTabPane name="data" tab="Daten">
+      <NTabPane name="data" :tab="t('settings.tabs.data')">
         <div class="flex flex-col gap-4">
           <NCard :bordered="false" class="!bg-card">
             <template #header>
-              <span class="text-sm font-medium">Depots</span>
+              <span class="text-sm font-medium">{{ t('portfolios.heading') }}</span>
             </template>
 
             <PortfolioManager />
@@ -324,7 +356,7 @@ const API_STATE_LABEL: Record<string, string> = {
 
           <NCard :bordered="false" class="!bg-card">
             <template #header>
-              <span class="text-sm font-medium">Sichern und Wiederherstellen</span>
+              <span class="text-sm font-medium">{{ t('backup.heading') }}</span>
             </template>
 
             <BackupPanel />
@@ -332,24 +364,24 @@ const API_STATE_LABEL: Record<string, string> = {
         </div>
       </NTabPane>
 
-      <NTabPane name="status" tab="Status">
+      <NTabPane name="status" :tab="t('settings.tabs.status')">
         <NCard :bordered="false" class="!bg-card">
           <template #header>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium">StockInfo-API</span>
+              <span class="text-sm font-medium">{{ t('settings.apiHeading') }}</span>
               <NButton
                 size="small"
                 secondary
                 :loading="api.state === 'checking'"
                 @click="api.check(client)"
               >
-                Erneut prüfen
+                {{ t('settings.apiRecheck') }}
               </NButton>
             </div>
           </template>
 
           <dl class="grid grid-cols-1 sm:grid-cols-[10rem_minmax(0,1fr)] gap-x-6 gap-y-3 text-sm">
-            <dt class="text-ink-muted">Adresse</dt>
+            <dt class="text-ink-muted">{{ t('settings.apiAddress') }}</dt>
             <dd class="break-all">
               <!--
                 Im Klartext und anklickbar: Im Container entscheidet sich beim
@@ -366,7 +398,7 @@ const API_STATE_LABEL: Record<string, string> = {
               </a>
             </dd>
 
-            <dt class="text-ink-muted">Zustand</dt>
+            <dt class="text-ink-muted">{{ t('settings.apiState') }}</dt>
             <dd class="flex items-center gap-2">
               <span
                 class="inline-block h-2 w-2 rounded-full shrink-0"
@@ -386,38 +418,36 @@ const API_STATE_LABEL: Record<string, string> = {
                       : 'text-ink-muted'
                 "
               >
-                {{ API_STATE_LABEL[api.state] }}
+                {{ apiStateLabel[api.state] }}
               </span>
               <span v-if="api.status" class="text-ink-muted">
-                — meldet „{{ api.status }}"
+                {{ t('settings.apiReports', { status: api.status }) }}
               </span>
             </dd>
 
             <template v-if="api.version">
-              <dt class="text-ink-muted">Version</dt>
+              <dt class="text-ink-muted">{{ t('settings.apiVersion') }}</dt>
               <dd class="tabular-nums">{{ api.version }}</dd>
             </template>
 
             <template v-if="api.latencyMs !== null">
-              <dt class="text-ink-muted">Antwortzeit</dt>
-              <dd class="tabular-nums">{{ api.latencyMs }} ms</dd>
+              <dt class="text-ink-muted">{{ t('settings.apiLatency') }}</dt>
+              <dd class="tabular-nums">{{ t('settings.apiLatencyUnit', { ms: api.latencyMs }) }}</dd>
             </template>
 
             <template v-if="api.checkedAt">
-              <dt class="text-ink-muted">Geprüft</dt>
+              <dt class="text-ink-muted">{{ t('settings.apiChecked') }}</dt>
               <dd class="text-ink-secondary">{{ apiCheckedAgo }}</dd>
             </template>
 
             <template v-if="api.error">
-              <dt class="text-ink-muted">Grund</dt>
+              <dt class="text-ink-muted">{{ t('settings.apiReason') }}</dt>
               <dd class="text-status-out">{{ api.error }}</dd>
             </template>
           </dl>
 
           <p v-if="api.state === 'offline'" class="mt-4 text-xs text-ink-muted leading-relaxed">
-            Ohne die API gibt es keine Kurse und damit keine Kennzahlen. Die
-            zuletzt geladenen Kurse bleiben gespeichert und werden weiter
-            verwendet — erkennbar am Alter in der Kopfzeile.
+            {{ t('settings.apiOfflineHint') }}
           </p>
         </NCard>
       </NTabPane>

@@ -166,12 +166,11 @@ notify(
     <div class="flex items-baseline gap-3 mb-1">
       <h1 class="text-2xl font-semibold">{{ t('views.instrumentsTitle') }}</h1>
       <span class="text-xs text-ink-muted tabular-nums">
-        {{ filtered.length }} von {{ instrumentsStore.instruments.length }}
+        {{ t('instruments.countLabel', { shown: filtered.length, total: instrumentsStore.instruments.length }) }}
       </span>
     </div>
     <p class="text-sm text-ink-muted mb-5">
-      Der Schalter „In Auswahl" steuert, welche Papiere beim Hinzufügen einer
-      Position angeboten werden.
+      {{ t('instruments.hint') }}
     </p>
 
     <div class="flex flex-wrap gap-3 mb-4">

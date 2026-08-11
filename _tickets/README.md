@@ -47,4 +47,6 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-20 | Sichern und Wiederherstellen | [erledigt](solved/T-20-backup.md) |
 | T-21 | Verwaltung mehrerer Depots | [erledigt](solved/T-21-portfolios.md) |
 | T-22 | Fremdwährung + Meldungen einheitlich als Toast | [erledigt](solved/T-22-currency.md) |
+| T-23 | Kursverlauf + Unraid-Template | [erledigt](solved/T-23-history.md) |
+| T-24 | Sprachumschaltung DE/EN + Konventions-Durchgang | [erledigt](solved/T-24-i18n.md) |
 | T-UI | Frühe UI-Vorschau | [erledigt](solved/T-UI-preview.md) |

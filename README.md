@@ -167,6 +167,21 @@ genau dort liegt auch der Großteil der Tests.
 Der Router läuft im **Hash-Modus** (`/#/rebalancing`). Damit sieht ein Server
 immer nur `/` und muss über die Adressen der App nichts wissen.
 
+## Sprache
+
+Deutsch und Englisch, umschaltbar unter *Einstellungen → Darstellung*. Die
+Wahl gilt für Beschriftungen, Zahlen und Datumsangaben zusammen — sie getrennt
+zu behandeln wäre der übliche Fehler: englische Beschriftung über einer Zahl
+im deutschen Format.
+
+Ohne eigene Wahl entscheidet die Spracheinstellung des Browsers; alles außer
+Deutsch bekommt Englisch. Die Wahl bleibt im Browser gespeichert.
+
+Sichtbarer Text steht ausnahmslos im Message-Katalog
+([`src/i18n/`](src/i18n/)). Eine ESLint-Regel macht einen festen Text im
+Template zum Fehler, und der Typecheck meldet jeden Schlüssel, der in einer
+Sprache fehlt.
+
 ## Themes
 
 Sechs Stück, umschaltbar unter *Einstellungen → Darstellung*: `MangoLila`

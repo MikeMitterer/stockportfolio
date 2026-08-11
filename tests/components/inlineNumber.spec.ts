@@ -11,6 +11,7 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import InlineNumber from '@/components/InlineNumber.vue'
+import { i18n } from '@/i18n'
 
 /** Öffnet den Editor und liefert das Eingabefeld. */
 async function openEditor(wrapper: ReturnType<typeof mount>) {
@@ -209,9 +210,17 @@ describe('InlineNumber — Grenzen und Sonderfälle', () => {
 })
 
 describe('InlineNumber — Löschkreuz', () => {
-  /** Das Kreuz ist der zweite Knopf; der erste zeigt den Wert. */
+  /**
+   * Das Löschkreuz.
+   *
+   * Gesucht wird über die Übersetzung, nicht über den deutschen Text: Die
+   * Vorgabesprache ist Englisch, und ein Test, der an einer Sprache klebt,
+   * bricht beim nächsten Wechsel.
+   */
   const clearButton = (wrapper: ReturnType<typeof mount>) =>
-    wrapper.findAll('button').find((button) => button.attributes('aria-label') === 'Wert löschen')
+    wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === i18n.global.t('common.clear'))
 
   it('zeigt kein Kreuz, wo Leere nichts bedeutet', () => {
     // Ohne `emptyValue` gäbe es nichts, worauf zurückgesetzt werden könnte.

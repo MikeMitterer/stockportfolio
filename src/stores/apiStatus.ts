@@ -21,6 +21,24 @@ import type { StockInfoClient } from '@/api/client'
 
 export type ApiState = 'unknown' | 'checking' | 'online' | 'offline'
 
+/**
+ * Übersetzt einen Fehler in einen Satz, der weiterhilft.
+ *
+ * „nicht erreichbar" allein sagt nicht, ob die Adresse falsch ist, das Netz
+ * fehlt oder der Dienst streikt. Bei ausbleibender Antwort (Status 0) steht
+ * deshalb die angefragte Adresse dabei — dort liegt die Ursache meist.
+ *
+ * @param cause Der aufgetretene Fehler.
+ */
+function describeFailure(cause: unknown): string {
+  if (cause instanceof ApiError) {
+    return cause.status === 0
+      ? `${cause.detail} — keine Antwort von ${cause.url}`
+      : `${cause.detail} (HTTP ${cause.status})`
+  }
+  return cause instanceof Error ? cause.message : 'Unbekannter Fehler'
+}
+
 export const useApiStatusStore = defineStore('apiStatus', () => {
   const state = ref<ApiState>('unknown')
   const status = ref<string | null>(null)
@@ -53,20 +71,12 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
       state.value = 'online'
     } catch (cause) {
       latencyMs.value = Math.round(performance.now() - started)
+      // Alte Werte verwerfen: Sonst stünde eine Version auf der Seite, die
+      // gerade niemand bestätigt.
       status.value = null
       version.value = null
       state.value = 'offline'
-      // Der Grund gehört sichtbar auf die Seite: „offline" allein sagt nicht,
-      // ob die Adresse falsch ist, das Netz fehlt oder der Dienst streikt.
-      error.value =
-        cause instanceof ApiError
-          // Status 0 heißt: keine Antwort — Netz, Adresse oder CORS.
-          ? cause.status === 0
-            ? `${cause.detail} — keine Antwort von ${cause.url}`
-            : `${cause.detail} (HTTP ${cause.status})`
-          : cause instanceof Error
-            ? cause.message
-            : 'Unbekannter Fehler'
+      error.value = describeFailure(cause)
       consola.warn('status: Health-Check fehlgeschlagen', { reason: error.value })
     } finally {
       checkedAt.value = new Date().toISOString()
