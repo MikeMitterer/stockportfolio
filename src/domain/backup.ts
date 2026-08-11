@@ -49,10 +49,24 @@ export interface Backup {
   allowlist: Record<string, boolean>
 }
 
+/**
+ * Grund einer Ablehnung — als Schlüssel, nicht als Satz.
+ *
+ * Die Domäne kennt keine Sprache: Ein deutscher Prosatext von hier stünde
+ * unübersetzbar in einer englischen Oberfläche. Sie sagt *was* nicht stimmt,
+ * die Anzeige sagt es in der Sprache des Nutzers.
+ */
+export interface BackupError {
+  /** Schlüssel im Message-Katalog, unterhalb von `backupErrors`. */
+  key: string
+  /** Werte für die Platzhalter des Textes. */
+  params?: Record<string, string | number>
+}
+
 /** Was beim Einlesen herauskommt: entweder Daten oder ein Grund. */
 export type ParseResult =
   | { ok: true; backup: Backup }
-  | { ok: false; error: string }
+  | { ok: false; error: BackupError }
 
 /**
  * Baut den Inhalt der Sicherungsdatei.
@@ -125,18 +139,18 @@ const KINDS: readonly InstrumentKind[] = ['etf', 'stock']
  * @param data Eingelesenes JSON.
  * @returns Fehlertext, oder `null` wenn die Hülle stimmt.
  */
-function checkEnvelope(data: Record<string, unknown>): string | null {
+function checkEnvelope(data: Record<string, unknown>): BackupError | null {
   if (data.kind !== BACKUP_KIND) {
-    return 'Das ist keine StockPortfolio-Sicherung — die Kennung fehlt oder passt nicht.'
+    return { key: 'wrongKind' }
   }
   if (typeof data.schemaVersion !== 'number') {
-    return 'Der Datei fehlt die Format-Angabe (schemaVersion).'
+    return { key: 'noSchemaVersion' }
   }
   if (data.schemaVersion > BACKUP_SCHEMA_VERSION) {
-    return (
-      `Die Datei stammt aus einer neueren Fassung (Format ${data.schemaVersion}, ` +
-      `diese App kennt ${BACKUP_SCHEMA_VERSION}). Bitte die App aktualisieren.`
-    )
+    return {
+      key: 'newerFormat',
+      params: { found: data.schemaVersion, known: BACKUP_SCHEMA_VERSION },
+    }
   }
   return null
 }
@@ -155,21 +169,21 @@ export function parseBackup(raw: string): ParseResult {
   try {
     data = JSON.parse(raw)
   } catch {
-    return { ok: false, error: 'Die Datei enthält kein gültiges JSON.' }
+    return { ok: false, error: { key: 'invalidJson' } }
   }
 
   if (!isRecord(data)) {
-    return { ok: false, error: 'Die Datei enthält kein Objekt.' }
+    return { ok: false, error: { key: 'notAnObject' } }
   }
 
   const envelopeError = checkEnvelope(data)
   if (envelopeError) return { ok: false, error: envelopeError }
 
   const portfolio = parsePortfolio(data.portfolio)
-  if (typeof portfolio === 'string') return { ok: false, error: portfolio }
+  if ('key' in portfolio) return { ok: false, error: portfolio }
 
   if (!isRecord(data.settings)) {
-    return { ok: false, error: 'Der Datei fehlen die Einstellungen.' }
+    return { ok: false, error: { key: 'noSettings' } }
   }
 
   return {
@@ -207,24 +221,24 @@ function parseAllowlist(value: unknown): Record<string, boolean> {
   return entries
 }
 
-/** Prüft das Depot; gibt bei einem Fehler den Grund als Text zurück. */
-function parsePortfolio(value: unknown): Portfolio | string {
-  if (!isRecord(value)) return 'Der Datei fehlt das Depot.'
+/** Prüft das Depot; gibt bei einem Fehler den Grund zurück. */
+function parsePortfolio(value: unknown): Portfolio | BackupError {
+  if (!isRecord(value)) return { key: 'noPortfolio' }
 
-  if (typeof value.id !== 'string' || value.id === '') return 'Dem Depot fehlt die Kennung.'
-  if (typeof value.name !== 'string') return 'Dem Depot fehlt der Name.'
-  if (!Array.isArray(value.positions)) return 'Dem Depot fehlt die Liste der Positionen.'
+  if (typeof value.id !== 'string' || value.id === '') return { key: 'noPortfolioId' }
+  if (typeof value.name !== 'string') return { key: 'noPortfolioName' }
+  if (!Array.isArray(value.positions)) return { key: 'noPositions' }
 
   const positions: Position[] = []
   const seen = new Set<string>()
 
   for (const [index, entry] of value.positions.entries()) {
     const position = parsePosition(entry, index)
-    if (typeof position === 'string') return position
+    if ('key' in position) return position
 
     // Doppelte Kennungen würden beim Bearbeiten die falsche Zeile treffen.
     if (seen.has(position.id)) {
-      return `Position ${index + 1}: Die Kennung „${position.id}" kommt mehrfach vor.`
+      return { key: 'duplicateId', params: { at: index + 1, id: position.id } }
     }
     seen.add(position.id)
     positions.push(position)
@@ -240,24 +254,26 @@ function parsePortfolio(value: unknown): Portfolio | string {
   }
 }
 
-/** Prüft eine Position; gibt bei einem Fehler den Grund als Text zurück. */
-function parsePosition(value: unknown, index: number): Position | string {
-  const at = `Position ${index + 1}`
-  if (!isRecord(value)) return `${at}: kein Objekt.`
+/** Prüft eine Position; gibt bei einem Fehler den Grund zurück. */
+function parsePosition(value: unknown, index: number): Position | BackupError {
+  const at = index + 1
+  if (!isRecord(value)) return { key: 'positionNotAnObject', params: { at } }
 
-  if (typeof value.id !== 'string' || value.id === '') return `${at}: Kennung fehlt.`
-  if (typeof value.symbol !== 'string' || value.symbol === '') return `${at}: Symbol fehlt.`
+  if (typeof value.id !== 'string' || value.id === '') return { key: 'positionNoId', params: { at } }
+  if (typeof value.symbol !== 'string' || value.symbol === '') {
+    return { key: 'positionNoSymbol', params: { at } }
+  }
 
   if (!GROUPS.includes(value.group as AssetGroup)) {
-    return `${at}: Unbekannte Assetklasse „${String(value.group)}".`
+    return { key: 'positionGroup', params: { at, group: String(value.group) } }
   }
 
   // Endliche Zahlen, keine Texte: `NaN` oder "100" würden sich erst in den
   // Kennzahlen zeigen, und dort sieht man die Ursache nicht mehr.
-  if (!isFiniteNumber(value.units)) return `${at}: Bestand ist keine Zahl.`
-  if (!isFiniteNumber(value.targetPercent)) return `${at}: Ziel-Anteil ist keine Zahl.`
+  if (!isFiniteNumber(value.units)) return { key: 'positionUnits', params: { at } }
+  if (!isFiniteNumber(value.targetPercent)) return { key: 'positionTarget', params: { at } }
   if (value.targetPercent < 0 || value.targetPercent > 100) {
-    return `${at}: Ziel-Anteil liegt außerhalb von 0–100 %.`
+    return { key: 'positionTargetRange', params: { at } }
   }
 
   return {

@@ -68,7 +68,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
         h('div', { class: 'flex items-center gap-2' }, [
           h('span', { class: 'font-medium text-sm' }, row.symbol),
           heldKeys.value.has(rowKey(row))
-            ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => 'im Depot')
+            ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => t('instruments.inPortfolio'))
             : null,
         ]),
         h('span', { class: 'text-xs text-ink-muted truncate' }, row.name ?? '—'),
@@ -85,7 +85,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'type',
     width: 90,
     render: (row) =>
-      h(NTag, { size: 'small', bordered: false }, () => (row.type === 'etf' ? 'ETF' : 'Aktie')),
+      h(NTag, { size: 'small', bordered: false }, () => (row.type === 'etf' ? t('dashboard.kindEtf') : t('dashboard.kindStock'))),
   },
   {
     title: t('table.price'),
@@ -128,7 +128,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
       h('span', { class: 'tabular-nums text-ink-muted' }, integer(row.history_count)),
   },
   {
-    title: 'In Auswahl',
+    title: t('instruments.inSelection'),
     key: 'allowed',
     align: 'center',
     width: 110,
@@ -153,7 +153,7 @@ const { notify } = useAppNotification()
 notify(
   computed(() => instrumentsStore.error !== null),
   {
-    title: 'Assets konnten nicht geladen werden',
+    title: t('notify.assetsFailedTitle'),
     type: 'error',
     content: () => instrumentsStore.error ?? '',
   },

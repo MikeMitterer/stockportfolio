@@ -16,6 +16,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
+import { translate } from '@/i18n'
 import { ApiError } from '@/api/errors'
 import type { StockInfoClient } from '@/api/client'
 
@@ -36,7 +37,7 @@ function describeFailure(cause: unknown): string {
       ? `${cause.detail} — keine Antwort von ${cause.url}`
       : `${cause.detail} (HTTP ${cause.status})`
   }
-  return cause instanceof Error ? cause.message : 'Unbekannter Fehler'
+  return cause instanceof Error ? cause.message : translate('notify.unknownError')
 }
 
 export const useApiStatusStore = defineStore('apiStatus', () => {
@@ -55,7 +56,7 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
   async function check(client: StockInfoClient | null): Promise<void> {
     if (!client) {
       state.value = 'offline'
-      error.value = 'Kein API-Client verfügbar'
+      error.value = translate('notify.noClient')
       return
     }
 

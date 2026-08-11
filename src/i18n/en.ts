@@ -103,7 +103,6 @@ export const en: MessageSchema = {
     instrumentsTitle: 'Assets',
     instrumentsComingSoon: 'The catalogue of all instruments from the StockInfo API will appear here — including the allow-list toggle for portfolio selection.',
     settingsTitle: 'Settings',
-    partial: 'Partial',
   },
 
   /**
@@ -139,6 +138,10 @@ export const en: MessageSchema = {
 
   notify: {
     quotesMissingTitle: 'Prices missing',
+    historyFailed: 'Price history could not be loaded',
+    assetsFailed: 'Instruments could not be loaded',
+    noClient: 'No API client available',
+    unknownError: 'Unknown error',
     quotesMissingBody: '{quotes} could not be loaded — {details}',
     targetsExceededTitle: 'Targets above 100 %',
     targetsExceededBody: 'Target shares add up to {sum} — more than 100 %. While that is the case, the buy and sell suggestions do not add up either.',
@@ -151,6 +154,7 @@ export const en: MessageSchema = {
     tabs: {
       calc: 'Calculation',
       theme: 'Appearance',
+      language: 'Language',
       links: 'Links',
       data: 'Data',
       status: 'Status',
@@ -294,6 +298,7 @@ export const en: MessageSchema = {
 
   dashboard: {
     positionsHeading: 'Positions — holdings and targets are editable in place',
+    positionsShort: 'Positions',
     assetClasses: 'Asset classes',
     targetDistribution: 'Target allocation',
     bands: 'Bands: −{lower} / +{upper}',
@@ -324,6 +329,8 @@ export const en: MessageSchema = {
     points: 'Price points',
     inSelection: 'In selection',
     inPortfolio: 'held',
+    unknownType: 'unknown',
+    newLink: 'New link',
   },
 
   addPosition: {
@@ -364,6 +371,28 @@ export const en: MessageSchema = {
     units: '{count} units',
     loading: '· loading …',
     overHundred: '· over 100 %',
+  },
+
+  backupErrors: {
+    invalidJson: 'The file does not contain valid JSON.',
+    notAnObject: 'The file does not contain an object.',
+    wrongKind: 'This is not a StockPortfolio backup — the marker is missing or does not match.',
+    noSchemaVersion: 'The file has no format version (schemaVersion).',
+    newerFormat:
+      'The file comes from a newer version (format {found}, this app knows {known}). Please update the app.',
+    noSettings: 'The file has no settings.',
+    noPortfolio: 'The file has no portfolio.',
+    noPortfolioId: 'The portfolio has no id.',
+    noPortfolioName: 'The portfolio has no name.',
+    noPositions: 'The portfolio has no list of positions.',
+    duplicateId: 'Position {at}: the id “{id}” appears more than once.',
+    positionNotAnObject: 'Position {at}: not an object.',
+    positionNoId: 'Position {at}: id missing.',
+    positionNoSymbol: 'Position {at}: symbol missing.',
+    positionGroup: 'Position {at}: unknown asset class “{group}”.',
+    positionUnits: 'Position {at}: holding is not a number.',
+    positionTarget: 'Position {at}: target share is not a number.',
+    positionTargetRange: 'Position {at}: target share outside 0–100 %.',
   },
 
   status: {

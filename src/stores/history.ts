@@ -14,6 +14,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
+import { translate } from '@/i18n'
 import { ApiError } from '@/api/errors'
 import { HistoryRepository } from '@/db/repository'
 import type { StockInfoClient } from '@/api/client'
@@ -124,7 +125,7 @@ export const useHistoryStore = defineStore('history', () => {
       })
     } catch (cause) {
       const reason =
-        cause instanceof ApiError ? cause.detail : 'Kursverlauf konnte nicht geladen werden'
+        cause instanceof ApiError ? cause.detail : translate('notify.historyFailed')
       // Ein fehlender Verlauf ist kein Drama — die Zeile zeigt dann eben keine
       // Linie. Deshalb nur ins Protokoll, keine Meldung an den Nutzer.
       consola.warn('history: Laden fehlgeschlagen', { key, reason })

@@ -5,7 +5,7 @@ import { NDivider, NSpin, NEmpty, NButton } from 'naive-ui'
 import KpiCard from '@/components/KpiCard.vue'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
-import { counted, eur, eurSigned, percent, pluralize } from '@/domain/formatters'
+import { eur, eurSigned, integer, percent } from '@/domain/formatters'
 import { computeRebalancing } from '@/domain/rebalancing'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
@@ -110,28 +110,32 @@ const { notify } = useAppNotification()
 notify(
   computed(() => failures.value.length > 0),
   {
-    title: 'Kurse fehlen',
+    title: t('notify.quotesMissingTitle'),
     type: 'warning',
     content: () =>
-      `${counted(failures.value.length, 'Kurs', 'Kurse')} konnten nicht geladen werden — ` +
-      failureSummary.value,
+      t('notify.quotesMissingBody', {
+        quotes: t('units.quotes', failures.value.length, {
+          named: { count: integer(failures.value.length) },
+        }),
+        details: failureSummary.value,
+      }),
   },
 )
 
 notify(
   computed(() => foreignCurrencyRows.value.length > 0),
   {
-    title: 'Fremde Währung',
+    title: t('currency.warningTitle'),
     type: 'warning',
     content: () => {
       const count = foreignCurrencyRows.value.length
-      return (
-        `${counted(count, 'Position')} ${pluralize(count, 'notiert', 'notieren')} nicht in ` +
-        `${settingsStore.settings.currency} und ${pluralize(count, 'zählt', 'zählen')} ` +
-        `deshalb nicht mit: ${foreignCurrencySummary.value}. Summen und Anteile beziehen ` +
-        'sich nur auf den Rest — die App rechnet in einer einzigen Währung und wandelt ' +
-        'nichts um.'
-      )
+      return t('currency.warningBody', {
+        positions: t('units.positions', count, { named: { count: integer(count) } }),
+        verb: t('currency.verb', count),
+        counts: t('currency.counts', count),
+        base: settingsStore.settings.currency,
+        list: foreignCurrencySummary.value,
+      })
     },
   },
 )
@@ -139,11 +143,10 @@ notify(
 notify(
   computed(() => result.value?.targetsExceeded ?? false),
   {
-    title: 'Ziele über 100 %',
+    title: t('notify.targetsExceededTitle'),
     type: 'error',
     content: () =>
-      `Die Ziel-Anteile summieren sich auf ${percent(result.value?.targetPercentSum ?? 0)} — ` +
-      'mehr als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht schlüssig.',
+      t('notify.targetsExceededBody', { sum: percent(result.value?.targetPercentSum ?? 0) }),
   },
 )
 
@@ -356,7 +359,7 @@ function toggleGroups(): void {
           <h2
             class="text-xs uppercase tracking-wide text-ink-secondary font-medium"
           >
-            {{ isCompact ? 'Positionen' : 'Positionen — Bestand und Ziel sind direkt änderbar' }}
+            {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
           </h2>
           <div class="flex items-center gap-5">
             <TargetAllocationBar

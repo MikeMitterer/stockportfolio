@@ -158,9 +158,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
                 {
                   class:
                     'text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-status-out/50 text-status-out',
-                  title: `Notiert in ${row.quote?.currency ?? '?'} — zählt nicht in die Summen`,
+                  title: t('currency.badgeTitle', { currency: row.quote?.currency ?? '?' }),
                 },
-                row.quote?.currency ?? 'Fremdwährung',
+                row.quote?.currency ?? t('currency.warningTitle'),
               )
             : null,
           row.excludedReason === 'disabled'
@@ -170,7 +170,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
                   class:
                     'text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-edge text-ink-muted',
                 },
-                'inaktiv',
+                t('currency.inactive'),
               )
             : null,
           row.position.group !== 'cash'
@@ -226,7 +226,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     // Der Zeitraum gehört in den Kopf, nicht in jede Zeile: einmal genannt,
     // kostet er keinen Platz in den Zeilen.
-    title: 'Verlauf 1M',
+    title: t('history.columnTitle'),
     key: 'history',
     // Schmal gehalten: Die Spalte ist eine Zugabe, keine Hauptzahl — sie darf
     // dem Delta und dem Status keinen Platz wegnehmen.
@@ -240,7 +240,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         points: series.points,
         loading: series.loading,
         width: 62,
-        periodLabel: 'letzter Monat',
+        periodLabel: t('history.lastMonth'),
       })
     },
   },
@@ -317,7 +317,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
               ? 'text-status-out text-xs'
               : 'text-ink-muted text-xs',
         },
-        row.excludedReason === 'currency' ? 'fremde Währung' : 'zählt nicht mit',
+        row.excludedReason === 'currency'
+          ? t('currency.statusForeign')
+          : t('currency.notCounted'),
       )
     },
   },

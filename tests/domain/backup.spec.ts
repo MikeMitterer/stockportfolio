@@ -1,6 +1,10 @@
 /**
  * Tests für Sicherung und Wiederherstellung.
  *
+ * Geprüft werden Schlüssel, nicht Sätze: Die Domäne kennt keine Sprache, und
+ * ein Test, der an einem deutschen Satz klebt, bricht bei der ersten
+ * Umformulierung.
+ *
  * Der Schwerpunkt liegt auf dem, was `parseBackup` **ablehnt**. Eine halb
  * eingelesene Datei stellt ein halbes Depot her, und das fällt erst auf, wenn
  * die Kennzahlen nicht mehr stimmen — dann ist die Ursache längst aus dem
@@ -161,7 +165,7 @@ describe('parseBackup — was abgelehnt wird', () => {
     const result = parseBackup('das ist keine Datei')
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('JSON')
+    expect(result.error.key).toBe('invalidJson')
   })
 
   it('fremdes JSON ohne Kennung', () => {
@@ -170,7 +174,7 @@ describe('parseBackup — was abgelehnt wird', () => {
     const result = parseBackup('{"foo": 1}')
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('Kennung')
+    expect(result.error.key).toBe('wrongKind')
   })
 
   it('eine JSON-Liste statt eines Objekts', () => {
@@ -181,14 +185,14 @@ describe('parseBackup — was abgelehnt wird', () => {
     const result = parseBackup(validRaw((data) => (data.schemaVersion = BACKUP_SCHEMA_VERSION + 1)))
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('neueren Fassung')
+    expect(result.error.key).toBe('newerFormat')
   })
 
   it('fehlendes Depot', () => {
     const result = parseBackup(validRaw((data) => delete data.portfolio))
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('Depot')
+    expect(result.error.key).toBe('noPortfolio')
   })
 
   it('fehlende Positionsliste', () => {
@@ -202,7 +206,7 @@ describe('parseBackup — was abgelehnt wird', () => {
     const result = parseBackup(validRaw((data) => delete data.settings))
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('Einstellungen')
+    expect(result.error.key).toBe('noSettings')
   })
 
   it('eine unbekannte Assetklasse', () => {
@@ -214,7 +218,8 @@ describe('parseBackup — was abgelehnt wird', () => {
     )
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('krypto')
+    expect(result.error.key).toBe('positionGroup')
+    expect(result.error.params?.group).toBe('krypto')
   })
 
   it('einen Bestand als Text', () => {
@@ -227,7 +232,7 @@ describe('parseBackup — was abgelehnt wird', () => {
     )
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('Bestand')
+    expect(result.error.key).toBe('positionUnits')
   })
 
   it('einen Ziel-Anteil außerhalb von 0–100', () => {
@@ -239,7 +244,7 @@ describe('parseBackup — was abgelehnt wird', () => {
     )
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('0–100')
+    expect(result.error.key).toBe('positionTargetRange')
   })
 
   it('doppelte Kennungen', () => {
@@ -252,7 +257,7 @@ describe('parseBackup — was abgelehnt wird', () => {
     )
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('mehrfach')
+    expect(result.error.key).toBe('duplicateId')
   })
 
   it('nennt die Nummer der beanstandeten Position', () => {
@@ -265,7 +270,8 @@ describe('parseBackup — was abgelehnt wird', () => {
     )
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.error).toContain('Position 2')
+    expect(result.error.key).toBe('positionUnits')
+    expect(result.error.params?.at).toBe(2)
   })
 })
 

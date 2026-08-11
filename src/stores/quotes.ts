@@ -9,6 +9,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import { consola } from 'consola'
+import { translate } from '@/i18n'
 import { ApiError } from '@/api/errors'
 import { toQuoteCacheEntry } from '@/api/mappers'
 import { QuoteCacheRepository } from '@/db/repository'
@@ -75,7 +76,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       nextFailures.push({
         key: result.key,
         symbol: result.symbol,
-        reason: result.reason ?? 'Unbekannter Fehler',
+        reason: result.reason ?? translate('notify.unknownError'),
       })
     }
 
@@ -135,7 +136,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       failures.value = failures.value.filter((failure) => failure.key !== key)
       await repository.put(key, entry)
     } catch (error) {
-      const reason = error instanceof ApiError ? error.detail : 'Unbekannter Fehler'
+      const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
       consola.error('quotes: Einzel-Refresh fehlgeschlagen', {
         symbol: position.symbol,
         reason,
@@ -175,7 +176,7 @@ async function fetchOne(client: StockInfoClient, position: Position): Promise<Fe
       : await client.getQuoteBySymbol(position.symbol)
     return { key, symbol: position.symbol, entry: toQuoteCacheEntry(response) }
   } catch (error) {
-    const reason = error instanceof ApiError ? error.detail : 'Unbekannter Fehler'
+    const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
     return { key, symbol: position.symbol, entry: null, reason }
   }
 }

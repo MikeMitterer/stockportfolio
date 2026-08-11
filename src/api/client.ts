@@ -7,6 +7,7 @@
  */
 
 import { ApiError } from './errors'
+import { translate } from '@/i18n'
 import type {
   DailyPoint,
   HealthResponse,
@@ -133,7 +134,7 @@ async function readErrorDetail(response: Response): Promise<string> {
   } catch {
     // Body war kein JSON — Statustext genügt.
   }
-  return response.statusText || 'Unbekannter Fehler'
+  return response.statusText || translate('notify.unknownError')
 }
 
 /**

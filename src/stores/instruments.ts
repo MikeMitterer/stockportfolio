@@ -10,6 +10,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { consola } from 'consola'
+import { translate } from '@/i18n'
 import { ApiError } from '@/api/errors'
 import { cacheKeyOf } from '@/api/mappers'
 import { AllowlistRepository } from '@/db/repository'
@@ -72,7 +73,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       loaded.value = true
     } catch (cause) {
       error.value =
-        cause instanceof ApiError ? cause.detail : 'Instrumente konnten nicht geladen werden'
+        cause instanceof ApiError ? cause.detail : translate('notify.assetsFailed')
       consola.error('instruments: Laden fehlgeschlagen', { reason: error.value })
     } finally {
       loading.value = false

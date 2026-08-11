@@ -113,10 +113,12 @@ async function onFileChosen(event: Event): Promise<void> {
 
   const result = parseBackup(await file.text())
   if (!result.ok) {
-    error.value = result.error
+    // Die Domäne nennt nur den Schlüssel — den Satz baut die Anzeige, in der
+    // Sprache des Nutzers.
+    error.value = t(`backupErrors.${result.error.key}`, result.error.params ?? {})
     done.value = null
     pending.value = null
-    consola.warn('backup: Datei abgelehnt', { reason: result.error })
+    consola.warn('backup: Datei abgelehnt', { reason: result.error.key })
     return
   }
 

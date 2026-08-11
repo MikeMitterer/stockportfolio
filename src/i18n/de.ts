@@ -97,7 +97,6 @@ export const de = {
     instrumentsComingSoon:
       'Hier wird bald der Katalog aller Papiere aus dem StockInfo-API angezeigt — inkl. Whitelist-Toggle für die Portfolio-Auswahl.',
     settingsTitle: 'Einstellungen',
-    partial: 'Teilweise',
   },
 
   /**
@@ -134,6 +133,10 @@ export const de = {
 
   notify: {
     quotesMissingTitle: 'Kurse fehlen',
+    historyFailed: 'Kursverlauf konnte nicht geladen werden',
+    assetsFailed: 'Instrumente konnten nicht geladen werden',
+    noClient: 'Kein API-Client verfügbar',
+    unknownError: 'Unbekannter Fehler',
     quotesMissingBody: '{quotes} konnten nicht geladen werden — {details}',
     targetsExceededTitle: 'Ziele über 100 %',
     targetsExceededBody:
@@ -147,6 +150,7 @@ export const de = {
     tabs: {
       calc: 'Berechnung',
       theme: 'Darstellung',
+      language: 'Sprache',
       links: 'Verweise',
       data: 'Daten',
       status: 'Status',
@@ -294,6 +298,7 @@ export const de = {
 
   dashboard: {
     positionsHeading: 'Positionen — Bestand und Ziel sind direkt änderbar',
+    positionsShort: 'Positionen',
     assetClasses: 'Assetklassen',
     targetDistribution: 'Ziel-Verteilung',
     bands: 'Bänder: −{lower} / +{upper}',
@@ -324,6 +329,8 @@ export const de = {
     points: 'Kurspunkte',
     inSelection: 'In Auswahl',
     inPortfolio: 'im Depot',
+    unknownType: 'unbekannt',
+    newLink: 'Neuer Verweis',
   },
 
   addPosition: {
@@ -363,6 +370,28 @@ export const de = {
     units: '{count} Stk',
     loading: '· lädt …',
     overHundred: '· über 100 %',
+  },
+
+  backupErrors: {
+    invalidJson: 'Die Datei enthält kein gültiges JSON.',
+    notAnObject: 'Die Datei enthält kein Objekt.',
+    wrongKind: 'Das ist keine StockPortfolio-Sicherung — die Kennung fehlt oder passt nicht.',
+    noSchemaVersion: 'Der Datei fehlt die Format-Angabe (schemaVersion).',
+    newerFormat:
+      'Die Datei stammt aus einer neueren Fassung (Format {found}, diese App kennt {known}). Bitte die App aktualisieren.',
+    noSettings: 'Der Datei fehlen die Einstellungen.',
+    noPortfolio: 'Der Datei fehlt das Depot.',
+    noPortfolioId: 'Dem Depot fehlt die Kennung.',
+    noPortfolioName: 'Dem Depot fehlt der Name.',
+    noPositions: 'Dem Depot fehlt die Liste der Positionen.',
+    duplicateId: 'Position {at}: Die Kennung „{id}“ kommt mehrfach vor.',
+    positionNotAnObject: 'Position {at}: kein Objekt.',
+    positionNoId: 'Position {at}: Kennung fehlt.',
+    positionNoSymbol: 'Position {at}: Symbol fehlt.',
+    positionGroup: 'Position {at}: Unbekannte Assetklasse „{group}“.',
+    positionUnits: 'Position {at}: Bestand ist keine Zahl.',
+    positionTarget: 'Position {at}: Ziel-Anteil ist keine Zahl.',
+    positionTargetRange: 'Position {at}: Ziel-Anteil liegt außerhalb von 0–100 %.',
   },
 
   status: {

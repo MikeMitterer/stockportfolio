@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { buildSparkline, type HistoryPoint } from '@/domain/sparkline'
 import { percentSigned } from '@/domain/formatters'
+
+const { t } = useI18n()
 
 /**
  * Kursverlauf als kleine Linie — für die Tabellenzeile.
@@ -72,7 +75,7 @@ const label = computed(() => percentSigned(line.value.changePercent))
       v-else
       class="shrink-0 inline-block"
       :style="{ width: `${width}px`, height: `${height}px` }"
-      :title="loading ? 'Kursverlauf wird geladen' : 'Kein Kursverlauf verfügbar'"
+      :title="loading ? t('status.quotesLoading') : t('history.none')"
     ></span>
 
     <span

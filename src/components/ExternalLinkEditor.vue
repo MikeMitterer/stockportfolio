@@ -23,8 +23,8 @@ const emit = defineEmits<{
 }>()
 
 const kindOptions: { label: string; value: InstrumentKind }[] = [
-  { label: 'ETF / Fonds', value: 'etf' },
-  { label: 'Aktie', value: 'stock' },
+  { label: t('links.etf'), value: 'etf' },
+  { label: t('links.stock'), value: 'stock' },
 ]
 
 const hasLinks = computed(() => props.links.length > 0)
@@ -48,7 +48,7 @@ function add(): void {
     ...props.links,
     {
       id: `link-${Date.now().toString(36)}`,
-      label: 'Neuer Verweis',
+      label: t('links.newLink'),
       urlTemplate: 'https://example.com/{isin}',
       appliesTo: [],
       enabled: true,

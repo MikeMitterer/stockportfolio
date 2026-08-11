@@ -11,6 +11,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { StockInfoClient } from '@/api/client'
 import { ApiError } from '@/api/errors'
+import { i18n } from '@/i18n'
 
 /** Client, dessen `/health` antwortet wie vorgegeben. */
 function clientWith(response: () => Promise<unknown>): StockInfoClient {
@@ -104,7 +105,9 @@ describe('useApiStatusStore', () => {
     await status.check(null)
 
     expect(status.state).toBe('offline')
-    expect(status.error).toBe('Kein API-Client verfügbar')
+    // Über den Katalog, nicht über den deutschen Satz: Die Vorgabesprache ist
+    // Englisch, und ein Test darf nicht an einer Sprache kleben.
+    expect(status.error).toBe(i18n.global.t('notify.noClient'))
   })
 
   it('gibt die konfigurierte Adresse unverändert zurück', () => {

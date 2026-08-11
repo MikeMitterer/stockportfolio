@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NButtonGroup, NCard, NTabPane, NTabs, NTag, NInputNumber, NSelect } from 'naive-ui'
+import {
+  NButton,
+  NButtonGroup,
+  NCard,
+  NInputNumber,
+  NSelect,
+  NTabPane,
+  NTabs,
+} from 'naive-ui'
 import BackupPanel from '@/components/BackupPanel.vue'
 import PortfolioManager from '@/components/PortfolioManager.vue'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
@@ -124,10 +132,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
 <template>
   <div class="max-w-[1400px] mx-auto px-6 py-8">
-    <div class="flex items-center gap-3 mb-4">
-      <h1 class="text-2xl font-semibold">{{ t('views.settingsTitle') }}</h1>
-      <NTag type="warning" size="small" :bordered="false">{{ t('views.partial') }}</NTag>
-    </div>
+    <h1 class="text-2xl font-semibold mb-4">{{ t('views.settingsTitle') }}</h1>
 
     <!--
       Gegliedert statt gestapelt: Rechenvorgaben, Aussehen und Verweise haben
@@ -244,34 +249,21 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
         </div>
       </NTabPane>
 
-      <NTabPane name="theme" :tab="t('settings.tabs.theme')">
-        <!--
-          Sprache über dem Theme: Sie ändert mehr als das Aussehen — auch
-          Zahlen und Datumsangaben — und wer sie sucht, sucht sie oben.
-        -->
-        <NCard :bordered="false" class="!bg-card mb-4">
+      <NTabPane name="links" :tab="t('settings.tabs.links')">
+        <NCard :bordered="false" class="!bg-card">
           <template #header>
-            <span class="text-sm font-medium">{{ t('settings.languageHeading') }}</span>
+            <span class="text-sm font-medium">{{ t('settings.linksHeading') }}</span>
           </template>
 
-          <div class="flex flex-col gap-2">
-            <NButtonGroup size="small">
-              <NButton
-                v-for="entry in locales"
-                :key="entry.id"
-                :type="entry.id === localeStore.current ? 'primary' : 'default'"
-                :secondary="entry.id !== localeStore.current"
-                @click="localeStore.setLocale(entry.id)"
-              >
-                {{ entry.label }}
-              </NButton>
-            </NButtonGroup>
-            <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
-              {{ t('settings.languageHint') }}
-            </span>
-          </div>
+          <ExternalLinkEditor
+            :links="settingsStore.settings.links"
+            @update="settingsStore.setLinks"
+            @reset="settingsStore.resetLinks"
+          />
         </NCard>
+      </NTabPane>
 
+      <NTabPane name="theme" :tab="t('settings.tabs.theme')">
         <NCard :bordered="false" class="!bg-card">
           <template #header>
             <span class="text-sm font-medium">{{ t('settings.themeHeading') }}</span>
@@ -331,19 +323,6 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
         </NCard>
       </NTabPane>
 
-      <NTabPane name="links" :tab="t('settings.tabs.links')">
-        <NCard :bordered="false" class="!bg-card">
-          <template #header>
-            <span class="text-sm font-medium">{{ t('settings.linksHeading') }}</span>
-          </template>
-
-          <ExternalLinkEditor
-            :links="settingsStore.settings.links"
-            @update="settingsStore.setLinks"
-            @reset="settingsStore.resetLinks"
-          />
-        </NCard>
-      </NTabPane>
       <NTabPane name="data" :tab="t('settings.tabs.data')">
         <div class="flex flex-col gap-4">
           <NCard :bordered="false" class="!bg-card">
@@ -362,6 +341,31 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             <BackupPanel />
           </NCard>
         </div>
+      </NTabPane>
+
+      <NTabPane name="language" :tab="t('settings.tabs.language')">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <span class="text-sm font-medium">{{ t('settings.languageHeading') }}</span>
+          </template>
+
+          <div class="flex flex-col gap-2">
+            <NButtonGroup size="small">
+              <NButton
+                v-for="entry in locales"
+                :key="entry.id"
+                :type="entry.id === localeStore.current ? 'primary' : 'default'"
+                :secondary="entry.id !== localeStore.current"
+                @click="localeStore.setLocale(entry.id)"
+              >
+                {{ entry.label }}
+              </NButton>
+            </NButtonGroup>
+            <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
+              {{ t('settings.languageHint') }}
+            </span>
+          </div>
+        </NCard>
       </NTabPane>
 
       <NTabPane name="status" :tab="t('settings.tabs.status')">

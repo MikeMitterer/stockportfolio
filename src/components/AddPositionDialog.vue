@@ -159,7 +159,7 @@ watch(
               <div class="tabular-nums">{{ percent(selected.volatility) }}</div>
             </div>
             <div class="col-span-2">
-              <NTag size="small" :bordered="false">{{ selected.type ?? 'unbekannt' }}</NTag>
+              <NTag size="small" :bordered="false">{{ selected.type ?? t('instruments.unknownType') }}</NTag>
               <NTag v-if="selected.provider" size="small" :bordered="false" class="ml-2">
                 {{ selected.provider }}
               </NTag>
