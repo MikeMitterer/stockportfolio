@@ -261,3 +261,133 @@ describe('usePortfolioStore — replacePortfolio', () => {
     expect(store.positions.find((p) => p.id === 'x')?.units).toBe(7)
   })
 })
+
+describe('usePortfolioStore — mehrere Depots', () => {
+  it('führt die Liste aller Depots mit', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+
+    expect(store.all).toHaveLength(1)
+    expect(store.all[0]?.name).toBe('Mein Depot')
+  })
+
+  it('legt ein weiteres Depot an und macht es zum aktiven', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+
+    const id = await store.createPortfolio('Kinderdepot')
+
+    expect(store.all).toHaveLength(2)
+    expect(store.portfolio?.id).toBe(id)
+    expect(store.portfolio?.name).toBe('Kinderdepot')
+  })
+
+  it('gibt einem namenlosen Depot einen Namen', async () => {
+    // Eine leere Zeile in der Liste wäre nicht wiederzuerkennen.
+    const store = usePortfolioStore()
+    await store.load()
+
+    await store.createPortfolio('   ')
+
+    expect(store.portfolio?.name).toBe('Neues Depot')
+  })
+
+  it('wechselt zwischen Depots, ohne Bestände zu vermischen', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const ersteId = store.portfolio?.id as string
+    await store.addPosition(makePosition({ id: 'nur-im-ersten' }))
+
+    const zweiteId = await store.createPortfolio('Zweites')
+    expect(store.positions.some((p) => p.id === 'nur-im-ersten')).toBe(false)
+
+    await store.switchTo(ersteId)
+    expect(store.positions.some((p) => p.id === 'nur-im-ersten')).toBe(true)
+
+    await store.switchTo(zweiteId)
+    expect(store.positions.some((p) => p.id === 'nur-im-ersten')).toBe(false)
+  })
+
+  it('ignoriert einen Wechsel auf eine unbekannte Kennung', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const id = store.portfolio?.id
+
+    await store.switchTo('gibt-es-nicht')
+
+    expect(store.portfolio?.id).toBe(id)
+  })
+
+  it('benennt auch ein Depot um, das gerade nicht aktiv ist', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const ersteId = store.portfolio?.id as string
+    await store.createPortfolio('Zweites')
+
+    await store.renamePortfolio(ersteId, 'Umbenannt')
+
+    expect(store.all.find((entry) => entry.id === ersteId)?.name).toBe('Umbenannt')
+    expect(store.portfolio?.name).toBe('Zweites')
+  })
+
+  it('lehnt einen leeren Namen ab, statt ihn zu übernehmen', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const id = store.portfolio?.id as string
+
+    await store.renamePortfolio(id, '   ')
+
+    expect(store.portfolio?.name).toBe('Mein Depot')
+  })
+
+  it('löscht ein Depot und lässt das aktive in Ruhe', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const ersteId = store.portfolio?.id as string
+    const zweiteId = await store.createPortfolio('Zweites')
+
+    await store.deletePortfolio(ersteId)
+
+    expect(store.all).toHaveLength(1)
+    expect(store.portfolio?.id).toBe(zweiteId)
+  })
+
+  it('wechselt weiter, wenn man das aktive Depot löscht', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const ersteId = store.portfolio?.id as string
+    const zweiteId = await store.createPortfolio('Zweites')
+
+    const nextActive = await store.deletePortfolio(zweiteId)
+
+    expect(nextActive).toBe(ersteId)
+    expect(store.portfolio?.id).toBe(ersteId)
+  })
+
+  it('lässt das letzte Depot stehen', async () => {
+    // Ohne Depot hätte die App keinen Zustand, in dem sie sinnvoll wäre — und
+    // die Einstellungen zeigten auf eine Kennung, die es nicht mehr gibt.
+    const store = usePortfolioStore()
+    await store.load()
+    const id = store.portfolio?.id as string
+
+    const result = await store.deletePortfolio(id)
+
+    expect(result).toBeNull()
+    expect(store.all).toHaveLength(1)
+    expect(await new PortfolioRepository().count()).toBe(1)
+  })
+
+  it('zieht die Positionszahl in der Liste nach', async () => {
+    // Eine veraltete Liste wäre schlimmer als keine — man sieht ihr an, dass
+    // sie sich nicht bewegt, und traut ihr dann nirgends mehr.
+    const store = usePortfolioStore()
+    await store.load()
+    const id = store.portfolio?.id as string
+    const vorher = store.all.find((entry) => entry.id === id)?.positionCount ?? 0
+
+    await store.addPosition(makePosition({ id: 'neu' }))
+
+    expect(store.all.find((entry) => entry.id === id)?.positionCount).toBe(vorher + 1)
+  })
+})

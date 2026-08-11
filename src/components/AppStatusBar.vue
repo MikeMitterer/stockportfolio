@@ -64,6 +64,8 @@ const host = computed(() => {
   }
 })
 
+const portfolioName = computed(() => portfolioStore.portfolio?.name ?? null)
+
 const positionCount = computed(
   () => portfolioStore.positions.filter((position) => position.enabled).length,
 )
@@ -96,8 +98,17 @@ const version = __APP_VERSION__
 
       <span class="hidden sm:inline opacity-40">·</span>
 
-      <span class="tabular-nums">
-        {{ positionCount }} {{ positionCount === 1 ? 'Position' : 'Positionen' }}
+      <!--
+        Der Depotname gehört hierher, sobald es mehr als eines gibt: Ohne ihn
+        wäre jede Zahl der App mehrdeutig — man sähe nicht, worauf sie sich
+        bezieht.
+      -->
+      <span class="truncate max-w-[14rem]">
+        <span v-if="portfolioName" class="text-ink-secondary">{{ portfolioName }}</span>
+        <span class="tabular-nums">
+          {{ portfolioName ? ', ' : '' }}{{ positionCount }}
+          {{ positionCount === 1 ? 'Position' : 'Positionen' }}
+        </span>
       </span>
 
       <span class="hidden sm:inline opacity-40">·</span>

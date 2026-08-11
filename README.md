@@ -78,6 +78,17 @@ eine JSON-Datei mit Depot, Einstellungen und der Auswahl ausgeblendeter
 Assets. Kurse sind nicht enthalten — die holt die App ohnehin neu. Beim Einspielen wird die Datei erst geprüft und der
 Inhalt gezeigt; überschrieben wird nichts, ohne dass man es bestätigt hat.
 
+### Mehrere Depots
+
+Unter *Einstellungen → Daten* lassen sich weitere Depots anlegen, umbenennen,
+wechseln und löschen — etwa eines für die Kinder oder eine Variante zum
+Durchrechnen. Gerechnet wird immer nur mit dem aktiven; sein Name steht in der
+Statuszeile, damit keine Zahl mehrdeutig bleibt.
+
+Toleranzbänder, Sicherheitspuffer und Darstellung gelten für alle Depots
+gemeinsam — sie beschreiben die Methode, nicht das einzelne Depot. Eine
+Sicherung enthält immer nur das aktive.
+
 ## Setup
 
 ```bash
@@ -194,7 +205,6 @@ Healthcheck färbt den Zustand im Docker-Reiter.
 
 | Thema | Stand |
 |---|---|
-| Mehrere Portfolios verwalten | offen — das Datenmodell kann es, die Oberfläche nicht |
 | Anzeige-Spalten ein-/ausblendbar | offen — die Einstellung existiert, ohne Oberfläche |
 | Warnung bei nicht-EUR-Positionen | offen — die App rechnet durchgängig in Euro |
 | Threshold-Benachrichtigungen | bewusst außerhalb des MVP |

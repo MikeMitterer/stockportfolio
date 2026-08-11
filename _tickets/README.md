@@ -30,7 +30,7 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-08 | Dashboard — Positions-Tabelle + Delta-Balken + Inline-Edit | [erledigt](solved/T-08-row-grouping.md) |
 | T-09 | Dashboard — Drilldown-Panel | erledigt; der Trade-Simulator wurde zugunsten von T-19 wieder entfernt |
 | T-10 | Assets-View + Add-Position-Dialog | [erledigt](solved/T-10-instruments.md) |
-| T-11 | Settings-View + Export/Import + Health-Check | **teilweise** — Bänder, Puffer, Themes, Verweise, Status und [Export/Import](solved/T-20-backup.md) stehen; die Portfolio-Verwaltung fehlt |
+| T-11 | Settings-View + Export/Import + Health-Check | [erledigt](solved/T-21-portfolios.md) — Bänder, Puffer, Themes, Verweise, Status, [Export/Import](solved/T-20-backup.md) und Depot-Verwaltung |
 | T-12 | Warnings + Toast + leere/Fehler-Zustände | **teilweise** — Toasts mit Zähler und leere Zustände stehen; die Warnung bei Fremdwährung fehlt |
 | T-13 | Docker — Multi-Stage-Image + `docker/build.sh` | [erledigt](solved/T-13-docker.md) |
 | T-14 | Version-Bump auf `0.1.0` + finale README/Docs | [erledigt](solved/T-14-release.md) |
@@ -45,4 +45,5 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-18 | Geldmarkt als eigene Klasse + Investitionsreserve | [erledigt](solved/T-18-geldmarkt-reserve.md) |
 | T-19 | Rebalancing als eigener Tab | [erledigt](solved/T-19-rebalancing-tab.md) |
 | T-20 | Sichern und Wiederherstellen | [erledigt](solved/T-20-backup.md) |
+| T-21 | Verwaltung mehrerer Depots | [erledigt](solved/T-21-portfolios.md) |
 | T-UI | Frühe UI-Vorschau | [erledigt](solved/T-UI-preview.md) |

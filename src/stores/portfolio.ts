@@ -12,11 +12,28 @@ import { PortfolioRepository } from '@/db/repository'
 import { demoPortfolio, emptyPortfolio } from '@/db/seed'
 import type { InstrumentKind, Portfolio, Position } from '@/types/portfolio'
 
+/** Kopf-Daten eines Depots für die Verwaltungsliste. */
+export interface PortfolioSummary {
+  id: string
+  name: string
+  positionCount: number
+  updatedAt: string
+}
+
 export const usePortfolioStore = defineStore('portfolio', () => {
   const repository = new PortfolioRepository()
 
   const portfolio = ref<Portfolio | null>(null)
   const loaded = ref<boolean>(false)
+
+  /**
+   * Alle vorhandenen Depots — nur Kopf-Daten für die Verwaltung.
+   *
+   * Bewusst getrennt vom aktiven Depot: Die Liste wird selten gebraucht, das
+   * aktive Depot dauernd. Sie vollständig im Speicher zu halten hieße, jede
+   * Positionsänderung an zwei Stellen nachzuziehen.
+   */
+  const all = ref<PortfolioSummary[]>([])
 
   const positions = computed<Position[]>(() => portfolio.value?.positions ?? [])
 
@@ -39,12 +56,86 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       consola.info('portfolio: leeres Depot angelegt')
       portfolio.value = fresh
       loaded.value = true
+      await refreshList()
       return
     }
 
-    const all = await repository.findAll()
-    portfolio.value = all.find((entry) => entry.id === preferredId) ?? all[0] ?? null
+    const entries = await repository.findAll()
+    portfolio.value = entries.find((entry) => entry.id === preferredId) ?? entries[0] ?? null
     loaded.value = true
+    await refreshList()
+  }
+
+  // ─── Verwaltung mehrerer Depots ───────────────────────────────────────────
+
+  /**
+   * Legt ein weiteres Depot an und macht es zum aktiven.
+   *
+   * @param name Anzeigename; leer fällt auf „Neues Depot" zurück.
+   * @returns Die Kennung des neuen Depots — der Aufrufer muss sie in den
+   *          Einstellungen als aktiv vermerken.
+   */
+  async function createPortfolio(name: string): Promise<string> {
+    const fresh = emptyPortfolio(name.trim() || 'Neues Depot')
+    await repository.save(fresh)
+    portfolio.value = fresh
+    await refreshList()
+    consola.info('portfolio: Depot angelegt', { id: fresh.id, name: fresh.name })
+    return fresh.id
+  }
+
+  /** Wechselt das aktive Depot. */
+  async function switchTo(id: string): Promise<void> {
+    const next = await repository.findById(id)
+    if (!next) {
+      consola.warn('portfolio: Wechsel auf unbekanntes Depot', { id })
+      return
+    }
+    portfolio.value = next
+  }
+
+  /** Benennt ein Depot um — auch eines, das gerade nicht aktiv ist. */
+  async function renamePortfolio(id: string, name: string): Promise<void> {
+    const trimmed = name.trim()
+    if (trimmed === '') return
+
+    const target = id === portfolio.value?.id ? portfolio.value : await repository.findById(id)
+    if (!target) return
+
+    const renamed = { ...target, name: trimmed, updatedAt: new Date().toISOString() }
+    await repository.save(renamed)
+    if (id === portfolio.value?.id) portfolio.value = renamed
+    await refreshList()
+  }
+
+  /**
+   * Löscht ein Depot endgültig.
+   *
+   * Das letzte bleibt stehen: Ohne Depot hätte die App keinen Zustand, in dem
+   * sie sinnvoll wäre — sie legte beim nächsten Start ohnehin ein leeres an,
+   * nur dass die Einstellungen dann auf eine Kennung zeigten, die es nicht
+   * mehr gibt.
+   *
+   * @returns Die Kennung des danach aktiven Depots, oder `null` wenn nichts
+   *          geschah.
+   */
+  async function deletePortfolio(id: string): Promise<string | null> {
+    if (all.value.length <= 1) {
+      consola.warn('portfolio: Letztes Depot bleibt bestehen', { id })
+      return null
+    }
+
+    await repository.remove(id)
+    await refreshList()
+
+    // Wer das aktive Depot löscht, landet beim nächsten in der Liste.
+    if (id === portfolio.value?.id) {
+      const next = all.value[0]
+      if (next) await switchTo(next.id)
+    }
+
+    consola.info('portfolio: Depot gelöscht', { id })
+    return portfolio.value?.id ?? null
   }
 
   /**
@@ -60,6 +151,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     if (current) await repository.remove(current.id)
 
     portfolio.value = demo
+    await refreshList()
     consola.info('portfolio: Beispiel-Depot geladen')
   }
 
@@ -67,6 +159,26 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   async function persist(): Promise<void> {
     if (!portfolio.value) return
     await repository.save(portfolio.value)
+    await refreshList()
+  }
+
+  /**
+   * Liest die Liste aller Depots neu.
+   *
+   * Nach jeder Änderung, damit Positionszahl und Datum in der Verwaltung
+   * stimmen — eine veraltete Liste wäre schlimmer als keine, weil man ihr
+   * ansieht, dass sie sich nicht bewegt.
+   */
+  async function refreshList(): Promise<void> {
+    const entries = await repository.findAll()
+    all.value = entries
+      .map((entry) => ({
+        id: entry.id,
+        name: entry.name,
+        positionCount: entry.positions.length,
+        updatedAt: entry.updatedAt,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'de'))
   }
 
   /**
@@ -154,6 +266,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     if (current && current.id !== next.id) await repository.remove(current.id)
 
     portfolio.value = next
+    await refreshList()
     consola.info('portfolio: Depot ersetzt', { id: next.id, positions: next.positions.length })
   }
 
@@ -171,8 +284,14 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     portfolio,
     positions,
     hasHoldings,
+    all,
     loaded,
     load,
+    refreshList,
+    createPortfolio,
+    switchTo,
+    renamePortfolio,
+    deletePortfolio,
     loadDemo,
     updatePosition,
     addPosition,
