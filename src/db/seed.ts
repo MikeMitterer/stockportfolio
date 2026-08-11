@@ -7,13 +7,17 @@
  * `demoPortfolio()` ein ausdrücklich als Beispiel benanntes Depot laden.
  */
 
+import { translate } from '@/i18n'
 import type { Portfolio, Position } from '@/types/portfolio'
 
 /**
  * Beispiel-Positionen — echte ISINs, damit Kurse geladen werden, aber
  * betont runde Stückzahlen, die niemand für einen echten Bestand hält.
  */
-const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
+const DEMO_POSITIONS: readonly (Omit<Position, 'id' | 'displayName'> & {
+  /** `null` beim Verrechnungskonto — sein Name kommt aus dem Katalog. */
+  displayName: string | null
+})[] = [
   {
     isin: 'IE00B3RBWM25',
     symbol: 'VGWL.DE',
@@ -68,7 +72,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
     isin: null,
     symbol: 'CASH',
     kind: null,
-    displayName: 'Verrechnungskonto',
+    displayName: null,
     group: 'cash',
     units: 5000,
     targetPercent: 5,
@@ -80,7 +84,7 @@ const DEMO_POSITIONS: readonly Omit<Position, 'id'>[] = [
  * Leeres Depot mit einer Cash-Position — die gibt es genau einmal je
  * Portfolio und sie lässt sich nicht über den Instrumenten-Dialog anlegen.
  */
-export function emptyPortfolio(name = 'Mein Depot'): Portfolio {
+export function emptyPortfolio(name = translate('seed.portfolioName')): Portfolio {
   const now = new Date().toISOString()
   return {
     id: newId(),
@@ -93,7 +97,7 @@ export function emptyPortfolio(name = 'Mein Depot'): Portfolio {
         isin: null,
         symbol: 'CASH',
         kind: null,
-        displayName: 'Verrechnungskonto',
+        displayName: translate('seed.cashAccount'),
         group: 'cash',
         units: 0,
         targetPercent: 0,
@@ -108,10 +112,16 @@ export function demoPortfolio(): Portfolio {
   const now = new Date().toISOString()
   return {
     id: newId(),
-    name: 'Beispiel-Depot',
+    name: translate('seed.demoName'),
     createdAt: now,
     updatedAt: now,
-    positions: DEMO_POSITIONS.map((position) => ({ ...position, id: newId() })),
+    positions: DEMO_POSITIONS.map((position) => ({
+      ...position,
+      id: newId(),
+      // Nur das Verrechnungskonto trägt keinen Marktnamen — es heißt in jeder
+      // Sprache anders, während „Xetra-Gold" überall Xetra-Gold heißt.
+      displayName: position.displayName ?? translate('seed.cashAccount'),
+    })),
   }
 }
 

@@ -214,7 +214,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               Der Auslöser steht über den Bändern, weil er bestimmt, ob sie
               überhaupt gelten. Umgekehrt gelesen ergäbe die Seite keinen Sinn.
             -->
-          <NCard :bordered="false" class="!bg-card mb-4">
+          <NCard :bordered="false" class="!bg-card h-full">
             <template #header>
               <span class="inline-flex items-center gap-1.5 text-sm font-medium">
                 {{ t('settings.triggerHeading') }}
@@ -280,7 +280,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             </div>
           </NCard>
 
-          <NCard :bordered="false" class="!bg-card">
+          <NCard :bordered="false" class="!bg-card h-full">
             <template #header>
               <span class="inline-flex items-center gap-1.5 text-sm font-medium">
                 {{ t('settings.bandsHeading') }}
@@ -343,7 +343,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             </div>
           </NCard>
 
-          <NCard :bordered="false" class="!bg-card">
+          <NCard :bordered="false" class="!bg-card h-full">
             <template #header>
               <span class="text-sm font-medium">{{ t('settings.metricsHeading') }}</span>
             </template>

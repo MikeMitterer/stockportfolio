@@ -39,6 +39,12 @@ export const en: MessageSchema = {
   // Bewusst englische Kürzel, auch im deutschen UI: „Kaufen"/„Verkaufen"
   // sind unterschiedlich lang und ließen die Spalte von Zeile zu Zeile
   // wandern. Buy/Sell/OK sind kurz, gleich lang und im Börsenkontext geläufig.
+  seed: {
+    portfolioName: 'My portfolio',
+    demoName: 'Sample portfolio',
+    cashAccount: 'Cash account',
+  },
+
   suggestion: {
     buy: 'Buy',
     sell: 'Sell',

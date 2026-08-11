@@ -9,6 +9,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { PortfolioRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { newId } from '@/db/seed'
+import { translate } from '@/i18n'
 import type { Portfolio, Position } from '@/types/portfolio'
 
 beforeEach(async () => {
@@ -89,7 +90,7 @@ describe('usePortfolioStore — load', () => {
     await store.loadDemo()
 
     expect(store.hasHoldings).toBe(true)
-    expect(store.portfolio?.name).toBe('Beispiel-Depot')
+    expect(store.portfolio?.name).toBe(translate('seed.demoName'))
   })
 
   it('loadDemo lässt kein verwaistes Depot zurück', async () => {
@@ -110,7 +111,7 @@ describe('usePortfolioStore — load', () => {
     const second = usePortfolioStore()
     await second.load(demoId)
 
-    expect(second.portfolio?.name).toBe('Beispiel-Depot')
+    expect(second.portfolio?.name).toBe(translate('seed.demoName'))
     expect(second.hasHoldings).toBe(true)
   })
 
@@ -268,7 +269,7 @@ describe('usePortfolioStore — mehrere Depots', () => {
     await store.load()
 
     expect(store.all).toHaveLength(1)
-    expect(store.all[0]?.name).toBe('Mein Depot')
+    expect(store.all[0]?.name).toBe(translate('seed.portfolioName'))
   })
 
   it('legt ein weiteres Depot an und macht es zum aktiven', async () => {
@@ -337,7 +338,7 @@ describe('usePortfolioStore — mehrere Depots', () => {
 
     await store.renamePortfolio(id, '   ')
 
-    expect(store.portfolio?.name).toBe('Mein Depot')
+    expect(store.portfolio?.name).toBe(translate('seed.portfolioName'))
   })
 
   it('löscht ein Depot und lässt das aktive in Ruhe', async () => {

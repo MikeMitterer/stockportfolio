@@ -56,6 +56,13 @@ info: ## Umgebungsvariablen anzeigen
 	@echo "    $(YELLOW)BASH_LIBS$(RESET)    = $(BLUE)$${BASH_LIBS:-<nicht gesetzt>}$(RESET)"
 	@echo "    $(YELLOW)VITE_STOCKINFO_API_URL$(RESET) = $(BLUE)$${VITE_STOCKINFO_API_URL:-<nicht gesetzt>}$(RESET)"
 	@echo
+	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
+	  "PLATFORM" "$(PLATFORM)"   "# docker-build: x86 | arm | all"
+	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
+	  "STRICT"   "$(STRICT)"     "# 1 = auch abbrechen, wenn Commits nach dem Tag liegen"
+	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
+	  "TARGET"   "$${TARGET:-dockerhub}" "# docker-push: dockerhub | ghcr | ecr"
+	@echo
 
 .PHONY: hints
 hints: ## Nützliche Links und Hinweise anzeigen
@@ -72,6 +79,13 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "2. Env"       "cp .env.example .env"
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "3. Deps"      "npm install"
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "4. Start"     "make dev"
+	@echo
+	@echo "  $(YELLOW)Docker$(RESET)"
+	@echo
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Server (x86)"  "make docker-build            # Vorgabe"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Lokal auf M1"  "make docker-build PLATFORM=arm"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Beide Archs"   "make docker-build PLATFORM=all  # baut und pusht"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Push-Ziel"     "make docker-push TARGET=ghcr"
 	@echo
 
 # ─── Precheck ────────────────────────────────────────────────────────────────
@@ -153,13 +167,34 @@ clean: ## dist/, coverage/, .vite/ löschen
 
 ##@ Docker
 
+# Zielplattform für docker-build — x86, nicht die Architektur des Rechners.
+#
+# Das Abbild läuft auf dem Server, nicht hier: Ein arm64-Build vom Mac startet
+# auf Unraid und den meisten NAS nicht. Wer es lokal auf Apple Silicon
+# ausprobieren will, baut mit PLATFORM=arm.
+#
+#   x86        linux/amd64   (Vorgabe)
+#   arm | m1   linux/arm64
+#   all        beide — buildx baut und pusht in einem Schritt (Login nötig)
+PLATFORM ?= x86
+
+# Wie streng build.sh den Git-Zustand prüft:
+#   2   ohne Tag oder mit dirty Working-Tree wird abgebrochen, Commits nach
+#       dem letzten Tag sind erlaubt (Vorgabe)
+#   1   zusätzlich abbrechen, wenn Commits nach dem letzten Tag liegen
+STRICT ?= 2
+
 .PHONY: docker-build
-docker-build: ## Docker-Image bauen (single-arch, lokal)
-	@./docker/build.sh --build
+docker-build: ## Docker-Image bauen  [PLATFORM=x86|arm|all, Default x86 — STRICT=1|2, Default 2]
+	@./docker/build.sh --build $(PLATFORM)
 
 .PHONY: docker-push
 docker-push: ##R Image pushen  [TARGET=dockerhub|ghcr|ecr, Default dockerhub]
 	@./docker/build.sh --push
+
+.PHONY: docker-update
+docker-update: ## Basis-Image aktualisieren (docker pull)
+	@./docker/build.sh --update
 
 .PHONY: docker-images
 docker-images: ## Lokale Images des Projekts anzeigen

@@ -32,6 +32,12 @@ export const de = {
   // Bewusst englische Kürzel, auch im deutschen UI: „Kaufen"/„Verkaufen"
   // sind unterschiedlich lang und ließen die Spalte von Zeile zu Zeile
   // wandern. Buy/Sell/OK sind kurz, gleich lang und im Börsenkontext geläufig.
+  seed: {
+    portfolioName: 'Mein Depot',
+    demoName: 'Beispiel-Depot',
+    cashAccount: 'Verrechnungskonto',
+  },
+
   suggestion: {
     buy: 'Buy',
     sell: 'Sell',
