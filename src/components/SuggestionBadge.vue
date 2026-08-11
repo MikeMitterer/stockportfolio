@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { NTooltip } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import type { Suggestion } from '@/types/portfolio'
 
@@ -15,6 +16,14 @@ const props = defineProps<{
    * bloß Punkt und Wort in der Statusfarbe.
    */
   plain?: boolean
+  /**
+   * Außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen.
+   *
+   * Das Etikett bleibt „OK" — für den Betrag lohnt keine Order. Verschweigen
+   * lässt sich der Grund trotzdem nicht: Sonst steht in der Zeile daneben eine
+   * sichtbare Abweichung ohne Erklärung, und man sucht den Fehler in der App.
+   */
+  belowMinTrade?: boolean
 }>()
 
 const { t } = useI18n()
@@ -53,24 +62,43 @@ const arrow = computed(() => {
 </script>
 
 <template>
-  <span
-    class="inline-flex w-[4.5rem] items-center justify-center gap-1 text-xs font-medium tabular-nums"
-    :class="plain ? '' : 'rounded-full border px-2 py-0.5'"
-    :style="
-      plain
-        ? { color }
-        : {
-          color,
-          borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,
-          backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
-        }
-    "
-  >
+  <!--
+    Der Marker liegt absolut neben der Pille, nicht in ihr: Die Breite der
+    Pille ist über alle Zeilen gleich, und genau so soll die Spalte auch
+    bleiben.
+  -->
+  <span class="relative inline-flex items-center justify-center">
     <span
-      class="inline-block h-1.5 w-1.5 rounded-full"
-      :style="{ backgroundColor: color }"
-    ></span>
-    <span v-if="arrow" class="leading-none">{{ arrow }}</span>
-    <span>{{ label }}</span>
+      class="inline-flex w-[4.5rem] items-center justify-center gap-1 text-xs font-medium tabular-nums"
+      :class="plain ? '' : 'rounded-full border px-2 py-0.5'"
+      :style="
+        plain
+          ? { color }
+          : {
+            color,
+            borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,
+            backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
+          }
+      "
+    >
+      <span
+        class="inline-block h-1.5 w-1.5 rounded-full"
+        :style="{ backgroundColor: color }"
+      ></span>
+      <span v-if="arrow" class="leading-none">{{ arrow }}</span>
+      <span>{{ label }}</span>
+    </span>
+
+    <NTooltip v-if="belowMinTrade" trigger="hover">
+      <template #trigger>
+        <span
+          class="absolute -right-6 text-[9px] uppercase tracking-wide leading-none text-ink-muted"
+          :aria-label="t('suggestion.belowMinTrade')"
+        >
+          {{ t('suggestion.belowMinTradeMark') }}
+        </span>
+      </template>
+      {{ t('suggestion.belowMinTrade') }}
+    </NTooltip>
   </span>
 </template>

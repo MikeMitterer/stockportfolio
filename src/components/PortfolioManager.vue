@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { NButton, NInput, NPopconfirm, NTag } from 'naive-ui'
 import { consola } from 'consola'
 import { formatAge } from '@/composables/useRelativeTime'
-import { formatterLocale, integer } from '@/domain/formatters'
+import { integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 

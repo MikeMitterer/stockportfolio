@@ -44,6 +44,8 @@ export const en: MessageSchema = {
     sell: 'Sell',
     ok: 'OK',
     near: 'Near',
+    belowMinTradeMark: 'min',
+    belowMinTrade: 'Outside the band, but below the minimum trade size.',
   },
   kpi: {
     total: 'Total value',
@@ -156,21 +158,43 @@ export const en: MessageSchema = {
   settings: {
     tabs: {
       calc: 'Calculation',
-      theme: 'Appearance',
+      theme: 'Theme',
       language: 'Language',
       links: 'Links',
+      notifications: 'Messages',
       data: 'Data',
       status: 'Status',
     },
+    triggerHeading: 'Trigger',
+    trigger: {
+      bands: 'Tolerance bands',
+      calendar: 'Fixed schedule',
+      both: 'Bands and schedule',
+    },
+    triggerHint: {
+      bands: 'Rebalance as soon as a share leaves its band — continuously, no calendar.',
+      calendar: 'Rebalance only on the due date, but then every deviation from target.',
+      both: 'Bands apply continuously; the due date additionally picks up the smaller deviations.',
+    },
+    intervalMonths: 'Interval (months)',
+    intervalHint: '12 = yearly, 6 = twice a year, 3 = quarterly.',
+    lastRebalanced: 'Last rebalanced ({depot})',
+    markToday: 'Today',
+    neverRebalanced: 'Never rebalanced — the review counts as due.',
+    dueSince: 'Due for {days} days.',
+    dueIn: '{days} days to go — next review {date}.',
     bandsHeading: 'Tolerance bands',
     lowerHint: 'Market value below target by more than this share → buy.',
     upperHint: 'Market value above target by more than this share → sell.',
-    metricsHeading: 'Key figures',
+    metricsHeading: 'Liquidity',
     securityBuffer: 'Safety buffer',
+    minTradeSize: 'Minimum trade size',
+    minTradeUnset: 'Off — every deviation outside the band is reported.',
     bufferPercent: '% of total value',
     bufferAbsolute: 'Fixed amount (€)',
     bufferUnset: 'Not set — all liquidity counts as reserve.',
     bufferEquals: 'Currently equals {amount}.',
+    notificationsHeading: 'Display duration',
     notificationSeconds: 'Dismiss messages after (s)',
     notificationKeep: 'They stay until the cause is fixed or you dismiss them.',
     notificationAuto: 'They dismiss themselves — sooner if the cause disappears first.',
@@ -305,6 +329,8 @@ export const en: MessageSchema = {
     assetClasses: 'Asset classes',
     targetDistribution: 'Target allocation',
     bands: 'Bands: −{lower} / +{upper}',
+    scheduleDue: 'Review due',
+    scheduleNext: 'Next review {date}',
     emptyTitle: 'No instruments in this portfolio yet',
     emptyHint: 'Add your first position — or load a sample portfolio to try the app.',
     loadDemo: 'Load sample portfolio',
@@ -380,6 +406,7 @@ export const en: MessageSchema = {
     title: 'The method',
     intro:
       'This page explains what the app calculates. It is here to look things up — the app works without reading it.',
+    openSetting: 'Open setting →',
     more: 'Read more →',
 
     bandsHeading: 'Tolerance bands',
@@ -395,6 +422,21 @@ export const en: MessageSchema = {
       'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up. A share that has fallen means you can buy in cheaply; one that has risen only means something went well.',
     bandsBody4:
       'The difference to the common calendar rebalancing: there you rebalance on fixed dates, whether or not it is needed. With bands it happens when there is something to do — in quiet years not at all, in turbulent ones several times.',
+
+    bandsMinTrade:
+      'Bands relative to the target have a flip side. They do fix the blindness towards small positions — 6 % of 2 % is 6 % of 2 %, however small the share — but they make them oversensitive in euro terms: in a €100,000 portfolio a 2 % target already signals at €120 of deviation. No order is worth that; the fee eats the benefit.',
+    bandsMinTrade2:
+      'The minimum trade size in the settings counters this. If a position sits outside its band but the missing amount is smaller than that limit, the status stays “OK” and the row gets a small “min”. The deviation does not disappear — it remains in the delta column — only the call to action does. The default is 0, i.e. off.',
+
+    triggerHeading: 'Bands, schedule — or both',
+    triggerBody:
+      'The app knows three triggers. “Tolerance bands” is what is described above: something happens when there is something to do. “Fixed schedule” is the common calendar rebalancing: once a year, regardless of where the shares stand — but then every deviation, not just the large ones.',
+    triggerBody2:
+      'Pure calendar rebalancing has a known weakness: if the market drops in March, the allocation shifts at once, but the date is in December. For nine months nothing happens. Conversely a year can be so quiet that the date would only shuffle rounding remainders.',
+    triggerBody3:
+      'Hence the third option, “Bands and schedule”: the bands keep running and report any coarse shift immediately; the date is an additional occasion on which the smaller deviations are picked up as well. The minimum trade size still applies — otherwise every rounding remainder would carry an order on the due date.',
+    triggerBody4:
+      'The date belongs to the portfolio, not to the settings: every portfolio has its own date of last rebalancing. It is set by hand — only whoever placed an order knows whether it was actually filled.',
 
     classesHeading: 'Five asset classes',
     classesBody:
@@ -432,10 +474,16 @@ export const en: MessageSchema = {
       'Money market and cash minus the safety buffer. Says how much could at most be invested in a downturn — not how much should be.',
     securityBuffer:
       'The amount meant to stay untouched — an emergency fund, not an investment. Either a fixed amount or a share of total value.',
+    trigger:
+      'What decides a rebalance: the bands continuously, a fixed date, or both. Pure calendar rebalancing leaves a March crash unattended until the end of the year.',
+    minTradeSize:
+      'Smallest amount for which an order is worthwhile. A deviation below it reports no action — it stays visible all the same. 0 switches the limit off.',
     delta:
       'Deviation from the target, relative to the target itself: −10 % means “a tenth below the target value”, not “ten percentage points”. The colour shows whether the position is inside the band.',
     coverFrom:
       'Every euro spent has to come from somewhere visible. The suggestion gives the units with which cash or money market closes the open gap.',
+    historyPeriod:
+      'Period of the small line next to the price. A month, a week or a day — with “one day” it shows the change from the last trading day to today.',
     moneymarket:
       'Money-market instruments barely fluctuate and therefore count, together with cash, as available liquidity. Bonds with a maturity do not.',
   },

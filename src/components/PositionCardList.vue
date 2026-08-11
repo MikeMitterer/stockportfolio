@@ -5,7 +5,6 @@ import PositionCard from '@/components/PositionCard.vue'
 import { assetColor } from '@/domain/assetColors'
 import { eur, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
-import type { Bands } from '@/types/portfolio'
 
 /**
  * Die Positionen als Karten, nach Assetklasse gegliedert — Mobilansicht.
@@ -17,7 +16,6 @@ import type { Bands } from '@/types/portfolio'
 const props = defineProps<{
   rows: PositionResult[]
   groups: GroupResult[]
-  bands: Bands
 }>()
 
 const { t } = useI18n()
@@ -65,7 +63,6 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
         v-for="row in entry.rows"
         :key="row.position.id"
         :row="row"
-        :bands="bands"
       />
     </template>
   </div>

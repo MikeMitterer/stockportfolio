@@ -37,6 +37,8 @@ export const de = {
     sell: 'Sell',
     ok: 'OK',
     near: 'Near',
+    belowMinTradeMark: 'min',
+    belowMinTrade: 'Außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen.',
   },
   kpi: {
     total: 'Gesamtwert',
@@ -152,21 +154,43 @@ export const de = {
   settings: {
     tabs: {
       calc: 'Berechnung',
-      theme: 'Darstellung',
+      theme: 'Theme',
       language: 'Sprache',
       links: 'Verweise',
+      notifications: 'Meldungen',
       data: 'Daten',
       status: 'Status',
     },
+    triggerHeading: 'Auslöser',
+    trigger: {
+      bands: 'Toleranzbänder',
+      calendar: 'Fester Termin',
+      both: 'Bänder und Termin',
+    },
+    triggerHint: {
+      bands: 'Ausgleich, sobald ein Anteil sein Band verlässt — laufend, ohne Kalender.',
+      calendar: 'Ausgleich nur zum Termin, dann aber jede Abweichung vom Ziel.',
+      both: 'Bänder gelten laufend; der Termin nimmt zusätzlich die kleineren Abweichungen mit.',
+    },
+    intervalMonths: 'Abstand (Monate)',
+    intervalHint: '12 = jährlich, 6 = halbjährlich, 3 = quartalsweise.',
+    lastRebalanced: 'Zuletzt ausgeglichen ({depot})',
+    markToday: 'Heute',
+    neverRebalanced: 'Noch nie ausgeglichen — der Termin gilt als fällig.',
+    dueSince: 'Seit {days} Tagen fällig.',
+    dueIn: 'Noch {days} Tage — nächster Termin {date}.',
     bandsHeading: 'Toleranzbänder',
     lowerHint: 'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Kaufen.',
     upperHint: 'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Verkaufen.',
-    metricsHeading: 'Kennzahlen',
+    metricsHeading: 'Liquidität',
     securityBuffer: 'Sicherheitspuffer',
+    minTradeSize: 'Mindest-Handelsvolumen',
+    minTradeUnset: 'Aus — jede Abweichung außerhalb des Bandes wird gemeldet.',
     bufferPercent: '% vom Gesamtwert',
     bufferAbsolute: 'Fester Betrag (€)',
     bufferUnset: 'Nicht festgelegt — die ganze Liquidität gilt als Reserve.',
     bufferEquals: 'Entspricht derzeit {amount}.',
+    notificationsHeading: 'Anzeigedauer',
     notificationSeconds: 'Meldungen ausblenden nach (s)',
     notificationKeep: 'Bleiben stehen, bis die Ursache behoben ist oder du sie wegklickst.',
     notificationAuto: 'Blenden sich selbst aus — früher, wenn die Ursache vorher wegfällt.',
@@ -305,6 +329,8 @@ export const de = {
     assetClasses: 'Assetklassen',
     targetDistribution: 'Ziel-Verteilung',
     bands: 'Bänder: −{lower} / +{upper}',
+    scheduleDue: 'Termin fällig',
+    scheduleNext: 'Nächster Termin {date}',
     emptyTitle: 'Noch keine Wertpapiere im Depot',
     emptyHint: 'Lege deine erste Position an — oder lade ein Beispiel-Depot, um die App auszuprobieren.',
     loadDemo: 'Beispiel-Depot laden',
@@ -379,6 +405,7 @@ export const de = {
     title: 'Die Methode',
     intro:
       'Diese Seite erklärt, wonach die App rechnet. Sie ist zum Nachschlagen da — die App lässt sich auch ohne sie bedienen.',
+    openSetting: 'Zur Einstellung →',
     more: 'Mehr dazu →',
 
     bandsHeading: 'Toleranzbänder',
@@ -394,6 +421,21 @@ export const de = {
       'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben. Ein gefallener Anteil bedeutet, dass man günstig nachkaufen kann; ein gestiegener bedeutet nur, dass etwas gut gelaufen ist.',
     bandsBody4:
       'Der Unterschied zum verbreiteten Kalender-Rebalancing: Dort schichtet man zu festen Terminen um, unabhängig davon, ob es nötig ist. Nach Bändern geschieht es, wenn es etwas zu tun gibt — in ruhigen Jahren gar nicht, in bewegten mehrmals.',
+
+    bandsMinTrade:
+      'Dass die Bänder relativ zum Ziel gelten, hat eine Kehrseite. Es löst zwar die Blindheit bei kleinen Positionen — 6 % von 2 % sind 6 % von 2 %, egal wie klein der Anteil ist —, macht sie in Euro aber überempfindlich: Bei einem Depot von 100.000 € meldet sich ein Ziel von 2 % schon bei 120 € Abweichung. Für diesen Betrag lohnt keine Order; die Gebühr frisst den Nutzen.',
+    bandsMinTrade2:
+      'Dagegen steht das Mindest-Handelsvolumen in den Einstellungen. Liegt eine Position außerhalb ihres Bandes, ist die fehlende Summe aber kleiner als diese Grenze, bleibt der Status auf „OK" und die Zeile bekommt ein kleines „min". Die Abweichung verschwindet nicht — sie steht weiter in der Delta-Spalte —, nur das Handlungssignal unterbleibt. Vorgabe ist 0, also aus.',
+
+    triggerHeading: 'Bänder, Termin — oder beides',
+    triggerBody:
+      'Die App kennt drei Auslöser. „Toleranzbänder" ist das oben Beschriebene: Es geschieht etwas, wenn etwas zu tun ist. „Fester Termin" ist das verbreitete Kalender-Rebalancing: einmal im Jahr, unabhängig davon, wie die Anteile stehen — dafür dann jede Abweichung, nicht nur die großen.',
+    triggerBody2:
+      'Reines Kalender-Rebalancing hat eine bekannte Schwäche: Bricht der Markt im März ein, verschiebt sich die Aufteilung sofort, der Termin aber liegt im Dezember. Neun Monate lang passiert nichts. Umgekehrt kann ein Jahr so ruhig verlaufen, dass am Termin nur Rundungsreste umzuschichten wären.',
+    triggerBody3:
+      'Deshalb die dritte Möglichkeit, „Bänder und Termin": Die Bänder laufen weiter und melden jede grobe Verschiebung sofort; der Termin ist ein zusätzlicher Anlass, bei dem auch die kleineren Abweichungen mitgenommen werden. Das Mindest-Handelsvolumen wirkt dabei weiter — am Stichtag stünde sonst hinter jedem Rundungsrest ein Auftrag.',
+    triggerBody4:
+      'Der Termin hängt am Depot, nicht an den Einstellungen: Jedes Depot hat sein eigenes Datum des letzten Ausgleichs. Gesetzt wird es von Hand — ob eine Order tatsächlich ausgeführt wurde, weiß nur, wer sie aufgegeben hat.',
 
     classesHeading: 'Fünf Assetklassen',
     classesBody:
@@ -431,10 +473,16 @@ export const de = {
       'Geldmarkt und Cash abzüglich Sicherheitspuffer. Sagt, wie viel bei einem Rückgang höchstens eingesetzt werden könnte — nicht, wie viel eingesetzt werden soll.',
     securityBuffer:
       'Der Betrag, der unangetastet bleiben soll — ein Notgroschen, kein Anlagebetrag. Wählbar als fester Betrag oder als Anteil am Gesamtwert.',
+    trigger:
+      'Woran sich der Ausgleich entscheidet: laufend an den Bändern, an einem festen Termin, oder an beidem. Reines Kalender-Rebalancing lässt einen Einbruch im März bis zum Jahresende unbeachtet.',
+    minTradeSize:
+      'Kleinster Betrag, für den sich eine Order lohnt. Bleibt eine Abweichung darunter, meldet die Position keinen Handlungsbedarf — sichtbar bleibt sie trotzdem. 0 schaltet die Grenze ab.',
     delta:
       'Abweichung vom Ziel, relativ zum Ziel selbst: −10 % heißt „ein Zehntel unter dem Zielwert", nicht „zehn Prozentpunkte". Die Farbe zeigt, ob die Position im Band liegt.',
     coverFrom:
       'Jeder Euro, der gekauft wird, muss sichtbar herkommen. Der Vorschlag nennt die Stückzahl, mit der Cash oder Geldmarkt die offene Lücke schließt.',
+    historyPeriod:
+      'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
     moneymarket:
       'Geldmarktnahe Papiere schwanken kaum und zählen deshalb zusammen mit Cash zur verfügbaren Liquidität. Laufzeit-Anleihen tun das nicht.',
   },

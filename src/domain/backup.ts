@@ -250,6 +250,9 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
     name: value.name,
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
+    // Der letzte Ausgleich gehört zum Depot: Ohne ihn stünde ein
+    // wiederhergestelltes Depot beim Kalender-Rebalancing sofort auf „fällig".
+    lastRebalancedAt: typeof value.lastRebalancedAt === 'string' ? value.lastRebalancedAt : null,
     positions,
   }
 }

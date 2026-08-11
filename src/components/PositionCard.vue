@@ -6,7 +6,6 @@ import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { assetColor } from '@/domain/assetColors'
 import { eur, eurCent, integer, percent } from '@/domain/formatters'
 import type { PositionResult } from '@/domain/rebalancing'
-import type { Bands } from '@/types/portfolio'
 
 /**
  * Eine Position als Karte — die Mobilansicht.
@@ -18,7 +17,6 @@ import type { Bands } from '@/types/portfolio'
  */
 const props = defineProps<{
   row: PositionResult
-  bands: Bands
 }>()
 
 const { t } = useI18n()
@@ -64,6 +62,7 @@ const title = computed(() =>
         v-if="row.isActive"
         :suggestion="row.suggestion"
         :near="row.isNearBand"
+        :below-min-trade="row.belowMinTrade"
         class="shrink-0"
       />
       <span v-else class="text-xs text-ink-muted shrink-0">{{ t('currency.notCounted') }}</span>
@@ -94,7 +93,8 @@ const title = computed(() =>
     <DeltaBar
       v-if="row.isActive"
       :relative-percent="row.relativeDeltaPercent"
-      :bands="bands"
+      :suggestion="row.suggestion"
+      :near="row.isNearBand"
       compact
     />
   </article>

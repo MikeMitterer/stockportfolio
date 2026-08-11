@@ -12,7 +12,7 @@ import InlineNumber from '@/components/InlineNumber.vue'
 import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
-import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
+import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 import { useHistoryStore, type HistorySeries } from '@/stores/history'
 import { HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
 import { useSettingsStore } from '@/stores/settings'
@@ -23,7 +23,6 @@ type RowKey = string | number
 const props = defineProps<{
   rows: PositionResult[]
   groups: GroupResult[]
-  bands: Bands
   total: number
   /** Summe der Ziel-Anteile über 100 % — färbt die Ziel-Spalte ein. */
   targetsExceeded: boolean
@@ -155,7 +154,6 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       h(PositionDrilldown, {
         row,
         total: props.total,
-        bands: props.bands,
         links: props.links,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
         onRemove: (id: string) => emit('remove', id),
@@ -252,7 +250,13 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     // Der Zeitraum gehört in den Kopf, nicht in jede Zeile: einmal genannt,
     // kostet er keinen Platz in den Zeilen.
-    title: () => t('history.columnTitle', { period: periodLabel.value }),
+    // Der Zeitraum steht in den Einstellungen — ohne Verweis sucht man ihn
+    // dort, wo die Spalte ist.
+    title: () =>
+      h('span', { class: 'inline-flex items-center gap-1' }, [
+        t('history.columnTitle', { period: periodLabel.value }),
+        h(InfoHint, { text: t('hints.historyPeriod'), settingsTab: 'data' }),
+      ]),
     key: 'history',
     // Schmal gehalten: Die Spalte ist eine Zugabe, keine Hauptzahl — sie darf
     // dem Delta und dem Status keinen Platz wegnehmen.
@@ -321,13 +325,17 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     title: () =>
       h('span', { class: 'inline-flex items-center gap-1' }, [
         t('table.delta'),
-        h(InfoHint, { text: t('hints.delta'), anchor: 'bands' }),
+        h(InfoHint, { text: t('hints.delta'), anchor: 'bands', settingsTab: 'calc' }),
       ]),
     key: 'delta',
     width: 150,
     render: (row) =>
       row.isActive
-        ? h(DeltaBar, { relativePercent: row.relativeDeltaPercent, bands: props.bands })
+        ? h(DeltaBar, {
+            relativePercent: row.relativeDeltaPercent,
+            suggestion: row.suggestion,
+            near: row.isNearBand,
+          })
         : h('span', { class: 'text-ink-muted text-xs' }, '—'),
   },
   {
@@ -339,7 +347,11 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     width: 130,
     render: (row) => {
       if (row.isActive) {
-        return h(SuggestionBadge, { suggestion: row.suggestion, near: row.isNearBand })
+        return h(SuggestionBadge, {
+          suggestion: row.suggestion,
+          near: row.isNearBand,
+          belowMinTrade: row.belowMinTrade,
+        })
       }
       return h(
         'span',

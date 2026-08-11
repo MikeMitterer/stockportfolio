@@ -1,21 +1,33 @@
 <script setup lang="ts">
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import {
   NButton,
   NButtonGroup,
   NCard,
+  NDatePicker,
   NInputNumber,
-  NSelect,
+  NRadio,
+  NRadioGroup,
+  NSpace,
   NTabPane,
   NTabs,
 } from 'naive-ui'
 import BackupPanel from '@/components/BackupPanel.vue'
+import AmountSettingField from '@/components/AmountSettingField.vue'
 import InfoHint from '@/components/InfoHint.vue'
 import PortfolioManager from '@/components/PortfolioManager.vue'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
-import { eur } from '@/domain/formatters'
-import { computeRebalancing, resolveSecurityBuffer } from '@/domain/rebalancing'
+import { shortDate } from '@/domain/formatters'
+import { computeRebalancing } from '@/domain/rebalancing'
+import {
+  REBALANCING_TRIGGERS,
+  daysUntilDue,
+  nextDueDate,
+  usesBands,
+  usesCalendar,
+} from '@/domain/schedule'
 import { useSettingsStore } from '@/stores/settings'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
@@ -23,13 +35,18 @@ import { useInstrumentsStore } from '@/stores/instruments'
 import { useThemeStore } from '@/stores/theme'
 import { LOCALE_IDS, LOCALES, useLocaleStore } from '@/stores/locale'
 import { HISTORY_PERIODS, HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
-import type { HistoryPeriod } from '@/types/portfolio'
+import type { AmountSetting, HistoryPeriod, RebalancingTrigger } from '@/types/portfolio'
 import { THEME_IDS, THEMES } from '@/theme/themes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+
+/** Namen der Reiter — Reihenfolge wie in der Anzeige. */
+const SETTINGS_TABS = ['calc', 'links', 'theme', 'data', 'notifications', 'language', 'status']
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
@@ -55,6 +72,72 @@ onMounted(async () => {
   await api.check(client)
 })
 
+const triggerOptions = computed(() =>
+  REBALANCING_TRIGGERS.map((value) => ({
+    value,
+    label: t(`settings.trigger.${value}`),
+    hint: t(`settings.triggerHint.${value}`),
+  })),
+)
+
+const bandsActive = computed(() => usesBands(settingsStore.settings.rebalancing.trigger))
+const calendarActive = computed(() => usesCalendar(settingsStore.settings.rebalancing.trigger))
+
+/** Das Datumsfeld arbeitet mit Zeitstempeln, gespeichert wird ein ISO-Datum. */
+const lastRebalancedStamp = computed(() => {
+  const stored = portfolioStore.portfolio?.lastRebalancedAt
+  if (!stored) return null
+  const parsed = new Date(stored)
+  return Number.isNaN(parsed.getTime()) ? null : parsed.getTime()
+})
+
+/** Wann der nächste Termin ansteht — oder dass noch nie ausgeglichen wurde. */
+const scheduleHint = computed(() => {
+  const stored = portfolioStore.portfolio?.lastRebalancedAt ?? null
+  const months = settingsStore.settings.rebalancing.intervalMonths
+  const days = daysUntilDue(stored, months, new Date())
+  if (days === null) return t('settings.neverRebalanced')
+  if (days <= 0) return t('settings.dueSince', { days: Math.abs(days) })
+  return t('settings.dueIn', { days, date: shortDate(nextDueDate(stored, months)) })
+})
+
+async function setTrigger(trigger: RebalancingTrigger): Promise<void> {
+  await settingsStore.patch({
+    rebalancing: { ...settingsStore.settings.rebalancing, trigger },
+  })
+}
+
+async function setIntervalMonths(value: number | null): Promise<void> {
+  if (value === null) return
+  await settingsStore.patch({
+    rebalancing: { ...settingsStore.settings.rebalancing, intervalMonths: value },
+  })
+}
+
+async function setLastRebalanced(stamp: number | null): Promise<void> {
+  await portfolioStore.markRebalanced(stamp === null ? null : new Date(stamp).toISOString())
+}
+
+async function markToday(): Promise<void> {
+  await portfolioStore.markRebalanced(new Date().toISOString())
+}
+
+/**
+ * Angezeigter Reiter — aus der Adresse, mit „Berechnung" als Rückfallwert.
+ *
+ * Ein unbekannter Name in der Adresse landet ebenfalls dort: Ein leerer
+ * Inhaltsbereich wäre die schlechtere Antwort auf einen Tippfehler.
+ */
+const activeTab = computed(() => {
+  const requested = route.query.tab
+  const name = Array.isArray(requested) ? requested[0] : requested
+  return typeof name === 'string' && SETTINGS_TABS.includes(name) ? name : 'calc'
+})
+
+function setTab(name: string): void {
+  void router.replace({ path: '/settings', query: { tab: name } })
+}
+
 async function setLowerBand(value: number | null): Promise<void> {
   if (value === null) return
   await settingsStore.setBands({ ...settingsStore.settings.bands, lowerPercent: value })
@@ -65,46 +148,13 @@ async function setUpperBand(value: number | null): Promise<void> {
   await settingsStore.setBands({ ...settingsStore.settings.bands, upperPercent: value })
 }
 
-async function setSecurityBufferValue(value: number | null): Promise<void> {
-  if (value === null) return
-  await settingsStore.patch({
-    securityBuffer: { ...settingsStore.settings.securityBuffer, value },
-  })
+async function setSecurityBuffer(securityBuffer: AmountSetting): Promise<void> {
+  await settingsStore.patch({ securityBuffer })
 }
 
-/**
- * Wechselt die Einheit und rechnet den Wert um.
- *
- * Die Zahl unverändert stehen zu lassen wäre falsch: Aus 170.000 € würden
- * 170.000 % — ein Wert, den niemand gemeint hat. Umgerechnet bleibt der Puffer
- * im Moment des Wechsels derselbe Betrag und skaliert ab dann mit dem Depot.
- */
-async function setSecurityBufferMode(mode: 'percent' | 'absolute'): Promise<void> {
-  const current = settingsStore.settings.securityBuffer
-  if (current.mode === mode) return
-
-  const euro = resolveSecurityBuffer(current, total.value)
-  const value =
-    mode === 'percent'
-      // Ohne Gesamtvermögen gibt es keinen Bezug — dann lieber zurück auf null
-      // als eine Division durch null.
-      ? total.value > 0
-        ? Number(((euro * 100) / total.value).toFixed(2))
-        : 0
-      : Math.round(euro)
-
-  await settingsStore.patch({ securityBuffer: { mode, value } })
+async function setMinTradeSize(minTradeSize: AmountSetting): Promise<void> {
+  await settingsStore.patch({ minTradeSize })
 }
-
-const bufferModeOptions = computed(() => [
-  { label: t('settings.bufferPercent'), value: 'percent' as const },
-  { label: t('settings.bufferAbsolute'), value: 'absolute' as const },
-])
-
-/** Puffer in Euro — bei Prozent-Modus aus dem aktuellen Gesamtwert. */
-const securityBufferEuro = computed(() =>
-  resolveSecurityBuffer(settingsStore.settings.securityBuffer, total.value),
-)
 
 async function setHistoryPeriod(value: HistoryPeriod): Promise<void> {
   await settingsStore.patch({ ui: { ...settingsStore.settings.ui, historyPeriod: value } })
@@ -147,22 +197,102 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       nichts miteinander zu tun; untereinander ergaben sie eine lange Seite,
       auf der man scrollen musste, um überhaupt zu sehen, was es gibt.
     -->
-    <NTabs type="line" animated>
+    <!--
+      Der Reiter steht in der Adresse: Nur so kann ein Hinweis anderswo in der
+      App auf die zugehörige Einstellung verweisen, statt „ist irgendwo in den
+      Einstellungen" zu sagen.
+    -->
+    <NTabs type="line" animated :value="activeTab" @update:value="setTab">
       <NTabPane name="calc" :tab="t('settings.tabs.calc')">
-        <!-- Zwei Spalten: beide Karten sind schmal, nebeneinander spart Höhe. -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+        <!--
+          Zwei Spalten, aber in Lesereihenfolge: Auslöser, dann die Grenzen,
+          die er verwendet, dann die Liquidität. Über die volle Breite stünde
+          neben dem Auslöser nur Leere.
+        -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <!--
+              Der Auslöser steht über den Bändern, weil er bestimmt, ob sie
+              überhaupt gelten. Umgekehrt gelesen ergäbe die Seite keinen Sinn.
+            -->
+          <NCard :bordered="false" class="!bg-card mb-4">
+            <template #header>
+              <span class="inline-flex items-center gap-1.5 text-sm font-medium">
+                {{ t('settings.triggerHeading') }}
+                <InfoHint :text="t('hints.trigger')" anchor="trigger" />
+              </span>
+            </template>
+
+            <div class="flex flex-col gap-4">
+              <NRadioGroup
+                :value="settingsStore.settings.rebalancing.trigger"
+                @update:value="setTrigger"
+              >
+                <NSpace vertical>
+                  <NRadio
+                    v-for="option in triggerOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    <span class="text-sm">{{ option.label }}</span>
+                    <span class="block text-xs text-ink-muted">{{ option.hint }}</span>
+                  </NRadio>
+                </NSpace>
+              </NRadioGroup>
+
+              <!--
+                  Termin und Datum nur, wenn ein Kalender im Spiel ist — sonst
+                  stünden hier Felder, die auf nichts wirken.
+                -->
+              <div v-if="calendarActive" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <label class="flex flex-col gap-1 text-sm">
+                  <span class="text-ink-muted">{{ t('settings.intervalMonths') }}</span>
+                  <NInputNumber
+                    :value="settingsStore.settings.rebalancing.intervalMonths"
+                    :min="1"
+                    :max="120"
+                    :step="1"
+                    @update:value="setIntervalMonths"
+                  />
+                  <span class="text-xs text-ink-muted">{{ t('settings.intervalHint') }}</span>
+                </label>
+
+                <label class="flex flex-col gap-1 text-sm">
+                  <span class="text-ink-muted">
+                    {{
+                      t('settings.lastRebalanced', {
+                        depot: portfolioStore.portfolio?.name ?? '',
+                      })
+                    }}
+                  </span>
+                  <div class="flex gap-2">
+                    <NDatePicker
+                      class="flex-1"
+                      type="date"
+                      clearable
+                      :value="lastRebalancedStamp"
+                      @update:value="setLastRebalanced"
+                    />
+                    <NButton secondary @click="markToday">{{ t('settings.markToday') }}</NButton>
+                  </div>
+                  <span class="text-xs text-ink-muted">{{ scheduleHint }}</span>
+                </label>
+              </div>
+            </div>
+          </NCard>
+
           <NCard :bordered="false" class="!bg-card">
             <template #header>
               <span class="inline-flex items-center gap-1.5 text-sm font-medium">
-              {{ t('settings.bandsHeading') }}
-              <InfoHint :text="t('hints.bands')" anchor="bands" />
-            </span>
+                {{ t('settings.bandsHeading') }}
+                <InfoHint :text="t('hints.bands')" anchor="bands" />
+              </span>
             </template>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <label class="flex flex-col gap-1 text-sm">
                 <span class="text-ink-muted">{{ t('bands.lower') }} (%)</span>
                 <NInputNumber
+                  :disabled="!bandsActive"
                   :value="settingsStore.settings.bands.lowerPercent"
                   :min="0"
                   :max="100"
@@ -178,6 +308,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               <label class="flex flex-col gap-1 text-sm">
                 <span class="text-ink-muted">{{ t('bands.upper') }} (%)</span>
                 <NInputNumber
+                  :disabled="!bandsActive"
                   :value="settingsStore.settings.bands.upperPercent"
                   :min="0"
                   :max="100"
@@ -190,6 +321,26 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                 </span>
               </label>
             </div>
+
+            <div class="mt-6">
+              <!--
+                  Bänder sind relativ zum Ziel — das löst zwar die Blindheit bei
+                kleinen Positionen, macht sie aber in Euro überempfindlich: Ein
+                Ziel von 2 % mit 6 % Band meldet sich bei 120 €. Dafür lohnt
+                keine Order. Die Mindestgröße zieht darunter eine Grenze; die
+                Abweichung bleibt sichtbar, nur das Signal unterbleibt.
+              -->
+              <AmountSettingField
+                :label="t('settings.minTradeSize')"
+                :setting="settingsStore.settings.minTradeSize"
+                :total="total"
+                :hint="t('hints.minTradeSize')"
+                anchor="bands"
+                :zero-hint="t('settings.minTradeUnset')"
+                :absolute-step="100"
+                @update="setMinTradeSize"
+              />
+            </div>
           </NCard>
 
           <NCard :bordered="false" class="!bg-card">
@@ -199,65 +350,20 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
             <div class="grid grid-cols-1 gap-6">
               <!--
-              Zwei Lesarten des Puffers, beide gültig: ein Notgroschen ist ein
-              fester Betrag und wächst nicht mit dem Depot; ein Liquiditätsanteil
-              ist ein Prozentsatz. Statt eine Auslegung zu erzwingen, steht die
-              Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
-            -->
-              <label class="flex flex-col gap-1 text-sm">
-                <span class="inline-flex items-center gap-1.5 text-ink-muted">
-              {{ t('settings.securityBuffer') }}
-              <InfoHint :text="t('hints.securityBuffer')" anchor="reserve" />
-            </span>
-                <div class="flex gap-2">
-                  <NInputNumber
-                    class="flex-1"
-                    :value="settingsStore.settings.securityBuffer.value"
-                    :min="0"
-                    :step="settingsStore.settings.securityBuffer.mode === 'percent' ? 1 : 1000"
-                    @update:value="setSecurityBufferValue"
-                  />
-                  <NSelect
-                    class="w-44 shrink-0"
-                    :value="settingsStore.settings.securityBuffer.mode"
-                    :options="bufferModeOptions"
-                    @update:value="setSecurityBufferMode"
-                  />
-                </div>
-                <span class="text-xs text-ink-muted">
-                  <template v-if="settingsStore.settings.securityBuffer.value === 0">
-                    {{ t('settings.bufferUnset') }}
-                  </template>
-                  <template v-else>
-                    {{ t('settings.bufferEquals', { amount: eur(securityBufferEuro) }) }}
-                  </template>
-                </span>
-              </label>
-
-              <!--
-              Meldungen sind Zustände, keine Ereignisse: Sie verschwinden ohnehin,
-              sobald ihre Ursache behoben ist. Der Zähler beendet nur das Warten
-              darauf — beim Eintippen von Stückzahlen stand sonst dauerhaft ein
-              Kasten im Weg.
-            -->
-              <label class="flex flex-col gap-1 text-sm">
-                <span class="text-ink-muted">{{ t('settings.notificationSeconds') }}</span>
-                <NInputNumber
-                  :value="settingsStore.settings.ui.notificationSeconds"
-                  :min="0"
-                  :max="120"
-                  :step="1"
-                  @update:value="setNotificationSeconds"
-                />
-                <span class="text-xs text-ink-muted">
-                  <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
-                    {{ t('settings.notificationKeep') }}
-                  </template>
-                  <template v-else>
-                    {{ t('settings.notificationAuto') }}
-                  </template>
-                </span>
-              </label>
+                Zwei Lesarten des Puffers, beide gültig: ein Notgroschen ist ein
+                fester Betrag und wächst nicht mit dem Depot; ein Liquiditätsanteil
+                ist ein Prozentsatz. Statt eine Auslegung zu erzwingen, steht die
+                Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
+              -->
+              <AmountSettingField
+                :label="t('settings.securityBuffer')"
+                :setting="settingsStore.settings.securityBuffer"
+                :total="total"
+                :hint="t('hints.securityBuffer')"
+                anchor="reserve"
+                :zero-hint="t('settings.bufferUnset')"
+                @update="setSecurityBuffer"
+              />
             </div>
           </NCard>
         </div>
@@ -335,29 +441,6 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             </button>
           </div>
         </NCard>
-
-        <NCard :bordered="false" class="!bg-card mt-4">
-          <template #header>
-            <span class="text-sm font-medium">{{ t('history.periodHeading') }}</span>
-          </template>
-
-          <div class="flex flex-col gap-2">
-            <NButtonGroup size="small">
-              <NButton
-                v-for="entry in historyPeriods"
-                :key="entry.id"
-                :type="entry.id === settingsStore.settings.ui.historyPeriod ? 'primary' : 'default'"
-                :secondary="entry.id !== settingsStore.settings.ui.historyPeriod"
-                @click="setHistoryPeriod(entry.id)"
-              >
-                {{ t(`history.periodNames.${entry.id}`) }}
-              </NButton>
-            </NButtonGroup>
-            <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
-              {{ t('history.periodHint') }}
-            </span>
-          </div>
-        </NCard>
       </NTabPane>
 
       <NTabPane name="data" :tab="t('settings.tabs.data')">
@@ -372,12 +455,72 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
           <NCard :bordered="false" class="!bg-card">
             <template #header>
+              <span class="text-sm font-medium">{{ t('history.periodHeading') }}</span>
+            </template>
+
+            <div class="flex flex-col gap-2">
+              <NButtonGroup size="small">
+                <NButton
+                  v-for="entry in historyPeriods"
+                  :key="entry.id"
+                  :type="
+                    entry.id === settingsStore.settings.ui.historyPeriod ? 'primary' : 'default'
+                  "
+                  :secondary="entry.id !== settingsStore.settings.ui.historyPeriod"
+                  @click="setHistoryPeriod(entry.id)"
+                >
+                  {{ t(`history.periodNames.${entry.id}`) }}
+                </NButton>
+              </NButtonGroup>
+              <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
+                {{ t('history.periodHint') }}
+              </span>
+            </div>
+          </NCard>
+
+          <NCard :bordered="false" class="!bg-card">
+            <template #header>
               <span class="text-sm font-medium">{{ t('backup.heading') }}</span>
             </template>
 
             <BackupPanel />
           </NCard>
         </div>
+      </NTabPane>
+
+      <NTabPane name="notifications" :tab="t('settings.tabs.notifications')">
+        <NCard :bordered="false" class="!bg-card">
+          <template #header>
+            <span class="text-sm font-medium">{{ t('settings.notificationsHeading') }}</span>
+          </template>
+
+          <div class="max-w-md">
+            <!--
+              Meldungen sind Zustände, keine Ereignisse: Sie verschwinden ohnehin,
+              sobald ihre Ursache behoben ist. Der Zähler beendet nur das Warten
+              darauf — beim Eintippen von Stückzahlen stand sonst dauerhaft ein
+              Kasten im Weg.
+            -->
+            <label class="flex flex-col gap-1 text-sm">
+              <span class="text-ink-muted">{{ t('settings.notificationSeconds') }}</span>
+              <NInputNumber
+                :value="settingsStore.settings.ui.notificationSeconds"
+                :min="0"
+                :max="120"
+                :step="1"
+                @update:value="setNotificationSeconds"
+              />
+              <span class="text-xs text-ink-muted">
+                <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
+                  {{ t('settings.notificationKeep') }}
+                </template>
+                <template v-else>
+                  {{ t('settings.notificationAuto') }}
+                </template>
+              </span>
+            </label>
+          </div>
+        </NCard>
       </NTabPane>
 
       <NTabPane name="language" :tab="t('settings.tabs.language')">
@@ -473,7 +616,9 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
             <template v-if="api.latencyMs !== null">
               <dt class="text-ink-muted">{{ t('settings.apiLatency') }}</dt>
-              <dd class="tabular-nums">{{ t('settings.apiLatencyUnit', { ms: api.latencyMs }) }}</dd>
+              <dd class="tabular-nums">
+                {{ t('settings.apiLatencyUnit', { ms: api.latencyMs }) }}
+              </dd>
             </template>
 
             <template v-if="api.checkedAt">

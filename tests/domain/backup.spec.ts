@@ -139,6 +139,33 @@ describe('parseBackup — der gute Fall', () => {
     expect(result.backup.portfolio.positions).toEqual(portfolio.positions)
   })
 
+  it('rettet den letzten Ausgleich mit hinüber', () => {
+    // Ohne ihn stünde ein wiederhergestelltes Depot beim Kalender-Rebalancing
+    // sofort auf „fällig" — und man hielte das für einen Rechenfehler.
+    const portfolio = { ...makePortfolio(), lastRebalancedAt: '2026-03-01T00:00:00.000Z' }
+    const raw = JSON.stringify(
+      buildBackup(
+        portfolio,
+        defaultSettings('depot-1'),
+        makeAllowlist(),
+        '0.1.0',
+        '2026-08-10T18:00:00.000Z',
+      ),
+    )
+
+    const result = parseBackup(raw)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.portfolio.lastRebalancedAt).toBe('2026-03-01T00:00:00.000Z')
+  })
+
+  it('nimmt eine Sicherung ohne diesen Vermerk an', () => {
+    const result = parseBackup(validRaw())
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.portfolio.lastRebalancedAt).toBeNull()
+  })
+
   it('nimmt eine ältere Format-Fassung an', () => {
     const result = parseBackup(validRaw((data) => (data.schemaVersion = BACKUP_SCHEMA_VERSION - 1)))
     expect(result.ok).toBe(true)

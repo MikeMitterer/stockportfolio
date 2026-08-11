@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { percentSigned } from '@/domain/formatters'
-import type { Bands } from '@/types/portfolio'
+import type { Suggestion } from '@/types/portfolio'
 
 /**
  * Divergierender Balken um die 0-%-Linie (= Ziel).
@@ -14,7 +14,17 @@ import type { Bands } from '@/types/portfolio'
  */
 const props = defineProps<{
   relativePercent: number
-  bands: Bands
+  /**
+   * Status der Zeile — bestimmt die Farbe der Füllung.
+   *
+   * Vorher rechnete der Balken sich das aus den Bändern selbst aus. Dieselbe
+   * Regel stand damit an zwei Stellen, und beim Kalender-Rebalancing wäre die
+   * hiesige schlicht falsch: Dort gibt es kein laufendes Band, aber sehr wohl
+   * einen Handlungsbedarf.
+   */
+  suggestion: Suggestion
+  /** Knapp vor der Bandgrenze — gedämpfte Warnfarbe statt Grün. */
+  near?: boolean
   compact?: boolean
   /** Ersetzt die Delta-Zahl rechts, etwa durch den Anteil am Gesamtvermögen. */
   label?: string
@@ -28,13 +38,8 @@ const halfWidth = computed(() => `${(magnitude.value * 50).toFixed(2)}%`)
 const isPositive = computed(() => clipped.value >= 0)
 
 const state = computed<'ok' | 'near' | 'out'>(() => {
-  const delta = props.relativePercent
-  const lower = -props.bands.lowerPercent
-  const upper = props.bands.upperPercent
-  if (delta < lower || delta > upper) return 'out'
-  const nearThreshold = 1
-  if (delta > upper - nearThreshold || delta < lower + nearThreshold) return 'near'
-  return 'ok'
+  if (props.suggestion !== 'ok') return 'out'
+  return props.near ? 'near' : 'ok'
 })
 
 // Statusfarben, nicht Klassenfarben: hier geht es um „im Band / nahe / draußen",

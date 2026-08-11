@@ -62,7 +62,7 @@ const targetPosition = computed(() => ({
       </span>
     </div>
     <div class="w-28 flex justify-start">
-      <SuggestionBadge :suggestion="group.suggestion" />
+      <SuggestionBadge :suggestion="group.suggestion" :below-min-trade="group.belowMinTrade" />
     </div>
   </div>
 </template>

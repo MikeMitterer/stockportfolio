@@ -58,3 +58,6 @@ docker/logs/
 .cache/
 .eslintcache
 .stylelintcache
+
+# Claude Code (lokale Werkzeug-Konfiguration)
+.claude/

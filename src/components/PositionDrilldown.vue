@@ -23,12 +23,11 @@ import { resolveKind, resolveLinks } from '@/domain/links'
 import PriceChart from '@/components/PriceChart.vue'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { PositionResult } from '@/domain/rebalancing'
-import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
+import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 
 const props = defineProps<{
   row: PositionResult
   total: number
-  bands: Bands
   links: ExternalLink[]
 }>()
 

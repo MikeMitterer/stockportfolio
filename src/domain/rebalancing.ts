@@ -5,9 +5,11 @@
  * Kein DOM, kein Reactivity, keine API — vollständig unit-testbar.
  */
 
+import { resolveAmount } from './amount'
+import { daysUntilDue, isDue, usesBands, usesCalendar } from './schedule'
 import type {
-  SecurityBuffer,
   AssetGroup,
+  RebalancingTrigger,
   Bands,
   Portfolio,
   Position,
@@ -181,6 +183,69 @@ export function isNearBand(actualEur: number, low: number, high: number, target:
 // Aggregator
 // ────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Unterdrückt ein Signal, für das sich keine Order lohnt.
+ *
+ * Relative Bänder machen kleine Positionen empfindlich — das ist ihr Zweck,
+ * sonst wären sie nie an der Reihe. In Euro gerechnet kippt derselbe Vorzug
+ * aber: Ein Ziel von 2 % gibt bei einem Band von 6 % schon bei 120 € ein
+ * Signal, und dafür lohnt keine Order. Wer solchen Signalen nicht folgt,
+ * gewöhnt sich an, Signale zu übergehen — das ist schlimmer als keines.
+ *
+ * Die Abweichung bleibt sichtbar; nur der Handlungsbedarf entfällt.
+ *
+ * @param suggestion Ergebnis des Bandvergleichs.
+ * @param deltaEuro  Abstand zum Zielwert in Euro (Vorzeichen egal).
+ * @param minTrade   Mindestbetrag; `0` schaltet die Prüfung ab.
+ */
+export function applyMinTrade(
+  suggestion: Suggestion,
+  deltaEuro: number,
+  minTrade: number,
+): { suggestion: Suggestion; belowMinTrade: boolean } {
+  if (suggestion === 'ok' || minTrade <= 0) return { suggestion, belowMinTrade: false }
+  if (Math.abs(deltaEuro) >= minTrade) return { suggestion, belowMinTrade: false }
+  return { suggestion: 'ok', belowMinTrade: true }
+}
+
+/**
+ * Urteil ohne Band: Am Termin zählt jede Abweichung vom Ziel.
+ *
+ * @param marketValue Aktueller Marktwert.
+ * @param target      Zielwert in Euro.
+ */
+export function calendarSuggestion(marketValue: number, target: number): Suggestion {
+  if (marketValue < target) return 'buy'
+  if (marketValue > target) return 'sell'
+  return 'ok'
+}
+
+/**
+ * Führt Band- und Terminurteil zusammen.
+ *
+ * Bei `both` gilt beides nebeneinander: Das Band meldet laufend, der Termin
+ * nimmt zusätzlich die kleineren Abweichungen mit. Vorrang hat das Band —
+ * es ist die schärfere Aussage und war zuerst da.
+ *
+ * @param bandVerdict Urteil aus den Toleranzbändern.
+ * @param trigger     Eingestellter Auslöser.
+ * @param due         Ist der Termin erreicht?
+ * @param marketValue Aktueller Marktwert.
+ * @param target      Zielwert in Euro.
+ */
+export function combineSuggestion(
+  bandVerdict: Suggestion,
+  trigger: RebalancingTrigger,
+  due: boolean,
+  marketValue: number,
+  target: number,
+): Suggestion {
+  const fromBands = usesBands(trigger) ? bandVerdict : 'ok'
+  if (fromBands !== 'ok') return fromBands
+  if (usesCalendar(trigger) && due) return calendarSuggestion(marketValue, target)
+  return 'ok'
+}
+
 export interface PositionResult {
   position: Position
   quote: QuoteCacheEntry | null
@@ -209,10 +274,17 @@ export interface PositionResult {
    * Zustand, den er so nicht gewollt hat.
    */
   excludedReason: 'disabled' | 'currency' | null
+  /**
+   * Die Position liegt außerhalb ihres Bandes, aber der nötige Trade wäre
+   * kleiner als das Mindest-Handelsvolumen.
+   */
+  belowMinTrade: boolean
 }
 
 export interface GroupResult {
   group: AssetGroup
+  /** Außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen. */
+  belowMinTrade?: boolean
   actualValue: number
   actualPercent: number
   targetPercent: number
@@ -221,16 +293,6 @@ export interface GroupResult {
   upperBand: number
   suggestion: Suggestion
   deltaEuro: number
-}
-
-/**
- * Rechnet den Sicherheitspuffer in Euro um.
- *
- * @param buffer Einstellung — Anteil oder fester Betrag.
- * @param total  Gesamtvermögen, Bezugsgröße im Prozent-Modus.
- */
-export function resolveSecurityBuffer(buffer: SecurityBuffer, total: number): number {
-  return buffer.mode === 'percent' ? (total * buffer.value) / 100 : buffer.value
 }
 
 export interface LiquidityResult {
@@ -264,7 +326,7 @@ export function computeLiquidity(
     groupMarketValue('moneymarket', portfolio, quotes, settings.currency) +
     groupMarketValue('cash', portfolio, quotes, settings.currency)
 
-  const securityBuffer = resolveSecurityBuffer(settings.securityBuffer, total)
+  const securityBuffer = resolveAmount(settings.securityBuffer, total)
   const investmentReserve = liquidAssets - securityBuffer
 
   return {
@@ -285,7 +347,20 @@ export interface RebalancingResult {
   targetPercentSum: number
   /** Über 100 % verteilt: die Ziele widersprechen sich. */
   targetsExceeded: boolean
+  /** Stand des Termins — leer, wenn ohne Kalender gearbeitet wird. */
+  schedule: ScheduleState
   computedAt: string
+}
+
+export interface ScheduleState {
+  /** Spielt der Termin in dieser Einstellung überhaupt eine Rolle? */
+  active: boolean
+  /** Ist er erreicht? */
+  due: boolean
+  /** Letzter Ausgleich dieses Depots, ISO-Datum. */
+  lastRebalancedAt: string | null
+  /** Tage bis zum Termin; negativ, wenn überfällig. `null` ohne bisherigen Ausgleich. */
+  daysUntilDue: number | null
 }
 
 /** Summe der Ziel-Anteile aller aktiven Positionen. */
@@ -314,15 +389,24 @@ function groupTargetPercent(group: AssetGroup, portfolio: Portfolio): number {
 /**
  * Hauptaggregator: liefert für ein Portfolio + Kurse + Settings alle
  * abgeleiteten Werte fürs UI.
+ *
+ * @param now Gegenwart — nur für den Termin relevant; als Parameter, damit
+ *            sich das Kalender-Rebalancing prüfen lässt.
  */
 export function computeRebalancing(
   portfolio: Portfolio,
   quotes: QuoteMap,
   settings: Settings,
+  now: Date = new Date(),
 ): RebalancingResult {
   const baseCurrency = settings.currency
   const total = totalValue(portfolio, quotes, settings.totalRounding, baseCurrency)
   const bands = settings.bands
+  const minTrade = resolveAmount(settings.minTradeSize, total)
+  const trigger = settings.rebalancing.trigger
+  const due =
+    usesCalendar(trigger) &&
+    isDue(portfolio.lastRebalancedAt, settings.rebalancing.intervalMonths, now)
 
   // Auch deaktivierte Positionen kommen in die Liste: wer eine abschaltet,
   // muss sie wiederfinden können. Ihre Kennzahlen bleiben leer, damit klar
@@ -346,6 +430,7 @@ export function computeRebalancing(
         isNearBand: false,
         isActive: false,
         excludedReason: 'disabled',
+        belowMinTrade: false,
       }
     }
 
@@ -364,12 +449,19 @@ export function computeRebalancing(
         isNearBand: false,
         isActive: false,
         excludedReason: 'currency',
+        belowMinTrade: false,
       }
     }
 
     const target = targetValue(position, total)
     const low = lowerBand(target, bands)
     const high = upperBand(target, bands)
+    const verdict = applyMinTrade(
+      combineSuggestion(suggestion(mv, low, high), trigger, due, mv, target),
+      target - mv,
+      minTrade,
+    )
+
     return {
       position,
       quote,
@@ -378,10 +470,12 @@ export function computeRebalancing(
       targetValue: target,
       lowerBand: low,
       upperBand: high,
-      suggestion: suggestion(mv, low, high),
+      suggestion: verdict.suggestion,
+      belowMinTrade: verdict.belowMinTrade,
       unitsDelta: unitsDelta(mv, target, quote),
       relativeDeltaPercent: relativeDeltaPercent(mv, target),
-      isNearBand: isNearBand(mv, low, high, target),
+      // Ohne laufendes Band gibt es kein „knapp davor" — nur den Termin.
+      isNearBand: usesBands(trigger) && isNearBand(mv, low, high, target),
       isActive: true,
       excludedReason: null,
     }
@@ -393,6 +487,14 @@ export function computeRebalancing(
     const target = (total * targetPercent) / 100
     const low = lowerBand(target, bands)
     const high = upperBand(target, bands)
+    // Dieselbe Regel wie in den Zeilen: Was sich als Order nicht lohnt, gibt
+    // auch als Gruppe kein Signal.
+    const verdict = applyMinTrade(
+      combineSuggestion(suggestion(actualValue, low, high), trigger, due, actualValue, target),
+      target - actualValue,
+      minTrade,
+    )
+
     return {
       group,
       actualValue,
@@ -401,7 +503,8 @@ export function computeRebalancing(
       targetValue: target,
       lowerBand: low,
       upperBand: high,
-      suggestion: suggestion(actualValue, low, high),
+      suggestion: verdict.suggestion,
+      belowMinTrade: verdict.belowMinTrade,
       deltaEuro: target - actualValue,
     }
   })
@@ -419,6 +522,16 @@ export function computeRebalancing(
     targetPercentSum: assignedTarget,
     // Kleine Rundungsreste (0.1 %-Punkte) sind kein Fehler — erst darüber.
     targetsExceeded: assignedTarget > 100.001,
+    schedule: {
+      active: usesCalendar(trigger),
+      due,
+      lastRebalancedAt: portfolio.lastRebalancedAt ?? null,
+      daysUntilDue: daysUntilDue(
+        portfolio.lastRebalancedAt,
+        settings.rebalancing.intervalMonths,
+        now,
+      ),
+    },
     computedAt: new Date().toISOString(),
   }
 }

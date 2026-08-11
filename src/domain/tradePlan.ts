@@ -9,6 +9,8 @@
  */
 
 import {
+  applyMinTrade,
+  combineSuggestion,
   lowerBand,
   marketValue,
   quoteFor,
@@ -16,7 +18,13 @@ import {
   upperBand,
   type PositionResult,
 } from './rebalancing'
-import type { Bands, Portfolio, QuoteMap, Suggestion } from '@/types/portfolio'
+import type {
+  Bands,
+  Portfolio,
+  QuoteMap,
+  RebalancingTrigger,
+  Suggestion,
+} from '@/types/portfolio'
 
 /** Geplante Stückzahlen je Position (`+` kaufen, `−` verkaufen). */
 export type TradeMap = Record<string, number>
@@ -56,6 +64,8 @@ export interface TradePlanRow {
   upperBandPercent: number
   /** Status nach Ausführung — landet die Position im Band? */
   suggestionAfter: Suggestion
+  /** Danach außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen. */
+  belowMinTradeAfter: boolean
   /**
    * Abweichung vom Ziel nach dem Trade, in **Prozentpunkten**.
    * Ziel 10 %, danach 9,5 % → −0,5.
@@ -98,6 +108,23 @@ export interface TradePlanRow {
   coverageUnits: number | null
 }
 
+/**
+ * Was der Plan außer Beständen und Bändern noch braucht.
+ *
+ * Als Objekt und nicht als weitere Positionsparameter: Die Reihenfolge von
+ * sechs Argumenten merkt sich niemand, und jedes neue hinge hinten an.
+ */
+export interface TradePlanOptions {
+  /** Probeweise Ziele; leer heißt: Ziele aus dem Depot. */
+  targets?: TargetMap
+  /** Mindest-Handelsvolumen in Euro; 0 schaltet es ab. */
+  minTrade?: number
+  /** Auslöser des Ausgleichs. */
+  trigger?: RebalancingTrigger
+  /** Ist der Termin erreicht? */
+  due?: boolean
+}
+
 export interface TradePlanResult {
   rows: TradePlanRow[]
   /**
@@ -137,7 +164,7 @@ export interface TradePlanResult {
  * @param total          Gesamtvermögen — Bezugsgröße für alle Prozentangaben.
  * @param bands          Toleranzbänder.
  * @param securityBuffer Betrag, der als Sicherheit stehen bleiben soll.
- * @param targetOverrides Probeweise Ziele; leer heißt: Ziele aus dem Depot.
+ * @param options        Alles Weitere; ohne Angabe rechnet der Plan wie bisher.
  */
 export function computeTradePlan(
   rows: PositionResult[],
@@ -145,8 +172,10 @@ export function computeTradePlan(
   total: number,
   bands: Bands,
   securityBuffer: number,
-  targetOverrides: TargetMap = {},
+  options: TradePlanOptions = {},
 ): TradePlanResult {
+  const { targets: targetOverrides = {}, minTrade = 0, trigger = 'bands', due = false } = options
+
   const planRows: Omit<TradePlanRow, 'coverageUnits'>[] = rows
     .filter((row) => row.isActive)
     .map((row) => {
@@ -163,6 +192,18 @@ export function computeTradePlan(
       const lowerPct = target * (1 - bands.lowerPercent / 100)
       const upperPct = target * (1 + bands.upperPercent / 100)
 
+      const verdict = applyMinTrade(
+        combineSuggestion(
+          suggestion(marketValueAfter, lowerBand(targetEur, bands), upperBand(targetEur, bands)),
+          trigger,
+          due,
+          marketValueAfter,
+          targetEur,
+        ),
+        targetEur - marketValueAfter,
+        minTrade,
+      )
+
       return {
         current: row,
         tradeUnits,
@@ -175,11 +216,10 @@ export function computeTradePlan(
         targetOverridden: override !== undefined,
         lowerBandPercent: lowerPct,
         upperBandPercent: upperPct,
-        suggestionAfter: suggestion(
-          marketValueAfter,
-          lowerBand(targetEur, bands),
-          upperBand(targetEur, bands),
-        ),
+        // Dieselbe Mindestgröße wie im Dashboard: Sonst meldet die Simulation
+        // „Buy" für einen Betrag, für den die Übersicht daneben „OK" sagt.
+        suggestionAfter: verdict.suggestion,
+        belowMinTradeAfter: verdict.belowMinTrade,
         deviationAfter: percentAfter - target,
         relativeDeviationAfter: target === 0 ? 0 : ((percentAfter - target) * 100) / target,
         inBandAfter: percentAfter >= lowerPct && percentAfter <= upperPct,

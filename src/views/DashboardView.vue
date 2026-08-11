@@ -6,8 +6,9 @@ import InfoHint from '@/components/InfoHint.vue'
 import KpiCard from '@/components/KpiCard.vue'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
-import { eur, eurSigned, integer, percent } from '@/domain/formatters'
+import { eur, eurSigned, integer, percent, shortDate } from '@/domain/formatters'
 import { computeRebalancing } from '@/domain/rebalancing'
+import { nextDueDate, usesBands } from '@/domain/schedule'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
 import PositionCardList from '@/components/PositionCardList.vue'
@@ -59,6 +60,20 @@ const result = computed(() => {
   const portfolio = portfolioStore.portfolio
   if (!portfolio) return null
   return computeRebalancing(portfolio, quotesStore.quotes, settingsStore.settings)
+})
+
+const bandsActive = computed(() => usesBands(settingsStore.settings.rebalancing.trigger))
+
+/** „Termin fällig" oder „nächster Termin am …" — je nach Stand. */
+const scheduleLabel = computed(() => {
+  const schedule = result.value?.schedule
+  if (!schedule) return ''
+  if (schedule.due) return t('dashboard.scheduleDue')
+  return t('dashboard.scheduleNext', {
+    date: shortDate(
+      nextDueDate(schedule.lastRebalancedAt, settingsStore.settings.rebalancing.intervalMonths),
+    ),
+  })
 })
 
 const liquidityTone = computed<'positive' | 'warning' | 'danger'>(() => {
@@ -291,6 +306,7 @@ function toggleGroups(): void {
           :label="t('kpi.investmentReserve')"
           :explanation="t('hints.investmentReserve')"
           anchor="reserve"
+          settings-tab="calc"
           :value="eurSigned(result.liquidity.investmentReserve)"
           :hint="t('kpi.investmentReserveHint')"
           :tone="liquidityTone"
@@ -299,6 +315,7 @@ function toggleGroups(): void {
           :label="t('kpi.investmentReservePercent')"
           :explanation="t('hints.securityBuffer')"
           anchor="reserve"
+          settings-tab="calc"
           :value="percent(result.liquidity.investmentReservePercent)"
           :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
         />
@@ -329,13 +346,12 @@ function toggleGroups(): void {
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
           </svg>
-          <h2 class="text-xs uppercase tracking-wide font-medium">{{ t('dashboard.assetClasses') }}</h2>
+          <h2 class="text-xs uppercase tracking-wide font-medium">
+            {{ t('dashboard.assetClasses') }}
+          </h2>
 
           <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
-          <span
-            v-if="groupsCollapsed"
-            class="ml-auto flex items-center gap-3 text-xs tabular-nums"
-          >
+          <span v-if="groupsCollapsed" class="ml-auto flex items-center gap-3 text-xs tabular-nums">
             <span
               v-for="group in result.groups"
               :key="group.group"
@@ -357,13 +373,9 @@ function toggleGroups(): void {
       </section>
 
       <!-- Positionen -->
-      <section
-        class="rounded-xl border border-edge bg-card overflow-hidden"
-      >
+      <section class="rounded-xl border border-edge bg-card overflow-hidden">
         <div class="px-4 md:px-5 py-3 md:py-4 flex items-center justify-between gap-4 flex-wrap">
-          <h2
-            class="text-xs uppercase tracking-wide text-ink-secondary font-medium"
-          >
+          <h2 class="text-xs uppercase tracking-wide text-ink-secondary font-medium">
             {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
           </h2>
           <div class="flex items-center gap-5">
@@ -373,13 +385,35 @@ function toggleGroups(): void {
               :exceeded="result.targetsExceeded"
             />
             <div class="text-xs text-ink-muted tabular-nums">
-              {{
-                t('dashboard.bands', {
-                  lower: percent(settingsStore.settings.bands.lowerPercent),
-                  upper: percent(settingsStore.settings.bands.upperPercent),
-                })
-              }}
-              <InfoHint :text="t('hints.bands')" anchor="bands" class="ml-1" />
+              <!--
+                Bänder nur nennen, wenn sie gelten: Im reinen Kalendermodus
+                stünde hier sonst eine Grenze, nach der niemand mehr fragt.
+              -->
+              <template v-if="bandsActive">
+                {{
+                  t('dashboard.bands', {
+                    lower: percent(settingsStore.settings.bands.lowerPercent),
+                    upper: percent(settingsStore.settings.bands.upperPercent),
+                  })
+                }}
+                <InfoHint
+                  :text="t('hints.bands')"
+                  anchor="bands"
+                  settings-tab="calc"
+                  class="ml-1"
+                />
+              </template>
+              <span v-if="result.schedule.active" class="ml-2">
+                <span :class="result.schedule.due ? 'text-status-out' : ''">{{
+                  scheduleLabel
+                }}</span>
+                <InfoHint
+                  :text="t('hints.trigger')"
+                  anchor="trigger"
+                  settings-tab="calc"
+                  class="ml-1"
+                />
+              </span>
               <span v-if="loading" class="ml-2">{{ t('common.loading') }}</span>
             </div>
             <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
@@ -389,18 +423,12 @@ function toggleGroups(): void {
         </div>
 
         <NDivider class="!my-0" />
-        <PositionCardList
-          v-if="isCompact"
-          :rows="result.rows"
-          :groups="result.groups"
-          :bands="settingsStore.settings.bands"
-        />
+        <PositionCardList v-if="isCompact" :rows="result.rows" :groups="result.groups" />
 
         <PositionsTable
           v-else
           :rows="result.rows"
           :groups="result.groups"
-          :bands="settingsStore.settings.bands"
           :total="result.total"
           :targets-exceeded="result.targetsExceeded"
           :links="settingsStore.settings.links"

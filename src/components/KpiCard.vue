@@ -11,6 +11,8 @@ const props = defineProps<{
   explanation?: string
   /** Sprungmarke auf der Methodenseite. */
   anchor?: string
+  /** Reiter in den Einstellungen, in dem der zugehörige Wert steht. */
+  settingsTab?: string
 }>()
 
 const toneClasses = computed(() => {
@@ -38,9 +40,16 @@ const toneClasses = computed(() => {
     kosten — der Kopfbereich stand sonst über der Tabelle wie ein Block.
   -->
   <div class="flex flex-col gap-0.5 px-4 py-1.5 border-l border-edge first:border-l-0 first:pl-0">
-    <div class="flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted leading-tight">
+    <div
+      class="flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted leading-tight"
+    >
       {{ label }}
-      <InfoHint v-if="explanation" :text="explanation" :anchor="anchor" />
+      <InfoHint
+        v-if="explanation"
+        :text="explanation"
+        :anchor="anchor"
+        :settings-tab="settingsTab"
+      />
     </div>
     <div class="flex items-baseline gap-2 min-w-0">
       <span class="text-base font-semibold tabular-nums leading-tight" :class="toneClasses">

@@ -162,6 +162,25 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     consola.info('portfolio: Beispiel-Depot geladen')
   }
 
+  /**
+   * Hält fest, wann dieses Depot zuletzt ausgeglichen wurde.
+   *
+   * Bewusst von Hand: Die App weiß nicht, ob eine Order tatsächlich
+   * ausgeführt wurde — das weiß nur, wer sie aufgegeben hat.
+   *
+   * @param date ISO-Datum, oder `null` um den Vermerk zu löschen.
+   */
+  async function markRebalanced(date: string | null): Promise<void> {
+    if (!portfolio.value) return
+
+    portfolio.value = {
+      ...portfolio.value,
+      lastRebalancedAt: date,
+      updatedAt: new Date().toISOString(),
+    }
+    await persist()
+  }
+
   /** Schreibt den aktuellen Stand durch. */
   async function persist(): Promise<void> {
     if (!portfolio.value) return
@@ -308,6 +327,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     removePosition,
     replacePortfolio,
     backfillKinds,
+    markRebalanced,
   }
 })
 

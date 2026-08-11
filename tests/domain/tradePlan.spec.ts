@@ -48,6 +48,8 @@ const SETTINGS: Settings = {
   totalRounding: 0,
   bands: { lowerPercent: 10, upperPercent: 20 },
   securityBuffer: { mode: 'absolute', value: 0 },
+  minTradeSize: { mode: 'absolute', value: 0 },
+  rebalancing: { trigger: 'bands', intervalMonths: 12 },
   currency: 'EUR',
   refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
   links: [],
@@ -502,7 +504,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
   it('rechnet Delta und Bänder gegen das probeweise Ziel', () => {
     // A steht bei 50 %; mit Probeziel 50 % ist nichts mehr zu tun.
     const { result } = makeSetup()
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { a: 50 })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
     const a = plan.rows.find((row) => row.current.position.id === 'a')
 
     expect(a?.deltaUnits).toBe(0)
@@ -512,7 +514,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
 
   it('markiert nur die Zeilen, deren Ziel probeweise gesetzt wurde', () => {
     const { result } = makeSetup()
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { a: 50 })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
 
     expect(plan.rows.find((row) => row.current.position.id === 'a')?.targetOverridden).toBe(true)
     expect(plan.rows.find((row) => row.current.position.id === 'b')?.targetOverridden).toBe(false)
@@ -520,7 +522,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
 
   it('lässt das Ziel im Depot unangetastet', () => {
     const { result } = makeSetup()
-    computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { a: 50 })
+    computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
 
     const a = result.rows.find((row) => row.position.id === 'a')
     expect(a?.position.targetPercent).toBe(25)
@@ -528,7 +530,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
 
   it('meldet über targetSum, wenn die Ziele nicht mehr 100 % ergeben', () => {
     const { result } = makeSetup()
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { a: 50 })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
 
     expect(plan.targetSum).toBeCloseTo(125, 6)
   })
@@ -582,7 +584,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
       result.total,
       SETTINGS.bands,
       0,
-      { eqqq: 50, ftse: 40, geldmarkt: 10 },
+      { targets: { eqqq: 50, ftse: 40, geldmarkt: 10 } },
     )
     expect(mitAnpassung.targetSum).toBeCloseTo(100, 6)
     expect(mitAnpassung.rows.every((row) => row.inBandAfter)).toBe(true)
@@ -725,5 +727,58 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
 
     expect(danach.underfunded).toBe(false)
     expect(danach.netCashFlow).toBeCloseTo(0, 6)
+  })
+})
+
+describe('Mindest-Handelsvolumen in der Simulation', () => {
+  /**
+   * Ohne diese Regel widerspricht sich die App: Das Dashboard sagt „OK",
+   * weil sich die Order nicht lohnt, die Simulation daneben „Buy".
+   */
+  const portfolio: Portfolio = {
+    id: 'p1',
+    name: 'Test',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    positions: [
+      makePosition({ id: 'klein', isin: 'K', symbol: 'K.DE', units: 188, targetPercent: 2 }),
+      makePosition({
+        id: 'rest',
+        isin: null,
+        symbol: 'CASH',
+        group: 'cash',
+        units: 98120,
+        targetPercent: 98,
+      }),
+    ],
+  }
+  const quotes: QuoteMap = new Map([['K', makeQuote({ isin: 'K', symbol: 'K.DE', price: 10 })]])
+  const settings: Settings = { ...SETTINGS, bands: { lowerPercent: 5, upperPercent: 5 } }
+
+  it('meldet ohne Grenze einen Nachkauf', () => {
+    const result = computeRebalancing(portfolio, quotes, settings)
+    const plan = computeTradePlan(result.rows, {}, result.total, settings.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'klein')!
+    expect(row.suggestionAfter).toBe('buy')
+    expect(row.belowMinTradeAfter).toBe(false)
+  })
+
+  it('schweigt, solange die fehlende Summe unter der Grenze liegt', () => {
+    const result = computeRebalancing(portfolio, quotes, settings)
+    const plan = computeTradePlan(result.rows, {}, result.total, settings.bands, 0, { minTrade: 500 })
+    const row = plan.rows.find((entry) => entry.current.position.id === 'klein')!
+    expect(row.suggestionAfter).toBe('ok')
+    expect(row.belowMinTradeAfter).toBe(true)
+  })
+
+  it('greift auf den Zustand *nach* dem Trade, nicht auf den davor', () => {
+    const result = computeRebalancing(portfolio, quotes, settings)
+    // 100 Stück zu 10 € kaufen — danach fehlen 1.000 € statt 120 € zu viel.
+    const plan = computeTradePlan(result.rows, { klein: 100 }, result.total, settings.bands, 0, {
+      minTrade: 500,
+    })
+    const row = plan.rows.find((entry) => entry.current.position.id === 'klein')!
+    expect(row.suggestionAfter).toBe('sell')
+    expect(row.belowMinTradeAfter).toBe(false)
   })
 })

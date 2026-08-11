@@ -33,6 +33,16 @@ const { t } = useI18n()
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsDelta2') }}</p>
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsBody3') }}</p>
       <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsBody4') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsMinTrade') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.bandsMinTrade2') }}</p>
+    </section>
+
+    <section id="trigger" class="flex flex-col gap-3 scroll-mt-20">
+      <h2 class="text-lg font-medium">{{ t('method.triggerHeading') }}</h2>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.triggerBody') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.triggerBody2') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.triggerBody3') }}</p>
+      <p class="text-sm leading-relaxed text-ink-secondary">{{ t('method.triggerBody4') }}</p>
     </section>
 
     <section id="classes" class="flex flex-col gap-3 scroll-mt-20">

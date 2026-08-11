@@ -124,28 +124,28 @@ export function money(value: number, currency: string): string {
 
 const PERCENT = (): Intl.NumberFormat =>
   formatter('percent', {
-  style: 'decimal',
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
+    style: 'decimal',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
   })
 
 const PERCENT_0 = (): Intl.NumberFormat =>
   formatter('percent_0', {
-  style: 'decimal',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   })
 
 const NUMBER = (): Intl.NumberFormat =>
   formatter('number', {
-  style: 'decimal',
-  maximumFractionDigits: 4,
+    style: 'decimal',
+    maximumFractionDigits: 4,
   })
 
 const INT = (): Intl.NumberFormat =>
   formatter('int', {
-  style: 'decimal',
-  maximumFractionDigits: 0,
+    style: 'decimal',
+    maximumFractionDigits: 0,
   })
 
 /** Formatiert Euro-Beträge — Standard ohne Nachkommastellen. */
@@ -188,4 +188,22 @@ export function integer(value: number): string {
 /** Beliebige Zahl (bis 4 Nachkommastellen) mit DE-Locale. */
 export function number(value: number): string {
   return NUMBER().format(value)
+}
+
+/**
+ * Datum in der Landesschreibweise, ohne Uhrzeit.
+ *
+ * Für Termine reicht der Tag — eine Uhrzeit suggerierte eine Genauigkeit, die
+ * bei „zuletzt ausgeglichen" niemand hat.
+ *
+ * @param value Datum, ISO-Zeichenkette oder `null`.
+ * @returns Formatiertes Datum; bei `null` oder ungültiger Eingabe ein Strich.
+ */
+export function shortDate(value: Date | string | null | undefined): string {
+  if (!value) return '—'
+
+  const date = typeof value === 'string' ? new Date(value) : value
+  if (Number.isNaN(date.getTime())) return '—'
+
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date)
 }

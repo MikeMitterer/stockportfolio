@@ -6,6 +6,7 @@ import DeltaBar from '@/components/DeltaBar.vue'
 import InfoHint from '@/components/InfoHint.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
+import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
 import { eur, eurCent, eurSigned, integer, percent, percentSigned } from '@/domain/formatters'
 import { computeRebalancing, type GroupResult } from '@/domain/rebalancing'
@@ -70,7 +71,12 @@ const plan = computed(() => {
     result.value.total,
     settingsStore.settings.bands,
     result.value.liquidity.securityBuffer,
-    targets.value,
+    {
+      targets: targets.value,
+      minTrade: resolveAmount(settingsStore.settings.minTradeSize, result.value.total),
+      trigger: settingsStore.settings.rebalancing.trigger,
+      due: result.value.schedule.due,
+    },
   )
 })
 
@@ -271,7 +277,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             class="inline-flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted"
           >
             {{ t('rebalancing.coverFrom') }}
-            <InfoHint :text="t('hints.coverFrom')" anchor="plan" />
+            <InfoHint :text="t('hints.coverFrom')" anchor="plan" settings-tab="calc" />
           </span>
           <div v-if="coverageOptions.length > 0" class="flex flex-wrap items-center gap-1.5 pt-0.5">
             <button
@@ -497,7 +503,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     -->
                     <DeltaBar
                       :relative-percent="row.relativeDeviationAfter"
-                      :bands="settingsStore.settings.bands"
+                      :suggestion="row.suggestionAfter"
                       :label="percent(row.percentAfter)"
                       compact
                     />
@@ -517,7 +523,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   </td>
 
                   <td class="px-4 py-1 text-center">
-                    <SuggestionBadge :suggestion="row.suggestionAfter" />
+                    <SuggestionBadge
+                      :suggestion="row.suggestionAfter"
+                      :below-min-trade="row.belowMinTradeAfter"
+                    />
                   </td>
                 </tr>
               </template>

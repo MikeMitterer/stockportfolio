@@ -43,11 +43,38 @@ export interface Portfolio {
   positions: Position[]
   createdAt: string
   updatedAt: string
+  /**
+   * Tag des letzten Ausgleichs, ISO-Datum — `null`/fehlend heißt: noch nie.
+   *
+   * Steht am Depot, nicht in den Einstellungen: Wann zuletzt ausgeglichen
+   * wurde, ist eine Tatsache dieses Depots. Bei mehreren Depots wäre ein
+   * gemeinsames Datum schlicht falsch.
+   */
+  lastRebalancedAt?: string | null
 }
 
 export interface Bands {
   lowerPercent: number
   upperPercent: number
+}
+
+/**
+ * Was einen Ausgleich auslöst.
+ *
+ * - `bands`    — laufend, sobald ein Anteil sein Band verlässt.
+ * - `calendar` — nur zum Termin, dann aber alles, was abweicht.
+ * - `both`     — Bänder laufend, der Termin nimmt zusätzlich die kleineren
+ *                Abweichungen mit.
+ *
+ * Reines Kalender-Rebalancing ist die schwächere Variante: Ein Einbruch im
+ * März wartet bis Dezember. `both` ist deshalb die empfohlene Kombination.
+ */
+export type RebalancingTrigger = 'bands' | 'calendar' | 'both'
+
+export interface RebalancingSchedule {
+  trigger: RebalancingTrigger
+  /** Abstand zwischen zwei Terminen in Monaten; 12 = jährlich. */
+  intervalMonths: number
 }
 
 /**
@@ -70,14 +97,15 @@ export interface ExternalLink {
 }
 
 /**
- * Der Betrag, der als Sicherheit unangetastet bleiben soll.
+ * Ein Betrag, der wahlweise absolut oder als Anteil am Depot gilt.
  *
- * Zwei Lesarten, beide berechtigt: Wer den Puffer als Notgroschen versteht
- * („drei Monatsausgaben"), meint einen festen Betrag — der wächst nicht mit
- * dem Depot. Wer ihn als Teil der Aufteilung versteht, meint einen Anteil.
- * Deshalb die Wahl statt einer aufgezwungenen Auslegung.
+ * Beide Lesarten sind berechtigt und hängen davon ab, was jemand meint: Ein
+ * Notgroschen von „drei Monatsausgaben" wächst nicht mit dem Depot, ein
+ * Liquiditätsanteil schon. Dieselbe Wahl stellt sich beim
+ * Mindest-Handelsvolumen — deshalb eine gemeinsame Form statt zweier
+ * gleichaussehender Typen.
  */
-export interface SecurityBuffer {
+export interface AmountSetting {
   /** `percent` = Anteil am Gesamtvermögen, `absolute` = fester Betrag in Euro. */
   mode: 'percent' | 'absolute'
   value: number
@@ -87,7 +115,21 @@ export interface Settings {
   activePortfolioId: string
   totalRounding: number
   bands: Bands
-  securityBuffer: SecurityBuffer
+  securityBuffer: AmountSetting
+  /**
+   * Betrag, unter dem sich ein Trade nicht lohnt.
+   *
+   * Relative Bänder machen kleine Positionen empfindlich — genau das ist ihr
+   * Zweck. In Euro gerechnet heißt es aber, dass ein Ziel von 2 % bei einem
+   * Band von 6 % schon bei 120 € ein Signal gibt; dafür lohnt keine Order.
+   * Wer diese Grenze setzt, bekommt für solche Fälle kein Signal mehr — die
+   * Abweichung bleibt sichtbar, der Handlungsbedarf entfällt.
+   *
+   * `0` schaltet die Prüfung ab.
+   */
+  minTradeSize: AmountSetting
+  /** Auslöser und Terminabstand des Ausgleichs. */
+  rebalancing: RebalancingSchedule
   currency: 'EUR'
   refresh: { autoOnLoad: boolean; staleAfterMinutes: number }
   links: ExternalLink[]

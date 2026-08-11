@@ -19,6 +19,14 @@ const props = defineProps<{
   text: string
   /** Sprungmarke auf der Methodenseite; ohne sie erscheint kein Verweis. */
   anchor?: string
+  /**
+   * Reiter in den Einstellungen, in dem der zugehörige Wert steht.
+   *
+   * Erklärung und Stellschraube gehören zusammen: Wer liest, was der
+   * Sicherheitspuffer ist, will ihn im nächsten Moment ändern — und sucht
+   * sonst selbst, in welchem Reiter er steckt.
+   */
+  settingsTab?: string
 }>()
 
 const { t } = useI18n()
@@ -26,6 +34,10 @@ const router = useRouter()
 
 function openMethod(): void {
   void router.push({ path: '/method', hash: props.anchor ? `#${props.anchor}` : '' })
+}
+
+function openSetting(): void {
+  void router.push({ path: '/settings', query: { tab: props.settingsTab } })
 }
 </script>
 
@@ -43,9 +55,7 @@ function openMethod(): void {
       -->
       <button
         type="button"
-        class="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border
-               border-edge text-[9px] leading-none text-ink-muted align-middle
-               transition-colors hover:border-ink-muted hover:text-ink-secondary"
+        class="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-edge text-[9px] leading-none text-ink-muted align-middle transition-colors hover:border-ink-muted hover:text-ink-secondary"
         :aria-label="text"
         @click="openMethod"
       >
@@ -56,18 +66,36 @@ function openMethod(): void {
     <div class="text-sm leading-relaxed">
       {{ text }}
       <!--
-        Ein echter Knopf, kein Text, der wie einer aussieht. Vorher stand hier
-        ein `span` — er sah aus wie ein Verweis, war aber keiner, und ein Klick
+        Beide Verweise in einer Zeile: Erklärung links, Stellschraube rechts.
+        Untereinander sah es nach einer Liste aus, obwohl es zwei
+        gleichrangige Wege sind.
+
+        Echte Knöpfe, kein Text, der wie einer aussieht. Vorher stand hier ein
+        `span` — er sah aus wie ein Verweis, war aber keiner, und ein Klick
         darauf tat nichts.
       -->
-      <button
-        v-if="anchor"
-        type="button"
-        class="mt-1 block text-xs text-accent underline decoration-dotted hover:opacity-80"
-        @click="openMethod"
+      <div
+        v-if="anchor || settingsTab"
+        class="mt-1 flex items-center justify-between gap-6 text-xs"
       >
-        {{ t('method.more') }}
-      </button>
+        <button
+          v-if="anchor"
+          type="button"
+          class="text-accent underline decoration-dotted hover:opacity-80"
+          @click="openMethod"
+        >
+          {{ t('method.more') }}
+        </button>
+
+        <button
+          v-if="settingsTab"
+          type="button"
+          class="text-accent underline decoration-dotted hover:opacity-80"
+          @click="openSetting"
+        >
+          {{ t('method.openSetting') }}
+        </button>
+      </div>
     </div>
   </NTooltip>
 </template>

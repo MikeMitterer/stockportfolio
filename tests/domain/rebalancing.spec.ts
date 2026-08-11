@@ -8,6 +8,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   actualPercent,
+  applyMinTrade,
+  combineSuggestion,
   groupMarketValue,
   hasForeignCurrency,
   computeLiquidity,
@@ -33,6 +35,7 @@ import type {
   QuoteCacheEntry,
   QuoteMap,
   Settings,
+  Suggestion,
 } from '@/types/portfolio'
 
 // ─── Helpers zum Erzeugen minimaler Test-Inputs ─────────────────────────────
@@ -395,6 +398,195 @@ describe('targetPercentSum', () => {
 
 // ─── computeRebalancing (Aggregator-Sanity) ─────────────────────────────────
 
+describe('applyMinTrade', () => {
+  it('lässt den Status unangetastet, wenn keine Grenze gesetzt ist', () => {
+    expect(applyMinTrade('buy', 5, 0)).toEqual({ suggestion: 'buy', belowMinTrade: false })
+  })
+
+  it('unterdrückt das Signal, wenn der fehlende Betrag unter der Grenze liegt', () => {
+    expect(applyMinTrade('buy', 120, 500)).toEqual({ suggestion: 'ok', belowMinTrade: true })
+  })
+
+  it('gilt für Verkäufe genauso — es zählt der Betrag, nicht das Vorzeichen', () => {
+    expect(applyMinTrade('sell', -120, 500)).toEqual({ suggestion: 'ok', belowMinTrade: true })
+  })
+
+  it('meldet ab der Grenze wieder', () => {
+    expect(applyMinTrade('buy', 500, 500)).toEqual({ suggestion: 'buy', belowMinTrade: false })
+  })
+
+  it('markiert nichts, was ohnehin im Band liegt', () => {
+    expect(applyMinTrade('ok', 10, 500)).toEqual({ suggestion: 'ok', belowMinTrade: false })
+  })
+})
+
+describe('Mindest-Handelsvolumen im Aggregat', () => {
+  /**
+   * Ziel 2 % von 100.000 € sind 2.000 €; die Position steht bei 1.880 €, also
+   * 6 % unter dem Ziel und damit außerhalb eines 5-%-Bandes. Es fehlen aber
+   * nur 120 € — genau der Fall, für den die Grenze gedacht ist.
+   */
+  const settings: Settings = {
+    activePortfolioId: 'p1',
+    totalRounding: 0,
+    bands: { lowerPercent: 5, upperPercent: 5 },
+    securityBuffer: { mode: 'absolute', value: 0 },
+    minTradeSize: { mode: 'absolute', value: 0 },
+    rebalancing: { trigger: 'bands', intervalMonths: 12 },
+    currency: 'EUR',
+    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
+    links: [],
+    ui: { notificationSeconds: 0, historyPeriod: 'month' },
+  }
+
+  const portfolio: Portfolio = {
+    id: 'p1',
+    name: 'Test',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    positions: [
+      makePosition({ id: 'klein', isin: 'K', symbol: 'K.DE', group: 'stocks', units: 188, targetPercent: 2 }),
+      makePosition({ id: 'rest', isin: null, symbol: 'CASH', group: 'cash', units: 98120, targetPercent: 98 }),
+    ],
+  }
+
+  const quotes: QuoteMap = new Map([['K', makeQuote({ isin: 'K', symbol: 'K.DE', price: 10 })]])
+
+  function rowOf(minTradeSize: Settings['minTradeSize']) {
+    const result = computeRebalancing(portfolio, quotes, { ...settings, minTradeSize })
+    return result.rows.find((row) => row.position.id === 'klein')!
+  }
+
+  it('meldet ohne Grenze einen Nachkauf', () => {
+    const row = rowOf({ mode: 'absolute', value: 0 })
+    expect(row.suggestion).toBe('buy')
+    expect(row.belowMinTrade).toBe(false)
+  })
+
+  it('schweigt, wenn die fehlenden 120 € unter der Grenze liegen', () => {
+    const row = rowOf({ mode: 'absolute', value: 500 })
+    expect(row.suggestion).toBe('ok')
+    expect(row.belowMinTrade).toBe(true)
+  })
+
+  it('lässt die Abweichung sichtbar — unterdrückt wird das Signal, nicht die Zahl', () => {
+    const ohne = rowOf({ mode: 'absolute', value: 0 })
+    const mit = rowOf({ mode: 'absolute', value: 500 })
+    expect(mit.relativeDeltaPercent).toBeCloseTo(ohne.relativeDeltaPercent, 6)
+    expect(mit.marketValue).toBe(ohne.marketValue)
+  })
+
+  it('rechnet die Grenze im Prozent-Modus aufs Gesamtvermögen', () => {
+    // 1 % von 100.000 € sind 1.000 € — mehr als die fehlenden 120 €.
+    const row = rowOf({ mode: 'percent', value: 1 })
+    expect(row.belowMinTrade).toBe(true)
+  })
+})
+
+describe('combineSuggestion', () => {
+  it('reicht bei „bands" das Bandurteil unverändert durch', () => {
+    expect(combineSuggestion('buy', 'bands', false, 900, 1000)).toBe('buy')
+    expect(combineSuggestion('ok', 'bands', true, 900, 1000)).toBe('ok')
+  })
+
+  it('ignoriert bei „calendar" das Band, solange der Termin nicht da ist', () => {
+    expect(combineSuggestion('buy', 'calendar', false, 900, 1000)).toBe('ok')
+  })
+
+  it('meldet am Termin jede Abweichung, auch die kleine', () => {
+    expect(combineSuggestion('ok', 'calendar', true, 999, 1000)).toBe('buy')
+    expect(combineSuggestion('ok', 'calendar', true, 1001, 1000)).toBe('sell')
+    expect(combineSuggestion('ok', 'calendar', true, 1000, 1000)).toBe('ok')
+  })
+
+  it('meldet bei „both" schon vor dem Termin, sobald das Band verlassen ist', () => {
+    expect(combineSuggestion('sell', 'both', false, 1200, 1000)).toBe('sell')
+  })
+
+  it('nimmt bei „both" am Termin zusätzlich die kleinen Abweichungen mit', () => {
+    expect(combineSuggestion('ok', 'both', false, 999, 1000)).toBe('ok')
+    expect(combineSuggestion('ok', 'both', true, 999, 1000)).toBe('buy')
+  })
+})
+
+describe('Auslöser im Aggregat', () => {
+  /** Ziel 50 %, tatsächlich 49,5 % — innerhalb eines 5-%-Bandes. */
+  const base: Settings = {
+    activePortfolioId: 'p1',
+    totalRounding: 0,
+    bands: { lowerPercent: 5, upperPercent: 5 },
+    securityBuffer: { mode: 'absolute', value: 0 },
+    minTradeSize: { mode: 'absolute', value: 0 },
+    rebalancing: { trigger: 'bands', intervalMonths: 12 },
+    currency: 'EUR',
+    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
+    links: [],
+    ui: { notificationSeconds: 0, historyPeriod: 'month' },
+  }
+
+  const portfolio: Portfolio = {
+    id: 'p1',
+    name: 'Test',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    lastRebalancedAt: '2026-01-01T00:00:00.000Z',
+    positions: [
+      makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 99, targetPercent: 50 }),
+      makePosition({ id: 'c', isin: null, symbol: 'CASH', group: 'cash', units: 101, targetPercent: 50 }),
+    ],
+  }
+
+  const quotes: QuoteMap = new Map([['A', makeQuote({ isin: 'A', symbol: 'A.DE', price: 1 })]])
+
+  function suggestionOf(settings: Settings, now: Date): Suggestion {
+    const result = computeRebalancing(portfolio, quotes, settings, now)
+    return result.rows.find((row) => row.position.id === 'a')!.suggestion
+  }
+
+  const vorTermin = new Date(2026, 5, 1)
+  const nachTermin = new Date(2027, 5, 1)
+
+  it('schweigt mit Bändern zu einer Abweichung innerhalb des Bandes', () => {
+    expect(suggestionOf(base, nachTermin)).toBe('ok')
+  })
+
+  it('meldet bei „calendar" erst zum Termin', () => {
+    const settings: Settings = { ...base, rebalancing: { trigger: 'calendar', intervalMonths: 12 } }
+    expect(suggestionOf(settings, vorTermin)).toBe('ok')
+    expect(suggestionOf(settings, nachTermin)).toBe('buy')
+  })
+
+  it('meldet bei „both" vor dem Termin nach Band, danach nach Ziel', () => {
+    const settings: Settings = { ...base, rebalancing: { trigger: 'both', intervalMonths: 12 } }
+    expect(suggestionOf(settings, vorTermin)).toBe('ok')
+    expect(suggestionOf(settings, nachTermin)).toBe('buy')
+  })
+
+  it('lässt die Mindestgröße auch am Termin gelten', () => {
+    const settings: Settings = {
+      ...base,
+      rebalancing: { trigger: 'calendar', intervalMonths: 12 },
+      minTradeSize: { mode: 'absolute', value: 10 },
+    }
+    // Es fehlt genau 1 € — dafür wird auch am Stichtag keine Order gegeben.
+    expect(suggestionOf(settings, nachTermin)).toBe('ok')
+  })
+
+  it('meldet den Terminstand mit', () => {
+    const settings: Settings = { ...base, rebalancing: { trigger: 'calendar', intervalMonths: 12 } }
+    const result = computeRebalancing(portfolio, quotes, settings, vorTermin)
+    expect(result.schedule.active).toBe(true)
+    expect(result.schedule.due).toBe(false)
+    expect(result.schedule.daysUntilDue).toBeGreaterThan(0)
+  })
+
+  it('lässt den Terminstand ruhen, solange nur Bänder gelten', () => {
+    const result = computeRebalancing(portfolio, quotes, base, nachTermin)
+    expect(result.schedule.active).toBe(false)
+    expect(result.schedule.due).toBe(false)
+  })
+})
+
 describe('computeRebalancing', () => {
   /**
    * Kleines synthetisches 3-Positionen-Portfolio, bei dem die
@@ -410,6 +602,8 @@ describe('computeRebalancing', () => {
     totalRounding: 0,
     bands: { lowerPercent: 10, upperPercent: 20 },
     securityBuffer: { mode: 'absolute', value: 0 },
+    minTradeSize: { mode: 'absolute', value: 0 },
+    rebalancing: { trigger: 'bands', intervalMonths: 12 },
     currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
@@ -674,6 +868,8 @@ describe('computeLiquidity', () => {
       totalRounding: 0,
       bands: { lowerPercent: 10, upperPercent: 20 },
       securityBuffer: { mode, value: buffer },
+      minTradeSize: { mode: 'absolute', value: 0 },
+      rebalancing: { trigger: 'bands', intervalMonths: 12 },
       currency: 'EUR',
       refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
       links: [],
@@ -816,6 +1012,8 @@ describe('Fremdwährung', () => {
     totalRounding: 0,
     bands: { lowerPercent: 10, upperPercent: 20 },
     securityBuffer: { mode: 'absolute', value: 0 },
+    minTradeSize: { mode: 'absolute', value: 0 },
+    rebalancing: { trigger: 'bands', intervalMonths: 12 },
     currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
