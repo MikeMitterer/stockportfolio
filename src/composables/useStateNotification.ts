@@ -18,7 +18,7 @@
  * meldet sich der Toast erneut.
  */
 
-import { onUnmounted, watch, type Ref } from 'vue'
+import { onMounted, onUnmounted, watch, type Ref } from 'vue'
 import type { NotificationApi, NotificationReactive } from 'naive-ui'
 
 export interface StateNotificationOptions {
@@ -85,42 +85,54 @@ export function useStateNotification(
     }, 1000)
   }
 
-  watch(
-    [active, options.content, options.seconds],
-    ([isActive, text]) => {
-      if (!isActive) {
-        close()
-        dismissed = false
-        return
-      }
+  /*
+   * Erst nach dem Aufbau der Komponente beobachten.
+   *
+   * `options.content` steht in den Quellen des Watchers und würde mit
+   * `immediate` schon während `setup()` ausgeführt. Verweist der Text auf eine
+   * Konstante, die weiter unten in der Datei steht, wirft das — und der
+   * Aufrufer muss seine Deklarationen nach den Bedürfnissen dieses
+   * Composables ordnen. Das ist eine Falle, die früher oder später jeder
+   * hineintappt; ein Toast ein Bild später fällt dagegen niemandem auf.
+   */
+  onMounted(() => {
+    watch(
+      [active, options.content, options.seconds],
+      ([isActive, text]) => {
+        if (!isActive) {
+          close()
+          dismissed = false
+          return
+        }
 
-      if (handle) {
-        // Nur den Text nachziehen — ein neuer Toast für dieselbe Ursache
-        // würde bei jedem Tastendruck erneut aufspringen. Der Zähler läuft
-        // dabei weiter, sonst ließe er sich durch Tippen endlos verlängern.
-        handle.content = text
-        return
-      }
+        if (handle) {
+          // Nur den Text nachziehen — ein neuer Toast für dieselbe Ursache
+          // würde bei jedem Tastendruck erneut aufspringen. Der Zähler läuft
+          // dabei weiter, sonst ließe er sich durch Tippen endlos verlängern.
+          handle.content = text
+          return
+        }
 
-      if (dismissed) return
+        if (dismissed) return
 
-      handle = notification.create({
-        title: options.title,
-        content: text,
-        type: options.type,
-        // Kein `duration`: Der Zähler unten macht das sichtbar und lässt sich
-        // in den Einstellungen abschalten.
-        closable: true,
-        onClose: () => {
-          dismissed = true
-          stopTicker()
-          handle = null
-        },
-      })
-      startTicker()
-    },
-    { immediate: true },
-  )
+        handle = notification.create({
+          title: options.title,
+          content: text,
+          type: options.type,
+          // Kein `duration`: Der Zähler unten macht das sichtbar und lässt sich
+          // in den Einstellungen abschalten.
+          closable: true,
+          onClose: () => {
+            dismissed = true
+            stopTicker()
+            handle = null
+          },
+        })
+        startTicker()
+      },
+      { immediate: true },
+    )
+  })
 
   onUnmounted(close)
 }

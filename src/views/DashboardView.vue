@@ -101,6 +101,10 @@ const foreignCurrencySummary = computed(() =>
     .join(' · '),
 )
 
+const failureSummary = computed(() =>
+  failures.value.map((failure) => `${failure.symbol}: ${failure.reason}`).join(' · '),
+)
+
 const { notify } = useAppNotification()
 
 notify(
@@ -141,10 +145,6 @@ notify(
       `Die Ziel-Anteile summieren sich auf ${percent(result.value?.targetPercentSum ?? 0)} — ` +
       'mehr als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht schlüssig.',
   },
-)
-
-const failureSummary = computed(() =>
-  failures.value.map((failure) => `${failure.symbol}: ${failure.reason}`).join(' · '),
 )
 
 // ─── Position hinzufügen ──────────────────────────────────────────────────
