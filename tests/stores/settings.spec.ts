@@ -178,17 +178,14 @@ describe('withDefaults — Meldungs-Zähler', () => {
     // ihn stillschweigend überschrieben.
     const alt: Partial<Settings> = {
       activePortfolioId: 'p1',
-      ui: { columns: defaultSettings('p1').ui.columns, notificationSeconds: 0 },
+      ui: { notificationSeconds: 0 },
     }
     expect(withDefaults(alt).ui.notificationSeconds).toBe(0)
   })
 
   it('ergänzt den Zähler bei Einstellungen aus einer älteren Fassung', () => {
-    // Solche Datensätze kennen nur `columns`.
-    const alt = {
-      activePortfolioId: 'p1',
-      ui: { columns: defaultSettings('p1').ui.columns },
-    } as unknown as Partial<Settings>
+    // Solche Datensätze kennen den Zähler noch nicht.
+    const alt = { activePortfolioId: 'p1', ui: {} } as unknown as Partial<Settings>
     expect(withDefaults(alt).ui.notificationSeconds).toBe(
       defaultSettings('p1').ui.notificationSeconds,
     )

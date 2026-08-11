@@ -208,7 +208,6 @@ Healthcheck färbt den Zustand im Docker-Reiter.
 
 | Thema | Stand |
 |---|---|
-| Anzeige-Spalten ein-/ausblendbar | offen — die Einstellung existiert, ohne Oberfläche |
 | Warnung bei nicht-EUR-Positionen | offen — die App rechnet durchgängig in Euro |
 | Threshold-Benachrichtigungen | bewusst außerhalb des MVP |
 | CORS gegen die produktive API | ungeprüft — die Origin des Containers muss erlaubt sein |

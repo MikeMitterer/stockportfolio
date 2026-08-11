@@ -61,14 +61,6 @@ export function defaultSettings(activePortfolioId: string): Settings {
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: defaultLinks(),
     ui: {
-      columns: {
-        volatility: true,
-        optimalUnits: true,
-        groupSharePercent: false,
-        deltaEuro: true,
-        deltaMax: false,
-        deltaPercentAbs: false,
-      },
       // Lang genug zum Lesen, kurz genug, um beim Tippen nicht zu stören.
       notificationSeconds: 8,
     },
@@ -104,7 +96,6 @@ export function withDefaults(stored: Partial<Settings>): Settings {
     securityBuffer: buffer,
     links: stored.links?.length ? stored.links : base.links,
     ui: {
-      columns: { ...base.ui.columns, ...stored.ui?.columns },
       notificationSeconds: stored.ui?.notificationSeconds ?? base.ui.notificationSeconds,
     },
   }

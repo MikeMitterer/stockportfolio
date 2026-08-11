@@ -412,14 +412,6 @@ describe('computeRebalancing', () => {
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
     ui: {
-      columns: {
-        volatility: false,
-        optimalUnits: false,
-        groupSharePercent: false,
-        deltaEuro: false,
-        deltaMax: false,
-        deltaPercentAbs: false,
-      },
       notificationSeconds: 0,
     },
   }
@@ -683,14 +675,6 @@ describe('computeLiquidity', () => {
       refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
       links: [],
       ui: {
-        columns: {
-          volatility: false,
-          optimalUnits: false,
-          groupSharePercent: false,
-          deltaEuro: false,
-          deltaMax: false,
-          deltaPercentAbs: false,
-        },
         notificationSeconds: 0,
       },
     }

@@ -92,14 +92,6 @@ export interface Settings {
   refresh: { autoOnLoad: boolean; staleAfterMinutes: number }
   links: ExternalLink[]
   ui: {
-    columns: {
-      volatility: boolean
-      optimalUnits: boolean
-      groupSharePercent: boolean
-      deltaEuro: boolean
-      deltaMax: boolean
-      deltaPercentAbs: boolean
-    }
     /**
      * Sekunden, nach denen sich eine Meldung von selbst ausblendet.
      *
