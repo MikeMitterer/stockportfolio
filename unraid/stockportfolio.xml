@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!--
+  Unraid-Container-Template für StockPortfolio.
+
+  Ablegen unter /boot/config/plugins/dockerMan/templates-user/ — danach
+  erscheint der Container im Docker-Reiter unter „Add Container" in der
+  Vorlagen-Auswahl.
+
+  Es gibt bewusst kein Volume: Die App speichert alles im Browser des
+  Nutzers (IndexedDB), nicht im Container. Ein Update ist damit ein reines
+  „Pull & Restart" — Depots und Einstellungen bleiben unberührt, weil sie
+  gar nicht hier liegen.
+-->
+<Container version="2">
+  <Name>StockPortfolio</Name>
+  <Repository>mangolila/stockportfolio</Repository>
+  <Registry>https://hub.docker.com/r/mangolila/stockportfolio</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support/>
+  <Project>https://github.com/MikeMitterer/StockPortfolio</Project>
+  <Overview>
+    Rebalancing nach Toleranzbändern als Web-App. Zeigt, wie weit die Anteile
+    eines Depots von ihrer Zielverteilung abweichen, und rechnet einen
+    Handelsplan durch, ohne etwas zu buchen.&#13;&#13;
+    Kurse und Stammdaten kommen aus einer StockInfo-Instanz; deren Adresse
+    wird unten gesetzt und gilt ab dem Start — dasselbe Abbild lässt sich
+    damit auf ein anderes Backend richten, ohne neu gebaut zu werden.&#13;&#13;
+    Depot und Einstellungen liegen ausschliesslich im Browser des Nutzers.
+    Der Container speichert nichts, braucht kein Volume und verliert bei
+    einem Update nichts. Zum Umziehen auf ein anderes Gerät gibt es in der
+    App unter Einstellungen - Daten eine Sicherung als Datei.
+  </Overview>
+  <Category>Productivity: Tools:</Category>
+  <WebUI>http://[IP]:[PORT:80]</WebUI>
+  <TemplateURL/>
+  <Icon>https://raw.githubusercontent.com/MikeMitterer/StockPortfolio/main/public/favicon.svg</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Eine erreichbare StockInfo-Instanz.</Requires>
+
+  <Config
+    Name="WebUI Port"
+    Target="80"
+    Default="8088"
+    Mode="tcp"
+    Description="Port, unter dem die Oberfläche erreichbar ist. Im Container hört nginx auf 80."
+    Type="Port"
+    Display="always"
+    Required="true"
+    Mask="false">8088</Config>
+
+  <Config
+    Name="StockInfo-API"
+    Target="STOCKINFO_API_URL"
+    Default="https://stockinfo.int.mikemitterer.at"
+    Mode=""
+    Description="Adresse der StockInfo-Instanz, von der Kurse und Stammdaten kommen. Wird beim Start in die App geschrieben — ein Neustart des Containers genügt, um sie zu ändern. Welche Adresse gerade gilt, steht in der App unter Einstellungen → Status."
+    Type="Variable"
+    Display="always"
+    Required="true"
+    Mask="false">https://stockinfo.int.mikemitterer.at</Config>
+
+  <Config
+    Name="Zeitzone"
+    Target="TZ"
+    Default="Europe/Vienna"
+    Mode=""
+    Description="Nur für die Zeitstempel im Container-Protokoll. Die Oberfläche richtet sich nach dem Browser."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false">Europe/Vienna</Config>
+</Container>

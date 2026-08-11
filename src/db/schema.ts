@@ -9,7 +9,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 export const DB_NAME = 'stockportfolio'
-export const DB_VERSION = 2
+export const DB_VERSION = 3
 
 /** Fester Schlüssel des Settings-Singletons. */
 export const SETTINGS_KEY = 'default'
@@ -34,6 +34,22 @@ export function allowlistId(portfolioId: string, key: string): string {
   return `${portfolioId}::${key}`
 }
 
+/**
+ * Zwischengespeicherter Kursverlauf.
+ *
+ * Tagesschlusskurse ändern sich einmal täglich. Ohne diesen Speicher holte
+ * die App bei jedem Seitenaufbau den Verlauf jeder Position neu — sechs
+ * Anfragen für Zahlen, die sich seit gestern nicht bewegt haben.
+ */
+export interface HistoryEntry {
+  /** `<isin>::<period>` */
+  key: string
+  isin: string
+  period: string
+  points: { date: string; close: number }[]
+  fetchedAt: string
+}
+
 export interface StockPortfolioDB extends DBSchema {
   portfolios: {
     key: string
@@ -51,6 +67,10 @@ export interface StockPortfolioDB extends DBSchema {
     key: string
     value: AllowlistEntry
     indexes: { byPortfolio: string }
+  }
+  dailyHistory: {
+    key: string
+    value: HistoryEntry
   }
 }
 
@@ -98,6 +118,13 @@ export function getDb(): Promise<IDBPDatabase<StockPortfolioDB>> {
               })
           }
         }
+      }
+
+      // Version 2 → 3: Zwischenspeicher für den Kursverlauf.
+      //
+      // Rein additiv — nichts umzuziehen. Fehlt der Verlauf, wird er geholt.
+      if (oldVersion < 3 && !db.objectStoreNames.contains('dailyHistory')) {
+        db.createObjectStore('dailyHistory', { keyPath: 'key' })
       }
     },
   })

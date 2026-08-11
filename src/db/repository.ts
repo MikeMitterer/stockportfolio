@@ -5,7 +5,13 @@
  * `idb` taucht außerhalb von `src/db/` nirgends auf.
  */
 
-import { allowlistId, getDb, SETTINGS_KEY, type AllowlistEntry } from './schema'
+import {
+  allowlistId,
+  getDb,
+  SETTINGS_KEY,
+  type AllowlistEntry,
+  type HistoryEntry,
+} from './schema'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 /**
@@ -99,6 +105,31 @@ export class QuoteCacheRepository {
   async put(key: string, entry: QuoteCacheEntry): Promise<void> {
     const db = await getDb()
     await db.put('quoteCache', toStorable({ ...entry, key }))
+  }
+}
+
+/**
+ * Zwischenspeicher für den Kursverlauf.
+ *
+ * Tagesschlusskurse ändern sich einmal täglich. Ohne diesen Speicher holte die
+ * App bei jedem Seitenaufbau den Verlauf jeder Position neu — Anfragen für
+ * Zahlen, die sich seit gestern nicht bewegt haben.
+ */
+export class HistoryRepository {
+  async load(key: string): Promise<HistoryEntry | null> {
+    const db = await getDb()
+    return (await db.get('dailyHistory', key)) ?? null
+  }
+
+  async put(entry: HistoryEntry): Promise<void> {
+    const db = await getDb()
+    await db.put('dailyHistory', toStorable(entry))
+  }
+
+  /** Wirft den gesamten Zwischenspeicher weg — für „neu laden". */
+  async clear(): Promise<void> {
+    const db = await getDb()
+    await db.clear('dailyHistory')
   }
 }
 

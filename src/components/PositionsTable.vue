@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, h, ref, watch } from 'vue'
+import { computed, h, inject, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDataTable, type DataTableColumns } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
+import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
@@ -11,6 +12,8 @@ import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
+import { useHistoryStore } from '@/stores/history'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 type RowKey = string | number
 
@@ -32,6 +35,30 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+/**
+ * Kursverlauf für die Zeilen.
+ *
+ * Kurzer Zeitraum: In 90 Pixeln Breite ist ein Jahr nur noch Zickzack. Ein
+ * Monat zeigt die Bewegung, um die es hier geht — kommt der Kurs von oben
+ * oder von unten?
+ */
+const SPARK_PERIOD = '1m' as const
+
+const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
+const historyStore = useHistoryStore()
+
+// Nachladen, sobald die Zeilen stehen. Der Store holt nur, was fehlt oder von
+// gestern ist — meist kostet das keine einzige Anfrage.
+watch(
+  () => props.rows.map((row) => row.position.id).join(','),
+  () => {
+    for (const row of props.rows) {
+      void historyStore.ensure(client, row.position, SPARK_PERIOD)
+    }
+  },
+  { immediate: true },
+)
 
 const expandedRowKeys = ref<RowKey[]>([])
 
@@ -112,7 +139,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.symbol'),
     key: 'symbol',
-    width: 260,
+    width: 220,
     render: (row) =>
       h('div', { class: 'flex flex-col gap-0.5' }, [
         // Kürzel und Verweis-Symbole in einer Zeile — die Links gehören zum
@@ -197,6 +224,20 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
           : h('span', { class: 'tabular-nums text-status-out text-xs' }, t('table.quoteMissing')),
   },
   {
+    title: 'Verlauf',
+    key: 'history',
+    // Schmal gehalten: Die Spalte ist eine Zugabe, keine Hauptzahl — sie darf
+    // dem Delta und dem Status keinen Platz wegnehmen.
+    width: 130,
+    render: (row) => {
+      if (row.position.group === 'cash') {
+        return h('span', { class: 'text-ink-muted text-xs' }, '—')
+      }
+      const series = historyStore.get(row.position, SPARK_PERIOD)
+      return h(PriceSparkline, { points: series.points, loading: series.loading, width: 62 })
+    },
+  },
+  {
     title: t('table.marketValue'),
     key: 'marketValue',
     align: 'right',
@@ -244,7 +285,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.delta'),
     key: 'delta',
-    width: 180,
+    width: 150,
     render: (row) =>
       row.isActive
         ? h(DeltaBar, { relativePercent: row.relativeDeltaPercent, bands: props.bands })

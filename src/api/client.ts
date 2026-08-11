@@ -59,6 +59,18 @@ export class StockInfoClient {
     )
   }
 
+  /**
+   * Tagesschlusskurse zu einem Symbol.
+   *
+   * Nötig für Positionen ohne ISIN — Cash hat keine, und selbst gepflegte
+   * Papiere manchmal auch nicht.
+   */
+  async getDailyHistoryBySymbol(symbol: string, period: Period = '3m'): Promise<DailyPoint[]> {
+    return this.request<DailyPoint[]>(
+      `/quote/by-symbol/${encodeURIComponent(symbol)}/daily?period=${period}`,
+    )
+  }
+
   /** Intraday-Kurshistorie zu einer ISIN. */
   async getQuoteHistory(isin: string, limit = 100): Promise<QuotePoint[]> {
     return this.request<QuotePoint[]>(

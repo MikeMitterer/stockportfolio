@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   NCard,
@@ -20,6 +20,8 @@ import {
 } from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
 import { resolveKind, resolveLinks } from '@/domain/links'
+import PriceChart from '@/components/PriceChart.vue'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, Bands, ExternalLink, Position } from '@/types/portfolio'
 
@@ -37,6 +39,8 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
 
 const isCash = computed(() => props.row.position.group === 'cash')
 
@@ -118,190 +122,204 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     Leerraum daneben, und die Details rutschten unter den Falz. Nebeneinander
     ist der aufgeklappte Bereich rund halb so hoch.
   -->
-  <div
-    class="grid grid-cols-1 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] gap-3 p-3"
-  >
-    <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-raised h-full">
-      <template #header>
-        <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
-      </template>
+  <div class="flex flex-col gap-3 p-3">
+    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] gap-3">
+      <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
+      <NCard :bordered="false" size="small" class="!bg-raised h-full">
+        <template #header>
+          <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
+        </template>
 
-      <div class="flex flex-col gap-2">
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex flex-col gap-1 text-xs">
-            <span class="text-ink-muted">
-              {{ isCash ? 'Betrag (€)' : t('table.units') }}
-            </span>
-            <NInputNumber
-              :value="row.position.units"
-              :precision="isCash ? 2 : 0"
-              :min="0"
-              :step="isCash ? 100 : 1"
-              size="small"
-              @update:value="updateUnits"
-            />
-          </label>
-
-          <label class="flex flex-col gap-1 text-xs">
-            <span class="text-ink-muted">{{ t('table.targetPercent') }}</span>
-            <NInputNumber
-              :value="row.position.targetPercent"
-              :precision="2"
-              :min="0"
-              :max="100"
-              :step="0.5"
-              size="small"
-              @update:value="updateTargetPercent"
-            />
-          </label>
-        </div>
-
-        <label class="flex flex-col gap-1 text-xs">
-          <span class="text-ink-muted">{{ t('drilldown.displayName') }}</span>
-          <NInput
-            :value="row.position.displayName"
-            size="small"
-            @update:value="updateDisplayName"
-          />
-        </label>
-
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex flex-col gap-1 text-xs">
-            <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
-            <NSelect
-              :value="row.position.group"
-              :options="groupOptions"
-              size="small"
-              @update:value="updateGroup"
-            />
-          </label>
-
-          <label class="flex flex-col gap-1 text-xs">
-            <span class="text-ink-muted">{{ t('drilldown.enabled') }}</span>
-            <div class="pt-1">
-              <NSwitch
-                :value="row.position.enabled"
+        <div class="flex flex-col gap-2">
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex flex-col gap-1 text-xs">
+              <span class="text-ink-muted">
+                {{ isCash ? 'Betrag (€)' : t('table.units') }}
+              </span>
+              <NInputNumber
+                :value="row.position.units"
+                :precision="isCash ? 2 : 0"
+                :min="0"
+                :step="isCash ? 100 : 1"
                 size="small"
-                @update:value="updateEnabled"
+                @update:value="updateUnits"
               />
-            </div>
+            </label>
+
+            <label class="flex flex-col gap-1 text-xs">
+              <span class="text-ink-muted">{{ t('table.targetPercent') }}</span>
+              <NInputNumber
+                :value="row.position.targetPercent"
+                :precision="2"
+                :min="0"
+                :max="100"
+                :step="0.5"
+                size="small"
+                @update:value="updateTargetPercent"
+              />
+            </label>
+          </div>
+
+          <label class="flex flex-col gap-1 text-xs">
+            <span class="text-ink-muted">{{ t('drilldown.displayName') }}</span>
+            <NInput
+              :value="row.position.displayName"
+              size="small"
+              @update:value="updateDisplayName"
+            />
           </label>
-        </div>
 
-        <label class="flex flex-col gap-1 text-xs">
-          <span class="text-ink-muted">{{ t('drilldown.notes') }}</span>
-          <NInput
-            :value="row.position.notes ?? ''"
-            type="textarea"
-            :rows="2"
-            size="small"
-            @update:value="updateNotes"
-          />
-        </label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex flex-col gap-1 text-xs">
+              <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
+              <NSelect
+                :value="row.position.group"
+                :options="groupOptions"
+                size="small"
+                @update:value="updateGroup"
+              />
+            </label>
 
-        <div class="flex items-center gap-2">
-          <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
-            Kurs neu laden
-          </NButton>
-          <NPopconfirm @positive-click="emit('remove', row.position.id)">
-            <template #trigger>
-              <NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton>
-            </template>
-            Position „{{ row.position.displayName }}" wirklich löschen?
-          </NPopconfirm>
-        </div>
-      </div>
-    </NCard>
+            <label class="flex flex-col gap-1 text-xs">
+              <span class="text-ink-muted">{{ t('drilldown.enabled') }}</span>
+              <div class="pt-1">
+                <NSwitch
+                  :value="row.position.enabled"
+                  size="small"
+                  @update:value="updateEnabled"
+                />
+              </div>
+            </label>
+          </div>
 
-    <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
-    <NCard :bordered="false" size="small" class="!bg-raised h-full">
-      <template #header>
-        <span class="text-sm font-medium">Details</span>
-      </template>
+          <label class="flex flex-col gap-1 text-xs">
+            <span class="text-ink-muted">{{ t('drilldown.notes') }}</span>
+            <NInput
+              :value="row.position.notes ?? ''"
+              type="textarea"
+              :rows="2"
+              size="small"
+              @update:value="updateNotes"
+            />
+          </label>
 
-      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-2 text-xs">
-        <div>
-          <div class="text-ink-muted">ISIN</div>
-          <div class="tabular-nums">{{ row.position.isin ?? '—' }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">Symbol</div>
-          <div class="tabular-nums">{{ row.position.symbol }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">Kurs</div>
-          <div class="tabular-nums">{{ row.quote ? eurCent(row.quote.price) : '—' }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">Marktwert</div>
-          <div class="tabular-nums">{{ eur(row.marketValue) }}</div>
-        </div>
-
-        <div>
-          <div class="text-ink-muted">{{ t('drilldown.lowerBand') }}</div>
-          <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">Ziel-Wert</div>
-          <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">{{ t('drilldown.upperBand') }}</div>
-          <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">{{ t('drilldown.deltaEuro') }}</div>
-          <div
-            class="tabular-nums"
-            :class="row.suggestion === 'ok' ? 'text-status-ok' : 'text-status-out'"
-          >
-            {{ eurSigned(deltaEuro) }}
+          <div class="flex items-center gap-2">
+            <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
+              Kurs neu laden
+            </NButton>
+            <NPopconfirm @positive-click="emit('remove', row.position.id)">
+              <template #trigger>
+                <NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton>
+              </template>
+              Position „{{ row.position.displayName }}" wirklich löschen?
+            </NPopconfirm>
           </div>
         </div>
+      </NCard>
 
-        <div v-if="optimalUnits !== null">
-          <div class="text-ink-muted">{{ t('drilldown.optimalUnits') }}</div>
-          <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
-        </div>
-        <div>
-          <div class="text-ink-muted">Δ Bestand (Stück)</div>
-          <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
-        </div>
-        <div v-if="row.quote?.volatility != null">
-          <div class="text-ink-muted">{{ t('drilldown.volatility') }}</div>
-          <div class="tabular-nums">{{ percent(row.quote.volatility) }}</div>
-        </div>
-        <div v-if="row.quote?.ter != null">
-          <div class="text-ink-muted">TER</div>
-          <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
-        </div>
-        <div v-if="row.quote">
-          <div class="text-ink-muted">Kurs-Stand</div>
-          <div class="tabular-nums">{{ quoteAge }}</div>
-        </div>
+      <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
+      <NCard :bordered="false" size="small" class="!bg-raised h-full">
+        <template #header>
+          <span class="text-sm font-medium">Details</span>
+        </template>
 
-        <div v-if="kindLabel">
-          <div class="text-ink-muted">Gattung</div>
-          <div>{{ kindLabel }}</div>
-        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-2 text-xs">
+          <div>
+            <div class="text-ink-muted">ISIN</div>
+            <div class="tabular-nums">{{ row.position.isin ?? '—' }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">Symbol</div>
+            <div class="tabular-nums">{{ row.position.symbol }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">Kurs</div>
+            <div class="tabular-nums">{{ row.quote ? eurCent(row.quote.price) : '—' }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">Marktwert</div>
+            <div class="tabular-nums">{{ eur(row.marketValue) }}</div>
+          </div>
 
-        <div class="col-span-2 md:col-span-3 xl:col-span-4 flex items-center gap-3 pt-1">
-          <a
-            v-for="link in resolvedLinks"
-            :key="link.id"
-            :href="link.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-accent hover:opacity-80 text-xs underline"
-          >
-            {{ link.label }} ↗
-          </a>
-          <span v-if="resolvedLinks.length === 0" class="text-xs text-ink-muted">
-            Keine passenden Verweise — unter „Einstellungen" konfigurierbar.
-          </span>
+          <div>
+            <div class="text-ink-muted">{{ t('drilldown.lowerBand') }}</div>
+            <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">Ziel-Wert</div>
+            <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">{{ t('drilldown.upperBand') }}</div>
+            <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">{{ t('drilldown.deltaEuro') }}</div>
+            <div
+              class="tabular-nums"
+              :class="row.suggestion === 'ok' ? 'text-status-ok' : 'text-status-out'"
+            >
+              {{ eurSigned(deltaEuro) }}
+            </div>
+          </div>
+
+          <div v-if="optimalUnits !== null">
+            <div class="text-ink-muted">{{ t('drilldown.optimalUnits') }}</div>
+            <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
+          </div>
+          <div>
+            <div class="text-ink-muted">Δ Bestand (Stück)</div>
+            <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
+          </div>
+          <div v-if="row.quote?.volatility != null">
+            <div class="text-ink-muted">{{ t('drilldown.volatility') }}</div>
+            <div class="tabular-nums">{{ percent(row.quote.volatility) }}</div>
+          </div>
+          <div v-if="row.quote?.ter != null">
+            <div class="text-ink-muted">TER</div>
+            <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
+          </div>
+          <div v-if="row.quote">
+            <div class="text-ink-muted">Kurs-Stand</div>
+            <div class="tabular-nums">{{ quoteAge }}</div>
+          </div>
+
+          <div v-if="kindLabel">
+            <div class="text-ink-muted">Gattung</div>
+            <div>{{ kindLabel }}</div>
+          </div>
+
+          <div class="col-span-2 md:col-span-3 xl:col-span-4 flex items-center gap-3 pt-1">
+            <a
+              v-for="link in resolvedLinks"
+              :key="link.id"
+              :href="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-accent hover:opacity-80 text-xs underline"
+            >
+              {{ link.label }} ↗
+            </a>
+            <span v-if="resolvedLinks.length === 0" class="text-xs text-ink-muted">
+              Keine passenden Verweise — unter „Einstellungen" konfigurierbar.
+            </span>
+          </div>
         </div>
-      </div>
+      </NCard>
+    </div>
+
+    <!-- ─── Kursverlauf ──────────────────────────────────────────────── -->
+    <NCard
+      v-if="row.position.group !== 'cash'"
+      :bordered="false"
+      size="small"
+      class="!bg-raised"
+    >
+      <PriceChart
+        :position="row.position"
+        :client="client"
+        :currency="row.quote?.currency ?? 'EUR'"
+      />
     </NCard>
   </div>
 </template>

@@ -35,6 +35,16 @@ Das ist die Notierungs-, nicht die Risikowährung: Ein EUR-notierter MSCI World
 steckt zu zwei Dritteln in US-Dollar. Diese Unterscheidung kann die App nicht
 treffen und behauptet sie auch nicht.
 
+### Kursverlauf
+
+Jede Zeile zeigt eine kleine Verlaufslinie über einen Monat — sie beantwortet
+eine Frage, die keine Zahl beantwortet: Kommt der Kurs gerade von oben oder
+von unten? In der aufgeklappten Zeile steht das Ganze größer, mit Hoch, Tief
+und wählbarem Zeitraum bis „Max".
+
+Tagesschlusskurse ändern sich einmal täglich; sie werden deshalb in IndexedDB
+gehalten und höchstens einmal pro Tag je Papier geholt.
+
 ### Fünf Assetklassen
 
 `Aktien / ETFs`, `Anleihen`, `Edelmetalle`, `Geldmarkt`, `Cash`.
