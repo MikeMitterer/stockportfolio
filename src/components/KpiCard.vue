@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import InfoHint from '@/components/InfoHint.vue'
 
 const props = defineProps<{
   label: string
   value: string
   hint?: string
   tone?: 'default' | 'positive' | 'warning' | 'danger'
+  /** Kurzerklärung des Begriffs; ohne sie erscheint kein Fragezeichen. */
+  explanation?: string
+  /** Sprungmarke auf der Methodenseite. */
+  anchor?: string
 }>()
 
 const toneClasses = computed(() => {
@@ -33,8 +38,9 @@ const toneClasses = computed(() => {
     kosten — der Kopfbereich stand sonst über der Tabelle wie ein Block.
   -->
   <div class="flex flex-col gap-0.5 px-4 py-1.5 border-l border-edge first:border-l-0 first:pl-0">
-    <div class="text-[11px] uppercase tracking-wide text-ink-muted leading-tight">
+    <div class="flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted leading-tight">
       {{ label }}
+      <InfoHint v-if="explanation" :text="explanation" :anchor="anchor" />
     </div>
     <div class="flex items-baseline gap-2 min-w-0">
       <span class="text-base font-semibold tabular-nums leading-tight" :class="toneClasses">

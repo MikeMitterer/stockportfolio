@@ -372,6 +372,66 @@ export const de = {
     overHundred: '· über 100 %',
   },
 
+  method: {
+    title: 'Die Methode',
+    intro:
+      'Diese Seite erklärt, wonach die App rechnet. Sie ist zum Nachschlagen da — die App lässt sich auch ohne sie bedienen.',
+    more: 'Mehr dazu →',
+
+    bandsHeading: 'Toleranzbänder',
+    bandsBody:
+      'Ein Depot soll eine bestimmte Aufteilung haben. Kurse verschieben sie laufend, aber nicht jede Abweichung ist ein Handlungsbedarf: Wer bei jedem Prozentpunkt umschichtet, zahlt Gebühren und Steuern für eine Genauigkeit, die am nächsten Tag wieder dahin ist.',
+    bandsBody2:
+      'Die Bänder ziehen eine Grenze. Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das untere oder obere Band abweicht, springt der Status auf Buy oder Sell. Relativ heißt: Bei einem Ziel von 10 % und einem unteren Band von 6 % beginnt der Handlungsbedarf bei 9,4 % — nicht bei 4 %.',
+    bandsBody3:
+      'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben. Ein gefallener Anteil bedeutet, dass man günstig nachkaufen kann; ein gestiegener bedeutet nur, dass etwas gut gelaufen ist.',
+    bandsBody4:
+      'Der Unterschied zum verbreiteten Kalender-Rebalancing: Dort schichtet man zu festen Terminen um, unabhängig davon, ob es nötig ist. Nach Bändern geschieht es, wenn es etwas zu tun gibt — in ruhigen Jahren gar nicht, in bewegten mehrmals.',
+
+    classesHeading: 'Fünf Assetklassen',
+    classesBody:
+      'Aktien/ETFs, Anleihen, Edelmetalle, Geldmarkt und Cash. Die Trennung von Anleihen und Geldmarkt ist kein Detail: Laufzeit-Anleihen schwanken und taugen nicht als Reserve, geldmarktnahe Papiere tun das kaum. Nur Geldmarkt und Cash zählen deshalb zur verfügbaren Liquidität.',
+
+    reserveHeading: 'Sicherheitspuffer und Investitionsreserve',
+    reserveBody:
+      'Der Sicherheitspuffer ist der Betrag, der unangetastet bleiben soll — ein Notgroschen, kein Anlagebetrag. Was an Geldmarkt und Cash darüber liegt, ist die Investitionsreserve.',
+    reserveBody2:
+      'Sie ist rein informativ: Sie sagt, wie viel bei einem Rückgang höchstens eingesetzt werden könnte, nicht wie viel eingesetzt werden soll. Diese Entscheidung nimmt die App niemandem ab.',
+    reserveBody3:
+      'Den Puffer gibt es als festen Betrag oder als Anteil am Gesamtwert. Beide Lesarten sind berechtigt: Ein Notgroschen von drei Monatsausgaben wächst nicht mit dem Depot, ein Liquiditätsanteil schon.',
+
+    planHeading: 'Der Rebalancing-Plan',
+    planBody:
+      'Der Plan rechnet, er bucht nicht. Man trägt Stückzahlen ein und sieht sofort, was das kostet oder einbringt und wo die Anteile danach liegen. Die Aufträge gibt man bei seiner Bank auf und pflegt die Bestände danach selbst nach.',
+    planBody2:
+      'Die Delta-Spalte nennt die Stückzahl bis zum Ziel. Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas in Euro gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht. Jeder Euro, der gekauft wird, muss sichtbar herkommen: aus einem Verkauf oder aus Cash bzw. Geldmarkt.',
+
+    limitsHeading: 'Was die App bewusst nicht tut',
+    limitsCurrency:
+      'Sie rechnet in einer einzigen Währung und wandelt nichts um. Ein fremd notiertes Papier bleibt sichtbar, zählt aber in keine Summe — 10.000 USD plus 10.000 EUR ergibt keine 20.000 von irgendetwas.',
+    limitsRisk:
+      'Sie sagt nichts über Währungsrisiko. Ein EUR-notierter MSCI World steckt zu zwei Dritteln in US-Dollar; das ist eine andere Frage als die Notierungswährung.',
+    limitsAdvice:
+      'Sie gibt keine Anlageberatung. Sie rechnet aus, was aus der eingegebenen Zielverteilung folgt — ob diese Verteilung sinnvoll ist, entscheidet der Nutzer.',
+    limitsData:
+      'Sie speichert nichts außerhalb des Browsers. Kein Server kennt die Bestände; die Kursquelle erfährt nur, welche Papiere abgefragt werden.',
+  },
+
+  hints: {
+    bands:
+      'Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das Band abweicht, entsteht Handlungsbedarf. Kleine Ausschläge bleiben unbeachtet — sie kosten sonst Gebühren für eine Genauigkeit, die nicht hält.',
+    investmentReserve:
+      'Geldmarkt und Cash abzüglich Sicherheitspuffer. Sagt, wie viel bei einem Rückgang höchstens eingesetzt werden könnte — nicht, wie viel eingesetzt werden soll.',
+    securityBuffer:
+      'Der Betrag, der unangetastet bleiben soll — ein Notgroschen, kein Anlagebetrag. Wählbar als fester Betrag oder als Anteil am Gesamtwert.',
+    delta:
+      'Abweichung vom Ziel, relativ zum Ziel selbst: −10 % heißt „ein Zehntel unter dem Zielwert", nicht „zehn Prozentpunkte". Die Farbe zeigt, ob die Position im Band liegt.',
+    coverFrom:
+      'Jeder Euro, der gekauft wird, muss sichtbar herkommen. Der Vorschlag nennt die Stückzahl, mit der Cash oder Geldmarkt die offene Lücke schließt.',
+    moneymarket:
+      'Geldmarktnahe Papiere schwanken kaum und zählen deshalb zusammen mit Cash zur verfügbaren Liquidität. Laufzeit-Anleihen tun das nicht.',
+  },
+
   backupErrors: {
     invalidJson: 'Die Datei enthält kein gültiges JSON.',
     notAnObject: 'Die Datei enthält kein Objekt.',

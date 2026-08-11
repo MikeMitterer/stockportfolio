@@ -3,6 +3,7 @@ import { computed, h, inject, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDataTable, type DataTableColumns } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
+import InfoHint from '@/components/InfoHint.vue'
 import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
@@ -290,7 +291,13 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       }),
   },
   {
-    title: t('table.delta'),
+    // Der Begriff ist erklärungsbedürftig: „relativ zum Ziel" ist etwas
+    // anderes als „Prozentpunkte", und die Verwechslung ist naheliegend.
+    title: () =>
+      h('span', { class: 'inline-flex items-center gap-1' }, [
+        t('table.delta'),
+        h(InfoHint, { text: t('hints.delta'), anchor: 'bands' }),
+      ]),
     key: 'delta',
     width: 150,
     render: (row) =>

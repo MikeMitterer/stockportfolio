@@ -22,6 +22,17 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/SettingsView.vue'),
   },
   {
+    /*
+     * Die Methodenseite steht bewusst nicht in der Hauptnavigation: Wer die
+     * App öffnet, will sie ausprobieren, nicht lesen. Erreichbar ist sie über
+     * die Fragezeichen an den Begriffen — also dann, wenn jemand eine Frage
+     * hat.
+     */
+    path: '/method',
+    name: 'method',
+    component: () => import('@/views/MethodView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: { name: 'dashboard' },
   },
@@ -42,4 +53,15 @@ export const router = createRouter({
    */
   history: createWebHashHistory(),
   routes,
+
+  /**
+   * Sprungmarken anfahren, sonst oben beginnen.
+   *
+   * Ohne das landet jeder Verweis auf einen Abschnitt der Methodenseite am
+   * Seitenanfang — der Nutzer müsste selbst suchen, was er angeklickt hat.
+   */
+  scrollBehavior(to) {
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
+    return { top: 0 }
+  },
 })

@@ -49,4 +49,5 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-22 | Fremdwährung + Meldungen einheitlich als Toast | [erledigt](solved/T-22-currency.md) |
 | T-23 | Kursverlauf + Unraid-Template | [erledigt](solved/T-23-history.md) |
 | T-24 | Sprachumschaltung DE/EN + Konventions-Durchgang | [erledigt](solved/T-24-i18n.md) |
+| T-25 | Erklärung in der App — Begriffe und Methodenseite | [erledigt](solved/T-25-doku.md) |
 | T-UI | Frühe UI-Vorschau | [erledigt](solved/T-UI-preview.md) |

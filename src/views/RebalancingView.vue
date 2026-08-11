@@ -3,6 +3,7 @@ import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NSpin, NTooltip, useNotification } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
+import InfoHint from '@/components/InfoHint.vue'
 import InlineNumber from '@/components/InlineNumber.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { assetColor } from '@/domain/assetColors'
@@ -266,7 +267,12 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           Höhe verhindert auch beim Erscheinen jeden Versatz.
         -->
         <div class="flex flex-col gap-0.5 min-h-[3.75rem]">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.coverFrom') }}</span>
+          <span
+            class="inline-flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted"
+          >
+            {{ t('rebalancing.coverFrom') }}
+            <InfoHint :text="t('hints.coverFrom')" anchor="plan" />
+          </span>
           <div v-if="coverageOptions.length > 0" class="flex flex-wrap items-center gap-1.5 pt-0.5">
             <button
               v-for="option in coverageOptions"

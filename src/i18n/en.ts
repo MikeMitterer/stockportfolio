@@ -373,6 +373,66 @@ export const en: MessageSchema = {
     overHundred: '· over 100 %',
   },
 
+  method: {
+    title: 'The method',
+    intro:
+      'This page explains what the app calculates. It is here to look things up — the app works without reading it.',
+    more: 'Read more →',
+
+    bandsHeading: 'Tolerance bands',
+    bandsBody:
+      'A portfolio is meant to have a certain allocation. Prices keep shifting it, but not every deviation calls for action: rebalancing on every percentage point costs fees and taxes for a precision that is gone again the next day.',
+    bandsBody2:
+      'The bands draw a line. Only when a share deviates from its target by more than the lower or upper band does the status switch to Buy or Sell. Relative, that is: with a target of 10 % and a lower band of 6 %, action starts at 9.4 % — not at 4 %.',
+    bandsBody3:
+      'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up. A share that has fallen means you can buy in cheaply; one that has risen only means something went well.',
+    bandsBody4:
+      'The difference to the common calendar rebalancing: there you rebalance on fixed dates, whether or not it is needed. With bands it happens when there is something to do — in quiet years not at all, in turbulent ones several times.',
+
+    classesHeading: 'Five asset classes',
+    classesBody:
+      'Stocks/ETFs, bonds, precious metals, money market and cash. Separating bonds from money market is not a detail: bonds with a maturity fluctuate and make a poor reserve, money-market instruments barely move. Only money market and cash therefore count as available liquidity.',
+
+    reserveHeading: 'Safety buffer and investable reserve',
+    reserveBody:
+      'The safety buffer is the amount meant to stay untouched — an emergency fund, not an investment. Whatever money market and cash hold above it is the investable reserve.',
+    reserveBody2:
+      'It is purely informational: it says how much could at most be invested in a downturn, not how much should be. The app does not take that decision from anyone.',
+    reserveBody3:
+      'The buffer comes as a fixed amount or as a share of total value. Both readings are legitimate: an emergency fund of three months of expenses does not grow with the portfolio, a liquidity share does.',
+
+    planHeading: 'The rebalancing plan',
+    planBody:
+      'The plan calculates, it does not book. You enter unit counts and see at once what that costs or brings in and where the shares end up. You place the orders with your bank and update the holdings yourself afterwards.',
+    planBody2:
+      'The delta column gives the units to reach the target. If the target shares add up to 100 %, all deltas cancel each other out in euro terms — follow them all and the plan adds up by itself. Every euro spent has to come from somewhere visible: from a sale, or from cash or money market.',
+
+    limitsHeading: 'What the app deliberately does not do',
+    limitsCurrency:
+      'It calculates in a single currency and converts nothing. An instrument quoted elsewhere stays visible but counts towards no total — 10,000 USD plus 10,000 EUR is not 20,000 of anything.',
+    limitsRisk:
+      'It says nothing about currency risk. A EUR-quoted MSCI World holds two thirds in US dollars; that is a different question from the quoting currency.',
+    limitsAdvice:
+      'It gives no investment advice. It works out what follows from the target allocation you entered — whether that allocation makes sense is your call.',
+    limitsData:
+      'It stores nothing outside the browser. No server knows the holdings; the price source only learns which instruments are queried.',
+  },
+
+  hints: {
+    bands:
+      'Action is only called for once a share deviates from its target by more than the band. Small swings are ignored — otherwise they cost fees for a precision that does not hold.',
+    investmentReserve:
+      'Money market and cash minus the safety buffer. Says how much could at most be invested in a downturn — not how much should be.',
+    securityBuffer:
+      'The amount meant to stay untouched — an emergency fund, not an investment. Either a fixed amount or a share of total value.',
+    delta:
+      'Deviation from the target, relative to the target itself: −10 % means “a tenth below the target value”, not “ten percentage points”. The colour shows whether the position is inside the band.',
+    coverFrom:
+      'Every euro spent has to come from somewhere visible. The suggestion gives the units with which cash or money market closes the open gap.',
+    moneymarket:
+      'Money-market instruments barely fluctuate and therefore count, together with cash, as available liquidity. Bonds with a maturity do not.',
+  },
+
   backupErrors: {
     invalidJson: 'The file does not contain valid JSON.',
     notAnObject: 'The file does not contain an object.',

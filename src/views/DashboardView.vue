@@ -2,6 +2,7 @@
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDivider, NSpin, NEmpty, NButton } from 'naive-ui'
+import InfoHint from '@/components/InfoHint.vue'
 import KpiCard from '@/components/KpiCard.vue'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
@@ -288,12 +289,16 @@ function toggleGroups(): void {
         <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
         <KpiCard
           :label="t('kpi.investmentReserve')"
+          :explanation="t('hints.investmentReserve')"
+          anchor="reserve"
           :value="eurSigned(result.liquidity.investmentReserve)"
           :hint="t('kpi.investmentReserveHint')"
           :tone="liquidityTone"
         />
         <KpiCard
           :label="t('kpi.investmentReservePercent')"
+          :explanation="t('hints.securityBuffer')"
+          anchor="reserve"
           :value="percent(result.liquidity.investmentReservePercent)"
           :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
         />
@@ -374,6 +379,7 @@ function toggleGroups(): void {
                   upper: percent(settingsStore.settings.bands.upperPercent),
                 })
               }}
+              <InfoHint :text="t('hints.bands')" anchor="bands" class="ml-1" />
               <span v-if="loading" class="ml-2">{{ t('common.loading') }}</span>
             </div>
             <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">

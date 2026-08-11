@@ -87,6 +87,18 @@ Solange ein Plan nicht gedeckt ist, steht im Kopf unter *Decken aus* je ein
 Knopf pro liquider Position mit der Stückzahl, die genau die offene Lücke
 schließt.
 
+### Erklärung in der App
+
+Die Begriffe, die nicht selbsterklärend sind — Toleranzband, Investitionsreserve,
+Sicherheitspuffer, Delta — tragen ein kleines Fragezeichen mit zwei, drei
+Sätzen. Wer mehr wissen will, landet über dieses Fragezeichen auf der Seite
+*Die Methode*: warum Bänder statt Kalender, warum asymmetrisch, und was die App
+bewusst nicht tut.
+
+Diese Seite steht **nicht** in der Hauptnavigation. Wer die App öffnet, will
+sie ausprobieren, nicht lesen — sie ist zum Nachschlagen da, wenn tatsächlich
+eine Frage auftaucht.
+
 ## Wo die Daten liegen
 
 **Ausschließlich im Browser** (IndexedDB), auf dem Gerät, an dem gearbeitet

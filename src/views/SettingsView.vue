@@ -11,6 +11,7 @@ import {
   NTabs,
 } from 'naive-ui'
 import BackupPanel from '@/components/BackupPanel.vue'
+import InfoHint from '@/components/InfoHint.vue'
 import PortfolioManager from '@/components/PortfolioManager.vue'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
 import { eur } from '@/domain/formatters'
@@ -145,7 +146,10 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
           <NCard :bordered="false" class="!bg-card">
             <template #header>
-              <span class="text-sm font-medium">{{ t('settings.bandsHeading') }}</span>
+              <span class="inline-flex items-center gap-1.5 text-sm font-medium">
+              {{ t('settings.bandsHeading') }}
+              <InfoHint :text="t('hints.bands')" anchor="bands" />
+            </span>
             </template>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -194,7 +198,10 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               Wahl hier — mit dem daraus folgenden Euro-Betrag als Kontrolle.
             -->
               <label class="flex flex-col gap-1 text-sm">
-                <span class="text-ink-muted">{{ t('settings.securityBuffer') }}</span>
+                <span class="inline-flex items-center gap-1.5 text-ink-muted">
+              {{ t('settings.securityBuffer') }}
+              <InfoHint :text="t('hints.securityBuffer')" anchor="reserve" />
+            </span>
                 <div class="flex gap-2">
                   <NInputNumber
                     class="flex-1"
