@@ -39,8 +39,13 @@ treffen und behauptet sie auch nicht.
 
 Jede Zeile zeigt eine kleine Verlaufslinie über einen Monat — sie beantwortet
 eine Frage, die keine Zahl beantwortet: Kommt der Kurs gerade von oben oder
-von unten? In der aufgeklappten Zeile steht das Ganze größer, mit Hoch, Tief
-und wählbarem Zeitraum bis „Max".
+von unten? Der Zeitraum steht im Spaltenkopf.
+
+In der aufgeklappten Zeile steht ein Diagramm mit Achsen: links die Kurse,
+rechts dieselben Linien als Veränderung seit Beginn des Zeitraums — zwei
+Lesarten derselben Daten, damit niemand im Kopf rechnen muss. Unten die
+Zeitachse, wählbar von einem Monat bis „Max". Beim Überfahren zeigt ein
+Zeiger Datum, Kurs und Veränderung des jeweiligen Tages.
 
 Tagesschlusskurse ändern sich einmal täglich; sie werden deshalb in IndexedDB
 gehalten und höchstens einmal pro Tag je Papier geholt.

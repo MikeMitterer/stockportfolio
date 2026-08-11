@@ -19,8 +19,10 @@ const props = withDefaults(
     loading?: boolean
     width?: number
     height?: number
+    /** Zeitraum im Klartext — erscheint beim Überfahren. */
+    periodLabel?: string
   }>(),
-  { loading: false, width: 90, height: 24 },
+  { loading: false, width: 90, height: 24, periodLabel: '' },
 )
 
 const line = computed(() => buildSparkline(props.points, props.width, props.height))
@@ -45,7 +47,8 @@ const label = computed(() => percentSigned(line.value.changePercent))
       :viewBox="`0 0 ${width} ${height}`"
       preserveAspectRatio="none"
       role="img"
-      :aria-label="`Kursverlauf ${label}`"
+      :aria-label="`Kursverlauf ${periodLabel}: ${label}`"
+      :title="periodLabel ? `${periodLabel}: ${label}` : label"
       class="shrink-0 overflow-visible"
     >
       <!-- Fläche nur angedeutet: Sie gibt der Linie Halt, ohne sie zu erschlagen. -->

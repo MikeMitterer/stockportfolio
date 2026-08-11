@@ -38,19 +38,38 @@ export interface Sparkline {
  * eine gerade Linie und damit nutzlos. Eine Verlaufslinie zeigt die Bewegung,
  * nicht das Niveau — für das Niveau steht der Kurs daneben.
  *
+ * Mit `domain` lässt sich der Wertebereich vorgeben — nötig, sobald daneben
+ * eine Achse steht: Die Linie muss dieselbe Skala verwenden wie deren Striche,
+ * sonst zeigt sie bei „160" auf eine andere Höhe als die Beschriftung.
+ *
  * @param points Kurspunkte in zeitlicher Reihenfolge.
  * @param width  Breite des Koordinatensystems.
  * @param height Höhe des Koordinatensystems.
+ * @param domain Vorgegebener Wertebereich; ohne Angabe der der Daten.
  */
-export function buildSparkline(points: HistoryPoint[], width: number, height: number): Sparkline {
+export function buildSparkline(
+  points: HistoryPoint[],
+  width: number,
+  height: number,
+  domain?: { min: number; max: number },
+): Sparkline {
   const values = points.map((point) => point.close).filter((value) => Number.isFinite(value))
 
   if (values.length === 0) {
-    return { path: '', areaPath: '', min: 0, max: 0, first: 0, last: 0, changePercent: 0, rising: true }
+    return {
+      path: '',
+      areaPath: '',
+      min: domain?.min ?? 0,
+      max: domain?.max ?? 0,
+      first: 0,
+      last: 0,
+      changePercent: 0,
+      rising: true,
+    }
   }
 
-  const min = Math.min(...values)
-  const max = Math.max(...values)
+  const min = domain?.min ?? Math.min(...values)
+  const max = domain?.max ?? Math.max(...values)
   const first = values[0] as number
   const last = values[values.length - 1] as number
 

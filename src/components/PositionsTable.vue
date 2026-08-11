@@ -224,7 +224,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
           : h('span', { class: 'tabular-nums text-status-out text-xs' }, t('table.quoteMissing')),
   },
   {
-    title: 'Verlauf',
+    // Der Zeitraum gehört in den Kopf, nicht in jede Zeile: einmal genannt,
+    // kostet er keinen Platz in den Zeilen.
+    title: 'Verlauf 1M',
     key: 'history',
     // Schmal gehalten: Die Spalte ist eine Zugabe, keine Hauptzahl — sie darf
     // dem Delta und dem Status keinen Platz wegnehmen.
@@ -234,7 +236,12 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         return h('span', { class: 'text-ink-muted text-xs' }, '—')
       }
       const series = historyStore.get(row.position, SPARK_PERIOD)
-      return h(PriceSparkline, { points: series.points, loading: series.loading, width: 62 })
+      return h(PriceSparkline, {
+        points: series.points,
+        loading: series.loading,
+        width: 62,
+        periodLabel: 'letzter Monat',
+      })
     },
   },
   {
