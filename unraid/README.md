@@ -14,14 +14,18 @@ Danach im Docker-Reiter auf „Add Container", oben unter *Template* den Eintrag
 | Feld | Bedeutung |
 |---|---|
 | WebUI Port | Host-Port; im Container hört nginx auf 80 |
-| StockInfo-API | Adresse der Instanz, von der die Kurse kommen |
+| StockInfo-API | Adresse der eigenen Instanz — voreingestellt `http://<host>:8000`, der Standard-Port von StockInfo |
+
+Die Adresse ist Pflicht: Ohne sie startet die App nicht, sondern zeigt eine
+entsprechende Meldung. StockInfo selbst liegt unter
+<https://github.com/MikeMitterer/stockinfo>.
 
 ## Ohne Vorlage
 
 ```bash
 docker run -d --name stockportfolio \
     -p 8088:80 \
-    -e STOCKINFO_API_URL=https://stockinfo.int.mikemitterer.at \
+    -e STOCKINFO_API_URL=http://<host>:8000 \
     --restart unless-stopped \
     mangolila/stockportfolio
 ```

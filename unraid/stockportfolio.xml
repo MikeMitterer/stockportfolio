@@ -59,13 +59,13 @@
   <Config
     Name="StockInfo-API"
     Target="STOCKINFO_API_URL"
-    Default="https://stockinfo.int.mikemitterer.at"
+    Default="http://&lt;host&gt;:8000"
     Mode=""
-    Description="Adresse der StockInfo-Instanz, von der Kurse und Stammdaten kommen. Wird beim Start in die App geschrieben — ein Neustart des Containers genügt, um sie zu ändern. Welche Adresse gerade gilt, steht in der App unter Einstellungen → Status."
+    Description="Adresse der eigenen StockInfo-Instanz, von der Kurse und Stammdaten kommen — &lt;host&gt; durch Namen oder IP ersetzen, 8000 ist der Standard-Port von StockInfo. Wird beim Start in die App geschrieben — ein Neustart des Containers genügt, um sie zu ändern. Welche Adresse gerade gilt, steht in der App unter Einstellungen → Status."
     Type="Variable"
     Display="always"
     Required="true"
-    Mask="false">https://stockinfo.int.mikemitterer.at</Config>
+    Mask="false">http://&lt;host&gt;:8000</Config>
 
   <Config
     Name="Zeitzone"

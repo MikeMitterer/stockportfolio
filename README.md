@@ -1,8 +1,9 @@
 # StockPortfolio
 
 Tolerance-band rebalancing as a web app — Vue 3 + Vite + TypeScript.
-It replaces a spreadsheet; prices come from the
-[StockInfo API](https://stockinfo.int.mikemitterer.at).
+It replaces a spreadsheet; prices come from
+[StockInfo](https://github.com/MikeMitterer/stockinfo), a separate service you
+run yourself.
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue)
 
@@ -266,13 +267,14 @@ database, no volumes.
 ```bash
 docker run -d --name stockportfolio \
     -p 8080:80 \
-    -e STOCKINFO_API_URL=https://stockinfo.int.mikemitterer.at \
+    -e STOCKINFO_API_URL=https://stockinfo.example.com \
     --restart unless-stopped \
     mangolila/stockportfolio
 ```
 
-Then open <http://localhost:8080>. `STOCKINFO_API_URL` is the address of your
-StockInfo instance — see [API address](#api-address) below.
+Then open <http://localhost:8080>. `STOCKINFO_API_URL` is the address of **your
+own** [StockInfo](https://github.com/MikeMitterer/stockinfo) instance — the app
+has no public backend to fall back on. See [API address](#api-address) below.
 
 If the API runs on the same machine but outside Docker, the container cannot
 reach it via `localhost`; use `http://host.docker.internal:8000` instead (on
@@ -288,7 +290,7 @@ services:
     ports:
       - '8080:80'
     environment:
-      STOCKINFO_API_URL: https://stockinfo.int.mikemitterer.at
+      STOCKINFO_API_URL: https://stockinfo.example.com
     restart: unless-stopped
 ```
 
@@ -354,6 +356,11 @@ It is **not** baked into the image. On start the entrypoint writes
 `STOCKINFO_API_URL` into `config.js`, from where the app reads it. The same image
 can therefore point at a different backend without being rebuilt. Without the
 variable, the value baked in at build time from `VITE_STOCKINFO_API_URL` applies.
+
+The address is mandatory. If neither source provides one, the app does not start
+but shows a message saying so — there is no built-in fallback, because a fallback
+address resolves for nobody but its owner and the mistake would only surface as an
+empty price table.
 
 ### Unraid
 

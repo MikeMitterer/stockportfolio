@@ -32,6 +32,13 @@ export const de = {
   // Bewusst englische Kürzel, auch im deutschen UI: „Kaufen"/„Verkaufen"
   // sind unterschiedlich lang und ließen die Spalte von Zeile zu Zeile
   // wandern. Buy/Sell/OK sind kurz, gleich lang und im Börsenkontext geläufig.
+  startup: {
+    noApiUrlTitle: 'Keine API-Adresse gesetzt',
+    noApiUrlBody:
+      'StockPortfolio holt seine Kurse von einer StockInfo-Instanz; ohne deren Adresse gibt es nichts zu rechnen. Im Container wird sie über die Umgebungsvariable STOCKINFO_API_URL gesetzt, in der Entwicklung über VITE_STOCKINFO_API_URL in der Datei .env.',
+    noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
+  },
+
   seed: {
     portfolioName: 'Mein Depot',
     demoName: 'Beispiel-Depot',

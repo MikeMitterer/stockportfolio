@@ -150,9 +150,22 @@ declare global {
 }
 
 /**
+ * Fehlt die API-Adresse, gibt es nichts zu starten.
+ *
+ * Eigene Fehlerklasse, damit der Start sie von einem beliebigen anderen
+ * Fehler unterscheiden und eine lesbare Seite zeigen kann.
+ */
+export class MissingApiUrlError extends Error {
+  constructor() {
+    super('STOCKINFO_API_URL ist nicht gesetzt')
+    this.name = 'MissingApiUrlError'
+  }
+}
+
+/**
  * Base-URL der API.
  *
- * Drei Quellen, in dieser Reihenfolge:
+ * Zwei Quellen, in dieser Reihenfolge:
  *
  * 1. `config.js` — vom Container-Entrypoint aus `STOCKINFO_API_URL` erzeugt.
  *    Ohne diesen Schritt wäre die Adresse ins Bündel gebacken und dasselbe
@@ -160,12 +173,21 @@ declare global {
  *    Umgebung bräuchte es einen eigenen Build.
  * 2. `VITE_STOCKINFO_API_URL` aus dem `.env` — der Wert zur Bauzeit, damit
  *    Entwicklung und Vorschau ohne Container auskommen.
- * 3. Die Produktions-Instanz als letzte Rückfallebene.
+ *
+ * Keine Rückfallebene: Eine fest eingebaute Adresse wäre für alle außer ihrem
+ * Besitzer ein Name, der nicht auflöst — und der Fehler zeigte sich erst als
+ * leere Kurstabelle. Die Adresse ist Pflicht, und fehlt sie, sagt das die App.
+ *
+ * @throws {MissingApiUrlError} Wenn keine der beiden Quellen etwas liefert.
  */
 export function apiBaseUrl(): string {
-  const runtime = globalThis.window?.__STOCKPORTFOLIO_CONFIG__?.apiUrl
+  const runtime = globalThis.window?.__STOCKPORTFOLIO_CONFIG__?.apiUrl?.trim()
   if (runtime) return runtime
-  return import.meta.env.VITE_STOCKINFO_API_URL || 'https://stockinfo.int.mikemitterer.at'
+
+  const compiled = import.meta.env.VITE_STOCKINFO_API_URL?.trim()
+  if (compiled) return compiled
+
+  throw new MissingApiUrlError()
 }
 
 /** Injection-Key für den Client (Vue provide/inject). */
