@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import InfoHint from '@/components/InfoHint.vue'
 
-const props = defineProps<{
+defineProps<{
   label: string
   value: string
   hint?: string
@@ -14,19 +13,6 @@ const props = defineProps<{
   /** Reiter in den Einstellungen, in dem der zugehörige Wert steht. */
   settingsTab?: string
 }>()
-
-const toneClasses = computed(() => {
-  switch (props.tone) {
-    case 'positive':
-      return 'text-status-ok'
-    case 'warning':
-      return 'text-status-near'
-    case 'danger':
-      return 'text-status-out'
-    default:
-      return 'text-ink'
-  }
-})
 </script>
 
 <template>
@@ -39,10 +25,8 @@ const toneClasses = computed(() => {
     darunter. Sie ist ohnehin nur Beiwerk und muss keine eigene Zeile Höhe
     kosten — der Kopfbereich stand sonst über der Tabelle wie ein Block.
   -->
-  <div class="flex flex-col gap-0.5 px-4 py-1.5 border-l border-edge first:border-l-0 first:pl-0">
-    <div
-      class="flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted leading-tight"
-    >
+  <div class="kpi">
+    <div class="kpi__label">
       {{ label }}
       <InfoHint
         v-if="explanation"
@@ -51,13 +35,79 @@ const toneClasses = computed(() => {
         :settings-tab="settingsTab"
       />
     </div>
-    <div class="flex items-baseline gap-2 min-w-0">
-      <span class="text-base font-semibold tabular-nums leading-tight" :class="toneClasses">
+
+    <div class="kpi__row">
+      <span class="kpi__value tabular-nums" :class="`kpi__value--${tone ?? 'default'}`">
         {{ value }}
       </span>
-      <span v-if="hint" class="text-[11px] text-ink-muted leading-tight truncate" :title="hint">
-        {{ hint }}
-      </span>
+      <span v-if="hint" class="kpi__hint" :title="hint">{{ hint }}</span>
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.kpi {
+  @include stack(0.125rem);
+  /*
+   * Untereinander gestapelt trennt eine Linie unten, nebeneinander eine
+   * links. Bliebe es bei der linken, ergäben die gestapelten Kennzahlen auf
+   * dem Telefon eine durchgehende Leiste am Rand, die nichts trennt.
+   */
+  padding: 0.375rem 0 var(--space-3);
+  border-bottom: 1px solid token(--border-default);
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  @include up(md) {
+    padding: 0.375rem var(--space-4);
+    border-bottom: 0;
+    border-left: 1px solid token(--border-default);
+
+    &:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0.375rem;
+    }
+  }
+
+  &__label {
+    @include row(var(--space-1));
+    font-size: 0.6875rem;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    @include muted(null);
+  }
+
+  &__row {
+    @include row(var(--space-2), baseline);
+    min-width: 0;
+  }
+
+  &__value {
+    font-size: var(--font-base);
+    font-weight: 600;
+    line-height: 1.25;
+
+    &--default { color: token(--text-primary); }
+    &--positive { color: token(--status-ok); }
+    &--warning { color: token(--status-near); }
+    &--danger { color: token(--status-out); }
+  }
+
+  &__hint {
+    overflow: hidden;
+    font-size: 0.6875rem;
+    line-height: 1.25;
+    @include muted(null);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+</style>

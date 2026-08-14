@@ -64,21 +64,21 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'symbol',
     width: 260,
     render: (row) =>
-      h('div', { class: 'flex flex-col' }, [
-        h('div', { class: 'flex items-center gap-2' }, [
-          h('span', { class: 'font-medium text-sm' }, row.symbol),
+      h('div', { class: 'cell-stack' }, [
+        h('div', { class: 'cell-row' }, [
+          h('span', { class: 'cell-symbol' }, row.symbol),
           heldKeys.value.has(rowKey(row))
             ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => t('instruments.inPortfolio'))
             : null,
         ]),
-        h('span', { class: 'text-xs text-ink-muted truncate' }, row.name ?? '—'),
+        h('span', { class: 'cell-name' }, row.name ?? '—'),
       ]),
   },
   {
     title: 'ISIN',
     key: 'isin',
     width: 150,
-    render: (row) => h('span', { class: 'tabular-nums text-xs' }, row.isin ?? '—'),
+    render: (row) => h('span', { class: 'cell-num cell-empty' }, row.isin ?? '—'),
   },
   {
     title: 'Typ',
@@ -95,8 +95,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     sorter: (a, b) => (a.latest_price ?? 0) - (b.latest_price ?? 0),
     render: (row) =>
       row.latest_price !== null
-        ? h('span', { class: 'tabular-nums' }, eurCent(row.latest_price))
-        : h('span', { class: 'tabular-nums text-ink-muted text-xs' }, 'noch keiner'),
+        ? h('span', { class: 'cell-num' }, eurCent(row.latest_price))
+        : h('span', { class: 'cell-num cell-num--muted cell-empty' }, 'noch keiner'),
   },
   {
     title: 'TER',
@@ -105,8 +105,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     width: 90,
     render: (row) =>
       row.ter !== null
-        ? h('span', { class: 'tabular-nums' }, percent(row.ter))
-        : h('span', { class: 'text-ink-muted' }, '—'),
+        ? h('span', { class: 'cell-num' }, percent(row.ter))
+        : h('span', { class: 'cell-empty' }, '—'),
   },
   {
     title: t('drilldown.volatility'),
@@ -116,8 +116,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     sorter: (a, b) => (a.volatility ?? 0) - (b.volatility ?? 0),
     render: (row) =>
       row.volatility !== null
-        ? h('span', { class: 'tabular-nums' }, percent(row.volatility))
-        : h('span', { class: 'text-ink-muted' }, '—'),
+        ? h('span', { class: 'cell-num' }, percent(row.volatility))
+        : h('span', { class: 'cell-empty' }, '—'),
   },
   {
     title: 'Kurspunkte',
@@ -125,7 +125,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     align: 'right',
     width: 110,
     render: (row) =>
-      h('span', { class: 'tabular-nums text-ink-muted' }, integer(row.history_count)),
+      h('span', { class: 'cell-num cell-num--muted' }, integer(row.history_count)),
   },
   {
     title: t('instruments.inSelection'),
@@ -162,33 +162,33 @@ notify(
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-6 py-8">
-    <div class="flex items-baseline gap-3 mb-1">
-      <h1 class="text-2xl font-semibold">{{ t('views.instrumentsTitle') }}</h1>
-      <span class="text-xs text-ink-muted tabular-nums">
+  <div class="instruments">
+    <div class="instruments__head">
+      <h1 class="instruments__title">{{ t('views.instrumentsTitle') }}</h1>
+      <span class="instruments__count tabular-nums">
         {{ t('instruments.countLabel', { shown: filtered.length, total: instrumentsStore.instruments.length }) }}
       </span>
     </div>
-    <p class="text-sm text-ink-muted mb-5">
+    <p class="instruments__intro">
       {{ t('instruments.hint') }}
     </p>
 
-    <div class="flex flex-wrap gap-3 mb-4">
+    <div class="instruments__filters">
       <NInput
         v-model:value="search"
         placeholder="Symbol, ISIN oder Name"
         clearable
-        class="max-w-xs"
+        class="instruments__search"
       />
       <NSelect
         v-model:value="typeFilter"
         :options="typeOptions"
-        class="max-w-[10rem]"
+        class="instruments__select"
         placeholder="Typ"
       />
     </div>
 
-    <div v-if="instrumentsStore.loading" class="flex justify-center py-16">
+    <div v-if="instrumentsStore.loading" class="instruments__loading">
       <NSpin size="large" />
     </div>
 
@@ -202,3 +202,44 @@ notify(
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.instruments {
+  @include content-frame(var(--space-8));
+
+  &__head {
+    @include row(var(--space-3), baseline);
+    margin-bottom: var(--space-1);
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  &__count {
+    @include muted(var(--font-xs));
+  }
+
+  &__intro {
+    margin-bottom: 1.25rem;
+    @include muted(var(--font-sm));
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  &__search { max-width: 20rem; }
+  &__select { max-width: 10rem; }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-8) 0;
+  }
+}
+</style>

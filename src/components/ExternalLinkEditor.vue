@@ -58,16 +58,16 @@ function add(): void {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <p class="text-xs text-ink-muted leading-relaxed">
+  <div class="linkeditor">
+    <p class="linkeditor__hint">
       {{ t('links.hint') }}
     </p>
 
-    <div v-if="hasLinks" class="flex flex-col gap-3">
+    <div v-if="hasLinks" class="linkeditor__list">
       <div
         v-for="link in links"
         :key="link.id"
-        class="grid grid-cols-1 md:grid-cols-[10rem_1fr_9rem_auto_auto] gap-2 items-center"
+        class="linkeditor__row"
       >
         <NInput
           :value="link.label"
@@ -103,11 +103,11 @@ function add(): void {
       </div>
     </div>
 
-    <p v-else class="text-xs text-ink-muted">
+    <p v-else class="linkeditor__hint">
       {{ t('links.noneConfigured') }}
     </p>
 
-    <div class="flex items-center gap-2">
+    <div class="linkeditor__actions">
       <NButton size="small" secondary @click="add">{{ t('links.add') }}</NButton>
       <NPopconfirm @positive-click="emit('reset')">
         <template #trigger>
@@ -118,3 +118,38 @@ function add(): void {
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.linkeditor {
+  @include stack(var(--space-4));
+
+  &__hint {
+    font-size: var(--font-xs);
+    line-height: 1.625;
+    @include muted(null);
+  }
+
+  &__list {
+    @include stack(var(--space-3));
+  }
+
+  /*
+   * Unterhalb md untereinander: Fünf Felder nebeneinander sind auf dem Telefon
+   * je 60 Pixel breit und damit unbedienbar.
+   */
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    align-items: center;
+
+    @include up(md) {
+      grid-template-columns: 10rem 1fr 9rem auto auto;
+    }
+  }
+
+  &__actions {
+    @include row(var(--space-2));
+  }
+}
+</style>

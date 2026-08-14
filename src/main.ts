@@ -8,7 +8,7 @@ import { LOCALES } from '@/stores/locale'
 import { setFormatterLocale } from '@/domain/formatters'
 import { apiBaseUrl, MissingApiUrlError, StockInfoClient, STOCK_INFO_CLIENT } from '@/api/client'
 import { translate } from '@/i18n'
-import '@/assets/style.css'
+import '@/assets/style.scss'
 
 /*
  * Sprache setzen, bevor die App das erste Mal zeichnet.

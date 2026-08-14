@@ -24,36 +24,88 @@ const overflowWidth = computed(() =>
 
 const isComplete = computed(() => !props.exceeded && Math.abs(props.sum - 100) < 0.01)
 
-const fillClass = computed(() => {
-  if (props.exceeded) return 'bg-status-out/70'
-  if (isComplete.value) return 'bg-status-ok/60'
-  return 'bg-accent/50'
-})
-
-const labelClass = computed(() => {
-  if (props.exceeded) return 'text-status-out'
-  if (isComplete.value) return 'text-status-ok'
-  return 'text-ink-muted'
+/** Zustand der Verteilung — trägt Farbe für Balken und Zahl. */
+const state = computed<'exceeded' | 'complete' | 'open'>(() => {
+  if (props.exceeded) return 'exceeded'
+  return isComplete.value ? 'complete' : 'open'
 })
 </script>
 
 <template>
-  <div class="flex items-center gap-3">
-    <span class="text-xs text-ink-muted shrink-0">{{ t('dashboard.targetDistribution') }}</span>
+  <div class="allocation">
+    <span class="allocation__label">{{ t('dashboard.targetDistribution') }}</span>
 
-    <div class="relative h-1.5 w-32 rounded-full bg-sunken overflow-hidden shrink-0">
-      <div class="absolute inset-y-0 left-0 rounded-full" :class="fillClass" :style="{ width: fillWidth }"></div>
+    <div class="allocation__track">
+      <div
+        class="allocation__fill"
+        :class="`allocation__fill--${state}`"
+        :style="{ width: fillWidth }"
+      ></div>
       <!-- Überhang: sitzt am rechten Rand, damit „zu viel" sichtbar bleibt -->
       <div
         v-if="exceeded"
-        class="absolute inset-y-0 right-0 bg-status-out/90"
+        class="allocation__overflow"
         :style="{ width: overflowWidth }"
       ></div>
     </div>
 
-    <span class="text-xs tabular-nums shrink-0" :class="labelClass">
+    <span class="allocation__value tabular-nums" :class="`allocation__value--${state}`">
       {{ percent(sum) }}
-      <span v-if="exceeded" class="ml-1">{{ t('common.overHundred') }}</span>
+      <span v-if="exceeded" class="allocation__over">{{ t('common.overHundred') }}</span>
     </span>
   </div>
 </template>
+
+<style scoped lang="scss">
+.allocation {
+  @include row(var(--space-3));
+
+  &__label {
+    flex-shrink: 0;
+    @include muted(var(--font-xs));
+  }
+
+  &__track {
+    position: relative;
+    flex-shrink: 0;
+    width: 8rem;
+    height: 0.375rem;
+    overflow: hidden;
+    border-radius: var(--radius-full);
+    background-color: token(--surface-sunken);
+  }
+
+  &__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: var(--radius-full);
+
+    &--exceeded { background-color: token(--status-out, 0.7); }
+    &--complete { background-color: token(--status-ok, 0.6); }
+    &--open { background-color: token(--accent, 0.5); }
+  }
+
+  &__overflow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: token(--status-out, 0.9);
+  }
+
+  &__value {
+    flex-shrink: 0;
+    font-size: var(--font-xs);
+
+    &--exceeded { color: token(--status-out); }
+    &--complete { color: token(--status-ok); }
+    &--open { @include muted(null); }
+  }
+
+  &__over {
+    margin-left: var(--space-1);
+  }
+}
+</style>

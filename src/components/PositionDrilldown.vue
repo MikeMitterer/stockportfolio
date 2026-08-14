@@ -121,18 +121,18 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     Leerraum daneben, und die Details rutschten unter den Falz. Nebeneinander
     ist der aufgeklappte Bereich rund halb so hoch.
   -->
-  <div class="flex flex-col gap-3 p-3">
-    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] gap-3">
+  <div class="drill">
+    <div class="drill__columns">
       <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
-      <NCard :bordered="false" size="small" class="!bg-raised h-full">
+      <NCard :bordered="false" size="small" class="drill__card drill__card--full">
         <template #header>
-          <span class="text-sm font-medium">{{ t('drilldown.editHeading') }}</span>
+          <span class="drill__heading">{{ t('drilldown.editHeading') }}</span>
         </template>
 
-        <div class="flex flex-col gap-2">
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex flex-col gap-1 text-xs">
-              <span class="text-ink-muted">
+        <div class="drill__form">
+          <div class="drill__pair">
+            <label class="drill__field">
+              <span class="drill__label">
                 {{ isCash ? t('dashboard.amountEuro') : t('table.units') }}
               </span>
               <NInputNumber
@@ -145,8 +145,8 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
               />
             </label>
 
-            <label class="flex flex-col gap-1 text-xs">
-              <span class="text-ink-muted">{{ t('table.targetPercent') }}</span>
+            <label class="drill__field">
+              <span class="drill__label">{{ t('table.targetPercent') }}</span>
               <NInputNumber
                 :value="row.position.targetPercent"
                 :precision="2"
@@ -159,8 +159,8 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             </label>
           </div>
 
-          <label class="flex flex-col gap-1 text-xs">
-            <span class="text-ink-muted">{{ t('drilldown.displayName') }}</span>
+          <label class="drill__field">
+            <span class="drill__label">{{ t('drilldown.displayName') }}</span>
             <NInput
               :value="row.position.displayName"
               size="small"
@@ -168,9 +168,9 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             />
           </label>
 
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex flex-col gap-1 text-xs">
-              <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
+          <div class="drill__pair">
+            <label class="drill__field">
+              <span class="drill__label">{{ t('drilldown.group') }}</span>
               <NSelect
                 :value="row.position.group"
                 :options="groupOptions"
@@ -179,9 +179,9 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
               />
             </label>
 
-            <label class="flex flex-col gap-1 text-xs">
-              <span class="text-ink-muted">{{ t('drilldown.enabled') }}</span>
-              <div class="pt-1">
+            <label class="drill__field">
+              <span class="drill__label">{{ t('drilldown.enabled') }}</span>
+              <div class="drill__switch">
                 <NSwitch
                   :value="row.position.enabled"
                   size="small"
@@ -191,8 +191,8 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             </label>
           </div>
 
-          <label class="flex flex-col gap-1 text-xs">
-            <span class="text-ink-muted">{{ t('drilldown.notes') }}</span>
+          <label class="drill__field">
+            <span class="drill__label">{{ t('drilldown.notes') }}</span>
             <NInput
               :value="row.position.notes ?? ''"
               type="textarea"
@@ -202,7 +202,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
             />
           </label>
 
-          <div class="flex items-center gap-2">
+          <div class="drill__actions">
             <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
               {{ t('dashboard.reloadQuote') }}
             </NButton>
@@ -217,89 +217,89 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
       </NCard>
 
       <!-- ─── Zusatz-Zahlen ────────────────────────────────────────────── -->
-      <NCard :bordered="false" size="small" class="!bg-raised h-full">
+      <NCard :bordered="false" size="small" class="drill__card drill__card--full">
         <template #header>
-          <span class="text-sm font-medium">{{ t('dashboard.details') }}</span>
+          <span class="drill__heading">{{ t('dashboard.details') }}</span>
         </template>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-2 text-xs">
+        <div class="drill__facts">
           <div>
-            <div class="text-ink-muted">ISIN</div>
+            <div class="drill__label">ISIN</div>
             <div class="tabular-nums">{{ row.position.isin ?? '—' }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('table.symbol') }}</div>
+            <div class="drill__label">{{ t('table.symbol') }}</div>
             <div class="tabular-nums">{{ row.position.symbol }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('table.price') }}</div>
+            <div class="drill__label">{{ t('table.price') }}</div>
             <div class="tabular-nums">{{ row.quote ? eurCent(row.quote.price) : '—' }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('table.marketValue') }}</div>
+            <div class="drill__label">{{ t('table.marketValue') }}</div>
             <div class="tabular-nums">{{ eur(row.marketValue) }}</div>
           </div>
 
           <div>
-            <div class="text-ink-muted">{{ t('drilldown.lowerBand') }}</div>
+            <div class="drill__label">{{ t('drilldown.lowerBand') }}</div>
             <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('dashboard.targetValue') }}</div>
+            <div class="drill__label">{{ t('dashboard.targetValue') }}</div>
             <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('drilldown.upperBand') }}</div>
+            <div class="drill__label">{{ t('drilldown.upperBand') }}</div>
             <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('drilldown.deltaEuro') }}</div>
+            <div class="drill__label">{{ t('drilldown.deltaEuro') }}</div>
             <div
               class="tabular-nums"
-              :class="row.suggestion === 'ok' ? 'text-status-ok' : 'text-status-out'"
+              :class="row.suggestion === 'ok' ? 'drill__ok' : 'drill__out'"
             >
               {{ eurSigned(deltaEuro) }}
             </div>
           </div>
 
           <div v-if="optimalUnits !== null">
-            <div class="text-ink-muted">{{ t('drilldown.optimalUnits') }}</div>
+            <div class="drill__label">{{ t('drilldown.optimalUnits') }}</div>
             <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
           </div>
           <div>
-            <div class="text-ink-muted">{{ t('dashboard.unitsDelta') }}</div>
+            <div class="drill__label">{{ t('dashboard.unitsDelta') }}</div>
             <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
           </div>
           <div v-if="row.quote?.volatility != null">
-            <div class="text-ink-muted">{{ t('drilldown.volatility') }}</div>
+            <div class="drill__label">{{ t('drilldown.volatility') }}</div>
             <div class="tabular-nums">{{ percent(row.quote.volatility) }}</div>
           </div>
           <div v-if="row.quote?.ter != null">
-            <div class="text-ink-muted">TER</div>
+            <div class="drill__label">TER</div>
             <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
           </div>
           <div v-if="row.quote">
-            <div class="text-ink-muted">{{ t('dashboard.quoteAge') }}</div>
+            <div class="drill__label">{{ t('dashboard.quoteAge') }}</div>
             <div class="tabular-nums">{{ quoteAge }}</div>
           </div>
 
           <div v-if="kindLabel">
-            <div class="text-ink-muted">{{ t('dashboard.kind') }}</div>
+            <div class="drill__label">{{ t('dashboard.kind') }}</div>
             <div>{{ kindLabel }}</div>
           </div>
 
-          <div class="col-span-2 md:col-span-3 xl:col-span-4 flex items-center gap-3 pt-1">
+          <div class="drill__links">
             <a
               v-for="link in resolvedLinks"
               :key="link.id"
               :href="link.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-accent hover:opacity-80 text-xs underline"
+              class="drill__link"
             >
               {{ link.label }} ↗
             </a>
-            <span v-if="resolvedLinks.length === 0" class="text-xs text-ink-muted">
+            <span v-if="resolvedLinks.length === 0" class="drill__no-links">
               {{ t('dashboard.noMatchingLinks') }}
             </span>
           </div>
@@ -312,7 +312,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
       v-if="row.position.group !== 'cash'"
       :bordered="false"
       size="small"
-      class="!bg-raised"
+      class="drill__card"
     >
       <PriceChart
         :position="row.position"
@@ -322,3 +322,90 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     </NCard>
   </div>
 </template>
+
+<style scoped lang="scss">
+.drill {
+  @include stack(var(--space-3));
+
+  padding: var(--space-3);
+
+  /*
+   * Zwei Spalten: links bearbeiten, rechts nachlesen. Der Kursverlauf steht
+   * darunter über die volle Breite — dann bleiben die Details oben stehen,
+   * statt neben einem hohen Diagramm zu verhungern.
+   */
+  &__columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+
+    @include up(lg) {
+      grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    }
+  }
+
+  &__card {
+    background-color: token(--surface-raised) !important;
+
+    &--full { height: 100%; }
+  }
+
+  &__heading {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__form { @include stack; }
+
+  &__pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  &__field {
+    @include stack(var(--space-1));
+
+    font-size: var(--font-xs);
+  }
+
+  &__label { @include muted(null); }
+
+  &__switch { padding-top: var(--space-1); }
+
+  &__actions { @include row; }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2) 1.25rem;
+    font-size: var(--font-xs);
+
+    @include up(md) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @include up(xl) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  &__ok { color: token(--status-ok); }
+  &__out { color: token(--status-out); }
+
+  &__links {
+    @include row(var(--space-3));
+
+    grid-column: span 2;
+    padding-top: var(--space-1);
+
+    @include up(md) { grid-column: span 3; }
+    @include up(xl) { grid-column: span 4; }
+  }
+
+  &__link {
+    font-size: var(--font-xs);
+    color: token(--accent);
+    text-decoration: underline;
+
+    &:hover { opacity: 0.8; }
+  }
+
+  &__no-links { @include muted; }
+}
+</style>

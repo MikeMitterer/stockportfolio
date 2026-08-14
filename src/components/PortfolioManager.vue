@@ -91,16 +91,16 @@ function messageOf(cause: unknown): string {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <p class="text-sm text-ink-secondary leading-relaxed">
+  <div class="depots">
+    <p class="depots__intro">
       {{ t('portfolios.intro') }}
     </p>
 
-    <div class="flex flex-col divide-y divide-edge border-y border-edge">
+    <div class="depots__list">
       <div
         v-for="entry in portfolioStore.all"
         :key="entry.id"
-        class="flex items-center gap-3 py-2"
+        class="depots__row"
       >
         <!--
           Der Name ist direkt editierbar, ohne Umschaltknopf: Umbenennen ist
@@ -109,7 +109,7 @@ function messageOf(cause: unknown): string {
         <NInput
           :value="entry.name"
           size="small"
-          class="max-w-[18rem]"
+          class="depots__name"
           :placeholder="t('portfolios.namePlaceholder')"
           @update:value="(name: string) => rename(entry.id, name)"
         />
@@ -118,15 +118,15 @@ function messageOf(cause: unknown): string {
           {{ t('portfolios.active') }}
         </NTag>
 
-        <span class="text-xs text-ink-muted tabular-nums">
+        <span class="depots__meta tabular-nums">
           {{ t('units.positions', entry.positionCount, { named: { count: integer(entry.positionCount) } }) }}
         </span>
 
-        <span class="text-xs text-ink-muted hidden sm:inline">
+        <span class="depots__meta depots__meta--wide">
           {{ t('portfolios.changed', { age: formatAge(entry.updatedAt) }) }}
         </span>
 
-        <div class="ml-auto flex items-center gap-2">
+        <div class="depots__actions">
           <NButton
             v-if="entry.id !== activeId"
             size="tiny"
@@ -166,11 +166,11 @@ function messageOf(cause: unknown): string {
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="depots__add">
       <NInput
         v-model:value="newName"
         size="small"
-        class="max-w-[18rem]"
+        class="depots__name"
         :placeholder="t('portfolios.newPlaceholder')"
         @keydown.enter="create"
       />
@@ -179,6 +179,58 @@ function messageOf(cause: unknown): string {
       </NButton>
     </div>
 
-    <p v-if="error" class="text-sm text-status-out">{{ error }}</p>
+    <p v-if="error" class="depots__error">{{ error }}</p>
   </div>
 </template>
+
+<style scoped lang="scss">
+.depots {
+  @include stack(var(--space-4));
+
+  &__intro {
+    font-size: var(--font-sm);
+    line-height: 1.625;
+    color: token(--text-secondary);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid token(--border-default);
+    border-bottom: 1px solid token(--border-default);
+  }
+
+  &__row {
+    @include row(var(--space-3));
+    padding: var(--space-2) 0;
+
+    & + & { border-top: 1px solid token(--border-default); }
+  }
+
+  &__name { max-width: 18rem; }
+
+  &__meta {
+    @include muted(var(--font-xs));
+
+    &--wide {
+      display: none;
+
+      @include up(sm) { display: inline; }
+    }
+  }
+
+  &__actions {
+    @include row(var(--space-2));
+    margin-left: auto;
+  }
+
+  &__add {
+    @include row(var(--space-2));
+  }
+
+  &__error {
+    font-size: var(--font-sm);
+    color: token(--status-out);
+  }
+}
+</style>

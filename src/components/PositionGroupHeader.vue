@@ -40,14 +40,14 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
   -->
   <button
     type="button"
-    class="group w-full flex items-center gap-2.5 px-5 py-1.5 text-left text-ink-muted"
+    class="groupheader"
     :style="{ backgroundColor: bandColor }"
     :aria-expanded="!collapsed"
     @click="emit('toggle')"
   >
     <svg
-      class="w-3 h-3 shrink-0 transition-all opacity-50 group-hover:opacity-100"
-      :class="{ '-rotate-90': collapsed }"
+      class="groupheader__chevron"
+      :class="{ 'groupheader__chevron--collapsed': collapsed }"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -58,34 +58,102 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
     </svg>
 
     <!-- Farbpunkt wie im Assetklassen-Balken oben — gleiche Klasse, gleiche Farbe -->
-    <span
-      class="inline-block w-1.5 h-1.5 rounded-full shrink-0"
-      :style="{ backgroundColor: color }"
-      aria-hidden="true"
-    ></span>
+    <span class="groupheader__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>
 
-    <span
-      class="text-[11px] uppercase tracking-wider transition-colors group-hover:text-ink"
-    >
+    <span class="groupheader__label">
       {{ label }}
-      <span class="tabular-nums opacity-50">{{ positionCount }}</span>
+      <span class="groupheader__count tabular-nums">{{ positionCount }}</span>
     </span>
 
-    <span class="ml-auto flex items-center gap-5 text-[11px] tabular-nums opacity-80">
-      <span class="hidden md:inline">{{ eur(group.actualValue) }}</span>
+    <span class="groupheader__figures tabular-nums">
+      <span class="groupheader__value">{{ eur(group.actualValue) }}</span>
       <span>
         {{ percent(group.actualPercent) }}
-        <span class="opacity-60">/ {{ percent(group.targetPercent) }}</span>
+        <span class="groupheader__target">/ {{ percent(group.targetPercent) }}</span>
       </span>
       <span
-        class="hidden sm:inline w-24 text-right"
-        :class="group.deltaEuro >= 0 ? 'text-status-ok/70' : 'text-status-out/70'"
+        class="groupheader__delta"
+        :class="group.deltaEuro >= 0 ? 'groupheader__delta--up' : 'groupheader__delta--down'"
       >
         {{ eurSigned(group.deltaEuro) }}
       </span>
-      <span class="w-28 flex justify-center">
+      <span class="groupheader__status">
         <SuggestionBadge :suggestion="group.suggestion" :below-min-trade="group.belowMinTrade" plain />
       </span>
     </span>
   </button>
 </template>
+
+<style scoped lang="scss">
+.groupheader {
+  @include row(0.625rem);
+  width: 100%;
+  padding: 0.375rem 1.25rem;
+  text-align: left;
+  @include muted(null);
+
+  &:hover {
+    .groupheader__chevron { opacity: 1; }
+    .groupheader__label { color: token(--text-primary); }
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    opacity: 0.5;
+    transition: all 0.15s ease;
+
+    &--collapsed { transform: rotate(-90deg); }
+  }
+
+  &__dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.15s ease;
+  }
+
+  &__count { opacity: 0.5; }
+
+  &__figures {
+    @include row(1.25rem);
+    margin-left: auto;
+    font-size: 0.6875rem;
+    opacity: 0.8;
+  }
+
+  &__value {
+    display: none;
+
+    @include up(md) { display: inline; }
+  }
+
+  &__target { opacity: 0.6; }
+
+  &__delta {
+    display: none;
+    width: 6rem;
+    text-align: right;
+
+    @include up(sm) { display: inline; }
+
+    &--up { color: token(--status-ok, 0.7); }
+    &--down { color: token(--status-out, 0.7); }
+  }
+
+  &__status {
+    display: flex;
+    justify-content: center;
+    width: 7rem;
+  }
+}
+</style>

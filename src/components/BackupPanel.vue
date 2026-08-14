@@ -201,12 +201,12 @@ const pendingCashTotal = computed(() =>
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <p class="text-sm text-ink-secondary leading-relaxed">
+  <div class="backup">
+    <p class="backup__intro">
       {{ t('backup.intro') }}
     </p>
 
-    <div class="flex flex-wrap items-center gap-3">
+    <div class="backup__actions">
       <NButton type="primary" :disabled="!portfolioStore.portfolio" @click="exportBackup">
         {{ t('backup.download') }}
       </NButton>
@@ -218,7 +218,7 @@ const pendingCashTotal = computed(() =>
         ref="fileInput"
         type="file"
         accept="application/json,.json"
-        class="hidden"
+        class="backup__file"
         @change="onFileChosen"
       />
     </div>
@@ -227,32 +227,32 @@ const pendingCashTotal = computed(() =>
       Vorschau vor dem Überschreiben. Genannt wird, woran man eine falsche
       Datei erkennt: Name, Alter und Umfang — und was verloren geht.
     -->
-    <div v-if="pending" class="rounded-lg border border-edge bg-raised p-4 flex flex-col gap-3">
-      <span class="text-sm font-medium">{{ t('backup.confirmHeading') }}</span>
+    <div v-if="pending" class="backup__preview">
+      <span class="backup__heading">{{ t('backup.confirmHeading') }}</span>
 
-      <dl class="grid grid-cols-[8rem_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-sm">
-        <dt class="text-ink-muted">{{ t('backup.portfolio') }}</dt>
+      <dl class="backup__facts">
+        <dt class="backup__term">{{ t('backup.portfolio') }}</dt>
         <dd>{{ pending.portfolio.name }}</dd>
 
-        <dt class="text-ink-muted">{{ t('backup.positions') }}</dt>
+        <dt class="backup__term">{{ t('backup.positions') }}</dt>
         <dd class="tabular-nums">{{ positionCount }}</dd>
 
-        <dt v-if="pendingCashTotal > 0" class="text-ink-muted">{{ t('backup.ofWhichCash') }}</dt>
+        <dt v-if="pendingCashTotal > 0" class="backup__term">{{ t('backup.ofWhichCash') }}</dt>
         <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ eur(pendingCashTotal) }}</dd>
 
-        <dt v-if="hiddenCount > 0" class="text-ink-muted">{{ t('backup.hidden') }}</dt>
+        <dt v-if="hiddenCount > 0" class="backup__term">{{ t('backup.hidden') }}</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">
           {{ t('units.assets', hiddenCount, { named: { count: integer(hiddenCount) } }) }}
         </dd>
 
-        <dt class="text-ink-muted">{{ t('backup.savedAt') }}</dt>
+        <dt class="backup__term">{{ t('backup.savedAt') }}</dt>
         <dd>{{ exportedAtLabel }}</dd>
 
-        <dt class="text-ink-muted">{{ t('backup.appVersion') }}</dt>
+        <dt class="backup__term">{{ t('backup.appVersion') }}</dt>
         <dd class="tabular-nums">{{ pending.appVersion }}</dd>
       </dl>
 
-      <p class="text-xs text-status-out leading-relaxed">
+      <p class="backup__warning">
         {{
           t('backup.replaceWarning', {
             positions: t('units.positions', portfolioStore.positions.length, {
@@ -262,7 +262,7 @@ const pendingCashTotal = computed(() =>
         }}
       </p>
 
-      <div class="flex items-center gap-2">
+      <div class="backup__confirm">
         <NPopconfirm @positive-click="applyPending">
           <template #trigger>
             <NButton type="error" size="small">{{ t('backup.replaceNow') }}</NButton>
@@ -274,3 +274,61 @@ const pendingCashTotal = computed(() =>
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.backup {
+  @include stack(var(--space-4));
+
+  &__intro {
+    font-size: var(--font-sm);
+    line-height: 1.625;
+    color: token(--text-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* Die Dateiauswahl bedient der Knopf daneben — sichtbar wäre sie doppelt. */
+  &__file { display: none; }
+
+  /*
+   * Was hineinkommt, steht vor dem Einspielen da: Überschrieben wird nichts,
+   * ohne dass man den Inhalt gesehen und bestätigt hat.
+   */
+  &__preview {
+    @include stack(var(--space-3));
+    padding: var(--space-4);
+    border: 1px solid token(--border-default);
+    border-radius: var(--radius-lg);
+    background-color: token(--surface-raised);
+  }
+
+  &__heading {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 0.375rem var(--space-4);
+    font-size: var(--font-sm);
+  }
+
+  &__term { @include muted(null); }
+
+  &__warning {
+    font-size: var(--font-xs);
+    line-height: 1.625;
+    color: token(--status-out);
+  }
+
+  &__confirm {
+    @include row(var(--space-2));
+  }
+}
+</style>

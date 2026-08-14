@@ -53,18 +53,12 @@ const isActive = (name: string): boolean => route.name === name
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b border-edge bg-page/90 backdrop-blur">
-    <div class="max-w-[1400px] mx-auto flex items-center gap-3 md:gap-6 px-4 md:px-6 h-14">
+  <header class="topbar">
+    <div class="topbar__inner">
       <!-- Plakette + Wortmarke, wie im Backend-Frontend -->
-      <RouterLink :to="{ name: 'dashboard' }" class="flex items-center gap-2.5 hover:opacity-90">
-        <span
-          class="inline-flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-          :style="{
-            background: 'linear-gradient(135deg, rgb(var(--accent)), rgb(var(--asset-bonds)))',
-          }"
-        >
+      <RouterLink :to="{ name: 'dashboard' }" class="topbar__brand">
+        <span class="topbar__badge">
           <svg
-            class="w-4 h-4"
             viewBox="0 0 24 24"
             fill="none"
             stroke="rgb(var(--accent-contrast))"
@@ -76,38 +70,34 @@ const isActive = (name: string): boolean => route.name === name
             <path d="M15 7h4v4" />
           </svg>
         </span>
-        <span class="hidden sm:inline font-semibold text-lg tracking-tight">
-          {{ t('app.title') }}
-        </span>
+        <span class="topbar__wordmark">{{ t('app.title') }}</span>
       </RouterLink>
 
-      <nav class="flex items-center gap-1">
+      <nav class="topbar__nav">
         <RouterLink
           v-for="item in navItems"
           :key="item.name"
           :to="{ name: item.name }"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors relative"
-          :class="
-            isActive(item.name)
-              ? 'text-ink'
-              : 'text-ink-secondary hover:text-ink hover:bg-raised'
-          "
+          class="topbar__item"
+          :class="{ 'topbar__item--active': isActive(item.name) }"
         >
           <NIcon :size="15">
             <component :is="ICONS[item.name]" />
           </NIcon>
-          <span class="hidden md:inline">{{ item.label }}</span>
-          <span class="sr-only md:hidden">{{ item.label }}</span>
+          <!--
+            Unterhalb md fällt die Beschriftung weg, nicht der Punkt: Vier
+            Symbole passen auf jedes Telefon, ein Hamburger kostete einen
+            zusätzlichen Griff.
+          -->
+          <span class="topbar__label">{{ item.label }}</span>
+          <span class="visually-hidden">{{ item.label }}</span>
           <!-- Aktiver Eintrag: Unterstrich in Akzentfarbe, wie im Backend -->
-          <span
-            v-if="isActive(item.name)"
-            class="absolute left-2 right-2 -bottom-[9px] h-0.5 rounded-full bg-accent"
-          ></span>
+          <span v-if="isActive(item.name)" class="topbar__underline"></span>
         </RouterLink>
       </nav>
 
-      <div class="ml-auto flex items-center gap-3">
-        <span v-if="lastRefreshLabel" class="hidden sm:inline text-xs text-ink-muted tabular-nums">
+      <div class="topbar__actions">
+        <span v-if="lastRefreshLabel" class="topbar__age tabular-nums">
           {{ lastRefreshLabel }}
         </span>
 
@@ -124,9 +114,131 @@ const isActive = (name: string): boolean => route.name === name
               </svg>
             </NIcon>
           </template>
-          <span class="hidden md:inline">{{ t('actions.refresh') }}</span>
+          <span class="topbar__refresh-label">{{ t('actions.refresh') }}</span>
         </NButton>
       </div>
     </div>
   </header>
 </template>
+
+<style scoped lang="scss">
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid token(--border-default);
+  background-color: token(--surface-page, 0.9);
+  backdrop-filter: blur(8px);
+
+  &__inner {
+    @include row(var(--space-3));
+    @include content-frame(0);
+
+    height: 3.5rem;
+
+    @include up(md) { gap: var(--space-6); }
+  }
+
+  &__brand {
+    @include row(0.625rem);
+
+    &:hover { opacity: 0.9; }
+  }
+
+  &__badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, token(--brand-from), token(--brand-to));
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &__wordmark {
+    display: none;
+    font-size: var(--font-lg);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+
+    @include up(sm) { display: inline; }
+  }
+
+  &__nav {
+    @include row(var(--space-1));
+  }
+
+  &__item {
+    position: relative;
+    @include row(0.375rem);
+    padding: 0.375rem var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+    color: token(--text-secondary);
+    transition: color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+      background-color: token(--surface-raised);
+      color: token(--text-primary);
+    }
+
+    &--active {
+      color: token(--text-primary);
+    }
+  }
+
+  &__label {
+    display: none;
+
+    @include up(md) { display: inline; }
+  }
+
+  /*
+   * Ein Strich, kein Kasten: Eine eingefärbte Fläche hinter dem aktiven Punkt
+   * konkurriert mit den Karten darunter.
+   */
+  &__underline {
+    position: absolute;
+    right: var(--space-2);
+    bottom: -9px;
+    left: var(--space-2);
+    height: 2px;
+    border-radius: var(--radius-full);
+    background-color: token(--accent);
+  }
+
+  &__actions {
+    @include row(var(--space-3));
+    margin-left: auto;
+  }
+
+  /*
+   * Erst ab `lg`: Bei Tablet-Breite drängen die vier Beschriftungen und der
+   * Knopf das Alter auf 40 Pixel zusammen, es brach dann dreizeilig um.
+   * Verloren geht nichts — dieselbe Angabe steht in der Statuszeile.
+   */
+  &__age {
+    display: none;
+    white-space: nowrap;
+    @include muted(var(--font-xs));
+
+    @include up(lg) { display: inline; }
+  }
+
+  /*
+   * Erst ab `lg`: Bei Tablet-Breite schob die Beschriftung den Knopf über den
+   * rechten Rand hinaus. Das Symbol allein ist eindeutig genug.
+   */
+  &__refresh-label {
+    display: none;
+
+    @include up(lg) { display: inline; }
+  }
+}
+</style>

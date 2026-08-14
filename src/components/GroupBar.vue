@@ -28,41 +28,123 @@ const targetPosition = computed(() => ({
 </script>
 
 <template>
-  <div class="flex items-center gap-4 py-2">
+  <div class="groupbar">
     <!-- Farbpunkt + Name: die Farbe wiederholt sich in Balken und Tabelle -->
-    <div class="w-36 shrink-0 flex items-center gap-2">
-      <span
-        class="inline-block w-2 h-2 rounded-full shrink-0"
-        :style="{ backgroundColor: color }"
-        aria-hidden="true"
-      ></span>
-      <span class="text-sm font-medium">{{ groupLabel }}</span>
+    <div class="groupbar__name">
+      <span class="groupbar__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>
+      <span class="groupbar__label">{{ groupLabel }}</span>
     </div>
 
-    <div class="relative flex-1 h-6 rounded-md bg-sunken overflow-hidden">
-      <div class="absolute rounded-sm transition-all" :style="{ ...actualStyle, top: '4px', bottom: '4px', left: '4px' }"></div>
+    <div class="groupbar__track">
+      <div class="groupbar__fill" :style="actualStyle"></div>
       <!-- Ziel-Marke -->
       <div
-        class="absolute top-0 bottom-0 w-0.5 bg-ink z-10"
+        class="groupbar__target"
         :style="targetPosition"
         :title="`Ziel: ${percent(group.targetPercent)}`"
       ></div>
     </div>
 
-    <div class="w-24 text-right tabular-nums text-sm">{{ percent(group.actualPercent) }}</div>
-    <div class="w-24 text-right tabular-nums text-xs text-ink-muted">
-      / {{ percent(group.targetPercent) }}
-    </div>
-    <div class="w-32 text-right tabular-nums text-xs text-ink-muted">
-      {{ eur(group.actualValue) }}
-    </div>
-    <div class="w-32 text-right tabular-nums text-xs">
-      <span :class="group.deltaEuro >= 0 ? 'text-status-ok' : 'text-status-out'">
+    <div class="groupbar__actual tabular-nums">{{ percent(group.actualPercent) }}</div>
+    <div class="groupbar__goal tabular-nums">/ {{ percent(group.targetPercent) }}</div>
+    <div class="groupbar__value tabular-nums">{{ eur(group.actualValue) }}</div>
+    <div class="groupbar__delta tabular-nums">
+      <span :class="group.deltaEuro >= 0 ? 'groupbar__up' : 'groupbar__down'">
         {{ eurSigned(group.deltaEuro) }}
       </span>
     </div>
-    <div class="w-28 flex justify-start">
+    <div class="groupbar__status">
       <SuggestionBadge :suggestion="group.suggestion" :below-min-trade="group.belowMinTrade" />
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.groupbar {
+  @include row(var(--space-4));
+  padding: var(--space-2) 0;
+
+  &__name {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-2);
+    width: 9rem;
+  }
+
+  &__dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+  }
+
+  &__label {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__track {
+    position: relative;
+    flex: 1;
+    height: 1.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background-color: token(--surface-sunken);
+  }
+
+  &__fill {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    border-radius: 0.25rem;
+    transition: all 0.15s ease;
+  }
+
+  /* Die Ziel-Marke steht über der Füllung, sonst verschwindet sie darin. */
+  &__target {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    width: 2px;
+    background-color: token(--text-primary);
+  }
+
+  &__actual {
+    width: 6rem;
+    font-size: var(--font-sm);
+    text-align: right;
+  }
+
+  &__goal,
+  &__value,
+  &__delta {
+    font-size: var(--font-xs);
+    text-align: right;
+  }
+
+  &__goal {
+    width: 6rem;
+    @include muted(null);
+  }
+
+  &__value {
+    width: 8rem;
+    @include muted(null);
+  }
+
+  &__delta { width: 8rem; }
+
+  &__up { color: token(--status-ok); }
+  &__down { color: token(--status-out); }
+
+  &__status {
+    display: flex;
+    justify-content: flex-start;
+    width: 7rem;
+  }
+}
+</style>

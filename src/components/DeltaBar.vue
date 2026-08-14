@@ -42,23 +42,6 @@ const state = computed<'ok' | 'near' | 'out'>(() => {
   return props.near ? 'near' : 'ok'
 })
 
-// Statusfarben, nicht Klassenfarben: hier geht es um „im Band / nahe / draußen",
-// nicht um die Assetklasse.
-//
-// Deckend, nicht halbdurchsichtig: bei Teiltransparenz mischte sich die Fläche
-// darunter ein und die Farbe wirkte ausgewaschen.
-const fillClasses = computed(() => {
-  switch (state.value) {
-    case 'ok':
-      return 'bg-status-ok'
-    case 'near':
-      return 'bg-status-near'
-    case 'out':
-      return 'bg-status-out'
-  }
-  return ''
-})
-
 const fillStyle = computed(() => {
   return isPositive.value
     ? { left: '50%', width: halfWidth.value }
@@ -76,11 +59,8 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
     Ringe kaschierten das nur und wirkten schmutzig. Nebeneinander ist beides
     ungestört: der Balken zeigt Richtung und Ausmaß, die Zahl den Wert.
   -->
-  <div class="flex items-center gap-2" role="img" :aria-label="`Delta ${text}`">
-    <div
-      class="relative flex-1 rounded-sm overflow-hidden bg-sunken"
-      :class="compact ? 'h-4' : 'h-5'"
-    >
+  <div class="delta" role="img" :aria-label="`Delta ${text}`">
+    <div class="delta__track" :class="{ 'delta__track--compact': compact }">
       <!--
         Nur **eine** Linie: das Ziel.
 
@@ -94,17 +74,64 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
         der Ziel-Linie erneut ein Strichbündel. Was der Plan bewegt, steht in
         den Spalten „Kauf / Verkauf" und „Abw. Ziel".
       -->
-      <div
-        class="absolute transition-all"
-        :class="fillClasses"
-        :style="{ ...fillStyle, top: '3px', bottom: '3px' }"
-      ></div>
+      <div class="delta__fill" :class="`delta__fill--${state}`" :style="fillStyle"></div>
 
-      <div class="absolute top-0 bottom-0 w-px bg-ink/25 z-10" style="left: 50%"></div>
+      <div class="delta__target"></div>
     </div>
 
-    <span class="w-14 shrink-0 text-right text-xs tabular-nums text-ink-secondary">
-      {{ text }}
-    </span>
+    <span class="delta__value tabular-nums">{{ text }}</span>
   </div>
 </template>
+
+<style scoped lang="scss">
+.delta {
+  @include row(var(--space-2));
+
+  &__track {
+    position: relative;
+    flex: 1;
+    height: 1.25rem;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    background-color: token(--surface-sunken);
+
+    &--compact { height: 1rem; }
+  }
+
+  /*
+   * Statusfarben, nicht Klassenfarben: Hier geht es um „im Band / nahe /
+   * draußen", nicht um die Assetklasse.
+   *
+   * Deckend, nicht halbdurchsichtig: Bei Teiltransparenz mischte sich die
+   * Fläche darunter ein und die Farbe wirkte ausgewaschen.
+   */
+  &__fill {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    transition: all 0.15s ease;
+
+    &--ok { background-color: token(--status-ok); }
+    &--near { background-color: token(--status-near); }
+    &--out { background-color: token(--status-out); }
+  }
+
+  &__target {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    z-index: 10;
+    width: 1px;
+    background-color: token(--text-primary, 0.25);
+  }
+
+  &__value {
+    flex-shrink: 0;
+    width: 3.5rem;
+    font-size: var(--font-xs);
+    text-align: right;
+    color: token(--text-secondary);
+  }
+}
+</style>

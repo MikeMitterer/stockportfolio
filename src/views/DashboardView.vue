@@ -268,9 +268,9 @@ function toggleGroups(): void {
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col gap-4 md:gap-6">
+  <div class="dashboard">
     <!-- Erst-Ladezustand -->
-    <div v-if="!ready" class="flex items-center justify-center py-24">
+    <div v-if="!ready" class="dashboard__loading">
       <NSpin size="large" />
     </div>
 
@@ -279,13 +279,13 @@ function toggleGroups(): void {
       das Beispiel-Depot lässt die App ausprobieren, ohne dass jemand
       fremde Bestände für die eigenen hält.
     -->
-    <NEmpty v-else-if="!hasHoldings" class="py-24" description="Noch keine Wertpapiere im Depot">
+    <NEmpty v-else-if="!hasHoldings" class="dashboard__empty" description="Noch keine Wertpapiere im Depot">
       <template #extra>
-        <div class="flex flex-col items-center gap-3">
-          <p class="text-xs text-ink-muted max-w-sm text-center leading-relaxed">
+        <div class="dashboard__empty-actions">
+          <p class="dashboard__empty-hint">
             {{ t('dashboard.emptyHint') }}
           </p>
-          <div class="flex items-center gap-2">
+          <div class="dashboard__empty-buttons">
             <NButton size="small" type="primary" @click="openAddDialog">
               {{ t('actions.addPosition') }}
             </NButton>
@@ -300,7 +300,7 @@ function toggleGroups(): void {
     <template v-else-if="result">
       <!-- Fehler-Banner bei fehlgeschlagenen Kursen -->
       <!-- Kennzahlen -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <section class="dashboard__kpis">
         <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
         <KpiCard
           :label="t('kpi.investmentReserve')"
@@ -319,7 +319,19 @@ function toggleGroups(): void {
           :value="percent(result.liquidity.investmentReservePercent)"
           :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
         />
-        <KpiCard :label="t('kpi.warnings')" :value="warningsValue" :tone="warningsTone" />
+        <!--
+          Zählt Datenprobleme, nicht Handlungsbedarf: Ein „Buy" in der Zeile
+          ist ein normaler Zustand, ein fehlender Kurs ein Mangel. Ohne den
+          Hinweis liest sich „Datenprobleme: Keine" neben fünf Buy-Zeilen wie
+          ein Widerspruch.
+        -->
+        <KpiCard
+          :label="t('kpi.warnings')"
+          :value="warningsValue"
+          :tone="warningsTone"
+          :explanation="t('hints.dataIssues')"
+          anchor="limits"
+        />
       </section>
 
       <!--
@@ -327,17 +339,17 @@ function toggleGroups(): void {
         ausgeblendet: die Gruppen-Trenner der Kartenliste zeigen dieselben
         Zahlen, und die Balkenzeile bräuchte hier acht Spalten Platz.
       -->
-      <section class="hidden md:block border-t border-edge">
+      <section class="dashboard__groups">
         <button
           type="button"
-          class="w-full flex items-center gap-2 py-2.5 text-left text-ink-secondary hover:text-ink transition-colors"
+          class="dashboard__groups-toggle"
           :aria-expanded="!groupsCollapsed"
           aria-controls="dashboard-groups-panel"
           @click="toggleGroups"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform"
-            :class="{ '-rotate-90': groupsCollapsed }"
+            class="dashboard__chevron"
+            :class="{ 'dashboard__chevron--collapsed': groupsCollapsed }"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -346,17 +358,17 @@ function toggleGroups(): void {
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
           </svg>
-          <h2 class="text-xs uppercase tracking-wide font-medium">
+          <h2 class="dashboard__section-title">
             {{ t('dashboard.assetClasses') }}
           </h2>
 
           <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
-          <span v-if="groupsCollapsed" class="ml-auto flex items-center gap-3 text-xs tabular-nums">
+          <span v-if="groupsCollapsed" class="dashboard__summary tabular-nums">
             <span
               v-for="group in result.groups"
               :key="group.group"
-              class="hidden sm:inline"
-              :class="group.suggestion === 'ok' ? 'text-ink-muted' : 'text-status-near'"
+              class="dashboard__summary-item"
+              :class="group.suggestion === 'ok' ? 'dashboard__summary-item--ok' : 'dashboard__summary-item--flagged'"
             >
               {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
             </span>
@@ -366,25 +378,25 @@ function toggleGroups(): void {
         <div
           v-show="!groupsCollapsed"
           id="dashboard-groups-panel"
-          class="pb-4 flex flex-col divide-y divide-edge-subtle"
+          class="dashboard__group-list"
         >
           <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
         </div>
       </section>
 
       <!-- Positionen -->
-      <section class="rounded-xl border border-edge bg-card overflow-hidden">
-        <div class="px-4 md:px-5 py-3 md:py-4 flex items-center justify-between gap-4 flex-wrap">
-          <h2 class="text-xs uppercase tracking-wide text-ink-secondary font-medium">
+      <section class="dashboard__panel">
+        <div class="dashboard__panel-head">
+          <h2 class="dashboard__panel-title">
             {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
           </h2>
-          <div class="flex items-center gap-5">
+          <div class="dashboard__panel-meta">
             <TargetAllocationBar
               v-if="!isCompact"
               :sum="result.targetPercentSum"
               :exceeded="result.targetsExceeded"
             />
-            <div class="text-xs text-ink-muted tabular-nums">
+            <div class="dashboard__bands tabular-nums">
               <!--
                 Bänder nur nennen, wenn sie gelten: Im reinen Kalendermodus
                 stünde hier sonst eine Grenze, nach der niemand mehr fragt.
@@ -400,21 +412,21 @@ function toggleGroups(): void {
                   :text="t('hints.bands')"
                   anchor="bands"
                   settings-tab="calc"
-                  class="ml-1"
+                  class="dashboard__hint"
                 />
               </template>
-              <span v-if="result.schedule.active" class="ml-2">
-                <span :class="result.schedule.due ? 'text-status-out' : ''">{{
+              <span v-if="result.schedule.active" class="dashboard__schedule">
+                <span :class="{ 'dashboard__due': result.schedule.due }">{{
                   scheduleLabel
                 }}</span>
                 <InfoHint
                   :text="t('hints.trigger')"
                   anchor="trigger"
                   settings-tab="calc"
-                  class="ml-1"
+                  class="dashboard__hint"
                 />
               </span>
-              <span v-if="loading" class="ml-2">{{ t('common.loading') }}</span>
+              <span v-if="loading" class="dashboard__schedule">{{ t('common.loading') }}</span>
             </div>
             <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
               {{ t('actions.addPosition') }}
@@ -448,3 +460,147 @@ function toggleGroups(): void {
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.dashboard {
+  @include stack(var(--space-4));
+
+  @include content-frame;
+
+  @include up(md) { gap: var(--space-6); }
+
+  &__loading {
+    @include row(0);
+
+    justify-content: center;
+    padding: var(--space-8) 0;
+  }
+
+  &__empty { padding: var(--space-8) 0; }
+
+  &__empty-actions {
+    @include stack(var(--space-3));
+
+    align-items: center;
+  }
+
+  /*
+   * Ein Satz, kein Absatz: Wer die App öffnet, will sie ausprobieren. Die
+   * Erklärung steht auf der Methodenseite, nicht im Leerzustand.
+   */
+  &__empty-hint {
+    @include muted;
+
+    max-width: 24rem;
+    line-height: 1.625;
+    text-align: center;
+  }
+
+  &__empty-buttons { @include row; }
+
+  &__kpis {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    @include up(sm) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include up(lg) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  /*
+   * Die Assetklassen-Balken bleiben dem Desktop vorbehalten: Auf dem Telefon
+   * stehen dieselben Zahlen ohnehin über jeder Gruppe in der Kartenliste.
+   */
+  &__groups {
+    display: none;
+    border-top: 1px solid token(--border-default);
+
+    @include up(md) { display: block; }
+  }
+
+  &__groups-toggle {
+    @include row;
+
+    width: 100%;
+    padding: 0.625rem 0;
+    text-align: left;
+    color: token(--text-secondary);
+    transition: color 0.15s ease;
+
+    &:hover { color: token(--text-primary); }
+  }
+
+  &__chevron {
+    width: 0.875rem;
+    height: 0.875rem;
+    transition: transform 0.15s ease;
+
+    &--collapsed { transform: rotate(-90deg); }
+  }
+
+  &__section-title {
+    font-size: var(--font-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  &__summary {
+    @include row(var(--space-3));
+
+    margin-left: auto;
+    font-size: var(--font-xs);
+  }
+
+  &__summary-item {
+    display: none;
+
+    @include up(sm) { display: inline; }
+
+    &--ok { @include muted(null); }
+    &--flagged { color: token(--status-near); }
+  }
+
+  &__group-list {
+    @include stack(0);
+
+    padding-bottom: var(--space-4);
+
+    > * + * { border-top: 1px solid token(--border-subtle); }
+  }
+
+  &__panel {
+    overflow: hidden;
+    border: 1px solid token(--border-default);
+    border-radius: 0.75rem;
+    background-color: token(--surface-card);
+  }
+
+  &__panel-head {
+    @include row(var(--space-4));
+
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+
+    @include up(md) { padding: var(--space-4) 1.25rem; }
+  }
+
+  &__panel-title {
+    font-size: var(--font-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: token(--text-secondary);
+  }
+
+  &__panel-meta { @include row(1.25rem); }
+
+  &__bands { @include muted; }
+
+  &__hint { margin-left: var(--space-1); }
+
+  &__schedule { margin-left: var(--space-2); }
+
+  &__due { color: token(--status-out); }
+}
+</style>

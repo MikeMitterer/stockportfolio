@@ -1,0 +1,137 @@
+// Variablen und Mixins, die in jedem Style-Block zur Verfügung stehen.
+//
+// Wird über `css.preprocessorOptions.scss.additionalData` in jede SFC
+// eingespielt — deshalb darf hier **nichts** stehen, das CSS erzeugt.
+// Sonst landete es einmal je Komponente im Bündel.
+
+// ─── Breakpoints ─────────────────────────────────────────────────────────────
+//
+// Vier Stufen, verbindlich über alle Apps (siehe ux-standards). Die eine
+// Grenze, die zählt, ist `md`: darunter eine Spalte und Kartenliste statt
+// Tabelle, darüber das volle Layout.
+
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+/// Ab dieser Breite aufwärts.
+///
+/// @param {String} $name - sm | md | lg | xl
+@mixin up($name) {
+  @if $name == sm {
+    @media (min-width: $bp-sm) { @content; }
+  } @else if $name == md {
+    @media (min-width: $bp-md) { @content; }
+  } @else if $name == lg {
+    @media (min-width: $bp-lg) { @content; }
+  } @else if $name == xl {
+    @media (min-width: $bp-xl) { @content; }
+  } @else {
+    @error 'Unbekannter Breakpoint: #{$name}';
+  }
+}
+
+/// Unterhalb dieser Breite.
+///
+/// @param {String} $name - sm | md | lg | xl
+@mixin below($name) {
+  @if $name == sm {
+    @media (max-width: $bp-sm - 1px) { @content; }
+  } @else if $name == md {
+    @media (max-width: $bp-md - 1px) { @content; }
+  } @else if $name == lg {
+    @media (max-width: $bp-lg - 1px) { @content; }
+  } @else if $name == xl {
+    @media (max-width: $bp-xl - 1px) { @content; }
+  } @else {
+    @error 'Unbekannter Breakpoint: #{$name}';
+  }
+}
+
+/// Farbe aus einem Token, wahlweise mit Deckkraft.
+///
+/// Die Token liegen als RGB-Tripel vor (`10 10 10`), damit Deckkraft
+/// nachträglich möglich ist. `token(--surface-card, .7)` spart das
+/// `rgb(var(…) / …)` an jeder Stelle.
+///
+/// @param {String} $name  - Name der CSS-Variable, mit `--`
+/// @param {Number} $alpha - Deckkraft 0…1
+@function token($name, $alpha: 1) {
+  @if $alpha == 1 {
+    @return rgb(var(#{$name}));
+  }
+  @return rgb(var(#{$name}) / #{$alpha});
+}
+
+// ─── Wiederkehrende Muster ───────────────────────────────────────────────────
+//
+// Was in mehr als zwei Komponenten gleich aussieht, steht hier einmal. Ohne
+// das schreibt jede Datei dieselben drei Zeilen neu, und beim nächsten
+// Feinschliff sind es dann zwölf Stellen statt einer.
+
+/// Leiser Beitext — Beschriftungen, Hinweise, Einheiten.
+///
+/// @param {String} $size - Schriftgröße; `null` lässt sie unverändert
+@mixin muted($size: var(--font-xs)) {
+  @if $size != null {
+    font-size: $size;
+  }
+  color: token(--text-muted);
+}
+
+/// Einzeilig kürzen statt umbrechen — für Namen in schmalen Spalten.
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/// Spalte mit gleichmäßigem Abstand.
+@mixin stack($gap: var(--space-2)) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+/// Zeile mit gleichmäßigem Abstand.
+///
+/// @param {String} $align - `align-items`
+@mixin row($gap: var(--space-2), $align: center) {
+  display: flex;
+  align-items: $align;
+  gap: $gap;
+}
+
+/// Steigend grün, fallend rot — als Modifikatoren `--rising` / `--falling`.
+///
+/// Sechs Komponenten zeigen dieselbe Aussage: Kurse, Delta, Gruppen, Zeiger.
+/// Sie müssen dieselbe Farbe tragen, sonst bedeutet Grün nicht überall
+/// dasselbe.
+@mixin trend {
+  &--rising { color: token(--status-ok); }
+  &--falling { color: token(--status-out); }
+}
+
+/// Erhobene Fläche mit Rahmen — Karten, Vorschauen, Zeiger.
+@mixin card-surface($surface: --surface-card) {
+  border: 1px solid token(--border-default);
+  border-radius: var(--radius-lg);
+  background-color: token($surface);
+}
+
+/// Zentrierter Inhaltsstreifen.
+///
+/// Gilt für jede Ansicht **und** für Kopf- und Statuszeile: Alle drei enden an
+/// derselben Kante. Die Innenabstände wachsen ab `md` mit.
+///
+/// @param {String} $pad - senkrechter Innenabstand; `0` für die Leisten
+@mixin content-frame($pad: var(--space-4)) {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: $pad var(--space-4);
+
+  @include up(md) {
+    padding: $pad var(--space-6);
+  }
+}

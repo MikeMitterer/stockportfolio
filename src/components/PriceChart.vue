@@ -227,14 +227,14 @@ watch(
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
-    <div class="flex items-center justify-between gap-4 flex-wrap">
-      <div class="flex items-baseline gap-3">
-        <span class="text-sm font-medium">{{ t('history.heading') }}</span>
+  <div class="chart">
+    <div class="chart__head">
+      <div class="chart__title-row">
+        <span class="chart__title">{{ t('history.heading') }}</span>
         <span
           v-if="line.path"
-          class="text-sm tabular-nums"
-          :class="line.rising ? 'text-status-ok' : 'text-status-out'"
+          class="chart__change tabular-nums"
+          :class="line.rising ? 'chart__change--rising' : 'chart__change--falling'"
         >
           {{ percentSigned(line.changePercent) }}
         </span>
@@ -253,18 +253,18 @@ watch(
       </NButtonGroup>
     </div>
 
-    <div ref="container" class="relative w-full rounded-md bg-sunken">
+    <div ref="container" class="chart__canvas">
       <NSpin
         v-if="series.loading && points.length === 0"
         size="small"
-        class="my-16 mx-auto block"
+        class="chart__spinner"
       />
 
       <svg
         v-else-if="line.path"
         :width="width"
         :height="HEIGHT"
-        class="block select-none"
+        class="chart__svg"
         role="img"
         :aria-label="`Kursverlauf ${percentSigned(line.changePercent)}`"
         @mousemove="onMove"
@@ -286,7 +286,7 @@ watch(
             :y="MARGIN.top + yOf(tick)"
             text-anchor="end"
             dominant-baseline="middle"
-            class="fill-ink-muted"
+            class="chart__axis-label"
             style="font-size: 10px"
           >
             {{ axisPrice(tick) }}
@@ -297,7 +297,7 @@ watch(
             :y="MARGIN.top + yOf(tick)"
             text-anchor="start"
             dominant-baseline="middle"
-            class="fill-ink-muted"
+            class="chart__axis-label"
             style="font-size: 10px"
           >
             {{ percentSigned(changeFrom(tick, first)) }}
@@ -318,7 +318,7 @@ watch(
             :x="MARGIN.left + tick.x"
             :y="HEIGHT - 6"
             text-anchor="middle"
-            class="fill-ink-muted"
+            class="chart__axis-label"
             style="font-size: 10px"
           >
             {{ tick.label }}
@@ -359,7 +359,7 @@ watch(
         </g>
       </svg>
 
-      <p v-else class="py-16 text-center text-xs text-ink-muted">
+      <p v-else class="chart__empty">
         {{ series.error ?? t('history.none') }}
       </p>
 
@@ -370,23 +370,112 @@ watch(
       -->
       <div
         v-if="hoveredPoint"
-        class="pointer-events-none absolute z-10 rounded-md border border-edge bg-card px-2.5 py-1.5
-               shadow-lg whitespace-nowrap"
+        class="chart__tip"
         :style="tooltipStyle"
       >
-        <div class="text-[11px] text-ink-muted">{{ fullDate(hoveredPoint.date) }}</div>
-        <div class="text-sm font-medium tabular-nums">{{ price(hoveredPoint.close) }}</div>
+        <div class="chart__tip-date">{{ fullDate(hoveredPoint.date) }}</div>
+        <div class="chart__tip-price tabular-nums">{{ price(hoveredPoint.close) }}</div>
         <div
-          class="text-[11px] tabular-nums"
-          :class="hoveredPoint.change >= 0 ? 'text-status-ok' : 'text-status-out'"
+          class="chart__tip-change tabular-nums"
+          :class="hoveredPoint.change >= 0 ? 'chart__change--rising' : 'chart__change--falling'"
         >
           {{ t('history.sinceStart', { value: percentSigned(hoveredPoint.change) }) }}
         </div>
       </div>
     </div>
 
-    <p v-if="line.path" class="text-[11px] text-ink-muted">
+    <p v-if="line.path" class="chart__caption">
       {{ t('history.axisHint', { date: fullDate(points[0]?.date ?? '') }) }}
     </p>
   </div>
 </template>
+
+<style scoped lang="scss">
+.chart {
+  @include stack(var(--space-2));
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  &__title-row {
+    @include row(var(--space-3), baseline);
+  }
+
+  &__title {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__change {
+    font-size: var(--font-sm);
+
+    &--rising { color: token(--status-ok); }
+    &--falling { color: token(--status-out); }
+  }
+
+  &__canvas {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    background-color: token(--surface-sunken);
+  }
+
+  &__spinner {
+    display: block;
+    margin: var(--space-8) auto;
+  }
+
+  &__svg {
+    display: block;
+    user-select: none;
+  }
+
+  &__axis-label {
+    fill: token(--text-muted);
+  }
+
+  &__empty {
+    padding: var(--space-8) 0;
+    font-size: var(--font-xs);
+    text-align: center;
+    @include muted(null);
+  }
+
+  /*
+   * Der Zeiger folgt der Maus und darf sie nicht abfangen — sonst löst sein
+   * eigener Rand `mouseleave` aus und er flackert.
+   */
+  &__tip {
+    position: absolute;
+    z-index: 10;
+    padding: 0.375rem 0.625rem;
+    border: 1px solid token(--border-default);
+    border-radius: var(--radius-sm);
+    background-color: token(--surface-card);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  &__tip-date,
+  &__tip-change {
+    font-size: 0.6875rem;
+  }
+
+  &__tip-date { @include muted(null); }
+
+  &__tip-price {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__caption {
+    @include muted(0.6875rem);
+  }
+}
+</style>

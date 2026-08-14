@@ -113,20 +113,20 @@ watch(
 <template>
   <NModal :show="show" @update:show="emit('update:show', $event)">
     <NCard
-      class="max-w-lg"
+      class="addpos__card"
       :bordered="false"
       role="dialog"
       aria-modal="true"
       :title="t('actions.addPosition')"
     >
-      <div class="flex flex-col gap-4">
+      <div class="addpos">
         <NAlert v-if="selectable.length === 0" type="info" :bordered="false">
           {{ t('addPosition.allInPortfolio') }}
         </NAlert>
 
         <template v-else>
-          <label class="flex flex-col gap-1 text-sm">
-            <span class="text-ink-muted">{{ t('addPosition.instrument') }}</span>
+          <label class="addpos__field">
+            <span class="addpos__label">{{ t('addPosition.instrument') }}</span>
             <NSelect
               v-model:value="selectedKey"
               :options="options"
@@ -138,42 +138,42 @@ watch(
           <!-- Kontext zum gewählten Papier, damit die Eingabe nicht blind erfolgt -->
           <div
             v-if="selected"
-            class="rounded-md bg-sunken p-3 grid grid-cols-2 gap-x-6 gap-y-2 text-xs"
+            class="addpos__facts"
           >
             <div>
-              <div class="text-ink-muted">ISIN</div>
+              <div class="addpos__label">ISIN</div>
               <div class="tabular-nums">{{ selected.isin ?? '—' }}</div>
             </div>
             <div>
-              <div class="text-ink-muted">{{ t('table.price') }}</div>
+              <div class="addpos__label">{{ t('table.price') }}</div>
               <div class="tabular-nums">
                 {{ selected.latest_price !== null ? eurCent(selected.latest_price) : 'noch keiner' }}
               </div>
             </div>
             <div v-if="selected.ter !== null">
-              <div class="text-ink-muted">TER</div>
+              <div class="addpos__label">TER</div>
               <div class="tabular-nums">{{ percent(selected.ter) }}</div>
             </div>
             <div v-if="selected.volatility !== null">
-              <div class="text-ink-muted">{{ t('addPosition.volatility') }}</div>
+              <div class="addpos__label">{{ t('addPosition.volatility') }}</div>
               <div class="tabular-nums">{{ percent(selected.volatility) }}</div>
             </div>
-            <div class="col-span-2">
+            <div class="addpos__tags">
               <NTag size="small" :bordered="false">{{ selected.type ?? t('instruments.unknownType') }}</NTag>
-              <NTag v-if="selected.provider" size="small" :bordered="false" class="ml-2">
+              <NTag v-if="selected.provider" size="small" :bordered="false" class="addpos__tag">
                 {{ selected.provider }}
               </NTag>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <label class="flex flex-col gap-1 text-sm">
-              <span class="text-ink-muted">{{ t('table.units') }}</span>
+          <div class="addpos__pair">
+            <label class="addpos__field">
+              <span class="addpos__label">{{ t('table.units') }}</span>
               <NInputNumber v-model:value="units" :min="0" :precision="0" :step="1" />
             </label>
 
-            <label class="flex flex-col gap-1 text-sm">
-              <span class="text-ink-muted">{{ t('table.targetPercent') }}</span>
+            <label class="addpos__field">
+              <span class="addpos__label">{{ t('table.targetPercent') }}</span>
               <NInputNumber
                 v-model:value="targetPercent"
                 :min="0"
@@ -181,16 +181,16 @@ watch(
                 :precision="2"
                 :step="0.5"
               />
-              <span class="text-xs text-ink-muted">
+              <span class="addpos__hint">
                 {{ t('addPosition.remaining', { value: percent(remainingTargetPercent) }) }}
               </span>
             </label>
           </div>
 
-          <label class="flex flex-col gap-1 text-sm">
-            <span class="text-ink-muted">{{ t('drilldown.group') }}</span>
+          <label class="addpos__field">
+            <span class="addpos__label">{{ t('drilldown.group') }}</span>
             <NSelect v-model:value="group" :options="groupOptions" />
-            <span class="text-xs text-ink-muted">
+            <span class="addpos__hint">
               {{ t('addPosition.groupHint') }}
             </span>
           </label>
@@ -202,7 +202,7 @@ watch(
       </div>
 
       <template #footer>
-        <div class="flex justify-end gap-2">
+        <div class="addpos__footer">
           <NButton size="small" quaternary @click="close">{{ t('actions.cancel') }}</NButton>
           <NButton
             v-if="selectable.length > 0"
@@ -218,3 +218,49 @@ watch(
     </NCard>
   </NModal>
 </template>
+
+<style scoped lang="scss">
+.addpos {
+  @include stack(var(--space-4));
+
+  &__card { max-width: 32rem; }
+
+  &__field {
+    @include stack(var(--space-1));
+    font-size: var(--font-sm);
+  }
+
+  &__label { @include muted(null); }
+
+  &__hint {
+    @include muted(var(--font-xs));
+  }
+
+  /* Kontext zum gewählten Papier, damit die Eingabe nicht blind erfolgt. */
+  &__facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2) var(--space-6);
+    padding: var(--space-3);
+    border-radius: var(--radius-sm);
+    background-color: token(--surface-sunken);
+    font-size: var(--font-xs);
+  }
+
+  &__tags { grid-column: span 2; }
+
+  &__tag { margin-left: var(--space-2); }
+
+  &__pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+}
+</style>
