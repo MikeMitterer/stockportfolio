@@ -73,51 +73,53 @@ const version = __APP_VERSION__
 <template>
   <footer class="statusbar">
     <div class="statusbar__inner">
-      <!-- Links: Herkunft und was gerade im Depot steht. -->
-      <span>
-        <span class="statusbar__app">StockPortfolio</span>
-        {{ t('status.poweredBy') }}
-        <a
-          href="https://www.mangolila.at/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="statusbar__origin"
-        >
-          MangoLila
-        </a>
-      </span>
-
-      <span class="statusbar__dot-separator">·</span>
-
-      <!--
-        Der Depotname gehört hierher, sobald es mehr als eines gibt: Ohne ihn
-        wäre jede Zahl der App mehrdeutig — man sähe nicht, worauf sie sich
-        bezieht.
-      -->
-      <span class="statusbar__context">
-        <span v-if="portfolioName" class="statusbar__strong">{{ portfolioName }}</span>
-        <span class="tabular-nums">
-          {{ portfolioName ? ', ' : ''
-          }}{{ t('units.positions', positionCount, { named: { count: integer(positionCount) } }) }}
+        <span class="statusbar__left">
+        <!-- Links: Herkunft und was gerade im Depot steht. -->
+        <span class="statusbar__brand">
+          <span class="statusbar__app">StockPortfolio</span>
+          {{ t('status.poweredBy') }}
+          <a
+            href="https://www.mangolila.at/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="statusbar__origin"
+          >
+            MangoLila
+          </a>
         </span>
-      </span>
 
-      <span class="statusbar__dot-separator">·</span>
+        <span class="statusbar__dot-separator statusbar__dot-separator--brand">·</span>
 
-      <!-- Das Alter der Kurse: Jede Kennzahl der App hängt daran. -->
-      <span>
-        {{ t('status.quotes') }}
-        <span class="statusbar__strong tabular-nums">
-          {{ quotesStore.loading ? t('status.quotesLoading') : quoteAge }}
+        <!--
+          Der Depotname gehört hierher, sobald es mehr als eines gibt: Ohne ihn
+          wäre jede Zahl der App mehrdeutig — man sähe nicht, worauf sie sich
+          bezieht.
+        -->
+        <span class="statusbar__context">
+          <span v-if="portfolioName" class="statusbar__strong">{{ portfolioName }}</span>
+          <span class="tabular-nums">
+            {{ portfolioName ? ', ' : ''
+            }}{{ t('units.positions', positionCount, { named: { count: integer(positionCount) } }) }}
+          </span>
         </span>
-      </span>
 
-      <span v-if="failureCount > 0" class="statusbar__failures">
-        {{
-          t('status.quotesMissing', {
-            quotes: t('units.quotes', failureCount, { named: { count: integer(failureCount) } }),
-          })
-        }}
+        <span class="statusbar__dot-separator">·</span>
+
+        <!-- Das Alter der Kurse: Jede Kennzahl der App hängt daran. -->
+        <span>
+          {{ t('status.quotes') }}
+          <span class="statusbar__strong tabular-nums">
+            {{ quotesStore.loading ? t('status.quotesLoading') : quoteAge }}
+          </span>
+        </span>
+
+        <span v-if="failureCount > 0" class="statusbar__failures">
+          {{
+            t('status.quotesMissing', {
+              quotes: t('units.quotes', failureCount, { named: { count: integer(failureCount) } }),
+            })
+          }}
+        </span>
       </span>
 
       <!-- Rechts: der technische Stand — Version und Zustand der Gegenstelle. -->
@@ -136,7 +138,10 @@ const version = __APP_VERSION__
           @click="router.push('/settings')"
         >
           <span class="statusbar__light" :class="`statusbar__light--${dotState}`"></span>
-          <span :class="{ 'statusbar__offline': dotState === 'offline' }">{{ host }}</span>
+          <span
+            class="statusbar__host"
+            :class="{ 'statusbar__offline': dotState === 'offline' }"
+          >{{ host }}</span>
           <span v-if="apiStatus.version" class="statusbar__api-version tabular-nums">
             {{ apiStatus.version }}
           </span>
@@ -162,14 +167,51 @@ const version = __APP_VERSION__
     padding-left: var(--space-6);
   }
 
-  /* Darf umbrechen: Auf schmalen Schirmen lieber zweizeilig als beschnitten. */
+  /*
+   * Zwei Blöcke, nicht sechs Geschwister: links die Lage, rechts der
+   * technische Stand. Mit `space-between` sitzt beides sauber an seiner Kante,
+   * ohne dass zwischen einzelnen Angaben unterschiedlich große Lücken
+   * entstehen.
+   */
   &__inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-1) var(--space-4);
     max-width: 1400px;
     margin: 0 auto;
+  }
+
+  &__left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-4);
+    min-width: 0;
+  }
+
+  /*
+   * Auf dem Telefon fällt weg, was nicht zur Lage gehört: Herkunft, Adresse
+   * der Gegenstelle, deren Version. Übrig bleibt eine Zeile — Depot, Alter der
+   * Kurse, Ampel, Version. Dreizeilig nahm die Statuszeile mehr Platz als die
+   * oberste Kennzahl.
+   */
+  &__brand {
+    display: none;
+
+    /*
+     * Erst ab `lg`: Bei 768 px passte zwar alles hinein, aber nur knapp — die
+     * Zeile brach auf zwei um, sobald der Depotname etwas länger war.
+     */
+    @include up(lg) { display: inline; }
+  }
+
+  &__host,
+  &__api-version {
+    display: none;
+
+    @include up(sm) { display: inline; }
   }
 
   &__app {
@@ -197,6 +239,12 @@ const version = __APP_VERSION__
     opacity: 0.4;
 
     @include up(sm) { display: inline; }
+
+    /* Gehört zur Herkunft — ohne sie stünde er verwaist am Zeilenanfang. */
+    &--brand {
+      @include up(sm) { display: none; }
+      @include up(lg) { display: inline; }
+    }
   }
 
   &__failures {
@@ -238,6 +286,9 @@ const version = __APP_VERSION__
   &__api-version {
     opacity: 0.6;
   }
+
+  /* Ohne Adresse daneben braucht die Ampel etwas Luft zur Version. */
+  &__api { min-width: 0.5rem; }
 }
 
 @keyframes statusbar-pulse {

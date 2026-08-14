@@ -59,7 +59,7 @@ export const de = {
     investmentReserveHint: 'Geldmarkt + Cash − Sicherheitspuffer',
     investmentReservePercent: 'Reserve in %',
     securityBufferHint: 'Sicherheitspuffer: {buffer}',
-    warnings: 'Warnungen',
+    warnings: 'Datenprobleme',
     warningsNone: 'Keine',
   },
   table: {
@@ -74,6 +74,7 @@ export const de = {
     status: 'Status',
     quoteAge: 'Kurs vor {minutes} Min.',
     quoteAgeStale: 'Kurs veraltet',
+    openDetails: 'Details anzeigen',
     quoteMissing: 'Kein Kurs verfügbar',
   },
   drilldown: {
@@ -496,6 +497,8 @@ export const de = {
       'Jeder Euro, der gekauft wird, muss sichtbar herkommen. Der Vorschlag nennt die Stückzahl, mit der Cash oder Geldmarkt die offene Lücke schließt.',
     historyPeriod:
       'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
+    dataIssues:
+      'Kurse, die nicht geladen werden konnten, und Papiere in fremder Währung — also Fälle, in denen eine Zahl der App fehlt oder nicht mitzählt. Ob eine Position gekauft oder verkauft werden sollte, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
     moneymarket:
       'Geldmarktnahe Papiere schwanken kaum und zählen deshalb zusammen mit Cash zur verfügbaren Liquidität. Laufzeit-Anleihen tun das nicht.',
   },

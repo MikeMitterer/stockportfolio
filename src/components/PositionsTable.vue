@@ -89,6 +89,17 @@ const expandedRowKeys = ref<RowKey[]>([])
 
 const rowKey = (row: PositionResult): RowKey => row.position.id
 
+/**
+ * Klappt eine Zeile auf oder zu.
+ *
+ * Hängt am Symbol und am Namen, nicht nur am Pfeil links: Wer Näheres zu einem
+ * Papier sucht, klickt es an — nicht ein Bedienelement daneben.
+ */
+function toggleRow(id: RowKey): void {
+  const open = expandedRowKeys.value
+  expandedRowKeys.value = open.includes(id) ? open.filter((key) => key !== id) : [...open, id]
+}
+
 // ─── Gruppierung ────────────────────────────────────────────────────────────
 
 interface RenderedGroup {
@@ -170,8 +181,17 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         // Papier, nicht in eine eigene Spalte, die die Tabelle breiter macht.
         h('div', { class: 'cell-row' }, [
           h(
-            'span',
-            { class: 'cell-symbol' },
+            'button',
+            {
+              class: 'cell-symbol cell-openable',
+              type: 'button',
+              title: t('table.openDetails'),
+              'aria-expanded': expandedRowKeys.value.includes(row.position.id),
+              onClick: (event: MouseEvent) => {
+                event.stopPropagation()
+                toggleRow(row.position.id)
+              },
+            },
             row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
           ),
           // Fremde Währung sieht aus wie „inaktiv", ist aber keine
@@ -204,7 +224,19 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             : null,
         ]),
         row.position.group !== 'cash'
-          ? h('span', { class: 'cell-name' }, row.position.displayName)
+          ? h(
+              'button',
+              {
+                class: 'cell-name cell-openable',
+                type: 'button',
+                title: t('table.openDetails'),
+                onClick: (event: MouseEvent) => {
+                  event.stopPropagation()
+                  toggleRow(row.position.id)
+                },
+              },
+              row.position.displayName,
+            )
           : null,
       ]),
   },

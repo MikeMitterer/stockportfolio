@@ -222,17 +222,27 @@ const isActive = (name: string): boolean => route.name === name
     margin-left: auto;
   }
 
+  /*
+   * Erst ab `lg`: Bei Tablet-Breite drängen die vier Beschriftungen und der
+   * Knopf das Alter auf 40 Pixel zusammen, es brach dann dreizeilig um.
+   * Verloren geht nichts — dieselbe Angabe steht in der Statuszeile.
+   */
   &__age {
     display: none;
+    white-space: nowrap;
     @include muted(var(--font-xs));
 
-    @include up(sm) { display: inline; }
+    @include up(lg) { display: inline; }
   }
 
+  /*
+   * Erst ab `lg`: Bei Tablet-Breite schob die Beschriftung den Knopf über den
+   * rechten Rand hinaus. Das Symbol allein ist eindeutig genug.
+   */
   &__refresh-label {
     display: none;
 
-    @include up(md) { display: inline; }
+    @include up(lg) { display: inline; }
   }
 }
 </style>

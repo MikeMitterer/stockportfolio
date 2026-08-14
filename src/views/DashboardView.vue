@@ -319,7 +319,19 @@ function toggleGroups(): void {
           :value="percent(result.liquidity.investmentReservePercent)"
           :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
         />
-        <KpiCard :label="t('kpi.warnings')" :value="warningsValue" :tone="warningsTone" />
+        <!--
+          Zählt Datenprobleme, nicht Handlungsbedarf: Ein „Buy" in der Zeile
+          ist ein normaler Zustand, ein fehlender Kurs ein Mangel. Ohne den
+          Hinweis liest sich „Datenprobleme: Keine" neben fünf Buy-Zeilen wie
+          ein Widerspruch.
+        -->
+        <KpiCard
+          :label="t('kpi.warnings')"
+          :value="warningsValue"
+          :tone="warningsTone"
+          :explanation="t('hints.dataIssues')"
+          anchor="limits"
+        />
       </section>
 
       <!--
