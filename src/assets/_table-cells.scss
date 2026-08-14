@@ -1,0 +1,93 @@
+/*
+ * Zellen der Datentabellen.
+ *
+ * Warum global und nicht `scoped` in der Komponente: Diese Zellen entstehen in
+ * `h()`-Funktionen, die als Eigenschaft an Naive UIs Tabelle gehen. Was dort
+ * gerendert wird, trägt das Scope-Merkmal der aufrufenden Komponente nicht
+ * zuverlässig — eine `scoped`-Regel griffe also nicht.
+ *
+ * Zwei Tabellen verwenden sie (Positionen und Assets), deshalb steht das hier
+ * einmal statt zweimal. Das Präfix `cell-` hält sie auseinander von allem
+ * anderen; erfunden wird hier nichts, was nicht in einer Tabellenzelle steht.
+ */
+
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cell-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/** Spaltenkopf mit Fragezeichen daneben. */
+.cell-head {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/** Symbol oder Kürzel — die Kennung der Zeile. */
+.cell-symbol {
+  font-size: var(--font-sm);
+  font-weight: 500;
+}
+
+/** Ausgeschriebener Name unter der Kennung. */
+.cell-name {
+  overflow: hidden;
+  font-size: var(--font-xs);
+  color: rgb(var(--text-muted));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/** Zahlen stehen in gleich breiten Ziffern, sonst springen die Spalten. */
+.cell-num {
+  font-variant-numeric: tabular-nums;
+
+  &--strong { font-weight: 500; }
+  &--muted { color: rgb(var(--text-muted)); }
+
+  &--missing {
+    font-size: var(--font-xs);
+    color: rgb(var(--status-out));
+  }
+}
+
+/** Platzhalter für „gibt es hier nicht". */
+.cell-empty {
+  font-size: var(--font-xs);
+  color: rgb(var(--text-muted));
+}
+
+/**
+ * Kleines Etikett in der Zelle — fremde Währung, stillgelegt.
+ *
+ * Trägt seinen Text ausgeschrieben: Die Randfarbe allein dürfte die Aussage
+ * nicht tragen.
+ */
+.cell-tag {
+  padding: 1px 0.375rem;
+  border: 1px solid rgb(var(--border-default));
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: rgb(var(--text-muted));
+
+  &--warning {
+    border-color: rgb(var(--status-out) / 0.5);
+    color: rgb(var(--status-out));
+  }
+}
+
+.cell-excluded {
+  font-size: var(--font-xs);
+  color: rgb(var(--text-muted));
+
+  &--currency { color: rgb(var(--status-out)); }
+}

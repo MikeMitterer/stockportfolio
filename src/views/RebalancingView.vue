@@ -215,14 +215,14 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col gap-4 md:gap-6">
-    <div v-if="!ready" class="flex items-center justify-center py-24">
+  <div class="reb">
+    <div v-if="!ready" class="reb__loading">
       <NSpin size="large" />
     </div>
 
     <NEmpty
       v-else-if="!hasHoldings"
-      class="py-24"
+      class="reb__empty"
       :description="t('rebalancing.empty')"
     />
 
@@ -232,32 +232,32 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
         Kein abstraktes Budget — jeder eingesetzte Euro muss im Plan aus einem
         Verkauf oder einer Entnahme bei Cash/Geldmarkt stammen.
       -->
-      <section class="flex flex-wrap items-end gap-x-8 gap-y-4">
-        <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.freed') }}</span>
-          <span class="text-lg font-semibold tabular-nums text-status-ok">
+      <section class="reb__summary">
+        <div class="reb__figure">
+          <span class="reb__caption">{{ t('rebalancing.freed') }}</span>
+          <span class="reb__value reb__value--in tabular-nums">
             {{ eur(plan.proceeds) }}
           </span>
-          <span class="text-[11px] text-ink-muted">{{ t('rebalancing.freedHint') }}</span>
+          <span class="reb__caption-hint">{{ t('rebalancing.freedHint') }}</span>
         </div>
 
-        <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.spent') }}</span>
-          <span class="text-lg font-semibold tabular-nums text-status-out">
+        <div class="reb__figure">
+          <span class="reb__caption">{{ t('rebalancing.spent') }}</span>
+          <span class="reb__value reb__value--out tabular-nums">
             {{ eur(plan.outlay) }}
           </span>
-          <span class="text-[11px] text-ink-muted">{{ t('rebalancing.spentHint') }}</span>
+          <span class="reb__caption-hint">{{ t('rebalancing.spentHint') }}</span>
         </div>
 
-        <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">{{ t('rebalancing.balance') }}</span>
+        <div class="reb__figure">
+          <span class="reb__caption">{{ t('rebalancing.balance') }}</span>
           <span
-            class="text-lg font-semibold tabular-nums"
-            :class="plan.underfunded ? 'text-status-out' : 'text-ink'"
+            class="reb__value tabular-nums"
+            :class="{ 'reb__value--out': plan.underfunded }"
           >
             {{ eurSigned(plan.netCashFlow) }}
           </span>
-          <span class="text-[11px] text-ink-muted">
+          <span class="reb__caption-hint">
             <template v-if="!planHasEntries">{{ t('rebalancing.nothingPlanned') }}</template>
             <template v-else-if="plan.underfunded">{{ t('rebalancing.underfunded') }}</template>
             <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">{{ t('rebalancing.balanced') }}</template>
@@ -272,49 +272,48 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           stehen sie neben der Lücke, die sie schließen sollen, und die feste
           Höhe verhindert auch beim Erscheinen jeden Versatz.
         -->
-        <div class="flex flex-col gap-0.5 min-h-[3.75rem]">
+        <div class="reb__figure reb__figure--cover">
           <span
-            class="inline-flex items-center gap-1 text-[11px] uppercase tracking-wide text-ink-muted"
+            class="reb__caption reb__caption--hinted"
           >
             {{ t('rebalancing.coverFrom') }}
             <InfoHint :text="t('hints.coverFrom')" anchor="plan" settings-tab="calc" />
           </span>
-          <div v-if="coverageOptions.length > 0" class="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <div v-if="coverageOptions.length > 0" class="reb__cover-options">
             <button
               v-for="option in coverageOptions"
               :key="option.id"
               type="button"
-              class="rounded-full border border-edge px-2 py-0.5 text-xs tabular-nums
-                     text-accent transition-colors hover:border-accent"
+              class="reb__cover-button tabular-nums"
               :title="t('rebalancing.coverTitle', { label: option.label, units: integer(option.units) })"
               @click="setTrade(option.id, option.units)"
             >
               {{ option.label }} {{ integer(option.units) }}
             </button>
           </div>
-          <span v-else class="text-sm text-ink-muted pt-1">
+          <span v-else class="reb__cover-empty">
             {{ planHasEntries ? t('rebalancing.coverNothing') : t('common.none') }}
           </span>
-          <span class="text-[11px] text-ink-muted">{{ t('rebalancing.coverHint') }}</span>
+          <span class="reb__caption-hint">{{ t('rebalancing.coverHint') }}</span>
         </div>
 
-        <div class="flex flex-col gap-0.5">
-          <span class="text-[11px] uppercase tracking-wide text-ink-muted">
+        <div class="reb__figure">
+          <span class="reb__caption">
             {{ t('rebalancing.reserve') }}
           </span>
-          <span class="text-lg font-semibold tabular-nums">{{ eur(plan.reserveAvailable) }}</span>
-          <span class="text-[11px] text-ink-muted">
+          <span class="reb__value tabular-nums">{{ eur(plan.reserveAvailable) }}</span>
+          <span class="reb__caption-hint">
             {{ t('rebalancing.reserveHint') }}
           </span>
         </div>
 
-        <div class="ml-auto flex items-center gap-3">
+        <div class="reb__note">
           <!--
             Der Plan bucht bewusst nichts. Er dient dem Durchrechnen; die
             Aufträge gibt der Nutzer bei seiner Bank auf und pflegt die
             Bestände danach im Dashboard nach.
           -->
-          <span class="text-[11px] text-ink-muted max-w-[16rem] leading-tight">
+          <span class="reb__note-text">
             {{ t('rebalancing.simulationNote') }}
           </span>
           <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
@@ -324,12 +323,12 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
       </section>
 
       <!-- ─── Der Plan ─────────────────────────────────────────────────── -->
-      <section class="rounded-xl border border-edge bg-card overflow-hidden">
-        <div class="px-4 md:px-5 py-3 flex items-baseline justify-between gap-4 flex-wrap">
-          <h2 class="text-xs uppercase tracking-wide text-ink-muted font-medium">
+      <section class="reb__panel">
+        <div class="reb__panel-head">
+          <h2 class="reb__panel-title">
             {{ t('rebalancing.heading') }}
           </h2>
-          <span class="text-xs text-ink-muted tabular-nums">
+          <span class="reb__panel-bands tabular-nums">
             {{
               t('rebalancing.bandsLabel', {
                 lower: percent(settingsStore.settings.bands.lowerPercent),
@@ -339,45 +338,45 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           </span>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
+        <div class="reb__scroll">
+          <table class="reb__table">
             <thead>
-              <tr class="text-[11px] uppercase tracking-wide text-ink-muted">
-                <th class="text-left font-medium px-4 py-1.5">{{ t('table.symbol') }}</th>
-                <th class="text-right font-medium px-2 py-1.5">{{ t('table.units') }}</th>
-                <th class="text-right font-medium px-2 py-1.5">{{ t('table.price') }}</th>
-                <th class="text-right font-medium px-2 py-1.5">{{ t('table.actualPercent') }}</th>
-                <th class="text-right font-medium px-2 py-1.5">{{ t('table.targetPercent') }}</th>
-                <th class="text-right font-medium px-2 py-1.5">
+              <tr class="reb__head">
+                <th class="reb__th reb__th--left reb__th--wide">{{ t('table.symbol') }}</th>
+                <th class="reb__th">{{ t('table.units') }}</th>
+                <th class="reb__th">{{ t('table.price') }}</th>
+                <th class="reb__th">{{ t('table.actualPercent') }}</th>
+                <th class="reb__th">{{ t('table.targetPercent') }}</th>
+                <th class="reb__th">
                   <NTooltip trigger="hover">
                     <template #trigger>
-                      <span class="border-b border-dotted border-ink-muted cursor-help">
+                      <span class="reb__hinted">
                         {{ t('rebalancing.columns.delta') }}
                       </span>
                     </template>
-                    <div class="max-w-xs text-sm">
+                    <div class="reb__tooltip">
                       {{ t('rebalancing.deltaTooltip') }}
-                      <div class="mt-2 text-xs">{{ t('rebalancing.deltaTooltipMore') }}</div>
+                      <div class="reb__tooltip-more">{{ t('rebalancing.deltaTooltipMore') }}</div>
                     </div>
                   </NTooltip>
                 </th>
-                <th class="text-right font-medium px-2 py-1.5 w-32">{{ t('rebalancing.columns.trade') }}</th>
-                <th class="text-right font-medium px-2 py-1.5 w-28">{{ t('rebalancing.columns.value') }}</th>
-                <th class="text-left font-medium px-2 py-1.5 w-56">
+                <th class="reb__th reb__th--w32">{{ t('rebalancing.columns.trade') }}</th>
+                <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
+                <th class="reb__th reb__th--left reb__th--w56">
                   {{ t('rebalancing.columns.shareAfter') }}
                 </th>
-                <th class="text-right font-medium px-2 py-1.5">{{ t('rebalancing.columns.deviation') }}</th>
-                <th class="text-center font-medium px-4 py-1.5 w-32">{{ t('table.status') }}</th>
+                <th class="reb__th">{{ t('rebalancing.columns.deviation') }}</th>
+                <th class="reb__th reb__th--center reb__th--wide reb__th--w32">{{ t('table.status') }}</th>
               </tr>
             </thead>
 
             <tbody>
               <template v-for="entry in groupedRows" :key="entry.group.group">
                 <tr :style="{ backgroundColor: bandColor(entry.group.group) }">
-                  <td colspan="11" class="px-4 py-1">
-                    <span class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-ink-muted">
+                  <td colspan="11" class="reb__td reb__td--wide">
+                    <span class="reb__group">
                       <span
-                        class="inline-block w-1.5 h-1.5 rounded-full"
+                        class="reb__group-dot"
                         :style="{ backgroundColor: assetColor(entry.group.group) }"
                         aria-hidden="true"
                       ></span>
@@ -389,10 +388,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                 <tr
                   v-for="row in entry.rows"
                   :key="row.current.position.id"
-                  class="border-t border-edge-subtle"
+                  class="reb__row"
                 >
-                  <td class="px-4 py-1">
-                    <div class="font-medium leading-tight">
+                  <td class="reb__td reb__td--wide">
+                    <div class="reb__symbol">
                       {{
                         row.current.position.group === 'cash'
                           ? row.current.position.displayName
@@ -401,21 +400,21 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     </div>
                     <div
                       v-if="row.current.position.group !== 'cash'"
-                      class="text-xs text-ink-muted truncate max-w-[14rem]"
+                      class="reb__name"
                     >
                       {{ row.current.position.displayName }}
                     </div>
                   </td>
 
-                  <td class="px-2 py-1 text-right tabular-nums">
+                  <td class="reb__td reb__td--num tabular-nums">
                     {{ integer(row.current.position.units) }}
                   </td>
 
-                  <td class="px-2 py-1 text-right tabular-nums text-ink-secondary">
+                  <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
                     {{ priceOf(row) !== null ? eurCent(priceOf(row)!) : '—' }}
                   </td>
 
-                  <td class="px-2 py-1 text-right tabular-nums text-ink-secondary">
+                  <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
                     {{ percent(row.current.actualPercent) }}
                   </td>
 
@@ -426,11 +425,11 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     stünde die Zeile hinterher dauerhaft auf „Kaufen". Der
                     Punkt markiert den Probewert.
                   -->
-                  <td class="px-2 py-1">
-                    <div class="flex items-center gap-1">
+                  <td class="reb__td">
+                    <div class="reb__target">
                       <span
-                        class="w-1.5 h-1.5 rounded-full shrink-0"
-                        :class="row.targetOverridden ? 'bg-accent' : 'bg-transparent'"
+                        class="reb__override"
+                        :class="{ 'reb__override--on': row.targetOverridden }"
                         :title="
                           row.targetOverridden
                             ? `Probeweise geändert — im Depot steht ${percent(
@@ -441,7 +440,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                         aria-hidden="true"
                       ></span>
                       <InlineNumber
-                        class="flex-1"
+                        class="reb__grow"
                         :value="row.targetPercent"
                         :display="percent(row.targetPercent)"
                         :precision="2"
@@ -456,22 +455,22 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   </td>
 
                   <!-- Delta bis zum Ziel — per Klick übernehmbar -->
-                  <td class="px-2 py-1 text-right">
+                  <td class="reb__td reb__td--num">
                     <button
                       v-if="row.deltaUnits !== 0"
                       type="button"
-                      class="tabular-nums text-xs underline decoration-dotted"
-                      :class="row.deltaUnits > 0 ? 'text-status-ok' : 'text-status-out'"
+                      class="reb__delta tabular-nums"
+                      :class="row.deltaUnits > 0 ? 'reb__delta--up' : 'reb__delta--down'"
                       :title="t('rebalancing.adoptDelta')"
                       @click="setTrade(row.current.position.id, row.deltaUnits)"
                     >
                       {{ row.deltaUnits > 0 ? '+' : '' }}{{ integer(row.deltaUnits) }}
                     </button>
-                    <span v-else class="text-ink-muted text-xs">—</span>
+                    <span v-else class="reb__muted">—</span>
                   </td>
 
                   <!-- Die Eingabe -->
-                  <td class="px-2 py-1">
+                  <td class="reb__td">
                     <InlineNumber
                       :value="row.tradeUnits"
                       :display="row.tradeUnits === 0 ? '—' : integer(row.tradeUnits)"
@@ -483,19 +482,19 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   </td>
 
                   <td
-                    class="px-2 py-1 text-right tabular-nums"
+                    class="reb__td reb__td--num tabular-nums"
                     :class="
                       row.cashFlow > 0
-                        ? 'text-status-ok'
+                        ? 'reb__flow--in'
                         : row.cashFlow < 0
-                          ? 'text-status-out'
-                          : 'text-ink-muted'
+                          ? 'reb__flow--out'
+                          : 'reb__muted'
                     "
                   >
                     {{ row.cashFlow === 0 ? '—' : eurSigned(row.cashFlow) }}
                   </td>
 
-                  <td class="px-2 py-1">
+                  <td class="reb__td">
                     <!--
                       Derselbe Balken wie auf dem Dashboard: Mitte ist das
                       Ziel, statt des Deltas steht der Anteil am Gesamtvermögen
@@ -515,14 +514,14 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     ist der Zustand in Ordnung, deshalb hier gedämpft statt rot.
                   -->
                   <td
-                    class="px-2 py-1 text-right tabular-nums"
-                    :class="row.inBandAfter ? 'text-ink-muted' : 'text-status-out'"
+                    class="reb__td reb__td--num tabular-nums"
+                    :class="row.inBandAfter ? 'reb__muted' : 'reb__flow--out'"
                     :title="`${percentSigned(row.relativeDeviationAfter)} relativ zum Ziel`"
                   >
                     {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
                   </td>
 
-                  <td class="px-4 py-1 text-center">
+                  <td class="reb__td reb__td--wide reb__td--center">
                     <SuggestionBadge
                       :suggestion="row.suggestionAfter"
                       :below-min-trade="row.belowMinTradeAfter"
@@ -534,19 +533,19 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
 
             <!-- Bilanz des Plans -->
             <tfoot>
-              <tr class="border-t border-edge">
-                <td colspan="7" class="px-4 py-2 text-right text-xs uppercase tracking-wide text-ink-muted">
+              <tr class="reb__foot">
+                <td colspan="7" class="reb__foot-label">
                   {{ t('rebalancing.footerQuestion') }}
                 </td>
                 <td
-                  class="px-2 py-2 text-right tabular-nums font-semibold"
+                  class="reb__foot-value tabular-nums"
                   :class="
-                    Math.abs(plan.netCashFlow) < 0.005 ? 'text-status-ok' : 'text-ink'
+                    Math.abs(plan.netCashFlow) < 0.005 ? 'reb__flow--in' : ''
                   "
                 >
                   {{ eurSigned(plan.netCashFlow) }}
                 </td>
-                <td class="px-2 py-2 text-xs text-ink-muted" colspan="3">
+                <td class="reb__foot-note" colspan="3">
                   <template v-if="!planHasEntries">{{ t('rebalancing.footerNothing') }}</template>
                   <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">
                     {{ t('rebalancing.footerBalanced') }}
@@ -566,3 +565,271 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
     </template>
   </div>
 </template>
+
+<style scoped lang="scss">
+.reb {
+  @include stack(var(--space-4));
+
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-4);
+
+  @include up(md) {
+    gap: var(--space-6);
+    padding: var(--space-6);
+  }
+
+  &__loading {
+    @include row(0);
+
+    justify-content: center;
+    padding: var(--space-8) 0;
+  }
+
+  &__empty { padding: var(--space-8) 0; }
+
+  /* Der Kopf fasst den Plan zusammen: was frei wird, was er kostet, was bleibt. */
+  &__summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-4) var(--space-8);
+  }
+
+  &__figure {
+    @include stack(0.125rem);
+
+    /* Feste Mindesthöhe, damit die Zeile beim Erscheinen der Knöpfe nicht springt. */
+    &--cover { min-height: 3.75rem; }
+  }
+
+  &__caption {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    @include muted(null);
+
+    &--hinted {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+  }
+
+  &__caption-hint {
+    font-size: 0.6875rem;
+    @include muted(null);
+  }
+
+  &__value {
+    font-size: var(--font-lg);
+    font-weight: 600;
+
+    &--in { color: token(--status-ok); }
+    &--out { color: token(--status-out); }
+  }
+
+  &__cover-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    padding-top: 0.125rem;
+  }
+
+  &__cover-button {
+    padding: 0.125rem var(--space-2);
+    border: 1px solid token(--border-default);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    color: token(--accent);
+    transition: border-color 0.15s ease;
+
+    &:hover { border-color: token(--accent); }
+  }
+
+  &__cover-empty {
+    @include muted(var(--font-sm));
+
+    padding-top: var(--space-1);
+  }
+
+  &__note {
+    @include row(var(--space-3));
+
+    margin-left: auto;
+  }
+
+  &__note-text {
+    max-width: 16rem;
+    font-size: 0.6875rem;
+    line-height: 1.25;
+    @include muted(null);
+  }
+
+  &__panel {
+    overflow: hidden;
+    border: 1px solid token(--border-default);
+    border-radius: 0.75rem;
+    background-color: token(--surface-card);
+  }
+
+  &__panel-head {
+    @include row(var(--space-4), baseline);
+
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+
+    @include up(md) { padding-right: 1.25rem; padding-left: 1.25rem; }
+  }
+
+  &__panel-title {
+    font-size: var(--font-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    @include muted(null);
+  }
+
+  &__panel-bands { @include muted; }
+
+  /*
+   * Die Stückzahlen brauchen alle Spalten nebeneinander — Kurs gegen Ziel
+   * gegen Delta. Deshalb hier ausnahmsweise seitliches Rollen statt einer
+   * Kartenliste; die Eingabe wäre einzeln untereinander sinnlos.
+   */
+  &__scroll { overflow-x: auto; }
+
+  &__table {
+    width: 100%;
+    font-size: var(--font-sm);
+  }
+
+  &__head {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    @include muted(null);
+  }
+
+  &__th {
+    padding: 0.375rem var(--space-2);
+    font-weight: 500;
+    text-align: right;
+
+    &--left { text-align: left; }
+    &--center { text-align: center; }
+    &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
+    &--w28 { width: 7rem; }
+    &--w32 { width: 8rem; }
+    &--w56 { width: 14rem; }
+  }
+
+  &__hinted {
+    border-bottom: 1px dotted token(--text-muted);
+    cursor: help;
+  }
+
+  &__tooltip {
+    max-width: 20rem;
+    font-size: var(--font-sm);
+  }
+
+  &__tooltip-more {
+    margin-top: var(--space-2);
+    font-size: var(--font-xs);
+  }
+
+  &__group {
+    @include row;
+
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    @include muted(null);
+  }
+
+  &__group-dot {
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+  }
+
+  &__row { border-top: 1px solid token(--border-subtle); }
+
+  &__td {
+    padding: var(--space-1) var(--space-2);
+
+    &--num { text-align: right; }
+    &--center { text-align: center; }
+    &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
+    &--secondary { color: token(--text-secondary); }
+  }
+
+  &__symbol {
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  &__name {
+    @include truncate;
+    @include muted;
+
+    max-width: 14rem;
+  }
+
+  &__target { @include row(var(--space-1)); }
+
+  /* Der Punkt markiert ein probeweise geändertes Ziel. */
+  &__override {
+    flex-shrink: 0;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+
+    &--on { background-color: token(--accent); }
+  }
+
+  &__grow { flex: 1; }
+
+  &__delta {
+    font-size: var(--font-xs);
+    text-decoration: underline dotted;
+
+    &--up { color: token(--status-ok); }
+    &--down { color: token(--status-out); }
+  }
+
+  &__muted { @include muted(null); }
+
+  &__flow {
+    &--in { color: token(--status-ok); }
+    &--out { color: token(--status-out); }
+  }
+
+  &__foot { border-top: 1px solid token(--border-default); }
+
+  &__foot-label {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-xs);
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    @include muted(null);
+  }
+
+  &__foot-value {
+    padding: var(--space-2);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  &__foot-note {
+    padding: var(--space-2);
+    @include muted;
+  }
+}
+</style>

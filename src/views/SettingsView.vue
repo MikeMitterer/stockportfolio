@@ -180,6 +180,12 @@ const apiCheckedAgo = useRelativeTime(computed(() => api.checkedAt))
 /** Die Adresse aus `VITE_STOCKINFO_API_URL`, wie sie beim Bauen gesetzt wurde. */
 const apiUrl = computed(() => client?.url ?? '—')
 
+/** Ampelfarbe des Zustands — grün, rot oder neutral. */
+const apiTone = computed(() => {
+  if (api.state === 'online') return 'ok'
+  return api.state === 'offline' ? 'out' : 'neutral'
+})
+
 const apiStateLabel = computed<Record<string, string>>(() => ({
   unknown: t('settings.apiStates.unknown'),
   checking: t('settings.apiStates.checking'),
@@ -189,8 +195,8 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-6 py-8">
-    <h1 class="text-2xl font-semibold mb-4">{{ t('views.settingsTitle') }}</h1>
+  <div class="settings">
+    <h1 class="settings__title">{{ t('views.settingsTitle') }}</h1>
 
     <!--
       Gegliedert statt gestapelt: Rechenvorgaben, Aussehen und Verweise haben
@@ -209,20 +215,20 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
           die er verwendet, dann die Liquidität. Über die volle Breite stünde
           neben dem Auslöser nur Leere.
         -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div class="settings__columns">
           <!--
               Der Auslöser steht über den Bändern, weil er bestimmt, ob sie
               überhaupt gelten. Umgekehrt gelesen ergäbe die Seite keinen Sinn.
             -->
-          <NCard :bordered="false" class="!bg-card h-full">
+          <NCard :bordered="false" class="settings__card settings__card--full">
             <template #header>
-              <span class="inline-flex items-center gap-1.5 text-sm font-medium">
+              <span class="settings__card-title settings__card-title--hinted">
                 {{ t('settings.triggerHeading') }}
                 <InfoHint :text="t('hints.trigger')" anchor="trigger" />
               </span>
             </template>
 
-            <div class="flex flex-col gap-4">
+            <div class="settings__cards">
               <NRadioGroup
                 :value="settingsStore.settings.rebalancing.trigger"
                 @update:value="setTrigger"
@@ -233,8 +239,8 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                     :key="option.value"
                     :value="option.value"
                   >
-                    <span class="text-sm">{{ option.label }}</span>
-                    <span class="block text-xs text-ink-muted">{{ option.hint }}</span>
+                    <span class="settings__option">{{ option.label }}</span>
+                    <span class="settings__option-hint">{{ option.hint }}</span>
                   </NRadio>
                 </NSpace>
               </NRadioGroup>
@@ -243,9 +249,9 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                   Termin und Datum nur, wenn ein Kalender im Spiel ist — sonst
                   stünden hier Felder, die auf nichts wirken.
                 -->
-              <div v-if="calendarActive" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <label class="flex flex-col gap-1 text-sm">
-                  <span class="text-ink-muted">{{ t('settings.intervalMonths') }}</span>
+              <div v-if="calendarActive" class="settings__pair">
+                <label class="settings__field">
+                  <span class="settings__label">{{ t('settings.intervalMonths') }}</span>
                   <NInputNumber
                     :value="settingsStore.settings.rebalancing.intervalMonths"
                     :min="1"
@@ -253,20 +259,20 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                     :step="1"
                     @update:value="setIntervalMonths"
                   />
-                  <span class="text-xs text-ink-muted">{{ t('settings.intervalHint') }}</span>
+                  <span class="settings__hint">{{ t('settings.intervalHint') }}</span>
                 </label>
 
-                <label class="flex flex-col gap-1 text-sm">
-                  <span class="text-ink-muted">
+                <label class="settings__field">
+                  <span class="settings__label">
                     {{
                       t('settings.lastRebalanced', {
                         depot: portfolioStore.portfolio?.name ?? '',
                       })
                     }}
                   </span>
-                  <div class="flex gap-2">
+                  <div class="settings__inline">
                     <NDatePicker
-                      class="flex-1"
+                      class="settings__grow"
                       type="date"
                       clearable
                       :value="lastRebalancedStamp"
@@ -274,23 +280,23 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                     />
                     <NButton secondary @click="markToday">{{ t('settings.markToday') }}</NButton>
                   </div>
-                  <span class="text-xs text-ink-muted">{{ scheduleHint }}</span>
+                  <span class="settings__hint">{{ scheduleHint }}</span>
                 </label>
               </div>
             </div>
           </NCard>
 
-          <NCard :bordered="false" class="!bg-card h-full">
+          <NCard :bordered="false" class="settings__card settings__card--full">
             <template #header>
-              <span class="inline-flex items-center gap-1.5 text-sm font-medium">
+              <span class="settings__card-title settings__card-title--hinted">
                 {{ t('settings.bandsHeading') }}
                 <InfoHint :text="t('hints.bands')" anchor="bands" />
               </span>
             </template>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label class="flex flex-col gap-1 text-sm">
-                <span class="text-ink-muted">{{ t('bands.lower') }} (%)</span>
+            <div class="settings__pair">
+              <label class="settings__field">
+                <span class="settings__label">{{ t('bands.lower') }} (%)</span>
                 <NInputNumber
                   :disabled="!bandsActive"
                   :value="settingsStore.settings.bands.lowerPercent"
@@ -300,13 +306,13 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                   :precision="1"
                   @update:value="setLowerBand"
                 />
-                <span class="text-xs text-ink-muted">
+                <span class="settings__hint">
                   {{ t('settings.lowerHint') }}
                 </span>
               </label>
 
-              <label class="flex flex-col gap-1 text-sm">
-                <span class="text-ink-muted">{{ t('bands.upper') }} (%)</span>
+              <label class="settings__field">
+                <span class="settings__label">{{ t('bands.upper') }} (%)</span>
                 <NInputNumber
                   :disabled="!bandsActive"
                   :value="settingsStore.settings.bands.upperPercent"
@@ -316,13 +322,13 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                   :precision="1"
                   @update:value="setUpperBand"
                 />
-                <span class="text-xs text-ink-muted">
+                <span class="settings__hint">
                   {{ t('settings.upperHint') }}
                 </span>
               </label>
             </div>
 
-            <div class="mt-6">
+            <div class="settings__below">
               <!--
                   Bänder sind relativ zum Ziel — das löst zwar die Blindheit bei
                 kleinen Positionen, macht sie aber in Euro überempfindlich: Ein
@@ -343,12 +349,12 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             </div>
           </NCard>
 
-          <NCard :bordered="false" class="!bg-card h-full">
+          <NCard :bordered="false" class="settings__card settings__card--full">
             <template #header>
-              <span class="text-sm font-medium">{{ t('settings.metricsHeading') }}</span>
+              <span class="settings__card-title">{{ t('settings.metricsHeading') }}</span>
             </template>
 
-            <div class="grid grid-cols-1 gap-6">
+            <div class="settings__stack-wide">
               <!--
                 Zwei Lesarten des Puffers, beide gültig: ein Notgroschen ist ein
                 fester Betrag und wächst nicht mit dem Depot; ein Liquiditätsanteil
@@ -370,9 +376,9 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="links" :tab="t('settings.tabs.links')">
-        <NCard :bordered="false" class="!bg-card">
+        <NCard :bordered="false" class="settings__card">
           <template #header>
-            <span class="text-sm font-medium">{{ t('settings.linksHeading') }}</span>
+            <span class="settings__card-title">{{ t('settings.linksHeading') }}</span>
           </template>
 
           <ExternalLinkEditor
@@ -384,9 +390,9 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="theme" :tab="t('settings.tabs.theme')">
-        <NCard :bordered="false" class="!bg-card">
+        <NCard :bordered="false" class="settings__card">
           <template #header>
-            <span class="text-sm font-medium">{{ t('settings.themeHeading') }}</span>
+            <span class="settings__card-title">{{ t('settings.themeHeading') }}</span>
           </template>
 
           <!--
@@ -394,48 +400,44 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             nicht nach dem Namen. Die Vorschau zeigt Fläche, Karte, Text und
             Akzentfarbe — dieselben vier Farben, die die Oberfläche prägen.
           -->
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="settings__themes">
             <button
               v-for="theme in themes"
               :key="theme.id"
               type="button"
-              class="flex flex-col gap-2 rounded-lg border p-3 text-left transition-colors"
-              :class="
-                themeStore.current === theme.id
-                  ? 'border-accent'
-                  : 'border-edge hover:border-ink-muted'
-              "
+              class="theme-tile"
+              :class="{ 'theme-tile--active': themeStore.current === theme.id }"
               :aria-pressed="themeStore.current === theme.id"
               @click="themeStore.setTheme(theme.id)"
             >
               <span
-                class="flex h-12 items-center gap-1.5 rounded-md px-2"
+                class="theme-tile__preview"
                 :style="{ backgroundColor: theme.preview.page }"
               >
                 <span
-                  class="h-8 flex-1 rounded"
+                  class="theme-tile__card"
                   :style="{ backgroundColor: theme.preview.card }"
                 ></span>
                 <span
-                  class="h-8 w-2 rounded"
+                  class="theme-tile__ink"
                   :style="{ backgroundColor: theme.preview.ink }"
                 ></span>
                 <span
-                  class="h-8 w-4 rounded"
+                  class="theme-tile__accent"
                   :style="{ backgroundColor: theme.preview.accent }"
                 ></span>
               </span>
 
-              <span class="flex items-center gap-2">
-                <span class="text-sm font-medium">{{ t(`settings.themeNames.${theme.id}`) }}</span>
+              <span class="theme-tile__name">
+                <span class="theme-tile__label">{{ t(`settings.themeNames.${theme.id}`) }}</span>
                 <span
                   v-if="themeStore.current === theme.id"
-                  class="text-[10px] uppercase tracking-wide text-accent"
+                  class="theme-tile__active"
                 >
                   {{ t('settings.themeActive') }}
                 </span>
               </span>
-              <span class="text-xs text-ink-muted leading-tight">
+              <span class="theme-tile__hint">
                 {{ t(`settings.themeHints.${theme.id}`) }}
               </span>
             </button>
@@ -444,21 +446,21 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="data" :tab="t('settings.tabs.data')">
-        <div class="flex flex-col gap-4">
-          <NCard :bordered="false" class="!bg-card">
+        <div class="settings__group">
+          <NCard :bordered="false" class="settings__card">
             <template #header>
-              <span class="text-sm font-medium">{{ t('portfolios.heading') }}</span>
+              <span class="settings__card-title">{{ t('portfolios.heading') }}</span>
             </template>
 
             <PortfolioManager />
           </NCard>
 
-          <NCard :bordered="false" class="!bg-card">
+          <NCard :bordered="false" class="settings__card">
             <template #header>
-              <span class="text-sm font-medium">{{ t('history.periodHeading') }}</span>
+              <span class="settings__card-title">{{ t('history.periodHeading') }}</span>
             </template>
 
-            <div class="flex flex-col gap-2">
+            <div class="settings__group settings__group--tight">
               <NButtonGroup size="small">
                 <NButton
                   v-for="entry in historyPeriods"
@@ -472,15 +474,15 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                   {{ t(`history.periodNames.${entry.id}`) }}
                 </NButton>
               </NButtonGroup>
-              <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
+              <span class="settings__hint settings__hint--wide">
                 {{ t('history.periodHint') }}
               </span>
             </div>
           </NCard>
 
-          <NCard :bordered="false" class="!bg-card">
+          <NCard :bordered="false" class="settings__card">
             <template #header>
-              <span class="text-sm font-medium">{{ t('backup.heading') }}</span>
+              <span class="settings__card-title">{{ t('backup.heading') }}</span>
             </template>
 
             <BackupPanel />
@@ -489,20 +491,20 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="notifications" :tab="t('settings.tabs.notifications')">
-        <NCard :bordered="false" class="!bg-card">
+        <NCard :bordered="false" class="settings__card">
           <template #header>
-            <span class="text-sm font-medium">{{ t('settings.notificationsHeading') }}</span>
+            <span class="settings__card-title">{{ t('settings.notificationsHeading') }}</span>
           </template>
 
-          <div class="max-w-md">
+          <div class="settings__narrow">
             <!--
               Meldungen sind Zustände, keine Ereignisse: Sie verschwinden ohnehin,
               sobald ihre Ursache behoben ist. Der Zähler beendet nur das Warten
               darauf — beim Eintippen von Stückzahlen stand sonst dauerhaft ein
               Kasten im Weg.
             -->
-            <label class="flex flex-col gap-1 text-sm">
-              <span class="text-ink-muted">{{ t('settings.notificationSeconds') }}</span>
+            <label class="settings__field">
+              <span class="settings__label">{{ t('settings.notificationSeconds') }}</span>
               <NInputNumber
                 :value="settingsStore.settings.ui.notificationSeconds"
                 :min="0"
@@ -510,7 +512,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                 :step="1"
                 @update:value="setNotificationSeconds"
               />
-              <span class="text-xs text-ink-muted">
+              <span class="settings__hint">
                 <template v-if="settingsStore.settings.ui.notificationSeconds === 0">
                   {{ t('settings.notificationKeep') }}
                 </template>
@@ -524,12 +526,12 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="language" :tab="t('settings.tabs.language')">
-        <NCard :bordered="false" class="!bg-card">
+        <NCard :bordered="false" class="settings__card">
           <template #header>
-            <span class="text-sm font-medium">{{ t('settings.languageHeading') }}</span>
+            <span class="settings__card-title">{{ t('settings.languageHeading') }}</span>
           </template>
 
-          <div class="flex flex-col gap-2">
+          <div class="settings__group settings__group--tight">
             <NButtonGroup size="small">
               <NButton
                 v-for="entry in locales"
@@ -541,7 +543,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                 {{ entry.label }}
               </NButton>
             </NButtonGroup>
-            <span class="text-xs text-ink-muted leading-relaxed max-w-2xl">
+            <span class="settings__hint settings__hint--wide">
               {{ t('settings.languageHint') }}
             </span>
           </div>
@@ -549,10 +551,10 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="status" :tab="t('settings.tabs.status')">
-        <NCard :bordered="false" class="!bg-card">
+        <NCard :bordered="false" class="settings__card">
           <template #header>
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium">{{ t('settings.apiHeading') }}</span>
+            <div class="settings__card-head">
+              <span class="settings__card-title">{{ t('settings.apiHeading') }}</span>
               <NButton
                 size="small"
                 secondary
@@ -564,9 +566,9 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
             </div>
           </template>
 
-          <dl class="grid grid-cols-1 sm:grid-cols-[10rem_minmax(0,1fr)] gap-x-6 gap-y-3 text-sm">
-            <dt class="text-ink-muted">{{ t('settings.apiAddress') }}</dt>
-            <dd class="break-all">
+          <dl class="settings__facts">
+            <dt class="settings__label">{{ t('settings.apiAddress') }}</dt>
+            <dd class="settings__address">
               <!--
                 Im Klartext und anklickbar: Im Container entscheidet sich beim
                 Bauen, welches Backend das Abbild anspricht — das sieht man
@@ -576,63 +578,53 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                 :href="apiUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-accent hover:opacity-80"
+                class="settings__link"
               >
                 {{ apiUrl }}
               </a>
             </dd>
 
-            <dt class="text-ink-muted">{{ t('settings.apiState') }}</dt>
-            <dd class="flex items-center gap-2">
+            <dt class="settings__label">{{ t('settings.apiState') }}</dt>
+            <dd class="settings__state">
               <span
-                class="inline-block h-2 w-2 rounded-full shrink-0"
-                :class="{
-                  'bg-status-ok': api.state === 'online',
-                  'bg-status-out': api.state === 'offline',
-                  'bg-ink-muted': api.state !== 'online' && api.state !== 'offline',
-                }"
+                class="settings__light"
+                :class="`settings__light--${apiTone}`"
                 aria-hidden="true"
               ></span>
               <span
-                :class="
-                  api.state === 'online'
-                    ? 'text-status-ok'
-                    : api.state === 'offline'
-                      ? 'text-status-out'
-                      : 'text-ink-muted'
-                "
+                :class="`settings__state-label settings__state-label--${apiTone}`"
               >
                 {{ apiStateLabel[api.state] }}
               </span>
-              <span v-if="api.status" class="text-ink-muted">
+              <span v-if="api.status" class="settings__label">
                 {{ t('settings.apiReports', { status: api.status }) }}
               </span>
             </dd>
 
             <template v-if="api.version">
-              <dt class="text-ink-muted">{{ t('settings.apiVersion') }}</dt>
+              <dt class="settings__label">{{ t('settings.apiVersion') }}</dt>
               <dd class="tabular-nums">{{ api.version }}</dd>
             </template>
 
             <template v-if="api.latencyMs !== null">
-              <dt class="text-ink-muted">{{ t('settings.apiLatency') }}</dt>
+              <dt class="settings__label">{{ t('settings.apiLatency') }}</dt>
               <dd class="tabular-nums">
                 {{ t('settings.apiLatencyUnit', { ms: api.latencyMs }) }}
               </dd>
             </template>
 
             <template v-if="api.checkedAt">
-              <dt class="text-ink-muted">{{ t('settings.apiChecked') }}</dt>
-              <dd class="text-ink-secondary">{{ apiCheckedAgo }}</dd>
+              <dt class="settings__label">{{ t('settings.apiChecked') }}</dt>
+              <dd class="settings__secondary">{{ apiCheckedAgo }}</dd>
             </template>
 
             <template v-if="api.error">
-              <dt class="text-ink-muted">{{ t('settings.apiReason') }}</dt>
-              <dd class="text-status-out">{{ api.error }}</dd>
+              <dt class="settings__label">{{ t('settings.apiReason') }}</dt>
+              <dd class="settings__error">{{ api.error }}</dd>
             </template>
           </dl>
 
-          <p v-if="api.state === 'offline'" class="mt-4 text-xs text-ink-muted leading-relaxed">
+          <p v-if="api.state === 'offline'" class="settings__note">
             {{ t('settings.apiOfflineHint') }}
           </p>
         </NCard>
@@ -659,5 +651,229 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
 :deep(.n-tabs-tab-wrapper:nth-last-child(2)) {
   margin-left: auto;
+}
+</style>
+
+<style scoped lang="scss">
+.settings {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+
+  &__title {
+    margin-bottom: var(--space-4);
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  /*
+   * Zwei Spalten, aber in Lesereihenfolge: Auslöser, dann die Grenzen, die er
+   * verwendet, dann die Liquidität.
+   */
+  &__columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+
+    @include up(xl) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  &__cards { @include stack(var(--space-4)); }
+
+  &__card {
+    background-color: token(--surface-card) !important;
+
+    /* Karten einer Zeile füllen die Zeilenhöhe aus — sonst enden sie versetzt. */
+    &--full { height: 100%; }
+  }
+
+  &__card-head {
+    @include row(var(--space-4));
+
+    justify-content: space-between;
+  }
+
+  &__card-title {
+    font-size: var(--font-sm);
+    font-weight: 500;
+
+    &--hinted {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+  }
+
+  &__group {
+    @include stack(var(--space-4));
+
+    &--tight { gap: var(--space-2); }
+  }
+
+  &__pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+
+    @include up(sm) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  &__stack-wide {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  &__below { margin-top: var(--space-6); }
+
+  &__narrow { max-width: 28rem; }
+
+  &__field {
+    @include stack(var(--space-1));
+
+    font-size: var(--font-sm);
+  }
+
+  &__inline {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  &__grow { flex: 1; }
+
+  &__label { @include muted(null); }
+
+  &__hint {
+    @include muted;
+
+    &--wide {
+      max-width: 42rem;
+      line-height: 1.625;
+    }
+  }
+
+  &__option { font-size: var(--font-sm); }
+
+  &__option-hint {
+    @include muted;
+
+    display: block;
+  }
+
+  &__themes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+
+    @include up(md) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3) var(--space-6);
+    font-size: var(--font-sm);
+
+    @include up(sm) { grid-template-columns: 10rem minmax(0, 1fr); }
+  }
+
+  &__address { word-break: break-all; }
+
+  &__link {
+    color: token(--accent);
+
+    &:hover { opacity: 0.8; }
+  }
+
+  &__state { @include row; }
+
+  &__light {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+    background-color: token(--text-muted);
+
+    &--ok { background-color: token(--status-ok); }
+    &--out { background-color: token(--status-out); }
+  }
+
+  &__state-label {
+    &--ok { color: token(--status-ok); }
+    &--out { color: token(--status-out); }
+    &--neutral { @include muted(null); }
+  }
+
+  &__secondary { color: token(--text-secondary); }
+
+  &__error { color: token(--status-out); }
+
+  &__note {
+    @include muted;
+
+    margin-top: var(--space-4);
+    line-height: 1.625;
+  }
+}
+
+/* Eine Kachel je Theme: Vorschau, Name, ein Satz dazu. */
+.theme-tile {
+  @include stack;
+
+  padding: var(--space-3);
+  border: 1px solid token(--border-default);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  transition: border-color 0.15s ease;
+
+  &:hover { border-color: token(--text-muted); }
+
+  &--active {
+    border-color: token(--accent);
+  }
+
+  /*
+   * Die Vorschaufarben stehen fest in `themes.ts`, nicht in den Variablen:
+   * Die Token eines nicht aktiven Themes gibt es im Dokument nicht.
+   */
+  &__preview {
+    @include row(0.375rem);
+
+    height: 3rem;
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-sm);
+  }
+
+  &__card,
+  &__ink,
+  &__accent {
+    height: 2rem;
+    border-radius: 0.25rem;
+  }
+
+  &__card { flex: 1; }
+  &__ink { width: 0.5rem; }
+  &__accent { width: 1rem; }
+
+  &__name { @include row; }
+
+  &__label {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__active {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: token(--accent);
+  }
+
+  &__hint {
+    @include muted;
+
+    line-height: 1.25;
+  }
 }
 </style>

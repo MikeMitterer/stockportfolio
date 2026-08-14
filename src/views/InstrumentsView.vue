@@ -64,21 +64,21 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'symbol',
     width: 260,
     render: (row) =>
-      h('div', { class: 'flex flex-col' }, [
-        h('div', { class: 'flex items-center gap-2' }, [
-          h('span', { class: 'font-medium text-sm' }, row.symbol),
+      h('div', { class: 'cell-stack' }, [
+        h('div', { class: 'cell-row' }, [
+          h('span', { class: 'cell-symbol' }, row.symbol),
           heldKeys.value.has(rowKey(row))
             ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => t('instruments.inPortfolio'))
             : null,
         ]),
-        h('span', { class: 'text-xs text-ink-muted truncate' }, row.name ?? '—'),
+        h('span', { class: 'cell-name' }, row.name ?? '—'),
       ]),
   },
   {
     title: 'ISIN',
     key: 'isin',
     width: 150,
-    render: (row) => h('span', { class: 'tabular-nums text-xs' }, row.isin ?? '—'),
+    render: (row) => h('span', { class: 'cell-num cell-empty' }, row.isin ?? '—'),
   },
   {
     title: 'Typ',
@@ -95,8 +95,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     sorter: (a, b) => (a.latest_price ?? 0) - (b.latest_price ?? 0),
     render: (row) =>
       row.latest_price !== null
-        ? h('span', { class: 'tabular-nums' }, eurCent(row.latest_price))
-        : h('span', { class: 'tabular-nums text-ink-muted text-xs' }, 'noch keiner'),
+        ? h('span', { class: 'cell-num' }, eurCent(row.latest_price))
+        : h('span', { class: 'cell-num cell-num--muted cell-empty' }, 'noch keiner'),
   },
   {
     title: 'TER',
@@ -105,8 +105,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     width: 90,
     render: (row) =>
       row.ter !== null
-        ? h('span', { class: 'tabular-nums' }, percent(row.ter))
-        : h('span', { class: 'text-ink-muted' }, '—'),
+        ? h('span', { class: 'cell-num' }, percent(row.ter))
+        : h('span', { class: 'cell-empty' }, '—'),
   },
   {
     title: t('drilldown.volatility'),
@@ -116,8 +116,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     sorter: (a, b) => (a.volatility ?? 0) - (b.volatility ?? 0),
     render: (row) =>
       row.volatility !== null
-        ? h('span', { class: 'tabular-nums' }, percent(row.volatility))
-        : h('span', { class: 'text-ink-muted' }, '—'),
+        ? h('span', { class: 'cell-num' }, percent(row.volatility))
+        : h('span', { class: 'cell-empty' }, '—'),
   },
   {
     title: 'Kurspunkte',
@@ -125,7 +125,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     align: 'right',
     width: 110,
     render: (row) =>
-      h('span', { class: 'tabular-nums text-ink-muted' }, integer(row.history_count)),
+      h('span', { class: 'cell-num cell-num--muted' }, integer(row.history_count)),
   },
   {
     title: t('instruments.inSelection'),

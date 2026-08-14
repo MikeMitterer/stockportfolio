@@ -165,13 +165,13 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     key: 'symbol',
     width: 220,
     render: (row) =>
-      h('div', { class: 'flex flex-col gap-0.5' }, [
+      h('div', { class: 'cell-stack' }, [
         // Kürzel und Verweis-Symbole in einer Zeile — die Links gehören zum
         // Papier, nicht in eine eigene Spalte, die die Tabelle breiter macht.
-        h('div', { class: 'flex items-center gap-2' }, [
+        h('div', { class: 'cell-row' }, [
           h(
             'span',
-            { class: 'font-medium text-sm' },
+            { class: 'cell-symbol' },
             row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
           ),
           // Fremde Währung sieht aus wie „inaktiv", ist aber keine
@@ -180,8 +180,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             ? h(
                 'span',
                 {
-                  class:
-                    'text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-status-out/50 text-status-out',
+                  class: 'cell-tag cell-tag--warning',
                   title: t('currency.badgeTitle', { currency: row.quote?.currency ?? '?' }),
                 },
                 row.quote?.currency ?? t('currency.warningTitle'),
@@ -191,8 +190,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             ? h(
                 'span',
                 {
-                  class:
-                    'text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-edge text-ink-muted',
+                  class: 'cell-tag',
                 },
                 t('currency.inactive'),
               )
@@ -206,7 +204,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             : null,
         ]),
         row.position.group !== 'cash'
-          ? h('span', { class: 'text-xs text-ink-muted truncate' }, row.position.displayName)
+          ? h('span', { class: 'cell-name' }, row.position.displayName)
           : null,
       ]),
   },
@@ -236,7 +234,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       row.quote
         ? h(
             'span',
-            { class: 'tabular-nums' },
+            { class: 'cell-num' },
             // Fremde Währung mit ihrem eigenen Zeichen: „628,20 €" für einen
             // USD-Kurs wäre schlicht falsch.
             row.excludedReason === 'currency'
@@ -244,8 +242,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
               : eurCent(row.quote.price),
           )
         : row.position.group === 'cash'
-          ? h('span', { class: 'tabular-nums text-ink-muted' }, '—')
-          : h('span', { class: 'tabular-nums text-status-out text-xs' }, t('table.quoteMissing')),
+          ? h('span', { class: 'cell-num cell-num--muted' }, '—')
+          : h('span', { class: 'cell-num cell-num--missing' }, t('table.quoteMissing')),
   },
   {
     // Der Zeitraum gehört in den Kopf, nicht in jede Zeile: einmal genannt,
@@ -253,7 +251,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     // Der Zeitraum steht in den Einstellungen — ohne Verweis sucht man ihn
     // dort, wo die Spalte ist.
     title: () =>
-      h('span', { class: 'inline-flex items-center gap-1' }, [
+      h('span', { class: 'cell-head' }, [
         t('history.columnTitle', { period: periodLabel.value }),
         h(InfoHint, { text: t('hints.historyPeriod'), settingsTab: 'data' }),
       ]),
@@ -263,7 +261,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     width: 130,
     render: (row) => {
       if (row.position.group === 'cash') {
-        return h('span', { class: 'text-ink-muted text-xs' }, '—')
+        return h('span', { class: 'cell-empty' }, '—')
       }
       const series = pointsFor(row.position)
       return h(PriceSparkline, {
@@ -283,7 +281,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     render: (row) =>
       h(
         'span',
-        { class: 'tabular-nums font-medium' },
+        { class: 'cell-num cell-num--strong' },
         row.excludedReason === 'currency' && row.quote
           ? money(row.marketValue, row.quote.currency)
           : eur(row.marketValue),
@@ -297,8 +295,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     sorter: (a, b) => a.actualPercent - b.actualPercent,
     render: (row) =>
       row.isActive
-        ? h('span', { class: 'tabular-nums' }, percent(row.actualPercent))
-        : h('span', { class: 'tabular-nums text-ink-muted' }, '—'),
+        ? h('span', { class: 'cell-num' }, percent(row.actualPercent))
+        : h('span', { class: 'cell-num cell-num--muted' }, '—'),
   },
   {
     title: t('table.targetPercent'),
@@ -323,7 +321,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     // Der Begriff ist erklärungsbedürftig: „relativ zum Ziel" ist etwas
     // anderes als „Prozentpunkte", und die Verwechslung ist naheliegend.
     title: () =>
-      h('span', { class: 'inline-flex items-center gap-1' }, [
+      h('span', { class: 'cell-head' }, [
         t('table.delta'),
         h(InfoHint, { text: t('hints.delta'), anchor: 'bands', settingsTab: 'calc' }),
       ]),
@@ -336,7 +334,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             suggestion: row.suggestion,
             near: row.isNearBand,
           })
-        : h('span', { class: 'text-ink-muted text-xs' }, '—'),
+        : h('span', { class: 'cell-empty' }, '—'),
   },
   {
     title: t('table.status'),
@@ -358,8 +356,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         {
           class:
             row.excludedReason === 'currency'
-              ? 'text-status-out text-xs'
-              : 'text-ink-muted text-xs',
+              ? 'cell-excluded cell-excluded--currency'
+              : 'cell-excluded',
         },
         row.excludedReason === 'currency'
           ? t('currency.statusForeign')
@@ -371,7 +369,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="postable">
     <template v-for="entry in renderedGroups" :key="entry.group.group">
       <PositionGroupHeader
         :group="entry.group"
@@ -425,5 +423,11 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
 /* Kopfzeile nur einmal ganz oben zeigen — die Gruppen darunter erben sie visuell. */
 .flex > :not(:first-of-type) :deep(.n-data-table-thead) {
   display: none;
+}
+</style>
+
+<style scoped lang="scss">
+.postable {
+  @include stack(0);
 }
 </style>

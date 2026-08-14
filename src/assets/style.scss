@@ -1,16 +1,5 @@
 @use '../theme/tokens';
-
-/*
- * ÜBERGANG: Tailwind läuft parallel, solange noch nicht jede Komponente auf
- * scoped SCSS steht. Die Direktiven verschwinden mit der letzten umgestellten
- * Datei — zusammen mit dem Paket selbst.
- *
- * Reihenfolge: Preflight zuerst, der eigene Reset danach. So gilt schon
- * während des Umbaus, was am Ende übrig bleibt.
- */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@use 'table-cells';
 
 /*
  * Grundlagen der Oberfläche — Reset, Grundflächen, Schrift.
