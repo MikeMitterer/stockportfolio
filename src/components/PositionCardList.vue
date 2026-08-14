@@ -37,25 +37,21 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="cardlist">
     <template v-for="entry in renderedGroups" :key="entry.group.group">
       <!-- Gruppen-Trenner: gleicher Farbton wie am Desktop -->
       <div
-        class="flex items-baseline justify-between gap-3 px-4 py-1.5 text-[11px] uppercase tracking-wider text-ink-muted"
-        :style="{ backgroundColor: `color-mix(in srgb, ${assetColor(entry.group.group)} 7%, transparent)` }"
+        class="cardlist__group"
+        :style="{ '--group-color': assetColor(entry.group.group) }"
       >
-        <span class="flex items-center gap-2">
-          <span
-            class="inline-block w-1.5 h-1.5 rounded-full shrink-0"
-            :style="{ backgroundColor: assetColor(entry.group.group) }"
-            aria-hidden="true"
-          ></span>
+        <span class="cardlist__name">
+          <span class="cardlist__dot" aria-hidden="true"></span>
           {{ t(`groups.${entry.group.group}`) }}
         </span>
         <span class="tabular-nums">
           {{ percent(entry.group.actualPercent) }}
-          <span class="opacity-60">/ {{ percent(entry.group.targetPercent) }}</span>
-          <span class="ml-2 opacity-70">{{ eur(entry.group.actualValue) }}</span>
+          <span class="cardlist__target">/ {{ percent(entry.group.targetPercent) }}</span>
+          <span class="cardlist__value">{{ eur(entry.group.actualValue) }}</span>
         </span>
       </div>
 
@@ -67,3 +63,49 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
     </template>
   </div>
 </template>
+
+<style scoped lang="scss">
+.cardlist {
+  display: flex;
+  flex-direction: column;
+
+  /*
+   * Die Assetfarbe kennzeichnet den Bereich, sie füllt ihn nicht: 7 % Anteil
+   * reichen, um die Gruppe zu erkennen, ohne mit dem Inhalt zu konkurrieren.
+   */
+  &__group {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0.375rem var(--space-4);
+    background-color: color-mix(in srgb, var(--group-color) 7%, transparent);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: token(--text-muted);
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  &__dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+    background-color: var(--group-color);
+  }
+
+  &__target { opacity: 0.6; }
+
+  &__value {
+    margin-left: var(--space-2);
+    opacity: 0.7;
+  }
+}
+</style>

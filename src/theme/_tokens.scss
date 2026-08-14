@@ -46,6 +46,18 @@
   --font-xl: 1.5rem;
 }
 
+/* ─── Marke — themeunabhängig ────────────────────────────────────────────── */
+/*
+ * Der Verlauf des MangoLila-Zeichens, Orange nach Pflaume. Feste Werte, keine
+ * Ableitung aus dem Theme: Eine Marke, die je nach Anstrich anders aussieht,
+ * ist keine.
+ */
+
+:root {
+  --brand-from: 223 84 48;
+  --brand-to: 129 44 124;
+}
+
 /* ─── Bedeutungstragende Farben — themeunabhängig ────────────────────────── */
 
 :root {

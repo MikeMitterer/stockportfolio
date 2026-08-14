@@ -50,12 +50,32 @@ defineProps<{
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  padding: 0.375rem var(--space-4);
-  border-left: 1px solid token(--border-default);
+  /*
+   * Untereinander gestapelt trennt eine Linie unten, nebeneinander eine
+   * links. Bliebe es bei der linken, ergäben die gestapelten Kennzahlen auf
+   * dem Telefon eine durchgehende Leiste am Rand, die nichts trennt.
+   */
+  padding: 0.375rem 0 var(--space-3);
+  border-bottom: 1px solid token(--border-default);
 
-  &:first-child {
-    padding-left: 0;
-    border-left: 0;
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  @include up(md) {
+    padding: 0.375rem var(--space-4);
+    border-bottom: 0;
+    border-left: 1px solid token(--border-default);
+
+    &:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0.375rem;
+    }
   }
 
   &__label {

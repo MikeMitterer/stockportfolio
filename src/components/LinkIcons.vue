@@ -38,7 +38,7 @@ function abbreviate(label: string): string {
 </script>
 
 <template>
-  <div v-if="resolved.length > 0" class="flex items-center gap-1">
+  <div v-if="resolved.length > 0" class="linkicons">
     <a
       v-for="link in resolved"
       :key="link.id"
@@ -46,12 +46,38 @@ function abbreviate(label: string): string {
       target="_blank"
       rel="noopener noreferrer"
       :title="link.label"
-      class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1 rounded text-[10px] font-medium
-             text-ink-muted border border-edge hover:text-accent hover:border-accent/60
-             transition-colors"
+      class="linkicons__item"
       @click.stop
     >
       {{ abbreviate(link.label) }}
     </a>
   </div>
 </template>
+
+<style scoped lang="scss">
+.linkicons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 var(--space-1);
+    border-radius: 0.25rem;
+    border: 1px solid token(--border-default);
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: token(--text-muted);
+    transition: color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      border-color: token(--accent, 0.6);
+      color: token(--accent);
+    }
+  }
+}
+</style>

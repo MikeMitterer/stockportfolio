@@ -161,7 +161,7 @@ const isActive = (name: string): boolean => route.name === name
     width: 2rem;
     height: 2rem;
     border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, token(--accent), token(--asset-bonds));
+    background: linear-gradient(135deg, token(--brand-from), token(--brand-to));
 
     svg {
       width: 1rem;

@@ -30,31 +30,21 @@ const title = computed(() =>
 </script>
 
 <template>
-  <article
-    class="border-b border-edge-subtle px-4 py-3 flex flex-col gap-2"
-    :class="{ 'opacity-55': !row.isActive }"
-  >
+  <article class="poscard" :class="{ 'poscard--inactive': !row.isActive }">
     <!-- Kopf: Papier und Status -->
-    <div class="flex items-start justify-between gap-3">
-      <div class="min-w-0 flex items-center gap-2">
+    <div class="poscard__head">
+      <div class="poscard__ident">
         <span
-          class="inline-block w-1.5 h-1.5 rounded-full shrink-0"
+          class="poscard__dot"
           :style="{ backgroundColor: color }"
           aria-hidden="true"
         ></span>
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="font-medium text-sm">{{ title }}</span>
-            <span
-              v-if="!row.isActive"
-              class="text-[10px] uppercase tracking-wide px-1.5 py-px rounded border border-edge text-ink-muted shrink-0"
-            >
-              {{ t('currency.inactive') }}
-            </span>
+        <div class="poscard__names">
+          <div class="poscard__title-row">
+            <span class="poscard__title">{{ title }}</span>
+            <span v-if="!row.isActive" class="poscard__tag">{{ t('currency.inactive') }}</span>
           </div>
-          <div v-if="!isCash" class="text-xs text-ink-muted truncate">
-            {{ row.position.displayName }}
-          </div>
+          <div v-if="!isCash" class="poscard__subtitle">{{ row.position.displayName }}</div>
         </div>
       </div>
 
@@ -63,29 +53,31 @@ const title = computed(() =>
         :suggestion="row.suggestion"
         :near="row.isNearBand"
         :below-min-trade="row.belowMinTrade"
-        class="shrink-0"
+        class="poscard__badge"
       />
-      <span v-else class="text-xs text-ink-muted shrink-0">{{ t('currency.notCounted') }}</span>
+      <span v-else class="poscard__excluded">{{ t('currency.notCounted') }}</span>
     </div>
 
     <!-- Basisdaten -->
-    <div class="flex items-baseline justify-between gap-3 text-sm">
-      <span class="text-ink-muted text-xs tabular-nums">
+    <div class="poscard__line poscard__line--base">
+      <span class="poscard__meta tabular-nums">
         <template v-if="!isCash">
           {{ t('common.units', { count: integer(row.position.units) }) }}
           <template v-if="row.quote"> · {{ eurCent(row.quote.price) }}</template>
         </template>
         <template v-else>{{ row.position.displayName }}</template>
       </span>
-      <span class="tabular-nums font-medium">{{ eur(row.marketValue) }}</span>
+      <span class="poscard__value tabular-nums">{{ eur(row.marketValue) }}</span>
     </div>
 
     <!-- IST gegen Ziel -->
-    <div v-if="row.isActive" class="flex items-baseline justify-between gap-3 text-xs">
-      <span class="text-ink-muted">{{ t('table.actualPercent') }} / {{ t('table.targetPercent') }}</span>
+    <div v-if="row.isActive" class="poscard__line">
+      <span class="poscard__muted">
+        {{ t('table.actualPercent') }} / {{ t('table.targetPercent') }}
+      </span>
       <span class="tabular-nums">
         {{ percent(row.actualPercent) }}
-        <span class="text-ink-muted">/ {{ percent(row.position.targetPercent) }}</span>
+        <span class="poscard__muted">/ {{ percent(row.position.targetPercent) }}</span>
       </span>
     </div>
 
@@ -99,3 +91,96 @@ const title = computed(() =>
     />
   </article>
 </template>
+
+<style scoped lang="scss">
+.poscard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid token(--border-subtle);
+
+  &--inactive { opacity: 0.55; }
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  &__ident {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  &__dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+  }
+
+  &__names { min-width: 0; }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  &__title {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__tag {
+    flex-shrink: 0;
+    padding: 1px 0.375rem;
+    border: 1px solid token(--border-default);
+    border-radius: 0.25rem;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: token(--text-muted);
+  }
+
+  &__subtitle {
+    overflow: hidden;
+    font-size: var(--font-xs);
+    color: token(--text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__badge { flex-shrink: 0; }
+
+  &__excluded {
+    flex-shrink: 0;
+    font-size: var(--font-xs);
+    color: token(--text-muted);
+  }
+
+  &__line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    font-size: var(--font-xs);
+
+    &--base { font-size: var(--font-sm); }
+  }
+
+  &__meta {
+    font-size: var(--font-xs);
+    color: token(--text-muted);
+  }
+
+  &__value { font-weight: 500; }
+
+  &__muted { color: token(--text-muted); }
+}
+</style>

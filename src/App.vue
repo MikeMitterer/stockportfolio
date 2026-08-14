@@ -93,9 +93,9 @@ function refresh(): void {
               Spaltenlayout über die volle Höhe, damit die Statuszeile auch bei
               kurzen Seiten unten steht statt mitten im Bild zu enden.
             -->
-            <div class="min-h-screen flex flex-col bg-page text-ink transition-colors">
+            <div class="app">
               <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
-              <div class="flex-1">
+              <div class="app__content">
                 <RouterView />
               </div>
               <AppStatusBar />
@@ -106,3 +106,20 @@ function refresh(): void {
     </NLoadingBarProvider>
   </NConfigProvider>
 </template>
+
+<style scoped lang="scss">
+/*
+ * Spaltenlayout über die volle Höhe, damit die Statuszeile auch bei kurzen
+ * Seiten unten steht statt mitten im Bild zu enden.
+ */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: token(--surface-page);
+  color: token(--text-primary);
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &__content { flex: 1; }
+}
+</style>
