@@ -73,7 +73,7 @@ const version = __APP_VERSION__
 <template>
   <footer class="statusbar">
     <div class="statusbar__inner">
-        <span class="statusbar__left">
+      <span class="statusbar__left">
         <!-- Links: Herkunft und was gerade im Depot steht. -->
         <span class="statusbar__brand">
           <span class="statusbar__app">StockPortfolio</span>
@@ -97,7 +97,7 @@ const version = __APP_VERSION__
         -->
         <span class="statusbar__context">
           <span v-if="portfolioName" class="statusbar__strong">{{ portfolioName }}</span>
-          <span class="tabular-nums">
+          <span class="statusbar__count tabular-nums">
             {{ portfolioName ? ', ' : ''
             }}{{ t('units.positions', positionCount, { named: { count: integer(positionCount) } }) }}
           </span>
@@ -107,7 +107,7 @@ const version = __APP_VERSION__
 
         <!-- Das Alter der Kurse: Jede Kennzahl der App hängt daran. -->
         <span>
-          {{ t('status.quotes') }}
+          <span class="statusbar__quotes-label">{{ t('status.quotes') }}</span>
           <span class="statusbar__strong tabular-nums">
             {{ quotesStore.loading ? t('status.quotesLoading') : quoteAge }}
           </span>
@@ -124,7 +124,7 @@ const version = __APP_VERSION__
 
       <!-- Rechts: der technische Stand — Version und Zustand der Gegenstelle. -->
       <span class="statusbar__tech">
-        <span class="tabular-nums">{{ t('common.version', { version }) }}</span>
+        <span class="statusbar__version tabular-nums">{{ t('common.version', { version }) }}</span>
 
         <!--
           Anklickbar statt bloß informativ: Wer hier ein rotes Licht sieht, will
@@ -156,16 +156,10 @@ const version = __APP_VERSION__
   position: sticky;
   bottom: 0;
   z-index: 20;
-  padding: 0.375rem var(--space-4);
   border-top: 1px solid token(--border-default);
   background-color: token(--surface-card, 0.95);
   backdrop-filter: blur(8px);
   @include muted(0.6875rem);
-
-  @include up(md) {
-    padding-right: var(--space-6);
-    padding-left: var(--space-6);
-  }
 
   /*
    * Zwei Blöcke, nicht sechs Geschwister: links die Lage, rechts der
@@ -179,8 +173,8 @@ const version = __APP_VERSION__
     align-items: center;
     justify-content: space-between;
     gap: var(--space-1) var(--space-4);
-    max-width: 1400px;
-    margin: 0 auto;
+
+    @include content-frame(0.375rem);
   }
 
   &__left {
@@ -207,8 +201,17 @@ const version = __APP_VERSION__
     @include up(lg) { display: inline; }
   }
 
+  /*
+   * Auf dem Telefon bleibt nur, was die Lage beschreibt: Depot, Alter der
+   * Kurse, Ampel. Alles Weitere — Anzahl der Positionen, Wort „Kurse",
+   * Version, Adresse — kommt ab `sm` dazu. Vorher füllte die Zeile bei
+   * 375 px die Breite bis auf 21 Pixel aus und brach bei einem längeren
+   * Depotnamen um.
+   */
   &__host,
-  &__api-version {
+  &__api-version,
+  &__count,
+  &__quotes-label {
     display: none;
 
     @include up(sm) { display: inline; }
@@ -228,6 +231,9 @@ const version = __APP_VERSION__
   &__strong {
     color: token(--text-secondary);
   }
+
+  /* Eigener Abstand: Zwischen zwei Elementen fällt das Leerzeichen weg. */
+  &__quotes-label { margin-right: 0.25em; }
 
   &__context {
     max-width: 14rem;

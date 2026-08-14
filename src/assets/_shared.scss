@@ -119,3 +119,19 @@ $bp-xl: 1280px;
   border-radius: var(--radius-lg);
   background-color: token($surface);
 }
+
+/// Zentrierter Inhaltsstreifen.
+///
+/// Gilt für jede Ansicht **und** für Kopf- und Statuszeile: Alle drei enden an
+/// derselben Kante. Die Innenabstände wachsen ab `md` mit.
+///
+/// @param {String} $pad - senkrechter Innenabstand; `0` für die Leisten
+@mixin content-frame($pad: var(--space-4)) {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: $pad var(--space-4);
+
+  @include up(md) {
+    padding: $pad var(--space-6);
+  }
+}

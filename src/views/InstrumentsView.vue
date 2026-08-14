@@ -205,9 +205,7 @@ notify(
 
 <style scoped lang="scss">
 .instruments {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
+  @include content-frame(var(--space-8));
 
   &__head {
     @include row(var(--space-3), baseline);

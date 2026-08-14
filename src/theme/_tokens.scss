@@ -44,6 +44,13 @@
   --font-base: 1rem;
   --font-lg: 1.125rem;
   --font-xl: 1.5rem;
+
+  /*
+   * Breite des Inhaltsstreifens. Kopfzeile, Statuszeile und jede Ansicht
+   * halten sich daran — sonst stünde die Navigation über einem Inhalt, der
+   * anders endet als sie.
+   */
+  --content-max: 1400px;
 }
 
 /* ─── Marke — themeunabhängig ────────────────────────────────────────────── */

@@ -208,7 +208,20 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       App auf die zugehörige Einstellung verweisen, statt „ist irgendwo in den
       Einstellungen" zu sagen.
     -->
-    <NTabs type="line" animated :value="activeTab" @update:value="setTab">
+    <!--
+      `key` an der Sprache: Naive UI misst den Schiebebalken unter dem aktiven
+      Reiter beim Einhängen und beim Reiterwechsel — nicht, wenn sich die
+      Beschriftungen ändern. Nach einem Sprachwechsel stand der Balken deshalb
+      dauerhaft 46 Pixel neben dem Reiter. Ein Neuaufbau ist hier billig: Die
+      Seite hält keinen Zustand, der dabei verloren ginge.
+    -->
+    <NTabs
+      :key="localeStore.current"
+      type="line"
+      animated
+      :value="activeTab"
+      @update:value="setTab"
+    >
       <NTabPane name="calc" :tab="t('settings.tabs.calc')">
         <!--
           Zwei Spalten, aber in Lesereihenfolge: Auslöser, dann die Grenzen,
@@ -656,9 +669,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
 <style scoped lang="scss">
 .settings {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
+  @include content-frame(var(--space-8));
 
   &__title {
     margin-bottom: var(--space-4);

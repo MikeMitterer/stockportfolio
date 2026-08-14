@@ -132,15 +132,11 @@ const isActive = (name: string): boolean => route.name === name
 
   &__inner {
     @include row(var(--space-3));
-    max-width: 1400px;
-    height: 3.5rem;
-    margin: 0 auto;
-    padding: 0 var(--space-4);
+    @include content-frame(0);
 
-    @include up(md) {
-      gap: var(--space-6);
-      padding: 0 var(--space-6);
-    }
+    height: 3.5rem;
+
+    @include up(md) { gap: var(--space-6); }
   }
 
   &__brand {

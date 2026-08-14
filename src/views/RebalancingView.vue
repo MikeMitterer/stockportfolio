@@ -570,14 +570,9 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
 .reb {
   @include stack(var(--space-4));
 
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-4);
+  @include content-frame;
 
-  @include up(md) {
-    gap: var(--space-6);
-    padding: var(--space-6);
-  }
+  @include up(md) { gap: var(--space-6); }
 
   &__loading {
     @include row(0);
