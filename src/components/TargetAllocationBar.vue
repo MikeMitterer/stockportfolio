@@ -58,14 +58,11 @@ const state = computed<'exceeded' | 'complete' | 'open'>(() => {
 
 <style scoped lang="scss">
 .allocation {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+  @include row(var(--space-3));
 
   &__label {
     flex-shrink: 0;
-    font-size: var(--font-xs);
-    color: token(--text-muted);
+    @include muted(var(--font-xs));
   }
 
   &__track {
@@ -104,7 +101,7 @@ const state = computed<'exceeded' | 'complete' | 'open'>(() => {
 
     &--exceeded { color: token(--status-out); }
     &--complete { color: token(--status-ok); }
-    &--open { color: token(--text-muted); }
+    &--open { @include muted(null); }
   }
 
   &__over {

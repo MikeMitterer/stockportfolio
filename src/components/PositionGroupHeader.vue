@@ -86,13 +86,11 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
 
 <style scoped lang="scss">
 .groupheader {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
+  @include row(0.625rem);
   width: 100%;
   padding: 0.375rem 1.25rem;
   text-align: left;
-  color: token(--text-muted);
+  @include muted(null);
 
   &:hover {
     .groupheader__chevron { opacity: 1; }
@@ -127,9 +125,7 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
   &__count { opacity: 0.5; }
 
   &__figures {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
+    @include row(1.25rem);
     margin-left: auto;
     font-size: 0.6875rem;
     opacity: 0.8;

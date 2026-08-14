@@ -131,9 +131,7 @@ const isActive = (name: string): boolean => route.name === name
   backdrop-filter: blur(8px);
 
   &__inner {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
+    @include row(var(--space-3));
     max-width: 1400px;
     height: 3.5rem;
     margin: 0 auto;
@@ -146,9 +144,7 @@ const isActive = (name: string): boolean => route.name === name
   }
 
   &__brand {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
+    @include row(0.625rem);
 
     &:hover { opacity: 0.9; }
   }
@@ -179,16 +175,12 @@ const isActive = (name: string): boolean => route.name === name
   }
 
   &__nav {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+    @include row(var(--space-1));
   }
 
   &__item {
     position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
+    @include row(0.375rem);
     padding: 0.375rem var(--space-3);
     border-radius: var(--radius-sm);
     font-size: var(--font-sm);
@@ -226,16 +218,13 @@ const isActive = (name: string): boolean => route.name === name
   }
 
   &__actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
+    @include row(var(--space-3));
     margin-left: auto;
   }
 
   &__age {
     display: none;
-    font-size: var(--font-xs);
-    color: token(--text-muted);
+    @include muted(var(--font-xs));
 
     @include up(sm) { display: inline; }
   }

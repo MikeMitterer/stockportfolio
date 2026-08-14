@@ -162,33 +162,33 @@ notify(
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-6 py-8">
-    <div class="flex items-baseline gap-3 mb-1">
-      <h1 class="text-2xl font-semibold">{{ t('views.instrumentsTitle') }}</h1>
-      <span class="text-xs text-ink-muted tabular-nums">
+  <div class="instruments">
+    <div class="instruments__head">
+      <h1 class="instruments__title">{{ t('views.instrumentsTitle') }}</h1>
+      <span class="instruments__count tabular-nums">
         {{ t('instruments.countLabel', { shown: filtered.length, total: instrumentsStore.instruments.length }) }}
       </span>
     </div>
-    <p class="text-sm text-ink-muted mb-5">
+    <p class="instruments__intro">
       {{ t('instruments.hint') }}
     </p>
 
-    <div class="flex flex-wrap gap-3 mb-4">
+    <div class="instruments__filters">
       <NInput
         v-model:value="search"
         placeholder="Symbol, ISIN oder Name"
         clearable
-        class="max-w-xs"
+        class="instruments__search"
       />
       <NSelect
         v-model:value="typeFilter"
         :options="typeOptions"
-        class="max-w-[10rem]"
+        class="instruments__select"
         placeholder="Typ"
       />
     </div>
 
-    <div v-if="instrumentsStore.loading" class="flex justify-center py-16">
+    <div v-if="instrumentsStore.loading" class="instruments__loading">
       <NSpin size="large" />
     </div>
 
@@ -202,3 +202,46 @@ notify(
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.instruments {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+
+  &__head {
+    @include row(var(--space-3), baseline);
+    margin-bottom: var(--space-1);
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  &__count {
+    @include muted(var(--font-xs));
+  }
+
+  &__intro {
+    margin-bottom: 1.25rem;
+    @include muted(var(--font-sm));
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  &__search { max-width: 20rem; }
+  &__select { max-width: 10rem; }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-8) 0;
+  }
+}
+</style>

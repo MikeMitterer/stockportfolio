@@ -86,9 +86,7 @@ const { t } = useI18n()
  * freiwillig.
  */
 .method {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
+  @include stack(var(--space-8));
   max-width: 46rem;
   margin: 0 auto;
   padding: var(--space-8) var(--space-6);
@@ -97,9 +95,7 @@ const { t } = useI18n()
   color: token(--text-secondary);
 
   &__header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+    @include stack(var(--space-2));
   }
 
   &__title {
@@ -110,9 +106,7 @@ const { t } = useI18n()
 
   /* Die Sprungmarken entsprechen den `anchor`-Angaben der Fragezeichen. */
   &__section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    @include stack(var(--space-3));
     scroll-margin-top: 5rem;
   }
 
@@ -123,9 +117,7 @@ const { t } = useI18n()
   }
 
   &__limits {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+    @include stack(var(--space-2));
 
     li {
       padding-left: var(--space-3);

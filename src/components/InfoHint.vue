@@ -98,7 +98,7 @@ function openSetting(): void {
   font-size: 0.5625rem;
   line-height: 1;
   vertical-align: middle;
-  color: token(--text-muted);
+  @include muted(null);
   transition: color 0.15s ease, border-color 0.15s ease;
 
   &:hover {

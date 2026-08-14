@@ -95,16 +95,14 @@ function setMode(mode: AmountSetting['mode']): void {
 
 <style scoped lang="scss">
 .amount {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  @include stack(var(--space-1));
   font-size: var(--font-sm);
 
   &__label {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    color: token(--text-muted);
+    @include muted(null);
   }
 
   &__row {
@@ -122,8 +120,7 @@ function setMode(mode: AmountSetting['mode']): void {
   }
 
   &__hint {
-    font-size: var(--font-xs);
-    color: token(--text-muted);
+    @include muted(var(--font-xs));
   }
 }
 </style>

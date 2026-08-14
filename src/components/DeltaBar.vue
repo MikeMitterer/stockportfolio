@@ -85,9 +85,7 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
 
 <style scoped lang="scss">
 .delta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  @include row(var(--space-2));
 
   &__track {
     position: relative;

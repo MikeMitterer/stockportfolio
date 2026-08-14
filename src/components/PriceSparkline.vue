@@ -93,9 +93,7 @@ const label = computed(() => percentSigned(line.value.changePercent))
 
 <style scoped lang="scss">
 .spark {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  @include row(var(--space-2));
 
   &__chart {
     flex-shrink: 0;
@@ -118,7 +116,7 @@ const label = computed(() => percentSigned(line.value.changePercent))
 
     &--rising { color: token(--status-ok); }
     &--falling { color: token(--status-out); }
-    &--empty { color: token(--text-muted); }
+    &--empty { @include muted(null); }
   }
 }
 </style>

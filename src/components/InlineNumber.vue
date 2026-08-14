@@ -58,10 +58,10 @@ const editing = ref<boolean>(false)
 const draft = ref<string | number>('')
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const textClass = computed(() => {
-  if (props.disabled) return 'text-ink-muted cursor-default'
-  if (props.invalid) return 'text-status-out'
-  return ''
+/** Zustand des Werts — steuert Farbe und Zeiger der Anzeige. */
+const valueState = computed(() => {
+  if (props.disabled) return 'disabled'
+  return props.invalid ? 'invalid' : 'normal'
 })
 
 async function startEdit(): Promise<void> {
@@ -135,12 +135,12 @@ function onKeydown(event: KeyboardEvent): void {
     absolut über der Zelle, damit weder Zeilenhöhe noch Spaltenbreite davon
     abhängen, ob gerade ein Wert drinsteht.
   -->
-  <div class="relative group/inline">
+  <div class="inline-number">
     <!--
       Kein Kasten um die Eingabe: nur eine Linie unter der Zahl. Der Wert bleibt
       dort stehen, wo er auch im Ruhezustand steht — die Zeile springt nicht.
-      Die Spinner-Pfeile sind ausgeblendet (siehe <style>), sie wären in einer
-      schmalen Tabellenzelle nur Gedränge.
+      Die Spinner-Pfeile sind ausgeblendet, sie wären in einer schmalen
+      Tabellenzelle nur Gedränge.
     -->
     <input
       v-if="editing"
@@ -150,7 +150,7 @@ function onKeydown(event: KeyboardEvent): void {
       :step="precision === 0 ? 1 : 0.5"
       :min="min"
       :max="max"
-      class="inline-number-field block w-full min-w-0 bg-transparent text-right tabular-nums px-1.5 py-0.5 outline-none border-0 border-b border-solid border-accent text-ink"
+      class="inline-number__field tabular-nums"
       @blur="commit"
       @keydown="onKeydown"
     />
@@ -158,8 +158,8 @@ function onKeydown(event: KeyboardEvent): void {
     <button
       v-else
       type="button"
-      class="block w-full min-w-0 text-right tabular-nums px-1.5 py-0.5 border-0 border-b border-solid border-transparent transition-colors hover:border-edge"
-      :class="textClass"
+      class="inline-number__display tabular-nums"
+      :class="`inline-number__display--${valueState}`"
       :disabled="disabled"
       :title="disabled ? undefined : t('common.edit')"
       @click.stop="startEdit"
@@ -175,9 +175,7 @@ function onKeydown(event: KeyboardEvent): void {
     <button
       v-if="clearable && !editing"
       type="button"
-      class="absolute left-0 top-1/2 -translate-y-1/2 leading-none px-1 text-ink-muted
-             opacity-0 transition-opacity hover:text-status-out
-             group-hover/inline:opacity-100 focus-visible:opacity-100"
+      class="inline-number__clear"
       :title="t('common.clear')"
       :aria-label="t('common.clear')"
       @click.stop="clear"
@@ -186,17 +184,66 @@ function onKeydown(event: KeyboardEvent): void {
     </button>
   </div>
 </template>
-<style scoped>
-/* Spinner-Pfeile ausblenden — in einer Tabellenzelle nur Ballast. */
-.inline-number-field::-webkit-outer-spin-button,
-.inline-number-field::-webkit-inner-spin-button {
-  appearance: none;
-  margin: 0;
-}
 
-.inline-number-field {
-  appearance: textfield;
-  /* Zahlenfelder bringen eine Eigenbreite mit — sie würde die Spalte sprengen. */
-  width: 100%;
+<style scoped lang="scss">
+.inline-number {
+  position: relative;
+
+  &__field,
+  &__display {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 0.125rem 0.375rem;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    text-align: right;
+  }
+
+  &__field {
+    /* Zahlenfelder bringen eine Eigenbreite mit — sie sprengte die Spalte. */
+    appearance: textfield;
+    border-bottom-color: token(--accent);
+    background-color: transparent;
+    color: token(--text-primary);
+    outline: none;
+
+    /* Spinner-Pfeile ausblenden — in einer Tabellenzelle nur Ballast. */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+
+  &__display {
+    transition: border-color 0.15s ease;
+
+    &:hover { border-bottom-color: token(--border-default); }
+
+    &--disabled {
+      @include muted(null);
+      cursor: default;
+    }
+
+    &--invalid { color: token(--status-out); }
+  }
+
+  &__clear {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    padding: 0 var(--space-1);
+    opacity: 0;
+    line-height: 1;
+    @include muted(null);
+    transform: translateY(-50%);
+    transition: opacity 0.15s ease, color 0.15s ease;
+
+    &:hover { color: token(--status-out); }
+    &:focus-visible { opacity: 1; }
+  }
+
+  &:hover &__clear { opacity: 1; }
 }
 </style>

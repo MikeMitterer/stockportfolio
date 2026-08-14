@@ -83,13 +83,11 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
     font-size: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: token(--text-muted);
+    @include muted(null);
   }
 
   &__name {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    @include row(var(--space-2));
   }
 
   &__dot {

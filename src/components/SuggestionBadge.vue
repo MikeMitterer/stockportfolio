@@ -134,7 +134,7 @@ const arrow = computed(() => {
     line-height: 1;
     text-transform: uppercase;
     letter-spacing: 0.025em;
-    color: token(--text-muted);
+    @include muted(null);
   }
 }
 </style>

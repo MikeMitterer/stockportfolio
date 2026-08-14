@@ -94,9 +94,7 @@ const title = computed(() =>
 
 <style scoped lang="scss">
 .poscard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  @include stack(var(--space-2));
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid token(--border-subtle);
 
@@ -110,9 +108,7 @@ const title = computed(() =>
   }
 
   &__ident {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    @include row(var(--space-2));
     min-width: 0;
   }
 
@@ -127,9 +123,7 @@ const title = computed(() =>
   &__names { min-width: 0; }
 
   &__title-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    @include row(var(--space-2));
   }
 
   &__title {
@@ -145,13 +139,12 @@ const title = computed(() =>
     font-size: 0.625rem;
     text-transform: uppercase;
     letter-spacing: 0.025em;
-    color: token(--text-muted);
+    @include muted(null);
   }
 
   &__subtitle {
     overflow: hidden;
-    font-size: var(--font-xs);
-    color: token(--text-muted);
+    @include muted(var(--font-xs));
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -160,8 +153,7 @@ const title = computed(() =>
 
   &__excluded {
     flex-shrink: 0;
-    font-size: var(--font-xs);
-    color: token(--text-muted);
+    @include muted(var(--font-xs));
   }
 
   &__line {
@@ -175,12 +167,11 @@ const title = computed(() =>
   }
 
   &__meta {
-    font-size: var(--font-xs);
-    color: token(--text-muted);
+    @include muted(var(--font-xs));
   }
 
   &__value { font-weight: 500; }
 
-  &__muted { color: token(--text-muted); }
+  &__muted { @include muted(null); }
 }
 </style>

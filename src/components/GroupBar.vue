@@ -61,9 +61,7 @@ const targetPosition = computed(() => ({
 
 <style scoped lang="scss">
 .groupbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  @include row(var(--space-4));
   padding: var(--space-2) 0;
 
   &__name {
@@ -130,12 +128,12 @@ const targetPosition = computed(() => ({
 
   &__goal {
     width: 6rem;
-    color: token(--text-muted);
+    @include muted(null);
   }
 
   &__value {
     width: 8rem;
-    color: token(--text-muted);
+    @include muted(null);
   }
 
   &__delta { width: 8rem; }

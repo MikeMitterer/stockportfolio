@@ -47,9 +47,7 @@ defineProps<{
 
 <style scoped lang="scss">
 .kpi {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
+  @include stack(0.125rem);
   /*
    * Untereinander gestapelt trennt eine Linie unten, nebeneinander eine
    * links. Bliebe es bei der linken, ergäben die gestapelten Kennzahlen auf
@@ -79,20 +77,16 @@ defineProps<{
   }
 
   &__label {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+    @include row(var(--space-1));
     font-size: 0.6875rem;
     line-height: 1.25;
     text-transform: uppercase;
     letter-spacing: 0.025em;
-    color: token(--text-muted);
+    @include muted(null);
   }
 
   &__row {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
+    @include row(var(--space-2), baseline);
     min-width: 0;
   }
 
@@ -111,7 +105,7 @@ defineProps<{
     overflow: hidden;
     font-size: 0.6875rem;
     line-height: 1.25;
-    color: token(--text-muted);
+    @include muted(null);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

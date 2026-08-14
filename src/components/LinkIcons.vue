@@ -56,9 +56,7 @@ function abbreviate(label: string): string {
 
 <style scoped lang="scss">
 .linkicons {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  @include row(var(--space-1));
 
   &__item {
     display: inline-flex;
@@ -71,7 +69,7 @@ function abbreviate(label: string): string {
     border: 1px solid token(--border-default);
     font-size: 0.625rem;
     font-weight: 500;
-    color: token(--text-muted);
+    @include muted(null);
     transition: color 0.15s ease, border-color 0.15s ease;
 
     &:hover {

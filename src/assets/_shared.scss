@@ -63,3 +63,59 @@ $bp-xl: 1280px;
   }
   @return rgb(var(#{$name}) / #{$alpha});
 }
+
+// ─── Wiederkehrende Muster ───────────────────────────────────────────────────
+//
+// Was in mehr als zwei Komponenten gleich aussieht, steht hier einmal. Ohne
+// das schreibt jede Datei dieselben drei Zeilen neu, und beim nächsten
+// Feinschliff sind es dann zwölf Stellen statt einer.
+
+/// Leiser Beitext — Beschriftungen, Hinweise, Einheiten.
+///
+/// @param {String} $size - Schriftgröße; `null` lässt sie unverändert
+@mixin muted($size: var(--font-xs)) {
+  @if $size != null {
+    font-size: $size;
+  }
+  color: token(--text-muted);
+}
+
+/// Einzeilig kürzen statt umbrechen — für Namen in schmalen Spalten.
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/// Spalte mit gleichmäßigem Abstand.
+@mixin stack($gap: var(--space-2)) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+/// Zeile mit gleichmäßigem Abstand.
+///
+/// @param {String} $align - `align-items`
+@mixin row($gap: var(--space-2), $align: center) {
+  display: flex;
+  align-items: $align;
+  gap: $gap;
+}
+
+/// Steigend grün, fallend rot — als Modifikatoren `--rising` / `--falling`.
+///
+/// Sechs Komponenten zeigen dieselbe Aussage: Kurse, Delta, Gruppen, Zeiger.
+/// Sie müssen dieselbe Farbe tragen, sonst bedeutet Grün nicht überall
+/// dasselbe.
+@mixin trend {
+  &--rising { color: token(--status-ok); }
+  &--falling { color: token(--status-out); }
+}
+
+/// Erhobene Fläche mit Rahmen — Karten, Vorschauen, Zeiger.
+@mixin card-surface($surface: --surface-card) {
+  border: 1px solid token(--border-default);
+  border-radius: var(--radius-lg);
+  background-color: token($surface);
+}

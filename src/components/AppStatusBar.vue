@@ -155,8 +155,7 @@ const version = __APP_VERSION__
   border-top: 1px solid token(--border-default);
   background-color: token(--surface-card, 0.95);
   backdrop-filter: blur(8px);
-  font-size: 0.6875rem;
-  color: token(--text-muted);
+  @include muted(0.6875rem);
 
   @include up(md) {
     padding-right: var(--space-6);
@@ -190,9 +189,7 @@ const version = __APP_VERSION__
 
   &__context {
     max-width: 14rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include truncate;
   }
 
   &__dot-separator {
@@ -207,16 +204,12 @@ const version = __APP_VERSION__
   }
 
   &__tech {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
+    @include row(var(--space-4));
     margin-left: auto;
   }
 
   &__api {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
+    @include row(0.375rem);
     transition: color 0.15s ease;
 
     &:hover { color: token(--text-primary); }
