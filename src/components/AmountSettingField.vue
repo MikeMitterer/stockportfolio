@@ -60,22 +60,22 @@ function setMode(mode: AmountSetting['mode']): void {
 </script>
 
 <template>
-  <label class="flex flex-col gap-1 text-sm">
-    <span class="inline-flex items-center gap-1.5 text-ink-muted">
+  <label class="amount">
+    <span class="amount__label">
       {{ label }}
       <InfoHint v-if="hint" :text="hint" :anchor="anchor" />
     </span>
 
-    <div class="flex gap-2">
+    <div class="amount__row">
       <NInputNumber
-        class="flex-1"
+        class="amount__value"
         :value="setting.value"
         :min="0"
         :step="setting.mode === 'percent' ? 1 : (absoluteStep ?? 1000)"
         @update:value="setValue"
       />
       <NSelect
-        class="w-44 shrink-0"
+        class="amount__mode"
         :value="setting.mode"
         :options="modeOptions"
         @update:value="setMode"
@@ -86,9 +86,44 @@ function setMode(mode: AmountSetting['mode']): void {
       Der Euro-Betrag als Kontrolle: Im Prozent-Modus sieht man sonst nicht,
       worüber man gerade entscheidet.
     -->
-    <span class="text-xs text-ink-muted">
+    <span class="amount__hint">
       <template v-if="setting.value === 0">{{ zeroHint }}</template>
       <template v-else>{{ t('settings.bufferEquals', { amount: eur(euro) }) }}</template>
     </span>
   </label>
 </template>
+
+<style scoped lang="scss">
+.amount {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--font-sm);
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: token(--text-muted);
+  }
+
+  &__row {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  &__value {
+    flex: 1;
+  }
+
+  &__mode {
+    flex-shrink: 0;
+    width: 11rem;
+  }
+
+  &__hint {
+    font-size: var(--font-xs);
+    color: token(--text-muted);
+  }
+}
+</style>

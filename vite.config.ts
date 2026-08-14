@@ -50,6 +50,19 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        /*
+         * Breakpoint-Mixins und der Farb-Helfer stehen in jeder Komponente
+         * zur Verfügung, ohne dass jede SFC dieselbe `@use`-Zeile trägt.
+         * Die Datei erzeugt selbst kein CSS — sonst läge sie einmal je
+         * Komponente im Bündel.
+         */
+        additionalData: '@use "@/assets/shared" as *;\n',
+      },
+    },
+  },
   server: {
     port: 5173,
     strictPort: true,

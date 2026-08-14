@@ -53,17 +53,10 @@ function openSetting(): void {
         Als Knopf, nicht als Symbol — er ist mit der Tastatur erreichbar und
         führt bei Klick weiter.
       -->
-      <button
-        type="button"
-        class="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-edge text-[9px] leading-none text-ink-muted align-middle transition-colors hover:border-ink-muted hover:text-ink-secondary"
-        :aria-label="text"
-        @click="openMethod"
-      >
-        ?
-      </button>
+      <button class="hint__trigger" type="button" :aria-label="text" @click="openMethod">?</button>
     </template>
 
-    <div class="text-sm leading-relaxed">
+    <div class="hint__body">
       {{ text }}
       <!--
         Beide Verweise in einer Zeile: Erklärung links, Stellschraube rechts.
@@ -74,28 +67,64 @@ function openSetting(): void {
         `span` — er sah aus wie ein Verweis, war aber keiner, und ein Klick
         darauf tat nichts.
       -->
-      <div
-        v-if="anchor || settingsTab"
-        class="mt-1 flex items-center justify-between gap-6 text-xs"
-      >
-        <button
-          v-if="anchor"
-          type="button"
-          class="text-accent underline decoration-dotted hover:opacity-80"
-          @click="openMethod"
-        >
+      <div v-if="anchor || settingsTab" class="hint__links">
+        <button v-if="anchor" class="hint__link" type="button" @click="openMethod">
           {{ t('method.more') }}
         </button>
 
-        <button
-          v-if="settingsTab"
-          type="button"
-          class="text-accent underline decoration-dotted hover:opacity-80"
-          @click="openSetting"
-        >
+        <button v-if="settingsTab" class="hint__link" type="button" @click="openSetting">
           {{ t('method.openSetting') }}
         </button>
       </div>
     </div>
   </NTooltip>
 </template>
+
+<style scoped lang="scss">
+/*
+ * Klein und blass: Der Hinweis darf die Zahl daneben nicht überstrahlen.
+ * Als Knopf, nicht als Symbol — er ist mit der Tastatur erreichbar und führt
+ * bei Klick weiter.
+ */
+.hint__trigger {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid token(--border-default);
+  border-radius: var(--radius-full);
+  font-size: 0.5625rem;
+  line-height: 1;
+  vertical-align: middle;
+  color: token(--text-muted);
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: token(--text-muted);
+    color: token(--text-secondary);
+  }
+}
+
+.hint__body {
+  font-size: var(--font-sm);
+  line-height: 1.625;
+}
+
+.hint__links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-top: var(--space-1);
+  font-size: var(--font-xs);
+}
+
+.hint__link {
+  color: token(--accent);
+  text-decoration: underline dotted;
+
+  &:hover { opacity: 0.8; }
+}
+</style>

@@ -42,7 +42,7 @@ const label = computed(() => percentSigned(line.value.changePercent))
 </script>
 
 <template>
-  <div class="flex items-center gap-2">
+  <div class="spark">
     <svg
       v-if="line.path"
       :width="width"
@@ -52,7 +52,7 @@ const label = computed(() => percentSigned(line.value.changePercent))
       role="img"
       :aria-label="`Kursverlauf ${periodLabel}: ${label}`"
       :title="periodLabel ? `${periodLabel}: ${label}` : label"
-      class="shrink-0 overflow-visible"
+      class="spark__chart"
     >
       <!-- Fläche nur angedeutet: Sie gibt der Linie Halt, ohne sie zu erschlagen. -->
       <path :d="line.areaPath" :fill="stroke" fill-opacity="0.12" />
@@ -73,20 +73,52 @@ const label = computed(() => percentSigned(line.value.changePercent))
     -->
     <span
       v-else
-      class="shrink-0 inline-block"
+      class="spark__placeholder"
       :style="{ width: `${width}px`, height: `${height}px` }"
       :title="loading ? t('status.quotesLoading') : t('history.none')"
     ></span>
 
     <span
       v-if="line.path"
-      class="text-[11px] tabular-nums w-14 text-right"
-      :class="line.rising ? 'text-status-ok' : 'text-status-out'"
+      class="spark__value tabular-nums"
+      :class="line.rising ? 'spark__value--rising' : 'spark__value--falling'"
     >
       {{ label }}
     </span>
-    <span v-else class="text-[11px] text-ink-muted w-14 text-right">
+    <span v-else class="spark__value spark__value--empty">
       {{ loading ? '…' : '—' }}
     </span>
   </div>
 </template>
+
+<style scoped lang="scss">
+.spark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  &__chart {
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  /*
+   * Platzhalter mit denselben Maßen: Ohne ihn springt die Spaltenbreite,
+   * sobald die ersten Verläufe eintreffen.
+   */
+  &__placeholder {
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  &__value {
+    width: 3.5rem;
+    font-size: 0.6875rem;
+    text-align: right;
+
+    &--rising { color: token(--status-ok); }
+    &--falling { color: token(--status-out); }
+    &--empty { color: token(--text-muted); }
+  }
+}
+</style>

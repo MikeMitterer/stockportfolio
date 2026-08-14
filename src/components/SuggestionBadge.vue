@@ -36,21 +36,22 @@ const state = computed<'ok' | 'near' | 'buy' | 'sell'>(() => {
 const label = computed(() => t(`suggestion.${state.value}`))
 
 /**
- * Statusfarbe als CSS-Variable statt fester Tailwind-Klasse.
+ * Statusfarbe als CSS-Variable, gesetzt am Element.
  *
- * Feste Klassen wie `text-emerald-300` waren für dunkle Flächen gedacht und
- * verschwinden im hellen Theme fast. Über die Token bekommt jedes Theme die
- * Stufe, die auf seiner Fläche trägt.
+ * Die Farbe hängt am Zustand und wird an drei Stellen gebraucht — Text, Rand
+ * und Fläche der Pille. Als eigene Variable steht sie einmal im Template und
+ * der Stil greift sie dreimal ab; drei einzelne Inline-Angaben wären dieselbe
+ * Information in dreifacher Ausfertigung.
  */
 const color = computed(() => {
   switch (state.value) {
     case 'buy':
     case 'sell':
-      return 'rgb(var(--status-out))'
+      return 'var(--status-out)'
     case 'near':
-      return 'rgb(var(--status-near))'
+      return 'var(--status-near)'
     default:
-      return 'rgb(var(--status-ok))'
+      return 'var(--status-ok)'
   }
 })
 
@@ -67,34 +68,16 @@ const arrow = computed(() => {
     Pille ist über alle Zeilen gleich, und genau so soll die Spalte auch
     bleiben.
   -->
-  <span class="relative inline-flex items-center justify-center">
-    <span
-      class="inline-flex w-[4.5rem] items-center justify-center gap-1 text-xs font-medium tabular-nums"
-      :class="plain ? '' : 'rounded-full border px-2 py-0.5'"
-      :style="
-        plain
-          ? { color }
-          : {
-            color,
-            borderColor: `color-mix(in srgb, ${color} 45%, transparent)`,
-            backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
-          }
-      "
-    >
-      <span
-        class="inline-block h-1.5 w-1.5 rounded-full"
-        :style="{ backgroundColor: color }"
-      ></span>
-      <span v-if="arrow" class="leading-none">{{ arrow }}</span>
+  <span class="badge" :style="{ '--badge-color': color }">
+    <span class="badge__pill" :class="{ 'badge__pill--plain': plain }">
+      <span class="badge__dot"></span>
+      <span v-if="arrow" class="badge__arrow">{{ arrow }}</span>
       <span>{{ label }}</span>
     </span>
 
     <NTooltip v-if="belowMinTrade" trigger="hover">
       <template #trigger>
-        <span
-          class="absolute -right-6 text-[9px] uppercase tracking-wide leading-none text-ink-muted"
-          :aria-label="t('suggestion.belowMinTrade')"
-        >
+        <span class="badge__mark" :aria-label="t('suggestion.belowMinTrade')">
           {{ t('suggestion.belowMinTradeMark') }}
         </span>
       </template>
@@ -102,3 +85,56 @@ const arrow = computed(() => {
     </NTooltip>
   </span>
 </template>
+
+<style scoped lang="scss">
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    width: 4.5rem;
+    padding: 0.125rem var(--space-2);
+    border: 1px solid color-mix(in srgb, rgb(var(--badge-color)) 45%, transparent);
+    border-radius: var(--radius-full);
+    background-color: color-mix(in srgb, rgb(var(--badge-color)) 14%, transparent);
+    color: rgb(var(--badge-color));
+    font-size: var(--font-xs);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+
+    &--plain {
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+  }
+
+  &__dot {
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: var(--radius-full);
+    background-color: rgb(var(--badge-color));
+  }
+
+  &__arrow {
+    line-height: 1;
+  }
+
+  &__mark {
+    position: absolute;
+    right: -1.5rem;
+    font-size: 0.5625rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: token(--text-muted);
+  }
+}
+</style>
