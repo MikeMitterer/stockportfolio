@@ -66,8 +66,9 @@ export const en: MessageSchema = {
     investmentReserveHint: 'Money market + cash − safety buffer',
     investmentReservePercent: 'Reserve in %',
     securityBufferHint: 'Safety buffer: {buffer}',
-    warnings: 'Data issues',
-    warningsNone: 'None',
+    dataStatus: 'Data status',
+    dataComplete: 'Complete',
+    dataIncomplete: '{count} incomplete',
   },
   table: {
     symbol: 'Symbol',
@@ -498,8 +499,8 @@ export const en: MessageSchema = {
       'Every euro spent has to come from somewhere visible. The suggestion gives the units with which cash or money market closes the open gap.',
     historyPeriod:
       'Period of the small line next to the price. A month, a week or a day — with “one day” it shows the change from the last trading day to today.',
-    dataIssues:
-      'Prices that could not be loaded, and securities quoted in another currency — cases where a figure is missing or does not count. Whether a position should be bought or sold is not shown here but in the status column of each row.',
+    dataStatus:
+      'Complete means: every position has a current price in the base currency and counts towards the totals. Incomplete are securities whose price could not be loaded or that are quoted in another currency — they stay visible but count towards nothing. Whether a position should be bought or sold is not shown here but in the status column of each row.',
     moneymarket:
       'Money-market instruments barely fluctuate and therefore count, together with cash, as available liquidity. Bonds with a maturity do not.',
   },

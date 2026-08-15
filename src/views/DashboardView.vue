@@ -95,14 +95,28 @@ const foreignCurrencyRows = computed(() =>
   (result.value?.rows ?? []).filter((row) => row.excludedReason === 'currency'),
 )
 
-const warningCount = computed(() => failures.value.length + foreignCurrencyRows.value.length)
+/**
+ * Positionen, deren Zahlen nicht vollständig sind.
+ *
+ * Zwei Ursachen, dieselbe Folge: Der Kurs konnte nicht geladen werden, oder
+ * das Papier notiert in fremder Währung. In beiden Fällen fehlt der Position
+ * ein Marktwert in der Basiswährung, und sie zählt in keine Summe.
+ */
+const incompleteCount = computed(() => failures.value.length + foreignCurrencyRows.value.length)
 
-const warningsValue = computed(() =>
-  warningCount.value === 0 ? t('kpi.warningsNone') : String(warningCount.value),
+/*
+ * Positiv formuliert: Der Normalfall ist „Vollständig", nicht „keine
+ * Probleme". Eine Kennzahl, die im Guten eine Verneinung zeigt, liest sich wie
+ * ein Mangel, den man gerade noch abgewendet hat.
+ */
+const dataStatusValue = computed(() =>
+  incompleteCount.value === 0
+    ? t('kpi.dataComplete')
+    : t('kpi.dataIncomplete', { count: integer(incompleteCount.value) }),
 )
 
-const warningsTone = computed<'positive' | 'danger'>(() =>
-  warningCount.value === 0 ? 'positive' : 'danger',
+const dataStatusTone = computed<'positive' | 'danger'>(() =>
+  incompleteCount.value === 0 ? 'positive' : 'danger',
 )
 
 // ─── Meldungen ──────────────────────────────────────────────────────────────
@@ -320,16 +334,16 @@ function toggleGroups(): void {
           :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
         />
         <!--
-          Zählt Datenprobleme, nicht Handlungsbedarf: Ein „Buy" in der Zeile
-          ist ein normaler Zustand, ein fehlender Kurs ein Mangel. Ohne den
-          Hinweis liest sich „Datenprobleme: Keine" neben fünf Buy-Zeilen wie
-          ein Widerspruch.
+          Beschreibt die Datenlage, nicht den Handlungsbedarf: Ein „Buy" in der
+          Zeile ist ein normaler Zustand, ein fehlender Kurs eine Lücke. Ohne
+          den Hinweis läse sich die Kennzahl neben fünf Buy-Zeilen wie ein
+          Widerspruch.
         -->
         <KpiCard
-          :label="t('kpi.warnings')"
-          :value="warningsValue"
-          :tone="warningsTone"
-          :explanation="t('hints.dataIssues')"
+          :label="t('kpi.dataStatus')"
+          :value="dataStatusValue"
+          :tone="dataStatusTone"
+          :explanation="t('hints.dataStatus')"
           anchor="limits"
         />
       </section>

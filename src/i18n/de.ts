@@ -59,8 +59,9 @@ export const de = {
     investmentReserveHint: 'Geldmarkt + Cash − Sicherheitspuffer',
     investmentReservePercent: 'Reserve in %',
     securityBufferHint: 'Sicherheitspuffer: {buffer}',
-    warnings: 'Datenprobleme',
-    warningsNone: 'Keine',
+    dataStatus: 'Datenlage',
+    dataComplete: 'Vollständig',
+    dataIncomplete: '{count} unvollständig',
   },
   table: {
     symbol: 'Symbol',
@@ -497,8 +498,8 @@ export const de = {
       'Jeder Euro, der gekauft wird, muss sichtbar herkommen. Der Vorschlag nennt die Stückzahl, mit der Cash oder Geldmarkt die offene Lücke schließt.',
     historyPeriod:
       'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
-    dataIssues:
-      'Kurse, die nicht geladen werden konnten, und Papiere in fremder Währung — also Fälle, in denen eine Zahl der App fehlt oder nicht mitzählt. Ob eine Position gekauft oder verkauft werden sollte, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
+    dataStatus:
+      'Vollständig heißt: Zu jeder Position liegt ein aktueller Kurs in der Basiswährung vor, alle zählen in die Summen. Unvollständig sind Papiere, deren Kurs nicht geladen werden konnte oder die in fremder Währung notieren — sie bleiben sichtbar, zählen aber nirgends mit. Ob eine Position gekauft oder verkauft werden sollte, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
     moneymarket:
       'Geldmarktnahe Papiere schwanken kaum und zählen deshalb zusammen mit Cash zur verfügbaren Liquidität. Laufzeit-Anleihen tun das nicht.',
   },
