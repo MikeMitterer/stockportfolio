@@ -99,6 +99,7 @@ const { t } = useI18n()
   }
 
   &__title {
+    font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
     color: token(--text-primary);
@@ -111,6 +112,7 @@ const { t } = useI18n()
   }
 
   &__heading {
+    font-family: var(--font-display);
     font-size: var(--font-lg);
     font-weight: 500;
     color: token(--text-primary);

@@ -673,6 +673,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
   &__title {
     margin-bottom: var(--space-4);
+    font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
   }

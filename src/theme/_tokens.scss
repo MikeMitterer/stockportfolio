@@ -46,6 +46,14 @@
   --font-xl: 1.5rem;
 
   /*
+   * Zwei Familien mit klaren Rollen: Die Oberfläche und alle Zahlen tragen
+   * `ui`, Titel tragen `display`. Eine dritte gibt es nicht — und Zahlen
+   * wechseln nie die Familie, sonst wandert die Spalte.
+   */
+  --font-ui: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk Variable', var(--font-ui);
+
+  /*
    * Breite des Inhaltsstreifens. Kopfzeile, Statuszeile und jede Ansicht
    * halten sich daran — sonst stünde die Navigation über einem Inhalt, der
    * anders endet als sie.

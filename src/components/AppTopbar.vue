@@ -169,6 +169,7 @@ const isActive = (name: string): boolean => route.name === name
 
   &__wordmark {
     display: none;
+    font-family: var(--font-display);
     font-size: var(--font-lg);
     font-weight: 600;
     letter-spacing: -0.015em;

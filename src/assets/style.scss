@@ -1,3 +1,4 @@
+@use 'font';
 @use '../theme/tokens';
 @use 'table-cells';
 
@@ -92,13 +93,7 @@ html,
 body {
   background-color: rgb(var(--surface-page));
   color: rgb(var(--text-primary));
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-ui);
 }
 
 /*

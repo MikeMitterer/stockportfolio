@@ -213,6 +213,7 @@ notify(
   }
 
   &__title {
+    font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
   }
