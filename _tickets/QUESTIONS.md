@@ -12,4 +12,3 @@
 
 ---
 
-- [] Die Wertentwicklung des Portfolios sollte visualisiert werden. ÜBerleg dir dazu Möglichkeiten.

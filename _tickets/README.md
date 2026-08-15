@@ -51,3 +51,4 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-24 | Sprachumschaltung DE/EN + Konventions-Durchgang | [erledigt](solved/T-24-i18n.md) |
 | T-25 | Erklärung in der App — Begriffe und Methodenseite | [erledigt](solved/T-25-doku.md) |
 | T-UI | Frühe UI-Vorschau | [erledigt](solved/T-UI-preview.md) |
+| T-26 | Wertentwicklung des Depots visualisieren | [offen — Entscheidung nötig](T-26-wertentwicklung.md) |
