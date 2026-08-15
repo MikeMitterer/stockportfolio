@@ -35,12 +35,18 @@ export default defineConfig({
       },
     },
   },
+  /*
+   * Eigene Ports statt der Vite-Vorgaben: Auf 5173 läuft das StockInfo-
+   * Dashboard. Mit `strictPort` bricht der Start ab, statt still auf einen
+   * anderen Port auszuweichen — sonst zeigt der Browser die falsche App und
+   * man sucht den Fehler in der Anwendung.
+   */
   server: {
-    port: 5173,
+    port: 5175,
     strictPort: true,
   },
   preview: {
-    port: 4173,
+    port: 4175,
     strictPort: true,
   },
   build: {

@@ -69,8 +69,8 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@echo
 	@echo "  $(YELLOW)URLs$(RESET)"
 	@echo
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Dev-Server"   "http://localhost:5173"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Preview"      "http://localhost:4173"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Dev-Server"   "http://localhost:5175"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Preview"      "http://localhost:4175"
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "StockInfo API" "https://stockinfo.int.mikemitterer.at/docs"
 	@echo
 	@echo "  $(YELLOW)Setup$(RESET)"
@@ -123,7 +123,7 @@ setup: ## Symlinks (.libs/) + Deps installieren
 ##@ Entwicklung
 
 .PHONY: dev
-dev: ## Vite Dev-Server starten (Port 5173)
+dev: ## Vite Dev-Server starten (Port 5175)
 	@npm run dev
 
 .PHONY: build
@@ -131,7 +131,7 @@ build: ## Production-Build (typecheck + vite build → dist/)
 	@npm run build
 
 .PHONY: preview
-preview: ## Preview des Prod-Builds (Port 4173)
+preview: ## Preview des Prod-Builds (Port 4175)
 	@npm run preview
 
 .PHONY: lint

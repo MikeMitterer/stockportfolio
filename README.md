@@ -180,7 +180,7 @@ selection.
 ```bash
 make setup                 # .libs/ symlinks + npm install
 cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
-make dev                   # http://localhost:5173
+make dev                   # http://localhost:5175
 ```
 
 `make setup` needs the environment variables `BASH_LIBS` and `DEV_MAKE`
@@ -192,9 +192,9 @@ make dev                   # http://localhost:5173
 
 | Command                        | Purpose                                     |
 | ------------------------------ | ------------------------------------------- |
-| `make dev`                     | Vite dev server (port 5173)                 |
+| `make dev`                     | Vite dev server (port 5175)                 |
 | `make build`                   | Typecheck + production build into `dist/`   |
-| `make preview`                 | Preview of the production build (port 4173) |
+| `make preview`                 | Preview of the production build (port 4175) |
 | `make test`                    | Vitest, single run                          |
 | `make lint` / `make typecheck` | ESLint / `vue-tsc --noEmit`                 |
 | `make docker-build`            | Build the Docker image                      |
