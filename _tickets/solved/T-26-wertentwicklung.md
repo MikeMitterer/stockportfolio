@@ -2,14 +2,14 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | **offen — Entscheidung nötig** | je nach Variante 2 h bis 1 Tag | Dashboard | — |
+| root | done — A und B umgesetzt | — | Dashboard | — |
 
 **Löst:** Aus `QUESTIONS.md`: „Die Wertentwicklung des Portfolios sollte
 visualisiert werden."
 
-**Vor der Umsetzung ist zu entscheiden, *welche* der drei Varianten** — sie
-unterscheiden sich nicht im Aufwand, sondern in dem, was sie überhaupt aussagen
-können.
+**Entschieden und umgesetzt: A und B zusammen, C nicht.** Die Begründung der
+drei Varianten steht unten — sie ist der Grund, warum die Beschriftung in der
+App „Rückblick" sagt und nicht „Wertentwicklung".
 
 ---
 
@@ -93,6 +93,19 @@ eigene Entscheidung fallen — nicht als Nebenwirkung einer Visualisierung.
 
 ---
 
+## Was gebaut wurde
+
+- `domain/portfolioHistory.ts` — Rückblick, Schnappschuss-Punkte, Zeitfenster,
+  Beginn der gemessenen Reihe. Zehn Tests, Schwerpunkt Zeitachse.
+- Schema v4: `valueSnapshots`, ein Eintrag je Depot und Tag, rein additiv.
+- `stores/valueHistory.ts` — laden, je Tag einmal schreiben, Rückblick rechnen,
+  beim Einspielen einer Sicherung ersetzen.
+- `PortfolioValueChart.vue` — zwei Linien, gemessen durchgezogen, gerechnet
+  gestrichelt, Zeitraum wählbar, Zeiger mit Datum/Wert/Veränderung.
+- Dashboard: kleine Linie in der Gesamtwert-Kachel, Diagramm klappt auf Klick
+  darunter auf. Beide zeigen dasselbe Fenster (90 Tage).
+- Sicherung: Fassung 2 enthält die Tageswerte.
+
 ## Verify
 
 Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) ·
@@ -100,4 +113,14 @@ Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) 
 
 | # | Where | Look for | AI | Human |
 |---|---|---|:--:|---|
-| 1 | Entscheidung | Variante gewählt | ➖ | |
+| 1 | Dashboard | Gesamtwert-Kachel zeigt Linie + Veränderung, Pfeil klappt das Diagramm auf | ✅ | |
+| 2 | Diagramm | Gestrichelte Linie (Rückblick), Zeitraum 1M/3M/1J/Max, Bildunterschrift nennt den Beginn der gemessenen Reihe | ✅ | |
+| 3 | Kachel gegen Diagramm | Beide zeigen dieselbe Prozentzahl | ✅¹ | |
+| 4 | Mobil (375 px) | Diagramm passt ohne waagrechten Überhang | ✅ | |
+| 5 | Nach einem Tag Pause | Zweiter Tageswert vorhanden, durchgezogene Linie beginnt | ➖² | |
+| 6 | Sichern → Wiederherstellen | Tageswerte überstehen den Umweg, Vorschau nennt ihre Anzahl | ➖³ | |
+
+¹ Über „Max" stünden dreistellige Prozente neben dem Gesamtwert; deshalb zeigen
+beide 90 Tage.
+² Braucht einen echten Tageswechsel — nicht in einer Sitzung prüfbar.
+³ Unit-getestet (Roundtrip in `backup.spec.ts`), nicht im Browser durchgespielt.

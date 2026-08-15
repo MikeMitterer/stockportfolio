@@ -51,4 +51,16 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-24 | Sprachumschaltung DE/EN + Konventions-Durchgang | [erledigt](solved/T-24-i18n.md) |
 | T-25 | Erklärung in der App — Begriffe und Methodenseite | [erledigt](solved/T-25-doku.md) |
 | T-UI | Frühe UI-Vorschau | [erledigt](solved/T-UI-preview.md) |
-| T-26 | Wertentwicklung des Depots visualisieren | [offen — Entscheidung nötig](T-26-wertentwicklung.md) |
+| T-26 | Wertentwicklung des Depots — Rückblick und Tageswerte | [erledigt](solved/T-26-wertentwicklung.md) |
+
+## Offen
+
+Kein Ticket, aber notiert, damit es nicht verloren geht:
+
+| Thema | Stand |
+|---|---|
+| Basiswährung außer EUR | hängt an StockInfo, siehe [Anfrage](../docs/stockinfo-currency-request.md) |
+| CORS gegen die produktive API | ungeprüft — nur auf dem Zielsystem möglich |
+| Unraid-Vorlage | nie auf einer echten Instanz gelaufen |
+| Verlaufs-Zwischenspeicher | wird nie aufgeräumt, wächst nur |
+| Feste Spaltenbreiten in der Positionstabelle | zehn Stück; blockieren einen späteren Schriftwechsel |

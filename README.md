@@ -76,6 +76,20 @@ This is the quotation currency, not the risk currency: a euro-quoted MSCI World
 holds two thirds US dollars. The app cannot tell that apart and does not claim
 to.
 
+### Value history
+
+The total-value tile carries a small line and the change over the last 90 days;
+a click opens the full chart below it. Two lines with different weight: solid
+for **recorded daily values** — what the portfolio actually stood at, including
+purchases and sales — and dashed for the **look back**, today's holdings valued
+at past prices. The second one is not the portfolio's history: a security bought
+last week appears across the whole period. The caption says from when the figure
+is real.
+
+Daily values start accumulating the first time this version runs, so the solid
+line grows over the months. They are part of the backup — the look back can be
+recomputed, they cannot.
+
 ### Price history
 
 Every row carries a small sparkline. It answers a question no number does: is
@@ -240,11 +254,29 @@ Visible text lives in the message catalogue ([`src/i18n/`](src/i18n/)), without
 exception. An ESLint rule turns a hard-coded string in a template into an error,
 and the typecheck reports every key missing in one of the languages.
 
+## Typography
+
+Two families, both shipped with the app: **Inter** carries the interface and
+every number, **Space Grotesk** the wordmark and page titles. Numbers never
+change family — digit widths differ between families, and the column would
+shift.
+
+Nothing is fetched at runtime. The fonts come from npm packages and are served
+from wherever the app is served; a Google Fonts link would leak the visitor's IP
+address on every page view. Only the `latin` subset is bundled, 69 KB for both.
+
 ## Themes
 
-Six of them, under _Settings → Theme_: `MangoLila` (after the StockInfo
-backend), `Classic`, `Ocean`, `Forest`, `Paper`, `Mono`. As long as nothing is
-chosen, the system setting decides between MangoLila (dark) and Paper (light).
+Eleven, under _Settings → Theme_. Seven dark — `MangoLila` (the family colour,
+after the StockInfo backend), `Classic`, `Slate`, `Ocean`, `Forest`, `Aurora`,
+`Carbon` — and four light: `Paper`, `Sepia`, `Meadow`, `Mono`. Without an
+explicit choice the system setting decides between MangoLila (dark) and Paper
+(light).
+
+A theme also shapes the **bars**: header and status bar have their own surface
+and text tokens, so a palette can sink them below the content (`Slate`), lift
+them above it (`Carbon`), wash them with colour (`Aurora`, `Meadow`) or invert
+them entirely — light content between dark bars (`Sepia`).
 
 Asset-class colours are theme-independent and checked for distinguishability
 with colour vision deficiency.
