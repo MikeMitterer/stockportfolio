@@ -156,10 +156,11 @@ const version = __APP_VERSION__
   position: sticky;
   bottom: 0;
   z-index: 20;
-  border-top: 1px solid token(--border-default);
-  background-color: token(--surface-card, 0.95);
+  border-top: 1px solid token(--border-bar);
+  background-color: token(--surface-statusbar, 0.95);
   backdrop-filter: blur(8px);
-  @include muted(0.6875rem);
+  font-size: 0.6875rem;
+  color: token(--text-bar-muted);
 
   /*
    * Zwei Blöcke, nicht sechs Geschwister: links die Lage, rechts der
@@ -219,7 +220,7 @@ const version = __APP_VERSION__
 
   &__app {
     font-weight: 500;
-    color: token(--text-secondary);
+    color: token(--text-bar-secondary);
   }
 
   &__origin {
@@ -229,7 +230,7 @@ const version = __APP_VERSION__
   }
 
   &__strong {
-    color: token(--text-secondary);
+    color: token(--text-bar-secondary);
   }
 
   /* Eigener Abstand: Zwischen zwei Elementen fällt das Leerzeichen weg. */
@@ -266,7 +267,7 @@ const version = __APP_VERSION__
     @include row(0.375rem);
     transition: color 0.15s ease;
 
-    &:hover { color: token(--text-primary); }
+    &:hover { color: token(--text-bar); }
   }
 
   &__light {
@@ -275,7 +276,7 @@ const version = __APP_VERSION__
     width: 0.375rem;
     height: 0.375rem;
     border-radius: var(--radius-full);
-    background-color: token(--text-muted);
+    background-color: token(--text-bar-muted);
 
     &--online { background-color: token(--status-ok); }
     &--offline { background-color: token(--status-out); }

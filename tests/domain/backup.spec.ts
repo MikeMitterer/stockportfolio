@@ -159,6 +159,56 @@ describe('parseBackup — der gute Fall', () => {
     expect(result.backup.portfolio.lastRebalancedAt).toBe('2026-03-01T00:00:00.000Z')
   })
 
+  it('rettet die Tageswerte mit hinüber', () => {
+    // Der Rückblick lässt sich neu rechnen, die gemessenen Tageswerte nicht —
+    // sie entstehen nur dadurch, dass die App über Monate benutzt wird.
+    const raw = JSON.stringify(
+      buildBackup(
+        makePortfolio(),
+        defaultSettings('depot-1'),
+        makeAllowlist(),
+        '0.1.0',
+        '2026-08-10T18:00:00.000Z',
+        [
+          { date: '2026-08-09', total: 160000 },
+          { date: '2026-08-08', total: 158000 },
+        ],
+      ),
+    )
+
+    const result = parseBackup(raw)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    // Aufsteigend sortiert, damit die Kurve nicht springt.
+    expect(result.backup.valueHistory.map((entry) => entry.date)).toEqual([
+      '2026-08-08',
+      '2026-08-09',
+    ])
+  })
+
+  it('übergeht unlesbare Tageswerte, statt die Sicherung abzulehnen', () => {
+    const result = parseBackup(
+      validRaw((data) => {
+        data.valueHistory = [
+          { date: '2026-08-09', total: 160000 },
+          { date: '2026-08-10', total: 'viel' },
+          { total: 1 },
+        ]
+      }),
+    )
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.valueHistory).toEqual([{ date: '2026-08-09', total: 160000 }])
+  })
+
+  it('nimmt eine Sicherung ohne Tageswerte an', () => {
+    const result = parseBackup(validRaw((data) => delete data.valueHistory))
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.valueHistory).toEqual([])
+  })
+
   it('nimmt eine Sicherung ohne diesen Vermerk an', () => {
     const result = parseBackup(validRaw())
     expect(result.ok).toBe(true)

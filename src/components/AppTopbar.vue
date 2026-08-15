@@ -126,9 +126,15 @@ const isActive = (name: string): boolean => route.name === name
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: 1px solid token(--border-default);
-  background-color: token(--surface-page, 0.9);
+  border-bottom: 1px solid token(--border-bar);
+  background-color: token(--surface-header, 0.92);
   backdrop-filter: blur(8px);
+  /*
+   * Eigene Textfarbe, nicht die des Inhalts: Ein Theme darf die Leiste
+   * umkehren — dunkle Leiste über hellem Inhalt. Ohne diese Zeile bliebe die
+   * Wortmarke dunkel auf dunklem Grund.
+   */
+  color: token(--text-bar);
 
   &__inner {
     @include row(var(--space-3));
@@ -180,16 +186,16 @@ const isActive = (name: string): boolean => route.name === name
     padding: 0.375rem var(--space-3);
     border-radius: var(--radius-sm);
     font-size: var(--font-sm);
-    color: token(--text-secondary);
+    color: token(--text-bar-secondary);
     transition: color 0.15s ease, background-color 0.15s ease;
 
     &:hover {
       background-color: token(--surface-raised);
-      color: token(--text-primary);
+      color: token(--text-bar);
     }
 
     &--active {
-      color: token(--text-primary);
+      color: token(--text-bar);
     }
   }
 
@@ -225,8 +231,9 @@ const isActive = (name: string): boolean => route.name === name
    */
   &__age {
     display: none;
+    font-size: var(--font-xs);
     white-space: nowrap;
-    @include muted(var(--font-xs));
+    color: token(--text-bar-muted);
 
     @include up(lg) { display: inline; }
   }

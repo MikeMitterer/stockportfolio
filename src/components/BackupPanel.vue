@@ -15,6 +15,7 @@ import type { Portfolio } from '@/types/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { useInstrumentsStore } from '@/stores/instruments'
+import { useValueHistoryStore } from '@/stores/valueHistory'
 
 /**
  * Sichern und Wiederherstellen.
@@ -33,6 +34,7 @@ const { t } = useI18n()
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 const instrumentsStore = useInstrumentsStore()
+const valueHistory = useValueHistoryStore()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
@@ -55,12 +57,12 @@ const exportedAtLabel = computed(() => {
 
 // ─── Sichern ────────────────────────────────────────────────────────────────
 
-function exportBackup(): void {
+async function exportBackup(): Promise<void> {
   const portfolio = portfolioStore.portfolio
   if (!portfolio) return
 
   try {
-    exportNow(portfolio)
+    await exportNow(portfolio)
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
     error.value = t('backup.exportFailed', { reason })
@@ -68,14 +70,19 @@ function exportBackup(): void {
   }
 }
 
-function exportNow(portfolio: Portfolio): void {
+async function exportNow(portfolio: Portfolio): Promise<void> {
   const exportedAt = new Date().toISOString()
+  // Die Tageswerte gehören dazu: Sie lassen sich nicht neu berechnen, sie
+  // entstehen nur dadurch, dass die App über Monate benutzt wird.
+  await valueHistory.load(portfolio.id)
+
   const backup = buildBackup(
     portfolio,
     settingsStore.settings,
     instrumentsStore.allowlist,
     __APP_VERSION__,
     exportedAt,
+    valueHistory.snapshots,
   )
 
   // Eingerückt geschrieben: Die Datei soll sich im Zweifel auch von Hand lesen
@@ -146,6 +153,7 @@ async function applyPending(): Promise<void> {
       activePortfolioId: backup.portfolio.id,
     })
     await instrumentsStore.replaceAllowlist(new Map(Object.entries(backup.allowlist)))
+    await valueHistory.replaceAll(backup.portfolio.id, backup.valueHistory)
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
     error.value = t('backup.importFailed', { reason })
@@ -243,6 +251,19 @@ const pendingCashTotal = computed(() =>
         <dt v-if="hiddenCount > 0" class="backup__term">{{ t('backup.hidden') }}</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">
           {{ t('units.assets', hiddenCount, { named: { count: integer(hiddenCount) } }) }}
+        </dd>
+
+        <!--
+          Einspielen ersetzt die Tageswerte, es führt sie nicht zusammen —
+          also gehört vorher hierher, wie viele in der Datei stehen.
+        -->
+        <dt v-if="pending.valueHistory.length > 0" class="backup__term">
+          {{ t('backup.valueHistory') }}
+        </dt>
+        <dd v-if="pending.valueHistory.length > 0" class="tabular-nums">
+          {{ t('units.days', pending.valueHistory.length, {
+            named: { count: integer(pending.valueHistory.length) },
+          }) }}
         </dd>
 
         <dt class="backup__term">{{ t('backup.savedAt') }}</dt>

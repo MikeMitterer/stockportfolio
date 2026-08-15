@@ -80,13 +80,40 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     backtest.value = buildBacktest(inputs)
   }
 
+  /**
+   * Ersetzt die Tageswerte eines Depots — beim Einspielen einer Sicherung.
+   *
+   * Erst löschen, dann schreiben: Ein Zusammenführen mit dem, was gerade da
+   * ist, ergäbe eine Kurve aus zwei Depots.
+   */
+  async function replaceAll(portfolioId: string, entries: ValueSnapshot[]): Promise<void> {
+    if (!portfolioId) return
+
+    await repository.clearPortfolio(portfolioId)
+    for (const entry of entries) {
+      await repository.put(portfolioId, entry.date, entry.total)
+    }
+    snapshots.value = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+  }
+
   /** Verwirft die Tageswerte eines gelöschten Depots. */
   async function forget(portfolioId: string): Promise<void> {
     await repository.clearPortfolio(portfolioId)
     snapshots.value = []
   }
 
-  return { snapshots, snapshotLine, backtest, loaded, truthFrom, load, record, computeBacktest, forget }
+  return {
+    snapshots,
+    snapshotLine,
+    backtest,
+    loaded,
+    truthFrom,
+    load,
+    record,
+    computeBacktest,
+    replaceAll,
+    forget,
+  }
 })
 
 /*

@@ -53,6 +53,31 @@
   --content-max: 1400px;
 }
 
+/* ─── Leisten — je Theme überschreibbar ──────────────────────────────────── */
+/*
+ * Kopf- und Statuszeile haben eigene Flächen-Token. Vorher steckten sie fest
+ * in den Komponenten, und ein Theme konnte sie nicht anfassen — alle sahen
+ * damit gleich aus, egal wie verschieden die Palette war.
+ *
+ * Wer sie nicht setzt, bekommt die bisherige Wirkung: Kopfzeile auf der
+ * Seitenfläche, Statuszeile auf der Kartenfläche.
+ */
+
+:root {
+  --surface-header: var(--surface-page);
+  --surface-statusbar: var(--surface-card);
+
+  /*
+   * Eigene Textfarben, weil ein Theme die Leisten auch umkehren darf — helle
+   * Inhalte, dunkle Leisten. Ohne diese Rolle stünde dort der dunkle
+   * Fließtext auf dunklem Grund.
+   */
+  --text-bar: var(--text-primary);
+  --text-bar-muted: var(--text-muted);
+  --text-bar-secondary: var(--text-secondary);
+  --border-bar: var(--border-default);
+}
+
 /* ─── Marke — themeunabhängig ────────────────────────────────────────────── */
 /*
  * Der Verlauf des MangoLila-Zeichens, Orange nach Pflaume. Feste Werte, keine
@@ -246,6 +271,126 @@
   --border-subtle: 227 227 227;
 
   --accent: 64 64 64;
+  --accent-contrast: 255 255 255;
+
+  --asset-stocks: 42 120 214;
+  --asset-bonds: 232 123 164;
+  --asset-metals: 237 161 0;
+  --asset-moneymarket: 74 58 167;
+  --asset-cash: 27 175 122;
+
+  --status-ok: 22 133 94;
+  --status-near: 180 83 9;
+  --status-out: 198 47 47;
+}
+
+/* ─── slate — dunkel, kühles Blaugrau, Leisten tiefer als der Inhalt ─────── */
+/*
+ * Erste der drei Varianten mit eigener Leisten-Behandlung: Kopf- und
+ * Statuszeile sitzen *unter* dem Inhalt statt auf derselben Ebene. Der Inhalt
+ * schwebt dadurch sichtbar in einem Rahmen.
+ */
+
+:root[data-theme='slate'] {
+  --surface-page: 24 28 35;
+  --surface-card: 32 38 47;
+  --surface-raised: 44 52 64;
+  --surface-sunken: 18 21 26;
+
+  --surface-header: 14 17 22;
+  --surface-statusbar: 14 17 22;
+
+  --text-primary: 233 237 243;
+  --text-secondary: 152 163 178;
+  --text-muted: 104 116 132;
+
+  --border-default: 48 56 68;
+  --border-subtle: 36 42 52;
+  --border-bar: 40 47 58;
+
+  --accent: 96 165 250;
+  --accent-contrast: 12 16 22;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── aurora — dunkel, Leisten mit Farbschleier ──────────────────────────── */
+/*
+ * Zweite Variante: Die Leisten tragen einen Violett-Schleier und heben sich
+ * *nach oben* ab. Zeigt, dass die Kopfzeile auch Farbe tragen darf, ohne dass
+ * die Marke dafür herhalten muss.
+ */
+
+:root[data-theme='aurora'] {
+  --surface-page: 13 12 24;
+  --surface-card: 22 20 38;
+  --surface-raised: 32 29 54;
+  --surface-sunken: 9 8 17;
+
+  --surface-header: 38 30 70;
+  --surface-statusbar: 30 25 56;
+
+  --text-primary: 240 238 250;
+  --text-secondary: 166 160 196;
+  --text-muted: 116 111 145;
+
+  --border-default: 44 40 70;
+  --border-subtle: 32 29 52;
+  --border-bar: 58 48 100;
+
+  --text-bar-muted: 156 148 194;
+
+  --accent: 167 139 250;
+  --accent-contrast: 13 12 24;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── sepia — hell, warmes Papier, dunkle Leisten ────────────────────────── */
+/*
+ * Dritte Variante und die deutlichste: heller Inhalt zwischen dunklen
+ * Leisten. Nur möglich, weil die Leisten eigene Textfarben haben — sonst
+ * stünde der dunkle Fließtext auf dunklem Grund.
+ */
+
+:root[data-theme='sepia'] {
+  --surface-page: 244 238 226;
+  --surface-card: 252 248 240;
+  --surface-raised: 255 255 255;
+  --surface-sunken: 236 229 214;
+
+  --surface-header: 43 37 30;
+  --surface-statusbar: 43 37 30;
+
+  --text-primary: 38 33 25;
+  --text-secondary: 96 87 73;
+  --text-muted: 145 134 116;
+
+  --text-bar: 250 246 238;
+  --text-bar-secondary: 214 203 184;
+  --text-bar-muted: 163 150 129;
+
+  --border-default: 219 210 192;
+  --border-subtle: 232 225 210;
+  --border-bar: 62 54 44;
+
+  --accent: 180 83 9;
   --accent-contrast: 255 255 255;
 
   --asset-stocks: 42 120 214;

@@ -139,6 +139,8 @@ const emit = defineEmits<{
     font-size: var(--font-base);
     font-weight: 600;
     line-height: 1.25;
+    /* „+€ 5.000" darf nicht zwischen Vorzeichen und Betrag umbrechen. */
+    white-space: nowrap;
 
     &--default { color: token(--text-primary); }
     &--positive { color: token(--status-ok); }

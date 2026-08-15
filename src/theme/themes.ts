@@ -6,7 +6,17 @@
  * Helligkeitsachse — es ist ein fertiges Gesamtbild.
  */
 
-export const THEME_IDS = ['mangolila', 'classic', 'ocean', 'forest', 'paper', 'mono'] as const
+export const THEME_IDS = [
+  'mangolila',
+  'classic',
+  'slate',
+  'ocean',
+  'forest',
+  'aurora',
+  'paper',
+  'sepia',
+  'mono',
+] as const
 
 export type ThemeId = (typeof THEME_IDS)[number]
 
@@ -37,6 +47,11 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
     isDark: true,
     preview: { page: '#0a0a0a', card: '#171717', ink: '#f5f5f5', accent: '#3987e5' },
   },
+  slate: {
+    id: 'slate',
+    isDark: true,
+    preview: { page: '#181c23', card: '#20262f', ink: '#e9edf3', accent: '#60a5fa' },
+  },
   ocean: {
     id: 'ocean',
     isDark: true,
@@ -52,10 +67,20 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
     isDark: true,
     preview: { page: '#14101a', card: '#1e1827', ink: '#f4f1f9', accent: '#e8703a' },
   },
+  aurora: {
+    id: 'aurora',
+    isDark: true,
+    preview: { page: '#0d0c18', card: '#161426', ink: '#f0eefa', accent: '#a78bfa' },
+  },
   paper: {
     id: 'paper',
     isDark: false,
     preview: { page: '#efe7d8', card: '#fbf7ef', ink: '#1c1a16', accent: '#2a78d6' },
+  },
+  sepia: {
+    id: 'sepia',
+    isDark: false,
+    preview: { page: '#f4eee2', card: '#fcf8f0', ink: '#262119', accent: '#b45309' },
   },
   mono: {
     id: 'mono',

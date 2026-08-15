@@ -9,6 +9,7 @@
  * Reine Funktionen, kein DOM: Weder Datei-Auswahl noch Download stehen hier.
  */
 
+import type { ValueSnapshot } from '@/domain/portfolioHistory'
 import type { AssetGroup, InstrumentKind, Portfolio, Position, Settings } from '@/types/portfolio'
 
 /** Erkennungsmerkmal der Datei — verhindert das Einlesen fremder JSON-Dateien. */
@@ -26,7 +27,7 @@ export const BACKUP_KIND = 'stockportfolio-backup'
  * Fassung hochzuzählen würde nur dazu führen, dass eine ältere App eine Datei
  * ablehnt, die sie problemlos lesen könnte.
  */
-export const BACKUP_SCHEMA_VERSION = 1
+export const BACKUP_SCHEMA_VERSION = 2
 
 export interface Backup {
   kind: typeof BACKUP_KIND
@@ -47,6 +48,17 @@ export interface Backup {
    * und leer heißt „nichts ausgeblendet", nicht „nichts erlaubt".
    */
   allowlist: Record<string, boolean>
+  /**
+   * Tageswerte des Depots.
+   *
+   * Der Rückblick lässt sich jederzeit neu rechnen — die gemessenen Tageswerte
+   * nicht. Sie entstehen nur, indem die App über Monate benutzt wird; ohne sie
+   * in der Sicherung wäre nach einem Gerätewechsel genau der Teil weg, der am
+   * längsten gebraucht hat.
+   *
+   * Ältere Sicherungen kennen das Feld nicht — dort gilt eine leere Liste.
+   */
+  valueHistory: ValueSnapshot[]
 }
 
 /**
@@ -86,6 +98,7 @@ export function buildBackup(
   allowlist: Map<string, boolean>,
   appVersion: string,
   exportedAt: string,
+  valueHistory: ValueSnapshot[] = [],
 ): Backup {
   return {
     kind: BACKUP_KIND,
@@ -95,6 +108,7 @@ export function buildBackup(
     portfolio,
     settings,
     allowlist: Object.fromEntries(allowlist),
+    valueHistory,
   }
 }
 
@@ -199,6 +213,7 @@ export function parseBackup(raw: string): ParseResult {
       // dass später ein Feld hinzugekommen ist.
       settings: data.settings as unknown as Settings,
       allowlist: parseAllowlist(data.allowlist),
+      valueHistory: parseValueHistory(data.valueHistory),
     },
   }
 }
@@ -255,6 +270,28 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
     lastRebalancedAt: typeof value.lastRebalancedAt === 'string' ? value.lastRebalancedAt : null,
     positions,
   }
+}
+
+/**
+ * Liest die Tageswerte.
+ *
+ * Fehlerhafte Einträge werden übergangen statt die ganze Sicherung
+ * abzulehnen: Ein unlesbarer Tageswert ist ein Schönheitsfehler in der Kurve,
+ * kein Grund, ein Depot nicht wiederherzustellen.
+ */
+function parseValueHistory(value: unknown): ValueSnapshot[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .filter(
+      (entry): entry is ValueSnapshot =>
+        isRecord(entry) &&
+        typeof entry.date === 'string' &&
+        typeof entry.total === 'number' &&
+        Number.isFinite(entry.total),
+    )
+    .map((entry) => ({ date: entry.date, total: entry.total }))
+    .sort((a, b) => a.date.localeCompare(b.date))
 }
 
 /** Prüft eine Position; gibt bei einem Fehler den Grund zurück. */
