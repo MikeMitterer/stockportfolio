@@ -1,5 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#0f766e"/>
-  <path d="M6 22 L12 14 L18 20 L26 8" fill="none" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="26" cy="8" r="2" fill="#5eead4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!--
+    Zeichen der App: Ring aus zwei Segmenten auf der Marken-Kachel.
+
+    Die Farben stehen als Hex und nicht als Token, weil ein per
+    <link rel="icon"> geladenes SVG ein eigenes Dokument ist: Es kommt weder an
+    die CSS-Variablen der Seite noch an deren Schriften heran. Genau darum steht
+    hier auch kein <text>; die Wortmarke ist HTML und sitzt in der Kopfzeile.
+    Wer die Werte ändert, ändert die drei brand-Token in src/theme/_tokens.scss
+    mit.
+
+    pathLength setzt den Umfang auf hundert Einheiten, damit die Längen unten
+    Prozente sind und unabhängig davon gelten, wie ein Browser den Bogen
+    annähert. Dieselben vier Zahlen stehen in AppTopbar.vue.
+
+    Ausgelegt auf 16 px, die Größe im Browser-Reiter: 7,6 % vom Umfang sind dort
+    knapp zwei Bildpunkte Lücke. Schmaler dürfte sie nicht sein, sonst läuft sie
+    beim Glätten zu.
+
+    Achtung beim Bearbeiten: In einem XML-Kommentar ist kein doppelter
+    Bindestrich erlaubt. Token-Namen deshalb ohne ihr Präfix nennen.
+  -->
+  <defs>
+    <linearGradient id="brand" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="46" y2="46">
+      <stop offset="0" stop-color="#2b8fe0"/>
+      <stop offset="1" stop-color="#2b3b8f"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#brand)"/>
+
+  <circle cx="24" cy="24" r="12.5" fill="none" stroke="#ffffff" stroke-width="5"
+          pathLength="100" stroke-dasharray="60 7.6 24.8 7.6" transform="rotate(-90 24 24)"/>
 </svg>

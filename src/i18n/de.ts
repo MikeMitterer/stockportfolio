@@ -3,6 +3,14 @@ export const de = {
   app: {
     title: 'StockPortfolio',
     subtitle: 'Tolerance-Band Rebalancing',
+    /*
+     * Die Wortmarke in zwei Teilen, zusammengesetzt ergeben sie `title`. Der
+     * zweite trägt die Kennfarbe: „Stock" teilen sich beide Apps, farbig gehört
+     * der Teil, der sie unterscheidet. Getrennt im Katalog und nicht im
+     * Template zerschnitten, damit die Teilung mit dem Namen wandert.
+     */
+    brandLead: 'Stock',
+    brandAccent: 'Portfolio',
   },
   nav: {
     dashboard: 'Dashboard',

@@ -58,19 +58,31 @@ const isActive = (name: string): boolean => route.name === name
       <!-- Plakette + Wortmarke, wie im Backend-Frontend -->
       <RouterLink :to="{ name: 'dashboard' }" class="topbar__brand">
         <span class="topbar__badge">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="rgb(var(--accent-contrast))"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M4 17l5-6 4 4 6-8" />
-            <path d="M15 7h4v4" />
+          <!--
+            Ring aus zwei Segmenten: ein Bestand und seine Aufteilung. Dieselbe
+            Form wie in public/favicon.svg, dort nur mit der Kachel darunter —
+            hier trägt die das umschließende Element. Stumpfe Strichenden, sonst
+            fressen die Rundungen die beiden Lücken auf.
+
+            pathLength="100" setzt den Umfang auf hundert Einheiten, damit die
+            Längen unten Prozente sind: Browser nähern den Bogen unterschiedlich
+            an (gemessen 56,18 statt 56,55), und ohne das stößt das Muster am
+            Startpunkt nicht sauber zusammen.
+          -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgb(var(--brand-contrast))" stroke-width="3.4">
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              pathLength="100"
+              stroke-dasharray="60 7.6 24.8 7.6"
+              transform="rotate(-90 12 12)"
+            />
           </svg>
         </span>
-        <span class="topbar__wordmark">{{ t('app.title') }}</span>
+        <!-- In einer Zeile, weil Vue Leerraum zwischen den Teilen sonst
+             zusammenfasst und „Stock Portfolio" daraus würde. -->
+        <span class="topbar__wordmark">{{ t('app.brandLead') }}<span class="topbar__brandword">{{ t('app.brandAccent') }}</span></span>
       </RouterLink>
 
       <nav class="topbar__nav">
@@ -175,6 +187,10 @@ const isActive = (name: string): boolean => route.name === name
     letter-spacing: -0.015em;
 
     @include up(sm) { display: inline; }
+  }
+
+  &__brandword {
+    color: token(--brand-word);
   }
 
   &__nav {

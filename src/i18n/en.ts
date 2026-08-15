@@ -10,6 +10,8 @@ export const en: MessageSchema = {
   app: {
     title: 'StockPortfolio',
     subtitle: 'Tolerance-Band Rebalancing',
+    brandLead: 'Stock',
+    brandAccent: 'Portfolio',
   },
   nav: {
     dashboard: 'Dashboard',

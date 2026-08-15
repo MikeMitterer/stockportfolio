@@ -88,14 +88,46 @@
 
 /* ─── Marke — themeunabhängig ────────────────────────────────────────────── */
 /*
- * Der Verlauf des MangoLila-Zeichens, Orange nach Pflaume. Feste Werte, keine
- * Ableitung aus dem Theme: Eine Marke, die je nach Anstrich anders aussieht,
- * ist keine.
+ * Der Verlauf des Zeichens, Azur nach Indigo. Feste Werte, keine Ableitung aus
+ * dem Theme: Eine Marke, die je nach Anstrich anders aussieht, ist keine.
+ *
+ * Die Farben kennzeichnen die App, nicht das Haus — StockInfo trägt Koralle
+ * nach Pflaume. Gemeinsam bleibt die Form: Kachel, weicher Radius, 135°.
+ * Wer sie ändert, ändert auch public/favicon.svg; dort stehen dieselben Werte
+ * als Hex, weil ein per <link rel="icon"> geladenes SVG ein eigenes Dokument
+ * ist und an diese Variablen nicht herankommt.
+ *
+ * --brand-contrast steht neben --accent-contrast, nicht statt dessen: Letzteres
+ * wechselt mit dem Theme und ist in sechs von elf nahezu schwarz. Auf einem
+ * Grund, der sich nicht mitändert, wäre das Zeichen dort kaum zu sehen.
  */
 
 :root {
-  --brand-from: 223 84 48;
-  --brand-to: 129 44 124;
+  --brand-from: 43 143 224;
+  --brand-to: 43 59 143;
+  --brand-contrast: 255 255 255;
+}
+
+/*
+ * Die Kennfarbe der Wortmarke — „Portfolio" trägt sie, „Stock" nicht. Zwei
+ * Abstufungen desselben Blaus, keine zwei Farben: Gemessen erreicht --brand-from
+ * auf hellen Leisten nur 2,8:1 und --brand-to auf dunklen 2,0:1. Für Text bei
+ * 18 px/600 sind 4,5:1 verlangt, also trägt keine der beiden Markenfarben über
+ * alle elf Themes. Dasselbe Vorgehen wie bei Status- und Kategoriefarben: eine
+ * helle und eine dunkle Stufe, Ton bleibt.
+ *
+ * Umgeschaltet wird nach der Leiste, nicht nach dem Inhalt — nur `paper` und
+ * `mono` haben eine helle Kopfzeile. `sepia` und `meadow` tragen hellen Inhalt
+ * zwischen dunklen Leisten und bleiben deshalb bei der hellen Stufe.
+ */
+
+:root {
+  --brand-word: 106 179 240; /* #6ab3f0 — 5,3:1 bis 8,8:1 auf dunklen Leisten */
+}
+
+:root[data-theme='paper'],
+:root[data-theme='mono'] {
+  --brand-word: 28 95 168; /* #1c5fa8 — 5,3:1 bzw. 5,4:1 */
 }
 
 /* ─── Bedeutungstragende Farben — themeunabhängig ────────────────────────── */
