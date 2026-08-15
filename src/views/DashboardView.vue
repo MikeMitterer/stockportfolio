@@ -4,6 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { NDivider, NSpin, NEmpty, NButton } from 'naive-ui'
 import InfoHint from '@/components/InfoHint.vue'
 import KpiCard from '@/components/KpiCard.vue'
+import PortfolioValueChart from '@/components/PortfolioValueChart.vue'
+import { useHistoryStore } from '@/stores/history'
+import { useValueHistoryStore } from '@/stores/valueHistory'
+import { withinDays, type BacktestInput } from '@/domain/portfolioHistory'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
 import { eur, eurSigned, integer, percent, shortDate } from '@/domain/formatters'
@@ -251,6 +255,80 @@ async function onRefreshOne(id: string): Promise<void> {
 const GROUPS_COLLAPSED_KEY = 'stockportfolio.dashboard.groupsCollapsed'
 const groupsCollapsed = ref<boolean>(false)
 
+// ─── Wertverlauf ────────────────────────────────────────────────────────────
+//
+// Überblick oben, Einzelheiten auf Klick: In der Gesamtwert-Kachel steht eine
+// kleine Linie, das ausführliche Diagramm klappt darunter auf. Dauerhaft
+// sichtbar würde es die Tabelle nach unten drücken — und die ist der Grund,
+// warum jemand das Dashboard öffnet.
+
+const historyStore = useHistoryStore()
+const valueHistory = useValueHistoryStore()
+
+/**
+ * Zeitraum, den der Rückblick lädt.
+ *
+ * Der längste, den die API kennt: Das Diagramm schneidet daraus zu, statt je
+ * Schaltfläche eine eigene Abfrage zu stellen.
+ */
+const BACKTEST_PERIOD = 'max' as const
+
+/**
+ * Fenster der kleinen Linie in der Kachel — dasselbe wie die Vorgabe des
+ * Diagramms.
+ *
+ * Über „max" stünde dort ein Prozentwert von mehreren hundert Prozent neben
+ * dem Gesamtwert. Das läse sich wie eine Wertentwicklung, ist aber der
+ * Rückblick: der heutige Bestand, gegen Kurse von vor Jahren gerechnet.
+ */
+const TREND_DAYS = 90
+
+/** Gemessene Werte, solange es genug davon gibt; sonst der Rückblick. */
+const trendPoints = computed(() => {
+  const source =
+    valueHistory.snapshotLine.length > 1 ? valueHistory.snapshotLine : valueHistory.backtest
+  return withinDays(source, TREND_DAYS, new Date())
+})
+const valueChartOpen = ref<boolean>(false)
+const valueHistoryLoading = ref<boolean>(false)
+
+/** Bestände mit ihrem Kursverlauf — Grundlage des Rückblicks. */
+const backtestInputs = computed<BacktestInput[]>(() =>
+  (result.value?.rows ?? [])
+    .filter((row) => row.isActive)
+    .map((row) => ({
+      units: row.position.units,
+      points: historyStore.get(row.position, BACKTEST_PERIOD).points,
+      constantValue: row.marketValue,
+    })),
+)
+
+/**
+ * Holt den langen Verlauf für alle Positionen und rechnet den Rückblick.
+ *
+ * Ein Zeitraum reicht: Das Diagramm schneidet daraus zu, statt für jede
+ * Schaltfläche neu zu laden.
+ */
+async function loadValueHistory(): Promise<void> {
+  const portfolio = portfolioStore.portfolio
+  if (!portfolio) return
+
+  valueHistoryLoading.value = true
+  try {
+    await valueHistory.load(portfolio.id)
+
+    await Promise.all(
+      portfolioStore.positions
+        .filter((position) => position.enabled)
+        .map((position) => historyStore.ensure(client ?? null, position, BACKTEST_PERIOD)),
+    )
+
+    valueHistory.computeBacktest(backtestInputs.value)
+  } finally {
+    valueHistoryLoading.value = false
+  }
+}
+
 onMounted(async () => {
   const stored = localStorage.getItem(GROUPS_COLLAPSED_KEY)
   if (stored === '1' || stored === '0') {
@@ -270,6 +348,11 @@ onMounted(async () => {
   // Ältere Positionen kennen ihre Gattung nicht — jetzt, wo die Kurse da
   // sind, lässt sie sich ableiten und dauerhaft festhalten.
   await portfolioStore.backfillKinds(quotesStore.quotes)
+
+  // Der Tageswert wird festgehalten, sobald die Kurse stehen — einmal je Tag.
+  const total = result.value?.total ?? 0
+  await valueHistory.record(portfolioStore.portfolio?.id ?? '', total)
+  await loadValueHistory()
 })
 
 watch(groupsCollapsed, (collapsed) => {
@@ -315,7 +398,14 @@ function toggleGroups(): void {
       <!-- Fehler-Banner bei fehlgeschlagenen Kursen -->
       <!-- Kennzahlen -->
       <section class="dashboard__kpis">
-        <KpiCard :label="t('kpi.total')" :value="eur(result.total)" />
+        <KpiCard
+          :label="t('kpi.total')"
+          :value="eur(result.total)"
+          :trend="trendPoints"
+          expandable
+          :expanded="valueChartOpen"
+          @toggle="valueChartOpen = !valueChartOpen"
+        />
         <KpiCard
           :label="t('kpi.investmentReserve')"
           :explanation="t('hints.investmentReserve')"
@@ -345,6 +435,19 @@ function toggleGroups(): void {
           :tone="dataStatusTone"
           :explanation="t('hints.dataStatus')"
           anchor="limits"
+        />
+      </section>
+
+      <!--
+        Der Wertverlauf klappt unter der Kachel auf, nicht daneben: So bleibt
+        die Kennzahlenzeile schmal und das Diagramm bekommt die volle Breite.
+      -->
+      <section v-if="valueChartOpen" class="dashboard__value">
+        <PortfolioValueChart
+          :backtest="valueHistory.backtest"
+          :snapshots="valueHistory.snapshotLine"
+          :truth-from="valueHistory.truthFrom"
+          :loading="valueHistoryLoading"
         />
       </section>
 
@@ -524,6 +627,12 @@ function toggleGroups(): void {
    * Die Assetklassen-Balken bleiben dem Desktop vorbehalten: Auf dem Telefon
    * stehen dieselben Zahlen ohnehin über jeder Gruppe in der Kartenliste.
    */
+  &__value {
+    padding-bottom: var(--space-2);
+    border-top: 1px solid token(--border-default);
+    padding-top: var(--space-4);
+  }
+
   &__groups {
     display: none;
     border-top: 1px solid token(--border-default);

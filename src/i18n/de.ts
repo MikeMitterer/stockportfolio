@@ -39,6 +39,15 @@ export const de = {
     noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
   },
 
+  valueHistory: {
+    heading: 'Wertverlauf',
+    empty: 'Noch kein Verlauf — sobald Kurse geladen sind, entsteht er.',
+    captionFrom:
+      'Durchgezogen ab {date}: tatsächlich festgehaltene Tageswerte. Gestrichelt davor: der heutige Bestand gegen alte Kurse gerechnet — kein Verlauf des Depots, sondern ein Rückblick auf die heutige Aufteilung.',
+    captionBacktestOnly:
+      'Gestrichelt: der heutige Bestand gegen alte Kurse gerechnet — kein Verlauf des Depots, sondern ein Rückblick auf die heutige Aufteilung. Ab heute hält die App zusätzlich den tatsächlichen Tageswert fest.',
+  },
+
   seed: {
     portfolioName: 'Mein Depot',
     demoName: 'Beispiel-Depot',
@@ -468,7 +477,7 @@ export const de = {
     planBody:
       'Der Plan rechnet, er bucht nicht. Man trägt Stückzahlen ein und sieht sofort, was das kostet oder einbringt und wo die Anteile danach liegen. Die Aufträge gibt man bei seiner Bank auf und pflegt die Bestände danach selbst nach.',
     planBody2:
-      'Die Delta-Spalte nennt die Stückzahl bis zum Ziel. Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas in Euro gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht. Jeder Euro, der gekauft wird, muss sichtbar herkommen: aus einem Verkauf oder aus Cash bzw. Geldmarkt.',
+      'Die Delta-Spalte nennt die Stückzahl bis zum Ziel. Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas in Euro gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht. Jeder Kauf muss im Plan bezahlt werden — aus einem Verkauf oder aus Cash beziehungsweise Geldmarkt. Einen abstrakten Topf, aus dem man schöpft, gibt es nicht.',
 
     limitsHeading: 'Was die App bewusst nicht tut',
     limitsCurrency:
@@ -495,7 +504,7 @@ export const de = {
     delta:
       'Abweichung vom Ziel, relativ zum Ziel selbst: −10 % heißt „ein Zehntel unter dem Zielwert", nicht „zehn Prozentpunkte". Die Farbe zeigt, ob die Position im Band liegt.',
     coverFrom:
-      'Jeder Euro, der gekauft wird, muss sichtbar herkommen. Der Vorschlag nennt die Stückzahl, mit der Cash oder Geldmarkt die offene Lücke schließt.',
+      'Käufe müssen im Plan bezahlt werden — es gibt keinen Topf, aus dem man schöpft. Fehlt Geld, nennt der Vorschlag die Stückzahl, mit der Cash oder Geldmarkt die Lücke schließt.',
     historyPeriod:
       'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
     dataStatus:

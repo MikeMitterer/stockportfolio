@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import InfoHint from '@/components/InfoHint.vue'
+import PriceSparkline from '@/components/PriceSparkline.vue'
+import type { HistoryPoint } from '@/domain/sparkline'
 
 defineProps<{
   label: string
@@ -12,6 +14,21 @@ defineProps<{
   anchor?: string
   /** Reiter in den Einstellungen, in dem der zugehörige Wert steht. */
   settingsTab?: string
+  /**
+   * Kleine Verlaufslinie neben der Zahl.
+   *
+   * Der Überblick soll auf einen Blick beantworten, wohin es geht — die Zahlen
+   * dazu stehen im aufgeklappten Diagramm, nicht hier.
+   */
+  trend?: HistoryPoint[]
+  /** Macht die Karte anklickbar; zeigt einen Pfeil an. */
+  expandable?: boolean
+  /** Zustand des Pfeils. */
+  expanded?: boolean
+}>()
+
+const emit = defineEmits<{
+  (event: 'toggle'): void
 }>()
 </script>
 
@@ -25,7 +42,14 @@ defineProps<{
     darunter. Sie ist ohnehin nur Beiwerk und muss keine eigene Zeile Höhe
     kosten — der Kopfbereich stand sonst über der Tabelle wie ein Block.
   -->
-  <div class="kpi">
+  <component
+    :is="expandable ? 'button' : 'div'"
+    class="kpi"
+    :class="{ 'kpi--expandable': expandable }"
+    :type="expandable ? 'button' : undefined"
+    :aria-expanded="expandable ? expanded : undefined"
+    @click="expandable && emit('toggle')"
+  >
     <div class="kpi__label">
       {{ label }}
       <InfoHint
@@ -41,8 +65,29 @@ defineProps<{
         {{ value }}
       </span>
       <span v-if="hint" class="kpi__hint" :title="hint">{{ hint }}</span>
+
+      <PriceSparkline
+        v-if="trend && trend.length > 1"
+        class="kpi__trend"
+        :points="trend"
+        :width="64"
+        :height="18"
+      />
+
+      <svg
+        v-if="expandable"
+        class="kpi__chevron"
+        :class="{ 'kpi__chevron--open': expanded }"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+      </svg>
     </div>
-  </div>
+  </component>
 </template>
 
 <style scoped lang="scss">
@@ -99,6 +144,26 @@ defineProps<{
     &--positive { color: token(--status-ok); }
     &--warning { color: token(--status-near); }
     &--danger { color: token(--status-out); }
+  }
+
+  &--expandable {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover .kpi__chevron { opacity: 1; }
+  }
+
+  &__trend { flex-shrink: 0; }
+
+  &__chevron {
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    opacity: 0.4;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+
+    &--open { transform: rotate(180deg); }
   }
 
   &__hint {

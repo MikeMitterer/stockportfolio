@@ -15,7 +15,7 @@ import {
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 export const DB_NAME = 'stockportfolio'
-export const DB_VERSION = 3
+export const DB_VERSION = 4
 
 /** Fester Schlüssel des Settings-Singletons. */
 export const SETTINGS_KEY = 'default'
@@ -78,6 +78,27 @@ export interface StockPortfolioDB extends DBSchema {
     key: string
     value: HistoryEntry
   }
+  /**
+   * Ein Gesamtwert je Tag und Depot.
+   *
+   * Der Rückblick rechnet den heutigen Bestand gegen alte Kurse; diese
+   * Schnappschüsse halten fest, was tatsächlich dastand — inklusive Käufen und
+   * Verkäufen. Sie beginnen leer und werden mit jedem Tag wertvoller.
+   */
+  valueSnapshots: {
+    key: string
+    value: ValueSnapshotEntry
+    indexes: { byPortfolio: string }
+  }
+}
+
+/** Ein Tagesstand, zusammengesetzt aus Depot und Datum. */
+export interface ValueSnapshotEntry {
+  /** `<portfolioId>::<YYYY-MM-DD>` — ein Eintrag je Depot und Tag. */
+  key: string
+  portfolioId: string
+  date: string
+  total: number
 }
 
 let dbPromise: Promise<IDBPDatabase<StockPortfolioDB>> | null = null
@@ -147,6 +168,12 @@ export function getDb(): Promise<IDBPDatabase<StockPortfolioDB>> {
       if (oldVersion < 1) createInitialStores(db)
       if (oldVersion < 2) await scopeAllowlistToPortfolio(db, transaction)
 
+      // Version 3 → 4: Tageswerte des Depots. Rein additiv; der Speicher
+      // beginnt leer und füllt sich ab dem ersten Start dieser Fassung.
+      if (oldVersion < 4 && !db.objectStoreNames.contains('valueSnapshots')) {
+        const store = db.createObjectStore('valueSnapshots', { keyPath: 'key' })
+        store.createIndex('byPortfolio', 'portfolioId')
+      }
       // Version 2 → 3: Zwischenspeicher für den Kursverlauf. Rein additiv —
       // fehlt der Verlauf, wird er geholt.
       if (oldVersion < 3 && !db.objectStoreNames.contains('dailyHistory')) {

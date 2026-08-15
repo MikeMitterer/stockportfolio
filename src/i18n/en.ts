@@ -46,6 +46,15 @@ export const en: MessageSchema = {
     noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
   },
 
+  valueHistory: {
+    heading: 'Value history',
+    empty: 'No history yet — it appears once prices are loaded.',
+    captionFrom:
+      'Solid from {date}: actually recorded daily values. Dashed before that: today’s holdings valued at past prices — not the portfolio’s history but a look back at today’s allocation.',
+    captionBacktestOnly:
+      'Dashed: today’s holdings valued at past prices — not the portfolio’s history but a look back at today’s allocation. From today on, the app also records the actual daily value.',
+  },
+
   seed: {
     portfolioName: 'My portfolio',
     demoName: 'Sample portfolio',
@@ -496,7 +505,7 @@ export const en: MessageSchema = {
     delta:
       'Deviation from the target, relative to the target itself: −10 % means “a tenth below the target value”, not “ten percentage points”. The colour shows whether the position is inside the band.',
     coverFrom:
-      'Every euro spent has to come from somewhere visible. The suggestion gives the units with which cash or money market closes the open gap.',
+      'Purchases have to be paid for within the plan — there is no pot to draw from. If money is missing, the suggestion gives the units with which cash or money market closes the gap.',
     historyPeriod:
       'Period of the small line next to the price. A month, a week or a day — with “one day” it shows the change from the last trading day to today.',
     dataStatus:

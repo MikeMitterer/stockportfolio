@@ -12,6 +12,7 @@ import {
   type AllowlistEntry,
   type HistoryEntry,
 } from './schema'
+import type { ValueSnapshotEntry } from '@/db/schema'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 /**
@@ -203,3 +204,36 @@ export class AllowlistRepository {
   }
 }
 
+/**
+ * Tageswerte des Depots.
+ *
+ * Ein Eintrag je Depot und Tag. Mehrfaches Schreiben am selben Tag überschreibt
+ * — der letzte Stand des Tages ist der, der zählt.
+ */
+export class ValueSnapshotRepository {
+  /** Alle Tageswerte eines Depots, aufsteigend nach Datum. */
+  async findByPortfolio(portfolioId: string): Promise<ValueSnapshotEntry[]> {
+    const db = await getDb()
+    const entries = await db.getAllFromIndex('valueSnapshots', 'byPortfolio', portfolioId)
+    return entries.sort((a, b) => a.date.localeCompare(b.date))
+  }
+
+  /**
+   * Schreibt den Stand eines Tages.
+   *
+   * @param portfolioId Depot.
+   * @param date        ISO-Datum `YYYY-MM-DD`.
+   * @param total       Gesamtwert.
+   */
+  async put(portfolioId: string, date: string, total: number): Promise<void> {
+    const db = await getDb()
+    await db.put('valueSnapshots', { key: `${portfolioId}::${date}`, portfolioId, date, total })
+  }
+
+  /** Verwirft alle Tageswerte eines Depots — für „Depot gelöscht". */
+  async clearPortfolio(portfolioId: string): Promise<void> {
+    const db = await getDb()
+    const keys = await db.getAllKeysFromIndex('valueSnapshots', 'byPortfolio', portfolioId)
+    await Promise.all(keys.map((key) => db.delete('valueSnapshots', key)))
+  }
+}
