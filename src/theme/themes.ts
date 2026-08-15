@@ -13,8 +13,10 @@ export const THEME_IDS = [
   'ocean',
   'forest',
   'aurora',
+  'carbon',
   'paper',
   'sepia',
+  'meadow',
   'mono',
 ] as const
 
@@ -72,6 +74,11 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
     isDark: true,
     preview: { page: '#0d0c18', card: '#161426', ink: '#f0eefa', accent: '#a78bfa' },
   },
+  carbon: {
+    id: 'carbon',
+    isDark: true,
+    preview: { page: '#080809', card: '#111113', ink: '#fcfcfd', accent: '#38bdf8' },
+  },
   paper: {
     id: 'paper',
     isDark: false,
@@ -81,6 +88,11 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
     id: 'sepia',
     isDark: false,
     preview: { page: '#f4eee2', card: '#fcf8f0', ink: '#262119', accent: '#b45309' },
+  },
+  meadow: {
+    id: 'meadow',
+    isDark: false,
+    preview: { page: '#eef3ee', card: '#fafcf9', ink: '#1a261e', accent: '#15803d' },
   },
   mono: {
     id: 'mono',

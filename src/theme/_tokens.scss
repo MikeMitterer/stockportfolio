@@ -411,3 +411,84 @@
   --status-near: 180 83 9;
   --status-out: 198 47 47;
 }
+
+/* ─── carbon — dunkel, kontraststark, Leisten heller als der Inhalt ──────── */
+/*
+ * Vierte Behandlung der Leisten: Sie liegen *über* dem Inhalt statt darunter.
+ * Zusammen mit dem fast schwarzen Grund ergibt das die kontraststärkste
+ * Variante — für helle Räume und für Augen, denen die gedämpften Themes zu
+ * weich sind.
+ */
+
+:root[data-theme='carbon'] {
+  --surface-page: 8 8 9;
+  --surface-card: 17 17 19;
+  --surface-raised: 28 28 31;
+  --surface-sunken: 3 3 4;
+
+  --surface-header: 26 26 29;
+  --surface-statusbar: 26 26 29;
+
+  --text-primary: 252 252 253;
+  --text-secondary: 190 190 196;
+  --text-muted: 138 138 146;
+
+  --border-default: 54 54 59;
+  --border-subtle: 34 34 38;
+  --border-bar: 66 66 72;
+
+  --accent: 56 189 248;
+  --accent-contrast: 8 8 9;
+
+  --asset-stocks: 96 165 250;
+  --asset-bonds: 244 114 182;
+  --asset-metals: 251 191 36;
+  --asset-moneymarket: 167 139 250;
+  --asset-cash: 52 211 153;
+
+  --status-ok: 52 211 153;
+  --status-near: 251 191 36;
+  --status-out: 248 113 113;
+}
+
+/* ─── meadow — hell, kühles Grün, Leisten mit Farbschleier ───────────────── */
+/*
+ * Das helle Gegenstück zu `aurora`: heller Inhalt, Leisten in gedecktem
+ * Tannengrün. Zeigt, dass ein Farbschleier auf den Leisten nicht an dunkle
+ * Themes gebunden ist.
+ */
+
+:root[data-theme='meadow'] {
+  --surface-page: 238 243 238;
+  --surface-card: 250 252 249;
+  --surface-raised: 255 255 255;
+  --surface-sunken: 229 236 228;
+
+  --surface-header: 30 61 46;
+  --surface-statusbar: 30 61 46;
+
+  --text-primary: 26 38 30;
+  --text-secondary: 82 100 88;
+  --text-muted: 130 148 136;
+
+  --text-bar: 240 248 243;
+  --text-bar-secondary: 196 219 205;
+  --text-bar-muted: 148 179 161;
+
+  --border-default: 213 224 215;
+  --border-subtle: 228 236 229;
+  --border-bar: 46 84 64;
+
+  --accent: 21 128 61;
+  --accent-contrast: 255 255 255;
+
+  --asset-stocks: 42 120 214;
+  --asset-bonds: 232 123 164;
+  --asset-metals: 237 161 0;
+  --asset-moneymarket: 74 58 167;
+  --asset-cash: 27 175 122;
+
+  --status-ok: 22 133 94;
+  --status-near: 180 83 9;
+  --status-out: 198 47 47;
+}
