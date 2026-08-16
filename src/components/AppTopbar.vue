@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { UxIcon, UxTopbar, type NavIconName } from '@mikemitterer/ux-foundation'
+import { useRoute, useRouter } from 'vue-router'
+import { UxNavItem, UxTopbar, type NavIconName } from '@mikemitterer/ux-foundation'
 
 defineProps<{
   lastRefreshLabel?: string
@@ -78,24 +78,24 @@ const isActive = (name: string): boolean => route.name === name
     </template>
 
     <template #nav>
-      <RouterLink
+      <!--
+        `UxNavItem` aus dem Fundament: Beschriftung ab `md`, verstecktes Label
+        für Hilfstechnik und der Unterstrich am aktiven Punkt stecken darin.
+        Hier lagen dieselben Regeln vorher als eigene siebzig Zeilen.
+
+        Die Adresse kommt aus dem Router, damit Mittelklick und „in neuem Tab
+        öffnen" funktionieren; der Klick selbst geht über `router.push`, sonst
+        lüde die Seite neu.
+      -->
+      <UxNavItem
         v-for="item in navItems"
         :key="item.name"
-        :to="{ name: item.name }"
-        class="topbar__item"
-        :class="{ 'topbar__item--active': isActive(item.name) }"
-      >
-        <UxIcon :name="item.icon" />
-        <!--
-            Unterhalb md fällt die Beschriftung weg, nicht der Punkt: Vier
-            Symbole passen auf jedes Telefon, ein Hamburger kostete einen
-            zusätzlichen Griff.
-          -->
-        <span class="topbar__label">{{ item.label }}</span>
-        <span class="visually-hidden">{{ item.label }}</span>
-        <!-- Aktiver Eintrag: Unterstrich in Akzentfarbe, wie im Backend -->
-        <span v-if="isActive(item.name)" class="topbar__underline"></span>
-      </RouterLink>
+        :icon="item.icon"
+        :label="item.label"
+        :active="isActive(item.name)"
+        :href="router.resolve({ name: item.name }).href"
+        @select="router.push({ name: item.name })"
+      />
     </template>
 
     <template #actions>
@@ -132,44 +132,12 @@ const isActive = (name: string): boolean => route.name === name
  * wandern. Verschachtelt griffe keine einzige Regel.
  */
 
-.topbar__item {
-  position: relative;
-  @include row(0.375rem);
-  padding: 0.375rem var(--space-3);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-sm);
-  color: token(--text-bar-secondary);
-  transition: color 0.15s ease, background-color 0.15s ease;
 
-  &:hover {
-    background-color: token(--surface-raised);
-    color: token(--text-bar);
-  }
-
-  &--active {
-    color: token(--text-bar);
-  }
-}
-
-.topbar__label {
-  display: none;
-
-  @include up(md) { display: inline; }
-}
 
 /*
  * Ein Strich, kein Kasten: Eine eingefärbte Fläche hinter dem aktiven Punkt
  * konkurriert mit den Karten darunter.
  */
-.topbar__underline {
-  position: absolute;
-  right: var(--space-2);
-  bottom: -9px;
-  left: var(--space-2);
-  height: 2px;
-  border-radius: var(--radius-full);
-  background-color: token(--accent);
-}
 
 /*
  * Erst ab `lg`: Bei Tablet-Breite drängen die vier Beschriftungen und der
