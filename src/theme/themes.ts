@@ -49,7 +49,7 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   classic: {
     id: 'classic',
     isDark: true,
-    preview: { page: '#0a0a0a', card: '#171717', ink: '#f5f5f5', accent: '#3987e5' },
+    preview: { page: '#0a0a0a', card: '#171717', ink: '#f5f5f5', accent: '#1d74dd' },
   },
   slate: {
     id: 'slate',
@@ -96,7 +96,7 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   paper: {
     id: 'paper',
     isDark: false,
-    preview: { page: '#efe7d8', card: '#fbf7ef', ink: '#1c1a16', accent: '#2a78d6' },
+    preview: { page: '#efe7d8', card: '#fbf7ef', ink: '#1c1a16', accent: '#2876d2' },
   },
   sepia: {
     id: 'sepia',

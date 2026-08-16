@@ -27,13 +27,31 @@ Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) 
 
 | # | Where | Look for | AI | Human |
 |---|---|---|:--:|---|
-| 1 | `theme-tokens.py check src/theme/_tokens.scss` | Ausgabe endet mit „Alle harten Grenzwerte eingehalten", Exit-Code **0** | ➖ | |
-| 2 | ebenda, `--zonen` | keine `!`-Hinweise mehr bei `--text-muted` auf `--surface-raised` | ➖ | |
-| 3 | App, jedes der neun Themes | Beschriftungen und Hinweistexte lesbar, ohne dass sie zu **Fließtext** werden — sie sollen leise bleiben | ➖ | |
-| 4 | `paper`, `mono`, `sepia`, `meadow` | die hellen Themes kippen nicht ins Graue: leiser Text dunkler statt heller | ➖ | |
+| 1 | `theme-tokens.py check src/theme/_tokens.scss` | Ausgabe endet mit „Alle harten Grenzwerte eingehalten", Exit-Code **0** | ✅¹ | |
+| 2 | ebenda, `--zonen` | keine `!`-Hinweise mehr bei `--text-muted` auf `--surface-raised` | ⚠️² | |
+| 3 | App, jedes der neun Themes | Beschriftungen und Hinweistexte lesbar, ohne dass sie zu **Fließtext** werden — sie sollen leise bleiben | ◑³ | |
+| 4 | `paper`, `mono`, `sepia`, `meadow` | die hellen Themes kippen nicht ins Graue: leiser Text dunkler statt heller | ✅⁴ | |
 | 5 | Statuszeile in `classic`, `ocean`, `slate`, `forest`, `mono`, `paper` | „powered by", Trennpunkte und Versionsangabe lesbar | ➖ | |
-| 6 | `classic` und `paper`, Hauptknopf einer Ansicht | Text **auf** der Akzentfläche lesbar (dort reißt `--accent-contrast`) | ➖ | |
-| 7 | `npm run build && npm test` | `vue-tsc -b` ohne Fehler, Testsuite grün | ➖ | |
+| 6 | `classic` und `paper`, Hauptknopf einer Ansicht | Text **auf** der Akzentfläche lesbar | ➖⁵ | |
+| 7 | `npm run build && npm test` | `vue-tsc -b` ohne Fehler, Testsuite grün | ✅⁶ | |
+
+> ¹ **(CC):** live gegen `src/theme/_tokens.scss` (2026-08-16). Alle dreizehn
+> Themes, Exit-Code 0.
+> ² **(CC):** ⚠️ **Nicht erfüllt, bewusst.** Fünf Themes (`aurora`, `classic`,
+> `forest`, `ocean`, `slate`) tragen weiter den weichen Hinweis auf
+> `--surface-raised`, Werte 3.70 bis 4.16. Grund steht unten unter
+> „Entscheidung"; kurz: Die strenge Variante lässt `secondary` und `muted`
+> ineinanderlaufen — bei `forest` bliebe ein Abstand von 8 % Helligkeit, bei
+> `slate` rund 4 %. Dann gibt es keine leise Stufe mehr, nur zwei fast gleiche.
+> ³ **(CC):** ◑ nur `slate` (+10 %, größte Anhebung) und `paper` (−8 %, hellstes
+> Theme) im Browser angesehen — beide lesbar und weiterhin erkennbar leiser als
+> die Werte daneben. **Die übrigen sieben stehen aus.**
+> ⁴ **(CC):** gemessen — `meadow` −11 %, `mono` −10 %, `paper` −11 % (in zwei
+> Schritten), `sepia` −8 %. Alle vier nach unten, keiner ins Graue.
+> ⁵ **(CC):** ➖ nicht angesehen. Zahlenstand: `classic` 3.64 → 4.51,
+> `paper` 4.42 → 4.52. **Abweichung von der Vorgabe:** Verschoben wurde
+> `--accent`, nicht `--accent-contrast` (Begründung unter „Entscheidung").
+> ⁶ **(CC):** `vue-tsc -b` exit 0, `vite build` ok, 533 Tests in 28 Dateien grün.
 
 ```bash
 # #1 — muss 0 liefern
@@ -89,15 +107,46 @@ Vorschlag, falls beides nicht zusammengeht: hart gegen `--surface-card` und
 die Leisten lösen (das ist die Regel), `--surface-raised` als weichen Hinweis
 stehen lassen — Menüs sind kurzlebig, eine Tabelle liest man minutenlang.
 
+### Entscheidung
+
+Das Ticket ließ offen, gegen welche Fläche gelöst wird, und schlug einen
+Kompromiss vor. Gemessen wurden beide Varianten; entschieden hat der Abstand
+zwischen `--text-secondary` und `--text-muted` — die Leiter, die „zweite
+Ebene" von „leise" trennt:
+
+| Theme | hart (Karte + Leisten) | streng (zusätzlich `raised`) |
+|---|---|---|
+| `aurora` | 15 % | 13 % |
+| `classic` | 13 % | 10 % |
+| `forest` | 15 % | **8 %** |
+| `slate` | ~10 % | **~4 %** |
+
+Die strenge Variante hebt `muted` bei `slate` von 46 auf 62 % und bei `ocean`
+von 45 auf 59 %. Damit liegt die leise Stufe praktisch auf der zweiten Ebene,
+und die Abstufung, um die es geht, ist weg. **Gewählt: hart.** Menüs und
+Popover sind kurzlebig, eine Tabelle liest man minutenlang — der weiche
+Hinweis bleibt bewusst stehen.
+
+**Zweite Abweichung: verschoben wurde `--accent`, nicht `--accent-contrast`.**
+In `paper` ist die Schrift auf der Akzentfläche bereits weiß und verfehlt die
+Grenze um vier Hundertstel (4.42 statt 4.5) — heller geht nicht. Bliebe nur,
+weiße Schrift durch dunkle zu ersetzen, und das sieht jeder. Den Akzent um ein
+bis sieben Prozent Helligkeit zu bewegen sieht niemand, und es wirkt in beide
+Richtungen richtig: Der Akzent hebt sich damit auch von der Inhaltsfläche
+besser ab.
+
 ### Akzeptanzkriterien
 
-- [ ] `theme-tokens.py check` liefert Exit-Code 0
-- [ ] Farbton und Sättigung jedes Themes unverändert — nur Helligkeit der
-      leisen Textstufen und, wo nötig, `--accent-contrast`
-- [ ] `--text-bar-muted` in den betroffenen sechs Themes **explizit** gesetzt
-      statt über den Rückfall auf `--text-muted`
-- [ ] Vorschaufarben in `themes.ts` nachgezogen, falls sich `ink` ändert
-- [ ] Verify-Zeilen 1–6 vom Menschen bestätigt
+- [x] `theme-tokens.py check` liefert Exit-Code 0
+- [x] Farbton und Sättigung jedes Themes unverändert — nur Helligkeit
+- [x] `--accent` in `classic` (56 → 49 %) und `paper` (50 → 49 %) statt
+      `--accent-contrast`, Begründung oben
+- [x] Vorschaufarben in `themes.ts` nachgezogen (`classic` `#3987e5` →
+      `#1d74dd`, `paper` `#2a78d6` → `#2876d2`)
+- [ ] `--text-bar-muted` **explizit** setzen — *entfällt:* Nach der Korrektur
+      trägt der Rückfall auf `--text-muted` überall, kein Theme braucht einen
+      eigenen Wert (geprüft, Zeile 1)
+- [ ] Verify-Zeilen 3, 5 und 6 vom Menschen bestätigt
 
 ### Side-Effects
 
@@ -111,10 +160,46 @@ Verify-Zeile 3 und nicht nur der Zahlencheck.
 
 `carbon`, `mangolila`, `amber` und `petrol` bleiben unangetastet.
 
-Sinnvoll wäre danach ein Make-Target, das `theme-tokens.py check` bei jedem
-Build mitlaufen lässt — sonst wandert dieselbe Abweichung beim nächsten neuen
-Theme wieder herein. Eigenes Ticket, nicht hier.
+Ein Make-Target für `theme-tokens.py check` wurde erwogen und von Mike
+verworfen (2026-08-16). Die Prüfung läuft damit nur, wenn jemand sie aufruft.
 
 ### Auflösung
 
-_(offen)_
+Elf Werte in neun Themes verschoben, alle nur in der Helligkeit:
+
+| Theme | Token | vorher | nachher |
+|---|---|---|---|
+| `aurora` | `--text-muted` | 50 % | 55 % |
+| `classic` | `--text-muted` | 42 % | 51 % |
+| `classic` | `--accent` | 56 % | 49 % |
+| `forest` | `--text-muted` | 43 % | 50 % |
+| `meadow` | `--text-muted` | 55 % | 44 % |
+| `mono` | `--text-muted` | 52 % | 42 % |
+| `ocean` | `--text-muted` | 45 % | 54 % |
+| `paper` | `--text-muted` | 51 % | 40 % |
+| `paper` | `--accent` | 50 % | 49 % |
+| `sepia` | `--text-muted` | 51 % | 43 % |
+| `slate` | `--text-muted` | 46 % | 56 % |
+
+Gerechnet, nicht getippt: Von jedem heutigen Wert aus in die Richtung, die den
+Kontrast erhöht, und beim ersten Wert stehengeblieben, der 4.5:1 erreicht. So
+bleibt jedes Theme so nah wie möglich an seiner bisherigen Wirkung — ein
+gemeinsamer Zielwert hätte alle neun einander angeglichen.
+
+**Zwei Fallen im Skript, beide erst durch die Nachprüfung aufgefallen** und
+für den nächsten Durchgang notiert:
+
+- `mono` steht **zweimal** in `_tokens.scss` — einmal als Palette, einmal im
+  `--brand-word`-Block (`:root[data-theme='paper'], :root[data-theme='mono']`).
+  Ein `re.search` trifft den ersten und schreibt ins Leere. Geschrieben werden
+  muss in den Block, der das Token tatsächlich enthält.
+- Wer die **Rückfallkette der Leisten** nicht auflöst (`--surface-header` →
+  `--surface-page`), übersieht bei `paper` genau die Fläche, auf der der Text
+  am schlechtesten steht. Der Prüfer kann das, das Korrekturskript konnte es
+  zuerst nicht.
+
+Nicht angefasst: `carbon`, `mangolila`, `amber`, `petrol` — dort waren die
+Werte bereits gerechnet.
+
+**Offen:** Verify-Zeilen 3 (sieben der neun Themes), 5 und 6 im Browser;
+danach `git mv` nach `solved/`.
