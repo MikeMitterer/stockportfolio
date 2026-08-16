@@ -59,15 +59,16 @@ function funde(quelle: string, datei: string): Fund[] {
 
   const klassen = new Set<string>()
   for (const treffer of template.matchAll(/<N[A-Za-z]+\b[^>]*?\sclass="([^"]+)"/gs)) {
-    for (const name of treffer[1].split(/\s+/)) klassen.add(name)
+    for (const name of (treffer[1] ?? '').split(/\s+/)) klassen.add(name)
   }
 
   const gefunden: Fund[] = []
   for (const klasse of klassen) {
     const regel = new RegExp(`\\.${klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{((?:[^{}]|\\{[^{}]*\\})*)\\}`, 'g')
     for (const treffer of style.matchAll(regel)) {
+      const block = treffer[1] ?? ''
       const eigenschaften = IHRE_SACHE.filter((name) =>
-        new RegExp(`(?<![\\w-])${name}\\s*:`).test(treffer[1]),
+        new RegExp(`(?<![\\w-])${name}\\s*:`).test(block),
       )
       if (eigenschaften.length > 0) gefunden.push({ datei, klasse, eigenschaften })
     }
