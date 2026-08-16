@@ -8,6 +8,8 @@
 
 export const THEME_IDS = [
   'mangolila',
+  'amber',
+  'petrol',
   'classic',
   'slate',
   'ocean',
@@ -67,8 +69,20 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   mangolila: {
     id: 'mangolila',
     isDark: true,
-    preview: { page: '#14101a', card: '#1e1827', ink: '#f4f1f9', accent: '#e8703a' },
+    preview: { page: '#181716', card: '#23211f', ink: '#f8f5f2', accent: '#e55e1f' },
   },
+
+  amber: {
+    id: 'amber',
+    isDark: true,
+    preview: { page: '#181411', card: '#241e19', ink: '#f8f5f2', accent: '#c45ed4' },
+  },
+  petrol: {
+    id: 'petrol',
+    isDark: true,
+    preview: { page: '#0f191a', card: '#172526', ink: '#f2f8f8', accent: '#e56124' },
+  },
+
   aurora: {
     id: 'aurora',
     isDark: true,

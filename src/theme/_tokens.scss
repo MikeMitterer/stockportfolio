@@ -130,6 +130,86 @@
   --brand-word: 28 95 168; /* #1c5fa8 — 5,3:1 bzw. 5,4:1 */
 }
 
+/* ─── amber — dunkel, warmes Bernstein ──────────────────────────────────── */
+/*
+ * Die warme Schwester von `mangolila`: gleicher Farbton, aber dreimal so
+ * gesättigt, sodass die Fläche sichtbar Bernstein trägt. Der Akzent ist
+ * deshalb **violett** und nicht koralle — auf warmem Grund geht eine warme
+ * Akzentfarbe unter, sie liest sich als „mehr davon" statt als Hervorhebung.
+ * Die Fußleiste nimmt denselben violetten Ton auf.
+ */
+
+:root[data-theme='amber'] {
+  --surface-page: 24 20 17;
+  --surface-card: 36 30 25;
+  --surface-raised: 50 43 36;
+  --surface-sunken: 19 15 12;
+
+  --surface-header: 66 47 36;
+  --surface-statusbar: 47 24 46;
+
+  --text-primary: 248 245 242;
+  --text-secondary: 189 178 168;
+  --text-muted: 165 155 146;
+  --text-bar-muted: 165 155 146;
+
+  --border-default: 65 56 48;
+  --border-subtle: 44 38 33;
+  --border-bar: 93 69 55;
+
+  --accent: 196 94 212;
+  --accent-contrast: 24 20 17;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
+/* ─── petrol — dunkel, kühles Blaugrün ──────────────────────────────────── */
+/*
+ * Farbton 182°, bewusst nicht 210° — dort liegt `ocean`, und zwei Themes mit
+ * 18° Abstand sind zwei Namen für dieselbe Farbe. Warmer Akzent gegen kühle
+ * Fläche.
+ */
+
+:root[data-theme='petrol'] {
+  --surface-page: 15 25 26;
+  --surface-card: 23 37 38;
+  --surface-raised: 34 52 53;
+  --surface-sunken: 11 19 20;
+
+  --surface-header: 32 64 65;
+  --surface-statusbar: 9 17 17;
+
+  --text-primary: 242 248 248;
+  --text-secondary: 177 195 196;
+  --text-muted: 151 169 170;
+  --text-bar-muted: 151 169 170;
+
+  --border-default: 45 67 67;
+  --border-subtle: 31 45 46;
+  --border-bar: 50 91 93;
+
+  --accent: 229 97 36;
+  --accent-contrast: 15 25 26;
+
+  --asset-stocks: 57 135 229;
+  --asset-bonds: 213 81 129;
+  --asset-metals: 201 133 0;
+  --asset-moneymarket: 144 133 233;
+  --asset-cash: 25 158 112;
+
+  --status-ok: 25 158 112;
+  --status-near: 217 119 6;
+  --status-out: 224 82 82;
+}
+
 /* ─── Bedeutungstragende Farben — themeunabhängig ────────────────────────── */
 
 :root {
@@ -233,27 +313,42 @@
   --status-out: 224 82 82;
 }
 
-/* ─── mangolila — dunkel, pflaume mit Koralle ────────────────────────────── */
+/* ─── mangolila — dunkel, warmes Anthrazit ──────────────────────────────── */
+/*
+ * Das Basis-Theme. Die Flächen tragen bewusst kaum Farbe (28° bei 6 %
+ * Sättigung) — warm gestimmt, aber ohne Stich; das unterscheidet sie von
+ * `classic` (0 %) und `slate` (blaustichig). Der Charakter kommt aus der
+ * Struktur: heller Kopf, tiefer Fuß, ruhige Flächen dazwischen.
+ *
+ * Die Koralle im Akzent ist die einzige Farbe im ganzen Theme — das ist der
+ * Punkt, nicht ein Versäumnis. Die Marke lebt in der Plakette und im Akzent,
+ * nicht in jeder Fläche.
+ */
 /*
  * Entspricht dem StockInfo-Backend-Frontend, damit beide Oberflächen als
  * dieselbe Anwendungsfamilie erkennbar sind.
  */
 
 :root[data-theme='mangolila'] {
-  --surface-page: 20 16 26;
-  --surface-card: 30 24 39;
-  --surface-raised: 42 33 54;
-  --surface-sunken: 14 11 19;
+  --surface-page: 24 23 22;
+  --surface-card: 35 33 31;
+  --surface-raised: 48 46 44;
+  --surface-sunken: 16 15 14;
 
-  --text-primary: 244 241 249;
-  --text-secondary: 165 155 184;
-  --text-muted: 118 109 136;
+  --surface-header: 61 56 51;
+  --surface-statusbar: 14 13 12;
 
-  --border-default: 52 42 66;
-  --border-subtle: 38 31 49;
+  --text-primary: 248 245 242;
+  --text-secondary: 196 186 177;
+  --text-muted: 170 160 151;
+  --text-bar-muted: 170 160 151;
 
-  --accent: 232 112 58;
-  --accent-contrast: 20 16 26;
+  --border-default: 62 58 55;
+  --border-subtle: 43 41 38;
+  --border-bar: 86 79 72;
+
+  --accent: 229 94 31;
+  --accent-contrast: 24 23 22;
 
   --asset-stocks: 57 135 229;
   --asset-bonds: 213 81 129;
