@@ -17,6 +17,25 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(packageVersion),
   },
   plugins: [vue()],
+
+  /*
+   * Das Fundament liegt als `file:`-Abhängigkeit vor — npm legt dafür einen
+   * Symlink, Vite sieht also einen Pfad außerhalb des Projekts. Zwei Angaben
+   * sind deshalb nötig:
+   *
+   * `exclude` verhindert das Vorbündeln. Das Paket liefert Quellen aus, und
+   * esbuild kann mit `.vue` nichts anfangen — ohne diese Zeile bricht der
+   * Dev-Server beim ersten Import ab.
+   *
+   * `fs.allow` erlaubt dem Dev-Server, Dateien jenseits des Projektordners
+   * auszuliefern. Ohne sie antwortet er auf jede Datei des Pakets mit 403.
+   *
+   * Beides entfällt, sobald das Paket aus der Registry kommt.
+   */
+  optimizeDeps: {
+    exclude: ['@mikemitterer/ux-foundation'],
+  },
+
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -31,7 +50,7 @@ export default defineConfig({
          * Die Datei erzeugt selbst kein CSS — sonst läge sie einmal je
          * Komponente im Bündel.
          */
-        additionalData: '@use "@/assets/shared" as *;\n',
+        additionalData: '@use "@mikemitterer/ux-foundation/styles/shared" as *;\n',
       },
     },
   },
@@ -44,6 +63,9 @@ export default defineConfig({
   server: {
     port: 5175,
     strictPort: true,
+    // Erlaubt dem Dev-Server, Dateien jenseits des Projektordners
+    // auszuliefern — das Fundament liegt als Symlink daneben.
+    fs: { allow: ['..'] },
   },
   preview: {
     port: 4175,

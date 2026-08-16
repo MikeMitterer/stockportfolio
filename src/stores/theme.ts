@@ -14,7 +14,7 @@ import {
   isThemeId,
   THEMES,
   type ThemeId,
-} from '@/theme/themes'
+} from '@mikemitterer/ux-foundation'
 
 const STORAGE_KEY = 'stockportfolio.theme'
 
