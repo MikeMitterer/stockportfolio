@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NSpin, NTooltip, useNotification } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
 import InfoHint from '@/components/InfoHint.vue'
-import InlineNumber from '@/components/InlineNumber.vue'
+import { UxInlineNumber } from '@mikemitterer/ux-foundation'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
@@ -19,7 +19,7 @@ import {
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
-import { useStateNotification } from '@/composables/useStateNotification'
+import { useStateNotification } from '@mikemitterer/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
@@ -439,7 +439,9 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                         "
                         aria-hidden="true"
                       ></span>
-                      <InlineNumber
+                      <UxInlineNumber
+                        :edit-label="t('common.edit')"
+                        :clear-label="t('common.clear')"
                         class="reb__grow"
                         :value="row.targetPercent"
                         :display="percent(row.targetPercent)"
@@ -471,7 +473,9 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
 
                   <!-- Die Eingabe -->
                   <td class="reb__td">
-                    <InlineNumber
+                    <UxInlineNumber
+                        :edit-label="t('common.edit')"
+                        :clear-label="t('common.clear')"
                       :value="row.tradeUnits"
                       :display="row.tradeUnits === 0 ? '—' : integer(row.tradeUnits)"
                       :precision="row.current.position.group === 'cash' ? 2 : 0"

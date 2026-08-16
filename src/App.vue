@@ -21,7 +21,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
-import { buildNaiveOverrides } from '@mikemitterer/ux-foundation'
+import { buildNaiveOverrides, UxAppShell } from '@mikemitterer/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
@@ -90,16 +90,21 @@ function refresh(): void {
         <NDialogProvider>
           <NNotificationProvider :max="3">
             <!--
-              Spaltenlayout über die volle Höhe, damit die Statuszeile auch bei
-              kurzen Seiten unten steht statt mitten im Bild zu enden.
+              Spaltenlayout, Grundfläche und die Frage, warum `position:
+              sticky` allein die Statuszeile nicht unten hält, stehen im
+              Fundament.
             -->
-            <div class="app">
-              <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
-              <div class="app__content">
-                <RouterView />
-              </div>
-              <AppStatusBar />
-            </div>
+            <UxAppShell>
+              <template #topbar>
+                <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
+              </template>
+
+              <RouterView />
+
+              <template #statusbar>
+                <AppStatusBar />
+              </template>
+            </UxAppShell>
           </NNotificationProvider>
         </NDialogProvider>
       </NMessageProvider>
@@ -107,19 +112,4 @@ function refresh(): void {
   </NConfigProvider>
 </template>
 
-<style scoped lang="scss">
-/*
- * Spaltenlayout über die volle Höhe, damit die Statuszeile auch bei kurzen
- * Seiten unten steht statt mitten im Bild zu enden.
- */
-.app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: token(--surface-page);
-  color: token(--text-primary);
-  transition: background-color 0.15s ease, color 0.15s ease;
 
-  &__content { flex: 1; }
-}
-</style>

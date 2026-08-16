@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, h, type Component } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { UxIcon, UxTopbar, type NavIconName } from '@mikemitterer/ux-foundation'
 
 defineProps<{
   lastRefreshLabel?: string
@@ -14,255 +15,183 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 
-/** Schlichte Strichsymbole — angelehnt an die Navigation des StockInfo-Backends. */
-const ICONS: Record<string, Component> = {
-  dashboard: () =>
-    h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-      h('rect', { x: 3, y: 12, width: 4, height: 8, rx: 1 }),
-      h('rect', { x: 10, y: 7, width: 4, height: 13, rx: 1 }),
-      h('rect', { x: 17, y: 4, width: 4, height: 16, rx: 1 }),
-    ]),
-  rebalancing: () =>
-    h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-      h('path', { d: 'M4 7h11M4 7l3-3M4 7l3 3', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-      h('path', { d: 'M20 17H9M20 17l-3-3M20 17l-3 3', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
-    ]),
-  instruments: () =>
-    h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-      h('circle', { cx: 12, cy: 12, r: 9 }),
-      h('path', { d: 'M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z' }),
-    ]),
-  settings: () =>
-    h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2' }, [
-      h('path', { d: 'M4 6h16M4 12h16M4 18h16', 'stroke-linecap': 'round' }),
-      h('circle', { cx: 9, cy: 6, r: 2, fill: 'currentColor' }),
-      h('circle', { cx: 15, cy: 12, r: 2, fill: 'currentColor' }),
-      h('circle', { cx: 7, cy: 18, r: 2, fill: 'currentColor' }),
-    ]),
-}
+/** Verweis auf die Startansicht — UxTopbar erwartet eine Adresse, kein Ziel-Objekt. */
+const dashboardHref = computed(() => router.resolve({ name: 'dashboard' }).href)
 
-const navItems = computed(() => [
-  { name: 'dashboard', label: t('nav.dashboard') },
-  { name: 'rebalancing', label: t('nav.rebalancing') },
-  { name: 'instruments', label: t('nav.instruments') },
-  { name: 'settings', label: t('nav.settings') },
+/*
+ * Die Symbole stehen im Fundament, nicht hier. Sie sind über alle Apps
+ * dieselben — das ist der Punkt, an dem eine Sammlung zusammenwächst oder
+ * auseinanderfällt.
+ */
+const navItems = computed<{ name: string; label: string; icon: NavIconName }[]>(() => [
+  { name: 'dashboard', label: t('nav.dashboard'), icon: 'dashboard' },
+  { name: 'rebalancing', label: t('nav.rebalancing'), icon: 'rebalancing' },
+  { name: 'instruments', label: t('nav.instruments'), icon: 'instruments' },
+  { name: 'settings', label: t('nav.settings'), icon: 'settings' },
 ])
 
 const isActive = (name: string): boolean => route.name === name
 </script>
 
 <template>
-  <header class="topbar">
-    <div class="topbar__inner">
-      <!-- Plakette + Wortmarke, wie im Backend-Frontend -->
-      <RouterLink :to="{ name: 'dashboard' }" class="topbar__brand">
-        <span class="topbar__badge">
-          <!--
-            Ring aus zwei Segmenten: ein Bestand und seine Aufteilung. Dieselbe
-            Form wie in public/favicon.svg, dort nur mit der Kachel darunter —
-            hier trägt die das umschließende Element. Stumpfe Strichenden, sonst
-            fressen die Rundungen die beiden Lücken auf.
+  <!--
+    Rahmen, Plakette und Wortmarke kommen aus dem Fundament. Hier bleibt, was
+    diese App ausmacht: welches Zeichen in der Plakette steht, welche
+    Menüpunkte es gibt und was rechts angezeigt wird.
+  -->
+  <UxTopbar
+    :brand-lead="t('app.brandLead')"
+    :brand-accent="t('app.brandAccent')"
+    :href="dashboardHref"
+  >
+    <template #badge>
+      <!--
+        Ring aus zwei Segmenten: ein Bestand und seine Aufteilung. Dieselbe
+        Form wie in public/favicon.svg, dort nur mit der Kachel darunter — hier
+        trägt die das Fundament. Stumpfe Strichenden, sonst fressen die
+        Rundungen die beiden Lücken auf.
 
-            pathLength="100" setzt den Umfang auf hundert Einheiten, damit die
-            Längen unten Prozente sind: Browser nähern den Bogen unterschiedlich
-            an (gemessen 56,18 statt 56,55), und ohne das stößt das Muster am
-            Startpunkt nicht sauber zusammen.
-          -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgb(var(--brand-contrast))" stroke-width="3.4">
-            <circle
-              cx="12"
-              cy="12"
-              r="9"
-              pathLength="100"
-              stroke-dasharray="60 7.6 24.8 7.6"
-              transform="rotate(-90 12 12)"
-            />
-          </svg>
-        </span>
-        <!-- In einer Zeile, weil Vue Leerraum zwischen den Teilen sonst
-             zusammenfasst und „Stock Portfolio" daraus würde. -->
-        <span class="topbar__wordmark">{{ t('app.brandLead') }}<span class="topbar__brandword">{{ t('app.brandAccent') }}</span></span>
-      </RouterLink>
+        pathLength="100" setzt den Umfang auf hundert Einheiten, damit die
+        Längen unten Prozente sind: Browser nähern den Bogen unterschiedlich an
+        (gemessen 56,18 statt 56,55), und ohne das stößt das Muster am
+        Startpunkt nicht sauber zusammen.
+      -->
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="rgb(var(--brand-contrast))"
+        stroke-width="3.4"
+        width="16"
+        height="16"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+          pathLength="100"
+          stroke-dasharray="60 7.6 24.8 7.6"
+          transform="rotate(-90 12 12)"
+        />
+      </svg>
+    </template>
 
-      <nav class="topbar__nav">
-        <RouterLink
-          v-for="item in navItems"
-          :key="item.name"
-          :to="{ name: item.name }"
-          class="topbar__item"
-          :class="{ 'topbar__item--active': isActive(item.name) }"
-        >
-          <NIcon :size="15">
-            <component :is="ICONS[item.name]" />
-          </NIcon>
-          <!--
+    <template #nav>
+      <RouterLink
+        v-for="item in navItems"
+        :key="item.name"
+        :to="{ name: item.name }"
+        class="topbar__item"
+        :class="{ 'topbar__item--active': isActive(item.name) }"
+      >
+        <UxIcon :name="item.icon" />
+        <!--
             Unterhalb md fällt die Beschriftung weg, nicht der Punkt: Vier
             Symbole passen auf jedes Telefon, ein Hamburger kostete einen
             zusätzlichen Griff.
           -->
-          <span class="topbar__label">{{ item.label }}</span>
-          <span class="visually-hidden">{{ item.label }}</span>
-          <!-- Aktiver Eintrag: Unterstrich in Akzentfarbe, wie im Backend -->
-          <span v-if="isActive(item.name)" class="topbar__underline"></span>
-        </RouterLink>
-      </nav>
+        <span class="topbar__label">{{ item.label }}</span>
+        <span class="visually-hidden">{{ item.label }}</span>
+        <!-- Aktiver Eintrag: Unterstrich in Akzentfarbe, wie im Backend -->
+        <span v-if="isActive(item.name)" class="topbar__underline"></span>
+      </RouterLink>
+    </template>
 
-      <div class="topbar__actions">
-        <span v-if="lastRefreshLabel" class="topbar__age tabular-nums">
-          {{ lastRefreshLabel }}
-        </span>
+    <template #actions>
+      <span v-if="lastRefreshLabel" class="topbar__age tabular-nums">
+        {{ lastRefreshLabel }}
+      </span>
 
-        <NButton size="small" secondary @click="emit('refresh')">
-          <template #icon>
-            <NIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v6h6M20 20v-6h-6" />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M20 10a8 8 0 0 0-14-4M4 14a8 8 0 0 0 14 4"
-                />
-              </svg>
-            </NIcon>
-          </template>
-          <span class="topbar__refresh-label">{{ t('actions.refresh') }}</span>
-        </NButton>
-      </div>
-    </div>
-  </header>
+      <NButton size="small" secondary @click="emit('refresh')">
+        <template #icon>
+          <NIcon>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v6h6M20 20v-6h-6" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M20 10a8 8 0 0 0-14-4M4 14a8 8 0 0 0 14 4"
+              />
+            </svg>
+          </NIcon>
+        </template>
+        <span class="topbar__refresh-label">{{ t('actions.refresh') }}</span>
+      </NButton>
+    </template>
+  </UxTopbar>
 </template>
 
 <style scoped lang="scss">
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  border-bottom: 1px solid token(--border-bar);
-  background-color: token(--surface-header, 0.92);
-  backdrop-filter: blur(8px);
-  /*
-   * Eigene Textfarbe, nicht die des Inhalts: Ein Theme darf die Leiste
-   * umkehren — dunkle Leiste über hellem Inhalt. Ohne diese Zeile bliebe die
-   * Wortmarke dunkel auf dunklem Grund.
-   */
-  color: token(--text-bar);
+/*
+ * Rahmen, Plakette und Wortmarke stehen im Fundament (`UxTopbar`). Hier bleibt
+ * nur, was diese App eigen macht — die Menüpunkte und die rechte Gruppe.
+ *
+ * Nicht mehr unter `.topbar` verschachtelt: Dieses Element gibt es nicht mehr,
+ * die Klassen hängen jetzt an Inhalten, die als Slot in die Fremdkomponente
+ * wandern. Verschachtelt griffe keine einzige Regel.
+ */
 
-  &__inner {
-    @include row(var(--space-3));
-    @include content-frame(0);
+.topbar__item {
+  position: relative;
+  @include row(0.375rem);
+  padding: 0.375rem var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  color: token(--text-bar-secondary);
+  transition: color 0.15s ease, background-color 0.15s ease;
 
-    height: 3.5rem;
-
-    @include up(md) { gap: var(--space-6); }
+  &:hover {
+    background-color: token(--surface-raised);
+    color: token(--text-bar);
   }
 
-  &__brand {
-    @include row(0.625rem);
-
-    &:hover { opacity: 0.9; }
+  &--active {
+    color: token(--text-bar);
   }
+}
 
-  &__badge {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, token(--brand-from), token(--brand-to));
+.topbar__label {
+  display: none;
 
-    svg {
-      width: 1rem;
-      height: 1rem;
-    }
-  }
+  @include up(md) { display: inline; }
+}
 
-  &__wordmark {
-    display: none;
-    font-family: var(--font-display);
-    font-size: var(--font-lg);
-    font-weight: 600;
-    letter-spacing: -0.015em;
+/*
+ * Ein Strich, kein Kasten: Eine eingefärbte Fläche hinter dem aktiven Punkt
+ * konkurriert mit den Karten darunter.
+ */
+.topbar__underline {
+  position: absolute;
+  right: var(--space-2);
+  bottom: -9px;
+  left: var(--space-2);
+  height: 2px;
+  border-radius: var(--radius-full);
+  background-color: token(--accent);
+}
 
-    @include up(sm) { display: inline; }
-  }
+/*
+ * Erst ab `lg`: Bei Tablet-Breite drängen die vier Beschriftungen und der
+ * Knopf das Alter auf 40 Pixel zusammen, es brach dann dreizeilig um.
+ * Verloren geht nichts — dieselbe Angabe steht in der Statuszeile.
+ */
+.topbar__age {
+  display: none;
+  font-size: var(--font-xs);
+  white-space: nowrap;
+  color: token(--text-bar-muted);
 
-  &__brandword {
-    color: token(--brand-word);
-  }
+  @include up(lg) { display: inline; }
+}
 
-  &__nav {
-    @include row(var(--space-1));
-  }
+/*
+ * Erst ab `lg`: Bei Tablet-Breite schob die Beschriftung den Knopf über den
+ * rechten Rand.
+ */
+.topbar__refresh-label {
+  display: none;
 
-  &__item {
-    position: relative;
-    @include row(0.375rem);
-    padding: 0.375rem var(--space-3);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-sm);
-    color: token(--text-bar-secondary);
-    transition: color 0.15s ease, background-color 0.15s ease;
-
-    &:hover {
-      background-color: token(--surface-raised);
-      color: token(--text-bar);
-    }
-
-    &--active {
-      color: token(--text-bar);
-    }
-  }
-
-  &__label {
-    display: none;
-
-    @include up(md) { display: inline; }
-  }
-
-  /*
-   * Ein Strich, kein Kasten: Eine eingefärbte Fläche hinter dem aktiven Punkt
-   * konkurriert mit den Karten darunter.
-   */
-  &__underline {
-    position: absolute;
-    right: var(--space-2);
-    bottom: -9px;
-    left: var(--space-2);
-    height: 2px;
-    border-radius: var(--radius-full);
-    background-color: token(--accent);
-  }
-
-  &__actions {
-    @include row(var(--space-3));
-    margin-left: auto;
-  }
-
-  /*
-   * Erst ab `lg`: Bei Tablet-Breite drängen die vier Beschriftungen und der
-   * Knopf das Alter auf 40 Pixel zusammen, es brach dann dreizeilig um.
-   * Verloren geht nichts — dieselbe Angabe steht in der Statuszeile.
-   */
-  &__age {
-    display: none;
-    font-size: var(--font-xs);
-    white-space: nowrap;
-    color: token(--text-bar-muted);
-
-    @include up(lg) { display: inline; }
-  }
-
-  /*
-   * Erst ab `lg`: Bei Tablet-Breite schob die Beschriftung den Knopf über den
-   * rechten Rand hinaus. Das Symbol allein ist eindeutig genug.
-   */
-  &__refresh-label {
-    display: none;
-
-    @include up(lg) { display: inline; }
-  }
+  @include up(lg) { display: inline; }
 }
 </style>

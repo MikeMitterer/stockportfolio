@@ -1,18 +1,16 @@
 /**
- * Formatiert einen ISO-Zeitstempel als relative Angabe („vor 3 Min.").
- * Reine Anzeige-Logik, kein State.
+ * Formuliert das Alter eines Zeitstempels — „gerade eben", „vor 12 Min".
+ *
+ * Die Rechnung liegt im Fundament (`minutesSince`), hier bleibt nur die
+ * Formulierung. Das ist die Trennlinie: Wie viele Minuten vergangen sind, ist
+ * überall dasselbe; wie man das sagt, weiß nur der Katalog dieser App.
  */
 
 import { computed, type ComputedRef, type Ref } from 'vue'
+import { minutesSince } from '@mikemitterer/ux-foundation'
 import { translate } from '@/i18n'
 
-/** Minuten seit dem Zeitstempel; `null` wenn kein Zeitstempel vorliegt. */
-export function minutesSince(isoTimestamp: string | null, now: number = Date.now()): number | null {
-  if (!isoTimestamp) return null
-  const then = Date.parse(isoTimestamp)
-  if (Number.isNaN(then)) return null
-  return Math.max(0, Math.floor((now - then) / 60_000))
-}
+export { minutesSince }
 
 /** Menschenlesbare Kurzform: „gerade eben", „vor 12 Min", „vor 3 Std". */
 export function formatAge(isoTimestamp: string | null, now: number = Date.now()): string {

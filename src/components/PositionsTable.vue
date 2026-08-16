@@ -8,7 +8,7 @@ import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
-import InlineNumber from '@/components/InlineNumber.vue'
+import { UxInlineNumber } from '@mikemitterer/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
@@ -246,7 +246,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     align: 'right',
     width: 110,
     render: (row) =>
-      h(InlineNumber, {
+      h(UxInlineNumber, {
+        editLabel: t('common.edit'),
+        clearLabel: t('common.clear'),
         value: row.position.units,
         display:
           row.position.group === 'cash'
@@ -336,7 +338,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
     align: 'right',
     width: 110,
     render: (row) =>
-      h(InlineNumber, {
+      h(UxInlineNumber, {
+        editLabel: t('common.edit'),
+        clearLabel: t('common.clear'),
         value: row.position.targetPercent,
         display: percent(row.position.targetPercent),
         precision: 2,

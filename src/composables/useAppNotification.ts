@@ -1,9 +1,9 @@
 /**
  * Meldungen der App — einheitlich als Toast.
  *
- * Nimmt `useStateNotification` die Wiederholung ab: den Zugriff auf die
- * Naive-UI-API und den Zähler aus den Einstellungen. Ohne das stünde in jeder
- * Ansicht dieselbe Verdrahtung, und eine davon wäre irgendwann anders.
+ * Nur noch die Verdrahtung: Das Verhalten (Zustand statt Ereignis, Zähler,
+ * Weggeklicktes bleibt weg) liegt im Fundament. Hier bleibt, was das Paket
+ * nicht wissen kann — aus welcher Einstellung die Anzeigedauer kommt.
  *
  * Was hier hineingehört: Aussagen über den **Zustand der Daten** — Kurse
  * fehlen, eine Position notiert fremd, die Ziele ergeben nicht 100 %. Was
@@ -11,26 +11,12 @@
  * tippt, gehört neben das Feld und nicht in die Ecke des Fensters.
  */
 
-import { computed, type Ref } from 'vue'
-import { useNotification } from 'naive-ui'
+import { computed } from 'vue'
+import { useNotifier, type Notifier } from '@mikemitterer/ux-foundation'
 import { useSettingsStore } from '@/stores/settings'
-import { useStateNotification } from '@/composables/useStateNotification'
 
-export interface AppNotificationOptions {
-  title: string
-  content: () => string
-  type: 'error' | 'warning' | 'info'
-}
-
-export interface AppNotifier {
-  /**
-   * Zeigt eine Meldung, solange `active` gilt.
-   *
-   * @param active  Zustand, der die Meldung auslöst.
-   * @param options Titel, Text und Art.
-   */
-  notify: (active: Ref<boolean>, options: AppNotificationOptions) => void
-}
+export type { NotifyOptions as AppNotificationOptions } from '@mikemitterer/ux-foundation'
+export type AppNotifier = Notifier
 
 /**
  * Liefert `notify` mit vorverdrahteter API und Zähler aus den Einstellungen.
@@ -39,14 +25,6 @@ export interface AppNotifier {
  * brauchen den Komponenten-Kontext.
  */
 export function useAppNotification(): AppNotifier {
-  const notification = useNotification()
   const settingsStore = useSettingsStore()
-
-  const seconds = computed(() => settingsStore.settings.ui.notificationSeconds)
-
-  return {
-    notify(active, options) {
-      useStateNotification(notification, active, { ...options, seconds })
-    },
-  }
+  return useNotifier(computed(() => settingsStore.settings.ui.notificationSeconds))
 }
