@@ -4,17 +4,16 @@
  * Der Punkt: Texte, Zahlen und Datumsangaben müssen zusammen umschalten. Sie
  * getrennt zu behandeln ist der übliche Fehler — die Beschriftung wäre
  * englisch und die Zahl darunter im deutschen Format.
+ *
+ * Die Erkennung selbst (Reihenfolge, `de-AT` → `de`) liegt im Fundament und
+ * ist dort geprüft. Hier steht, was diese App daraus macht: welche Kataloge
+ * es gibt, was ohne Treffer gilt und dass die drei Umschaltungen zusammen
+ * passieren.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import {
-  browserLocale,
-  DEFAULT_LOCALE,
-  isLocaleId,
-  readStoredLocale,
-  useLocaleStore,
-} from '@/stores/locale'
+import { DEFAULT_LOCALE, readStoredLocale, useLocaleStore } from '@/stores/locale'
 import { eur, setFormatterLocale } from '@/domain/formatters'
 import { i18n } from '@/i18n'
 
@@ -37,6 +36,11 @@ function fakeStorage(): Storage {
 
 let storage: Storage
 
+/** Stellt die Sprachliste des Browsers, in Präferenz-Reihenfolge. */
+function pretendBrowser(...sprachen: string[]): void {
+  vi.stubGlobal('navigator', { languages: sprachen, language: sprachen[0] ?? '' })
+}
+
 beforeEach(() => {
   setActivePinia(createPinia())
   storage = fakeStorage()
@@ -49,35 +53,6 @@ afterEach(() => {
   setFormatterLocale('en-GB')
 })
 
-describe('isLocaleId', () => {
-  it('erkennt die bekannten Sprachen', () => {
-    expect(isLocaleId('de')).toBe(true)
-    expect(isLocaleId('en')).toBe(true)
-    expect(isLocaleId('fr')).toBe(false)
-  })
-})
-
-describe('browserLocale', () => {
-  it('nimmt Deutsch bei deutschem Browser', () => {
-    vi.stubGlobal('navigator', { languages: ['de-AT'], language: 'de-AT' })
-    expect(browserLocale()).toBe('de')
-  })
-
-  it('behandelt regionale Varianten wie ihre Hauptsprache', () => {
-    // de-CH und de-AT sind beide Deutsch; eigene Kataloge dafür wären Unsinn.
-    vi.stubGlobal('navigator', { languages: ['de-CH'], language: 'de-CH' })
-    expect(browserLocale()).toBe('de')
-  })
-
-  it('gibt allem anderen die Vorgabe', () => {
-    // Auch Sprachen ohne Katalog — Englisch ist die wahrscheinlichere
-    // Zweitsprache als Deutsch.
-    vi.stubGlobal('navigator', { languages: ['fr-FR'], language: 'fr-FR' })
-    expect(browserLocale()).toBe(DEFAULT_LOCALE)
-    expect(DEFAULT_LOCALE).toBe('en')
-  })
-})
-
 describe('readStoredLocale', () => {
   it('nimmt die eigene Wahl', () => {
     storage.setItem(STORAGE_KEY, 'de')
@@ -86,14 +61,39 @@ describe('readStoredLocale', () => {
   })
 
   it('folgt ohne eigene Wahl dem Browser', () => {
-    vi.stubGlobal('navigator', { languages: ['de-AT'], language: 'de-AT' })
+    pretendBrowser('de-AT')
 
     expect(readStoredLocale()).toBe('de')
   })
 
+  it('behandelt regionale Varianten wie ihre Hauptsprache', () => {
+    // de-CH und de-AT sind beide Deutsch; eigene Kataloge dafür wären Unsinn.
+    pretendBrowser('de-CH')
+
+    expect(readStoredLocale()).toBe('de')
+  })
+
+  it('nimmt die erste Sprache mit Katalog, nicht die erste überhaupt', () => {
+    // Ein französisch geführtes System mit Deutsch an zweiter Stelle: Der
+    // Katalog ist da, also wird er benutzt. Die frühere Fassung las nur den
+    // ersten Eintrag und zeigte hier Englisch.
+    pretendBrowser('fr-FR', 'de-CH', 'en-US')
+
+    expect(readStoredLocale()).toBe('de')
+  })
+
+  it('gibt allem anderen die Vorgabe', () => {
+    // Sprachen ohne Katalog — Englisch ist die wahrscheinlichere Zweitsprache
+    // als Deutsch.
+    pretendBrowser('fr-FR', 'it-IT')
+
+    expect(readStoredLocale()).toBe(DEFAULT_LOCALE)
+    expect(DEFAULT_LOCALE).toBe('en')
+  })
+
   it('lässt die eigene Wahl den Browser überstimmen', () => {
     // Einmal gewählt, bleibt gewählt — sonst wäre der Umschalter wertlos.
-    vi.stubGlobal('navigator', { languages: ['de-AT'], language: 'de-AT' })
+    pretendBrowser('de-AT')
     storage.setItem(STORAGE_KEY, 'en')
 
     expect(readStoredLocale()).toBe('en')

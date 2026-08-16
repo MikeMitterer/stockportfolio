@@ -8,7 +8,7 @@ import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
-import { UxInlineNumber } from '@mikemitterer/ux-foundation'
+import { safeStorage, UxInlineNumber } from '@mikemitterer/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
@@ -120,11 +120,15 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
 const COLLAPSED_KEY = 'stockportfolio.table.collapsedGroups'
 const collapsedGroups = ref<Set<AssetGroup>>(loadCollapsed())
 
-/** Liest die eingeklappten Gruppen aus dem localStorage. */
+/** Liest die eingeklappten Gruppen aus dem Speicher. */
 function loadCollapsed(): Set<AssetGroup> {
+  const stored = safeStorage.read(COLLAPSED_KEY)
+  if (!stored) return new Set()
+
+  // Das `try` gilt nur noch dem Inhalt: Was dort steht, hat eine frühere
+  // Fassung geschrieben und muss nicht mehr passen. Der Zugriff selbst ist
+  // abgesichert.
   try {
-    const stored = localStorage.getItem(COLLAPSED_KEY)
-    if (!stored) return new Set()
     const parsed: unknown = JSON.parse(stored)
     if (!Array.isArray(parsed)) return new Set()
     return new Set(parsed as AssetGroup[])
@@ -136,7 +140,7 @@ function loadCollapsed(): Set<AssetGroup> {
 watch(
   collapsedGroups,
   (groups) => {
-    localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...groups]))
+    safeStorage.write(COLLAPSED_KEY, JSON.stringify([...groups]))
   },
   { deep: true },
 )

@@ -8,6 +8,7 @@
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { detectLocale, persistLocale } from '@mikemitterer/ux-foundation'
 import { i18n } from '@/i18n'
 import { setFormatterLocale } from '@/domain/formatters'
 
@@ -34,37 +35,24 @@ export const LOCALES: Record<LocaleId, LocaleInfo> = {
   en: { id: 'en', label: 'English', numberLocale: 'en-GB' },
 }
 
-/** Prüft, ob ein beliebiger Wert eine bekannte Sprache ist. */
-export function isLocaleId(value: unknown): value is LocaleId {
-  return typeof value === 'string' && (LOCALE_IDS as readonly string[]).includes(value)
-}
-
-/** Vorgabe, wenn die Browsersprache keinen Katalog hat. */
+/**
+ * Vorgabe, wenn keine der Browsersprachen einen Katalog hat.
+ *
+ * Englisch statt Deutsch: Wer Französisch oder Italienisch eingestellt hat,
+ * kommt mit Englisch eher zurecht — und es ist die Vorgabe der App.
+ */
 export const DEFAULT_LOCALE: LocaleId = 'en'
 
 /**
- * Sprache des Browsers, auf die bekannten abgebildet.
+ * Liest die gespeicherte Wahl, sonst die des Browsers.
  *
- * Nur der erste Teil zählt: `de-CH` und `de-AT` sind beide Deutsch, und wer
- * die Unterschiede abbilden wollte, bräuchte Katalog um Katalog. Alles andere
- * — Französisch, Italienisch — bekommt Englisch: Es ist die Vorgabe der App
- * und die wahrscheinlichere Zweitsprache.
+ * Die Reihenfolge und die Abbildung `de-AT` → `de` liegen im Fundament: Das
+ * ist in jeder App dieselbe Logik und genau die Sorte, die beim Nachbauen
+ * unbemerkt falsch wird — die frühere Fassung hier las nur die erste
+ * Browsersprache und übersah ein Deutsch an zweiter Stelle.
  */
-export function browserLocale(): LocaleId {
-  if (typeof navigator === 'undefined') return DEFAULT_LOCALE
-  const preferred = navigator.languages?.[0] ?? navigator.language ?? ''
-  return preferred.toLowerCase().startsWith('de') ? 'de' : DEFAULT_LOCALE
-}
-
-/** Liest die gespeicherte Wahl, sonst die des Browsers. */
 export function readStoredLocale(): LocaleId {
-  try {
-    const stored = window.localStorage?.getItem(STORAGE_KEY)
-    if (isLocaleId(stored)) return stored
-  } catch {
-    // Privater Modus: dann eben die des Browsers.
-  }
-  return browserLocale()
+  return detectLocale(LOCALE_IDS, DEFAULT_LOCALE, STORAGE_KEY)
 }
 
 export const useLocaleStore = defineStore('locale', () => {
@@ -87,13 +75,9 @@ export const useLocaleStore = defineStore('locale', () => {
     current.value = next
     i18n.global.locale.value = next
     setFormatterLocale(LOCALES[next].numberLocale)
-    document.documentElement.lang = next
-
-    try {
-      window.localStorage?.setItem(STORAGE_KEY, next)
-    } catch {
-      // Dann eben nur für diese Sitzung.
-    }
+    // Schreibt die Wahl und zieht `lang` am Wurzelelement nach — ohne das
+    // trennt der Browser Wörter nach den Regeln der falschen Sprache.
+    persistLocale(next, STORAGE_KEY)
   }
 
   return { current, info, init, setLocale }

@@ -12,34 +12,12 @@ import {
   DEFAULT_DARK_THEME,
   DEFAULT_LIGHT_THEME,
   isThemeId,
+  safeStorage,
   THEMES,
   type ThemeId,
 } from '@mikemitterer/ux-foundation'
 
 const STORAGE_KEY = 'stockportfolio.theme'
-
-/**
- * Zugriff auf den localStorage, der auch ohne ihn auskommt.
- *
- * Im privaten Modus mancher Browser und bei blockierten Cookies wirft schon
- * der bloße Zugriff. Das Theme ist eine Bequemlichkeit — dafür soll die App
- * nicht beim Start stehen bleiben.
- */
-function readStorage(key: string): string | null {
-  try {
-    return window.localStorage?.getItem(key) ?? null
-  } catch {
-    return null
-  }
-}
-
-function writeStorage(key: string, value: string): void {
-  try {
-    window.localStorage?.setItem(key, value)
-  } catch {
-    // Dann eben nur für diese Sitzung.
-  }
-}
 
 /**
  * Fragt das Betriebssystem, ob es dunkel eingestellt ist.
@@ -69,7 +47,8 @@ export function systemTheme(): ThemeId {
  * niemand nach dem Update vor einer unerwarteten Oberfläche sitzt.
  */
 export function readStoredTheme(): ThemeId {
-  const stored = readStorage(STORAGE_KEY)
+  // Der Speicher kann blockiert sein — dann gilt eben die Systemeinstellung.
+  const stored = safeStorage.read(STORAGE_KEY)
   if (isThemeId(stored)) return stored
   if (stored === 'dark') return DEFAULT_DARK_THEME
   if (stored === 'light') return DEFAULT_LIGHT_THEME
@@ -97,7 +76,8 @@ export const useThemeStore = defineStore('theme', () => {
   function setTheme(theme: ThemeId): void {
     current.value = theme
     applyTheme(theme)
-    writeStorage(STORAGE_KEY, theme)
+    // Misslingt das Schreiben, gilt die Wahl für diese Sitzung.
+    safeStorage.write(STORAGE_KEY, theme)
   }
 
   return { current, info, isDark, init, setTheme }

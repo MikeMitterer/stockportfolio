@@ -16,7 +16,7 @@ import { nextDueDate, usesBands } from '@/domain/schedule'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
 import PositionCardList from '@/components/PositionCardList.vue'
-import { useIsCompact } from '@/composables/useIsCompact'
+import { safeStorage, useIsCompact } from '@mikemitterer/ux-foundation'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
@@ -37,7 +37,8 @@ const settingsStore = useSettingsStore()
 const quotesStore = useQuotesStore()
 const instrumentsStore = useInstrumentsStore()
 
-// Unter 768 px tritt die Leseansicht an die Stelle der Tabelle.
+// Unterhalb von `md` tritt die Leseansicht an die Stelle der Tabelle. Die
+// Grenze steht im Fundament — dieselbe, an der auch die SCSS-Mixins kippen.
 const isCompact = useIsCompact()
 
 const loading = computed(() => quotesStore.loading)
@@ -330,7 +331,13 @@ async function loadValueHistory(): Promise<void> {
 }
 
 onMounted(async () => {
-  const stored = localStorage.getItem(GROUPS_COLLAPSED_KEY)
+  /*
+   * Über `safeStorage`, nicht direkt: Vorher stand hier ein blankes
+   * `localStorage.getItem`. Im privaten Modus wirft schon der Zugriff — und
+   * weil die Zeile vor dem Laden des Depots steht, blieb die ganze Ansicht
+   * leer. Wegen eines eingeklappten Blocks.
+   */
+  const stored = safeStorage.read(GROUPS_COLLAPSED_KEY)
   if (stored === '1' || stored === '0') {
     groupsCollapsed.value = stored === '1'
   }
@@ -356,7 +363,7 @@ onMounted(async () => {
 })
 
 watch(groupsCollapsed, (collapsed) => {
-  localStorage.setItem(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')
+  safeStorage.write(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')
 })
 
 function toggleGroups(): void {
