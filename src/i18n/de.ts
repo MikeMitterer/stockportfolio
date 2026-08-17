@@ -182,6 +182,10 @@ export const de = {
     assetsFailedTitle: 'Assets konnten nicht geladen werden',
     backupTitle: 'Sicherung',
     doneTitle: 'Erledigt',
+    // Beschriftung der Restzeit am Balken einer Meldung. Steht hier einmal,
+    // weil sie in der ganzen App gleich lautet — das Fundament nimmt sie
+    // deshalb bewusst als eigenen Parameter und nicht je Meldung entgegen.
+    closesIn: 'schließt in {n} s',
   },
 
   settings: {
@@ -230,6 +234,7 @@ export const de = {
     themeHeading: 'Theme',
     themeNames: {
       classic: 'Classic',
+      macos: 'macOS',
       slate: 'Slate',
       ocean: 'Ocean',
       forest: 'Forest',
@@ -245,6 +250,7 @@ export const de = {
     },
     themeHints: {
       classic: 'Dunkel, neutralgrau',
+      macos: 'Dunkel in den Systemfarben von macOS — Leisten heller als der Inhalt',
       slate: 'Dunkel, kühles Blaugrau — Leisten tiefer als der Inhalt',
       ocean: 'Dunkel, blaustichig',
       forest: 'Dunkel, grünstichig',

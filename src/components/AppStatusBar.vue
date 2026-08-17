@@ -2,7 +2,7 @@
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { UxStatusBar } from '@mikemitterer/ux-foundation'
+import { UxStatusBar } from '@mmit/ux-foundation'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'

@@ -33,7 +33,7 @@ export default defineConfig({
    * Beides entfällt, sobald das Paket aus der Registry kommt.
    */
   optimizeDeps: {
-    exclude: ['@mikemitterer/ux-foundation'],
+    exclude: ['@mmit/ux-foundation'],
   },
 
   resolve: {
@@ -50,7 +50,7 @@ export default defineConfig({
          * Die Datei erzeugt selbst kein CSS — sonst läge sie einmal je
          * Komponente im Bündel.
          */
-        additionalData: '@use "@mikemitterer/ux-foundation/styles/shared" as *;\n',
+        additionalData: '@use "@mmit/ux-foundation/styles/shared" as *;\n',
       },
     },
   },

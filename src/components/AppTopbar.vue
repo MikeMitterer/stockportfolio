@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
-import { UxNavItem, UxTopbar, type NavIconName } from '@mikemitterer/ux-foundation'
+import { UxNavItem, UxTopbar, type NavIconName } from '@mmit/ux-foundation'
 
 defineProps<{
   lastRefreshLabel?: string

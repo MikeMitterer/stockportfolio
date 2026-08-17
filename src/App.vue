@@ -21,7 +21,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
-import { buildNaiveOverrides, UxAppShell } from '@mikemitterer/ux-foundation'
+import { buildNaiveOverrides, UxAppShell } from '@mmit/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
