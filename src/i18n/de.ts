@@ -182,6 +182,10 @@ export const de = {
     assetsFailedTitle: 'Assets konnten nicht geladen werden',
     backupTitle: 'Sicherung',
     doneTitle: 'Erledigt',
+    // Beschriftung der Restzeit am Balken einer Meldung. Steht hier einmal,
+    // weil sie in der ganzen App gleich lautet — das Fundament nimmt sie
+    // deshalb bewusst als eigenen Parameter und nicht je Meldung entgegen.
+    closesIn: 'schließt in {n} s',
   },
 
   settings: {

@@ -180,6 +180,7 @@ export const en: MessageSchema = {
     assetsFailedTitle: 'Assets could not be loaded',
     backupTitle: 'Backup',
     doneTitle: 'Done',
+    closesIn: 'closes in {n} s',
   },
 
   settings: {

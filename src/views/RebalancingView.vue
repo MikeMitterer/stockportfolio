@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NEmpty, NSpin, NTooltip, useNotification } from 'naive-ui'
+import { NButton, NEmpty, NSpin, NTooltip } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
 import InfoHint from '@/components/InfoHint.vue'
-import { UxInlineNumber } from '@mikemitterer/ux-foundation'
+import { UxInlineNumber } from '@mmit/ux-foundation'
+import { useAppNotification } from '@/composables/useAppNotification'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
@@ -19,7 +20,6 @@ import {
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
-import { useStateNotification } from '@mikemitterer/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
@@ -134,37 +134,35 @@ const coverageOptions = computed<{ id: string; label: string; units: number }[]>
 // beim Tippen nach unten, unter der Tabelle waren sie im kleinen Fenster
 // außer Sicht. Der Toast bleibt sichtbar, solange die Ursache besteht.
 
-const notification = useNotification()
+/*
+ * Über `useAppNotification` wie die übrigen Ansichten, nicht über
+ * `useStateNotification` direkt: Anzeigedauer und Restzeit-Text stehen dort
+ * einmal. Vorher lag beides hier ein zweites Mal — und die Restzeit fehlte,
+ * seit das Fundament sie verlangt.
+ */
+const { notify } = useAppNotification()
 
-/** Zähler aus den Einstellungen; 0 lässt Meldungen stehen. */
-const notificationSeconds = computed(() => settingsStore.settings.ui.notificationSeconds)
-
-useStateNotification(
-  notification,
+notify(
   computed(() => plan.value?.underfunded ?? false),
   {
     title: t('rebalancing.underfundedTitle'),
     type: 'error',
-    seconds: notificationSeconds,
     content: () =>
       t('rebalancing.underfundedBody', { amount: eur(-(plan.value?.netCashFlow ?? 0)) }),
   },
 )
 
-useStateNotification(notification, targetSumOff, {
+notify(targetSumOff, {
   title: t('rebalancing.targetSumTitle'),
   type: 'warning',
-  seconds: notificationSeconds,
   content: () => t('rebalancing.targetSumBody', { sum: percent(plan.value?.targetSum ?? 0) }),
 })
 
-useStateNotification(
-  notification,
+notify(
   computed(() => plan.value?.bufferBreached ?? false),
   {
     title: t('rebalancing.bufferTitle'),
     type: 'warning',
-    seconds: notificationSeconds,
     content: () =>
       t('rebalancing.bufferBody', {
         liquid: eur(plan.value?.liquidAfter ?? 0),
