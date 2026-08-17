@@ -260,7 +260,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             : integer(row.position.units),
         precision: row.position.group === 'cash' ? 2 : 0,
         min: 0,
-        onCommit: (units: number) => emit('update', row.position.id, { units }),
+        onCommit: (units: number | null) =>
+          units !== null && emit('update', row.position.id, { units }),
       }),
   },
   {
@@ -353,8 +354,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         // Bei überzogener Ziel-Summe alle Ziel-Zellen einfärben — der Fehler
         // liegt in der Summe, nicht in einer einzelnen Zeile.
         invalid: props.targetsExceeded,
-        onCommit: (targetPercent: number) =>
-          emit('update', row.position.id, { targetPercent }),
+        onCommit: (targetPercent: number | null) =>
+          targetPercent !== null && emit('update', row.position.id, { targetPercent }),
       }),
   },
   {

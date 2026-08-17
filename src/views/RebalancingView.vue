@@ -449,7 +449,8 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                         :min="0"
                         :max="100"
                         @commit="
-                          (targetPercent: number) =>
+                          (targetPercent: number | null) =>
+                            targetPercent !== null &&
                             setTarget(row.current.position.id, targetPercent)
                         "
                       />
@@ -481,7 +482,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                       :precision="row.current.position.group === 'cash' ? 2 : 0"
                       :min="-row.current.position.units"
                       :empty-value="0"
-                      @commit="(units: number) => setTrade(row.current.position.id, units)"
+                      @commit="
+                        (units: number | null) =>
+                          units !== null && setTrade(row.current.position.id, units)
+                      "
                     />
                   </td>
 
