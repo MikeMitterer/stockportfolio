@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
-# setup-libs.sh — Legt Symlinks unter .libs/ zu BashLib und MakeLib an
+# setup-libs.sh — Legt Symlinks unter .libs/ zu BashLib, MakeLib und
+#                 ProjectTools an
 #
-# BashLib und MakeLib sind zentrale Konventions-Repos. Dieses Script verlinkt
-# sie ins Projekt (nicht kopieren), damit alle Scripts und das Makefile mit
-# denselben Versionen arbeiten wie systemweit.
+# Das sind zentrale Konventions-Repos. Dieses Script verlinkt sie ins Projekt
+# (nicht kopieren), damit alle Scripts und das Makefile mit denselben Versionen
+# arbeiten wie systemweit.
 #
 # Verwendung:
 #   ./scripts/setup-libs.sh [--install|--info|--help]
@@ -41,11 +42,20 @@ readonly APPNAME="$(basename "$0")"
 readonly PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 readonly LIBS_DIR="${PROJECT_ROOT}/.libs"
 
-# BashLib- und MakeLib-Quellen aus den Env-Variablen ableiten.
-# BASH_LIBS zeigt üblicherweise auf .../BashLib/src, wir brauchen das
-# Repo-Root (eine Ebene höher).
+# Quell-Repos aus den Env-Variablen ableiten.
+# BASH_LIBS und PROJECT_TOOLS zeigen üblicherweise auf .../<Repo>/src, wir
+# brauchen das Repo-Root (eine Ebene höher). DEV_MAKE zeigt direkt aufs Root.
 readonly BASHLIB_REPO="$(cd "${BASH_LIBS%/src}" 2>/dev/null && pwd || true)"
 readonly MAKELIB_REPO="${DEV_MAKE:-}"
+readonly PROJECTTOOLS_REPO="$([[ -n "${PROJECT_TOOLS:-}" ]] && cd "${PROJECT_TOOLS%/src}" 2>/dev/null && pwd || true)"
+
+# Was verlinkt wird: "<Name>|<Env-Variable>|<Repo-Root>|<erwarteter Wert>"
+# Der Name ist zugleich der Symlink unter .libs/.
+readonly LINKED_REPOS=(
+    "BashLib|BASH_LIBS|${BASHLIB_REPO}|.../BashLib/src"
+    "MakeLib|DEV_MAKE|${MAKELIB_REPO}|.../MakeLib"
+    "ProjectTools|PROJECT_TOOLS|${PROJECTTOOLS_REPO}|.../ProjectTools/src"
+)
 
 usage() {
     echo
@@ -66,8 +76,9 @@ usage() {
     echo -e "    Status prüfen:    ${GREEN}${APPNAME} --info${NC}"
     echo
     echo -e "${LIGHT_BLUE}Voraussetzungen:${NC}"
-    echo -e "    ${YELLOW}BASH_LIBS${NC} → ${BLUE}${BASH_LIBS:-<nicht gesetzt>}${NC}"
-    echo -e "    ${YELLOW}DEV_MAKE${NC}  → ${BLUE}${DEV_MAKE:-<nicht gesetzt>}${NC}"
+    printf "    ${YELLOW}%-13s${NC} → ${BLUE}%s${NC}\n" "BASH_LIBS"     "${BASH_LIBS:-<nicht gesetzt>}"
+    printf "    ${YELLOW}%-13s${NC} → ${BLUE}%s${NC}\n" "DEV_MAKE"      "${DEV_MAKE:-<nicht gesetzt>}"
+    printf "    ${YELLOW}%-13s${NC} → ${BLUE}%s${NC}\n" "PROJECT_TOOLS" "${PROJECT_TOOLS:-<nicht gesetzt>}"
     echo
 }
 
@@ -94,28 +105,25 @@ linkOnce() {
 
 cmd_install() {
     local _rc=0
+    local _entry _name _envvar _repo _expected
 
     echo
     echo -e "${CYAN}▶ Symlinks anlegen unter ${YELLOW}${LIBS_DIR}${NC}"
     echo
 
-    if [[ -z "${BASHLIB_REPO}" || ! -d "${BASHLIB_REPO}" ]]; then
-        echo -e "${RED}✗ BashLib-Repo nicht gefunden${NC}" >&2
-        echo -e "  ${YELLOW}Tipp:${NC} ${YELLOW}BASH_LIBS${NC} soll auf .../BashLib/src zeigen — aktuell: ${BLUE}${BASH_LIBS:-<leer>}${NC}" >&2
-        _rc=1
-    else
-        linkOnce "${BASHLIB_REPO}" "${LIBS_DIR}/BashLib" && \
-            echo -e "  ${GREEN}✓${NC} BashLib   → ${BLUE}${BASHLIB_REPO}${NC}"
-    fi
+    for _entry in "${LINKED_REPOS[@]}"; do
+        IFS='|' read -r _name _envvar _repo _expected <<< "${_entry}"
 
-    if [[ -z "${MAKELIB_REPO}" || ! -d "${MAKELIB_REPO}" ]]; then
-        echo -e "${RED}✗ MakeLib-Repo nicht gefunden${NC}" >&2
-        echo -e "  ${YELLOW}Tipp:${NC} ${YELLOW}DEV_MAKE${NC} soll auf .../MakeLib zeigen — aktuell: ${BLUE}${DEV_MAKE:-<leer>}${NC}" >&2
-        _rc=1
-    else
-        linkOnce "${MAKELIB_REPO}" "${LIBS_DIR}/MakeLib" && \
-            echo -e "  ${GREEN}✓${NC} MakeLib   → ${BLUE}${MAKELIB_REPO}${NC}"
-    fi
+        if [[ -z "${_repo}" || ! -d "${_repo}" ]]; then
+            echo -e "${RED}✗ ${_name}-Repo nicht gefunden${NC}" >&2
+            echo -e "  ${YELLOW}Tipp:${NC} ${YELLOW}${_envvar}${NC} soll auf ${_expected} zeigen — aktuell: ${BLUE}${!_envvar:-<leer>}${NC}" >&2
+            _rc=1
+            continue
+        fi
+
+        linkOnce "${_repo}" "${LIBS_DIR}/${_name}" && \
+            printf "  ${GREEN}✓${NC} %-13s → ${BLUE}%s${NC}\n" "${_name}" "${_repo}"
+    done
 
     echo
 
@@ -129,24 +137,27 @@ cmd_install() {
 }
 
 cmd_info() {
+    local _entry _name _path _target
+
     echo
     echo -e "${CYAN}▶ Aktuelle Verlinkung${NC}"
     echo
 
-    for lib in BashLib MakeLib; do
-        local _path="${LIBS_DIR}/${lib}"
+    for _entry in "${LINKED_REPOS[@]}"; do
+        _name="${_entry%%|*}"
+        _path="${LIBS_DIR}/${_name}"
+
         if [[ -L "${_path}" ]]; then
-            local _target
             _target="$(readlink "${_path}")"
             if [[ -d "${_target}" ]]; then
-                echo -e "  ${GREEN}✓${NC} ${lib}   → ${BLUE}${_target}${NC}"
+                printf "  ${GREEN}✓${NC} %-13s → ${BLUE}%s${NC}\n" "${_name}" "${_target}"
             else
-                echo -e "  ${YELLOW}⚠${NC} ${lib}   → ${BLUE}${_target}${NC} ${RED}(Ziel fehlt)${NC}"
+                printf "  ${YELLOW}⚠${NC} %-13s → ${BLUE}%s${NC} ${RED}(Ziel fehlt)${NC}\n" "${_name}" "${_target}"
             fi
         elif [[ -e "${_path}" ]]; then
-            echo -e "  ${YELLOW}⚠${NC} ${lib}   — existiert, ist aber kein Symlink"
+            printf "  ${YELLOW}⚠${NC} %-13s — existiert, ist aber kein Symlink\n" "${_name}"
         else
-            echo -e "  ${RED}✗${NC} ${lib}   — nicht verlinkt"
+            printf "  ${RED}✗${NC} %-13s — nicht verlinkt\n" "${_name}"
         fi
     done
     echo

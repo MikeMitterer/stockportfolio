@@ -118,6 +118,19 @@ setup: ## Symlinks (.libs/) + Deps installieren
 	@./scripts/setup-libs.sh --install
 	@npm install --no-audit --no-fund
 
+# ─── Status ──────────────────────────────────────────────────────────────────
+
+##@ Status
+
+# Geteilte Check-Scripte aus ProjectTools. PROJECT_TOOLS kommt normalerweise aus
+# der Umgebung (~/.ci.machine.bashrc); der Fallback greift in nicht-interaktiven
+# Shells (CI, Jenkins), wo nur der .libs-Symlink da ist.
+PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
+
+.PHONY: status
+status: ## Git-Status des Repos + offene Blocker-Issues
+	@bash $(PROJECT_TOOLS)/bash/repo-status.sh --show
+
 # ─── Entwicklung ─────────────────────────────────────────────────────────────
 
 ##@ Entwicklung
