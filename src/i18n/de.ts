@@ -230,6 +230,7 @@ export const de = {
     themeHeading: 'Theme',
     themeNames: {
       classic: 'Classic',
+      macos: 'macOS',
       slate: 'Slate',
       ocean: 'Ocean',
       forest: 'Forest',
@@ -245,6 +246,7 @@ export const de = {
     },
     themeHints: {
       classic: 'Dunkel, neutralgrau',
+      macos: 'Dunkel in den Systemfarben von macOS — Leisten heller als der Inhalt',
       slate: 'Dunkel, kühles Blaugrau — Leisten tiefer als der Inhalt',
       ocean: 'Dunkel, blaustichig',
       forest: 'Dunkel, grünstichig',

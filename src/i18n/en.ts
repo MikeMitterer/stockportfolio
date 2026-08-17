@@ -228,6 +228,7 @@ export const en: MessageSchema = {
     themeHeading: 'Theme',
     themeNames: {
       classic: 'Classic',
+      macos: 'macOS',
       slate: 'Slate',
       ocean: 'Ocean',
       forest: 'Forest',
@@ -243,6 +244,7 @@ export const en: MessageSchema = {
     },
     themeHints: {
       classic: 'Dark, neutral grey',
+      macos: 'Dark in the macOS system colours — bars lighter than the content',
       slate: 'Dark, cool blue-grey — bars sit below the content',
       ocean: 'Dark, blueish',
       forest: 'Dark, greenish',
