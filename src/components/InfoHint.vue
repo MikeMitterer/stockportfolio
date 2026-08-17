@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { UxInfoHint } from '@mikemitterer/ux-foundation'
+import { UxInfoHint } from '@mmit/ux-foundation'
 
 /**
  * Fragezeichen mit Kurzerklärung — die App-Hälfte davon.

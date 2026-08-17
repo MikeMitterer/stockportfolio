@@ -8,7 +8,7 @@
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { detectLocale, persistLocale } from '@mikemitterer/ux-foundation'
+import { detectLocale, persistLocale } from '@mmit/ux-foundation'
 import { i18n } from '@/i18n'
 import { setFormatterLocale } from '@/domain/formatters'
 

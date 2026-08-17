@@ -55,7 +55,7 @@ describe('Zugriff auf den localStorage', () => {
 
     expect(
       treffer,
-      `Direkter Speicherzugriff — stattdessen safeStorage aus @mikemitterer/ux-foundation:\n${treffer.join('\n')}`,
+      `Direkter Speicherzugriff — stattdessen safeStorage aus @mmit/ux-foundation:\n${treffer.join('\n')}`,
     ).toEqual([])
   })
 

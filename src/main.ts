@@ -13,9 +13,9 @@ import { translate } from '@/i18n'
  * Der Reset greift auf Token zu, und die Schrift soll stehen, bevor das erste
  * Zeichen gemalt wird.
  */
-import '@mikemitterer/ux-foundation/styles/fonts.css'
-import '@mikemitterer/ux-foundation/styles/tokens.css'
-import '@mikemitterer/ux-foundation/styles/reset.css'
+import '@mmit/ux-foundation/styles/fonts.css'
+import '@mmit/ux-foundation/styles/tokens.css'
+import '@mmit/ux-foundation/styles/reset.css'
 import '@/assets/style.scss'
 
 /*

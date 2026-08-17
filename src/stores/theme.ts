@@ -15,7 +15,7 @@ import {
   safeStorage,
   THEMES,
   type ThemeId,
-} from '@mikemitterer/ux-foundation'
+} from '@mmit/ux-foundation'
 
 const STORAGE_KEY = 'stockportfolio.theme'
 

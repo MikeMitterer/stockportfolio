@@ -8,7 +8,7 @@
  */
 
 import { computed, type ComputedRef, type Ref } from 'vue'
-import { minutesSince, useMinutesSince } from '@mikemitterer/ux-foundation'
+import { minutesSince, useMinutesSince } from '@mmit/ux-foundation'
 import { translate } from '@/i18n'
 
 export { minutesSince }
