@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| frontend | ready | ~2 h | UI-only | — |
+| frontend | done | ~2 h | UI-only | — |
 
 **Löst:** `--text-muted` verfehlt in **neun von dreizehn** Themes die eigene
 Regel (≥ 4.5:1 gegen `--surface-card`), in sechs davon zusätzlich
@@ -10,7 +10,7 @@ Regel (≥ 4.5:1 gegen `--surface-card`), in sechs davon zusätzlich
 `--accent`. Gefunden beim ersten Lauf von `theme-tokens.py check`.
 
 <!--
-  Repo:   frontend. Status: ready. Scope: UI-only (nur Token-Werte).
+  Repo:   frontend. Status: done. Scope: UI-only (nur Token-Werte).
   Fund vom 2026-08-15 bei der Neufassung von mangolila. Die Regel steht seit
   Langem in ux-standards/references/themes.md — nachgemessen hatte sie nie
   jemand, weil dreizehn Paletten von Hand niemand durchrechnet.
@@ -146,7 +146,8 @@ besser ab.
 - [ ] `--text-bar-muted` **explizit** setzen — *entfällt:* Nach der Korrektur
       trägt der Rückfall auf `--text-muted` überall, kein Theme braucht einen
       eigenen Wert (geprüft, Zeile 1)
-- [ ] Verify-Zeilen 3, 5 und 6 vom Menschen bestätigt
+- [ ] Verify-Zeilen 3, 5 und 6 vom Menschen bestätigt — *hier nicht mehr
+      prüfbar:* umgezogen nach `ux-foundation`, Ticket **T-15**
 
 ### Side-Effects
 
@@ -201,5 +202,19 @@ für den nächsten Durchgang notiert:
 Nicht angefasst: `carbon`, `mangolila`, `amber`, `petrol` — dort waren die
 Werte bereits gerechnet.
 
-**Offen:** Verify-Zeilen 3 (sieben der neun Themes), 5 und 6 im Browser;
-danach `git mv` nach `solved/`.
+**Abgeschlossen mit Umzug des Deliverables.** Die Werte wurden hier korrigiert
+(`fafb043`), danach hat `3b5858f` das Fundament ausgelagert: Paletten und
+Prüfskript liegen seither in **ux-foundation**
+(`src/styles/tokens.css`, `scripts/theme-tokens.py`) — `src/theme/_tokens.scss`
+gibt es in diesem Repo nicht mehr. Die Verify-Befehle oben laufen hier also ins
+Leere.
+
+Nachgemessen am 2026-08-18 gegen `ux-foundation`: `make check-themes` meldet
+„Alle harten Grenzwerte eingehalten" und genau die fünf weichen Hinweise, die
+unter Fußnote ² bewusst stehengelassen wurden. Die Korrektur ist beim Umzug
+vollständig mitgekommen.
+
+**Offen geblieben** sind allein die Sichtprüfungen (Zeilen 3, 5, 6). Sie gehören
+ins Schaufenster des Fundaments — einmal für alle Apps statt in jeder erneut —
+und laufen dort weiter als **`ux-foundation` T-15 · Die leisen Textfarben einmal
+mit Augen prüfen**.
