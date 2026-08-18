@@ -191,6 +191,7 @@ export const en: MessageSchema = {
       links: 'Links',
       notifications: 'Messages',
       data: 'Data',
+      backup: 'Backup',
       status: 'Status',
     },
     triggerHeading: 'Trigger',

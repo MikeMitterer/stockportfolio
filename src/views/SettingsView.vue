@@ -46,7 +46,16 @@ const route = useRoute()
 const router = useRouter()
 
 /** Namen der Reiter — Reihenfolge wie in der Anzeige. */
-const SETTINGS_TABS = ['calc', 'links', 'theme', 'data', 'notifications', 'language', 'status']
+const SETTINGS_TABS = [
+  'calc',
+  'links',
+  'theme',
+  'data',
+  'backup',
+  'notifications',
+  'language',
+  'status',
+]
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
@@ -492,15 +501,17 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               </span>
             </div>
           </NCard>
-
-          <NCard :bordered="false" class="settings__card">
-            <template #header>
-              <span class="settings__card-title">{{ t('backup.heading') }}</span>
-            </template>
-
-            <BackupPanel />
-          </NCard>
         </div>
+      </NTabPane>
+
+      <NTabPane name="backup" :tab="t('settings.tabs.backup')">
+        <NCard :bordered="false" class="settings__card">
+          <template #header>
+            <span class="settings__card-title">{{ t('backup.heading') }}</span>
+          </template>
+
+          <BackupPanel />
+        </NCard>
       </NTabPane>
 
       <NTabPane name="notifications" :tab="t('settings.tabs.notifications')">

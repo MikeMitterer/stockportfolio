@@ -196,6 +196,7 @@ export const de = {
       links: 'Verweise',
       notifications: 'Meldungen',
       data: 'Daten',
+      backup: 'Sicherung',
       status: 'Status',
     },
     triggerHeading: 'Auslöser',
