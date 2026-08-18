@@ -62,6 +62,7 @@ export default defineConfig({
    */
   server: {
     port: 5175,
+    // port: 5173,
     strictPort: true,
     // Erlaubt dem Dev-Server, Dateien jenseits des Projektordners
     // auszuliefern — das Fundament liegt als Symlink daneben.
