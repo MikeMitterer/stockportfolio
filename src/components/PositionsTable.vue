@@ -8,7 +8,7 @@ import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
-import { safeStorage, UxInlineNumber } from '@mmit/ux-foundation'
+import { safeStorage, UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
 import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
@@ -157,6 +157,21 @@ function toggleGroup(group: AssetGroup): void {
     next.add(group)
   }
   collapsedGroups.value = next
+}
+
+/**
+ * Aufklapp-Pfeil der Zeile — derselbe Pfeil wie am Gruppenkopf.
+ *
+ * Naive bringt einen eigenen mit (16 px), der Gruppenkopf trug `UxCaret` in
+ * `sm` (12 px): zwei Quellen, und ausgerechnet die äußere Ebene war die
+ * kleinere. Über `render-expand-icon` kommt auch dieser Pfeil aus dem
+ * Fundament, damit ist die Größe eine Entscheidung und kein Nebeneffekt.
+ *
+ * `turn` wie oben: eingeklappt zur Seite, offen nach unten — „hier hängt
+ * etwas darunter". Die Zeile verschwindet ja nicht, sie bekommt Beiwerk.
+ */
+function renderExpandIcon({ expanded }: { expanded: boolean }) {
+  return h(UxCaret, { open: expanded, motion: 'turn', size: 'sm' })
 }
 
 // ─── Spalten ────────────────────────────────────────────────────────────────
@@ -427,6 +442,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         :row-key="rowKey"
         :bordered="false"
         :single-line="false"
+        :render-expand-icon="renderExpandIcon"
         size="small"
         :row-props="
           (row: PositionResult) => ({
@@ -439,9 +455,16 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
 </template>
 
 <style scoped>
+/*
+ * Zeilenpolster enger als Naives Vorgabe für `size="small"`.
+ *
+ * Die Tabelle ist die Hauptansicht und wird am Stück gelesen; jede Zeile
+ * kostet Blickweg. Unter 6 px stoßen die einzeiligen Zellen an die Fläche der
+ * Aufklapp-Schaltfläche daneben — deshalb hier die Grenze.
+ */
 :deep(.n-data-table-td) {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 /*
@@ -461,8 +484,15 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   background-color: transparent;
 }
 
-/* Kopfzeile nur einmal ganz oben zeigen — die Gruppen darunter erben sie visuell. */
-.flex > :not(:first-of-type) :deep(.n-data-table-thead) {
+/*
+ * Kopfzeile nur einmal ganz oben zeigen — die Gruppen darunter erben sie
+ * visuell.
+ *
+ * Der Selektor stand auf `.flex`, dem Tailwind-Wrapper von früher. Seit der
+ * Wrapper `.postable` heißt, griff die Regel nicht mehr und jede Gruppe trug
+ * ihre eigene Spaltenkopfzeile — vier statt einer.
+ */
+.postable > :not(:first-of-type) :deep(.n-data-table-thead) {
   display: none;
 }
 </style>

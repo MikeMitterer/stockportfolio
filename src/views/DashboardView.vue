@@ -2,7 +2,7 @@
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
-import { NDivider, NSpin, NEmpty, NButton } from 'naive-ui'
+import { NSpin, NEmpty, NButton } from 'naive-ui'
 import InfoHint from '@/components/InfoHint.vue'
 import KpiCard from '@/components/KpiCard.vue'
 import PortfolioValueChart from '@/components/PortfolioValueChart.vue'
@@ -460,111 +460,119 @@ function toggleGroups(): void {
       </section>
 
       <!--
-        Gruppen-Balken (ein-/ausklappbar). Auf schmalen Bildschirmen
-        ausgeblendet: die Gruppen-Trenner der Kartenliste zeigen dieselben
-        Zahlen, und die Balkenzeile bräuchte hier acht Spalten Platz.
+        Assetklassen und Tabelle sind ein Bereich, kein Nachbarpaar: Die
+        Balkenzeile ist die Kopfzeile dessen, was darunter steht. Ohne die
+        Klammer läge zwischen beiden der Blockabstand des Dashboards, und die
+        Zeile hinge sichtbar weiter von ihrer Tabelle weg als von der Linie
+        über ihr.
       -->
-      <section class="dashboard__groups">
-        <button
-          type="button"
-          class="dashboard__groups-toggle"
-          :aria-expanded="!groupsCollapsed"
-          aria-controls="dashboard-groups-panel"
-          @click="toggleGroups"
-        >
-          <!-- `turn` wie im Gruppenkopf darunter — dieselbe Aussage, dieselbe Bewegung. -->
-          <UxCaret :open="!groupsCollapsed" motion="turn" />
-          <h2 class="dashboard__section-title">
-            {{ t('dashboard.assetClasses') }}
-          </h2>
+      <div class="dashboard__table-area">
+        <!--
+          Gruppen-Balken (ein-/ausklappbar). Auf schmalen Bildschirmen
+          ausgeblendet: die Gruppen-Trenner der Kartenliste zeigen dieselben
+          Zahlen, und die Balkenzeile bräuchte hier acht Spalten Platz.
+        -->
+        <section class="dashboard__groups">
+          <button
+            type="button"
+            class="dashboard__groups-toggle"
+            :aria-expanded="!groupsCollapsed"
+            aria-controls="dashboard-groups-panel"
+            @click="toggleGroups"
+          >
+            <!-- `turn` wie im Gruppenkopf darunter — dieselbe Aussage, dieselbe Bewegung. -->
+            <UxCaret :open="!groupsCollapsed" motion="turn" />
+            <h2 class="dashboard__section-title">
+              {{ t('dashboard.assetClasses') }}
+            </h2>
 
-          <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
-          <span v-if="groupsCollapsed" class="dashboard__summary tabular-nums">
-            <span
-              v-for="group in result.groups"
-              :key="group.group"
-              class="dashboard__summary-item"
-              :class="group.suggestion === 'ok' ? 'dashboard__summary-item--ok' : 'dashboard__summary-item--flagged'"
-            >
-              {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
-            </span>
-          </span>
-        </button>
-
-        <div
-          v-show="!groupsCollapsed"
-          id="dashboard-groups-panel"
-          class="dashboard__group-list"
-        >
-          <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
-        </div>
-      </section>
-
-      <!-- Positionen -->
-      <section class="dashboard__panel">
-        <div class="dashboard__panel-head">
-          <h2 class="dashboard__panel-title">
-            {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
-          </h2>
-          <div class="dashboard__panel-meta">
-            <TargetAllocationBar
-              v-if="!isCompact"
-              :sum="result.targetPercentSum"
-              :exceeded="result.targetsExceeded"
-            />
-            <div class="dashboard__bands tabular-nums">
-              <!--
-                Bänder nur nennen, wenn sie gelten: Im reinen Kalendermodus
-                stünde hier sonst eine Grenze, nach der niemand mehr fragt.
-              -->
-              <template v-if="bandsActive">
-                {{
-                  t('dashboard.bands', {
-                    lower: percent(settingsStore.settings.bands.lowerPercent),
-                    upper: percent(settingsStore.settings.bands.upperPercent),
-                  })
-                }}
-                <InfoHint
-                  :text="t('hints.bands')"
-                  anchor="bands"
-                  settings-tab="calc"
-                  class="dashboard__hint"
-                />
-              </template>
-              <span v-if="result.schedule.active" class="dashboard__schedule">
-                <span :class="{ 'dashboard__due': result.schedule.due }">{{
-                  scheduleLabel
-                }}</span>
-                <InfoHint
-                  :text="t('hints.trigger')"
-                  anchor="trigger"
-                  settings-tab="calc"
-                  class="dashboard__hint"
-                />
+            <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
+            <span v-if="groupsCollapsed" class="dashboard__summary tabular-nums">
+              <span
+                v-for="group in result.groups"
+                :key="group.group"
+                class="dashboard__summary-item"
+                :class="group.suggestion === 'ok' ? 'dashboard__summary-item--ok' : 'dashboard__summary-item--flagged'"
+              >
+                {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
               </span>
-              <span v-if="loading" class="dashboard__schedule">{{ t('common.loading') }}</span>
-            </div>
-            <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
-              {{ t('actions.addPosition') }}
-            </NButton>
+            </span>
+          </button>
+
+          <div
+            v-show="!groupsCollapsed"
+            id="dashboard-groups-panel"
+            class="dashboard__group-list"
+          >
+            <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
           </div>
-        </div>
+        </section>
 
-        <NDivider class="!my-0" />
-        <PositionCardList v-if="isCompact" :rows="result.rows" :groups="result.groups" />
+        <!-- Positionen -->
+        <section class="dashboard__panel">
+          <div class="dashboard__panel-head">
+            <h2 class="dashboard__panel-title">
+              {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
+            </h2>
+            <div class="dashboard__panel-meta">
+              <TargetAllocationBar
+                v-if="!isCompact"
+                :sum="result.targetPercentSum"
+                :exceeded="result.targetsExceeded"
+              />
+              <div class="dashboard__bands tabular-nums">
+                <!--
+                  Bänder nur nennen, wenn sie gelten: Im reinen Kalendermodus
+                  stünde hier sonst eine Grenze, nach der niemand mehr fragt.
+                -->
+                <template v-if="bandsActive">
+                  {{
+                    t('dashboard.bands', {
+                      lower: percent(settingsStore.settings.bands.lowerPercent),
+                      upper: percent(settingsStore.settings.bands.upperPercent),
+                    })
+                  }}
+                  <InfoHint
+                    :text="t('hints.bands')"
+                    anchor="bands"
+                    settings-tab="calc"
+                    class="dashboard__hint"
+                  />
+                </template>
+                <span v-if="result.schedule.active" class="dashboard__schedule">
+                  <span :class="{ 'dashboard__due': result.schedule.due }">{{
+                    scheduleLabel
+                  }}</span>
+                  <InfoHint
+                    :text="t('hints.trigger')"
+                    anchor="trigger"
+                    settings-tab="calc"
+                    class="dashboard__hint"
+                  />
+                </span>
+                <span v-if="loading" class="dashboard__schedule">{{ t('common.loading') }}</span>
+              </div>
+              <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
+                {{ t('actions.addPosition') }}
+              </NButton>
+            </div>
+          </div>
 
-        <PositionsTable
-          v-else
-          :rows="result.rows"
-          :groups="result.groups"
-          :total="result.total"
-          :targets-exceeded="result.targetsExceeded"
-          :links="settingsStore.settings.links"
-          @update="onUpdate"
-          @remove="onRemove"
-          @refresh="onRefreshOne"
-        />
-      </section>
+          <PositionCardList v-if="isCompact" :rows="result.rows" :groups="result.groups" />
+
+          <PositionsTable
+            v-else
+            :rows="result.rows"
+            :groups="result.groups"
+            :total="result.total"
+            :targets-exceeded="result.targetsExceeded"
+            :links="settingsStore.settings.links"
+            @update="onUpdate"
+            @remove="onRemove"
+            @refresh="onRefreshOne"
+          />
+        </section>
+      </div>
     </template>
 
     <AddPositionDialog
@@ -578,12 +586,18 @@ function toggleGroups(): void {
 </template>
 
 <style scoped lang="scss">
+/*
+ * Blockabstand und Rahmenpolster tragen dieselbe Stufe.
+ *
+ * Der Abstand stand ab `md` auf `--space-6`, das Polster des Rahmens bleibt
+ * bei `--space-4`: Über der Kennzahlenzeile lagen damit 16 px, darunter bis
+ * zur Linie der Gruppen 24 px — sichtbar schief, und die Kennzahlen wirkten
+ * an die Kopfzeile geklebt.
+ */
 .dashboard {
   @include stack(var(--space-4));
 
   @include content-frame;
-
-  @include up(md) { gap: var(--space-6); }
 
   &__loading {
     @include row(0);
@@ -631,6 +645,15 @@ function toggleGroups(): void {
     border-top: 1px solid token(--border-default);
     padding-top: var(--space-4);
   }
+
+  /*
+   * Kein Blockabstand zwischen Assetklassen und Tabelle: Der Abstand der
+   * Zeile nach unten kommt allein aus ihrem eigenen Polster und ist damit so
+   * groß wie der nach oben zur Linie (rund 12 px). Vorher standen dort 28 px
+   * — Polster plus Blockabstand — und die Kopfzeile hing bei ihrer Nachbarin
+   * statt bei ihrem Inhalt.
+   */
+  &__table-area { @include stack(0); }
 
   &__groups {
     display: none;
@@ -690,12 +713,19 @@ function toggleGroups(): void {
     background-color: token(--surface-card);
   }
 
+  /*
+   * Die Trennlinie sitzt am Kopf, nicht als eigener Divider dazwischen.
+   * Naives `NDivider` bringt 24 px Abstand nach oben und unten mit — 49 px
+   * Leerfläche um einen 1 px-Strich, und das `!my-0` daran war eine
+   * Tailwind-Utility, die es seit dessen Ausbau nicht mehr gibt.
+   */
   &__panel-head {
     @include row(var(--space-4));
 
     flex-wrap: wrap;
     justify-content: space-between;
     padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid token(--border-default);
 
     @include up(md) { padding: var(--space-4) 1.25rem; }
   }
