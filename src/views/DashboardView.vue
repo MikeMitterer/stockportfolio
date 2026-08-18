@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from 'vue'
+import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
 import { NDivider, NSpin, NEmpty, NButton } from 'naive-ui'
 import InfoHint from '@/components/InfoHint.vue'
@@ -471,17 +472,8 @@ function toggleGroups(): void {
           aria-controls="dashboard-groups-panel"
           @click="toggleGroups"
         >
-          <svg
-            class="dashboard__chevron"
-            :class="{ 'dashboard__chevron--collapsed': groupsCollapsed }"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
-          </svg>
+          <!-- `turn` wie im Gruppenkopf darunter — dieselbe Aussage, dieselbe Bewegung. -->
+          <UxCaret :open="!groupsCollapsed" motion="turn" />
           <h2 class="dashboard__section-title">
             {{ t('dashboard.assetClasses') }}
           </h2>
@@ -659,13 +651,6 @@ function toggleGroups(): void {
     &:hover { color: token(--text-primary); }
   }
 
-  &__chevron {
-    width: 0.875rem;
-    height: 0.875rem;
-    transition: transform 0.15s ease;
-
-    &--collapsed { transform: rotate(-90deg); }
-  }
 
   &__section-title {
     font-size: var(--font-xs);

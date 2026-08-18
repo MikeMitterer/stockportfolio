@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InfoHint from '@/components/InfoHint.vue'
+import { UxCaret } from '@mmit/ux-foundation'
 import PriceSparkline from '@/components/PriceSparkline.vue'
 import type { HistoryPoint } from '@/domain/sparkline'
 
@@ -74,18 +75,11 @@ const emit = defineEmits<{
         :height="18"
       />
 
-      <svg
-        v-if="expandable"
-        class="kpi__chevron"
-        :class="{ 'kpi__chevron--open': expanded }"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        aria-hidden="true"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
-      </svg>
+      <!--
+        `flip`: zu zeigt nach unten, offen nach oben — „hier geht etwas auf".
+        Die Karte selbst ist der Knopf, der Pfeil nur ihr Merkmal.
+      -->
+      <UxCaret v-if="expandable" class="kpi__chevron" :open="!!expanded" size="sm" />
     </div>
   </component>
 </template>
@@ -158,14 +152,15 @@ const emit = defineEmits<{
 
   &__trend { flex-shrink: 0; }
 
+  /*
+   * Form, Größe und Drehung stehen in `UxCaret` (Fundament). Hier bleibt nur,
+   * was die Umgebung angeht: Der Pfeil ist gedämpft und hellt beim Überfahren
+   * der Karte auf — er soll auf sich aufmerksam machen, wenn jemand ohnehin
+   * hinsieht, und sonst nicht.
+   */
   &__chevron {
-    flex-shrink: 0;
-    width: 0.75rem;
-    height: 0.75rem;
     opacity: 0.4;
-    transition: transform 0.15s ease, opacity 0.15s ease;
-
-    &--open { transform: rotate(180deg); }
+    transition: opacity 0.15s ease;
   }
 
   &__hint {

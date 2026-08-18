@@ -473,8 +473,8 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   <!-- Die Eingabe -->
                   <td class="reb__td">
                     <UxInlineNumber
-                        :edit-label="t('common.edit')"
-                        :clear-label="t('common.clear')"
+                      :edit-label="t('common.edit')"
+                      :clear-label="t('common.clear')"
                       :value="row.tradeUnits"
                       :display="row.tradeUnits === 0 ? '—' : integer(row.tradeUnits)"
                       :precision="row.current.position.group === 'cash' ? 2 : 0"

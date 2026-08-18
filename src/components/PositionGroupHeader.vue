@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
 import { eur, eurSigned, percent } from '@/domain/formatters'
 import { assetColor } from '@/domain/assetColors'
@@ -45,17 +46,12 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
     :aria-expanded="!collapsed"
     @click="emit('toggle')"
   >
-    <svg
-      class="groupheader__chevron"
-      :class="{ 'groupheader__chevron--collapsed': collapsed }"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      aria-hidden="true"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
-    </svg>
+    <!--
+      `turn`: offen zeigt nach unten, eingeklappt zur Seite — „hier hängt etwas
+      darunter". Nicht `flip`: Die Gruppe verschwindet nicht, sie ist nur
+      zusammengeschoben.
+    -->
+    <UxCaret class="groupheader__chevron" :open="!collapsed" motion="turn" size="sm" />
 
     <!-- Farbpunkt wie im Assetklassen-Balken oben — gleiche Klasse, gleiche Farbe -->
     <span class="groupheader__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>
@@ -97,14 +93,11 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
     .groupheader__label { color: token(--text-primary); }
   }
 
+  // Form, Größe und Drehung stehen in `UxCaret` (Fundament) — hier bleibt die
+  // Dämpfung, die beim Überfahren des Kopfes aufhellt.
   &__chevron {
-    flex-shrink: 0;
-    width: 0.75rem;
-    height: 0.75rem;
     opacity: 0.5;
-    transition: all 0.15s ease;
-
-    &--collapsed { transform: rotate(-90deg); }
+    transition: opacity 0.15s ease;
   }
 
   &__dot {
