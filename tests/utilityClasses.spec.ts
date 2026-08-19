@@ -67,7 +67,9 @@ interface Fund {
 
 /** Statische `class="…"`-Attribute — `:class`-Bindungen bleiben außen vor. */
 function ausMarkup(quelle: string, datei: string): Fund[] {
-  const template = quelle.split('<template>')[1]?.split('<style')[0] ?? ''
+  // `slice(1)`: Eine SFC darf mehrere `<template>`-Blöcke haben — heute tut es
+  // keine, aber `[1]` würde ab dem zweiten still nur den ersten prüfen.
+  const template = quelle.split('<template>').slice(1).join('\n').split('<style')[0] ?? ''
   const funde: Fund[] = []
 
   for (const treffer of template.matchAll(/(?<!:)\bclass="([^"]+)"/g)) {
@@ -83,7 +85,10 @@ function ausMarkup(quelle: string, datei: string): Fund[] {
  * umbenannt wurde — genau der Fall, der hier durchgerutscht ist.
  */
 function ausStil(quelle: string, datei: string): Fund[] {
-  const stil = datei.endsWith('.vue') ? (quelle.split('<style')[1] ?? '') : quelle
+  // Alle Stil-Blöcke, nicht nur den ersten: `PositionsTable.vue` und
+  // `SettingsView.vue` haben je zwei. Mit `[1]` lag der zweite außerhalb der
+  // Prüfung — genau dort hätte ein toter Utility-Selektor unbemerkt überlebt.
+  const stil = datei.endsWith('.vue') ? quelle.split('<style').slice(1).join('\n') : quelle
   const ohneKommentare = stil.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
   const funde: Fund[] = []
 

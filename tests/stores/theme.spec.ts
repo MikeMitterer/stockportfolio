@@ -7,28 +7,9 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { readStoredTheme, systemTheme } from '@/stores/theme'
+import { installFakeStorage } from '../fixtures/storage'
 
 const STORAGE_KEY = 'stockportfolio.theme'
-
-/**
- * Ersatz für den localStorage.
- *
- * Die jsdom-Umgebung dieses Projekts bringt keinen mit — `window.localStorage`
- * ist dort schlicht `undefined`.
- */
-function fakeStorage(): Storage {
-  const values = new Map<string, string>()
-  return {
-    getItem: (key) => values.get(key) ?? null,
-    setItem: (key, value) => void values.set(key, value),
-    removeItem: (key) => void values.delete(key),
-    clear: () => values.clear(),
-    key: (index) => [...values.keys()][index] ?? null,
-    get length() {
-      return values.size
-    },
-  } as Storage
-}
 
 let storage: Storage
 
@@ -41,8 +22,7 @@ function pretendSystem(dark: boolean): void {
 }
 
 beforeEach(() => {
-  storage = fakeStorage()
-  Object.defineProperty(window, 'localStorage', { value: storage, configurable: true })
+  storage = installFakeStorage()
 })
 
 afterEach(() => {

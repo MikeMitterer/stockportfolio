@@ -16,23 +16,9 @@ import { createPinia, setActivePinia } from 'pinia'
 import { DEFAULT_LOCALE, readStoredLocale, useLocaleStore } from '@/stores/locale'
 import { eur, setFormatterLocale } from '@/domain/formatters'
 import { i18n } from '@/i18n'
+import { installFakeStorage } from '../fixtures/storage'
 
 const STORAGE_KEY = 'stockportfolio.locale'
-
-/** Ersatz für den localStorage — die jsdom-Umgebung bringt keinen mit. */
-function fakeStorage(): Storage {
-  const values = new Map<string, string>()
-  return {
-    getItem: (key) => values.get(key) ?? null,
-    setItem: (key, value) => void values.set(key, value),
-    removeItem: (key) => void values.delete(key),
-    clear: () => values.clear(),
-    key: (index) => [...values.keys()][index] ?? null,
-    get length() {
-      return values.size
-    },
-  } as Storage
-}
 
 let storage: Storage
 
@@ -43,8 +29,7 @@ function pretendBrowser(...sprachen: string[]): void {
 
 beforeEach(() => {
   setActivePinia(createPinia())
-  storage = fakeStorage()
-  Object.defineProperty(window, 'localStorage', { value: storage, configurable: true })
+  storage = installFakeStorage()
 })
 
 afterEach(() => {
