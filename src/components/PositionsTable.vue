@@ -149,6 +149,19 @@ function isCollapsed(group: AssetGroup): boolean {
   return collapsedGroups.value.has(group)
 }
 
+/**
+ * Die Gruppe, deren Tabelle die Spaltenkopfzeile trägt — die erste, die
+ * tatsächlich sichtbar ist. Alle darunter erben sie visuell.
+ *
+ * Nach DOM-Position (`:first-of-type`) ging das schief: `v-show` lässt die
+ * Tabelle einer eingeklappten Gruppe im Dokument stehen. Klappt man die oberste
+ * Gruppe zu, fiele die Kopfzeile ausgerechnet der versteckten Tabelle zu — und
+ * die ganze Ansicht stünde ohne Spaltennamen da.
+ */
+const headedGroup = computed<AssetGroup | null>(
+  () => renderedGroups.value.find((entry) => !isCollapsed(entry.group.group))?.group.group ?? null,
+)
+
 function toggleGroup(group: AssetGroup): void {
   const next = new Set(collapsedGroups.value)
   if (next.has(group)) {
@@ -436,6 +449,8 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
 
       <NDataTable
         v-show="!isCollapsed(entry.group.group)"
+        class="postable__table"
+        :class="{ 'postable__table--headless': entry.group.group !== headedGroup }"
         v-model:expanded-row-keys="expandedRowKeys"
         :columns="columns"
         :data="entry.rows"
@@ -488,11 +503,12 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
  * Kopfzeile nur einmal ganz oben zeigen — die Gruppen darunter erben sie
  * visuell.
  *
- * Der Selektor stand auf `.flex`, dem Tailwind-Wrapper von früher. Seit der
- * Wrapper `.postable` heißt, griff die Regel nicht mehr und jede Gruppe trug
- * ihre eigene Spaltenkopfzeile — vier statt einer.
+ * Welche Tabelle sie trägt, entscheidet `headedGroup` im Skript, nicht die
+ * Stellung im Dokument: Eingeklappte Gruppen bleiben per `v-show` stehen, ein
+ * `:first-of-type` hätte die Kopfzeile also einer unsichtbaren Tabelle
+ * zugesprochen.
  */
-.postable > :not(:first-of-type) :deep(.n-data-table-thead) {
+.postable__table--headless :deep(.n-data-table-thead) {
   display: none;
 }
 </style>
