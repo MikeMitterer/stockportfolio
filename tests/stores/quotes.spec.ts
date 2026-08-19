@@ -288,4 +288,50 @@ describe('useQuotesStore — refreshOne', () => {
     const persisted = await new QuoteCacheRepository().loadAll()
     expect(persisted.get('IE0000000001')?.price).toBe(999)
   })
+
+  /**
+   * Der Ladezustand je Position — daran hängt der Spinner am Knopf im
+   * Drilldown. Wichtig ist beides: dass er während des Abrufs steht und dass
+   * er danach verschwindet, auch wenn der Abruf schiefgeht. Ein Knopf, der
+   * nach einem Fehler ewig dreht, ist schlimmer als gar keine Anzeige.
+   */
+  it('merkt sich die Position, solange ihr Kurs geholt wird', async () => {
+    const position = makePosition({ id: 'a' })
+    let währendDesAbrufs: string[] = []
+
+    const client = mockClient({
+      refreshByIsin: vi.fn(async () => {
+        währendDesAbrufs = [...useQuotesStore().refreshing]
+        return makeQuoteResponse('AAA.DE', 999, 'IE0000000001')
+      }) as unknown as StockInfoClient['refreshByIsin'],
+    })
+    const store = useQuotesStore()
+
+    await store.refreshOne(client, position)
+
+    expect(währendDesAbrufs).toEqual(['a'])
+    expect([...store.refreshing]).toEqual([])
+  })
+
+  it('gibt die Position auch nach einem Fehlschlag wieder frei', async () => {
+    const client = mockClient({
+      refreshByIsin: vi.fn(async () => {
+        throw new ApiError(503, 'Upstream weg', '/refresh')
+      }) as unknown as StockInfoClient['refreshByIsin'],
+    })
+    const store = useQuotesStore()
+
+    await store.refreshOne(client, makePosition({ id: 'a' }))
+
+    expect([...store.refreshing]).toEqual([])
+  })
+
+  it('lässt Cash-Positionen gar nicht erst als ladend gelten', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.refreshOne(client, makePosition({ id: 'c', isin: null, group: 'cash' }))
+
+    expect([...store.refreshing]).toEqual([])
+  })
 })

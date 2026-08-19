@@ -17,6 +17,7 @@ import {
 import AppStatusBar from '@/components/AppStatusBar.vue'
 import AppTopbar from '@/components/AppTopbar.vue'
 import { useRelativeTime } from '@/composables/useRelativeTime'
+import { useMinimumDuration } from '@/composables/useMinimumDuration'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useLocaleStore } from '@/stores/locale'
@@ -34,7 +35,15 @@ const localeStore = useLocaleStore()
 
 const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
-const refreshLabel = computed(() => (quotesStore.loading ? '…' : ageLabel.value))
+
+/*
+ * Der globale Abruf liest den Cache des Dienstes und ist nach Millisekunden
+ * fertig — ohne Mindestdauer blitzte der Spinner auf, ohne dass ihn jemand
+ * sah. Die Altersangabe hängt an derselben Größe, sonst liefen Spinner und
+ * „…" auseinander.
+ */
+const refreshing = useMinimumDuration(computed(() => quotesStore.loading))
+const refreshLabel = computed(() => (refreshing.value ? '…' : ageLabel.value))
 
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
@@ -96,7 +105,11 @@ function refresh(): void {
             -->
             <UxAppShell>
               <template #topbar>
-                <AppTopbar :last-refresh-label="refreshLabel" @refresh="refresh" />
+                <AppTopbar
+                  :last-refresh-label="refreshLabel"
+                  :refreshing="refreshing"
+                  @refresh="refresh"
+                />
               </template>
 
               <RouterView />

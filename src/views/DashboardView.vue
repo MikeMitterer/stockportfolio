@@ -567,6 +567,7 @@ function toggleGroups(): void {
             :total="result.total"
             :targets-exceeded="result.targetsExceeded"
             :links="settingsStore.settings.links"
+            :refreshing-ids="quotesStore.refreshing"
             @update="onUpdate"
             @remove="onRemove"
             @refresh="onRefreshOne"

@@ -28,6 +28,8 @@ const props = defineProps<{
   targetsExceeded: boolean
   /** Konfigurierte externe Verweise (fürs Drilldown). */
   links: ExternalLink[]
+  /** IDs der Positionen, deren Kurs gerade einzeln geholt wird. */
+  refreshingIds?: Set<string>
 }>()
 
 const emit = defineEmits<{
@@ -198,6 +200,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         row,
         total: props.total,
         links: props.links,
+        refreshing: props.refreshingIds?.has(row.position.id) ?? false,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
         onRemove: (id: string) => emit('remove', id),
         onRefresh: (id: string) => emit('refresh', id),

@@ -32,6 +32,14 @@ export const useQuotesStore = defineStore('quotes', () => {
 
   const quotes = shallowRef<QuoteMap>(new Map())
   const loading = ref<boolean>(false)
+  /**
+   * Positionen, deren Kurs gerade einzeln geholt wird — daran hängt der
+   * Spinner am Knopf im Drilldown.
+   *
+   * Eine Menge und kein Schalter: Es können mehrere Zeilen offen sein, und wer
+   * zwei nacheinander anstößt, soll an beiden sehen, dass etwas läuft.
+   */
+  const refreshing = ref<Set<string>>(new Set())
   const failures = ref<QuoteFailure[]>([])
   const lastRefreshAt = ref<string | null>(null)
 
@@ -124,6 +132,8 @@ export const useQuotesStore = defineStore('quotes', () => {
     if (position.group === 'cash') return
 
     const key = quoteKey(position)
+    markRefreshing(position.id, true)
+
     try {
       const response = position.isin
         ? await client.refreshByIsin(position.isin)
@@ -145,10 +155,34 @@ export const useQuotesStore = defineStore('quotes', () => {
         ...failures.value.filter((failure) => failure.key !== key),
         { key, symbol: position.symbol, reason },
       ]
+    } finally {
+      // `finally`, nicht am Ende des `try`: Ein Fehlschlag darf den Knopf nicht
+      // ewig drehen lassen.
+      markRefreshing(position.id, false)
     }
   }
 
-  return { quotes, loading, failures, lastRefreshAt, hydrate, loadQuotes, refreshOne }
+  /** Setzt oder löscht den Ladezustand einer Position. */
+  function markRefreshing(id: string, active: boolean): void {
+    const next = new Set(refreshing.value)
+    if (active) {
+      next.add(id)
+    } else {
+      next.delete(id)
+    }
+    refreshing.value = next
+  }
+
+  return {
+    quotes,
+    loading,
+    refreshing,
+    failures,
+    lastRefreshAt,
+    hydrate,
+    loadQuotes,
+    refreshOne,
+  }
 })
 
 /** Jüngster `fetchedAt`-Zeitstempel einer Cache-Map. */

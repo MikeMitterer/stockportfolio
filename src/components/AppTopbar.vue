@@ -7,6 +7,8 @@ import { UxNavItem, UxTopbar, type NavIconName } from '@mmit/ux-foundation'
 
 defineProps<{
   lastRefreshLabel?: string
+  /** Solange die Kurse geholt werden — der Knopf dreht und nimmt keinen zweiten Klick an. */
+  refreshing?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -103,7 +105,19 @@ const isActive = (name: string): boolean => route.name === name
         {{ lastRefreshLabel }}
       </span>
 
-      <NButton size="small" secondary @click="emit('refresh')">
+      <!--
+        `loading` ersetzt das Symbol durch den Spinner und lässt die
+        Beschriftung stehen — unterhalb `md` fällt die ohnehin weg, dann dreht
+        an derselben Stelle der Pfeil. `disabled` dazu, sonst lässt sich
+        derselbe Abruf mehrfach anstoßen.
+      -->
+      <NButton
+        size="small"
+        secondary
+        :loading="refreshing"
+        :disabled="refreshing"
+        @click="emit('refresh')"
+      >
         <template #icon>
           <NIcon>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

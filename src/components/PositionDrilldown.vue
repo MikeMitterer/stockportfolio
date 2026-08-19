@@ -29,6 +29,8 @@ const props = defineProps<{
   row: PositionResult
   total: number
   links: ExternalLink[]
+  /** Solange der Kurs dieser Position geholt wird — der Knopf dreht. */
+  refreshing?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -203,7 +205,13 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           </label>
 
           <div class="drill__actions">
-            <NButton size="tiny" secondary @click="emit('refresh', row.position.id)">
+            <NButton
+              size="tiny"
+              secondary
+              :loading="refreshing"
+              :disabled="refreshing"
+              @click="emit('refresh', row.position.id)"
+            >
               {{ t('dashboard.reloadQuote') }}
             </NButton>
             <NPopconfirm @positive-click="emit('remove', row.position.id)">
