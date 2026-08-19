@@ -3,11 +3,11 @@ import { onScopeDispose, ref, watch, type Ref } from 'vue'
 /**
  * Vorgabe für die Mindestdauer.
  *
- * Kurz genug, dass niemand wartet, lang genug, dass das Auge es mitbekommt —
- * unterhalb von rund einem Drittel einer Sekunde liest sich ein erscheinender
- * und sofort verschwindender Spinner als Zucken, nicht als Rückmeldung.
+ * Lang genug, dass das Auge den Spinner mitbekommt, kurz genug, dass niemand
+ * auf ihn wartet. Stand zuerst auf 400 ms und fühlte sich zäh an — bei einer
+ * Aktion, die ohnehin sofort fertig ist, reicht ein Aufblitzen als Quittung.
  */
-export const MIN_VISIBLE_MS = 400
+export const MIN_VISIBLE_MS = 200
 
 /**
  * Hält einen Zustand mindestens so lange, wie er zu sehen sein soll.

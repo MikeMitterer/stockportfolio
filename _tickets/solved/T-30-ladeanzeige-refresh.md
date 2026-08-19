@@ -159,3 +159,7 @@ Refresh auslösen. Das ist ein eigenes Ticket.
 
 Was kein Test sagt: ob sich 0,4 s richtig anfühlen. Die Zahl steht als
 `MIN_VISIBLE_MS` an einer Stelle.
+
+**Nachtrag 2026-08-19:** Sie fühlten sich zäh an und stehen seither auf
+**200 ms**. Die Zeilen oben nennen noch 0,4 s — sie halten den Stand beim
+Abschluss fest, verbindlich ist der Code.
