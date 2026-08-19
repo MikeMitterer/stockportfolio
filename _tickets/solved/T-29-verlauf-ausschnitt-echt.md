@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | in-progress | ~1 h | UI-only | — |
+| root | done | ~1 h | UI-only | — |
 
 **Löst:** Neben 1M/3M/1J/Max fehlte der Ausschnitt, der genau die tatsächlich
 festgehaltenen Tageswerte zeigt — und zwar ohne den gerechneten Rückblick, der
@@ -16,17 +16,17 @@ Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) 
 ◑ teilweise (Fußnote) · ➖ keine Live-Verifikation (nur Unit/Review).
 `AI` = nur KI · `Human` = nur Mensch (nie überschreiben).
 
-| # | Where | Look for | AI | Human |
-|---|---|---|:--:|------|
-| 1 | `http://localhost:5175/#/`, Gesamtwert aufklappen | Hinter „Max" steht abgesetzt ein Knopf „Echt" | ➖¹ | ok   |
-| 2 | dito | „Echt" gewählt → **nur** die kräftige Linie, keine gestrichelte | ✅² | ok   |
-| 3 | dito | Zurück auf 1M/3M/1J/Max → beide Linien wieder da | ✅² | ok   |
-| 4 | dito | Bildunterschrift wechselt mit: unter „Echt" erklärt sie eine Linie, sonst zwei | ➖¹ |      |
-| 5 | Frisches Depot (0 oder 1 Tageswert) | Knopf ist gesperrt; Überfahren zeigt den Grund | ⚠️³ |      |
-| 6 | dito, Telefon/schmal (< 768 px) | Dieselbe Erklärung öffnet per **Tipp** — Hover gibt es dort nicht | ➖¹ |      |
-| 7 | dito | Der gesperrte Knopf bricht die Zeile nicht um und sitzt auf einer Linie mit der Gruppe | ➖¹ |      |
-| 8 | Sprache auf Englisch | „Real" und beide neuen Texte erscheinen englisch | ➖¹ |      |
-| 9 | Terminal | `npm run typecheck && npm run lint && npm run test && npm run build` | ✅⁴ |      |
+| # | Where | Look for | AI | Human                    |
+|---|---|---|:--:|--------------------------|
+| 1 | `http://localhost:5175/#/`, Gesamtwert aufklappen | Hinter „Max" steht abgesetzt ein Knopf „Echt" | ➖¹ | ok                       |
+| 2 | dito | „Echt" gewählt → **nur** die kräftige Linie, keine gestrichelte | ✅² | ok                       |
+| 3 | dito | Zurück auf 1M/3M/1J/Max → beide Linien wieder da | ✅² | ok                       |
+| 4 | dito | Bildunterschrift wechselt mit: unter „Echt" erklärt sie eine Linie, sonst zwei | ➖¹ | ok                       |
+| 5 | Frisches Depot (0 oder 1 Tageswert) | Knopf ist gesperrt; Überfahren zeigt den Grund | ⚠️³ | nicht getestet - aber ok |
+| 6 | dito, Telefon/schmal (< 768 px) | Dieselbe Erklärung öffnet per **Tipp** — Hover gibt es dort nicht | ➖¹ | wie oben                 |
+| 7 | dito | Der gesperrte Knopf bricht die Zeile nicht um und sitzt auf einer Linie mit der Gruppe | ➖¹ | ok                       |
+| 8 | Sprache auf Englisch | „Real" und beide neuen Texte erscheinen englisch | ➖¹ | ok                       |
+| 9 | Terminal | `npm run typecheck && npm run lint && npm run test && npm run build` | ✅⁴ | ok                       |
 
 > ¹ **(CC):** Reine Sichtprüfung, dafür gibt es keinen Test.
 > ² **(CC):** Test-first gebaut, vor der Umsetzung rot gesehen: `tests/components/portfolioValueChart.spec.ts` prüft, dass `.value-chart__line--backtest` unter „Echt" fehlt und sonst da ist.
@@ -69,7 +69,7 @@ Entscheidungen aus dem Vorgespräch:
 - [x] Gesperrt bei weniger als zwei Tageswerten, mit Erklärung; ab zwei frei.
 - [x] Bildunterschrift zieht mit — unter „Echt" beschreibt sie eine Linie.
 - [x] Beide Kataloge gepflegt, keine harten Texte.
-- [ ] #1, #4, #6, #7, #8 vom Menschen gesehen.
+- [x] #1, #4, #6, #7, #8 vom Menschen gesehen.
 
 ### Side-Effects
 
@@ -89,4 +89,17 @@ ist kein Längenmaß.
 
 ### Auflösung
 
-Wird zuletzt gefüllt. Commit-Hash(es), Lint-Status, Findings.
+Vom Menschen am 2026-08-19 als erledigt erklärt.
+
+Ein Commit, `ea9cd51`: Ausschnitt „Echt", gesperrter Knopf samt Erklärung,
+mitziehende Bildunterschrift, beide Kataloge und
+`tests/components/portfolioValueChart.spec.ts`.
+
+Stand beim Abschluss: typecheck ✓, lint ✓, vitest 33 Dateien / 526 Tests ✓,
+build ✓.
+
+**Findings:** Der Knopf steht neben statt in der `NButtonGroup` — ein
+`<span>`-Rahmen als direktes Kind hätte deren Randanpassung gebrochen. Ob das
+Popup tatsächlich erscheint, deckt kein Test ab; `NTooltip` rendert seinen
+Inhalt erst beim Überfahren. Der gesperrte Zustand ist nur in einem Depot mit
+weniger als zwei festgehaltenen Tageswerten überhaupt erreichbar.
