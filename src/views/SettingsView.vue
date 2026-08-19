@@ -8,6 +8,7 @@ import {
   NCard,
   NDatePicker,
   NInputNumber,
+  NSwitch,
   NRadio,
   NRadioGroup,
   NSpace,
@@ -113,6 +114,23 @@ const scheduleHint = computed(() => {
 async function setTrigger(trigger: RebalancingTrigger): Promise<void> {
   await settingsStore.patch({
     rebalancing: { ...settingsStore.settings.rebalancing, trigger },
+  })
+}
+
+/**
+ * Beide Felder gehen einzeln, ohne das jeweils andere zu verlieren — `patch`
+ * ersetzt `refresh` als Ganzes, der bestehende Stand muss also mit hinein.
+ */
+async function setAutoOnLoad(autoOnLoad: boolean): Promise<void> {
+  await settingsStore.patch({
+    refresh: { ...settingsStore.settings.refresh, autoOnLoad },
+  })
+}
+
+async function setStaleAfterMinutes(value: number | null): Promise<void> {
+  if (value === null) return
+  await settingsStore.patch({
+    refresh: { ...settingsStore.settings.refresh, staleAfterMinutes: value },
   })
 }
 
@@ -468,16 +486,16 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       </NTabPane>
 
       <NTabPane name="data" :tab="t('settings.tabs.data')">
-        <div class="settings__group">
-          <NCard :bordered="false" class="settings__card">
-            <template #header>
-              <span class="settings__card-title">{{ t('portfolios.heading') }}</span>
-            </template>
+        <!--
+          Zwei Spalten wie im Reiter „Berechnung": Über die volle Breite eines
+          großen Schirms gezogen, stehen in einem Block mit drei Knöpfen zwei
+          Handbreit Leere.
 
-            <PortfolioManager />
-          </NCard>
-
-          <NCard :bordered="false" class="settings__card">
+          Die Depot-Verwaltung nimmt die volle Zeile — sie ist eine Liste mit
+          Namensfeld, Kennzeichnung und Zahlen je Zeile und wird schmal eng.
+        -->
+        <div class="settings__columns">
+          <NCard :bordered="false" class="settings__card settings__card--full">
             <template #header>
               <span class="settings__card-title">{{ t('history.periodHeading') }}</span>
             </template>
@@ -500,6 +518,58 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                 {{ t('history.periodHint') }}
               </span>
             </div>
+          </NCard>
+
+          <!--
+            Kursbeschaffung steht bei den Daten, nicht beim Rechnen: Sie
+            bestimmt, woher die Zahlen kommen, nicht wie mit ihnen gerechnet
+            wird. Der Schalter steht über der Frist, weil er darüber
+            entscheidet, ob sie überhaupt gilt.
+          -->
+          <NCard :bordered="false" class="settings__card settings__card--full">
+            <template #header>
+              <span class="settings__card-title">{{ t('settings.refreshHeading') }}</span>
+            </template>
+
+            <div class="settings__stack-wide">
+              <!--
+                Ein Schalter steht auf einer Linie mit seiner Beschriftung,
+                nicht darunter: Er ist der Wert selbst, kein Feld, das man
+                ausfüllt. Im senkrechten Stapel wie beim Zahlenfeld sah er aus,
+                als wäre er eine Zeile verrutscht.
+              -->
+              <label class="settings__field">
+                <span class="settings__switch">
+                  <span class="settings__label">{{ t('settings.autoOnLoad') }}</span>
+                  <NSwitch
+                    :value="settingsStore.settings.refresh.autoOnLoad"
+                    @update:value="setAutoOnLoad"
+                  />
+                </span>
+                <span class="settings__hint">{{ t('settings.autoOnLoadHint') }}</span>
+              </label>
+
+              <label class="settings__field">
+                <span class="settings__label">{{ t('settings.staleAfter') }}</span>
+                <NInputNumber
+                  :disabled="!settingsStore.settings.refresh.autoOnLoad"
+                  :value="settingsStore.settings.refresh.staleAfterMinutes"
+                  :min="1"
+                  :max="1440"
+                  :step="15"
+                  @update:value="setStaleAfterMinutes"
+                />
+                <span class="settings__hint">{{ t('settings.staleAfterHint') }}</span>
+              </label>
+            </div>
+          </NCard>
+
+          <NCard :bordered="false" class="settings__card settings__card--wide">
+            <template #header>
+              <span class="settings__card-title">{{ t('portfolios.heading') }}</span>
+            </template>
+
+            <PortfolioManager />
           </NCard>
         </div>
       </NTabPane>
@@ -708,6 +778,9 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
     /* Karten einer Zeile füllen die Zeilenhöhe aus — sonst enden sie versetzt. */
     &--full { height: 100%; }
+
+    /* Über beide Spalten — für Inhalte, die in einer halben Breite eng werden. */
+    &--wide { grid-column: 1 / -1; }
   }
 
   &__card-head {
@@ -750,6 +823,18 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
   &__below { margin-top: var(--space-6); }
 
   &__narrow { max-width: 28rem; }
+
+  /*
+   * Beschriftung und Schalter in einer Zeile, der Schalter rechts. `center`
+   * statt `baseline`: Ein Schalter hat keine Schriftlinie, an der Grundlinie
+   * ausgerichtet säße er sichtbar zu tief.
+   */
+  &__switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
 
   &__field {
     @include stack(var(--space-1));

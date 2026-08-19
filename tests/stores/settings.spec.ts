@@ -253,3 +253,41 @@ describe('withDefaults — Zeitraum der Verlaufslinie', () => {
     expect(withDefaults(alt).ui.historyPeriod).toBe('month')
   })
 })
+
+/**
+ * Die beiden Felder unter `refresh` steuern das automatische Laden. Sie standen
+ * lange nur im Modell; seit sie eine Oberfläche haben, müssen sie einzeln
+ * änderbar sein, ohne das jeweils andere zu verlieren — der klassische Fehler
+ * beim Zusammenführen verschachtelter Einstellungen.
+ */
+describe('Einstellungen zum Aktualisieren', () => {
+  it('ändert die Frist, ohne den Schalter zu verlieren', async () => {
+    const store = useSettingsStore()
+    await store.load('p1')
+
+    await store.patch({ refresh: { ...store.settings.refresh, staleAfterMinutes: 15 } })
+
+    expect(store.settings.refresh.staleAfterMinutes).toBe(15)
+    expect(store.settings.refresh.autoOnLoad).toBe(true)
+  })
+
+  it('ändert den Schalter, ohne die Frist zu verlieren', async () => {
+    const store = useSettingsStore()
+    await store.load('p1')
+
+    await store.patch({ refresh: { ...store.settings.refresh, autoOnLoad: false } })
+
+    expect(store.settings.refresh.autoOnLoad).toBe(false)
+    expect(store.settings.refresh.staleAfterMinutes).toBe(60)
+  })
+
+  it('hält beides über einen Neustart hinweg', async () => {
+    const store = useSettingsStore()
+    await store.load('p1')
+    await store.patch({ refresh: { autoOnLoad: false, staleAfterMinutes: 15 } })
+
+    const wieder = await new SettingsRepository().load()
+
+    expect(wieder?.refresh).toEqual({ autoOnLoad: false, staleAfterMinutes: 15 })
+  })
+})

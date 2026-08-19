@@ -217,6 +217,13 @@ export const de = {
     },
     intervalMonths: 'Abstand (Monate)',
     intervalHint: '12 = jährlich, 6 = halbjährlich, 3 = quartalsweise.',
+    refreshHeading: 'Kurse aktualisieren',
+    autoOnLoad: 'Beim Öffnen einer Ansicht aktualisieren',
+    autoOnLoadHint:
+      'Holt die Kurse, sobald das Depot oder der Ausgleich geöffnet wird. Abgeschaltet kommen neue Kurse nur noch auf Knopfdruck.',
+    staleAfter: 'Kurse gelten als alt nach (Minuten)',
+    staleAfterHint:
+      'Jünger als das, wird beim Öffnen nichts geholt — sonst löste jeder Wechsel zwischen den Ansichten einen vollen Abruf aus. „Aktualisieren" in der Kopfzeile übergeht die Frist und holt immer frische Kurse.',
     lastRebalanced: 'Zuletzt ausgeglichen ({depot})',
     markToday: 'Heute',
     neverRebalanced: 'Noch nie ausgeglichen — der Termin gilt als fällig.',

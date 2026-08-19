@@ -212,6 +212,13 @@ export const en: MessageSchema = {
     },
     intervalMonths: 'Interval (months)',
     intervalHint: '12 = yearly, 6 = twice a year, 3 = quarterly.',
+    refreshHeading: 'Updating prices',
+    autoOnLoad: 'Update when opening a view',
+    autoOnLoadHint:
+      'Fetches prices as soon as the portfolio or the rebalancing view is opened. Switched off, new prices only arrive at the press of a button.',
+    staleAfter: 'Prices count as old after (minutes)',
+    staleAfterHint:
+      'Anything younger is not fetched again when a view opens — otherwise every switch between views triggered a full round. “Refresh” in the header ignores this and always fetches fresh prices.',
     lastRebalanced: 'Last rebalanced ({depot})',
     markToday: 'Today',
     neverRebalanced: 'Never rebalanced — the review counts as due.',
