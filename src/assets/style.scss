@@ -7,3 +7,24 @@
  */
 
 @use 'table-cells';
+
+/*
+ * Meldungen erscheinen ohne Aufklappen, verschwinden aber weich.
+ *
+ * Naive lässt einen Toast über rund drei Zehntelsekunden von oben nach unten
+ * wachsen (`max-height` von 0 auf die Inhaltshöhe). Gemessen ist daran nichts
+ * kaputt — er erreicht seine volle Höhe und steht danach richtig da. Aber
+ * beim Seitenaufbau, wenn mehrere Meldungen gleichzeitig kommen, liest sich
+ * das Wachsen als „halber Toast", und man wartet auf etwas, das schon da ist.
+ *
+ * Nur das **Einblenden** ist betroffen. Beim Ausblenden gibt es nichts
+ * misszuverstehen: Was verschwindet, hat man gelesen, und der weiche Abgang
+ * zeigt, wohin die Meldung geht — die darunter rücken nach.
+ *
+ * Global und nicht `scoped`: Der Container hängt am `body`, außerhalb jeder
+ * Komponente. `!important`, weil Naive seine Transition per CSS-in-JS
+ * einspielt und damit die spätere Regel gewinnt.
+ */
+.n-notification-wrapper.notification-transition-enter-active {
+  transition: none !important;
+}

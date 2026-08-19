@@ -6,7 +6,7 @@
  * ohne Netzwerk instanziierbar bleibt.
  */
 
-import { ApiError } from './errors'
+import { ApiError, type ApiUrlSource } from './errors'
 import { translate } from '@/i18n'
 import type {
   DailyPoint,
@@ -122,7 +122,10 @@ export class StockInfoClient {
       })
     } catch (cause) {
       const detail = cause instanceof Error ? cause.message : 'Netzwerkfehler'
-      throw new ApiError(0, detail, url)
+      // Die Herkunft der Adresse gehört an den Fehler: Hier ist sie bekannt,
+      // später ließe sie sich nur noch raten — und wer eine falsche Adresse
+      // sieht, muss wissen, wo er sie ändert.
+      throw new ApiError(0, detail, url, apiUrlSource())
     }
 
     if (!response.ok) {
@@ -159,7 +162,7 @@ async function readErrorDetail(response: Response): Promise<string> {
  */
 declare global {
   interface Window {
-    __STOCKPORTFOLIO_CONFIG__?: { apiUrl?: string }
+    __STOCKPORTFOLIO_CONFIG__?: { apiUrl?: string; container?: boolean }
   }
 }
 
@@ -202,6 +205,25 @@ export function apiBaseUrl(): string {
   if (compiled) return compiled
 
   throw new MissingApiUrlError()
+}
+
+/**
+ * Welche Quelle die Adresse gerade liefert — und wo man sie ändert.
+ *
+ * Dieselbe Reihenfolge wie in `apiBaseUrl` und bewusst daneben statt darin:
+ * Der Wert wandert in jeden Netzwerkfehler, damit eine Meldung nicht nur die
+ * unerreichbare Adresse nennt, sondern auch den Ort, an dem sie steht.
+ *
+ * Der Container ist der Grund für den dritten Fall. Sein Entrypoint schreibt
+ * `config.js` immer — bei fehlender `STOCKINFO_API_URL` mit leerer Adresse.
+ * Von der Platzhalter-Datei aus `public/` unterscheidet sie sich nur durch das
+ * Kennzeichen `container`. Ohne diese Unterscheidung riete eine Meldung im
+ * Container zur `.env`, die es dort nicht gibt.
+ */
+export function apiUrlSource(): ApiUrlSource {
+  const config = globalThis.window?.__STOCKPORTFOLIO_CONFIG__
+  if (config?.apiUrl?.trim()) return 'runtime'
+  return config?.container ? 'container-build' : 'build'
 }
 
 /** Injection-Key für den Client (Vue provide/inject). */

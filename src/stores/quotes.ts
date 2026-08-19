@@ -10,7 +10,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 import { consola } from 'consola'
 import { translate } from '@/i18n'
-import { ApiError } from '@/api/errors'
+import { ApiError, describeFailure } from '@/api/errors'
 import { toQuoteCacheEntry } from '@/api/mappers'
 import { QuoteCacheRepository } from '@/db/repository'
 import { quoteKey } from '@/domain/rebalancing'
@@ -286,7 +286,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       failures.value = failures.value.filter((failure) => failure.key !== key)
       await repository.put(key, entry)
     } catch (error) {
-      const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
+      const reason = error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
       consola.error('quotes: Einzel-Refresh fehlgeschlagen', {
         symbol: position.symbol,
         reason,
@@ -379,7 +379,7 @@ async function fetchOne(
     const response = await requestQuote(client, position, force)
     return { key, symbol: position.symbol, entry: toQuoteCacheEntry(response) }
   } catch (error) {
-    const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
+    const reason = error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
     return { key, symbol: position.symbol, entry: null, reason }
   }
 }

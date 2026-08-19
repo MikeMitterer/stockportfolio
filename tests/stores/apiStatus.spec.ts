@@ -116,3 +116,99 @@ describe('useApiStatusStore', () => {
     expect(new StockInfoClient('https://stockinfo.example/').url).toBe('https://stockinfo.example')
   })
 })
+
+/**
+ * Erst fragen, dann laden.
+ *
+ * Health-Check und Kursabruf liefen gleichzeitig los: Wenn die Ansichten
+ * luden, wusste noch niemand, dass der Dienst tot ist — also gingen acht
+ * Abrufe in ihre Zeitüberschreitung, und hinterher meldete die App „8 Kurse
+ * fehlen". Beides für eine Ursache, die vorher feststand.
+ */
+describe('useApiStatusStore — ensureChecked', () => {
+  it('prüft genau einmal, auch bei mehreren Aufrufen', async () => {
+    const client = clientWith(async () => ({ status: 'ok', version: '1.0' }))
+    const store = useApiStatusStore()
+
+    await Promise.all([
+      store.ensureChecked(client),
+      store.ensureChecked(client),
+      store.ensureChecked(client),
+    ])
+
+    expect(client.health).toHaveBeenCalledTimes(1)
+  })
+
+  it('gibt den erreichten Zustand zurück', async () => {
+    const store = useApiStatusStore()
+    const client = clientWith(async () => ({ status: 'ok', version: '1.0' }))
+
+    await expect(store.ensureChecked(client)).resolves.toBe('online')
+  })
+
+  it('meldet einen toten Dienst als offline, ohne zu werfen', async () => {
+    const client = clientWith(async () => {
+      throw new ApiError(0, 'Failed to fetch', 'https://falsch.example/health')
+    })
+    const store = useApiStatusStore()
+
+    await expect(store.ensureChecked(client)).resolves.toBe('offline')
+  })
+
+  it('fragt nach einem erneuten `check` nicht noch einmal von selbst', async () => {
+    const client = clientWith(async () => ({ status: 'ok', version: '1.0' }))
+    const store = useApiStatusStore()
+
+    await store.ensureChecked(client)
+    await store.check(client)
+    await store.ensureChecked(client)
+
+    // Einmal durch ensureChecked, einmal durch den ausdrücklichen check.
+    expect(client.health).toHaveBeenCalledTimes(2)
+  })
+})
+
+/**
+ * Die Adresse getrennt vom Satz.
+ *
+ * Im Dialog soll sie anklickbar sein — wer eine falsche Adresse sieht, will
+ * sie ausprobieren, statt sie abzutippen. Aus dem fertigen Satz ließe sie sich
+ * nur per Regex herausschneiden; sie steht ohnehin im Fehler.
+ */
+describe('useApiStatusStore — Adresse des Fehlschlags', () => {
+  it('merkt sich die angefragte Adresse', async () => {
+    const client = clientWith(async () => {
+      throw new ApiError(0, 'Failed to fetch', 'https://falsch.example/health')
+    })
+    const store = useApiStatusStore()
+
+    await store.check(client)
+
+    expect(store.errorUrl).toBe('https://falsch.example/health')
+  })
+
+  it('lässt sie leer, wenn der Fehler keine trägt', async () => {
+    const client = clientWith(async () => {
+      throw new Error('irgendwas')
+    })
+    const store = useApiStatusStore()
+
+    await store.check(client)
+
+    expect(store.errorUrl).toBeNull()
+  })
+
+  it('räumt sie weg, sobald der Dienst wieder antwortet', async () => {
+    const store = useApiStatusStore()
+    await store.check(
+      clientWith(async () => {
+        throw new ApiError(0, 'Failed to fetch', 'https://falsch.example/health')
+      }),
+    )
+    expect(store.errorUrl).not.toBeNull()
+
+    await store.check(clientWith(async () => ({ status: 'ok', version: '1.0' })))
+
+    expect(store.errorUrl).toBeNull()
+  })
+})

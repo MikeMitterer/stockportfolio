@@ -173,11 +173,25 @@ export const en: MessageSchema = {
     counts: 'is | are',
   },
 
+  errors: {
+    urlFrom: {
+      runtime: 'Address from the container’s STOCKINFO_API_URL',
+      'container-build':
+        'STOCKINFO_API_URL is not set on the container — the build-time value applies',
+      build: 'Address from .env at build time (VITE_STOCKINFO_API_URL)',
+    },
+  },
+
   notify: {
     quotesMissingTitle: 'Prices missing',
     historyFailed: 'Price history could not be loaded',
     assetsFailed: 'Instruments could not be loaded',
     noClient: 'No API client available',
+    apiOfflineTitle: 'Service unreachable',
+    apiOfflineBody:
+      'StockPortfolio gets its prices from a StockInfo instance. That address is not answering — until it is back, the last loaded prices remain in use; their age is shown in the header.',
+    apiOfflineRetry: 'Check again',
+    apiOfflineSettings: 'Go to status page',
     unknownError: 'Unknown error',
     quotesMissingBody: '{quotes} could not be loaded — {details}',
     targetsExceededTitle: 'Targets above 100 %',

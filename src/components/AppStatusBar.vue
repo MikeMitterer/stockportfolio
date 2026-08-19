@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted } from 'vue'
+import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { UxStatusBar } from '@mmit/ux-foundation'
@@ -34,10 +34,12 @@ const quotesStore = useQuotesStore()
 
 const quoteAge = useRelativeTime(computed(() => quotesStore.lastRefreshAt))
 
-onMounted(() => {
-  // Nur, wenn noch niemand geprüft hat — die Einstellungen tun dasselbe.
-  if (apiStatus.state === 'unknown') void apiStatus.check(client)
-})
+/*
+ * Geprüft wird nicht mehr hier, sondern in `App.vue`: Diese Zeile zeigt den
+ * Zustand an, sie ermittelt ihn nicht. Der Unterschied wurde praktisch, als der
+ * Ausfall auch gemeldet werden sollte — eine Meldung, die aus der Statuszeile
+ * käme, hinge an einem Bauteil, das nur anzeigt.
+ */
 
 const stateLabel = computed<Record<string, string>>(() => ({
   unknown: t('status.apiUnknown'),

@@ -22,6 +22,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { useQuotesStore } from '@/stores/quotes'
+import { useApiStatusStore } from '@/stores/apiStatus'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { newId } from '@/db/seed'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
@@ -36,6 +37,7 @@ if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 const quotesStore = useQuotesStore()
+const apiStatus = useApiStatusStore()
 const instrumentsStore = useInstrumentsStore()
 
 // Unterhalb von `md` tritt die Leseansicht an die Stelle der Tabelle. Die
@@ -349,14 +351,24 @@ onMounted(async () => {
   // Zuerst den persistierten Cache zeigen, dann im Hintergrund aktualisieren.
   await quotesStore.hydrate()
 
-  // Mit Schonfrist: Ein Wechsel zwischen den Ansichten baut die Seite neu auf
-  // und löste sonst jedes Mal einen vollen Durchgang aus.
+  /*
+   * Erst fragen, dann laden.
+   *
+   * Mit Schonfrist, weil ein Wechsel zwischen den Ansichten die Seite neu
+   * aufbaut und sonst jedes Mal einen vollen Durchgang auslöste — und erst
+   * nach dem Health-Check, weil ein toter Dienst sonst je Position eine
+   * Zeitüberschreitung kostet und die App hinterher „Kurse fehlen" meldet.
+   * Zwei Meldungen für eine Ursache, die vorher feststand.
+   */
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    await quotesStore.loadQuotesIfStale(
-      client,
-      portfolioStore.positions,
-      settingsStore.settings.refresh.staleAfterMinutes,
-    )
+    const zustand = await apiStatus.ensureChecked(client)
+    if (zustand !== 'offline') {
+      await quotesStore.loadQuotesIfStale(
+        client,
+        portfolioStore.positions,
+        settingsStore.settings.refresh.staleAfterMinutes,
+      )
+    }
   }
 
   // Ältere Positionen kennen ihre Gattung nicht — jetzt, wo die Kurse da

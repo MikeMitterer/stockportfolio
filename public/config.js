@@ -8,4 +8,4 @@
  * `STOCKINFO_API_URL` — dadurch spricht dasselbe Abbild je nach Umgebung ein
  * anderes Backend an, ohne neu gebaut zu werden.
  */
-window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: '' }
+window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: '', container: false }

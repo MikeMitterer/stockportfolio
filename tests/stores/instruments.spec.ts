@@ -84,9 +84,30 @@ describe('useInstrumentsStore — load', () => {
 
     await expect(store.load(client)).resolves.toBeUndefined()
 
-    expect(store.error).toBe('Katalog nicht erreichbar')
+    expect(store.error).toContain('Katalog nicht erreichbar')
+    expect(store.error).toContain('503')
     expect(store.instruments).toHaveLength(0)
     expect(store.loading).toBe(false)
+  })
+
+  /**
+   * Der Fall aus der Praxis: falsche `VITE_STOCKINFO_API_URL` in der `.env`.
+   * Die Meldung lautete nur „Netzwerkfehler" — sie nannte weder die Adresse
+   * noch den Grund, und die Papiere sind die einzige Ansicht, die überhaupt
+   * etwas sagt.
+   */
+  it('nennt bei ausbleibender Antwort die angefragte Adresse', async () => {
+    const client = {
+      getInstruments: vi.fn(async () => {
+        throw new ApiError(0, 'Failed to fetch', 'https://falsch.example/instruments')
+      }),
+    } as unknown as StockInfoClient
+    const store = useInstrumentsStore()
+
+    await store.load(client)
+
+    expect(store.error).toContain('https://falsch.example/instruments')
+    expect(store.error).toContain('Failed to fetch')
   })
 })
 

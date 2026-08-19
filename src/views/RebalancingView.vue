@@ -20,6 +20,7 @@ import {
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
+import { useApiStatusStore } from '@/stores/apiStatus'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
@@ -30,6 +31,7 @@ const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 const quotesStore = useQuotesStore()
+const apiStatus = useApiStatusStore()
 
 const ready = computed(() => portfolioStore.loaded && settingsStore.loaded)
 const hasHoldings = computed(() => portfolioStore.hasHoldings)
@@ -44,14 +46,18 @@ onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
   await quotesStore.hydrate()
-  // Mit Schonfrist — siehe `loadQuotesIfStale`; der Wechsel hierher soll nicht
-  // jedes Mal alle Kurse neu holen.
+  // Mit Schonfrist — siehe `loadQuotesIfStale` — und erst nach dem
+  // Health-Check: Gegen einen toten Dienst zu laden kostet je Position eine
+  // Zeitüberschreitung und meldet hinterher fehlende Kurse.
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    await quotesStore.loadQuotesIfStale(
-      client,
-      portfolioStore.positions,
-      settingsStore.settings.refresh.staleAfterMinutes,
-    )
+    const zustand = await apiStatus.ensureChecked(client)
+    if (zustand !== 'offline') {
+      await quotesStore.loadQuotesIfStale(
+        client,
+        portfolioStore.positions,
+        settingsStore.settings.refresh.staleAfterMinutes,
+      )
+    }
   }
 })
 

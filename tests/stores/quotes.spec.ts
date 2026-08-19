@@ -503,7 +503,10 @@ describe('useQuotesStore — refreshOne', () => {
     await store.refreshOne(client, makePosition({ symbol: 'AAA.DE' }))
 
     expect(store.failures).toHaveLength(1)
-    expect(store.failures[0]?.reason).toBe('Upstream weg')
+    // Mit Statuscode: „Upstream weg" allein sagt nicht, ob der Dienst
+    // geantwortet hat oder gar nicht erst erreichbar war.
+    expect(store.failures[0]?.reason).toContain('Upstream weg')
+    expect(store.failures[0]?.reason).toContain('503')
   })
 
   it('persistiert den aktualisierten Kurs', async () => {

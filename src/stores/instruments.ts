@@ -11,7 +11,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { consola } from 'consola'
 import { translate } from '@/i18n'
-import { ApiError } from '@/api/errors'
+import { ApiError, describeFailure } from '@/api/errors'
 import { cacheKeyOf } from '@/api/mappers'
 import { AllowlistRepository } from '@/db/repository'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -72,8 +72,10 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       allowlistFor.value = portfolioId
       loaded.value = true
     } catch (cause) {
+      // `describeFailure` statt `detail`: Bei falscher Adresse stand hier nur
+      // „Netzwerkfehler" — ohne die Adresse und ohne den Ort, an dem sie steht.
       error.value =
-        cause instanceof ApiError ? cause.detail : translate('notify.assetsFailed')
+        cause instanceof ApiError ? describeFailure(cause) : translate('notify.assetsFailed')
       consola.error('instruments: Laden fehlgeschlagen', { reason: error.value })
     } finally {
       loading.value = false

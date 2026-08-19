@@ -22,9 +22,13 @@ API_URL="${STOCKINFO_API_URL:-}"
 # landet unverändert in einer JavaScript-Datei.
 ESCAPED=$(printf '%s' "${API_URL}" | sed 's/\\/\\\\/g; s/"/\\"/g')
 
+# `container: true` unterscheidet diese Datei von der Platzhalter-Fassung aus
+# `public/`. Beide tragen bei fehlender Variable eine leere Adresse — ohne das
+# Kennzeichen riete eine Fehlermeldung im Container zur `.env`, die es dort
+# nicht gibt, statt zu STOCKINFO_API_URL.
 cat > "${CONFIG_FILE}" <<CONFIG
 /* Beim Start des Containers erzeugt — nicht bearbeiten. */
-window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: "${ESCAPED}" }
+window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: "${ESCAPED}", container: true }
 CONFIG
 
 if [ -n "${API_URL}" ]; then

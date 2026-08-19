@@ -174,11 +174,29 @@ export const de = {
     counts: 'zählt | zählen',
   },
 
+  /*
+   * Woher die Adresse des Dienstes stammt. Steht in jeder Meldung, die eine
+   * unerreichbare Adresse nennt — sonst weiß niemand, wo er sie ändert.
+   */
+  errors: {
+    urlFrom: {
+      runtime: 'Adresse aus STOCKINFO_API_URL des Containers',
+      'container-build':
+        'STOCKINFO_API_URL ist am Container nicht gesetzt — es gilt der Wert aus dem Bau',
+      build: 'Adresse aus .env beim Bauen (VITE_STOCKINFO_API_URL)',
+    },
+  },
+
   notify: {
     quotesMissingTitle: 'Kurse fehlen',
     historyFailed: 'Kursverlauf konnte nicht geladen werden',
     assetsFailed: 'Instrumente konnten nicht geladen werden',
     noClient: 'Kein API-Client verfügbar',
+    apiOfflineTitle: 'Dienst nicht erreichbar',
+    apiOfflineBody:
+      'StockPortfolio holt seine Kurse von einer StockInfo-Instanz. Diese Adresse antwortet nicht — bis sie wieder erreichbar ist, gelten die zuletzt geladenen Kurse weiter, erkennbar am Alter in der Kopfzeile.',
+    apiOfflineRetry: 'Erneut prüfen',
+    apiOfflineSettings: 'Zur Statusseite',
     unknownError: 'Unbekannter Fehler',
     quotesMissingBody: '{quotes} konnten nicht geladen werden — {details}',
     targetsExceededTitle: 'Ziele über 100 %',

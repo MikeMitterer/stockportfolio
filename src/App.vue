@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import {
   NConfigProvider,
   NMessageProvider,
-  NNotificationProvider,
   NDialogProvider,
   NLoadingBarProvider,
   darkTheme,
@@ -18,13 +17,15 @@ import {
 import AppStatusBar from '@/components/AppStatusBar.vue'
 import AppTopbar from '@/components/AppTopbar.vue'
 import AppProgressBar from '@/components/AppProgressBar.vue'
+import AppApiAlert from '@/components/AppApiAlert.vue'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { useMinimumDuration } from '@/composables/useMinimumDuration'
+import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
-import { buildNaiveOverrides, UxAppShell } from '@mmit/ux-foundation'
+import { buildNaiveOverrides, UxAppShell, UxNotificationProvider } from '@mmit/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
@@ -35,6 +36,7 @@ const { t } = useI18n()
 
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
+const apiStatus = useApiStatusStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
@@ -85,7 +87,25 @@ localeStore.init()
 
 onMounted(() => {
   naiveOverrides.value = buildNaiveOverrides()
+
+  /*
+   * Einmal beim Start gegen den Dienst klopfen.
+   *
+   * Vorher tat das die Statuszeile, und das Ergebnis blieb im Ampelpunkt unten
+   * rechts stecken: Wer eine falsche Adresse konfiguriert hatte, merkte es erst
+   * auf der Papiere-Seite — der einzigen Ansicht, die den Fehler ausspricht.
+   * Die Kurse fallen still auf den Cache zurück und schweigen.
+   */
+  if (client && apiStatus.state === 'unknown') void apiStatus.check(client)
+
 })
+
+/*
+ * Die Meldung dazu steht in `AppApiAlert` — sie braucht den
+ * NotificationProvider über sich, und der wird hier erst im Template
+ * aufgespannt. Ein `useNotifier()` an dieser Stelle findet ihn nicht und reißt
+ * beim Start die ganze Oberfläche mit.
+ */
 
 watch(
   () => themeStore.current,
@@ -106,9 +126,23 @@ watch(
  * Seitenaufruf ist das richtig und schont beide Seiten — wer aber selbst auf
  * einen Knopf drückt, erwartet, dass etwas passiert, und nicht dieselbe Zahl.
  */
-function refresh(): void {
+async function refresh(): Promise<void> {
   if (!client) return
-  void quotesStore.loadQuotes(client, portfolioStore.positions, { force: true })
+
+  /*
+   * Erst nachsehen, ob überhaupt jemand da ist.
+   *
+   * Gegen einen toten Dienst zu laden kostet je Position eine
+   * Zeitüberschreitung und meldet hinterher „Kurse fehlen" — für eine Ursache,
+   * die der rote Punkt längst zeigt. Anders als beim automatischen Laden wird
+   * hier **neu** geprüft: Wer drückt, will wissen, ob es wieder geht.
+   */
+  if (apiStatus.state === 'offline') {
+    await apiStatus.check(client)
+    if (apiStatus.state === 'offline') return
+  }
+
+  await quotesStore.loadQuotes(client, portfolioStore.positions, { force: true })
 }
 </script>
 
@@ -128,7 +162,15 @@ function refresh(): void {
     <NLoadingBarProvider>
       <NMessageProvider>
         <NDialogProvider>
-          <NNotificationProvider :max="3">
+          <!--
+            Der Anker aus dem Fundament, nicht Naives eigener: Der setzt
+            Meldungen zwölf Pixel unter den oberen Rand — also über die
+            klebende Kopfzeile, wo sie zu zwei Dritteln dahinter verschwinden.
+            `UxNotificationProvider` legt den Versatz auf `--toast-top`.
+          -->
+          <UxNotificationProvider :max="3">
+            <!-- Zeichnet nichts; meldet nur, wenn der Dienst schweigt. -->
+            <AppApiAlert />
             <!--
               Spaltenlayout, Grundfläche und die Frage, warum `position:
               sticky` allein die Statuszeile nicht unten hält, stehen im
@@ -159,7 +201,7 @@ function refresh(): void {
                 <AppStatusBar />
               </template>
             </UxAppShell>
-          </NNotificationProvider>
+          </UxNotificationProvider>
         </NDialogProvider>
       </NMessageProvider>
     </NLoadingBarProvider>

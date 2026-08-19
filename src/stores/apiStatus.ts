@@ -17,28 +17,10 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { translate } from '@/i18n'
-import { ApiError } from '@/api/errors'
+import { ApiError, describeFailure } from '@/api/errors'
 import type { StockInfoClient } from '@/api/client'
 
 export type ApiState = 'unknown' | 'checking' | 'online' | 'offline'
-
-/**
- * Übersetzt einen Fehler in einen Satz, der weiterhilft.
- *
- * „nicht erreichbar" allein sagt nicht, ob die Adresse falsch ist, das Netz
- * fehlt oder der Dienst streikt. Bei ausbleibender Antwort (Status 0) steht
- * deshalb die angefragte Adresse dabei — dort liegt die Ursache meist.
- *
- * @param cause Der aufgetretene Fehler.
- */
-function describeFailure(cause: unknown): string {
-  if (cause instanceof ApiError) {
-    return cause.status === 0
-      ? `${cause.detail} — keine Antwort von ${cause.url}`
-      : `${cause.detail} (HTTP ${cause.status})`
-  }
-  return cause instanceof Error ? cause.message : translate('notify.unknownError')
-}
 
 export const useApiStatusStore = defineStore('apiStatus', () => {
   const state = ref<ApiState>('unknown')
@@ -46,7 +28,23 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
   const version = ref<string | null>(null)
   const latencyMs = ref<number | null>(null)
   const checkedAt = ref<string | null>(null)
+
+  /*
+   * Das gerade laufende Versprechen — kein `ref`, weil es niemand anzeigt.
+   * Es sorgt dafür, dass gleichzeitig startende Ansichten sich denselben
+   * Health-Check teilen, statt je einen eigenen loszuschicken.
+   */
+  let laufenderCheck: Promise<void> | null = null
   const error = ref<string | null>(null)
+
+  /**
+   * Die Adresse, die nicht geantwortet hat — getrennt vom Satz darüber.
+   *
+   * Damit die Oberfläche sie anklickbar machen kann: Wer eine falsche Adresse
+   * sieht, will sie ausprobieren, statt sie abzutippen. Aus dem fertigen Satz
+   * ließe sie sich nur per Regex herausschneiden.
+   */
+  const errorUrl = ref<string | null>(null)
 
   /**
    * Fragt `/health` ab.
@@ -62,6 +60,7 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
 
     state.value = 'checking'
     error.value = null
+    errorUrl.value = null
     const started = performance.now()
 
     try {
@@ -70,6 +69,7 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
       status.value = response.status
       version.value = response.version
       state.value = 'online'
+      errorUrl.value = null
     } catch (cause) {
       latencyMs.value = Math.round(performance.now() - started)
       // Alte Werte verwerfen: Sonst stünde eine Version auf der Seite, die
@@ -78,13 +78,37 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
       version.value = null
       state.value = 'offline'
       error.value = describeFailure(cause)
+      errorUrl.value = cause instanceof ApiError ? cause.url : null
       consola.warn('status: Health-Check fehlgeschlagen', { reason: error.value })
     } finally {
       checkedAt.value = new Date().toISOString()
     }
   }
 
-  return { state, status, version, latencyMs, checkedAt, error, check }
+  /**
+   * Läuft der Dienst? Fragt höchstens einmal und teilt die Antwort.
+   *
+   * Vorher liefen Health-Check und Kursabruf gleichzeitig los: Wenn die
+   * Ansichten luden, wusste noch niemand, dass der Dienst tot ist — acht
+   * Abrufe liefen in ihre Zeitüberschreitung, und hinterher meldete die App
+   * „8 Kurse fehlen". Zwei Meldungen für eine Ursache, die vorher feststand.
+   *
+   * Das laufende Versprechen wird geteilt, damit gleichzeitig startende
+   * Ansichten nicht je einen eigenen Check auslösen. Ein ausdrückliches
+   * `check()` bleibt davon unberührt — wer nachsieht, will es wirklich wissen.
+   *
+   * @returns Der Zustand nach der Prüfung; wirft nie.
+   */
+  async function ensureChecked(client: StockInfoClient): Promise<ApiState> {
+    if (state.value === 'online' || state.value === 'offline') return state.value
+    laufenderCheck ??= check(client).finally(() => {
+      laufenderCheck = null
+    })
+    await laufenderCheck
+    return state.value
+  }
+
+  return { state, status, version, latencyMs, checkedAt, error, check, ensureChecked, errorUrl }
 })
 
 /*
