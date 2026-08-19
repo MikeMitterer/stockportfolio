@@ -120,15 +120,42 @@ build ✓.
 **Findings:**
 
 Der eigentliche Befund kam erst beim Testen und war kein Anzeigefehler: Die
-beiden Knöpfe rufen verschiedene Endpunkte. Die Kopfzeile liest über
-`getQuoteByIsin` den Cache des Dienstes, der Drilldown erzwingt mit
-`refreshByIsin` den Server-Refresh. Deshalb war global nichts zu sehen.
+beiden Knöpfe rufen verschiedene Endpunkte. Nachgesehen wurde im Dienst selbst
+(`${DEV_LOCAL}/DevWeb/Production/StockInfo`), nicht geraten:
 
-**Offen, bewusst nicht entschieden:** Ob der globale Knopf überhaupt nur den
-Cache lesen soll. Er heißt „Aktualisieren" und tut damit etwas anderes als
-derselbe Knopf an einer einzelnen Zeile. Das kann Absicht sein — bei vielen
-Positionen wären es ebenso viele erzwungene Server-Refreshes auf einmal. Wenn
-nicht, ist es ein eigenes Ticket.
+| Endpunkt | Was passiert | Beleg (StockInfo) |
+|---|---|---|
+| `GET /quote/{isin}` | Liegt der letzte Kurs in der SQLite-DB des Dienstes und ist jünger als die TTL, kommt er von dort; sonst wird live beschafft und gespeichert | `app/services/quote_cache.py:509` |
+| `POST /refresh/{isin}` | „Umgeht die TTL bewusst" — immer live über yfinance und justETF | `app/services/quote_cache.py:268` |
+
+Die TTL ist `Settings.cache_ttl_hours`, Vorgabe **6 Stunden**
+(`app/config.py:27`).
+
+Wichtig ist die Folge daraus, und sie war anfangs falsch beschrieben: Der
+globale Knopf liest **nicht** immer nur Zwischengespeichertes. Er respektiert
+die TTL — innerhalb von sechs Stunden antwortet SQLite in Millisekunden, danach
+holt er genauso frisch wie der Einzelknopf und dauert dann auch. Derselbe Knopf
+hat also je nach Zeitpunkt zwei völlig verschiedene Laufzeiten. Genau deshalb
+braucht die Anzeige die Mindestdauer: Sie darf nicht davon abhängen, ob gerade
+zufällig ein Netzabruf nötig war.
+
+Zwei Dinge, die dabei mit auffielen und **nicht** zu diesem Ticket gehören:
+
+- Fällt die Live-Beschaffung aus, liefert `_get` den alten Wert als `stale`
+  statt eines Fehlers (`quote_cache.py:519`). Das erklärt, warum in
+  StockPortfolio selten `failures` auflaufen.
+- Der Dienst kennt `POST /refresh` für alle Instrumente, mit Lock und `409` bei
+  laufendem Durchgang (`app/routers/dashboard.py:107`), sowie
+  `POST /refresh/by-symbol/{symbol}`. Der Client dieser App bietet von beiden
+  nichts an — er kennt nur `refreshByIsin`. Ein Papier **ohne** ISIN bekommt
+  deshalb auch im Drilldown keinen echten Refresh, sondern still ein
+  `getQuoteBySymbol` (`src/stores/quotes.ts:137`).
+
+**Entschieden, aber nicht hier umgesetzt:** Das unterschiedliche Verhalten ist
+unintuitiv. Wer einen Knopf drückt, will, dass aktiv etwas passiert — die TTL
+zu berücksichtigen ist beim automatischen Laden einer Seite richtig und sauber,
+bei einem ausdrücklichen Klick nicht. Der globale Knopf soll also einen echten
+Refresh auslösen. Das ist ein eigenes Ticket.
 
 Was kein Test sagt: ob sich 0,4 s richtig anfühlen. Die Zahl steht als
 `MIN_VISIBLE_MS` an einer Stelle.
