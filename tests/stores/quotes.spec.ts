@@ -564,3 +564,123 @@ describe('useQuotesStore — refreshOne', () => {
     expect([...store.refreshing]).toEqual([])
   })
 })
+
+/**
+ * Was der Code-Review vom 2026-08-19 gefunden hat.
+ *
+ * Alle drei Fälle haben denselben Kern: Der Store behandelt „ist fertig" und
+ * „hat etwas erreicht" als dasselbe — beim Zeitstempel, beim leeren Aufruf und
+ * bei zwei Läufen gleichzeitig.
+ */
+describe('useQuotesStore — Zustand bei Fehlschlag und Überlappung', () => {
+  it('stempelt den Zeitstempel nicht, wenn kein einziger Kurs ankam', async () => {
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async () => {
+        throw new ApiError(503, 'Dienst weg', '/quote')
+      }) as unknown as StockInfoClient['getQuoteByIsin'],
+    })
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition()])
+
+    expect(store.lastRefreshAt).toBeNull()
+  })
+
+  /**
+   * Der eigentliche Schaden: Ein Totalausfall galt als frischer Abruf, und die
+   * Schonfrist aus T-33 unterband danach jede Wiederholung — bei der Vorgabe
+   * von 60 Minuten also eine Stunde lang.
+   */
+  it('lässt nach einem Totalausfall sofort wieder laden', async () => {
+    let scheitern = true
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async (isin: string) => {
+        if (scheitern) throw new ApiError(503, 'Dienst weg', '/quote')
+        return makeQuoteResponse('AAA.DE', 100, isin)
+      }) as unknown as StockInfoClient['getQuoteByIsin'],
+    })
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition()])
+    scheitern = false
+    await store.loadQuotesIfStale(client, [makePosition()], 60)
+
+    expect(store.quotes.get('IE0000000001')?.price).toBe(100)
+  })
+
+  it('stempelt weiterhin, wenn wenigstens ein Kurs ankam', async () => {
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async (isin: string) => {
+        if (isin === 'IE0000000002') throw new ApiError(503, 'Dienst weg', '/quote')
+        return makeQuoteResponse('AAA.DE', 100, isin)
+      }) as unknown as StockInfoClient['getQuoteByIsin'],
+    })
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [
+      makePosition({ id: 'a', isin: 'IE0000000001' }),
+      makePosition({ id: 'b', isin: 'IE0000000002' }),
+    ])
+
+    expect(store.lastRefreshAt).not.toBeNull()
+  })
+
+  /**
+   * Der Aktualisieren-Knopf steht in der Kopfzeile und damit auf jeder Route —
+   * auch dort, wo das Depot gar nicht geladen ist. Ein Klick durfte nie den
+   * gesamten Kursbestand löschen.
+   */
+  it('leert den Cache nicht, wenn gar keine Positionen übergeben werden', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition()])
+    await store.loadQuotes(client, [], { force: true })
+
+    expect(store.quotes.size).toBe(1)
+    expect(await new QuoteCacheRepository().loadAll()).toHaveProperty('size', 1)
+  })
+
+  it('leert ihn sehr wohl, wenn das Depot nur noch Cash enthält', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition()])
+    await store.loadQuotes(client, [makePosition({ id: 'c', isin: null, group: 'cash' })])
+
+    expect(store.quotes.size).toBe(0)
+  })
+
+  /**
+   * Zwei Läufe können sich überlappen: Der automatische Abruf läuft noch,
+   * während der Klick einen zweiten startet. Der schnellere darf den Zustand
+   * des langsameren nicht abräumen — sonst hört der Spinner auf, der Knopf
+   * entsperrt sich, und der Nutzer drückt ein drittes Mal.
+   */
+  it('hält den Ladezustand, bis auch der zweite Lauf fertig ist', async () => {
+    // Halter statt loser Variable: TypeScript verengt eine `let`-Bindung, die
+    // nur in einer Closure beschrieben wird, sonst auf `never`.
+    const langsam: { aufloesen: (() => void) | null } = { aufloesen: null }
+    const client = mockClient({
+      refreshByIsin: vi.fn(
+        () =>
+          new Promise((resolve) => {
+            langsam.aufloesen = () => resolve(makeQuoteResponse('AAA.DE', 999, 'IE0000000001'))
+          }),
+      ) as unknown as StockInfoClient['refreshByIsin'],
+    })
+    const store = useQuotesStore()
+
+    const erzwungen = store.loadQuotes(client, [makePosition()], { force: true })
+    await store.loadQuotes(client, [makePosition()]) // schneller Lauf, dazwischen
+
+    expect(store.forcing).toBe(true)
+    expect(store.busy).toBe(true)
+
+    langsam.aufloesen?.()
+    await erzwungen
+
+    expect(store.forcing).toBe(false)
+    expect(store.busy).toBe(false)
+  })
+})

@@ -78,9 +78,15 @@ const context = computed(() => {
   return name ? `${name}, ${count}` : count
 })
 
-/** Alter der Kurse — jede Kennzahl der App hängt daran. */
+/**
+ * Alter der Kurse — jede Kennzahl der App hängt daran.
+ *
+ * `busy` und nicht `loading`: Letzteres setzt nur der Sammelabruf, nicht der
+ * Einzel-Refresh im Drilldown. Die Zeile behauptete dort ein Alter, während
+ * oben sichtbar geladen wurde — drei Anzeigen, zwei Meinungen.
+ */
 const dataAge = computed(() => {
-  const wert = quotesStore.loading ? t('status.quotesLoading') : quoteAge.value
+  const wert = quotesStore.busy ? t('status.quotesLoading') : quoteAge.value
   return `${t('status.quotes')} ${wert}`
 })
 

@@ -32,7 +32,18 @@ export const useQuotesStore = defineStore('quotes', () => {
   const repository = new QuoteCacheRepository()
 
   const quotes = shallowRef<QuoteMap>(new Map())
-  const loading = ref<boolean>(false)
+  /*
+   * Zähler statt Schalter — aus demselben Grund wie beim Fortschritt.
+   *
+   * Zwei Durchgänge können sich überlappen: Der automatische Abruf holt noch,
+   * während der Klick einen zweiten startet. Als Schalter räumte der schneller
+   * fertige den Zustand des langsameren ab — der Spinner hörte auf, der Knopf
+   * entsperrte sich mitten im Abruf, und der nächste Klick war eingeladen.
+   */
+  const loadingRuns = ref<number>(0)
+  const forcingRuns = ref<number>(0)
+
+  const loading = computed<boolean>(() => loadingRuns.value > 0)
   /**
    * Positionen, deren Kurs gerade einzeln geholt wird — daran hängt der
    * Spinner am Knopf im Drilldown.
@@ -62,7 +73,7 @@ export const useQuotesStore = defineStore('quotes', () => {
    * gab — und sperrt sich obendrein in einem Moment, in dem man ihn vielleicht
    * gerade drücken will.
    */
-  const forcing = ref<boolean>(false)
+  const forcing = computed<boolean>(() => forcingRuns.value > 0)
 
   const busy = computed<boolean>(() => progressTotal.value > 0)
 
@@ -135,10 +146,23 @@ export const useQuotesStore = defineStore('quotes', () => {
   }
 
   /** Übernimmt einen neuen Cache-Stand und schreibt ihn durch. */
-  async function commit(nextQuotes: QuoteMap, nextFailures: QuoteFailure[]): Promise<void> {
+  /**
+   * Übernimmt das Ergebnis eines Durchgangs.
+   *
+   * @param stamped Kam wenigstens ein Kurs an? Nur dann gilt der Bestand als
+   *   aufgefrischt. Der Zeitstempel stand vorher auch nach einem Totalausfall
+   *   auf „jetzt" — zusammen mit der Schonfrist beim automatischen Laden hieß
+   *   das: Ein Ausfall von dreißig Sekunden fror die Kurse für eine Stunde
+   *   ein, weil jeder Ansichtswechsel sie für frisch hielt.
+   */
+  async function commit(
+    nextQuotes: QuoteMap,
+    nextFailures: QuoteFailure[],
+    stamped = true,
+  ): Promise<void> {
     quotes.value = nextQuotes
     failures.value = nextFailures
-    lastRefreshAt.value = new Date().toISOString()
+    if (stamped) lastRefreshAt.value = new Date().toISOString()
     await repository.replaceAll(nextQuotes)
   }
 
@@ -157,14 +181,24 @@ export const useQuotesStore = defineStore('quotes', () => {
   ): Promise<void> {
     const relevant = positions.filter((position) => position.enabled && position.group !== 'cash')
     if (relevant.length === 0) {
-      await commit(new Map(), [])
+      /*
+       * Zwei sehr verschiedene Fälle, die vorher gleich behandelt wurden.
+       *
+       * Enthält das Depot nur noch Cash oder abgeschaltete Papiere, gehören die
+       * alten Kurse tatsächlich weg. Kommt dagegen eine **leere** Liste herein,
+       * ist meist nur nichts geladen — der Aktualisieren-Knopf steht in der
+       * Kopfzeile und damit auf jeder Route, auch auf der Methodenseite, die
+       * das Depot nie lädt. Ein Klick dort löschte den gesamten Kursbestand
+       * samt IndexedDB, ohne dass irgendetwas darauf hindeutete.
+       */
+      if (positions.length > 0) await commit(new Map(), [])
       return
     }
 
     const force = options.force ?? false
 
-    loading.value = true
-    if (force) forcing.value = true
+    loadingRuns.value += 1
+    if (force) forcingRuns.value += 1
     beginProgress(relevant.length)
     failures.value = []
 
@@ -180,7 +214,10 @@ export const useQuotesStore = defineStore('quotes', () => {
         },
       )
       const sorted = sortOutcomes(results, quotes.value)
-      await commit(sorted.quotes, sorted.failures)
+      // Kam gar nichts an, ist der Bestand nicht aufgefrischt — dann darf auch
+      // der Zeitstempel nicht so tun.
+      const angekommen = results.some((outcome) => outcome.entry !== null)
+      await commit(sorted.quotes, sorted.failures, angekommen)
 
       if (sorted.failures.length > 0) {
         consola.warn('quotes: Kurse teilweise nicht geladen', {
@@ -189,8 +226,8 @@ export const useQuotesStore = defineStore('quotes', () => {
         })
       }
     } finally {
-      loading.value = false
-      forcing.value = false
+      loadingRuns.value -= 1
+      if (force) forcingRuns.value -= 1
     }
   }
 
