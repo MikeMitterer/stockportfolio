@@ -97,7 +97,12 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
   // Dämpfung, die beim Überfahren des Kopfes aufhellt.
   &__chevron {
     opacity: 0.5;
-    transition: opacity 0.15s ease;
+    // `transform` muss mitgeführt werden: Das Kurzschreiben setzt
+    // `transition-property` neu und hätte sonst die Drehung aus `UxCaret`
+    // gestrichen — der Pfeil sprang um.
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
   }
 
   &__dot {

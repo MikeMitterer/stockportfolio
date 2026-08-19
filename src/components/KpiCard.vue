@@ -150,6 +150,19 @@ const emit = defineEmits<{
     &:hover .kpi__chevron { opacity: 1; }
   }
 
+  /*
+   * Grafik richtet sich mittig aus, nicht an der Grundlinie.
+   *
+   * Die Zeile steht auf `baseline` — richtig für Etikett und Betrag, die
+   * dadurch auf einer Linie sitzen. Ein SVG hat seine Grundlinie aber an der
+   * Unterkante: Verlauf und Pfeil sackten damit an den unteren Zeilenrand,
+   * statt neben dem Wert zu stehen.
+   */
+  &__trend,
+  &__chevron {
+    align-self: center;
+  }
+
   &__trend { flex-shrink: 0; }
 
   /*
@@ -160,7 +173,12 @@ const emit = defineEmits<{
    */
   &__chevron {
     opacity: 0.4;
-    transition: opacity 0.15s ease;
+    // `transform` muss mitgeführt werden: Das Kurzschreiben setzt
+    // `transition-property` neu und hätte sonst die Drehung aus `UxCaret`
+    // gestrichen — der Pfeil sprang um.
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
   }
 
   &__hint {
