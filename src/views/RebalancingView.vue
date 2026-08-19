@@ -44,8 +44,14 @@ onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
   await quotesStore.hydrate()
+  // Mit Schonfrist — siehe `loadQuotesIfStale`; der Wechsel hierher soll nicht
+  // jedes Mal alle Kurse neu holen.
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    await quotesStore.loadQuotes(client, portfolioStore.positions)
+    await quotesStore.loadQuotesIfStale(
+      client,
+      portfolioStore.positions,
+      settingsStore.settings.refresh.staleAfterMinutes,
+    )
   }
 })
 

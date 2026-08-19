@@ -84,6 +84,20 @@ export class StockInfoClient {
     return this.request<QuoteResponse>(`/refresh/${encodeURIComponent(isin)}`, 'POST')
   }
 
+  /**
+   * Dasselbe für Papiere ohne ISIN.
+   *
+   * Ohne diesen Weg fiel ein solches Papier still auf `getQuoteBySymbol`
+   * zurück — der Dienst hätte dann seine TTL angewandt, und ein Knopf namens
+   * „neu laden" hätte den zwischengespeicherten Kurs geliefert.
+   */
+  async refreshBySymbol(symbol: string): Promise<QuoteResponse> {
+    return this.request<QuoteResponse>(
+      `/refresh/by-symbol/${encodeURIComponent(symbol)}`,
+      'POST',
+    )
+  }
+
   /** Health-Check der API. */
   async health(): Promise<HealthResponse> {
     return this.request<HealthResponse>('/health')

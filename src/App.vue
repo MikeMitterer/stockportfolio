@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import {
   NConfigProvider,
   NMessageProvider,
@@ -16,6 +17,7 @@ import {
 } from 'naive-ui'
 import AppStatusBar from '@/components/AppStatusBar.vue'
 import AppTopbar from '@/components/AppTopbar.vue'
+import AppProgressBar from '@/components/AppProgressBar.vue'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { useMinimumDuration } from '@/composables/useMinimumDuration'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -28,6 +30,9 @@ import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 
+// Die Leiste kennt die App nicht — ihre Beschriftung kommt fertig übersetzt herein.
+const { t } = useI18n()
+
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
 const themeStore = useThemeStore()
@@ -37,13 +42,31 @@ const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
 
 /*
- * Der globale Abruf liest den Cache des Dienstes und ist nach Millisekunden
- * fertig — ohne Mindestdauer blitzte der Spinner auf, ohne dass ihn jemand
- * sah. Die Altersangabe hängt an derselben Größe, sonst liefen Spinner und
- * „…" auseinander.
+ * Zwei Anzeigen, zwei verschiedene Fragen.
+ *
+ * Der Balken oben sagt „im Hintergrund passiert etwas" und hängt deshalb an
+ * jedem Kursabruf. Der Spinner am Knopf sagt „dein Klick ist angekommen" und
+ * hängt allein am erzwungenen Abruf — sonst drehte er beim Seitenaufruf mit,
+ * ohne dass ihn jemand gedrückt hat, und wäre dabei gesperrt.
+ *
+ * Beide mit Mindestdauer: Ohne sie blitzen sie bei einem Abruf, der aus dem
+ * Speicher des Dienstes kommt, unbemerkt auf.
  */
-const refreshing = useMinimumDuration(computed(() => quotesStore.loading))
-const refreshLabel = computed(() => (refreshing.value ? '…' : ageLabel.value))
+const progressVisible = useMinimumDuration(computed(() => quotesStore.busy))
+const refreshing = useMinimumDuration(computed(() => quotesStore.forcing))
+
+/*
+ * Am Ende läuft die Leiste voll, statt zurückzuschnappen.
+ *
+ * Ist der letzte Kurs da, stellt der Store seine Zähler auf null — die Leiste
+ * steht wegen der Mindestdauer aber noch einen Moment. Ohne diese Zeile fiele
+ * sie in diesem Moment von 80 % auf den Anfang zurück und verschwände dann.
+ */
+const progressPercent = computed(() => (quotesStore.busy ? quotesStore.progressPercent : 100))
+
+// Die Altersangabe hängt am tatsächlichen Laden, nicht am Klick: Sie sagt, dass
+// die Zahl daneben gerade nicht stimmt — und das gilt in beiden Fällen.
+const refreshLabel = computed(() => (progressVisible.value ? '…' : ageLabel.value))
 
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
@@ -75,9 +98,17 @@ watch(
   },
 )
 
+/**
+ * Der ausdrückliche Klick auf „Aktualisieren".
+ *
+ * Mit `force`, und das ist der Unterschied zum automatischen Laden: Der Dienst
+ * antwortet sonst sechs Stunden lang aus seinem eigenen Speicher. Beim
+ * Seitenaufruf ist das richtig und schont beide Seiten — wer aber selbst auf
+ * einen Knopf drückt, erwartet, dass etwas passiert, und nicht dieselbe Zahl.
+ */
 function refresh(): void {
   if (!client) return
-  void quotesStore.loadQuotes(client, portfolioStore.positions)
+  void quotesStore.loadQuotes(client, portfolioStore.positions, { force: true })
 }
 </script>
 
@@ -103,6 +134,16 @@ function refresh(): void {
               sticky` allein die Statuszeile nicht unten hält, stehen im
               Fundament.
             -->
+            <!--
+              Außerhalb der Shell: Die Leiste klebt am Fensterrand, nicht am
+              Inhalt — sonst läge sie unter der Kopfzeile.
+            -->
+            <AppProgressBar
+              :active="progressVisible"
+              :percent="progressPercent"
+              :label="t('status.quotesLoading')"
+            />
+
             <UxAppShell>
               <template #topbar>
                 <AppTopbar

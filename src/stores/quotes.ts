@@ -7,7 +7,7 @@
  */
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
 import { consola } from 'consola'
 import { translate } from '@/i18n'
 import { ApiError } from '@/api/errors'
@@ -15,6 +15,7 @@ import { toQuoteCacheEntry } from '@/api/mappers'
 import { QuoteCacheRepository } from '@/db/repository'
 import { quoteKey } from '@/domain/rebalancing'
 import type { StockInfoClient } from '@/api/client'
+import type { QuoteResponse } from '@/api/types'
 import type { Position, QuoteCacheEntry, QuoteMap } from '@/types/portfolio'
 
 /** Maximale Anzahl gleichzeitiger Kursabfragen — schont die API. */
@@ -41,6 +42,48 @@ export const useQuotesStore = defineStore('quotes', () => {
    */
   const refreshing = ref<Set<string>>(new Set())
   const failures = ref<QuoteFailure[]>([])
+
+  /*
+   * Fortschritt über alle laufenden Abrufe, für den Balken am oberen Rand.
+   *
+   * Zwei Zähler statt eines Objekts je Vorgang: Es können mehrere gleichzeitig
+   * laufen — ein Einzel-Refresh, während der Seitenaufruf noch lädt —, und
+   * addierte Zahlen ergeben von selbst einen gemeinsamen Balken. Beide stehen
+   * auf 0, wenn nichts läuft.
+   */
+  const progressTotal = ref<number>(0)
+  const progressDone = ref<number>(0)
+
+  /**
+   * Läuft gerade ein **angestoßener** Abruf?
+   *
+   * Hängt allein am Klick, nicht am Laden überhaupt: Ein Knopf, der dreht,
+   * ohne dass ihn jemand gedrückt hat, behauptet eine Handlung, die es nicht
+   * gab — und sperrt sich obendrein in einem Moment, in dem man ihn vielleicht
+   * gerade drücken will.
+   */
+  const forcing = ref<boolean>(false)
+
+  const busy = computed<boolean>(() => progressTotal.value > 0)
+
+  const progressPercent = computed<number>(() =>
+    progressTotal.value === 0
+      ? 0
+      : Math.round((progressDone.value / progressTotal.value) * 100),
+  )
+
+  /** Meldet `count` beginnende Abrufe an. */
+  function beginProgress(count: number): void {
+    progressTotal.value += count
+  }
+
+  /** Meldet einen erledigten Abruf; der letzte setzt beide Zähler zurück. */
+  function stepProgress(): void {
+    progressDone.value += 1
+    if (progressDone.value < progressTotal.value) return
+    progressTotal.value = 0
+    progressDone.value = 0
+  }
   const lastRefreshAt = ref<string | null>(null)
 
   /** Lädt den persistierten Cache — zeigt sofort Werte, bevor das Netz antwortet. */
@@ -99,19 +142,42 @@ export const useQuotesStore = defineStore('quotes', () => {
     await repository.replaceAll(nextQuotes)
   }
 
-  async function loadQuotes(client: StockInfoClient, positions: Position[]): Promise<void> {
+  /**
+   * Lädt die Kurse aller Positionen.
+   *
+   * `force` gehört dem ausdrücklichen Klick: Wer „Aktualisieren" drückt, will
+   * frische Kurse und nicht dieselbe Zahl. Beim automatischen Laden — Seiten-
+   * aufruf, Ansichtswechsel, Depotwechsel — bleibt es bei der TTL des
+   * Dienstes; dort wäre ein Live-Abruf je Position pure Last ohne Anlass.
+   */
+  async function loadQuotes(
+    client: StockInfoClient,
+    positions: Position[],
+    options: { force?: boolean } = {},
+  ): Promise<void> {
     const relevant = positions.filter((position) => position.enabled && position.group !== 'cash')
     if (relevant.length === 0) {
       await commit(new Map(), [])
       return
     }
 
+    const force = options.force ?? false
+
     loading.value = true
+    if (force) forcing.value = true
+    beginProgress(relevant.length)
     failures.value = []
 
     try {
-      const results = await mapWithConcurrency(relevant, MAX_CONCURRENT_REQUESTS, (position) =>
-        fetchOne(client, position),
+      const results = await mapWithConcurrency(
+        relevant,
+        MAX_CONCURRENT_REQUESTS,
+        async (position) => {
+          // `fetchOne` wirft nie — der Schritt wird also in jedem Fall gezählt.
+          const outcome = await fetchOne(client, position, force)
+          stepProgress()
+          return outcome
+        },
       )
       const sorted = sortOutcomes(results, quotes.value)
       await commit(sorted.quotes, sorted.failures)
@@ -124,7 +190,45 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
     } finally {
       loading.value = false
+      forcing.value = false
     }
+  }
+
+  /**
+   * Lädt nur, wenn es sich lohnt — für das automatische Laden gedacht.
+   *
+   * Ein Wechsel zwischen den Ansichten baut die Seite neu auf und löste bisher
+   * jedes Mal einen vollen Durchgang aus: n Anfragen für Kurse, die zehn
+   * Sekunden alt sein konnten. Der Klick auf „Aktualisieren" geht weiter
+   * ungefragt durch — wer drückt, will neue Kurse.
+   *
+   * Die Frist gilt **nur für Vollständiges**: Fehlt einer Position ihr Kurs —
+   * gerade angelegt, letzter Abruf gescheitert —, wird geladen, sonst bliebe
+   * die Zeile bis zum Ende der Frist ohne Wert.
+   *
+   * @param maxAgeMinutes Alter, ab dem die Kurse als veraltet gelten.
+   */
+  async function loadQuotesIfStale(
+    client: StockInfoClient,
+    positions: Position[],
+    maxAgeMinutes: number,
+  ): Promise<void> {
+    if (!isStale(maxAgeMinutes) && hasQuoteForAll(positions)) return
+    await loadQuotes(client, positions)
+  }
+
+  /** Ist der letzte Abruf länger her als `maxAgeMinutes`? */
+  function isStale(maxAgeMinutes: number): boolean {
+    if (!lastRefreshAt.value) return true
+    const age = Date.now() - Date.parse(lastRefreshAt.value)
+    return Number.isNaN(age) || age >= maxAgeMinutes * 60_000
+  }
+
+  /** Hat jede Position, die einen Kurs haben kann, auch einen? */
+  function hasQuoteForAll(positions: Position[]): boolean {
+    return positions
+      .filter((position) => position.enabled && position.group !== 'cash')
+      .every((position) => quotes.value.has(quoteKey(position)))
   }
 
   /** Lädt den Kurs einer einzelnen Position neu (Server-Refresh erzwungen). */
@@ -133,11 +237,10 @@ export const useQuotesStore = defineStore('quotes', () => {
 
     const key = quoteKey(position)
     markRefreshing(position.id, true)
+    beginProgress(1)
 
     try {
-      const response = position.isin
-        ? await client.refreshByIsin(position.isin)
-        : await client.getQuoteBySymbol(position.symbol)
+      const response = await requestQuote(client, position, true)
 
       const entry = toQuoteCacheEntry(response)
       const next = new Map(quotes.value)
@@ -156,9 +259,10 @@ export const useQuotesStore = defineStore('quotes', () => {
         { key, symbol: position.symbol, reason },
       ]
     } finally {
-      // `finally`, nicht am Ende des `try`: Ein Fehlschlag darf den Knopf nicht
-      // ewig drehen lassen.
+      // `finally`, nicht am Ende des `try`: Ein Fehlschlag darf weder den Knopf
+      // ewig drehen lassen noch den Balken oben stehen.
       markRefreshing(position.id, false)
+      stepProgress()
     }
   }
 
@@ -177,10 +281,16 @@ export const useQuotesStore = defineStore('quotes', () => {
     quotes,
     loading,
     refreshing,
+    forcing,
+    busy,
+    progressTotal,
+    progressDone,
+    progressPercent,
     failures,
     lastRefreshAt,
     hydrate,
     loadQuotes,
+    loadQuotesIfStale,
     refreshOne,
   }
 })
@@ -201,13 +311,35 @@ interface FetchOutcome {
   reason?: string
 }
 
-/** Holt den Kurs einer Position — ISIN bevorzugt, Symbol als Fallback. */
-async function fetchOne(client: StockInfoClient, position: Position): Promise<FetchOutcome> {
+/**
+ * Wählt den Endpunkt für eine Position.
+ *
+ * Zwei Achsen: ISIN oder Symbol — und ob die TTL des Dienstes gilt. Ohne
+ * `force` liefert er innerhalb von sechs Stunden den Kurs aus seinem eigenen
+ * Speicher; mit `force` beschafft er ihn live.
+ */
+function requestQuote(
+  client: StockInfoClient,
+  position: Position,
+  force: boolean,
+): Promise<QuoteResponse> {
+  if (position.isin) {
+    return force ? client.refreshByIsin(position.isin) : client.getQuoteByIsin(position.isin)
+  }
+  return force
+    ? client.refreshBySymbol(position.symbol)
+    : client.getQuoteBySymbol(position.symbol)
+}
+
+/** Holt den Kurs einer Position und macht aus einem Fehler ein Ergebnis. */
+async function fetchOne(
+  client: StockInfoClient,
+  position: Position,
+  force: boolean,
+): Promise<FetchOutcome> {
   const key = quoteKey(position)
   try {
-    const response = position.isin
-      ? await client.getQuoteByIsin(position.isin)
-      : await client.getQuoteBySymbol(position.symbol)
+    const response = await requestQuote(client, position, force)
     return { key, symbol: position.symbol, entry: toQuoteCacheEntry(response) }
   } catch (error) {
     const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')

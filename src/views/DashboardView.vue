@@ -349,8 +349,14 @@ onMounted(async () => {
   // Zuerst den persistierten Cache zeigen, dann im Hintergrund aktualisieren.
   await quotesStore.hydrate()
 
+  // Mit Schonfrist: Ein Wechsel zwischen den Ansichten baut die Seite neu auf
+  // und löste sonst jedes Mal einen vollen Durchgang aus.
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    await quotesStore.loadQuotes(client, portfolioStore.positions)
+    await quotesStore.loadQuotesIfStale(
+      client,
+      portfolioStore.positions,
+      settingsStore.settings.refresh.staleAfterMinutes,
+    )
   }
 
   // Ältere Positionen kennen ihre Gattung nicht — jetzt, wo die Kurse da

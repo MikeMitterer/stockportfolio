@@ -68,6 +68,7 @@ function mockClient(overrides: Partial<StockInfoClient> = {}): StockInfoClient {
     getQuoteByIsin: vi.fn(async (isin: string) => makeQuoteResponse('AAA.DE', 100, isin)),
     getQuoteBySymbol: vi.fn(async (symbol: string) => makeQuoteResponse(symbol, 200, null)),
     refreshByIsin: vi.fn(async (isin: string) => makeQuoteResponse('AAA.DE', 999, isin)),
+    refreshBySymbol: vi.fn(async (symbol: string) => makeQuoteResponse(symbol, 888, null)),
     ...overrides,
   } as unknown as StockInfoClient
 }
@@ -241,6 +242,224 @@ describe('useQuotesStore — Persistenz', () => {
   })
 })
 
+/**
+ * Ein Klick soll etwas bewirken.
+ *
+ * `GET /quote/{isin}` beim Dienst respektiert eine TTL von sechs Stunden —
+ * innerhalb davon kommt der Kurs aus dessen SQLite-DB. Für das automatische
+ * Laden beim Seitenaufruf ist das genau richtig; wer dagegen ausdrücklich auf
+ * „Aktualisieren" drückt, erwartet frische Kurse und nicht dieselbe Zahl.
+ */
+describe('useQuotesStore — loadQuotes mit force', () => {
+  it('geht ohne force über den TTL-Weg', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition({ isin: 'IE0000000001' })])
+
+    expect(client.getQuoteByIsin).toHaveBeenCalledWith('IE0000000001')
+    expect(client.refreshByIsin).not.toHaveBeenCalled()
+  })
+
+  it('erzwingt mit force den Server-Refresh', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition({ isin: 'IE0000000001' })], { force: true })
+
+    expect(client.refreshByIsin).toHaveBeenCalledWith('IE0000000001')
+    expect(client.getQuoteByIsin).not.toHaveBeenCalled()
+    expect(store.quotes.get('IE0000000001')?.price).toBe(999)
+  })
+
+  /**
+   * Die stille Ausnahme, die es vorher gab: Ohne ISIN fiel der Refresh auf
+   * `getQuoteBySymbol` zurück — der Knopf sagte „neu laden" und las den Cache.
+   */
+  it('erzwingt ihn auch für Papiere ohne ISIN', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition({ isin: null, symbol: 'AAA.DE' })], {
+      force: true,
+    })
+
+    expect(client.refreshBySymbol).toHaveBeenCalledWith('AAA.DE')
+    expect(client.getQuoteBySymbol).not.toHaveBeenCalled()
+  })
+})
+
+/**
+ * Fortschritt und Handlung sind zwei verschiedene Dinge.
+ *
+ * Der Balken oben zeigt jeden Kursabruf — auch den beim Seitenaufruf, den
+ * niemand angestoßen hat. Der Spinner am Knopf gehört dagegen allein dem
+ * Klick: Ein drehender Knopf, den keiner gedrückt hat, behauptet eine Handlung,
+ * die es nicht gab.
+ */
+describe('useQuotesStore — Fortschritt', () => {
+  it('zählt jeden fertigen Kurs mit und ist danach still', async () => {
+    const store = useQuotesStore()
+    const stände: number[] = []
+
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async (isin: string) => {
+        stände.push(store.progressTotal)
+        return makeQuoteResponse('AAA.DE', 100, isin)
+      }) as unknown as StockInfoClient['getQuoteByIsin'],
+    })
+
+    await store.loadQuotes(client, [
+      makePosition({ id: 'a', isin: 'IE0000000001' }),
+      makePosition({ id: 'b', isin: 'IE0000000002' }),
+    ])
+
+    expect(stände).toEqual([2, 2])
+    expect(store.busy).toBe(false)
+    expect(store.progressTotal).toBe(0)
+  })
+
+  it('zählt auch den Einzel-Refresh mit', async () => {
+    const store = useQuotesStore()
+    let währenddessen = 0
+
+    const client = mockClient({
+      refreshByIsin: vi.fn(async (isin: string) => {
+        währenddessen = useQuotesStore().progressTotal
+        return makeQuoteResponse('AAA.DE', 999, isin)
+      }) as unknown as StockInfoClient['refreshByIsin'],
+    })
+
+    await store.refreshOne(client, makePosition({ id: 'a' }))
+
+    expect(währenddessen).toBe(1)
+    expect(store.busy).toBe(false)
+  })
+
+  it('bleibt nach einem Fehlschlag nicht stehen', async () => {
+    const client = mockClient({
+      refreshByIsin: vi.fn(async () => {
+        throw new ApiError(503, 'Upstream weg', '/refresh')
+      }) as unknown as StockInfoClient['refreshByIsin'],
+    })
+    const store = useQuotesStore()
+
+    await store.refreshOne(client, makePosition({ id: 'a' }))
+
+    expect(store.busy).toBe(false)
+  })
+
+  it('meldet den Knopf-Zustand nur beim erzwungenen Abruf', async () => {
+    const store = useQuotesStore()
+    const beobachtet: boolean[] = []
+
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async (isin: string) => {
+        beobachtet.push(store.forcing)
+        return makeQuoteResponse('AAA.DE', 100, isin)
+      }) as unknown as StockInfoClient['getQuoteByIsin'],
+      refreshByIsin: vi.fn(async (isin: string) => {
+        beobachtet.push(store.forcing)
+        return makeQuoteResponse('AAA.DE', 999, isin)
+      }) as unknown as StockInfoClient['refreshByIsin'],
+    })
+
+    await store.loadQuotes(client, [makePosition()])
+    await store.loadQuotes(client, [makePosition()], { force: true })
+
+    expect(beobachtet).toEqual([false, true])
+    expect(store.forcing).toBe(false)
+  })
+
+  it('lässt den Knopf in Ruhe, wenn es gar nichts zu holen gibt', async () => {
+    const store = useQuotesStore()
+    let gesehen = false
+
+    // Nur Cash: `loadQuotes` bricht ab, bevor irgendein Abruf ergeht.
+    await store.loadQuotes(mockClient(), [makePosition({ group: 'cash', isin: null })], {
+      force: true,
+    })
+    gesehen = store.forcing || store.busy
+
+    expect(gesehen).toBe(false)
+  })
+})
+
+/**
+ * Schonfrist beim automatischen Laden.
+ *
+ * Ein Wechsel zwischen Dashboard und Ausgleichen baut die Ansicht neu auf und
+ * löste bisher jedes Mal n HTTP-Anfragen aus — für Kurse, die zehn Sekunden
+ * alt sein konnten. Der Knopf bleibt davon unberührt: Wer klickt, will neue
+ * Kurse, egal wie alt die vorhandenen sind.
+ */
+describe('useQuotesStore — loadQuotesIfStale', () => {
+  it('lädt, wenn noch gar keine Kurse da sind', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotesIfStale(client, [makePosition()], 60)
+
+    expect(client.getQuoteByIsin).toHaveBeenCalledTimes(1)
+  })
+
+  it('lädt nicht noch einmal, solange die Kurse jung sind', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition()])
+    await store.loadQuotesIfStale(client, [makePosition()], 60)
+
+    expect(client.getQuoteByIsin).toHaveBeenCalledTimes(1)
+  })
+
+  it('lädt wieder, sobald die Frist um ist', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition()])
+    // Frist 0 Minuten: alles gilt sofort als alt.
+    await store.loadQuotesIfStale(client, [makePosition()], 0)
+
+    expect(client.getQuoteByIsin).toHaveBeenCalledTimes(2)
+  })
+
+  /**
+   * Sonst bekäme eine gerade angelegte Position bis zum Ende der Frist keinen
+   * Kurs — die Schonfrist darf nur für Vollständiges gelten.
+   */
+  it('lädt trotz Frist, wenn einer Position der Kurs fehlt', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition({ id: 'a', isin: 'IE0000000001' })])
+    await store.loadQuotesIfStale(
+      client,
+      [
+        makePosition({ id: 'a', isin: 'IE0000000001' }),
+        makePosition({ id: 'b', isin: 'IE0000000002' }),
+      ],
+      60,
+    )
+
+    expect(store.quotes.has('IE0000000002')).toBe(true)
+  })
+
+  it('lässt Cash außen vor — dafür gibt es nie einen Kurs', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.loadQuotes(client, [makePosition({ id: 'a' })])
+    await store.loadQuotesIfStale(
+      client,
+      [makePosition({ id: 'a' }), makePosition({ id: 'c', isin: null, group: 'cash' })],
+      60,
+    )
+
+    expect(client.getQuoteByIsin).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('useQuotesStore — refreshOne', () => {
   it('aktualisiert nur den Kurs der angegebenen Position', async () => {
     const client = mockClient()
@@ -252,6 +471,16 @@ describe('useQuotesStore — refreshOne', () => {
 
     expect(store.quotes.get('IE0000000001')?.price).toBe(999)
     expect(store.quotes.get('IE0000000002')?.price).toBe(100)
+  })
+
+  it('nimmt für Papiere ohne ISIN den Refresh-Weg, nicht den Cache', async () => {
+    const client = mockClient()
+    const store = useQuotesStore()
+
+    await store.refreshOne(client, makePosition({ isin: null, symbol: 'AAA.DE' }))
+
+    expect(client.refreshBySymbol).toHaveBeenCalledWith('AAA.DE')
+    expect(client.getQuoteBySymbol).not.toHaveBeenCalled()
   })
 
   it('tut nichts bei Cash-Positionen', async () => {
