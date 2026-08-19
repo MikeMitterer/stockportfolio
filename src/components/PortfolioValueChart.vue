@@ -29,7 +29,21 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const HEIGHT = 200
-const MARGIN = { top: 12, right: 12, bottom: 22, left: 56 }
+
+/**
+ * Rand um die Zeichenfläche — er trägt die Achsenbeschriftungen.
+ *
+ * Die Zahlen sind gerechnet, nicht geschätzt, denn beide Achsen klebten einmal
+ * am Rand: Links steht der Betrag rechtsbündig vor der Achse, `€ 1.234.567` sind
+ * bei 10 px rund 66 px plus Abstand. Unten steht ein Datum in `dateStyle:
+ * 'medium'` — auf Deutsch „18. Aug. 2026", rund 70 px breit. Dessen Überstand
+ * fängt nicht der Rand ab, sondern der Anker an den Enden (siehe `zeitAnker`),
+ * sonst wäre rechts die halbe Datumsbreite verschenkt.
+ */
+const MARGIN = { top: 12, right: 16, bottom: 26, left: 80 }
+
+/** Abstand der Betragsbeschriftung zur senkrechten Achse. */
+const LABEL_GAP = 10
 
 /** Zeiträume in Tagen; 0 heißt „alles". */
 const PERIODS = computed<{ days: number; label: string }[]>(() => [
@@ -108,6 +122,20 @@ const timeTicks = computed(() =>
   tickIndices(axisPoints.value.length, 5).map((index) => axisPoints.value[index]!),
 )
 
+/**
+ * Ausrichtung einer Datumsbeschriftung.
+ *
+ * Mittig ist richtig — außer an den Enden: Der erste Tick sitzt auf der
+ * senkrechten Achse, der letzte am rechten Ende der Zeichenfläche. Mittig
+ * ausgerichtet ragte dort jeweils die halbe Datumsbreite hinaus, rechts also
+ * sichtbar über den Rand.
+ */
+function zeitAnker(index: number, anzahl: number): 'start' | 'middle' | 'end' {
+  if (index === 0) return 'start'
+  if (index === anzahl - 1) return 'end'
+  return 'middle'
+}
+
 /** Veränderung über den gezeigten Zeitraum — die Zahl über dem Diagramm. */
 const change = computed(() => {
   const list = shownSnapshots.value.length > 1 ? shownSnapshots.value : shownBacktest.value
@@ -181,17 +209,22 @@ const tooltipStyle = computed(() => {
             :y2="y(tick)"
             class="value-chart__grid"
           />
-          <text :x="MARGIN.left - 8" :y="y(tick) + 3" text-anchor="end" class="value-chart__axis">
+          <text
+            :x="MARGIN.left - LABEL_GAP"
+            :y="y(tick) + 3"
+            text-anchor="end"
+            class="value-chart__axis"
+          >
             {{ eur(tick) }}
           </text>
         </g>
 
         <text
-          v-for="point in timeTicks"
+          v-for="(point, index) in timeTicks"
           :key="point.date"
           :x="x(point.date)"
-          :y="HEIGHT - 6"
-          text-anchor="middle"
+          :y="HEIGHT - 8"
+          :text-anchor="zeitAnker(index, timeTicks.length)"
           class="value-chart__axis"
         >
           {{ shortDate(point.date) }}
