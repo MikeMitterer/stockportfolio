@@ -54,6 +54,11 @@ export const de = {
       'Durchgezogen ab {date}: tatsächlich festgehaltene Tageswerte. Gestrichelt davor: der heutige Bestand gegen alte Kurse gerechnet — kein Verlauf des Depots, sondern ein Rückblick auf die heutige Aufteilung.',
     captionBacktestOnly:
       'Gestrichelt: der heutige Bestand gegen alte Kurse gerechnet — kein Verlauf des Depots, sondern ein Rückblick auf die heutige Aufteilung. Ab heute hält die App zusätzlich den tatsächlichen Tageswert fest.',
+    captionReal:
+      'Nur die tatsächlich festgehaltenen Tageswerte ab {date} — was hier steht, stand so auch da. Der gerechnete Rückblick bleibt in diesem Ausschnitt außen vor.',
+    periodReal: 'Echt',
+    periodRealDisabled:
+      'Dieser Ausschnitt zeigt nur tatsächlich festgehaltene Tageswerte. Dafür braucht es mindestens zwei — aus einem einzigen entsteht keine Linie. Die App hält ab jetzt täglich einen fest.',
   },
 
   seed: {

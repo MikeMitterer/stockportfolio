@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NButtonGroup } from 'naive-ui'
+import { NButton, NButtonGroup, NTooltip } from 'naive-ui'
+import { useIsCompact } from '@mmit/ux-foundation'
 import { eur, percentSigned, shortDate } from '@/domain/formatters'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
 import { withinDays } from '@/domain/portfolioHistory'
@@ -28,6 +29,9 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
+/** Auf dem Telefon gibt es kein Überfahren — dort öffnet die Erklärung per Tipp. */
+const isCompact = useIsCompact()
+
 const HEIGHT = 200
 
 /**
@@ -45,15 +49,41 @@ const MARGIN = { top: 12, right: 16, bottom: 26, left: 80 }
 /** Abstand der Betragsbeschriftung zur senkrechten Achse. */
 const LABEL_GAP = 10
 
-/** Zeiträume in Tagen; 0 heißt „alles". */
-const PERIODS = computed<{ days: number; label: string }[]>(() => [
-  { days: 30, label: t('history.short.m1') },
-  { days: 90, label: t('history.short.m3') },
-  { days: 365, label: t('history.short.y1') },
-  { days: 0, label: t('history.short.max') },
+type PeriodId = 'm1' | 'm3' | 'y1' | 'max' | 'real'
+
+/** Länge des Ausschnitts in Tagen; 0 heißt „alles, was da ist". */
+const PERIOD_DAYS: Record<PeriodId, number> = { m1: 30, m3: 90, y1: 365, max: 0, real: 0 }
+
+/**
+ * Die vier Längen der Reihe nach. „Echt" steht nicht darin: Es ist kein
+ * Längenmaß, sondern eine Auswahl der Quelle, und steht deshalb abgesetzt
+ * hinter der Gruppe.
+ */
+const PERIODS = computed<{ id: PeriodId; label: string }[]>(() => [
+  { id: 'm1', label: t('history.short.m1') },
+  { id: 'm3', label: t('history.short.m3') },
+  { id: 'y1', label: t('history.short.y1') },
+  { id: 'max', label: t('history.short.max') },
 ])
 
-const days = ref<number>(90)
+const selected = ref<PeriodId>('m3')
+
+const days = computed(() => PERIOD_DAYS[selected.value])
+
+/**
+ * Nur die gemessene Reihe — der gerechnete Rückblick bleibt außen vor.
+ *
+ * Genau darum geht es in diesem Ausschnitt: zu sehen, was tatsächlich dastand.
+ * Die gestrichelte Linie daneben rechnet den *heutigen* Bestand gegen alte
+ * Kurse und würde die Frage wieder verwässern.
+ */
+const onlyMeasured = computed(() => selected.value === 'real')
+
+/**
+ * Aus einem einzigen Tageswert entsteht keine Linie — dann bleibt der Knopf
+ * gesperrt und sagt beim Überfahren, warum.
+ */
+const realAvailable = computed(() => props.snapshots.length >= 2)
 
 const container = useTemplateRef<HTMLElement>('container')
 const width = ref<number>(720)
@@ -74,7 +104,9 @@ onUnmounted(() => observer?.disconnect())
 const plotWidth = computed(() => Math.max(1, width.value - MARGIN.left - MARGIN.right))
 const plotHeight = HEIGHT - MARGIN.top - MARGIN.bottom
 
-const shownBacktest = computed(() => withinDays(props.backtest, days.value, new Date()))
+const shownBacktest = computed(() =>
+  onlyMeasured.value ? [] : withinDays(props.backtest, days.value, new Date()),
+)
 const shownSnapshots = computed(() => withinDays(props.snapshots, days.value, new Date()))
 
 /** Die Achse folgt der längeren Reihe — meist dem Rückblick. */
@@ -143,6 +175,23 @@ const change = computed(() => {
   return changeFrom(list[list.length - 1]!.close, list[0]!.close)
 })
 
+/**
+ * Die Bildunterschrift erklärt, was zu sehen ist — also je Ausschnitt anders.
+ *
+ * Sonst stünde unter „Echt" eine Erklärung für zwei Linien, von denen dort nur
+ * eine steht. Das Datum kommt aus `truthFrom`; fehlt es, tut es der erste
+ * gezeigte Tageswert.
+ */
+const caption = computed(() => {
+  if (onlyMeasured.value) {
+    const from = props.truthFrom ?? shownSnapshots.value[0]?.date ?? null
+    return t('valueHistory.captionReal', { date: shortDate(from) })
+  }
+  return props.truthFrom
+    ? t('valueHistory.captionFrom', { date: shortDate(props.truthFrom) })
+    : t('valueHistory.captionBacktestOnly')
+})
+
 // ─── Zeiger ─────────────────────────────────────────────────────────────────
 
 const hovered = ref<number | null>(null)
@@ -180,14 +229,42 @@ const tooltipStyle = computed(() => {
       <NButtonGroup size="tiny">
         <NButton
           v-for="entry in PERIODS"
-          :key="entry.days"
-          :type="entry.days === days ? 'primary' : 'default'"
-          :secondary="entry.days !== days"
-          @click="days = entry.days"
+          :key="entry.id"
+          :type="entry.id === selected ? 'primary' : 'default'"
+          :secondary="entry.id !== selected"
+          @click="selected = entry.id"
         >
           {{ entry.label }}
         </NButton>
       </NButtonGroup>
+
+      <!--
+        Abgesetzt von der Gruppe: „Echt" wählt die Quelle, nicht die Länge. Der
+        gesperrte Fall braucht zudem einen Rahmen um den Knopf — ein `disabled`
+        nimmt keine Mausereignisse an, das Popup hinge sonst an nichts.
+      -->
+      <span class="value-chart__real">
+        <NTooltip v-if="!realAvailable" :trigger="isCompact ? 'click' : 'hover'">
+          <template #trigger>
+            <span class="value-chart__lock" tabindex="0">
+              <NButton size="tiny" secondary disabled>
+                {{ t('valueHistory.periodReal') }}
+              </NButton>
+            </span>
+          </template>
+          {{ t('valueHistory.periodRealDisabled') }}
+        </NTooltip>
+
+        <NButton
+          v-else
+          size="tiny"
+          :type="onlyMeasured ? 'primary' : 'default'"
+          :secondary="!onlyMeasured"
+          @click="selected = 'real'"
+        >
+          {{ t('valueHistory.periodReal') }}
+        </NButton>
+      </span>
     </div>
 
     <div ref="container" class="value-chart__canvas">
@@ -261,13 +338,7 @@ const tooltipStyle = computed(() => {
       </div>
     </div>
 
-    <p class="value-chart__caption">
-      {{
-        truthFrom
-          ? t('valueHistory.captionFrom', { date: shortDate(truthFrom) })
-          : t('valueHistory.captionBacktestOnly')
-      }}
-    </p>
+    <p class="value-chart__caption">{{ caption }}</p>
   </div>
 </template>
 
@@ -279,6 +350,12 @@ const tooltipStyle = computed(() => {
     @include row(var(--space-3));
 
     justify-content: flex-end;
+  }
+
+  /* Nur Lage: Der Rahmen um den gesperrten Knopf soll ihn nicht umbrechen. */
+  &__real,
+  &__lock {
+    display: inline-flex;
   }
 
   &__change {

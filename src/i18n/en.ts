@@ -55,6 +55,11 @@ export const en: MessageSchema = {
       'Solid from {date}: actually recorded daily values. Dashed before that: today’s holdings valued at past prices — not the portfolio’s history but a look back at today’s allocation.',
     captionBacktestOnly:
       'Dashed: today’s holdings valued at past prices — not the portfolio’s history but a look back at today’s allocation. From today on, the app also records the actual daily value.',
+    captionReal:
+      'Only the daily values actually recorded, from {date} on — what you see here is what stood there. The calculated look back stays out of this view.',
+    periodReal: 'Real',
+    periodRealDisabled:
+      'This view shows only daily values that were actually recorded. It needs at least two — a single one makes no line. The app records one each day from now on.',
   },
 
   seed: {
