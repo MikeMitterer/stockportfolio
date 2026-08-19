@@ -17,16 +17,16 @@ Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) 
 `AI` = nur KI · `Human` = nur Mensch (nie überschreiben).
 
 | # | Where | Look for | AI | Human |
-|---|---|---|:--:|---|
-| 1 | `http://localhost:5175/#/`, Gesamtwert aufklappen | Hinter „Max" steht abgesetzt ein Knopf „Echt" | ➖¹ | |
-| 2 | dito | „Echt" gewählt → **nur** die kräftige Linie, keine gestrichelte | ✅² | |
-| 3 | dito | Zurück auf 1M/3M/1J/Max → beide Linien wieder da | ✅² | |
-| 4 | dito | Bildunterschrift wechselt mit: unter „Echt" erklärt sie eine Linie, sonst zwei | ➖¹ | |
-| 5 | Frisches Depot (0 oder 1 Tageswert) | Knopf ist gesperrt; Überfahren zeigt den Grund | ⚠️³ | |
-| 6 | dito, Telefon/schmal (< 768 px) | Dieselbe Erklärung öffnet per **Tipp** — Hover gibt es dort nicht | ➖¹ | |
-| 7 | dito | Der gesperrte Knopf bricht die Zeile nicht um und sitzt auf einer Linie mit der Gruppe | ➖¹ | |
-| 8 | Sprache auf Englisch | „Real" und beide neuen Texte erscheinen englisch | ➖¹ | |
-| 9 | Terminal | `npm run typecheck && npm run lint && npm run test && npm run build` | ✅⁴ | |
+|---|---|---|:--:|------|
+| 1 | `http://localhost:5175/#/`, Gesamtwert aufklappen | Hinter „Max" steht abgesetzt ein Knopf „Echt" | ➖¹ | ok   |
+| 2 | dito | „Echt" gewählt → **nur** die kräftige Linie, keine gestrichelte | ✅² | ok   |
+| 3 | dito | Zurück auf 1M/3M/1J/Max → beide Linien wieder da | ✅² | ok   |
+| 4 | dito | Bildunterschrift wechselt mit: unter „Echt" erklärt sie eine Linie, sonst zwei | ➖¹ |      |
+| 5 | Frisches Depot (0 oder 1 Tageswert) | Knopf ist gesperrt; Überfahren zeigt den Grund | ⚠️³ |      |
+| 6 | dito, Telefon/schmal (< 768 px) | Dieselbe Erklärung öffnet per **Tipp** — Hover gibt es dort nicht | ➖¹ |      |
+| 7 | dito | Der gesperrte Knopf bricht die Zeile nicht um und sitzt auf einer Linie mit der Gruppe | ➖¹ |      |
+| 8 | Sprache auf Englisch | „Real" und beide neuen Texte erscheinen englisch | ➖¹ |      |
+| 9 | Terminal | `npm run typecheck && npm run lint && npm run test && npm run build` | ✅⁴ |      |
 
 > ¹ **(CC):** Reine Sichtprüfung, dafür gibt es keinen Test.
 > ² **(CC):** Test-first gebaut, vor der Umsetzung rot gesehen: `tests/components/portfolioValueChart.spec.ts` prüft, dass `.value-chart__line--backtest` unter „Echt" fehlt und sonst da ist.

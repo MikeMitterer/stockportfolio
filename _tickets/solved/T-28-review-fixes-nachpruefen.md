@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | in-progress | ~1 h | Test-only (neue Tests erlaubt, kein Feature-Code) | — |
+| root | done | ~1 h | Test-only (neue Tests erlaubt, kein Feature-Code) | — |
 
 **Löst:** Die vier Befunde aus dem Code-Review sind behoben, aber nur die Suite
 belegt das — die drei sichtbaren Fälle (Spaltenkopf, zwei Caret-Drehungen) hat
@@ -79,7 +79,7 @@ ohne Test ein zweites Mal kommt.
 - [x] Der Test schlägt gegen die alte Fassung fehl — kurz gegenprobieren,
       sonst bewacht er nichts.
 - [x] #9 einmal absichtlich rot gesehen, nicht nur hergeleitet.
-- [ ] #1–#7 und #11–#12 vom Menschen im Browser abgehakt, in beiden Breiten (Tabelle und Kartenliste unter `md`).
+- [x] #1–#7 und #11–#12 vom Menschen im Browser abgehakt, in beiden Breiten (Tabelle und Kartenliste unter `md`).
 - [x] Suite, Typecheck, Lint und Build grün.
 
 ### Side-Effects
@@ -97,4 +97,19 @@ erweitert, prüft das mit.
 
 ### Auflösung
 
-Wird zuletzt gefüllt. Commit-Hash(es), Lint-Status, Findings.
+Vom Menschen am 2026-08-19 als erledigt erklärt.
+
+| Commit | Inhalt |
+|---|---|
+| `b1e2cf0` | Spaltenkopf folgt der Sichtbarkeit statt der Dokumentstellung |
+| `6bcf2e0` | Pfeil-Drehung wieder animiert; Pfeil und Verlauf mittig statt auf der Grundlinie |
+| `f7552d9` | Achsenbeschriftungen im Wertverlauf mit Abstand zum Rand |
+| `ca03d77` | Wächter für den Spaltenkopf, Guard liest alle Stil-Blöcke, gemeinsamer Speicher-Ersatz |
+
+Stand beim Abschluss: typecheck ✓, lint ✓, vitest 33 Dateien / 526 Tests ✓,
+build ✓.
+
+**Findings:** Zwei Befunde kamen erst beim Testen dazu (#11/#12) und sind mit
+behoben. Der Wächter für den Spaltenkopf prüft die Klassenvergabe, nicht das
+gerenderte `thead` — jsdom wertet die scoped Regel nicht aus. Wer die Regel
+später auf echtes Rendering umstellen will, braucht dafür einen Browser-Lauf.
