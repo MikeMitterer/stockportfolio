@@ -19,7 +19,7 @@ Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) 
 
 | # | Where | Look for | AI | Human |
 |---|---|---|:--:|-------|
-| 1 | Netzwerk-Tab, Klick auf „Aktualisieren" | Je Position ein `POST /refresh/…`, kein `GET /quote/…` | ✅¹ | ok    |
+| 1 | Netzwerk-Tab, Klick auf „Aktualisieren" | Je Position ein `POST /refresh/…`, kein `GET /quote/…` | ✅¹ | okute |
 | 2 | dito, Seite neu laden (F5) | Weiterhin `GET /quote/…` — die TTL gilt beim automatischen Laden unverändert | ✅¹ | ok    |
 | 3 | dito, Ansicht wechseln (Dashboard ↔ Ausgleichen) | Ebenfalls `GET`, kein erzwungener Abruf | ➖² |       |
 | 4 | Kopfzeile | Der Klick dauert jetzt spürbar; der Spinner läuft die ganze Zeit und der Knopf bleibt gesperrt | ➖² |       |
