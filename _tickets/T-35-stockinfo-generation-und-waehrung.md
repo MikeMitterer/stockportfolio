@@ -16,8 +16,8 @@ Kurswährung wird hier als **EUR geraten**.
 Verify `#8`) und `T-24-rest-core-vertrag.md`.
 **Design:** `StockInfo/docs/superpowers/specs/2026-08-19-plugin-system-design.md`
 
-**Hängt an:** StockInfo T-24 (liefert `generation_id` und die Fixtures) und
-T-25 (erzeugt den Profilwechsel).
+**Hängt an:** StockInfo **T-24** (definiert den öffentlichen Vertrag — Endpunkt,
+Header, Fixtures) und **T-25** (implementiert und rotiert die Generation).
 
 ---
 
@@ -33,10 +33,14 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 4 | StockInfo wechselt das Profil (neue `generation_id`) | nur der **neue** Namespace wird sichtbar; alte Werte erscheinen nie | | |
 | 5 | nach #4 | Depot, Stückzahlen, Ziele, Einstellungen und Notizen **bleiben** | | |
 | 6 | StockInfo-Neustart **ohne** Profilwechsel | Cache bleibt — die Generation ändert sich nicht bei jeder Konfigänderung | | |
-| 6b | Profilwechsel **während** einer offenen Sitzung | wird bemerkt, nicht erst beim nächsten App-Start | | |
+| 6b | Profilwechsel **während** einer offenen Sitzung | Header-Abweichung wird bemerkt, nicht erst beim nächsten App-Start | | |
+| 6b2 | **verspätete** Antwort aus der alten Generation trifft nach einer neuen ein | wird **verworfen**; kein Rückwechsel auf die alte Generation | | |
+| 6b3 | Header auf einer `404`- oder `502`-Antwort | wird ausgewertet — sonst bliebe der alte Cache nach einem Profilwechsel stehen | | |
 | 6c | Abbruch zwischen „neue Generation speichern" und „Caches leeren" | beim nächsten Start erscheinen **keine** Werte der alten Generation | | |
 | 6d | Wechsel der StockInfo-Basis-URL (Server A → B) | Cache von A wird nicht weiterverwendet | | |
-| 6e | älteres StockInfo **ohne** `generation_id` | dessen Cache gilt **nicht** als generationensicher | | |
+| 6e | älteres StockInfo (`/generation` → `404`, kein Header) | Werte sind in der Sitzung nutzbar, werden aber **nicht** generationensicher persistiert | | |
+| 6f | derselbe Server unterstützt später `/generation` | dessen Namespace beginnt **leer**; Legacy-Daten wandern nie hinein | | |
+| 6g | `instrumentAllowlist` und `valueSnapshots` nach Profilwechsel | bleiben — wie Depot und Einstellungen | | |
 | 7 | Mapper gegen StockInfos veröffentlichte Core-Fixtures | grün, ohne das StockInfo-Repo zu klonen | | |
 | 8 | Fixture mit unbekanntem `details`-Feld | wird ignoriert, bricht nichts | | |
 | 9 | Fixture **ohne** Core-Pflichtfeld | schlägt sichtbar fehl — die Asymmetrie ist der Kern des Vertrags | | |
@@ -101,15 +105,40 @@ dann nicht mehr sicherheitskritisch, sondern Hausputz.
 Zur *Instanz* gehört mindestens die normalisierte Basis-URL. Sonst verwendet ein
 Wechsel von Server A auf B den Cache von A weiter.
 
-**Einmal beim App-Start genügt nicht.** Ein Profilwechsel kann eine offene
-Sitzung treffen. Möglich sind ein Generation-Header auf jeder Datenantwort oder
-ein erneuter Check vor einem Refresh und nach Wiederverbindung — welcher Weg
-gilt, entscheidet StockInfo in T-24/T-25 verbindlich, samt **einem** stabilen
-Endpunkt (`/sources` oder `/env` ist dort noch eine Alternative, kein Vertrag).
+**Der Weg ist entschieden** *(Codex, 2026-08-21)*: ein kanonischer Endpunkt
+**und** ein Header — keines von beidem allein.
 
-Weiterhin gilt: **niemals** Depot, Stückzahlen, Ziele, Einstellungen oder Notizen
-anfassen. Und ohne Generationswechsel wird nichts geleert — eine neue
-Paketversion drüben ist kein Profilwechsel.
+```http
+GET /generation                       →  { "generation_id": "550e8400-…" }
+StockInfo-Generation: 550e8400-…      ←  auf jeder Antwort, auch auf Fehlern
+```
+
+**Warum der Header allein nicht reicht** — der Punkt, den ich übersehen hatte:
+Zwei Anfragen können sich über einen Profilwechsel hinweg überschneiden. Eine
+verspätete Antwort aus A trifft nach einer schnellen aus B ein. **UUIDs tragen
+keine Reihenfolge** — wer dem Header blind folgt, springt von B zurück auf A.
+
+Der Ablauf ist deshalb:
+
+1. **Vor** dem Hydrieren `GET /generation` abrufen, passenden Namespace wählen
+2. bei jeder Datenantwort den Header mit der bestätigten Generation vergleichen
+3. gleich ⇒ normal verarbeiten
+4. **abweichend ⇒ Antwort nicht speichern**, `/generation` erneut abfragen, auf
+   dessen Ergebnis umschalten, Anfrage bei Bedarf wiederholen
+5. eine verspätete Antwort einer alten Generation wird damit verworfen statt zu
+   einem Rückwechsel zu führen
+
+`/generation` ist die Wahrheit, der Header das kostenlose Sofortsignal. Kein
+Polling, keine Extra-Anfrage vor jedem normalen Request.
+
+Fehlt der Header bei einem Server, der `/generation` beantwortet, ist das ein
+**Vertragsfehler** — solche Antworten werden nicht persistent gecacht.
+
+**Nur zwei Speicher werden generationell adressiert:** `quoteCache` und
+`dailyHistory`. Ausdrücklich **nicht** — und das gehört genauso geprüft wie das
+Leeren: Depot, Positionen, Stückzahlen, Ziele, Einstellungen, Notizen,
+`instrumentAllowlist` und `valueSnapshots`. Und ohne Generationswechsel wird
+ohnehin nichts geleert; eine neue Paketversion drüben ist kein Profilwechsel.
 
 ### Cache-Schlüssel mittelfristig auf `listing_id`
 
