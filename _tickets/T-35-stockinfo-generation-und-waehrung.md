@@ -35,6 +35,11 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 6 | StockInfo-Neustart **ohne** Profilwechsel | Cache bleibt — die Generation ändert sich nicht bei jeder Konfigänderung | | |
 | 6b | Profilwechsel **während** einer offenen Sitzung | Header-Abweichung wird bemerkt, nicht erst beim nächsten App-Start | | |
 | 6b2 | **verspätete** Antwort aus der alten Generation trifft nach einer neuen ein | wird **verworfen**; kein Rückwechsel auf die alte Generation | | |
+| 6b4 | **zwei** Headerabweichungen (B und C) fast gleichzeitig | es läuft höchstens **eine** Generationsbestätigung je Instanz; kein einzelner Fetch setzt den Namespace selbst | | |
+| 6b5 | die beiden `/generation`-Antworten treffen **vertauscht** ein (C zuerst, B danach) | am Ende ist nur die **jüngste** bestätigte Generation sichtbar — kein Rückwechsel auf B | | |
+| 6b6 | überholte `/generation`-Antwort | verändert **weder** Namespace **noch** Stores | | |
+| 6b7 | Retry nach Headerabweichung, alte cachebare Antwort liegt im HTTP-Cache | der Retry verarbeitet eine **neue Netzantwort**, keine Endlosschleife | | |
+| 6b8 | anhaltender Wechsel oder Vertragsbruch | Zahl automatischer Wiederholungen ist **begrenzt**; danach sichtbare Meldung statt stiller Schleife | | |
 | 6b3 | Header auf einer `404`- oder `502`-Antwort | wird ausgewertet — sonst bliebe der alte Cache nach einem Profilwechsel stehen | | |
 | 6c | Abbruch zwischen „neue Generation speichern" und „Caches leeren" | beim nächsten Start erscheinen **keine** Werte der alten Generation | | |
 | 6d | Wechsel der StockInfo-Basis-URL (Server A → B) | Cache von A wird nicht weiterverwendet | | |
@@ -135,6 +140,56 @@ Der Ablauf ist deshalb:
 
 `/generation` ist die Wahrheit, der Header das kostenlose Sofortsignal. Kein
 Polling, keine Extra-Anfrage vor jedem normalen Request.
+
+#### Auch die Bestätigungen selbst können sich überholen
+
+*(Codex, 2026-08-21)* Der Ablauf oben löst das Problem für **Datenantworten** —
+und wiederholt es eine Ebene höher für die Bestätigungen. Der Fall:
+
+1. Der Client hat A bestätigt.
+2. Zwei Datenantworten signalisieren nacheinander B und C.
+3. Beide starten **je eine** `/generation`-Abfrage.
+4. Die C-Bestätigung kommt zuerst an, der Client schaltet auf C.
+5. Die ältere, langsamere B-Bestätigung kommt danach — und schaltet zurück auf B.
+
+Genau der Rückwechsel, den Schritt 4 verhindern sollte. Denn auch die Antwort
+von `/generation` ist nur ein **Schnappschuss ihres eigenen Requests**; eine
+UUID trägt weiterhin keine zeitliche Ordnung. „Der Endpunkt ist die Wahrheit"
+hilft nur, wenn die Bestätigung **zentral koordiniert** ist.
+
+Verbindlich ist deshalb:
+
+- **Höchstens eine laufende Generationsbestätigung je StockInfo-Instanz**
+  (single flight) — oder ein clientseitiges Request-Epoch, das ältere Versuche
+  vom Commit ausschließt.
+- Alle gleichzeitig erkannten Abweichungen laufen durch **diesen einen** Pfad;
+  kein einzelner Fetch setzt den sichtbaren Namespace selbst.
+- Eine bereits überholte `/generation`-Antwort verändert weder Namespace noch
+  Stores.
+
+Der Fixture-Fall „zwei vertauscht eintreffende Antworten aus A und B" deckt das
+**nicht** ab: Er prüft die Datenantworten, nicht die konkurrierenden
+Bestätigungen, die sie auslösen. Dafür stehen `#6b4`–`#6b6`.
+
+#### Der Retry muss die verworfene Antwort loswerden
+
+Dass ein Retry nicht dieselbe alte Repräsentation aus Browser- oder Proxy-Cache
+zurückbekommen darf, stand bisher nur als Absicht im Text — ohne Abnahmepunkt
+*(Codex, 2026-08-21)*. Eine Umsetzung hätte den Absatz lesen und trotzdem bei
+einem gewöhnlichen `fetch` landen können.
+
+Messbar wird es so:
+
+- Reconciliation-Abfrage und Wiederholung **umgehen oder revalidieren** den
+  HTTP-Cache ausdrücklich.
+- Ein Test legt eine alte cachebare Antwort vor und prüft, dass der Retry eine
+  **neue Netzantwort** verarbeitet statt zu kreisen.
+- Die Zahl automatischer Wiederholungen ist **begrenzt**; anhaltender Wechsel
+  oder Vertragsbruch wird sichtbar gemeldet.
+
+Welche Kombination aus Fetch-Option, Request-Header und serverseitiger
+Cache-Regel das erreicht, entscheidet die Umsetzung. Abgenommen wird das
+Ergebnis, nicht die Absicht.
 
 **Zwei Punkte, an denen ich zu weich formuliert hatte** *(Codex, 2026-08-21)*:
 
