@@ -25,36 +25,63 @@ Header, Fixtures) und **T-25** (implementiert und rotiert die Generation).
 
 Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ keine Live-Verifikation.
 
+**Die Nummern sind in Runde 12 neu vergeben.** Sie liefen als `#6b`…`#6g` aus
+dem Ruder, mit `#6b3` hinter `#6b8` — Verweise wurden unlesbar. Jetzt fünf
+Blöcke, fortlaufend durchnummeriert. Ältere Rundennotizen nennen noch die alten
+Nummern; die Zuordnung steht in der Spec, Runde 12.
+
+**A — Die Währung wird nicht geraten**
+
 | # | Where | Look for | AI | Human |
 |---|---|---|:--:|---|
 | 1 | StockInfo-Antwort **ohne** `currency`, Position im Depot | Kurs gilt als unbrauchbar — **kein** stiller EUR-Ersatz | | |
 | 2 | dieselbe Lage, Oberfläche | Position bleibt sichtbar, zählt aber in keine Summe; der Grund ist erkennbar | | |
 | 3 | Detailbereich derselben Position | zeigt keinen EUR-formatierten Betrag für einen Kurs ohne Währung | | |
+
+**B — Generationswechsel und Namespace**
+
+| # | Where | Look for | AI | Human |
+|---|---|---|:--:|---|
 | 4 | StockInfo wechselt das Profil (neue `generation_id`) | nur der **neue** Namespace wird sichtbar; alte Werte erscheinen nie | | |
 | 5 | nach #4 | Depot, Stückzahlen, Ziele, Einstellungen und Notizen **bleiben** | | |
-| 6 | StockInfo-Neustart **ohne** Profilwechsel | Cache bleibt — die Generation ändert sich nicht bei jeder Konfigänderung | | |
-| 6b | Profilwechsel **während** einer offenen Sitzung | Header-Abweichung wird bemerkt, nicht erst beim nächsten App-Start | | |
-| 6b2 | **verspätete** Antwort aus der alten Generation trifft nach einer neuen ein | wird **verworfen**; kein Rückwechsel auf die alte Generation | | |
-| 6b4 | **zwei** Headerabweichungen (B und C) fast gleichzeitig | es läuft höchstens **eine** Generationsbestätigung je Instanz; kein einzelner Fetch setzt den Namespace selbst | | |
-| 6b5 | die beiden `/generation`-Antworten treffen **vertauscht** ein (C zuerst, B danach) | am Ende ist nur die **jüngste** bestätigte Generation sichtbar — kein Rückwechsel auf B | | |
-| 6b6 | überholte `/generation`-Antwort | verändert **weder** Namespace **noch** Stores | | |
-| 6b7 | Retry nach Headerabweichung, alte cachebare Antwort liegt im HTTP-Cache | der Retry verarbeitet eine **neue Netzantwort**, keine Endlosschleife | | |
-| 6b8 | anhaltender Wechsel oder Vertragsbruch | Zahl automatischer Wiederholungen ist **begrenzt**; danach sichtbare Meldung statt stiller Schleife | | |
-| 6b3 | Header auf einer `404`- oder `502`-Antwort | wird ausgewertet — sonst bliebe der alte Cache nach einem Profilwechsel stehen | | |
-| 6c | Abbruch zwischen „neue Generation speichern" und „Caches leeren" | beim nächsten Start erscheinen **keine** Werte der alten Generation | | |
-| 6d | Wechsel der StockInfo-Basis-URL (Server A → B) | Cache von A wird nicht weiterverwendet | | |
-| 6d2 | generationenfähiger Server, Datenantwort **ohne** Header | Antwort gilt **komplett** als unbrauchbar — nicht gemappt, nicht angezeigt, nicht gecacht | | |
-| 6d3 | `/generation` beim Start: Timeout, Netzwerkfehler oder `5xx` | **nicht** als Legacy behandelt; kein Wert erscheint in Summen oder Charts | | |
-| 6d4 | nach #6d3, erfolgreicher Retry mit **gleicher** ID | vorgeladener Namespace wird freigegeben | | |
-| 6d5 | nach #6d3, erfolgreicher Retry mit **anderer** ID | direkt der neue Namespace, ohne Zwischenanzeige des alten | | |
-| 6e | älteres StockInfo (`/generation` → `404`, kein Header) | Werte sind in der Sitzung nutzbar, werden aber **nicht** generationensicher persistiert | | |
-| 6f | derselbe Server unterstützt später `/generation` | dessen Namespace beginnt **leer**; Legacy-Daten wandern nie hinein | | |
-| 6g | `instrumentAllowlist` und `valueSnapshots` nach Profilwechsel | bleiben — wie Depot und Einstellungen | | |
-| 7 | Mapper gegen StockInfos veröffentlichte **HTTP-Fixtures** (Status + Header + Rumpf) | grün, ohne das StockInfo-Repo zu klonen | | |
-| 7b | Fixture-Satz | enthält `200`+Header, `404`/`502` mit **neuer** Generation, Antwort ohne Header, Header/Body-Widerspruch bei `/generation`, zwei vertauscht eintreffende Antworten aus A und B | | |
-| 8 | Fixture mit unbekanntem `details`-Feld | wird ignoriert, bricht nichts | | |
-| 9 | Fixture **ohne** Core-Pflichtfeld | schlägt sichtbar fehl — die Asymmetrie ist der Kern des Vertrags | | |
-| 10 | `npm test` | grün | | |
+| 6 | `instrumentAllowlist` und `valueSnapshots` nach Profilwechsel | bleiben — wie Depot und Einstellungen | | |
+| 7 | StockInfo-Neustart **ohne** Profilwechsel | Cache bleibt — die Generation ändert sich nicht bei jeder Konfigänderung | | |
+| 8 | Profilwechsel **während** einer offenen Sitzung | Header-Abweichung wird bemerkt, nicht erst beim nächsten App-Start | | |
+| 9 | Header auf einer `404`- oder `502`-Antwort | wird ausgewertet — sonst bliebe der alte Cache nach einem Profilwechsel stehen | | |
+| 10 | **verspätete** Datenantwort aus der alten Generation trifft nach einer neuen ein | wird **verworfen**; kein Rückwechsel auf die alte Generation | | |
+| 11 | Abbruch **während** Persistierung/Aktivierung des neuen sichtbaren Namespace | nach Neustart ist genau **ein** bestätigter Namespace sichtbar; nie Werte einer anderen Generation | | |
+| 12 | **Neustart** mit geänderter StockInfo-Basis-URL (A → B) | der Namespace von A wird nicht hydriert | | |
+
+**C — Koordination: genau eine Bestätigung (Single-Flight)**
+
+| # | Where | Look for | AI | Human |
+|---|---|---|:--:|---|
+| 13 | **zwei** Headerabweichungen (B und C) fast gleichzeitig | es entsteht **genau ein** laufender `/generation`-Request je normalisierter Basis-URL | | |
+| 14 | dieselbe Lage | beide Aufrufer warten auf **dasselbe** Ergebnis; der sichtbare Namespace wird daraus **höchstens einmal** gesetzt | | |
+| 15 | weiteres Abweichungssignal **während** einer laufenden Bestätigung | wird **nicht** von einem einzelnen Fetch committed; bleibt sein Retry danach abweichend, folgt eine weitere, wiederum **einzelne** Bestätigung | | |
+| 16 | Retry nach Headerabweichung, alte cachebare Antwort liegt im HTTP-Cache | der Retry verarbeitet eine **neue Netzantwort**, keine Endlosschleife | | |
+| 17 | anhaltender Wechsel oder Vertragsbruch | Zahl automatischer Wiederholungen ist **begrenzt**; danach sichtbare Meldung statt stiller Schleife | | |
+
+**D — Unbestätigte, fehlende und alte Generation**
+
+| # | Where | Look for | AI | Human |
+|---|---|---|:--:|---|
+| 18 | generationenfähiger Server, Datenantwort **ohne** Header | Antwort gilt **komplett** als unbrauchbar — nicht gemappt, nicht angezeigt, nicht gecacht | | |
+| 19 | `/generation` beim Start: Timeout, Netzwerkfehler oder `5xx` | **nicht** als Legacy behandelt; kein Wert erscheint in Summen oder Charts | | |
+| 20 | nach #19, erfolgreicher Retry mit **gleicher** ID | vorgeladener Namespace wird freigegeben | | |
+| 21 | nach #19, erfolgreicher Retry mit **anderer** ID | direkt der neue Namespace, ohne Zwischenanzeige des alten | | |
+| 22 | älteres StockInfo (`/generation` → `404`, kein Header) | Werte sind in der Sitzung nutzbar, werden aber **nicht** generationensicher persistiert | | |
+| 23 | derselbe Server unterstützt später `/generation` | dessen Namespace beginnt **leer**; Legacy-Daten wandern nie hinein | | |
+
+**E — Vertrag und Fixtures**
+
+| # | Where | Look for | AI | Human |
+|---|---|---|:--:|---|
+| 24 | Mapper gegen StockInfos veröffentlichte **HTTP-Fixtures** (Status + Header + Rumpf) | grün, ohne das StockInfo-Repo zu klonen | | |
+| 25 | Fixture-Satz | enthält `200`+Header, `404`/`502` mit **neuer** Generation, Antwort ohne Header, Header/Body-Widerspruch bei `/generation`, zwei vertauscht eintreffende **Datenantworten** aus A und B | | |
+| 26 | Fixture mit unbekanntem `details`-Feld | wird ignoriert, bricht nichts | | |
+| 27 | Fixture **ohne** Core-Pflichtfeld | schlägt sichtbar fehl — die Asymmetrie ist der Kern des Vertrags | | |
+| 28 | `npm test` | grün | | |
 
 ---
 
@@ -112,8 +139,22 @@ Vor dem Hydrieren wird die aktuelle Generation geladen; **nur ihr Namespace wird
 sichtbar**. Alte Namespaces darf man danach aufräumen — aber ihr Löschen ist
 dann nicht mehr sicherheitskritisch, sondern Hausputz.
 
-Zur *Instanz* gehört mindestens die normalisierte Basis-URL. Sonst verwendet ein
-Wechsel von Server A auf B den Cache von A weiter.
+Zur *Instanz* gehört mindestens die normalisierte Basis-URL. Sonst hydriert ein
+späterer Start mit Server B den Namespace von Server A.
+
+**Ein Live-Wechsel der Basis-URL gehört ausdrücklich nicht zum Vertrag**
+*(von Mike bestätigt, 2026-08-21; Codex hat den Fall daraufhin zurückgezogen)*.
+`src/api/client.ts` bezieht die Adresse aus der vom Container erzeugten
+`config.js` (`STOCKINFO_API_URL`) oder aus der beim Build eingebetteten
+`VITE_STOCKINFO_API_URL`; der `StockInfoClient` entsteht beim App-Start, und
+weder die Einstellungen noch sonst eine Stelle wechseln die Adresse in einer
+laufenden Sitzung. Ein echter Wechsel heißt: Konfiguration ändern, Container
+beziehungsweise Seite neu starten — der alte JavaScript-Kontext samt offener
+Requests wird dabei verworfen.
+
+`#12` prüft deshalb die **Partitionierung des persistenten Caches über den
+Neustart hinweg**, nicht ein Request-Rennen. Eine zusätzliche
+Konfigurationsepoche braucht es nicht.
 
 **Der Weg ist entschieden** *(Codex, 2026-08-21)*: ein kanonischer Endpunkt
 **und** ein Header — keines von beidem allein.
@@ -157,19 +198,38 @@ von `/generation` ist nur ein **Schnappschuss ihres eigenen Requests**; eine
 UUID trägt weiterhin keine zeitliche Ordnung. „Der Endpunkt ist die Wahrheit"
 hilft nur, wenn die Bestätigung **zentral koordiniert** ist.
 
-Verbindlich ist deshalb:
+**Gewählt ist Single-Flight** *(Codex, 2026-08-21 — und die Wahl war
+überfällig)*. Ich hatte zwei Wege nebeneinander zugelassen: höchstens eine
+laufende Bestätigung, *oder* mehrere mit einem Request-Epoch, das ältere vom
+Commit ausschließt. Das las sich großzügig, war aber unimplementierbar: Meine
+Verify-Zeilen verlangten gleichzeitig **eine** Bestätigung und **zwei**
+vertauscht eintreffende `/generation`-Antworten. Bei echtem Single-Flight kann
+der zweite Fall gar nicht eintreten — beide Abweichungen teilen sich dasselbe
+Promise und erzeugen eine einzige Anfrage. Kein Testset hätte beide Zeilen
+erfüllen können.
 
-- **Höchstens eine laufende Generationsbestätigung je StockInfo-Instanz**
-  (single flight) — oder ein clientseitiges Request-Epoch, das ältere Versuche
-  vom Commit ausschließt.
-- Alle gleichzeitig erkannten Abweichungen laufen durch **diesen einen** Pfad;
-  kein einzelner Fetch setzt den sichtbaren Namespace selbst.
-- Eine bereits überholte `/generation`-Antwort verändert weder Namespace noch
-  Stores.
+Single-Flight ist hier der bessere Weg: weniger Netzlast, und der Rückwechsel
+wird **konstruktiv unmöglich** statt nachträglich verhindert.
+
+- **Genau ein** laufender `/generation`-Request je normalisierter
+  StockInfo-Basis-URL.
+- Alle gleichzeitig erkannten Abweichungen warten auf **dasselbe** Ergebnis; der
+  sichtbare Namespace wird daraus höchstens einmal gesetzt.
+- Trifft während einer laufenden Bestätigung ein weiteres Abweichungssignal ein,
+  committet **kein** einzelner Fetch. Bleibt sein Retry danach abweichend, folgt
+  eine weitere, wiederum einzelne Bestätigung.
+- Die ganze Kette bleibt durch `#17` begrenzt.
 
 Der Fixture-Fall „zwei vertauscht eintreffende Antworten aus A und B" deckt das
-**nicht** ab: Er prüft die Datenantworten, nicht die konkurrierenden
-Bestätigungen, die sie auslösen. Dafür stehen `#6b4`–`#6b6`.
+**nicht** ab: Er prüft die Datenantworten, nicht die Bestätigungen, die sie
+auslösen. Dafür stehen `#13`–`#15`.
+
+**Der Test „zwei vertauschte `/generation`-Antworten" ist gestrichen** — er
+gehörte allein zur nicht gewählten Epoch-Variante. Dasselbe gilt für die
+Formulierung „die jüngste bestätigte Generation": UUIDs haben gerade keine
+fachliche Ordnung. Gemeint sein könnte nur das Ergebnis des jüngsten noch
+gültigen **clientseitigen** Bestätigungsversuchs — und unter Single-Flight
+stellt sich die Frage nicht mehr.
 
 #### Der Retry muss die verworfene Antwort loswerden
 
