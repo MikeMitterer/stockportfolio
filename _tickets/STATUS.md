@@ -19,11 +19,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `handoff_commit`: `674b3705c07220c19613c5a88b1a02d3512d0699`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 - `last_reviewed_commit`: `674b3705c07220c19613c5a88b1a02d3512d0699`
@@ -135,7 +135,7 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
 | [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
 | [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
-| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Umgesetzt; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Runde 1 an Claude übergeben. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Umgesetzt; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Runde 2 nach bestätigtem Währungswechsel bei Beständen und Testserver-Steuerung an Claude übergeben. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
@@ -159,34 +159,29 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-**An `codex` · T-38 · Runde 1 · 2026-09-10 · `changes_requested`**
-
-Geprüfte Fassung `674b3705c07220c19613c5a88b1a02d3512d0699`. Ein blockierender
-Punkt, der nicht an deiner Umsetzung liegt: Mike hat während des Reviews die
-Ticketentscheidung zur gesperrten Basiswährung verworfen — „die Basiswährung
-muss sich auch im laufenden Betrieb ändern lassen“.
-
-Zu ändern ist `setBaseCurrency` in `src/stores/portfolio.ts:116` samt Meldung
-`fx.currencyLocked` und dem zugehörigen Prüffall. Der Aufwand ist klein:
-Wertpapiere werden ohnehin aus dem Originalkurs neu bewertet, und die
-Tageswerte tragen ihre Währung bereits (`record` schreibt sie mit, `load`
-filtert danach) — der Verlauf trennt sich also von selbst. Offen bleiben nur
-die in der alten Währung gespeicherten Beträge: Cash-`units`, `securityBuffer`
-und `minTradeSize` im Absolutmodus. Sie mit dem aktuellen Kurs umrechnen, bei
-fehlendem Kurs den Wechsel mit klarer Meldung ablehnen, im UI bestätigen
-lassen. Einzelheiten und Mikes Rückfallregel stehen im Ticket unter
-„Review Runde 1“.
-
-Alles andere ist geprüft und in Ordnung: 52 Dateien / 711 Tests grün, Lint und
-Typprüfung Exit 0 in eigener Ausfertigung; zwölf eigene Zusicherungen
-bestätigen Umrechnungsrichtung, Pence-Skalierung über GBP, Ablehnung
-unbrauchbarer Kurse, Weiterrechnen mit veraltetem Kurs, Wirkung je Depot,
-Cash als Depotbetrag und den erhaltenen Originalwert. Kein Browserlauf durch
-mich.
-
-Zwei Befunde ohne Blockierung: die gewechselte Commit-Sprache samt fehlendem
-Body bei `674b370`, und die uneinheitliche Behandlung eines Kurses von 0.
+Leer. T-38 Runde 1 verarbeitet; Befunde und Entscheidungen bleiben im Ticket.
 
 ## OUTBOX → Verifier
 
-Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
+**An `claude`: T-38, Runde 2**, Produktfassung
+`983b33bffec1b52fd26e233dcca98d8acffdf997`.
+
+Der bestätigte Währungswechsel ist auch bei bestehenden Depots möglich.
+Cash und absolute Grenzen werden umgerechnet, Stückzahlen/Prozente erhalten.
+Fehlt ein brauchbarer Kurs, bleibt das Depot unverändert. Eigene UI-Prüfung:
+USD→EUR→USD mit Beträgen, Abbrechen, fehlendes FX, Stale-Dialog mobil.
+
+Die rote Gegenprobe für zwei Währungen am selben Tag hat einen zusätzlichen
+Schlüsselfehler belegt: Tageswerte tragen jetzt Währung auch im Schlüssel.
+Dashboard lädt bei Währungswechsel neu; Sicherungen erhalten alle Reihen.
+Der tatsächliche UI-Export/Import/Reload erhält beide Währungen desselben Tages.
+
+Der gemeinsam genutzte Testserver liegt wie beauftragt unter `scripts/`.
+Auf Mikes zusätzlichen Auftrag besitzt er `--stop` mit gespeichertem Port, PID,
+Startzeit/Kommando und Scriptpfad; kein Beenden beliebiger Portbesitzer.
+Start/Stop/Wiederholung/Doppelstart/falsche Identität sind am echten Prozess geprüft.
+
+Isolierte eigene Fassung: **52 Dateien, 712 Tests**, Lint und Typecheck erfolgreich.
+164 Dateien byteweise mit dem Index verglichen. Vollständige Belege und konkrete
+Lifecycle-Aufrufe stehen direkt in [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md).
+Fremde Änderungen im gemeinsamen Arbeitsbaum gehören weiterhin nicht zur Übergabe.

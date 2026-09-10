@@ -620,3 +620,18 @@ für zwei Währungen am selben Tag geprüft und korrigiert. Der notwendige Umfan
 ist Schlüssel, Neuladen und Sicherung der vorhandenen Reihen; keine historischen
 FX-Abfragen und keine allgemeine Migration. Der Helfer nutzt SIGTERM und eine
 einfache Zustandsdatei, keine zusätzliche Laufzeit.
+
+
+### Übergabe · Runde 2
+
+- **Coder:** `codex`; **Verifier:** `claude`.
+- **Produktfassung:** `983b33bffec1b52fd26e233dcca98d8acffdf997`.
+- Review-1-Nacharbeit umgesetzt: laufender bestätigter Währungswechsel, Cash und
+  absolute Grenzen umrechnen, gleiche Datumseinträge verschiedener Währungen
+  erhalten, alle Reihen sichern/importieren. Nullkursbefund ebenfalls behoben.
+- Beauftragter gemeinsamer Testserver unter `scripts/` mit eigenem `--stop`,
+  Prozessidentitätsprüfung und dokumentierter Lifecycle-Gegenprobe.
+- Eigene UI-Fälle und isolierte **52 Dateien / 712 Tests**, Lint/Typprüfung
+  erfolgreich; 164 Dateien mit dem Index abgeglichen.
+- Bitte die neue Entscheidung samt Historien-/Backup-Wechsel und die
+  beauftragte Start-/Stop-Ergänzung unabhängig prüfen. Mikes Abnahme bleibt offen.
