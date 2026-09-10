@@ -2,7 +2,8 @@
 
 **T-37 ist zur Bearbeitung aktiviert, danach folgt T-38.** Mike hat diese
 Reihenfolge am 2026-09-10 im Codex-Chat beauftragt. T-37 beginnt mit der
-Vertragsbewertung und der Klärung des Feldbedarfs; T-38 ist eingeplant.
+Vertragsbewertung; Feldbedarf ist geklärt und die Bewertung zur Prüfung
+übergeben. T-38 ist eingeplant.
 T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
 
 **Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
@@ -15,11 +16,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `none`
 - `last_reviewed_commit`: `none`
@@ -69,9 +70,9 @@ Entwicklungsdaten dürfen zurückgesetzt und neu angelegt werden. Maßgeblich
 ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
 
 **Aktueller Schritt:** Die Feldentscheidung ist im Vorschlag unter
-`docs/stockinfo-integration-proposal.md` verarbeitet. Die Bewertungsübergabe
-an den Reviewer wird vorbereitet; keine Produktimplementierung ist damit
-behauptet. Der Scheduler bleibt aktiv.
+`docs/stockinfo-integration-proposal.md` verarbeitet. Die Bewertung ist an
+`claude` übergeben; zu prüfen ist der Commit oben. Eine Produktimplementierung
+ist damit nicht behauptet. Der Scheduler bleibt aktiv.
 
 ### Übernahmestand
 
@@ -87,7 +88,7 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-34](30-doing/T-34-einstellungen-fuers-aktualisieren.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #1–#4 und #6 offen. |
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
-| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Seit 2026-09-10 aktiviert; automatische Detailanzeige ohne Hauptzeilen-Dubletten entschieden, Bewertungsreview wird vorbereitet. |
+| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Automatische Detailanzeige ohne Hauptzeilen-Dubletten entschieden; Bewertungsreview Runde 1 an claude übergeben. |
 | [T-38](20-ready/T-38-basiswaehrung-und-devisenkurse.md) | Nach T-37 eingeplant; konfigurierbare Basiswährung je Depot und Weiterrechnen bei veralteten FX-Kursen mit Warnung entschieden. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
@@ -114,4 +115,29 @@ Leer. Empfänger ist bei aktiver Zuordnung `implementer`.
 
 ## OUTBOX → Verifier
 
-Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
+**An `claude` · T-37 · Runde 1 · 2026-09-10**
+
+Übergabefassung: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`.
+Vergleichsbasis vor dieser Ticketarbeit: `987894c`.
+
+Bitte den Bewertungsauftrag aus
+[T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) und den
+[Integrationsvorschlag](../docs/stockinfo-integration-proposal.md) unabhängig
+prüfen. Schwerpunkt: aktueller Identitätsvertrag für Quote und Katalog,
+alle vier Quote-/Refreshwege, automatische Detailanzeige ohne Wiederholung
+der tatsächlich dargestellten Hauptzeilen-Felder, ausdrücklich auch bei
+dynamischen Spalten; Metadaten, `0`/`false` und Feldkollisionen.
+
+Mikes Feldentscheidungen stehen im Ticket. Seine allgemeine Regel gegen
+Versionsmigrationen steht in `AGENTS.md`; die T-38-Entscheidungen wurden in
+dessen eingeplantem Ticket festgehalten. T-35 wird nicht insgesamt aktiviert.
+
+Belege: echter Mapper isoliert mit StockInfo-Fixtures und synthetischen
+Identitäts-/Detailvarianten ausgeführt; Vertrag und Verbraucher am Quellcode
+zugeordnet; 83 lokale Verweise und Boardzustand geprüft. `make test`: 39
+Dateien / 589 Tests bestanden; `make lint` und `make typecheck`: Exit 0.
+Die Projektprüfungen liefen im vorhandenen Arbeitsbaum samt fremden Änderungen;
+diese Änderungen werden nicht mit übergeben. Der zu prüfende Diff enthält
+nur Dokumentation und Boardpflege. Kein Browser-/Live-API-Nachweis, keine
+implementierte Detailanzeige behauptet. Ergebnis und Belege bitte nach
+Workflow im Ticket und in der INBOX festhalten.

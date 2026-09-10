@@ -58,7 +58,7 @@ zugeschnitten; keine neue Route allein durch dieses Ticket beauftragt.
 
 Repo: StockPortfolio. Betroffene Fremdschnittstelle: StockInfo.
 Zeitbudget: nicht beziffert. Status: technische Bewertung und Feldbedarf
-dokumentiert; unabhängiger Review wird vorbereitet.
+dokumentiert; Bewertungsreview Runde 1 an `claude` übergeben.
 
 ### Vorliegende Befunde
 
@@ -170,4 +170,5 @@ Antwort mit Client-Normalisierung. Identitätsformen, Abrufwege, Metadaten und
 Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B sind
 entschieden: automatische Detailanzeige ohne Wiederholung tatsächlich in der
 Hauptzeile dargestellter Felder, einschließlich dynamischer Schlüssel.
-Keine unabhängige Freigabe und keine Implementierung; Review wird vorbereitet.
+Keine unabhängige Freigabe und keine Implementierung. Bewertungsreview Runde 1
+an `claude` übergeben, Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5`.
