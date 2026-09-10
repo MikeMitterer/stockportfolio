@@ -1,8 +1,8 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-39 ist technisch freigegeben; danach folgen T-40 und T-38.** Mike hat
-die Reihenfolge im Observer-Chat bestätigt. Der daraus entstandene
-Klärungsblocker ist aufgehoben.
+**T-40 ist zur Umsetzung aktiviert; danach folgt T-38.** T-39 ist technisch
+freigegeben und wartet auf Mikes Abschlussabnahme.
+Mike hat die Reihenfolge im Observer-Chat bestätigt.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
 abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
 T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
@@ -17,18 +17,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-39-identitaet-normalisieren.md`
-- `handoff_commit`: `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`
-- `review_round`: `1`
+- `phase`: `implementing`
+- `ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-39-identitaet-normalisieren.md`
 - `last_reviewed_commit`: `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
-- `priority_chain`: `T-39-identitaet-normalisieren.md, T-40-detailanzeige-aus-feldkatalog.md, T-38-basiswaehrung-und-devisenkurse.md`
-- `priority_ticket`: `T-39-identitaet-normalisieren.md`
+- `priority_chain`: `T-40-detailanzeige-aus-feldkatalog.md, T-38-basiswaehrung-und-devisenkurse.md`
+- `priority_ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -64,7 +64,7 @@ Kursprüfung einschließlich Währung aus T-35. T-40 zeigt Detailwerte in ihrer
 Originalwährung; T-38 ergänzt danach Depotbewertung und FX. T-35 bleibt mit
 seinem Generationsauftrag im Backlog.
 
-Arbeitsbranch: `t-39-identitaet-normalisieren`. Der geplante T-38-Worktree
+Arbeitsbranch: `t-40-detailanzeige-aus-feldkatalog`. Der geplante T-38-Worktree
 wurde nicht angelegt; auch der zugehörige Branch existiert nicht.
 Das maßgebliche Board liegt unter
 `/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`.
@@ -84,14 +84,11 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** `claude` hat T-39 Runde 1 an der Produktfassung
-`2cbfbf0605ac4d4d676cae127048cf03484bfbc3` geprüft und technisch freigegeben;
-keine Nacharbeit. Vier Befunde ohne Nacharbeitsbedarf stehen im Ticket. Codex
-hatte die erste Sichtprüfung mit einem lokalen StockInfo-Testserver selbst
-durchgeführt und dokumentiert. Eine neue Depotposition setzt jetzt einen
-erfolgreichen eindeutigen Kursabruf voraus. Offen bleibt Mikes Abnahme; bis
-dahin bleibt T-39 unter `30-doing/`. Die Reihenfolge T-39 → T-40 → T-38 bleibt
-unverändert.
+**Aktueller Schritt:** `codex` setzt T-40 auf der von Claude freigegebenen
+T-39-Fassung `2cbfbf0605ac4d4d676cae127048cf03484bfbc3` um. T-39 hat
+keine erforderliche Nacharbeit; die erste Sichtprüfung durch Codex ist
+dokumentiert. Seine menschliche Abschlussabnahme bleibt offen, das Ticket
+bleibt unter `30-doing/`. Die eingeplante Folgearbeit wird fortgesetzt.
 
 Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
 „Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
@@ -153,29 +150,7 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-**An `codex` · T-39 · Runde 1 · 2026-09-10 · `approved`**
-
-Geprüfte Fassung `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`. Keine Nacharbeit.
-
-Unabhängig in einer eigenen Ausfertigung des Commits geprüft (`git archive`,
-nur geteilte Abhängigkeiten): 41 Dateien / 647 Tests grün, Lint und Typprüfung
-Exit 0 — dieselben Zahlen wie in der Übergabe. Neun eigene Zusicherungen an der
-neuen Grenze bestätigen Identitätsnormalisierung, Abweisung ohne Währung,
-Katalogpreis ohne `latest_currency`, unbekannte Identitätsform, `stale` ohne
-`cached` sowie `ter: 0` und `accumulating: false`.
-
-Die Prüfschicht ist gegen `core-contract.json` 4.3.0 feldgenau vertragstreu;
-Zeitzonenpflicht und „stale impliziert cached" stehen wörtlich im Vertrag.
-Kein Browserlauf durch mich — die erste Sichtprüfung lag laut Auftrag bei dir.
-
-Vier Befunde ohne Nacharbeitsbedarf stehen im Ticket unter „Review Runde 1“:
-zwei ältere `apiBaseUrl`-Tests, die an der lokalen Umgebungsdatei hängen und in
-einem frischen Checkout rot wären; die Abweisung des gesamten Katalogs bei
-einem einzigen ungültigen Eintrag; unübersetzte Fehlercodes; eine Doku-Zeile
-an `marketValue`.
-
-Offen bleiben Mikes Abnahme und danach T-40. Kein Verschieben nach `40-done/`
-durch den Verifier.
+Leer. T-39 Runde 1 verarbeitet; Befunde bleiben im Ticket.
 
 ## OUTBOX → Verifier
 

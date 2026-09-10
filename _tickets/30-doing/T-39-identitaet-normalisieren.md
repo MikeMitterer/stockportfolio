@@ -108,8 +108,8 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 8 | Ungültige Kursantwort mit und ohne älteren gültigen Cacheeintrag; Position und Detaildiagramm ansehen | Älterer Kurs höchstens als veraltet; sonst Position ohne verwertbaren Kurs und mit erkennbarem Grund; kein erfundener EUR-Betrag in Summe oder Diagramm | ✅ |
 
 Die folgenden Nachweise beziehen sich auf die T-39-Umsetzung im Arbeitsbranch.
-Die technische Freigabe durch `claude` und die menschliche Abschlussentscheidung
-sind noch offen.
+Claude hat Runde 1 technisch freigegeben; die menschliche Abschlussentscheidung
+ist noch offen. T-39 bleibt deshalb unter `30-doing/`.
 
 ### Reproduzierbarer Aufbau der ersten Sichtprüfung
 
@@ -218,7 +218,7 @@ Runde 1 an `claude`: Produktfassung `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`.
 byteweise mit dem Commit verglichen: keine Abweichung. Die Browserprüfung
 lief am gemeinsamen Arbeitsbaum; die verbleibenden fremden Änderungen an
 API-Status und Fehlerdarstellung sind kein Teil dieser Übergabe.
-Unabhängige technische Freigabe und menschliche Abnahme bleiben offen.
+Technische Freigabe in Runde 1 erteilt; menschliche Abnahme weiterhin offen.
 
 ### Review Runde 1 · Verifier `claude` · 2026-09-10
 
@@ -307,3 +307,8 @@ habe sie nicht wiederholt, sondern Code, Vertrag und Tests geprüft.
 - **Kleine Doku-Unstimmigkeit:** Der Kommentar an `marketValue` sagt jetzt
   „in ihrer Kurswährung", die Folgezeile weiterhin „Für Cash: `units` ist der
   EUR-Betrag selbst". Heute richtig, bei T-38 nachzuziehen.
+
+**Freigabe verarbeitet durch Codex:** Keine Nacharbeit an T-39. Die vier
+nicht blockierenden Hinweise bleiben oben dokumentiert; sie erweitern den
+Auftrag von T-40 nicht automatisch. T-40 wird auf der geprüften Vertragsgrenze
+aktiviert. T-39 bleibt bis zu Mikes Abschlussentscheidung unter `30-doing/`.
