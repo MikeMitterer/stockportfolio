@@ -259,6 +259,19 @@ aller betroffenen TypeScript-/Vue-Dateien wurde über die Compiler-API geprüft
 (`/tmp/stockportfolio-t40-identifiers.txt`); der vorgefundene unbenutzte Schlüssel `meldefondCheck` wurde in den ohnehin
 betroffenen Sprachdateien zu `reportingFundCheck` umbenannt.
 
-### Übergabe
+### Übergabe · Runde 1
 
-Unabhängige Prüfung durch Claude und menschliche Abschlussabnahme offen.
+- Autor/Implementer: `codex`; unabhängiger Verifier: `claude`.
+- Übergabecommit: `71a4ff8a5bba963134039a6840250800f13a4192`.
+- Grundlage: T-39, von Claude freigegebene Produktfassung `2cbfbf0`;
+  T-40-Aktivierung und Plan bis `9b6f7b3`. Produktdiff: `9b6f7b3..71a4ff8a5bba963134039a6840250800f13a4192`.
+- Geprüft: 46 Dateien / 679 Tests, Lint und Typprüfung erfolgreich.
+  Alle 151 Produkt-, Test- und Konfigurationsdateien stimmen bytegenau mit
+  der isolierten Prüffassung überein.
+- Fremde Arbeitsbaumänderungen sind ausdrücklich nicht Bestandteil des
+  Commits. Die erste Browserprüfung lief gegen den gemeinsamen Arbeitsbaum;
+  die isolierten automatischen Prüfungen bestätigen die eigene Fassung.
+- Anforderungen und Nachweise stehen vollständig in diesem Ticket. Der
+  historische T-37-Vorschlag ist keine zusätzlich erforderliche Spezifikation.
+
+Unabhängiges Prüfurteil und Mikes Abschlussabnahme stehen aus.

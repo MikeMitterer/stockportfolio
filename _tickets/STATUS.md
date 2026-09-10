@@ -1,6 +1,6 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-40 ist zur Umsetzung aktiviert; danach folgt T-38.** T-39 ist technisch
+**T-40 ist an Claude zur unabhängigen Prüfung übergeben; danach folgt T-38.** T-39 ist technisch
 freigegeben und wartet auf Mikes Abschlussabnahme.
 Mike hat die Reihenfolge im Observer-Chat bestätigt.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
@@ -17,11 +17,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-39-identitaet-normalisieren.md`
 - `last_reviewed_commit`: `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`
@@ -84,8 +84,9 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** `codex` setzt T-40 auf der von Claude freigegebenen
-T-39-Fassung `2cbfbf0605ac4d4d676cae127048cf03484bfbc3` um. T-39 hat
+**Aktueller Schritt:** `claude` prüft T-40 Runde 1, Fassung
+`71a4ff8a5bba963134039a6840250800f13a4192`. `codex` hält den Produktstand bis zur
+Rückgabe stabil. Umsetzung und erste Sichtprüfung sind im Ticket belegt. T-39 hat
 keine erforderliche Nacharbeit; die erste Sichtprüfung durch Codex ist
 dokumentiert. Seine menschliche Abschlussabnahme bleibt offen, das Ticket
 bleibt unter `30-doing/`. Die eingeplante Folgearbeit wird fortgesetzt.
@@ -103,7 +104,10 @@ und `implementing` gesetzt. Rollen, Owner und Reviewzähler bleiben unverändert
 T-39 liefert die gemeinsame Pflichtfeldprüfung einschließlich Kurswährung.
 T-40 und T-38 verwenden dieselben Typen, Mapper, Cache- und Anzeigebausteine
 weiter. T-40 erhält die Originalwerte; T-38 leitet daraus Depotwerte ab.
-Die konkreten Prüfpunkte stehen in den drei Tickets.
+Die konkreten Prüfpunkte stehen vollständig in den drei Tickets. Mike hat
+am 2026-09-10 klargestellt, dass die gesamte benötigte Information im
+entsprechenden Ticket liegen soll. Der T-37-Integrationsvorschlag bleibt
+ausschließlich als historische Bewertung erhalten.
 Die Freigabe von T-37 Runde 1 durch `claude` ist verarbeitet; keine Nacharbeit. T-38 war
 noch nicht begonnen — Branch und Worktree existierten beim Vorziehen nicht,
 es geht also keine angefangene Arbeit verloren. T-37 ist mit Mikes
@@ -125,13 +129,14 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
-| [T-39](30-doing/T-39-identitaet-normalisieren.md) | Als nächstes Ticket zugeordnet; gemeinsame Identitäts- und Pflichtfeldprüfung einschließlich Kurswährung. Phase siehe Zustandsblock. |
-| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Nach T-39 eingeplant; Detailanzeige in Originalwährung ohne FX-Umrechnung. |
+| [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
+| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 an Claude übergeben, menschliche Abschlussabnahme offen. |
 | [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Nach T-40 eingeplant; Depot-Basiswährung und FX-Bewertung mit Warnung bei veralteten Kursen. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-39 ist aktiv; T-40 und T-38 folgen in dieser Reihenfolge.
+Agentenaufträge. T-40 ist im Review; T-38 folgt danach. T-39 wartet auf die
+menschliche Abschlussabnahme.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
@@ -154,4 +159,31 @@ Leer. T-39 Runde 1 verarbeitet; Befunde bleiben im Ticket.
 
 ## OUTBOX → Verifier
 
-Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
+**An `claude`: T-40, Reviewrunde 1.**
+
+Übergabecommit: `71a4ff8a5bba963134039a6840250800f13a4192`; Vergleichsbasis `9b6f7b3`.
+Vollständiger Auftrag und alle Prüfnachweise:
+[T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md). Den historischen
+Integrationsvorschlag nicht als zusätzliche Spezifikation verwenden.
+
+Bitte die gemeinsame Detailübernahme in Quote/Refresh/Katalog und Cache,
+Sitzungskatalog samt Fehler-/Adresswechsel, Einheiten und Anwendbarkeit sowie
+den Abgleich mit tatsächlich gerenderten Hauptspalten prüfen. TER und
+Volatilität laufen durch dieselbe Darstellung; mobil gibt es Zusatzinformationen.
+Neue Felder beeinflussen keine Berechnungen. Kein Spalteneditor und kein FX.
+
+Nachweise: isoliert 46 Dateien / 679 Tests, `make lint`, `make typecheck`
+erfolgreich; 151 Produkt-/Test-/Konfigurationsdateien bytegenau gleich.
+Die isolierte Kopie liegt unter `/tmp/stockportfolio-t40-review-t8763v`.
+Die vorhandenen Konfigurationstests brauchen eine explizite öffentliche
+Testadresse (`VITE_STOCKINFO_API_URL=https://contract.test`). Kein Live-Netz
+in Unit-Tests. Details zu roten Gegenproben und Browserfällen stehen im Ticket.
+
+Die erste Sichtprüfung lief mit dem echten lokalen StockInfo-Testserver und
+synthetischen Detaildefinitionen; kein echter Pluginabruf wird behauptet.
+Browser: `http://127.0.0.1:5189`, Testserver 8899 mit neuer temporärer DB.
+Dynamische Hauptspalten wurden über die programmatische Prop geprüft.
+Der gemeinsame Arbeitsbaum enthält fremde Produkt-/Boardänderungen; sie sind
+aus dem Übergabecommit ausgeschlossen und bleiben unverändert.
+
+Technische Prüfung beauftragt; Mikes Abschlussabnahme bleibt separat offen.

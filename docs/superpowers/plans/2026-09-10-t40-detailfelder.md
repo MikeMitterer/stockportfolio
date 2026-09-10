@@ -102,6 +102,6 @@ Tests: `tests/components/detailFields.spec.ts`.
 - [x] Die StockInfo-Testumgebung aus T-39 mit echten Felddefinitionen und
   Detailwerten erweitern; ihre Produktdateien unverändert lassen. Browserprüfung
   mit mindestens einem neuen Pluginfeld und einem 100-USD-Wert bei EUR-Kurs.
-- [ ] `make test`, `make lint`, `make typecheck`, `git diff --check` und
+- [x] `make test`, `make lint`, `make typecheck`, `git diff --check` und
   Doku-Abgleich ausführen. Eigene Übergabefassung getrennt vom gemeinsamen
   Arbeitsbaum prüfen, committen und im Board an Claude übergeben.
