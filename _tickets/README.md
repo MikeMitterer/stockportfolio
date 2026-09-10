@@ -126,7 +126,6 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 
 | Thema | Stand |
 |---|---|
-| Basiswährung außer EUR | hängt an StockInfo, siehe [Anfrage](../docs/stockinfo-currency-request.md) |
 | CORS gegen die produktive API | ungeprüft — nur auf dem Zielsystem möglich |
 | Unraid-Vorlage | nie auf einer echten Instanz gelaufen |
 | Verlaufs-Zwischenspeicher | wird nie aufgeräumt, wächst nur |
@@ -137,3 +136,9 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 [T-37 · StockInfo-Vertrag und dynamische Felder](10-backlog/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md):
 Identitätszuordnung, zusätzliche Kennzahlen und Nutzen einer flachen
 Quote-Ansicht bewerten. Offen, noch nicht zur Umsetzung eingeplant.
+
+[T-38 · Basiswährung außer EUR](10-backlog/T-38-basiswaehrung-und-devisenkurse.md):
+StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
+nutzt sie nicht. Zuschnitt offen — Umrechnung gemischter Depots und wählbare
+Basiswährung sind zwei verschiedene Umfänge. Ersetzt die überholte Anfrage
+`docs/stockinfo-currency-request.md`.

@@ -413,8 +413,8 @@ in the Docker tab.
 
 | Topic                                | State                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------- |
-| Base currency other than EUR         | open — depends on StockInfo (see [request](docs/stockinfo-currency-request.md)) |
-| Converting mixed-currency portfolios | open — would need FX rates including their age                                  |
+| Base currency other than EUR         | open — scope undecided ([T-38](_tickets/10-backlog/T-38-basiswaehrung-und-devisenkurse.md)) |
+| Converting mixed-currency portfolios | open — StockInfo serves FX rates with their age; the app does not use them yet  |
 | Threshold notifications              | deliberately outside the MVP                                                    |
 | CORS against the production API      | unverified — the container's origin has to be allowed                           |
 | Pruning the price-history cache      | open — it only ever grows                                                       |

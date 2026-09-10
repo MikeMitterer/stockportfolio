@@ -22,8 +22,11 @@ Summe. Das ist keine Notlösung — für ein Werkzeug, in dem man bewusst
 EUR-notierte Papiere kauft, ist es die ehrlichere Antwort als eine Zahl, die
 niemand nachrechnen kann.
 
-Was dafür an StockInfo ginge, steht in
-[`docs/stockinfo-currency-request.md`](../../docs/stockinfo-currency-request.md).
+Was dafür an StockInfo ginge, stand in `docs/stockinfo-currency-request.md`.
+Diese Anfrage ist seit 2026-09-10 überholt und entfernt — StockInfo liefert
+inzwischen Devisenkurse. Der offene Rest steht in
+[T-38](../10-backlog/T-38-basiswaehrung-und-devisenkurse.md); die Anfrage selbst
+bleibt in der Git-Historie lesbar.
 
 ## Sichtbar ausschließen, nicht verschwinden lassen
 

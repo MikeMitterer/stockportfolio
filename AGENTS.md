@@ -31,12 +31,11 @@ Alles, was die App anzeigt und rechnet, stammt von dort: `/instruments`,
 erreichbaren Dienst bleibt die Oberfläche leer. Eine leere Kurstabelle ist
 deshalb zuerst ein Verdacht gegen Adresse oder Dienst, nicht gegen die Rechnung.
 
-**Braucht die App etwas vom Dienst, entsteht der Regelweg als Ticket im
-StockInfo-Board.** Beschrieben wird das Problem aus Konsumentensicht samt
-Auswirkung; über die Lösung entscheidet, wer den Dienst kennt. Für einen
-größeren Zusammenhang eignet sich ein Anfragedokument wie
-[`docs/stockinfo-currency-request.md`](docs/stockinfo-currency-request.md).
-Beides ist eine Beschreibung, kein fertiger Bauauftrag.
+**Braucht die App etwas vom Dienst, entsteht ein Ticket im StockInfo-Board.**
+Es beschreibt Problem und Auswirkung aus Konsumentensicht, keinen fertigen
+Bauauftrag — über die Lösung entscheidet, wer den Dienst kennt. Auch ein großer
+Zusammenhang beginnt als ein Ticket; aufgeteilt wird er dort, wo der Zuschnitt
+bekannt ist.
 
 **Von sich aus ändert hier niemand Code in StockInfo.** Beauftragt Mike die
 Änderung dort ausdrücklich, ist sie zulässig — dann gelten drüben die Regeln
