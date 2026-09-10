@@ -12,7 +12,9 @@ Daneben erwartet der Mapper `isin` auf oberster Ebene. Im aktuellen
 StockInfo-Vertrag liegt eine ISIN innerhalb der passenden `identity`-Form.
 Eine neue Route für flache Details allein würde diese Lücke nicht beheben.
 
-Die **erste Bewertung liegt vor**. Dieses Ticket konkretisiert den benötigten
+Der [aktualisierte Integrationsvorschlag](../../docs/stockinfo-integration-proposal.md)
+liegt vor. Empfehlung: bestehende Antworten im Client normalisieren; eine neue
+flache Route ist für den belegten Bedarf nicht nötig. Dieses Ticket konkretisiert den benötigten
 Konsumentenvertrag und entscheidet, ob eine zusätzliche serverseitige
 Leseansicht sinnvoll ist. Noch keine Implementierung, keine Live-Abnahme.
 
@@ -49,7 +51,8 @@ zusätzlicher StockInfo-Projektionsroute. Die Umsetzung wird danach gesondert
 zugeschnitten; keine neue Route allein durch dieses Ticket beauftragt.
 
 Repo: StockPortfolio. Betroffene Fremdschnittstelle: StockInfo.
-Zeitbudget: nicht beziffert. Status: aktiv, Bewertung wird vervollständigt.
+Zeitbudget: nicht beziffert. Status: technische Bewertung ergänzt; wartet
+auf Feldentscheidungen A/B vor endgültigem Zuschnitt und unabhängigem Review.
 
 ### Vorliegende Befunde
 
@@ -73,18 +76,31 @@ werden. Vorhandene fremde Änderungen wurden nicht verändert.
 
 ### Verify · einzige aktuelle Matrix
 
-Legende: ◑ teilweise belegt · ➖ noch nicht nachgewiesen.
+Legende: ✅ Bewertungsprüfung ausgeführt · ◑ teilweise belegt · ➖ noch nicht nachgewiesen.
 Die Matrix bewertet den Abschluss dieser Bewertung, nicht eine bereits
 implementierte Integration. Menschliche Entscheidungen stehen oben.
 
 | # | Prüfung / Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Aktuelle StockInfo-Antwortmodelle und Portfolio-Mapper gegenüberstellen; synthetische Antworten durch den echten Mapper schicken | Identitätsformen `listed`, `pair`, `isin_only` und optionale ISIN korrekt im Integrationsvorschlag behandelt; erste Mapper-Lücke bereits reproduziert | ◑ |
+| 1 | Aktuelle StockInfo-Antwortmodelle und Portfolio-Mapper gegenüberstellen; synthetische Antworten durch den echten Mapper schicken | Alle drei Identitätsformen und `listed` ohne ISIN geprüft; Quote- und Katalogmapper liefern jeweils `undefined`. Zielzuordnung und Grenzen im Vorschlag dokumentiert | ✅ |
 | 2 | Antworten von Quote, Refresh und Instrumentkatalog bis Cache und UI verfolgen | Vollständige betroffene Abruf- und Verbraucherwege; erste Codeinventur liegt vor, kein Live-Ende-zu-Ende-Nachweis | ◑ |
 | 3 | Mikes Antworten A/B in konkrete Felder und Anwendungsfälle übersetzen | Benötigte Kennzahlen, reine Anzeige versus Berechnung und Cache-Anforderungen eindeutig festgelegt | ➖ |
-| 4 | Verschachtelte Antwort plus Mapper mit zusätzlicher flacher Route vergleichen | Begründete Empfehlung samt Beispielantwort, Aufwandstreibern und Folgen für alle relevanten Abrufwege | ◑ |
-| 5 | Gegenfälle im empfohlenen Vertrag durchgehen | `0`, `false`, `null`, fehlendes Feld, Namenskollision, Quellen-/manueller Wert, Einheit und Betragswährung eindeutig geregelt | ➖ |
+| 4 | Verschachtelte Antwort plus Mapper mit zusätzlicher flacher Route vergleichen | Vergleich und Empfehlung samt synthetischem Antwortausschnitt, vier Quote-/Refreshwegen und direkt konsumiertem Katalog dokumentiert | ✅ |
+| 5 | Gegenfälle im empfohlenen Vertrag durchgehen | Regeln für `0`, `false`, `null`, fehlendes Feld, Kollision, wirksamen/manuellen Wert, Einheit und Betragswährung dokumentiert; keine Produktumsetzung behauptet | ✅ |
 | 6 | Empfehlung und offene Restarbeit unabhängig prüfen | Freigegebener Integrationsvorschlag und getrennt zugeschnittene Umsetzung; keine fälschlich behauptete Route oder Produktfreigabe | ➖ |
+
+**Nachweise 2026-09-10:**
+[Integrationsvorschlag](../../docs/stockinfo-integration-proposal.md), Abschnitte
+„Der aktuelle Vertrag“, „Werte und Metadaten zusammenhalten“, „Vergleich mit
+einer flachen Serverroute“ und „Was tatsächlich geprüft wurde“. `✅` bezeichnet
+hier die ausgeführte Bewertungsprüfung, keine Live-Integration. Die frühere
+Untersuchung vom 2026-09-08 bleibt als Ausgangsbefund erhalten.
+
+**Doku-Abgleich:** README (One currency, Not there yet), ursprüngliche
+MVP-Spec (API, Datenmodell, Rebalancing, Nicht im MVP), Board und Projektregeln
+inventarisiert. Planungsstand und Links aktualisiert; Produktanleitungen
+behaupten keine implementierte Integration. Offene Antworten A/B und
+unabhängiger Review verhindern noch den Abschluss.
 
 ### Regeln für die mögliche Projektion
 
@@ -123,5 +139,8 @@ gegebenenfalls ein verlinktes Umsetzungsticket.
 
 ### Auflösung
 
-Offen. Ausgangsbewertung übernommen; Feldbedarf und endgültiger Integrationsweg
-noch nicht entschieden. Keine unabhängige Freigabe und keine Implementierung.
+Offen. Der Integrationsvorschlag vom 2026-09-10 empfiehlt die bestehende
+Antwort mit Client-Normalisierung. Identitätsformen, Abrufwege, Metadaten und
+Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B bleiben
+unentschieden; deshalb noch kein vollständig abgestimmter Vorschlag.
+Keine unabhängige Freigabe und keine Implementierung.

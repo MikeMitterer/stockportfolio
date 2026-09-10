@@ -139,6 +139,6 @@ Quote-Ansicht bewerten. Seit 2026-09-10 zur Bearbeitung aktiviert.
 
 [T-38 · Basiswährung außer EUR](20-ready/T-38-basiswaehrung-und-devisenkurse.md):
 StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
-nutzt sie nicht. Zuschnitt offen — Umrechnung gemischter Depots und wählbare
-Basiswährung sind zwei verschiedene Umfänge. Nach T-37 eingeplant. Ersetzt die überholte Anfrage
+nutzt sie nicht. Konfigurierbare Basiswährung je Depot ist entschieden;
+der Umgang mit veralteten Kursen ist offen. Nach T-37 eingeplant. Ersetzt die überholte Anfrage
 `docs/stockinfo-currency-request.md`.
