@@ -64,7 +64,7 @@ Kursprüfung einschließlich Währung aus T-35. T-40 zeigt Detailwerte in ihrer
 Originalwährung; T-38 ergänzt danach Depotbewertung und FX. T-35 bleibt mit
 seinem Generationsauftrag im Backlog.
 
-Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. Der geplante T-38-Worktree
+Arbeitsbranch: `t-39-identitaet-normalisieren`. Der geplante T-38-Worktree
 wurde nicht angelegt; auch der zugehörige Branch existiert nicht.
 Das maßgebliche Board liegt unter
 `/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`.
