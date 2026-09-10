@@ -17,11 +17,11 @@ import {
   eurSigned,
   integer,
   number,
-  percent,
 } from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
 import { resolveKind, resolveLinks } from '@/domain/links'
 import PriceChart from '@/components/PriceChart.vue'
+import PositionDetailFields from '@/components/PositionDetailFields.vue'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { PositionResult } from '@/domain/rebalancing'
@@ -31,6 +31,7 @@ const props = defineProps<{
   row: PositionResult
   total: number
   links: ExternalLink[]
+  visibleStockInfoFields?: readonly string[]
   /** Solange der Kurs dieser Position geholt wird — der Knopf dreht. */
   refreshing?: boolean
 }>()
@@ -284,14 +285,6 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
               <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
             </div>
           </template>
-          <div v-if="row.quote?.volatility != null">
-            <div class="drill__label">{{ t('drilldown.volatility') }}</div>
-            <div class="tabular-nums">{{ percent(row.quote.volatility) }}</div>
-          </div>
-          <div v-if="row.quote?.ter != null">
-            <div class="drill__label">TER</div>
-            <div class="tabular-nums">{{ percent(row.quote.ter) }}</div>
-          </div>
           <div v-if="row.quote">
             <div class="drill__label">{{ t('dashboard.quoteAge') }}</div>
             <div class="tabular-nums">{{ quoteAge }}</div>
@@ -320,6 +313,10 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
         </div>
       </NCard>
     </div>
+
+    <NCard v-if="row.quote" :bordered="false" size="small" class="drill__card">
+      <PositionDetailFields :quote="row.quote" :visible-keys="visibleStockInfoFields" />
+    </NCard>
 
     <!-- ─── Kursverlauf ──────────────────────────────────────────────── -->
     <NCard

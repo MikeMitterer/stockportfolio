@@ -22,8 +22,10 @@ sys.dont_write_bytecode = True
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--stockinfo-root", type=Path, required=True)
 parser.add_argument("--port", type=int, default=8899)
+parser.add_argument("--detail-fixtures", type=Path)
 args = parser.parse_args()
 stockinfo_root = args.stockinfo_root.resolve()
+detail_fixtures = args.detail_fixtures.resolve() if args.detail_fixtures else None
 data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t39-server-"))
 os.environ["DATABASE_PATH"] = str(data_dir / "stockinfo.db")
 os.environ["CORS_ORIGINS"] = '["http://127.0.0.1:5189"]'
@@ -35,6 +37,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
 from app.container import get_cached_quote_service, get_daily_history_service
 from app.db import init_db
+from app.detail_models import DetailDefinition, DetailInput
 from app.main import app
 from app.models import QuoteResponse
 from app.providers.base import RawQuote, SourceAnswer
@@ -62,6 +65,22 @@ SEEDS = [
     *[{**BASE, "identity": {"kind": "listed", "ticker": "DUAL", "mic": mic}, "symbol": "DUAL", "name": f"T39 Mehrdeutig {mic}", "type": "stock", "currency": "USD"} for mic in ["XNAS", "XNYS"]],
 ]
 state = {"mode": "normal", "symbol": "NOSI.DE"}
+
+
+def prepare_details(repository: QuoteRepository) -> tuple[list[DetailDefinition], dict[str, Any]]:
+    """T-40 verwendet dieselbe Testumgebung mit offen deklarierten Zusatzfeldern."""
+    if detail_fixtures is None:
+        return [], {}
+    catalog = json.loads((detail_fixtures / "detail-catalog.json").read_text())
+    values = json.loads((detail_fixtures / "detail-values.json").read_text())
+    definitions = [DetailDefinition.model_validate(entry) for entry in catalog["details"]]
+    scope = {"source": "t40-core", "instrument_types": ["etf"], "identity_kinds": ["listed"]}
+    for name, label_en, label_de, value in [("ter", "TER", "TER", 0.2), ("volatility", "Volatility", "Volatilität", 11.4)]:
+        definitions.append(DetailDefinition(name=name, kind="number", unit="percent", label_en=label_en, label_de=label_de,
+                                            sources=["t40-core"], scopes=[scope]))
+        values[name] = {"value": value, "origin": "provider", "source": "t40-core"}
+    repository.detail_catalog(definitions)
+    return definitions, values
 
 
 class LocalQuotes:
@@ -108,9 +127,19 @@ async def test_lifespan(application: FastAPI) -> AsyncIterator[None]:
     database = str(data_dir / "stockinfo.db")
     init_db(database)
     repository = QuoteRepository(database)
+    definitions, details = prepare_details(repository)
     now = datetime.now(timezone.utc).isoformat()
     for seed in SEEDS:
-        repository.save_quote(QuoteResponse(**seed, quote_time=now, fetched_at=now))
+        applicable = {definition.name for definition in definitions if definition.applies(seed["type"], seed["identity"]["kind"])}
+        readings: dict[str, dict[str, Any]] = {}
+        for name, entry in details.items():
+            if name in applicable and entry.get("origin") == "provider":
+                readings.setdefault(entry["source"], {})[name] = entry
+        saved = repository.save_quote(QuoteResponse(**seed, quote_time=now, fetched_at=now, detail_readings=readings))
+        manual = {name: DetailInput(value=entry["manual_value"], currency=entry.get("manual_currency"))
+                  for name, entry in details.items() if name in applicable and entry.get("manual_value") is not None}
+        if manual:
+            repository.set_detail_overrides(saved.instrument_id, manual, now)
     daily = LocalDaily()
     service = CachedQuoteService(QuoteService(LocalQuotes(), EmptyEtfEnricher(), LocalResolver()), repository, 6, DailyCloseSync(repository, daily))
     application.dependency_overrides[get_cached_quote_service] = lambda: service
@@ -128,10 +157,13 @@ app.router.lifespan_context = test_lifespan
 async def test_faults(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     if request.url.path == "/__test/scenario" and request.method == "POST":
         changes = await request.json()
-        if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity"}:
+        if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down"}:
             return JSONResponse({"error": "unknown test mode"}, status_code=400)
         state.update({key: changes[key] for key in ("mode", "symbol") if key in changes})
         return JSONResponse(state, headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+    if request.url.path == "/fields" and state["mode"] == "fields-down":
+        return JSONResponse({"code": "t40_test_fields_unavailable"}, status_code=503,
+                            headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
     response = await call_next(request)
     if response.status_code != 200 or state["mode"] == "normal":
         return response

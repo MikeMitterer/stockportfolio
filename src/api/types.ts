@@ -7,6 +7,41 @@
  */
 
 import type { InstrumentIdentity } from '@/types/portfolio'
+import type { DetailScalar } from '@/types/details'
+
+export interface DetailValueResponse {
+  value: DetailScalar | null
+  unit: string | null
+  currency: string | null
+  origin: 'provider' | 'manual' | null
+  source: string | null
+  as_of: string | null
+  shadowed: boolean
+  manual_value: DetailScalar | null
+  manual_currency: string | null
+}
+
+export interface DetailDefinitionResponse {
+  name: string
+  kind: 'number' | 'text' | 'boolean'
+  unit: string | null
+  label_en: string
+  label_de: string
+  overridable: boolean
+  sources: string[]
+  scopes: { source: string; instrument_types: string[]; identity_kinds: string[] }[]
+  minimum: number | null
+  maximum: number | null
+  currency_required: boolean
+}
+
+/** Für die Detailanzeige benötigter Teil von GET /fields. */
+export interface FieldsResponse {
+  generation_id: string
+  core_version: string
+  details_version: number
+  details: DetailDefinitionResponse[]
+}
 
 /** Zeitraum für History-Endpunkte. */
 export type Period = '1w' | '1m' | '3m' | '1y' | 'max'
@@ -16,6 +51,7 @@ export type InstrumentType = 'stock' | 'etf'
 
 /** Vollständige Kurs- und Metadaten-Antwort für ein Wertpapier. */
 export interface QuoteResponse {
+  details?: Record<string, DetailValueResponse> | null
   identity: InstrumentIdentity
   isin: string | null
   symbol: string
@@ -40,6 +76,7 @@ export interface QuoteResponse {
 
 /** Eintrag aus `GET /instruments` — Katalog aller bekannten Papiere. */
 export interface InstrumentSummary {
+  details?: Record<string, DetailValueResponse> | null
   identity: InstrumentIdentity
   listing_id: string
   manual_fields: string[]

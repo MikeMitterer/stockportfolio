@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, inject, ref, watch } from 'vue'
+import { computed, h, inject, ref, watch, type ComputedRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDataTable, type DataTableColumns } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
@@ -11,6 +11,8 @@ import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import { safeStorage, UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
+import { useFieldsStore } from '@/stores/fields'
+import { projectDetailFields } from '@/domain/detailFields'
 import { eur, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
@@ -20,6 +22,10 @@ import { useSettingsStore } from '@/stores/settings'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 type RowKey = string | number
+type PositionColumn = DataTableColumns<PositionResult>[number] & {
+  /** Genau die in dieser Spalte für diese Zeile dargestellten API-Felder. */
+  stockInfoFields?: (row: PositionResult) => string[]
+}
 
 const props = defineProps<{
   rows: PositionResult[]
@@ -31,6 +37,8 @@ const props = defineProps<{
   links: ExternalLink[]
   /** IDs der Positionen, deren Kurs gerade einzeln geholt wird. */
   refreshingIds?: Set<string>
+  /** Programmatische Spaltenkonfiguration; kein zusätzlicher Benutzereditor. */
+  detailColumns?: readonly string[]
 }>()
 
 const emit = defineEmits<{
@@ -39,8 +47,9 @@ const emit = defineEmits<{
   (event: 'refresh', id: string): void
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const quoteIssue = useQuoteIssue()
+const fieldsStore = useFieldsStore()
 
 /**
  * Kursverlauf für die Zeilen.
@@ -193,7 +202,26 @@ function renderExpandIcon({ expanded }: { expanded: boolean }) {
 
 // ─── Spalten ────────────────────────────────────────────────────────────────
 
-const columns = computed<DataTableColumns<PositionResult>>(() => [
+const dynamicColumns = computed<PositionColumn[]>(() => [...new Set(props.detailColumns ?? [])].map(key => {
+  const fieldFor = (row: PositionResult) => projectDetailFields(row.quote, fieldsStore.catalog?.definitions ?? [], [], locale.value)
+    .find(field => field.key === key)
+  return {
+    key: `detail:${key}`,
+    title: props.rows.map(fieldFor).find(field => field)?.label ?? key,
+    width: 160,
+    stockInfoFields: row => fieldFor(row) ? [key] : [],
+    render: row => {
+      const field = fieldFor(row)
+      return field ? h('span', { 'data-main-field': key }, field.value) : '—'
+    },
+  }
+}))
+
+watch(() => props.detailColumns, keys => {
+  if (keys?.length && client) void fieldsStore.load(client)
+}, { immediate: true, deep: true })
+
+const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
     type: 'expand',
     expandable: () => true,
@@ -202,6 +230,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         row,
         total: props.total,
         links: props.links,
+        visibleStockInfoFields: columns.value.flatMap(column => column.stockInfoFields?.(row) ?? []),
         refreshing: props.refreshingIds?.has(row.position.id) ?? false,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
         onRemove: (id: string) => emit('remove', id),
@@ -211,6 +240,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.symbol'),
     key: 'symbol',
+    stockInfoFields: row => row.position.group === 'cash' ? [] : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
     width: 220,
     render: (row) =>
       h('div', { class: 'cell-stack' }, [
@@ -301,6 +331,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.price'),
     key: 'price',
+    stockInfoFields: row => row.quote ? ['price', 'currency'] : [],
     align: 'right',
     width: 100,
     render: (row) =>
@@ -438,6 +469,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       )
     },
   },
+  ...dynamicColumns.value,
 ])
 </script>
 

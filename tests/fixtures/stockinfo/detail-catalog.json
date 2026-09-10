@@ -1,0 +1,125 @@
+{
+  "generation_id": "t40-test-generation",
+  "core_version": "4.3.0",
+  "details_version": 1,
+  "details": [
+    {
+      "name": "risk-a.score",
+      "kind": "number",
+      "unit": "percent",
+      "label_en": "Risk score",
+      "label_de": "Risikoscore",
+      "overridable": true,
+      "sources": [
+        "risk-a"
+      ],
+      "scopes": [
+        {
+          "source": "risk-a",
+          "instrument_types": [
+            "etf",
+            "stock"
+          ],
+          "identity_kinds": [
+            "listed"
+          ]
+        }
+      ],
+      "minimum": 0,
+      "maximum": 100,
+      "currency_required": false
+    },
+    {
+      "name": "risk-b.score",
+      "kind": "number",
+      "unit": null,
+      "label_en": "Risk score",
+      "label_de": "Risikoscore",
+      "overridable": false,
+      "sources": [
+        "risk-b"
+      ],
+      "scopes": [
+        {
+          "source": "risk-b",
+          "instrument_types": [
+            "etf"
+          ],
+          "identity_kinds": [
+            "listed"
+          ]
+        }
+      ],
+      "currency_required": false
+    },
+    {
+      "name": "risk-a.flag",
+      "kind": "boolean",
+      "unit": null,
+      "label_en": "Confirmed",
+      "label_de": "Bestätigt",
+      "overridable": true,
+      "sources": [
+        "risk-a"
+      ],
+      "scopes": [
+        {
+          "source": "risk-a",
+          "instrument_types": [
+            "etf"
+          ],
+          "identity_kinds": [
+            "listed"
+          ]
+        }
+      ],
+      "currency_required": false
+    },
+    {
+      "name": "risk-a.amount",
+      "kind": "number",
+      "unit": "absolute",
+      "label_en": "Exposure",
+      "label_de": "Engagement",
+      "overridable": true,
+      "sources": [
+        "risk-a"
+      ],
+      "scopes": [
+        {
+          "source": "risk-a",
+          "instrument_types": [
+            "etf"
+          ],
+          "identity_kinds": [
+            "listed"
+          ]
+        }
+      ],
+      "currency_required": true
+    },
+    {
+      "name": "risk-a.note",
+      "kind": "text",
+      "unit": null,
+      "label_en": "Comment",
+      "label_de": "",
+      "overridable": true,
+      "sources": [
+        "risk-a"
+      ],
+      "scopes": [
+        {
+          "source": "risk-a",
+          "instrument_types": [
+            "etf"
+          ],
+          "identity_kinds": [
+            "listed"
+          ]
+        }
+      ],
+      "currency_required": false
+    }
+  ]
+}

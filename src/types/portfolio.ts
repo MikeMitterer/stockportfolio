@@ -3,6 +3,8 @@
  * Referenz: docs/superpowers/specs/2026-08-06-rebalancing-webapp-design.md §5.
  */
 
+import type { DetailValue } from './details'
+
 /**
  * Assetklassen.
  *
@@ -163,6 +165,8 @@ export type InstrumentIdentity =
   | { kind: 'isin_only'; isin: string }
 
 export interface QuoteCacheEntry {
+  /** null/fehlend: noch nicht geladen; leere Map: geladen, keine Zusatzwerte. */
+  details?: Record<string, DetailValue> | null
   identity: InstrumentIdentity
   isin: string | null
   symbol: string

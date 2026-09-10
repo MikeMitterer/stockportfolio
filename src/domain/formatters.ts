@@ -163,9 +163,11 @@ export function eurCent(value: number): string {
   return EUR_CENT().format(value)
 }
 
-/** Formatiert eine Prozentzahl mit einer Nachkommastelle und Suffix `%`. */
-export function percent(value: number): string {
-  return `${PERCENT().format(value)} %`
+/** Prozentzahl mit mindestens einer Nachkommastelle, bei Bedarf genauer. */
+export function percent(value: number, maximumFractionDigits = 1): string {
+  const selected = maximumFractionDigits === 1 ? PERCENT()
+    : formatter(`percent-${maximumFractionDigits}`, { minimumFractionDigits: 1, maximumFractionDigits })
+  return `${selected.format(value)} %`
 }
 
 /** Formatiert eine Prozentzahl ohne Nachkommastelle. */

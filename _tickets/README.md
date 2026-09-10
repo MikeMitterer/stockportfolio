@@ -142,6 +142,8 @@ Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 [T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
 Sie stehen seit 2026-09-10 vor T-38; die Reihenfolge steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
+T-39 ist technisch freigegeben und wartet auf Mikes Abschlussabnahme.
+T-40 ist umgesetzt; sein unabhängiger Review steht noch aus.
 
 | Ticket | Zuständiger Umfang |
 |---|---|
@@ -151,7 +153,7 @@ Sie stehen seit 2026-09-10 vor T-38; die Reihenfolge steht in
 
 Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
 Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
-Kursprüfung wird in T-39 umgesetzt.
+Kursprüfung ist in T-39 umgesetzt.
 
 [T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
 StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App

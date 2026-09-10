@@ -1,0 +1,57 @@
+{
+  "risk-a.score": {
+    "value": 0,
+    "unit": "percent",
+    "currency": null,
+    "origin": "provider",
+    "source": "risk-a",
+    "as_of": "2026-09-10T08:00:00Z",
+    "shadowed": true,
+    "manual_value": 7,
+    "manual_currency": null
+  },
+  "risk-b.score": {
+    "value": null,
+    "unit": null,
+    "currency": null,
+    "origin": null,
+    "source": null,
+    "as_of": null,
+    "shadowed": false,
+    "manual_value": null,
+    "manual_currency": null
+  },
+  "risk-a.flag": {
+    "value": false,
+    "unit": null,
+    "currency": null,
+    "origin": "provider",
+    "source": "risk-a",
+    "as_of": "2026-09-10T08:00:00Z",
+    "shadowed": false,
+    "manual_value": null,
+    "manual_currency": null
+  },
+  "risk-a.amount": {
+    "value": 100,
+    "unit": "absolute",
+    "currency": "USD",
+    "origin": "provider",
+    "source": "risk-a",
+    "as_of": "2026-09-10T08:00:00Z",
+    "shadowed": false,
+    "manual_value": null,
+    "manual_currency": null
+  },
+  "risk-a.note": {
+    "value": "<img src=x onerror=alert(1)>",
+    "unit": null,
+    "currency": null,
+    "origin": "manual",
+    "source": null,
+    "as_of": "2026-09-10T08:00:00Z",
+    "shadowed": false,
+    "manual_value": "<img src=x onerror=alert(1)>",
+    "manual_currency": null
+  }
+}

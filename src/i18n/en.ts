@@ -7,6 +7,18 @@
 import type { MessageSchema } from './de'
 
 export const en: MessageSchema = {
+  detailFields: {
+    title: 'Additional information',
+    yes: 'Yes', no: 'No', ter: 'TER',
+    ratio: 'ratio', basisPoints: 'basis points', millions: 'million',
+    provider: 'Provider', manual: 'Manual',
+    asOf: 'As of: {value}',
+    shadowed: 'Manual value (overridden by provider): {value}',
+    unavailable: 'Additional information is currently unavailable. Quotes remain usable.',
+    notLoaded: 'Additional values have not been loaded yet. Reload the quote.',
+    empty: 'No further additional information.',
+    retry: 'Reload field catalog',
+  },
   app: {
     title: 'StockPortfolio',
     subtitle: 'Tolerance-Band Rebalancing',
@@ -114,7 +126,7 @@ export const en: MessageSchema = {
     deltaEuro: 'Delta €',
     lowerBand: 'Lower band',
     upperBand: 'Upper band',
-    meldefondCheck: 'myOEKB — reporting fund check',
+    reportingFundCheck: 'myOEKB — reporting fund check',
     notes: 'Notes',
     displayName: 'Name',
     group: 'Group',

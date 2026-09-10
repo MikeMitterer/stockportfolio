@@ -92,6 +92,24 @@ The client validates StockInfo Core 4.3.0 quote and catalog responses at one
 boundary. It preserves listed, pair and ISIN-only identities. IndexedDB
 schema 5 rebuilds older quote caches; portfolio positions remain stored.
 
+### Additional instrument information
+
+Open a position on the dashboard to see additional fields supplied by StockInfo
+plugins. On mobile, use **Additional information** on the position card. Fields
+already displayed in a configured main column are omitted from the details.
+TER and volatility use the same display as plugin fields.
+
+Labels, applicability and units come from StockInfo's field catalog. The app
+shows the effective value, its provider or manual origin, date and any overridden
+manual value. Zero and false remain values; missing values appear as a dash.
+Amounts keep the currency attached to that value and never change the portfolio
+calculations automatically.
+
+If the field catalog is unavailable, quotes and the existing core information
+remain usable. Older cached quotes without details are marked as not yet loaded;
+reload the quote to fetch them. The field catalog is loaded for the current
+session and API address, while detail values are stored with the quote.
+
 ### Value history
 
 The total-value tile carries a small line and the change over the last 90 days;

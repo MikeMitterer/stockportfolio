@@ -72,8 +72,9 @@ Projekts.
   [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
   T-37 ist als Bewertung abgeschlossen. T-39 normalisiert Identität und prüft
   Kurs-Pflichtfelder einschließlich Währung; eine neue Depotposition setzt
-  einen erfolgreichen eindeutigen Kursabruf voraus. T-40 folgt mit `/fields`
-  und der dynamischen Detailanzeige. Der
+  einen erfolgreichen eindeutigen Kursabruf voraus. T-40 ergänzt `/fields`,
+  persistierte Detailwerte und die dynamische Detailanzeige. Sichtbare Spalten
+  liefern ihre Feldschlüssel für den Dublettenabgleich. Der
   Generationsauftrag aus T-35 bleibt im Backlog.
 
 Lokal gegen den Dienst entwickeln — im StockInfo-Repo das Backend starten, hier

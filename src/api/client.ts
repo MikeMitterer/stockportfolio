@@ -7,10 +7,11 @@
  */
 
 import { ApiError, type ApiUrlSource } from './errors'
-import { normalizeInstruments, normalizeQuote } from './normalizers'
+import { normalizeFields, normalizeInstruments, normalizeQuote } from './normalizers'
 import { translate } from '@/i18n'
 import type {
   DailyPoint,
+  FieldsResponse,
   HealthResponse,
   InstrumentSummary,
   Period,
@@ -42,6 +43,11 @@ export class StockInfoClient {
   /** Katalog aller bekannten Instrumente. */
   async getInstruments(): Promise<InstrumentSummary[]> {
     return normalizeInstruments(await this.request<unknown>('/instruments'), `${this.baseUrl}/instruments`)
+  }
+
+  /** Felddefinitionen werden unabhängig von den Kursen geladen. */
+  async getFields(): Promise<FieldsResponse> {
+    return normalizeFields(await this.request<unknown>('/fields'), `${this.baseUrl}/fields`)
   }
 
   /** Kurs zu einer ISIN (bevorzugt Xetra/EUR). */

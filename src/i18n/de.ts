@@ -1,5 +1,17 @@
 /** Deutscher Message-Katalog. Source of Truth für Key-Struktur. */
 export const de = {
+  detailFields: {
+    title: 'Zusatzinformationen',
+    yes: 'Ja', no: 'Nein', ter: 'TER',
+    ratio: 'Anteil', basisPoints: 'Basispunkte', millions: 'Mio.',
+    provider: 'Quelle', manual: 'Manuell',
+    asOf: 'Stand: {value}',
+    shadowed: 'Manueller Wert (durch Quelle ersetzt): {value}',
+    unavailable: 'Zusatzinformationen sind derzeit nicht verfügbar. Die Kurse bleiben nutzbar.',
+    notLoaded: 'Zusatzwerte noch nicht geladen. Lade den Kurs neu.',
+    empty: 'Keine weiteren Zusatzinformationen.',
+    retry: 'Feldkatalog erneut laden',
+  },
   app: {
     title: 'StockPortfolio',
     subtitle: 'Tolerance-Band Rebalancing',
@@ -113,7 +125,7 @@ export const de = {
     deltaEuro: 'Delta €',
     lowerBand: 'Lower Band',
     upperBand: 'Upper Band',
-    meldefondCheck: 'myOEKB — Meldefond-Check',
+    reportingFundCheck: 'myOEKB — Meldefond-Check',
     notes: 'Notizen',
     displayName: 'Bezeichnung',
     group: 'Gruppe',

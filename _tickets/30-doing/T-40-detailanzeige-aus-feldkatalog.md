@@ -1,9 +1,9 @@
 # T-40 · Zusätzliche StockInfo-Kennzahlen automatisch im Detailbereich zeigen
 
 Neue Kennzahlen aus StockInfo-Plugins sollen **ohne Frontend-Änderung sichtbar**
-werden. Heute wirft der Mapper sie weg: Ein Risikoscore unter
-`details["risk-demo.score"].value` kommt genauso wenig an wie ein flaches Feld
-`"risk-demo.score": 7`. Auch der Feldkatalog `GET /fields` ist nicht angebunden.
+werden. Vor der Umsetzung verwarf der Mapper sie: Ein Risikoscore unter
+`details["risk-demo.score"].value` kam genauso wenig an wie ein flaches Feld
+`"risk-demo.score": 7`. Auch der Feldkatalog `GET /fields` war nicht angebunden.
 
 Deine Entscheidung vom 2026-09-10 gibt die Form vor:
 
@@ -21,6 +21,18 @@ liefert `kind`, Beschriftungen, Einheit und Anwendbarkeit; der Wert liefert
 `origin`, `source`, `as_of` und gegebenenfalls seine eigene Währung.
 DE/EN-Beschriftung aus dem Katalog, Rückfall auf `label_en`, dann der
 vollständige Feldname. Werte werden als Text gerendert, nicht als HTML.
+Anwendbar ist eine Definition, wenn mindestens ein `scope` den Instrumenttyp
+und `identity.kind` enthält. Die unterstützten Arten sind `number`, `text`
+und `boolean`; ungültige oder unbekannte Definitionen entfallen einzeln.
+Doppelte vollständige Feldnamen machen den Zusatzkatalog uneindeutig und
+werden als Katalogfehler behandelt. Seine Version muss eine nichtnegative
+ganze Zahl sein; `generation_id` und `core_version` dürfen nicht leer sein.
+
+TER und Volatilität verwenden bei fehlendem Katalog ihre bekannten
+Core-Definitionen. Explizit gelieferte null-Detailwerte bleiben fehlend;
+ein Core-Rückfall ersetzt sie nicht. Ungültige Zusatzwerte beeinträchtigen
+keinen gültigen Core-Kurs. Neue Details werden nur aus der `details`-Map
+übernommen, nicht aus beliebigen flachen Core-Eigenschaften.
 
 **Die Hauptzeile bestimmt, was schon sichtbar ist.** Die Spaltenkonfiguration
 in `PositionsTable.vue` liefert die kanonischen Feldschlüssel der tatsächlich
@@ -33,8 +45,10 @@ Die heutigen festen Detailzellen für TER und Volatilität werden in dieselbe
 Felddarstellung einbezogen — zwei Listen nebeneinander wären die nächste Quelle
 für Dubletten.
 
-Regeln für die Gegenfälle, aus dem
-[Integrationsvorschlag](../../docs/stockinfo-integration-proposal.md#werte-und-metadaten-zusammenhalten):
+Dieses Ticket enthält die verbindlichen Anforderungen für Umsetzung und Review.
+Die Bewertung aus T-37 ist ausschließlich ein historischer Herkunftsbeleg.
+
+Regeln für die Gegenfälle:
 
 | Fall | Verhalten |
 |---|---|
@@ -45,6 +59,8 @@ Regeln für die Gegenfälle, aus dem
 | Wirksamer und manueller Wert | `value` gilt; `manual_value` ersetzt ihn nicht |
 | Prozent und Beträge | Deklarierten Maßstab und die Währung **am Wert** erhalten |
 | Katalog nicht erreichbar | Gültige Core-Kurse bleiben verwendbar |
+| Unbekannte oder widersprüchliche Einheit | Betroffener Zahlenwert erscheint als nicht verwendbar (—); keine Interpretation oder Umrechnung |
+| Detailname entspricht einem Core-Feld | Keine Vermischung mit Core-Preis oder Identität; Zusatzwerte bleiben in ihrer eigenen Map |
 
 Die Detailwerte samt Metadaten müssen den Weg durch Cache und Neuladen
 überstehen. Ein Eintrag ohne Details heißt „noch nicht geladen", nicht
@@ -65,12 +81,14 @@ aus Zusatzfeldern und jede Änderung an StockInfo.
 
 ## Für dich
 
-Nichts zu tun, bis die Anzeige steht. Zur Abnahme wirst du gebeten, den
-Detailbereich einer Position anzusehen und zu beurteilen, ob die zusätzlichen
-Angaben verständlich beschriftet und nicht doppelt sind.
+Die Anzeige steht; die technische Prüfung wird unabhängig durch Claude
+durchgeführt. Danach bleibt deine Abschlussabnahme offen: Öffne eine Position
+und prüfe, ob Beschriftung, Werte und Herkunft verständlich sind. Mobil gibt
+es dafür den Knopf „Zusatzinformationen“. Die erste Sichtprüfung durch Codex
+ist unten dokumentiert.
 
-**Eine Voraussetzung betrifft die Testumgebung:** StockInfos `details_version`
-steht heute auf `0`, und `/fields` bezieht die Definitionen aus seiner
+**Voraussetzung der Testumgebung:** Bei der T-37-Bewertung stand StockInfos
+`details_version` auf `0`, und `/fields` bezieht die Definitionen aus seiner
 Datenbank. Ohne eine Instanz mit mindestens einer Detaildefinition bleibt die
 Zusatzliste leer — ein Test dagegen würde nichts beweisen. Der Befund stammt
 aus dem T-37-Review vom 2026-09-10.
@@ -85,9 +103,11 @@ StockInfo (nur lesend). Zeitbudget nicht beziffert.
 Identität lassen sich Detailwerte keiner Position verlässlich zuordnen.
 
 Der Feldkatalog ist veränderlich: `/fields` liefert `generation_id`,
-`core_version` und `details_version`. Eine gespeicherte Kopie gehört zu dieser
-Kombination und zur StockInfo-Basisadresse. Ein bei Bedarf neu geladener
-Sitzungskatalog ist die begrenzte Variante, solange
+`core_version` und `details_version`. Der hier verwendete Sitzungskatalog gehört zu dieser
+Kombination und zur StockInfo-Basisadresse. Er wird beim Öffnen und nach einer
+neuen Kursantwort geladen; gleichzeitige Anfragen werden zusammengefasst.
+Eine neue Adresse verwirft den alten Katalog, verspätete Antworten der alten
+Adresse dürfen den neuen Stand nicht überschreiben. Diese Variante gilt, solange
 [T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md) nicht umgesetzt
 ist; generationensichere Zusammenführung über einen Profilwechsel ist damit
 nicht zugesagt.
@@ -98,25 +118,147 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Instanz mit mindestens einer Detaildefinition anbinden, Position mit Zusatzfeld öffnen | Feld erscheint im Detailbereich mit Beschriftung und Einheit, ohne Frontend-Änderung | ➖ |
-| 2 | Dasselbe Feld in die Hauptzeile aufnehmen | Es verschwindet aus dem Detailbereich; nach Entfernen erscheint es dort wieder | ➖ |
-| 3 | Dynamische Spalte hinzufügen und entfernen | Der Abgleich folgt der tatsächlichen Spaltenkonfiguration, nicht einer festen Liste | ➖ |
-| 4 | Werte `0`, `false` und `null` liefern | `0` und `false` erscheinen; `null` erscheint als fehlend, nicht als Null | ➖ |
-| 5 | `risk-a.score` und `risk-b.score` mit gleicher Beschriftung liefern | Beide bleiben getrennt sichtbar | ➖ |
-| 6 | Detailbetrag 100 USD bei einer abweichenden Kurswährung liefern | Anzeige bleibt 100 USD; keine Ersatzwährung und kein FX-Abruf durch die Detailanzeige | ➖ |
-| 7 | Wert mit `shadowed: true` und abweichendem `manual_value` | Angezeigt wird `value`; der manuelle Wert bleibt Zusatzinformation | ➖ |
-| 8 | `/fields` ausfallen lassen | Kurse und Kernanzeige bleiben nutzbar; nur die Zusatzliste fehlt | ➖ |
-| 9 | Cache schreiben, App neu laden | Detailwerte samt Metadaten überleben; leerer Detailteil bedeutet „nicht geladen" | ➖ |
-| 10 | TER und Volatilität prüfen | Erscheinen genau einmal, über dieselbe Felddarstellung | ➖ |
+| 1 | Instanz mit mindestens einer Detaildefinition anbinden, Position mit Zusatzfeld öffnen | Feld erscheint im Detailbereich mit Beschriftung und Einheit, ohne Frontend-Änderung | ✅ |
+| 2 | Dasselbe Feld in die Hauptzeile aufnehmen | Es verschwindet aus dem Detailbereich; nach Entfernen erscheint es dort wieder | ✅ |
+| 3 | Dynamische Spalte hinzufügen und entfernen | Der Abgleich folgt der tatsächlichen Spaltenkonfiguration, nicht einer festen Liste | ✅ |
+| 4 | Werte `0`, `false` und `null` liefern | `0` und `false` erscheinen; `null` erscheint als fehlend, nicht als Null | ✅ |
+| 5 | `risk-a.score` und `risk-b.score` mit gleicher Beschriftung liefern | Beide bleiben getrennt sichtbar | ✅ |
+| 6 | Detailbetrag 100 USD bei einer abweichenden Kurswährung liefern | Anzeige bleibt 100 USD; keine Ersatzwährung und kein FX-Abruf durch die Detailanzeige | ✅ |
+| 7 | Wert mit `shadowed: true` und abweichendem `manual_value` | Angezeigt wird `value`; der manuelle Wert bleibt Zusatzinformation | ✅ |
+| 8 | `/fields` ausfallen lassen | Kurse und Kernanzeige bleiben nutzbar; nur die Zusatzliste fehlt | ✅ |
+| 9 | Cache schreiben, App neu laden | Detailwerte samt Metadaten überleben; fehlend/null bedeutet „nicht geladen“, eine leere Map dagegen „geladen“ | ✅ |
+| 10 | TER und Volatilität prüfen | Erscheinen genau einmal, über dieselbe Felddarstellung | ✅ |
 
-Durchgehend ➖: noch keine Umsetzung.
+Die Nachweise wurden am 2026-09-10 durch Codex erbracht. Die unabhängige
+technische Freigabe und die menschliche Abschlussabnahme sind noch offen.
 
-**Doku-Abgleich · Zuschnitt vom 2026-09-10:** T-39 liefert die gemeinsame
-Pflichtfeldprüfung; T-38 übernimmt ausschließlich Depotbewertung und FX.
-Die Grenze zwischen Originalwert und umgerechnetem Depotwert ist auch im
-Integrationsvorschlag und in T-38 festgehalten. Keine Produktfunktion behauptet.
+### Umsetzung
+
+`src/api/normalizers.ts` prüft weiterhin alle Core-Antworten gemeinsam und
+erhält jetzt zusätzlich skalare Detailwerte mit Einheit, Währung, Herkunft,
+Zeitpunkt sowie manueller Eingabe. Ungültige Zusatzwerte verwerfen keinen
+gültigen Core-Kurs. `getFields()` bindet den Katalog an; `src/stores/fields.ts`
+hält ihn für die Sitzung und API-Adresse. Er wird beim Öffnen und nach einer
+neuen Kursantwort nachgeladen, parallele Abrufe teilen eine Anfrage.
+
+`src/domain/detailFields.ts` erzeugt die gemeinsame Darstellung für Core-
+TER/-Volatilität und definierte Pluginfelder. Die Spaltenkonfiguration in
+`PositionsTable.vue` nennt direkt ihre dargestellten Feldschlüssel.
+`renderExpand` reicht diese an die Detailansicht weiter. Die programmatische
+Prop `detailColumns` erzeugt dynamische Hauptspalten aus denselben Definitionen
+und Werten; es gibt keinen zusätzlichen Benutzereditor oder eine zweite
+Ausschlussliste. Mobil verwendet eine aufklappbare Ansicht dieselbe Komponente.
+
+Prozentwerte behalten ihren Maßstab und bis zu vier Nachkommastellen;
+beispielsweise bleibt 0,19 % als 0,19 % sichtbar. Die Einheiten `percent`,
+`ratio`, `basis_points`, `millions` und `absolute` wurden gegen StockInfos
+Pluginvertrag geprüft. Ein absoluter Betrag braucht seine Wertwährung; eine
+fehlende Währung wird nicht durch die Kurs- oder Depotwährung ersetzt.
+
+**Persistenz:** Detailwerte liegen einschließlich Metadaten im vorhandenen
+Kurscache. Kein Schemawechsel und keine Migration; fehlend/null bedeutet
+„noch nicht geladen“, eine leere Map bedeutet „geladen, ohne Zusatzwerte“.
+Der Feldkatalog selbst wird nicht persistiert. Eine generationensichere
+Zuordnung über einen Profilwechsel bleibt wie vereinbart bei T-35.
+
+### Erste Sichtprüfung durch Codex
+
+Die bestehende [StockInfo-Testumgebung](T-39-stockinfo-server.py) aus T-39
+wurde um eine optionale Detailvorbereitung erweitert. Sie verwendet echte
+REST-Routen, Services und SQLite-Speicherung; externe Provider und der
+produktive Scheduler bleiben für diesen Test ersetzt. StockInfo-Quellstand:
+`fe102bf1c8fd9032411e0735146aac9879f9d3f7`; dessen Produktcode und Vertrag
+stimmen mit der T-37-Vertragsgrundlage `778e449` überein. Kein StockInfo-
+Produktcode und keine Produktionsdaten wurden verändert.
 
 ```bash
-curl -s "https://stockinfo.int.mikemitterer.at/fields" | head -40      # #1 Katalog und Versionen
-curl -s "https://stockinfo.int.mikemitterer.at/quote/IE00B4L5Y983"     # #4/#7 details-Block ansehen
+/Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
+  _tickets/30-doing/T-39-stockinfo-server.py \
+  --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo \
+  --detail-fixtures tests/fixtures/stockinfo
+
+VITE_STOCKINFO_API_URL=http://127.0.0.1:8899 \
+  npm run dev -- --host 127.0.0.1 --port 5189 --strictPort
 ```
+
+Browser http://127.0.0.1:5189/, isolierter Kontext `stockportfolio-t39`.
+Der Server erzeugt bei jedem Start eine neue temporäre Datenbank und gibt
+deren Pfad aus. Zusatzdaten sind ausdrücklich synthetische Beispiele nach dem
+realen Vertrag; sie prüfen die Frontend-Anbindung, keinen echten Pluginabruf.
+
+| Fall | Beobachtung |
+|---|---|
+| Neue Definitionen risk-a/risk-b | Sieben Detailzellen einschließlich TER/Volatilität aus echten Serverantworten sichtbar |
+| Gleiches Label, andere Namespaces | risk-a.score und risk-b.score bleiben getrennt erkennbar |
+| Wirksamer Wert 0, manueller Wert 7 | 0,0 % angezeigt; verdeckte 7,0 % getrennt erläutert |
+| Boolean false / fehlender Wert null | „Nein“ beziehungsweise Gedankenstrich |
+| 100 USD bei EUR-Kurs | $ 100,00 in den Details, EUR-Kurs unverändert |
+| HTML-Zeichen im Textwert | Als Text sichtbar; kein img-Element erzeugt |
+| Dynamische Hauptspalten risk-a.score und ter | Beide erscheinen in der Hauptzeile und verschwinden aus den Details; nach Entfernen wieder sichtbar |
+| Ausfall von /fields | Zusatzhinweis mit erneutem Laden; gültiger Kurs und Kernansicht bleiben vorhanden |
+| Cache und Neuladen | value, source, asOf, shadowed und manualValue in IndexedDB bestätigt; nach Reload ohne neuen Quote-/Refreshabruf vorhanden |
+| Mobile Ansicht, 500 px | Zusatzfelder aufklappbar und ohne horizontalen Seitenüberlauf lesbar |
+
+Für die dynamischen Spalten wurde im isolierten Browser ausdrücklich die
+programmatische Komponenten-Prop gesetzt und anschließend zurückgesetzt;
+kein vorhandener Benutzerschalter wird behauptet. Die gesamte Verbindung
+zwischen Tabellenkonfiguration und Detailansicht wird zusätzlich automatisch
+mit echten Vue-/Naive-Komponenten geprüft. Screenshots wurden im Chat
+betrachtet; kein Screenshot-Artefakt im Repository behauptet.
+
+Der Katalogausfall lässt sich nur in diesem Testserver einschalten:
+
+```bash
+curl -s http://127.0.0.1:8899/__test/scenario \
+  -X POST -d '{"mode":"fields-down"}'
+# Mit mode: normal wieder reguläre Antworten einschalten.
+```
+
+### Automatische Prüfung und Grenzen
+
+- `tests/api/details.spec.ts`: vier Quote-/Refreshwege und Katalog, Werte
+  0/false/null, Metadaten, offener Namensraum, Feldkatalog und ungültige Angaben.
+- `tests/stores/detailCache.spec.ts`: Laden, Einzel- und Sammelrefresh sowie
+  erneute Hydrierung mit fake-indexeddb.
+- `tests/stores/fields.spec.ts`: neue Katalogversion, gemeinsame parallele
+  Anfrage, Ausfall und verspätete Antwort nach Adresswechsel.
+- `tests/domain/detailFields.spec.ts`: Anwendbarkeit, Namespaces, Labels,
+  Maßstäbe, fehlende Währung, manuelle Werte, Ausschlüsse und Core-Rückfälle.
+- `tests/components/detailFields.spec.ts`: echte Tabellen-/Drilldown-Verbindung,
+  dynamische Spalten, HTML als Text, Core bei Katalogausfall und Mobilansicht.
+
+Rote Gegenproben belegten den verlorenen Detailblock, den fehlenden Katalogweg,
+die fehlende Projektion, die Rundung von 0,19 % auf 0,2 % und die Darstellung
+einer unbekannten Einheit als gültigen Zahlenwert.
+
+Arbeitsbaum: `make test` mit **47 Dateien und 687 Tests** erfolgreich;
+`make lint` und `make typecheck` erfolgreich. Logs:
+`/tmp/stockportfolio-t40-final-{test,lint,typecheck}.log`. Dieser Lauf enthält
+auch die vorgefundenen fremden Änderungen. Die getrennte Übergabefassung
+ohne sie bestand ebenfalls `make test` (**46 Dateien, 679 Tests**),
+`make lint` und `make typecheck`. Dafür wurde der vorgemerkte eigene Stand
+nach `/tmp/stockportfolio-t40-review-t8763v` exportiert, ohne lokale geheime
+Konfiguration. Die vorhandenen URL-Konfigurationstests bekamen ausdrücklich
+`VITE_STOCKINFO_API_URL=https://contract.test`; API-Aufrufe bleiben injiziert.
+Logs: `/tmp/stockportfolio-t40-isolated-{test,lint,typecheck}.log`.
+
+**Doku-Abgleich:** README um Benutzung, Herkunft, Ausfall und Cache ergänzt;
+AGENTS beschreibt den angebundenen Feldkatalog. Auf Mikes Hinweis ist der
+Integrationsvorschlag ausdrücklich als historische Bewertung gekennzeichnet.
+Alle verbindlichen Detailanforderungen stehen in diesem Ticket; der Vorschlag
+wird nicht parallel fortgeschrieben. Boardübersicht, Ausführungsplan, Testdaten-Herkunft und dieses
+Ticket nachgeführt. Unraid und Containerkonfiguration bleiben unverändert;
+es entsteht keine neue Einstellung oder zusätzliche Laufzeitabhängigkeit.
+
+**Lessons angewandt:** Keine zweite Kursvalidierung oder Ausschlussliste; die
+freigegebene Grenze aus T-39 wird erweitert. Keine neue Serverroute und kein
+Migrationspfad. Frischer Testspeicher, wiederholtes Laden, isolierte Prüffassung
+und getrennt ausgewiesene Browser-/Unit-Nachweise decken SI-CX-01 ab.
+Aktuelle Aussagen werden gemeinsam fortgeschrieben. Das Bezeichnerinventar
+aller betroffenen TypeScript-/Vue-Dateien wurde über die Compiler-API geprüft
+(`/tmp/stockportfolio-t40-identifiers.txt`); der vorgefundene unbenutzte Schlüssel `meldefondCheck` wurde in den ohnehin
+betroffenen Sprachdateien zu `reportingFundCheck` umbenannt.
+
+### Übergabe
+
+Unabhängige Prüfung durch Claude und menschliche Abschlussabnahme offen.

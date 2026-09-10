@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { NButton } from 'naive-ui'
+import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
 import DeltaBar from '@/components/DeltaBar.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
+import PositionDetailFields from '@/components/PositionDetailFields.vue'
 import { assetColor } from '@/domain/assetColors'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { eur, integer, money, percent } from '@/domain/formatters'
@@ -22,6 +25,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const quoteIssue = useQuoteIssue()
+const detailsOpen = ref(false)
 
 const isCash = computed(() => props.row.position.group === 'cash')
 const color = computed(() => assetColor(props.row.position.group))
@@ -92,6 +96,11 @@ const title = computed(() =>
       :near="row.isNearBand"
       compact
     />
+    <NButton v-if="row.quote" size="small" quaternary :aria-expanded="detailsOpen" @click="detailsOpen = !detailsOpen">
+      <UxCaret :open="detailsOpen" motion="turn" size="sm" />
+      {{ t('detailFields.title') }}
+    </NButton>
+    <PositionDetailFields v-if="detailsOpen && row.quote" :quote="row.quote" :show-heading="false" />
   </article>
 </template>
 

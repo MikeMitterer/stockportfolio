@@ -1,23 +1,23 @@
-# StockInfo in StockPortfolio: Identität und zusätzliche Kennzahlen
+# Historische Integrationsbewertung aus T-37
 
-**Empfehlung: die vorhandenen Antworten im Client normalisieren.** Eine neue
-flache Route ist für StockPortfolio derzeit nicht nötig. Die bestehende
-`details`-Map liefert bereits den wirksamen Wert mit Herkunft, Einheit und
-Währung. T-39 schließt inzwischen die vorgelagerte Vertragslücke: Quote und
-Instrumentkatalog werden gemeinsam geprüft; die ISIN wird aus `identity`
-abgeleitet und die vollständige Identität bleibt erhalten.
+Bewertungsstand vom 2026-09-10, technisch freigegeben durch Claude zu
+`2e4c378ae49ffe147b55673101fdf4ed078ebed5`. Diese Datei bewahrt Untersuchung,
+Entscheidungsgrundlage und damaligen Umsetzungsvorschlag. Sie wird nicht als
+parallele Spezifikation oder laufender Umsetzungsstand fortgeschrieben.
 
-Stand: 2026-09-10. Dies ist der Integrationsvorschlag zu
-[T-37](../_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
-mit Fortschreibung zur Umsetzung von T-39. **Mike hat die automatische Zusatzanzeige
-in der Detailansicht gewählt.** Bereits in der Haupt-Info-Zeile dargestellte
-Felder werden dort nicht wiederholt; auch dynamische Felder können zur
-Hauptzeile gehören. Claude hat den Vorschlag in Runde 1 am 2026-09-10
-technisch freigegeben (Übergabecommit `2e4c378ae49ffe147b55673101fdf4ed078ebed5`).
-Die Identitäts- und Kursprüfung aus T-39 ist implementiert und zur unabhängigen
-Prüfung vorgesehen. Die automatische Zusatzanzeige aus T-40 steht weiter aus.
+**Verbindliche Anforderungen, Entscheidungen und Prüfnachweise stehen vollständig
+im jeweiligen Ticket:**
 
-## Der aktuelle Vertrag
+- [T-39 · Identität und Kursprüfung](../_tickets/30-doing/T-39-identitaet-normalisieren.md)
+- [T-40 · Zusätzliche Kennzahlen](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md)
+- [T-38 · Depotwährung und FX](../_tickets/30-doing/T-38-basiswaehrung-und-devisenkurse.md)
+
+Die folgenden Aussagen zu Ausgangslage, Anpassungsbedarf und geplanter Umsetzung
+gehören zur damaligen Bewertung aus
+[T-37](../_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md).
+Spätere Nutzerentscheidungen und Fortschritte werden in den Tickets gepflegt.
+
+## Damals geprüfter Vertrag
 
 Geprüft wurden StockInfos `contract/core-contract.json` (`core_version: 4.3.0`),
 die HTTP-Fixtures für Quote und Instrumentkatalog sowie `app/models.py`,
