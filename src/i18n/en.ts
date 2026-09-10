@@ -9,7 +9,11 @@ import type { MessageSchema } from './de'
 export const en: MessageSchema = {
   fx: {
     baseCurrency: 'Base currency', invalidCurrency: 'Choose a valid base currency.',
-    currencyLocked: 'The base currency can be changed for empty portfolios. Create a new portfolio for existing holdings, amount limits or recorded values.',
+    changeTitle: 'Change base currency',
+    changeHint: 'The base currency can be changed at any time. Cash and absolute amount limits will be converted.',
+    changeConfirm: 'Switch from {from} to {to}? Cash and absolute amount limits will be converted; holdings and percentage limits stay unchanged. The chart shows the new currency series. Earlier series remain stored.',
+    changeRate: '1 {from} = {rate} {to}, rate as of {time}.',
+    changeUnavailable: 'No valid exchange rate for the stored amounts. The base currency was not changed.',
     title: 'Exchange rates', retry: 'Reload exchange rates',
     stalePair: '{pair}: Using a stale exchange rate from {time}.',
     missingPair: '{pair}: No valid exchange rate. Affected positions are excluded from totals and trade suggestions.',

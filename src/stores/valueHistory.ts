@@ -108,6 +108,13 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     snapshots.value = [...entries].sort((a, b) => a.date.localeCompare(b.date))
   }
 
+  /** Sicherungen erhalten alle Währungsreihen; die Anzeige filtert separat. */
+  async function exportAll(portfolioId: string): Promise<ValueSnapshot[]> {
+    const entries = await repository.findByPortfolio(portfolioId)
+    return entries.filter(entry => isCurrency(entry.currency))
+      .map(({ date, total, currency }) => ({ date, total, currency }))
+  }
+
   /** Verwirft die Tageswerte eines gelöschten Depots. */
   async function forget(portfolioId: string): Promise<void> {
     await repository.clearPortfolio(portfolioId)
@@ -124,6 +131,7 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     record,
     computeBacktest,
     replaceAll,
+    exportAll,
     forget,
   }
 })

@@ -2,7 +2,11 @@
 export const de = {
   fx: {
     baseCurrency: 'Basiswährung', invalidCurrency: 'Bitte eine gültige Basiswährung wählen.',
-    currencyLocked: 'Die Basiswährung ist bei leeren Depots änderbar. Für bestehende Bestände, Betragsgrenzen oder Tageswerte lege ein neues Depot an.',
+    changeTitle: 'Basiswährung ändern',
+    changeHint: 'Die Basiswährung kann jederzeit geändert werden. Cash und absolute Geldschwellen werden dabei umgerechnet.',
+    changeConfirm: 'Von {from} zu {to} wechseln? Cash und absolute Geldschwellen werden umgerechnet; Stückzahlen und Prozentgrenzen bleiben erhalten. Der Verlauf zeigt die Reihe der neuen Währung. Frühere Reihen bleiben gespeichert.',
+    changeRate: '1 {from} = {rate} {to}, Kursstand {time}.',
+    changeUnavailable: 'Kein gültiger Devisenkurs für die gespeicherten Geldbeträge. Die Basiswährung wurde nicht geändert.',
     title: 'Devisenkurse', retry: 'Devisenkurse erneut laden',
     stalePair: '{pair}: Veralteter Devisenkurs vom {time} wird weiterverwendet.',
     missingPair: '{pair}: Kein gültiger Devisenkurs. Betroffene Positionen zählen nicht in Summen und Handelsvorschläge.',

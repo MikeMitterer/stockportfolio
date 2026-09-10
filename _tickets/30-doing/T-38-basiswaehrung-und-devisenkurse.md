@@ -5,7 +5,9 @@ richtig berechnen**. Jedes Depot hat eine eigene, vom Nutzer wählbare
 Basiswährung (Mike, 2026-09-10).
 
 **Umgesetzt durch Codex am 2026-09-10; unabhängiger Review und menschliche
-Abschlussabnahme stehen noch aus.** Die UI bietet die Währungswahl pro Depot.
+Abschlussabnahme stehen noch aus.** Nach Mikes Korrektur im Review bietet die UI
+den bestätigten Währungswechsel auch bei bestehenden Depots an. Cash und
+absolute Geldschwellen werden umgerechnet; Wertpapierstückzahlen bleiben gleich.
 Fremd notierte Positionen werden über StockInfo-FX umgerechnet. Ein brauchbarer
 veralteter Kurs bleibt mit dauerhafter Warnung verwendbar; fehlt ein gültiger
 Kurs, wird die Position aus Bewertung und Handelsvorschlägen ausgeschlossen.
@@ -191,9 +193,11 @@ bleibt die einzige vollständige Spezifikation; es entsteht kein paralleler Plan
 1. **Depotwahl und Beträge:** `baseCurrency` wird beim Anlegen im UI gewählt,
    Vorgabe EUR, Auswahl gültiger ISO-Währungen einschließlich USD/CAD. Keine
    Standorterkennung und keine Installationseinstellung. Cash ist ein Betrag
-   dieser Währung. Die Währung darf nur bei einem leeren Depot ohne Cashbetrag,
-   Betragsgrenzen oder Tageswerte geändert werden; sonst zeigt die UI die
-   Neueinrichtung eines Depots als Weg. Keine automatische Umbuchung.
+   dieser Währung. **Aktualisierte Entscheidung nach Review 1:** Die Währung
+   darf auch bei bestehenden Depots gewechselt werden. Ein Bestätigungsdialog
+   nennt Umrechnung und Kursstand. Cash und absolute Grenzen werden mit einem
+   gültigen Kurs umgerechnet; Stückzahlen und Prozentgrenzen bleiben erhalten.
+   Fehlt der benötigte Kurs, wird keine Änderung gespeichert.
    Sicherheitspuffer und Mindesthandelsbetrag werden je Depot gespeichert.
    Bestehende EUR-Depots können die bisher globalen Werte direkt übernehmen;
    daraus entsteht keine allgemeine Datenmigration.
@@ -242,7 +246,7 @@ bleibt die einzige vollständige Spezifikation; es entsteht kein paralleler Plan
 - [x] Sichtprüfung, isolierte Gesamtprüfung und Reviewübergabe
 
 
-### Umsetzung · Codex · 2026-09-10
+### Umsetzung · Runde 1 · Codex · 2026-09-10
 
 - `Portfolio.baseCurrency` und `amountSettings` gehören zum Depot. Neue Depots
   haben EUR als UI-Vorgabe, keine Geldschwellen und eine leere Cashzeile. Bereits
@@ -268,7 +272,7 @@ bleibt die einzige vollständige Spezifikation; es entsteht kein paralleler Plan
 - Backupformat 3 erhält Depotwährung und Geldschwellen. Fehlerhafte vorhandene
   Geldschwellen werden abgelehnt, statt sie still durch null zu ersetzen.
 
-### Eigene UI-Prüfung · Codex · 2026-09-10
+### Eigene UI-Prüfung · Runde 1 · Codex · 2026-09-10
 
 Mike: „T-38 natürlich auch UI-Tests von dir“. Die folgenden Handgriffe wurden
 von Codex selbst im isolierten Chrome-Kontext `stockportfolio-t39` ausgeführt.
@@ -279,7 +283,7 @@ weiterverwendet, also kein behaupteter kompletter Browser-Frischstart.
 
 StockInfos tatsächliche FastAPI-Routen, `CachedFxService`, QuoteService und
 SQLite-Repository laufen mit kontrollierten lokalen Quellen. Der bestehende
-[T-39-Testserver](T-39-stockinfo-server.py) wurde um `LocalFx` erweitert:
+[T-39-Testserver](../../scripts/stockinfo-test-server.py) wurde um `LocalFx` erweitert:
 USD/EUR = 0,8; EUR/USD = 1,25; GBP/EUR = 1,2. Fehlerantworten werden ausdrücklich
 als Testfälle eingespeist. StockInfo-Produktdateien wurden nicht verändert.
 
@@ -314,7 +318,7 @@ Gesamtprüfungen liefen ausschließlich auf der isolierten eigenen Fassung.
 
 ```bash
 /Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
-  _tickets/30-doing/T-39-stockinfo-server.py \
+  scripts/stockinfo-test-server.py \
   --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo \
   --detail-fixtures tests/fixtures/stockinfo --port 8899
 ```
@@ -361,10 +365,10 @@ neu gestartete Serverdatenbank und ausdrücklich benannte Browser-Vorbereitung;
 SI-R-02 über einfache EUR-Übernahme ohne allgemeine Migration. Die technische
 Freigabe wird ausschließlich beim zugeordneten Verifier `claude` angefragt.
 
-**Grenzen:** Kein Live-Devisenprovider geprüft; deterministische Testkurse.
-Kein historischer FX-Endpunkt verfügbar; deshalb kein gemischter historischer
-Rückblick. Neue Depots mit neuer Währung sind der vorgesehene Weg für bestehende
-Bestände. Die eigene UI-Prüfung ersetzt nicht Mikes Abschlussabnahme.
+**Grenzen der Runde 1:** Kein Live-Devisenprovider geprüft; deterministische
+Testkurse. Kein historischer FX-Endpunkt verfügbar. Die damalige Beschränkung
+auf leere Depots wurde im anschließenden Review verworfen und in Runde 2 entfernt.
+Die eigene UI-Prüfung ersetzt nicht Mikes Abschlussabnahme.
 
 
 ### Übergabe · Runde 1
@@ -395,9 +399,7 @@ Der zuständige Coder führt die Verschiebung nach Verarbeitung des laufenden
 Reviews durch und belegt, dass die bisherigen Detail- und FX-Szenarien vom
 neuen Ort starten. Dabei alle Verweise auf den bisherigen Pfad inventarisieren
 und aktuelle Benutzungsanweisungen korrigieren. Dieser Nachtrag ändert weder
-die übergebene Produktfassung noch den bestehenden Prüfauftrag. Umsetzung
-und Nachweis der Ablageänderung sind noch offen und gehören vor Abschluss
-in den aktuellen Nachweisstand dieses Tickets.
+die übergebene Produktfassung noch den bestehenden Prüfauftrag. Umsetzung und Nachweis sind unten bei Runde 2 ergänzt.
 
 ### Review Runde 1 · Verifier `claude` · 2026-09-10
 
@@ -520,3 +522,101 @@ erhalten — konsistent zur Vertragsinvariante aus T-39.
   mit; in fremder Währung greift `price > 0` und die Position wird
   ausgeschlossen. Praktisch irrelevant, weil StockInfo keinen Nullkurs liefert,
   aber beide Wege sollten dieselbe Antwort geben.
+
+
+### Nacharbeit · Runde 2 · Codex · 2026-09-10
+
+**Review 1 verarbeitet:** Der Währungswechsel ist für bestehende Depots
+freigeschaltet. Ein Dialog nennt alte/neue Währung, umzurechnende Beträge,
+Kurs und Kursstand, bei veraltetem Kurs zusätzlich die Warnung. Abbrechen
+verändert nichts. Cash und absolute Sicherheits-/Mindesthandelsbeträge werden
+mit derselben Rate in einer gemeinsamen Depotänderung gespeichert. Stückzahlen
+und Prozentgrenzen bleiben erhalten. Fehlender, unpassender oder ungültiger
+Kurs verhindert die Änderung; ebenso ein nicht endliches Umrechnungsergebnis.
+
+Die Historie war noch nicht vollständig gegen laufende Währungswechsel
+abgesichert: Der bisherige Schlüssel enthielt nur Depot und Datum. Eine rote
+Gegenprobe zeigte, dass USD/EUR-Tageswerte desselben Tages sich überschrieben.
+Der Schlüssel enthält jetzt auch die Währung. Der Dashboard-Watcher lädt bei
+Änderung der Basiswährung die passende Reihe. Sicherungen erhalten sämtliche
+gekennzeichneten Währungsreihen, die Anzeige filtert weiterhin auf die aktuelle
+Währung. Mehrere Einträge am selben Datum zählen in der Backup-Vorschau als
+**ein Tag**. Alte unbeschriftete Werte werden weiter nicht übernommen.
+
+Auch der nicht blockierende Nullkursbefund ist korrigiert: Ungültige
+Originalpreise werden mit und ohne FX gleich ausgeschlossen. Weitere
+Rechenwege bleiben auf der freigeprüften gemeinsamen Bewertung aufgebaut.
+
+**Erneute eigene Browserprüfung, bestehende Testdepots:**
+
+| Fall | Ergebnis |
+|---|---|
+| 100 USD Cash, 20 USD Mindesthandel; USD → EUR bestätigen | 80 EUR Cash, 16 EUR Mindesthandel; jeweils 10 VTI-/EUNL-Stück bleiben erhalten. Originalkurse unverändert. |
+| Wechsel EUR → GBP bei `fx-missing`, ohne früheren Kurs für das Paar | Verständliche Fehlermeldung; EUR und gespeicherte Beträge bleiben erhalten. |
+| Wechsel EUR → USD bei `fx-stale` vorbereiten und abbrechen | Dialog zeigt Rate 1,25, Kursdatum 01.09.2026 und Stale-Warnung. Nach Abbrechen weiterhin EUR. |
+| Denselben Wechsel bestätigen | Cash wieder 100 USD, Mindesthandel 20 USD. USD-Tagesreihe sichtbar; EUR-Reihe bleibt gespeichert. |
+| Dialog bei 500×1000 ansehen | Text, Kursstand, Warnung und beide Aktionen lesbar; Screenshot direkt geprüft. |
+| Backup nach Wechsel herunterladen, wieder einspielen und neu laden | Enthält und erhält 5.000 USD und 4.000 EUR für dasselbe Datum, jeweils mit Währung; aktuelles Depot USD, Mindesthandel 20 USD. Vorschau zählt korrekt einen Tag. |
+
+**Gemeinsamer Testserver:** Nach `scripts/stockinfo-test-server.py` verschoben.
+Aktuelle Links und Startbefehle in T-39, T-40 und T-38 zeigen auf denselben
+Helfer. Start vom neuen Ort mit neuer temporärer Datenbank geprüft: `/quote`
+liefert VTI samt sieben Detailfeldern, `/fields` Core 4.3.0 und `/fx` USD/EUR 0,8.
+Die FX-Fälle `normal`, `fx-missing` und `fx-stale` wurden im Browser durchlaufen.
+
+Mike ergänzte im Codex-Chat: Das Script soll Port/Prozess behalten und eine
+Option zum sauberen Beenden seines eigenen Servers anbieten; kein eigenes
+Ticket nötig. Das ist im selben Helfer umgesetzt:
+
+```bash
+# Start mit Portvorgabe 8899 (andere Ports über --port)
+/Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
+  scripts/stockinfo-test-server.py \
+  --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo \
+  --detail-fixtures tests/fixtures/stockinfo
+
+# Eigenen registrierten Server sauber beenden
+/Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
+  scripts/stockinfo-test-server.py --stop --port 8899
+```
+
+Der Start vermerkt Scriptpfad, Port, PID, Prozessstart und Kommando im temporären
+Benutzerverzeichnis. `--stop` braucht weder StockInfo-Konfiguration noch dessen
+Imports, prüft die Prozessidentität und sendet nur diesem Prozess SIGTERM.
+Es sucht und beendet **keinen beliebigen Portbesitzer**. Veraltete Einträge
+werden ohne Signal entfernt. Ein Doppelstart überschreibt keinen laufenden
+Nachweis. Der Prozess räumt seine Zustandsdatei beim regulären Ende auf.
+
+Lifecycle-Prüfung separat auf Port 8897: Start und echter FX-Aufruf 200; `--stop`
+liefert Erfolg, Uvicorn meldet abgeschlossenen Shutdown; wiederholtes Stoppen
+bleibt wirkungslos. Ein absichtlich falscher Identitätsnachweis für den anderen
+laufenden Testserver beendet ihn nicht (dessen `/health` danach 200). Erneuter
+Start funktioniert, ein Doppelstart wird mit Exit 2 abgelehnt; anschließend
+regulär gestoppt. Die konkrete Script-Aufrufpräfix-Freigabe ist eingerichtet,
+sodass künftige Stopps keine wechselnden `kill <PID>`-Freigaben benötigen.
+
+
+**Gesamtprüfung Runde 2:** Isolierte eigene Fassung, **52 Dateien / 712 Tests
+erfolgreich**, `make lint` und `make typecheck` Exit 0. Prüfkopie:
+`/var/folders/1g/t8rp3mj157z2kfc6ch_t3nw40000gn/T/stockportfolio-t38-r2-review-ddn0syyc`.
+Logs: `/tmp/stockportfolio-t38-r2-isolated-{test,lint,typecheck}.log`.
+164 Produkt-/Test-/Konfigurationsdateien einschließlich Testserver mit dem
+Index verglichen, keine Abweichung. Nach dem Lauf nur den erläuternden
+Kommentar zum Snapshot-Schlüssel ergänzt; keine Verhaltensänderung.
+TS-/Vue-Bezeichnerinventar der 14 geänderten Implementierungs-/Testdateien
+sowie Python-AST-Inventar des Helfers: englische Bezeichner. Der zusätzliche
+Schema-Edit betrifft ausschließlich den Kommentar.
+
+**Doku-Abgleich Runde 2:** README und aktuelle Ausführungsentscheidung beschreiben
+den laufenden bestätigten Währungswechsel. Runde-1-Belege sind als historisch
+gekennzeichnet; Reviewzitate bleiben erhalten. Historienimport/-export beschreibt
+alle Währungsreihen. Die drei Tickets verweisen auf den einen Helfer unter
+`scripts/`; seine Stop-Option ist im Script und in den Tickets dokumentiert.
+Kein neues Ticket und kein zusätzlicher Prozessmanager eingeführt.
+
+**Lessons Runde 2:** SI-R-01/SI-T-66 praktisch angewandt: Die Reviewaussage,
+die Historie sei bereits vollständig vorbereitet, wurde durch die Gegenprobe
+für zwei Währungen am selben Tag geprüft und korrigiert. Der notwendige Umfang
+ist Schlüssel, Neuladen und Sicherung der vorhandenen Reihen; keine historischen
+FX-Abfragen und keine allgemeine Migration. Der Helfer nutzt SIGTERM und eine
+einfache Zustandsdatei, keine zusätzliche Laufzeit.

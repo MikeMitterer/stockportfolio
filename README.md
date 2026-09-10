@@ -70,9 +70,11 @@ action is suppressed. The default is 0, i.e. off.
 Choose a currency for each portfolio in **Settings → Data → Portfolios**.
 New portfolios default to EUR; USD, CAD and other ISO currencies are available.
 Cash, security buffers and minimum trade amounts belong to that portfolio and
-use its currency. The currency can be changed while the portfolio has no
-holdings, cash amount, nonzero limits or daily values; otherwise create a new
-portfolio so existing amounts keep their meaning.
+use its currency. You can change the currency at any time. A confirmation
+shows the rate used to convert cash and absolute limits; holdings and percentage
+limits stay unchanged. Without a valid conversion rate, stored amounts and
+currency stay unchanged. The chart shows the selected currency series, and
+earlier series remain available when switching back.
 
 StockInfo FX rates convert foreign quotes into the portfolio currency before
 calculating totals, allocations, bands and trades. A rate of 0.8 EUR per USD
@@ -82,8 +84,8 @@ into GBP. Original quotes and plugin amounts retain their own currencies.
 A stale FX rate remains usable with a persistent warning naming the pair and
 rate date. If no valid rate exists, the affected position stays visible and is
 excluded from totals and trades. Incomplete valuations do not overwrite daily
-values. Snapshots and backups carry the portfolio currency; unlabelled or
-mismatched old snapshots are omitted. Historical backtests requiring FX are
+values. Snapshots carry their currency; unlabelled old snapshots are omitted. Backups
+retain all currency series, while the chart shows only the selected currency. Historical backtests requiring FX are
 hidden with an explanation because StockInfo does not supply historical FX.
 
 Quotation currency does not describe currency exposure: a euro-quoted MSCI

@@ -119,14 +119,14 @@ Chrome-Kontext `stockportfolio-t39` durchgeführt. StockInfo-Vertragsgrundlage:
 stand das Nachbar-Repository auf `fe102bf1c8fd9032411e0735146aac9879f9d3f7`;
 der Vergleich enthält ausschließlich Regel- und Board-Dokumentation, keine
 Änderung an Servercode oder Vertrag. Das Begleitskript
-[T-39-stockinfo-server.py](T-39-stockinfo-server.py) startet die echte FastAPI-App
+[StockInfo-Testserver](../../scripts/stockinfo-test-server.py) startet die echte FastAPI-App
 mit ihren Quote-/Refresh-/Katalog-/Historienrouten, Services und SQLite-Repository.
 Es verwendet eine neu erzeugte temporäre Datenbank, eine lokale Kurs- und
 Historienquelle sowie einen Test-Lifespan ohne produktiven Scheduler.
 
 ```bash
 /Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
-  _tickets/30-doing/T-39-stockinfo-server.py \
+  scripts/stockinfo-test-server.py \
   --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo
 
 VITE_STOCKINFO_API_URL=http://127.0.0.1:8899 \
@@ -312,3 +312,10 @@ habe sie nicht wiederholt, sondern Code, Vertrag und Tests geprüft.
 nicht blockierenden Hinweise bleiben oben dokumentiert; sie erweitern den
 Auftrag von T-40 nicht automatisch. T-40 wird auf der geprüften Vertragsgrenze
 aktiviert. T-39 bleibt bis zu Mikes Abschlussentscheidung unter `30-doing/`.
+
+
+**Gemeinsamer Helfer (2026-09-10):** Der StockInfo-Testserver liegt unter
+[scripts/stockinfo-test-server.py](../../scripts/stockinfo-test-server.py).
+Nach einem Start lässt er sich mit demselben Python-Aufruf und `--stop --port 8899`
+sauber beenden. Er prüft seine gespeicherte Prozessidentität und beendet keine
+anderen Portbesitzer. Der Lifecycle-Nachweis steht in T-38 Runde 2.

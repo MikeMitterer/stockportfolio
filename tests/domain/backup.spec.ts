@@ -416,7 +416,7 @@ describe('Depotwährung und Geldschwellen in Sicherungen', () => {
     expect(result).toEqual({ ok: false, error: { key: 'invalidAmountSettings' } })
   })
 
-  it('erhält USD-Geldschwellen und nur passende Tageswerte', () => {
+  it('erhält USD-Geldschwellen und gekennzeichnete Währungsreihen', () => {
     const amountSettings = { securityBuffer: { mode: 'absolute', value: 300 }, minTradeSize: { mode: 'absolute', value: 20 } }
     const result = parseBackup(validRaw(data => {
       Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
@@ -426,6 +426,6 @@ describe('Depotwährung und Geldschwellen in Sicherungen', () => {
     if (!result.ok) return
     expect(result.backup.portfolio.baseCurrency).toBe('USD')
     expect(result.backup.portfolio.amountSettings).toEqual(amountSettings)
-    expect(result.backup.valueHistory).toEqual([{ date: '2026-09-01', total: 100, currency: 'USD' }])
+    expect(result.backup.valueHistory).toEqual([{ date: '2026-09-01', total: 100, currency: 'USD' }, { date: '2026-09-02', total: 90, currency: 'EUR' }])
   })
 })

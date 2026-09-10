@@ -163,7 +163,7 @@ Zuordnung über einen Profilwechsel bleibt wie vereinbart bei T-35.
 
 ### Erste Sichtprüfung durch Codex
 
-Die bestehende [StockInfo-Testumgebung](T-39-stockinfo-server.py) aus T-39
+Die bestehende [StockInfo-Testumgebung](../../scripts/stockinfo-test-server.py) aus T-39
 wurde um eine optionale Detailvorbereitung erweitert. Sie verwendet echte
 REST-Routen, Services und SQLite-Speicherung; externe Provider und der
 produktive Scheduler bleiben für diesen Test ersetzt. StockInfo-Quellstand:
@@ -173,7 +173,7 @@ Produktcode und keine Produktionsdaten wurden verändert.
 
 ```bash
 /Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
-  _tickets/30-doing/T-39-stockinfo-server.py \
+  scripts/stockinfo-test-server.py \
   --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo \
   --detail-fixtures tests/fixtures/stockinfo
 
@@ -359,3 +359,10 @@ Runde 1 zu `71a4ff8a5bba963134039a6840250800f13a4192` verarbeitet. Keine
 Nacharbeit gefordert; optionale Reviewhinweise erweitern den Auftrag nicht.
 T-38 wird wie eingeplant fortgesetzt. T-40 bleibt bis zu Mikes
 Abschlussabnahme unter `30-doing/`.
+
+
+**Gemeinsamer Helfer (2026-09-10):** Der StockInfo-Testserver liegt unter
+[scripts/stockinfo-test-server.py](../../scripts/stockinfo-test-server.py).
+Nach einem Start lässt er sich mit demselben Python-Aufruf und `--stop --port 8899`
+sauber beenden. Er prüft seine gespeicherte Prozessidentität und beendet keine
+anderen Portbesitzer. Der Lifecycle-Nachweis steht in T-38 Runde 2.

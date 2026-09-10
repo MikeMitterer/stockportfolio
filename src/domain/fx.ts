@@ -29,7 +29,7 @@ export interface ConvertedPrice {
 }
 
 export function convertedPrice(quote: QuoteCacheEntry | null, target: string, rates: FxMap): ConvertedPrice | null {
-  if (!quote) return null
+  if (!quote || !Number.isFinite(quote.price) || quote.price <= 0) return null
   const base = majorCurrency(quote.currency)
   const scale = quote.currency === 'GBp' ? 0.01 : 1
   if (base === target) return { price: quote.price * scale, rate: scale, fx: null }

@@ -44,6 +44,8 @@ const pending = ref<Backup | null>(null)
 const error = ref<string | null>(null)
 const done = ref<string | null>(null)
 
+const historyDayCount = computed(() => new Set(pending.value?.valueHistory.map(entry => entry.date)).size)
+
 const positionCount = computed(() => pending.value?.portfolio.positions.length ?? 0)
 
 /** Zeitpunkt der Sicherung, lesbar. */
@@ -75,7 +77,7 @@ async function exportNow(portfolio: Portfolio): Promise<void> {
   const exportedAt = new Date().toISOString()
   // Die Tageswerte gehören dazu: Sie lassen sich nicht neu berechnen, sie
   // entstehen nur dadurch, dass die App über Monate benutzt wird.
-  await valueHistory.load(portfolio.id, baseCurrencyOf(portfolio))
+  const history = await valueHistory.exportAll(portfolio.id)
 
   const backup = buildBackup(
     portfolio,
@@ -83,7 +85,7 @@ async function exportNow(portfolio: Portfolio): Promise<void> {
     instrumentsStore.allowlist,
     __APP_VERSION__,
     exportedAt,
-    valueHistory.snapshots,
+    history,
   )
 
   // Eingerückt geschrieben: Die Datei soll sich im Zweifel auch von Hand lesen
@@ -264,8 +266,8 @@ const pendingCashTotal = computed(() =>
           {{ t('backup.valueHistory') }}
         </dt>
         <dd v-if="pending.valueHistory.length > 0" class="tabular-nums">
-          {{ t('units.days', pending.valueHistory.length, {
-            named: { count: integer(pending.valueHistory.length) },
+          {{ t('units.days', historyDayCount, {
+            named: { count: integer(historyDayCount) },
           }) }}
         </dd>
 

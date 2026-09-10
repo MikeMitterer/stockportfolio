@@ -398,7 +398,7 @@ watch(() => [result.value, fx.loading], () => {
   valueHistory.computeBacktest(backtestInputs.value)
   void recordCurrentValue()
 })
-watch(() => portfolioStore.portfolio?.id, () => { if (ready.value) void loadValueHistory() })
+watch(() => [portfolioStore.portfolio?.id, portfolioStore.portfolio?.baseCurrency], () => { if (ready.value) void loadValueHistory() })
 
 watch(groupsCollapsed, (collapsed) => {
   safeStorage.write(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')

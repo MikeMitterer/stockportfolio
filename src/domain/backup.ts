@@ -9,7 +9,7 @@
  * Reine Funktionen, kein DOM: Weder Datei-Auswahl noch Download stehen hier.
  */
 
-import { baseCurrencyOf, isCurrency } from '@/domain/fx'
+import { isCurrency } from '@/domain/fx'
 import type { ValueSnapshot } from '@/domain/portfolioHistory'
 import type { AmountSetting, AssetGroup, InstrumentKind, Portfolio, Position, Settings } from '@/types/portfolio'
 
@@ -211,7 +211,7 @@ export function parseBackup(raw: string): ParseResult {
       // dass später ein Feld hinzugekommen ist.
       settings: data.settings as unknown as Settings,
       allowlist: parseAllowlist(data.allowlist),
-      valueHistory: parseValueHistory(data.valueHistory, baseCurrencyOf(portfolio)),
+      valueHistory: parseValueHistory(data.valueHistory),
     },
   }
 }
@@ -289,14 +289,14 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
  * abzulehnen: Ein unlesbarer Tageswert ist ein Schönheitsfehler in der Kurve,
  * kein Grund, ein Depot nicht wiederherzustellen.
  */
-function parseValueHistory(value: unknown, currency: string): ValueSnapshot[] {
+function parseValueHistory(value: unknown): ValueSnapshot[] {
   if (!Array.isArray(value)) return []
 
   return value
     .filter(
       (entry): entry is ValueSnapshot =>
         isRecord(entry) &&
-        entry.currency === currency &&
+        isCurrency(entry.currency) &&
         typeof entry.date === 'string' &&
         typeof entry.total === 'number' &&
         Number.isFinite(entry.total),

@@ -24,6 +24,14 @@ describe('Umrechnung in die Depotwährung', () => {
     expect(convertedPrice(original, 'CAD', new Map())).toBeNull()
   })
 
+  it('behandelt unbrauchbare Originalkurse mit und ohne FX gleich', () => {
+    for (const price of [0, -1, NaN, Infinity]) {
+      const invalid = { ...quote(), price }
+      expect(convertedPrice(invalid, 'USD', new Map())).toBeNull()
+      expect(convertedPrice(invalid, 'EUR', new Map([[fxKey('USD', 'EUR'), rate]]))).toBeNull()
+    }
+  })
+
   it('behandelt Pence als Hundertstel GBP, auch ohne FX-Abruf', () => {
     expect(convertedPrice(quote('GBp', 1250), 'GBP', new Map())).toMatchObject({ price: 12.5, rate: 0.01 })
     const sterling = { ...rate, base: 'GBP', rate: 1.2 }
