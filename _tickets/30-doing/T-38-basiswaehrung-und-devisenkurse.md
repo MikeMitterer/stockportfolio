@@ -187,3 +187,61 @@ T-40, Depotbewertung und FX hier. Die Funktion ist noch nicht verfügbar.
 curl -s "http://localhost:8000/fx?base=EUR&quote=USD"                                    # #1 Erfolgsfall
 curl -s -o /dev/null -w "%{http_code}\n" "http://localhost:8000/fx?base=EUR&quote=ZZZ"   # #2 unbekannte Währung
 ```
+
+### Ausführungsentscheidungen und Plan · Codex · 2026-09-10
+
+Die technische Grundlage T-39/T-40 ist unabhängig freigegeben. Dieses Ticket
+bleibt die einzige vollständige Spezifikation; es entsteht kein paralleler Plan.
+
+1. **Depotwahl und Beträge:** `baseCurrency` wird beim Anlegen im UI gewählt,
+   Vorgabe EUR, Auswahl gültiger ISO-Währungen einschließlich USD/CAD. Keine
+   Standorterkennung und keine Installationseinstellung. Cash ist ein Betrag
+   dieser Währung. Die Währung darf nur bei einem leeren Depot ohne Cashbetrag,
+   Betragsgrenzen oder Tageswerte geändert werden; sonst zeigt die UI die
+   Neueinrichtung eines Depots als Weg. Keine automatische Umbuchung.
+   Sicherheitspuffer und Mindesthandelsbetrag werden je Depot gespeichert.
+   Bestehende EUR-Depots können die bisher globalen Werte direkt übernehmen;
+   daraus entsteht keine allgemeine Datenmigration.
+2. **FX-Vertrag:** Clientmethode für `GET /fx?base=...&quote=...`, gemeinsame
+   Normalisierer-Hilfen für endliche positive Zahl, ISO-Währungen, vollständige
+   Zeitpunkte und boolesche Cacheflags. Antwortpaar muss dem angefragten Paar
+   entsprechen; `source` ist optional. Kein erratener Kurs, kein automatisches
+   Invertieren einer falschen Antwort. Gleiches Währungspaar braucht keinen
+   Abruf. GBp wird zuerst durch 100 in GBP umgerechnet.
+3. **Sitzung und Aktualisierung:** Ein FX-Store hält Werte je gerichtetes Paar
+   und API-Adresse. Nur tatsächlich benötigte Paare laden, parallele Abrufe
+   teilen. Nach Quote-Refresh und beim Depotwechsel prüfen; eine explizite
+   Wiederholung ist möglich. Bei fehlgeschlagenem Abruf darf ein zuvor gültiger
+   Wert nur als veraltet weiterverwendet werden. Neue Adresse verwirft alte
+   Werte; verspätete Antworten überschreiben sie nicht. Keine FX-Werte in
+   Nutzersicherungen; StockInfo besitzt bereits den dauerhaften FX-Cache.
+4. **Gemeinsame Bewertung:** Originalquote und Pluginbeträge unverändert
+   erhalten. Eine reine Funktion liefert den umgerechneten Stückpreis und
+   Marktwert. Summen, Gruppen, Liquidität, Bänder, Stückvorschläge und
+   Handelssimulator verwenden genau diese Werte. Fehlendes/ungültiges FX
+   schließt die Position sichtbar aus allen abgeleiteten Rechnungen aus.
+   Ein verwendeter veralteter Kurs bleibt mit Paar und Kursstand dauerhaft
+   sichtbar gewarnt, unabhängig vom Ausblenden anderer Meldungen.
+5. **Oberfläche:** Alle Depotbeträge und Achsen verwenden die aktive
+   Basiswährung. Originalkurse behalten ihre Währung; zusätzlich ist die
+   Umrechnung nachvollziehbar. Depotverwaltung und Sicherungsübersicht nennen
+   die Währung. Betragsgrenzen werden in der aktiven Depotwährung eingegeben.
+6. **Tageswerte und Rückblick:** Neue Tageswerte führen ihre Währung mit;
+   Laden/Import mischt keine Währungen. Unvollständige Bewertungen werden nicht
+   als vollständiger Tageswert gespeichert. Tageswerte ohne Währungsangabe
+   werden verworfen. Der Rückblick wird bei benötigtem historischen FX mit
+   sichtbarer Erklärung ausgelassen; aktuelle FX-Werte ersetzen keine
+   historischen Kurse. GBp→GBP ist lediglich die konstante Einheitenskalierung.
+7. **Prüfung:** Rote Tests für Richtung, EUR/USD/CAD, GBp, identische Währung,
+   falsches Paar, fehlende Pflichtfelder, 0/negative/ungültige Raten, veralteten
+   Rückfall, Adress- und Depotwechsel. Rechnungs- und Handelstests müssen
+   denselben Stückpreis beweisen. Persistenz/Backup prüfen Depotwährung,
+   Betragsgrenzen und getrennte Tageswerte. Erste Browserprüfung durch Codex
+   mit dem vorhandenen echten StockInfo-Testserver und kontrollierter FX-Quelle.
+   Abschließend isolierte eigene Fassung: `make test`, `make lint`,
+   `make typecheck`, Bezeichnerinventar und unabhängiger Review durch Claude.
+
+- [ ] Depotdaten und FX-Vertrag mit roten Gegenproben
+- [ ] Gemeinsame Umrechnung, Store und Rechenwege
+- [ ] UI, Sicherung und währungsgetrennte Tageswerte
+- [ ] Sichtprüfung, isolierte Gesamtprüfung und Reviewübergabe
