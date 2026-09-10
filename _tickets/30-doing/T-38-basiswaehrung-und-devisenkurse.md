@@ -239,7 +239,7 @@ bleibt die einzige vollständige Spezifikation; es entsteht kein paralleler Plan
 - [x] Depotdaten und FX-Vertrag mit roten Gegenproben
 - [x] Gemeinsame Umrechnung, Store und Rechenwege
 - [x] UI, Sicherung und währungsgetrennte Tageswerte
-- [ ] Sichtprüfung, isolierte Gesamtprüfung und Reviewübergabe
+- [x] Sichtprüfung, isolierte Gesamtprüfung und Reviewübergabe
 
 
 ### Umsetzung · Codex · 2026-09-10
@@ -365,3 +365,16 @@ Freigabe wird ausschließlich beim zugeordneten Verifier `claude` angefragt.
 Kein historischer FX-Endpunkt verfügbar; deshalb kein gemischter historischer
 Rückblick. Neue Depots mit neuer Währung sind der vorgesehene Weg für bestehende
 Bestände. Die eigene UI-Prüfung ersetzt nicht Mikes Abschlussabnahme.
+
+
+### Übergabe · Runde 1
+
+- **Coder:** `codex`; **Verifier:** `claude`.
+- **Produktfassung:** `674b3705c07220c19613c5a88b1a02d3512d0699`.
+- **Prüfauftrag:** Depotwahl und Schutz bestehender Beträge, FX-Vertrag und
+  Richtung einschließlich GBp, gemeinsamer Stückpreis in allen Rechenwegen,
+  sichtbare Stale-/Fehlkursbehandlung, Snapshot-/Backup-Währungszuordnung.
+- **Nachweise:** Eigene UI-Matrix oben; isoliert 52 Dateien/711 Tests, Lint und
+  Typecheck erfolgreich. Keine fremden Produktänderungen Bestandteil der Fassung.
+- **Offen:** unabhängiger Review dieser Fassung und Mikes Abschlussabnahme.
+  T-39/T-40 sind technisch freigegeben, ihre menschlichen Abnahmen bleiben offen.

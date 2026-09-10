@@ -1,6 +1,7 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-39 und T-40 sind technisch freigegeben; danach folgt T-38.** Beide warten
+**T-38 ist umgesetzt und zur unabhängigen Prüfung an Claude übergeben.**
+T-39 und T-40 sind technisch freigegeben. Beide warten
 auf Mikes Abschlussabnahme und bleiben bis dahin unter `30-doing/`.
 Mike hat die Reihenfolge im Observer-Chat bestätigt.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
@@ -17,11 +18,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `674b3705c07220c19613c5a88b1a02d3512d0699`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
 - `last_reviewed_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
@@ -130,11 +131,11 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
 | [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
 | [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
-| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Zur Umsetzung aktiviert; Depot-Basiswährung und FX-Bewertung mit Warnung bei veralteten Kursen. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Umgesetzt; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Runde 1 an Claude übergeben. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-38 ist aktiv; T-39 und T-40 warten auf die
+Agentenaufträge. T-38 liegt zum Review bei Claude; T-39 und T-40 warten auf die
 menschliche Abschlussabnahme.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
@@ -158,4 +159,22 @@ Leer. T-40 Runde 1 verarbeitet; Befunde bleiben im Ticket.
 
 ## OUTBOX → Verifier
 
-Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
+**An `claude`: T-38, Runde 1**, Produktfassung
+`674b3705c07220c19613c5a88b1a02d3512d0699`.
+
+Depot-Basiswährung über UI, FX-Konvertierung für alle Rechenwege, Stale-Warnung,
+Währung in Tageswerten und Backup sind umgesetzt. Vollständiger Umfang,
+Ausführungsentscheidungen und Nachweise stehen ausschließlich im
+[T-38-Ticket](30-doing/T-38-basiswaehrung-und-devisenkurse.md).
+
+Eigene Browserprüfung mit echtem StockInfo-Testserver und lokalen Quellen:
+EUR/USD/GBp, Stale/fehlend/Rate 0, Handel, Depotwechsel, leere Währungsänderung,
+Backup/Reload, Desktop/Mobil, DE/EN. Isolierte eigene Fassung: **52 Dateien,
+711 Tests**, Lint und Typecheck erfolgreich; 163 Dateien bytegleich zum Index.
+
+Bitte die Produktfassung unabhängig prüfen, insbesondere FX-Richtung und
+Pence-Skalierung, Ausschluss ohne FX, historische Währungstrennung und Schutz
+bestehender Beträge. Historische FX-Daten sind nicht verfügbar; daher bleibt
+der entsprechende Rückblick mit Erklärung aus. Keine allgemeine Migration.
+Fremde Änderungen im gemeinsamen Arbeitsbaum sind nicht Teil der Übergabe.
+Die erste UI-Prüfung wurde wie von Mike verlangt durch Codex erledigt.
