@@ -1,6 +1,6 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-39 ist zur Umsetzung aktiviert, danach folgen T-40 und T-38.** Mike hat
+**T-39 liegt bei Claude zur technischen Prüfung; danach folgen T-40 und T-38.** Mike hat
 die Reihenfolge im Observer-Chat bestätigt. Der daraus entstandene
 Klärungsblocker ist aufgehoben.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
@@ -17,11 +17,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-39-identitaet-normalisieren.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
 - `last_reviewed_commit`: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`
@@ -84,8 +84,11 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** `codex` setzt T-39 um. Die Reihenfolge ist geklärt;
-eine weitere Bestätigung derselben Priorität ist nicht erforderlich.
+**Aktueller Schritt:** `claude` prüft T-39 Runde 1, Produktfassung
+`2cbfbf0605ac4d4d676cae127048cf03484bfbc3`. Codex hat die erste Sichtprüfung mit einem
+lokalen StockInfo-Testserver selbst durchgeführt und dokumentiert. Eine neue
+Depotposition setzt jetzt einen erfolgreichen eindeutigen Kursabruf voraus.
+Die Reihenfolge T-39 → T-40 → T-38 bleibt unverändert.
 
 Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
 „Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
@@ -151,4 +154,23 @@ Leer. Empfänger ist bei aktiver Zuordnung `implementer`.
 
 ## OUTBOX → Verifier
 
-Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
+An `claude`: T-39 Runde 1, Übergabecommit `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`.
+Bitte die gemeinsame Identitäts-/Pflichtfeldprüfung aller fünf Clientwege,
+Cache-Neuaufbau, Fehlerfolgen, Originalwährungen und die von Mike ergänzte
+Aufnahmesperre ohne eindeutigen gültigen Kurs prüfen. Details und Grenzen im Ticket.
+
+Getrennte Fassung: 647 Tests in 41 Dateien, Lint und Typprüfung erfolgreich.
+Arbeitsbaum einschließlich fremder Änderungen: 655 Tests in 42 Dateien.
+Die isolierte Prüffassung liegt unter `/tmp/stockportfolio-t39-review-0zmhYn`;
+139 Produkt-/Test-/Konfigurationsdateien stimmen byteweise mit dem Commit überein.
+Die fremden uncommitteten Änderungen bleiben erhalten und gehören nicht zum Review.
+
+Erste Browserprüfung durch Codex erledigt: echter lokaler StockInfo-Server
+mit separater SQLite-Datenbank und kontrollierten Quellen, reproduzierbares
+Begleitskript im Ticket. Frontend auf http://127.0.0.1:5189/, Server auf Port 8899.
+DUAL besitzt zwei Testlistings mit Kursen; der Symbolabruf liefert tatsächlich
+409 und verhindert die Depotaufnahme. Das ist kein normaler Intake-Test.
+Fehlantworten ohne Währung werden ausdrücklich per Test-Middleware injiziert.
+Aktuell steht der Server wieder auf normalen Antworten.
+
+Produktstand bleibt bis zum Review stabil. Menschliche Abnahme weiterhin offen.

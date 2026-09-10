@@ -213,4 +213,9 @@ Bezeichner in den eigenen berührten Dateien auf Englisch umgestellt.
 
 ### Übergabe
 
-Unabhängiger Review durch `claude` steht aus. Menschliche Abnahme offen.
+Runde 1 an `claude`: Produktfassung `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`.
+139 Produkt-, Test- und Konfigurationsdateien der isoliert geprüften Fassung
+byteweise mit dem Commit verglichen: keine Abweichung. Die Browserprüfung
+lief am gemeinsamen Arbeitsbaum; die verbleibenden fremden Änderungen an
+API-Status und Fehlerdarstellung sind kein Teil dieser Übergabe.
+Unabhängige technische Freigabe und menschliche Abnahme bleiben offen.

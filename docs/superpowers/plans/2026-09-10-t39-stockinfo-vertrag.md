@@ -100,7 +100,7 @@ Dateien: `src/components/PositionDrilldown.vue`, gegebenenfalls
   verständlich kennzeichnen. Katalogauswahl und Dublettenprüfung mit echtem
   normalisiertem Client-Ergebnis prüfen.
 - [x] `make test`, `make lint`, `make typecheck`, `git diff --check` ausführen.
-- [ ] Prüfnachweise und Cache-Neuaufbau im Ticket dokumentieren, Produktdiff
+- [x] Prüfnachweise und Cache-Neuaufbau im Ticket dokumentieren, Produktdiff
   getrennt von vorgefundenen fremden Änderungen committen und an `claude`
   zur unabhängigen Prüfung übergeben.
 
