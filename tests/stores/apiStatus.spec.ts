@@ -212,3 +212,76 @@ describe('useApiStatusStore — Adresse des Fehlschlags', () => {
     expect(store.errorUrl).toBeNull()
   })
 })
+
+/**
+ * Was der Review vom 2026-08-20 gefunden hat.
+ *
+ * Beide Fälle betreffen `ensureChecked` und beide waren von den bisherigen
+ * Tests nicht erreichbar: Sie riefen nur `ensureChecked` und nie den Fall,
+ * dass anderswo bereits ein `check()` unterwegs ist.
+ */
+describe('useApiStatusStore — ensureChecked neben laufendem check', () => {
+  it('startet keinen zweiten Health-Check, wenn schon einer läuft', async () => {
+    const client = clientWith(
+      () => new Promise((resolve) => setTimeout(() => resolve({ status: 'ok', version: '1.0' }), 20)),
+    )
+    const store = useApiStatusStore()
+
+    // So läuft es beim Start: `App.vue` stößt an, die Ansicht fragt danach.
+    const vonApp = store.check(client)
+    const vonAnsicht = store.ensureChecked(client)
+
+    await Promise.all([vonApp, vonAnsicht])
+
+    expect(client.health).toHaveBeenCalledTimes(1)
+  })
+
+  it('räumt den Fehlertext eines laufenden Checks nicht weg', async () => {
+    const client = clientWith(
+      () =>
+        new Promise((_resolve, reject) =>
+          setTimeout(() => reject(new ApiError(0, 'Failed to fetch', 'https://x.example/health')), 20),
+        ),
+    )
+    const store = useApiStatusStore()
+
+    await Promise.all([store.check(client), store.ensureChecked(client)])
+
+    expect(store.error).toContain('Failed to fetch')
+    expect(store.errorUrl).toBe('https://x.example/health')
+  })
+
+  /**
+   * Sonst bliebe die App bis zum Sitzungsende bei „offline": Der Befund hat
+   * kein Verfallsdatum, und seit dem Umbau prüft beim Ansichtswechsel niemand
+   * mehr nach. Kommt der Dienst zurück, merkt es nur der Knopf.
+   */
+  it('prüft einen alten offline-Befund erneut', async () => {
+    let tot = true
+    const client = clientWith(async () => {
+      if (tot) throw new ApiError(0, 'Failed to fetch', 'https://x.example/health')
+      return { status: 'ok', version: '1.0' }
+    })
+    const store = useApiStatusStore()
+
+    await store.ensureChecked(client, 60)
+    expect(store.state).toBe('offline')
+
+    tot = false
+    // Frist 0 Minuten: Der Befund gilt sofort als alt.
+    await store.ensureChecked(client, 0)
+
+    expect(store.state).toBe('online')
+    expect(client.health).toHaveBeenCalledTimes(2)
+  })
+
+  it('lässt einen frischen Befund in Ruhe', async () => {
+    const client = clientWith(async () => ({ status: 'ok', version: '1.0' }))
+    const store = useApiStatusStore()
+
+    await store.ensureChecked(client, 60)
+    await store.ensureChecked(client, 60)
+
+    expect(client.health).toHaveBeenCalledTimes(1)
+  })
+})

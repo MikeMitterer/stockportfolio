@@ -11,6 +11,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { ApiError, describeFailure } from '@/api/errors'
+import { translate } from '@/i18n'
 
 describe('describeFailure', () => {
   it('nennt die Adresse, wenn gar keine Antwort kam', () => {
@@ -75,7 +76,15 @@ describe('describeFailure', () => {
     expect(describeFailure(new Error('kaputt'))).toBe('kaputt')
   })
 
-  it('kommt auch mit etwas zurecht, das gar kein Fehler ist', () => {
-    expect(describeFailure('irgendwas')).toBeTruthy()
+  /**
+   * `String(cause)` stünde bei einem fremden Wert wörtlich vor dem Nutzer —
+   * „undefined", „null" oder „[object Object]", auf der Statusseite und im
+   * Dialog. Ein `toBeTruthy()` hätte das nicht bemerkt.
+   */
+  it('nennt bei etwas, das gar kein Fehler ist, den übersetzten Rückfall', () => {
+    const satz = describeFailure(undefined)
+
+    expect(satz).not.toContain('undefined')
+    expect(satz).toBe(translate('notify.unknownError'))
   })
 })

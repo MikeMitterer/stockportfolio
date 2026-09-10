@@ -74,5 +74,8 @@ export function describeFailure(cause: unknown): string {
     const herkunft = cause.urlSource ? ` · ${translate(`errors.urlFrom.${cause.urlSource}`)}` : ''
     return `${cause.detail} — keine Antwort von ${cause.url}${herkunft}`
   }
-  return cause instanceof Error ? cause.message : String(cause)
+  // Kein `String(cause)`: Was kein `Error` ist, ergäbe wörtlich „undefined",
+  // „null" oder „[object Object]" — und das stünde so auf der Statusseite und
+  // im Dialog.
+  return cause instanceof Error ? cause.message : translate('notify.unknownError')
 }

@@ -52,6 +52,26 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
    * @param client Der injizierte API-Client; `null`, wenn keiner bereitsteht.
    */
   async function check(client: StockInfoClient | null): Promise<void> {
+    /*
+     * Auch der ausdrückliche Aufruf trägt sich ein.
+     *
+     * Vorher tat das nur `ensureChecked`, und zwar für sein eigenes
+     * Versprechen. Beim Start stößt aber `App.vue` den Check an, und die
+     * Ansicht ruft kurz darauf `ensureChecked`: Der Zustand stand dann auf
+     * `checking`, kein Versprechen war hinterlegt — also lief ein zweiter
+     * Health-Check, der `error` und `errorUrl` des ersten zurücksetzte,
+     * während dessen Anfrage noch unterwegs war.
+     */
+    laufenderCheck = fuehreCheckAus(client)
+    try {
+      await laufenderCheck
+    } finally {
+      laufenderCheck = null
+    }
+  }
+
+  /** Der eigentliche Abruf — ohne Buchführung über laufende Prüfungen. */
+  async function fuehreCheckAus(client: StockInfoClient | null): Promise<void> {
     if (!client) {
       state.value = 'offline'
       error.value = translate('notify.noClient')
@@ -99,13 +119,39 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
    *
    * @returns Der Zustand nach der Prüfung; wirft nie.
    */
-  async function ensureChecked(client: StockInfoClient): Promise<ApiState> {
-    if (state.value === 'online' || state.value === 'offline') return state.value
-    laufenderCheck ??= check(client).finally(() => {
-      laufenderCheck = null
-    })
-    await laufenderCheck
+  async function ensureChecked(
+    client: StockInfoClient,
+    maxAgeMinutes = Number.POSITIVE_INFINITY,
+  ): Promise<ApiState> {
+    // Läuft schon einer — gleich von wem angestoßen —, wird er abgewartet.
+    if (laufenderCheck) {
+      await laufenderCheck
+      return state.value
+    }
+
+    if (befundGilt(maxAgeMinutes)) return state.value
+
+    await check(client)
     return state.value
+  }
+
+  /**
+   * Taugt der letzte Befund noch?
+   *
+   * Ohne Frist gilt er unbegrenzt — das ist der Startfall, in dem einmal
+   * geprüft und das Ergebnis geteilt wird. Mit Frist altert er: Sonst bliebe
+   * die App nach einem einzigen `offline` bis zum Sitzungsende dabei, auch
+   * wenn der Dienst längst wieder antwortet. Seit der Health-Check aus der
+   * Statuszeile heraus ist, prüft beim Ansichtswechsel sonst niemand mehr nach.
+   */
+  function befundGilt(maxAgeMinutes: number): boolean {
+    if (state.value !== 'online' && state.value !== 'offline') return false
+    if (!Number.isFinite(maxAgeMinutes)) return true
+    if (maxAgeMinutes <= 0) return false
+
+    const stand = checkedAt.value ? Date.parse(checkedAt.value) : Number.NaN
+    if (Number.isNaN(stand)) return false
+    return Date.now() - stand < maxAgeMinutes * 60_000
   }
 
   return { state, status, version, latencyMs, checkedAt, error, check, ensureChecked, errorUrl }

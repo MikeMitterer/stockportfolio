@@ -368,7 +368,10 @@ onMounted(async () => {
    * Zwei Meldungen für eine Ursache, die vorher feststand.
    */
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    const status = await apiStatus.ensureChecked(client)
+    const status = await apiStatus.ensureChecked(
+      client,
+      settingsStore.settings.refresh.staleAfterMinutes,
+    )
     if (status !== 'offline') {
       await quotesStore.loadQuotesIfStale(
         client,

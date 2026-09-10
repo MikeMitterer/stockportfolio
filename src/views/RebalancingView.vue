@@ -49,7 +49,10 @@ onMounted(async () => {
   // Health-Check: Gegen einen toten Dienst zu laden kostet je Position eine
   // Zeitüberschreitung und meldet hinterher fehlende Kurse.
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    const state = await apiStatus.ensureChecked(client)
+    const state = await apiStatus.ensureChecked(
+      client,
+      settingsStore.settings.refresh.staleAfterMinutes,
+    )
     if (state !== 'offline') {
       await quotesStore.loadQuotesIfStale(
         client,
