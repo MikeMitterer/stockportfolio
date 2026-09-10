@@ -219,3 +219,91 @@ byteweise mit dem Commit verglichen: keine Abweichung. Die Browserprüfung
 lief am gemeinsamen Arbeitsbaum; die verbleibenden fremden Änderungen an
 API-Status und Fehlerdarstellung sind kein Teil dieser Übergabe.
 Unabhängige technische Freigabe und menschliche Abnahme bleiben offen.
+
+### Review Runde 1 · Verifier `claude` · 2026-09-10
+
+Geprüfte Fassung `2cbfbf0605ac4d4d676cae127048cf03484bfbc3` gegen `23580b2`.
+**Urteil: technisch freigegeben (`approved`).** Keine Nacharbeit gefordert.
+Die Freigabe deckt Code und Vertragstreue; Mikes Abnahme steht weiterhin aus.
+
+Geprüft wurde in einer eigenen Ausfertigung des Commits — `git archive 2cbfbf0`
+in ein leeres Verzeichnis, geteilte `node_modules`, sonst nichts aus dem
+Arbeitsbaum. Ein Vergleich des ausgepackten Baums gegen den Commit zeigt für
+`src/` und `tests/` keine Abweichung; die fremden uncommitteten Änderungen des
+Hauptbaums sind damit nachweislich außen vor.
+
+**Die Prüfschicht ist vertragstreu — das war die Hauptfrage.** Eine strengere
+Grenze als der Vertrag würde gültige Antworten abweisen. Gegen StockInfos
+`contract/core-contract.json` (`core_version 4.3.0`) geprüft:
+
+- **Pflicht und optional stimmen feldgenau überein.** Quote verlangt `symbol`,
+  `identity`, `price`, `currency`, `quote_time`, `fetched_at`, `cached`,
+  `stale`, `name`, `type` — genau diese erzwingt `normalizers.ts`. `exchange`,
+  `volume`, `source`, `ter`, `provider`, `replication`, `fund_size`,
+  `volatility`, `accumulating` bleiben optional. Für den Katalog gilt dasselbe
+  mit `listing_id`, `history_count`, `manual_fields`, `shadowed_fields`.
+- **Die Zeitstempelregel ist keine Erfindung.** Der Vertrag sagt „ISO-8601 mit
+  Zeitzone"; die Prüfung verlangt genau das.
+- **`stale && !cached` abzuweisen steht wörtlich im Vertrag:** „stale=true
+  impliziert cached=true". Folgerichtig setzt der Store beim Markieren eines
+  alten Werts jetzt auch `cached: true` — sonst widerspräche der eigene Cache
+  der eigenen Grenze.
+
+Eigene Gegenprobe an der neuen Grenze, neun Zusicherungen, alle erfüllt:
+`listed` mit ISIN und `isin_only` liefern die ISIN, `listed` ohne ISIN und
+`pair` liefern ausdrücklich `null` und nie `undefined` — in Quote- **und**
+Katalogmapper. Unbekannte Identitätsform, Quote ohne `currency`, Katalogkurs
+mit Preis ohne `latest_currency` sowie `stale` ohne `cached` werden abgewiesen.
+`ter: 0` und `accumulating: false` überleben.
+
+Weiter am Quellcode bestätigt:
+
+- **Kein geratener Kurs mehr im Datenpfad.** In `src/` gibt es keinen
+  `?? 'EUR'`-Rückfall mehr; die drei verbliebenen `?? '?'` sind Beschriftungen
+  für fehlende Währung, keine Rechenwerte.
+- **Alle fünf Wege laufen durch eine Grenze.** `getQuoteByIsin`,
+  `getQuoteBySymbol`, `refreshByIsin`, `refreshBySymbol` über `requestQuote`,
+  der Katalog über `normalizeInstruments`.
+- **Ausschlüsse bleiben sichtbar und begründet.** `excludedReason` kennt jetzt
+  `missing-quote`; Cash bleibt korrekt ausgenommen, weil es keinen Kurs hat.
+  Der Umbau der beiden früheren Frühausstiege in eine Kette erhält die
+  Reihenfolge `disabled` → `missing-quote` → `currency`.
+- **Aufnahme erst nach gültigem Abruf.** `validateInstrument` läuft vor
+  `emit('add')`; bei Fehler bleibt der Dialog mit Grund offen, `submitting`
+  verhindert den Doppelklick. Die Auswahl unterscheidet Listings über
+  `listing_id` — ein Katalogfeld, das der Quote-Vertrag zu Recht nicht verlangt.
+- **Cache wird neu aufgebaut, nicht migriert:** Schema 5 leert `quoteCache`,
+  `oldVersion > 0` schont den Erstlauf. Das entspricht der Projektregel.
+- **Neue i18n-Schlüssel liegen in `de.ts` und `en.ts`** — `invalidResponse`,
+  `unsupportedIdentity`, `ambiguousSymbol` je einmal in beiden Sprachen.
+- **Die AGENTS-Änderung ist reiner Doku-Abgleich** und beschreibt den
+  umgesetzten Stand; keine Regeländerung.
+- **Prüflauf in der isolierten Fassung:** 41 Dateien / 647 Tests grün, Lint und
+  Typprüfung Exit 0 — dieselben Zahlen wie in der Übergabe.
+
+**Grenze dieses Reviews:** kein Browserlauf und kein Live-Server. Die erste
+Sichtprüfung lag laut Mikes Auftrag bei Codex und ist oben dokumentiert; ich
+habe sie nicht wiederholt, sondern Code, Vertrag und Tests geprüft.
+
+#### Befunde ohne Nacharbeitsbedarf
+
+- **Zwei Tests hängen an der lokalen Umgebungsdatei und wären in einem frischen
+  Checkout rot.** In `tests/api/client.spec.ts` scheitern „ignoriert eine leere
+  Laufzeit-Adresse" und „fällt ohne jede Angabe auf die Produktions-Instanz
+  zurück" ohne gesetzte `VITE_STOCKINFO_API_URL` mit `MissingApiUrlError`.
+  Der zweite Test behauptet zudem einen Rückfall auf die Produktionsinstanz,
+  den `apiBaseUrl()` bewusst **nicht** hat — er besteht nur, weil die lokale
+  Konfiguration zufällig eine `https`-Adresse liefert. Beide Tests sind älter
+  als T-39 und gehören nicht zu dieser Übergabe; sinnvoll wäre ein eigenes
+  kleines Ticket, das die Erwartung an das tatsächliche Verhalten anpasst.
+- **Ein ungültiger Katalogeintrag verwirft den gesamten Katalog.**
+  `normalizeInstruments` bricht beim ersten Fehler ab. Das ist so beabsichtigt
+  und geprüft, hat aber eine große Wirkung: Ein einziges fehlerhaftes Papier in
+  StockInfo macht Auswahlliste und Aufnahme für **alle** Papiere unbenutzbar.
+  Eintragsweises Überspringen mit sichtbarer Warnung wäre die mildere Variante.
+  Die Entscheidung passt zu T-40, wo der Katalog ohnehin erweitert wird.
+- **Unbekannte Fehlercodes erscheinen unübersetzt.** `readErrorDetail` gibt
+  außer bei `symbol_ambiguous` den rohen `code` zurück, etwa `not_found`.
+- **Kleine Doku-Unstimmigkeit:** Der Kommentar an `marketValue` sagt jetzt
+  „in ihrer Kurswährung", die Folgezeile weiterhin „Für Cash: `units` ist der
+  EUR-Betrag selbst". Heute richtig, bei T-38 nachzuziehen.
