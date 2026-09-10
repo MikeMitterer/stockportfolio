@@ -20,25 +20,31 @@ Leseansicht sinnvoll ist. Noch keine Implementierung, keine Live-Abnahme.
 
 ## Für dich
 
-Zu entscheiden ist, **welche zusätzlichen Felder StockPortfolio verwenden soll**:
-konkret benannte Kennzahlen oder beliebige neue Plugin-Felder in einer
-zusätzlichen Anzeige. Für Berechnungen müssen Bedeutung und Einheit feststehen.
+**Entschieden: zusätzliche Plugin-Felder automatisch in der Detailansicht
+anzeigen.** Felder, die bereits in der aktuellen Haupt-Info-Zeile erscheinen,
+werden dort nicht wiederholt. Die Hauptzeile kann selbst dynamische Felder
+enthalten; entscheidend sind die tatsächlich dargestellten Feldschlüssel.
 
-| Frage | Deine Entscheidung |
-|---|---|
-| A · Welche zusätzlichen Kennzahlen möchtest du sehen oder auswerten? Ein Beispiel genügt für den ersten Zuschnitt. | |
-| B · Sollen unbekannte Plugin-Felder automatisch als Zusatzinformationen erscheinen oder nur ausdrücklich ausgewählte Felder? | |
+### Bisherige Antworten
 
-Kein manueller REST- oder Browser-Test durch dich erforderlich, bevor der
-Umfang geklärt und eine passende Testumgebung vorbereitet ist.
+**A/B · Feldbedarf und Anzeige — Mike, 2026-09-10:**
+
+> Ja, in der Detail-View wenn sie nicht sowieso Teil der aktuellen "Haupt-Info-Zeile" sein - theoretisch könnten das auch teilweise dynamische Felder sein, berücksichtige das
+
+Der Bedarf ist eine generische Anzeige, keine feste Wunschliste zusätzlicher
+Berechnungsfelder. Neue Kennzahlen ändern dadurch keine Portfolioformeln.
+
+Für die Bewertung ist kein manueller REST- oder Browser-Test erforderlich.
+Der unabhängige Reviewer prüft den Integrationsvorschlag gegen Vertrag und
+belegte Anforderungen.
 
 ### Bisheriger Auftrag
 
 Mike, 2026-09-08: „Kannst du die Bewertung als Ticket in StockPortfolio definieren“.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
-T-37 ist damit vor T-38 zur Bearbeitung aktiviert. Die Vertragsprüfung läuft;
-die offenen Feldentscheidungen werden im Chat abgefragt.
+T-37 ist damit vor T-38 zur Bearbeitung aktiviert. Die Feldentscheidungen sind
+oben dokumentiert und in den Integrationsvorschlag übernommen.
 
 ## Umsetzung und technische Nachweise
 
@@ -51,8 +57,8 @@ zusätzlicher StockInfo-Projektionsroute. Die Umsetzung wird danach gesondert
 zugeschnitten; keine neue Route allein durch dieses Ticket beauftragt.
 
 Repo: StockPortfolio. Betroffene Fremdschnittstelle: StockInfo.
-Zeitbudget: nicht beziffert. Status: technische Bewertung ergänzt; wartet
-auf Feldentscheidungen A/B vor endgültigem Zuschnitt und unabhängigem Review.
+Zeitbudget: nicht beziffert. Status: technische Bewertung und Feldbedarf
+dokumentiert; unabhängiger Review wird vorbereitet.
 
 ### Vorliegende Befunde
 
@@ -83,8 +89,8 @@ implementierte Integration. Menschliche Entscheidungen stehen oben.
 | # | Prüfung / Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
 | 1 | Aktuelle StockInfo-Antwortmodelle und Portfolio-Mapper gegenüberstellen; synthetische Antworten durch den echten Mapper schicken | Alle drei Identitätsformen und `listed` ohne ISIN geprüft; Quote- und Katalogmapper liefern jeweils `undefined`. Zielzuordnung und Grenzen im Vorschlag dokumentiert | ✅ |
-| 2 | Antworten von Quote, Refresh und Instrumentkatalog bis Cache und UI verfolgen | Vollständige betroffene Abruf- und Verbraucherwege; erste Codeinventur liegt vor, kein Live-Ende-zu-Ende-Nachweis | ◑ |
-| 3 | Mikes Antworten A/B in konkrete Felder und Anwendungsfälle übersetzen | Benötigte Kennzahlen, reine Anzeige versus Berechnung und Cache-Anforderungen eindeutig festgelegt | ➖ |
+| 2 | Antworten von Quote, Refresh und Instrumentkatalog bis Cache und UI verfolgen | Vier Quote-/Refreshwege, Katalog, Auswahl, Cache und Hauptzeile/Detailansicht am Quellcode zugeordnet; keine Live-Ende-zu-Ende-Prüfung | ✅ |
+| 3 | Mikes Antworten A/B in konkrete Felder und Anwendungsfälle übersetzen | Automatische Detailanzeige; tatsächliche Hauptzeilen-Feldschlüssel einschließlich dynamischer Felder ausschließen; Anzeige ohne neue Berechnungen und Cacheanforderungen im Vorschlag festgelegt | ✅ |
 | 4 | Verschachtelte Antwort plus Mapper mit zusätzlicher flacher Route vergleichen | Vergleich und Empfehlung samt synthetischem Antwortausschnitt, vier Quote-/Refreshwegen und direkt konsumiertem Katalog dokumentiert | ✅ |
 | 5 | Gegenfälle im empfohlenen Vertrag durchgehen | Regeln für `0`, `false`, `null`, fehlendes Feld, Kollision, wirksamen/manuellen Wert, Einheit und Betragswährung dokumentiert; keine Produktumsetzung behauptet | ✅ |
 | 6 | Empfehlung und offene Restarbeit unabhängig prüfen | Freigegebener Integrationsvorschlag und getrennt zugeschnittene Umsetzung; keine fälschlich behauptete Route oder Produktfreigabe | ➖ |
@@ -99,8 +105,28 @@ Untersuchung vom 2026-09-08 bleibt als Ausgangsbefund erhalten.
 **Doku-Abgleich:** README (One currency, Not there yet), ursprüngliche
 MVP-Spec (API, Datenmodell, Rebalancing, Nicht im MVP), Board und Projektregeln
 inventarisiert. Planungsstand und Links aktualisiert; Produktanleitungen
-behaupten keine implementierte Integration. Offene Antworten A/B und
-unabhängiger Review verhindern noch den Abschluss.
+behaupten keine implementierte Integration. Die Antworten A/B sind verarbeitet;
+unabhängiger Review und erforderliche Abschlussbestätigung bleiben offen.
+
+### Prüfstand vor der Bewertungsübergabe · 2026-09-10
+
+Die Projektprüfungen liefen im vorgefundenen Arbeitsbaum einschließlich der
+bereits vorhandenen fremden Produktänderungen. Die Übergabe selbst enthält
+ausschließlich die dokumentierte Bewertung, Projektregel und Ticketpflege;
+sie gibt jene Produktänderungen nicht frei.
+
+| Befehl im Projektverzeichnis | Ergebnis |
+|---|---|
+| `make test` | 39 Testdateien, 589 Tests bestanden; `/tmp/stockportfolio-t37-test.log` |
+| `make lint` | Exit 0; `/tmp/stockportfolio-t37-lint.log` |
+| `make typecheck` | Exit 0; `/tmp/stockportfolio-t37-typecheck.log` |
+| `git diff --check` | Keine Whitespace-Fehler |
+
+Der kopierbare Mapperaufruf im Integrationsvorschlag wurde ausgeführt. Die
+lokalen Links in acht betroffenen Dokumenten und die aktive Ticket-/Prioritäts-
+Zuordnung wurden geprüft. Browser und Live-API sind für diese Bewertung
+nicht als durchgeführt angegeben. Die neuen Darstellungsregeln sind
+Akzeptanzfälle der folgenden Umsetzung, keine bereits bestandenen UI-Tests.
 
 ### Regeln für die mögliche Projektion
 
@@ -141,6 +167,7 @@ gegebenenfalls ein verlinktes Umsetzungsticket.
 
 Offen. Der Integrationsvorschlag vom 2026-09-10 empfiehlt die bestehende
 Antwort mit Client-Normalisierung. Identitätsformen, Abrufwege, Metadaten und
-Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B bleiben
-unentschieden; deshalb noch kein vollständig abgestimmter Vorschlag.
-Keine unabhängige Freigabe und keine Implementierung.
+Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B sind
+entschieden: automatische Detailanzeige ohne Wiederholung tatsächlich in der
+Hauptzeile dargestellter Felder, einschließlich dynamischer Schlüssel.
+Keine unabhängige Freigabe und keine Implementierung; Review wird vorbereitet.

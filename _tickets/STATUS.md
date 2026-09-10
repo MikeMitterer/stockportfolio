@@ -15,7 +15,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `blocked`
+- `phase`: `implementing`
 - `ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
@@ -52,22 +52,26 @@ nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
 Reihenfolge: T-37 vor T-38. T-37 liefert zunächst den im Ticket beschriebenen
-Integrationsvorschlag; seine Feldentscheidungen bleiben bis zu Mikes Antwort
-offen. Für T-38 hat Mike am 2026-09-10 eine vom Nutzer konfigurierbare
+Integrationsvorschlag. Mike hat eine automatische Detailanzeige gewählt:
+Felder der tatsächlichen Hauptzeile einschließlich dynamischer Felder
+werden nicht wiederholt. Für T-38 hat Mike am 2026-09-10 eine vom Nutzer konfigurierbare
 Basiswährung **je Depot** festgelegt. Typische Wahl: EUR im Euroraum, USD in
-den USA; Hauptfall ist das Depot mit gewählter Währung. Der Umgang mit
-veralteten FX-Kursen bleibt offen. T-38 folgt mit Umrechnung. Die Abhängigkeit zu
+den USA; Hauptfall ist das Depot mit gewählter Währung. Veraltete FX-Kurse
+werden mit sichtbarer Warnung weiterverwendet. T-38 folgt mit Umrechnung. Die Abhängigkeit zu
 T-35 wird geprüft; damit ist T-35 nicht insgesamt aktiviert.
 
 Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. Bereits vorgefundene
 uncommittete Produktänderungen gehören nicht zu dieser Bewertungsübergabe.
 
-**Offener Entscheidungsbedarf:** Der technische Vorschlag zu T-37 liegt unter
-`docs/stockinfo-integration-proposal.md`. Für den Abschluss fehlen die im
-Ticket geforderten Antworten A/B: zusätzliche Kennzahlen und Auswahl gegenüber
-automatischer Zusatzanzeige. Die Fragen wurden im Codex-Chat gestellt.
-Bis dahin keine endgültige Feldauswahl, Produktimplementierung oder Übergabe
-als vollständig abgestimmter Vorschlag. Der Scheduler bleibt aktiv.
+Projektweite Entscheidung vom 2026-09-10: keine Migrationspfade zwischen
+StockPortfolio-Versionen. Einfach passende Daten übernehmen; inkompatible
+Entwicklungsdaten dürfen zurückgesetzt und neu angelegt werden. Maßgeblich
+ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
+
+**Aktueller Schritt:** Die Feldentscheidung ist im Vorschlag unter
+`docs/stockinfo-integration-proposal.md` verarbeitet. Die Bewertungsübergabe
+an den Reviewer wird vorbereitet; keine Produktimplementierung ist damit
+behauptet. Der Scheduler bleibt aktiv.
 
 ### Übernahmestand
 
@@ -83,8 +87,8 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-34](30-doing/T-34-einstellungen-fuers-aktualisieren.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #1–#4 und #6 offen. |
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
-| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Erste Bewertung liegt vor; seit 2026-09-10 zur Bearbeitung aktiviert, Umfangsentscheidungen A/B werden geklärt. |
-| [T-38](20-ready/T-38-basiswaehrung-und-devisenkurse.md) | Seit 2026-09-10 nach T-37 eingeplant; konfigurierbare Basiswährung je Depot entschieden, veraltete Kurse und notwendiger Währungsanteil aus T-35 werden geklärt. |
+| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Seit 2026-09-10 aktiviert; automatische Detailanzeige ohne Hauptzeilen-Dubletten entschieden, Bewertungsreview wird vorbereitet. |
+| [T-38](20-ready/T-38-basiswaehrung-und-devisenkurse.md) | Nach T-37 eingeplant; konfigurierbare Basiswährung je Depot und Weiterrechnen bei veralteten FX-Kursen mit Warnung entschieden. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten

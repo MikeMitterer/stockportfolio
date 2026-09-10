@@ -196,9 +196,15 @@ StockPortfolio ist Entwicklungsstand und wird bislang nur von Mike verwendet.
 Release 0.1.0 ist draußen; die Unraid-Vorlage lief nie auf einer echten Instanz,
 CORS gegen die produktive API ist ungeprüft.
 
-Migrationspfade, Kompatibilität und Ablösungshinweise brauchen konkreten Bedarf
-aus tatsächlich genutzten Daten, Installationen oder ausdrücklich benannten
-Verbrauchern. Keine Zusatzarbeit für hypothetische Verbreitung. Aktuelle
+**Keine Migrationspfade zwischen StockPortfolio-Versionen** (Mike, 2026-09-10).
+Was sich einfach übernehmen lässt, wird übernommen; der Rest darf neu angelegt
+werden. Keine Kompatibilitätsschichten oder aufwendige Datenüberführung allein
+zum Erhalten alter Entwicklungsstände. Persistenter Browserzustand darf zur
+Vereinfachung neuer Entwicklungen zurückgesetzt werden; neben localStorage
+liegen Depotdaten insbesondere in IndexedDB. Ein erforderlicher Reset wird als
+solcher beschrieben, statt eine verlustfreie Migration zu behaupten.
+
+Keine Zusatzarbeit für hypothetische Verbreitung. Aktuelle
 Dokumentation beschreibt den gültigen Stand direkt; verworfene
 Entwicklungsregeln brauchen keine Übergangshinweise. Prüfaufwand und
 Befundgewicht folgen dem belegten Schaden. Diese Einordnung gilt, bis Mike einen

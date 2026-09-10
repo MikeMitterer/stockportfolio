@@ -24,8 +24,8 @@ auf ein Depot, das kleiner ist als seines.
 Alterskennzeichnung, ohne die ein stiller alter Kurs jede Prozentzahl dieser App
 verzerren würde. StockPortfolio ruft den Endpunkt bis heute nicht auf.
 
-Die zweite Hälfte des Problems ist damit **nicht** gelöst: Welche Notierung
-eines Papiers man bekommt, wählt man nicht pro Abfrage. StockInfo führt genau
+Die Wahl der Notierung ist ein eigener Vorgang. Welche Notierung eines
+Papiers man bekommt, wählt man nicht pro Abfrage. StockInfo führt genau
 ein aktives Listing je ISIN; Börse und Währung entscheiden sich bei der Aufnahme
 über `POST /instruments/intake` mit `check_exchange` und `confirmed_listing`.
 Einen `?currency=`- oder `?exchange=`-Parameter am Quote-Endpunkt gibt es nicht.
@@ -38,13 +38,13 @@ anderer Vorgang und bleibt bei StockInfo.
 
 ## Für dich
 
-Die Basiswährung je Depot ist entschieden. Offen sind der Umgang mit
-veralteten Devisenkursen und der Zuschnitt der Umsetzung. Dafür ist noch kein
-manueller Test nötig.
+Entschieden sind die Basiswährung je Depot und das Weiterrechnen bei
+veralteten Devisenkursen mit sichtbarer Warnung. Die technische Umsetzung
+wird als zusammenhängende Funktion geplant; Teilaufgaben erhalten getrennte
+Prüfpunkte.
 
 | Frage | Deine Entscheidung |
 |---|---|
-| B · Wie soll ein veralteter Devisenkurs (`stale: true`) wirken — Summe mit sichtbarer Warnung, oder Position wie heute ausschließen? | |
 | C · Groß genug zum Aufteilen? Naheliegender Schnitt: (1) `/fx` anbinden und umrechnen, (2) Basiswährung konfigurierbar machen. | |
 
 ### Bisherige Antworten
@@ -55,6 +55,18 @@ Damit gehört die Wahl zum jeweiligen Depot. Eine einzige globale Einstellung
 für alle Depots würde diesen Auftrag nicht erfüllen. Die Notierungswährung
 der Wertpapiere bleibt erhalten; die Bewertung wird in die Depotwährung
 umgerechnet.
+
+**B · Veralteter Devisenkurs — Mike, 2026-09-10:** „Weiterrechnen mit sichtbarer Warnung“.
+
+Ein verwendbarer, aber als `stale` gekennzeichneter FX-Kurs bleibt Grundlage
+der Umrechnung. Die Warnung nennt betroffene Währungspaare und den Kursstand.
+Ein fehlender oder ungültiger FX-Kurs ist weiterhin kein verwendbarer Kurs.
+
+**Bedienort — Mike, 2026-09-10:** „Wählbar - allerdings frage ich mich ob das ein UI-Setting ist oder ein .env-Setting“.
+
+Entwurfsentscheidung: UI-Einstellung am jeweiligen Depot, bei der
+Depotanlage mit Vorgabe EUR. Speicherung und Export führen die Depotwährung
+mit. Eine installationsweite Einstellung wäre keine Wahl je Depot.
 
 **Präzisierung — Mike, 2026-09-10:** „Annahme für die Währung ist, dass ein User aus Europa als Basiswährung EUR wählt und ein User aus den USA USD - du kannst du Annahmen nochmal gegenprüfen“.
 
@@ -79,7 +91,7 @@ Status: am 2026-09-10 nach T-37 eingeplant. Repo: StockPortfolio, betroffene
 Fremdschnittstelle: StockInfo. Zeitbudget noch nicht geschätzt.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
-Die Basiswährung je Depot ist geklärt; die Antwort zu veralteten Kursen steht aus.
+Basiswährung je Depot und Umgang mit veralteten Kursen sind geklärt.
 
 **Hängt an [T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md).** Solange eine
 fehlende Kurswährung als EUR geraten wird, kann keine Umrechnung stimmen; T-35
@@ -108,11 +120,12 @@ Vorprüfung vom 2026-09-10, noch keine Umsetzung:
 - `Portfolio` benötigt die Basiswährung als eigenes Feld; `Settings.currency`
   ist heute global und fest auf EUR typisiert. Depotanlage, Depotwechsel,
   Persistenz sowie Export/Import müssen die neue Angabe erhalten.
-- Die bisherigen Depots und gespeicherten Beträge waren EUR. Ein Wechsel der
-  Basiswährung darf bestehendes Cash, absolute Grenzbeträge und Tageswerte
-  nicht bloß mit einem anderen Währungssymbol versehen. Ihre Ursprungswährung
-  muss bekannt bleiben oder beim ausdrücklich ausgeführten Wechsel korrekt
-  umgerechnet werden. Die konkrete Bedienung wird im Entwurf festgelegt.
+- Für alte StockPortfolio-Versionen wird kein Migrationspfad gebaut
+  (Mike, 2026-09-10, siehe `AGENTS.md`). Einfache Übernahmen sind zulässig;
+  inkompatible Depots, Einstellungen oder Tageswerte dürfen zurückgesetzt
+  und neu angelegt werden. Eine Basiswährungsänderung innerhalb der neuen
+  Funktion darf Beträge dennoch nicht unbemerkt umetikettieren. Eine einfache
+  Neueinrichtung ist einer aufwendigen automatischen Überführung vorzuziehen.
 - Umrechnungsrichtung: `GET /fx?base=USD&quote=CAD` liefert CAD je USD.
   Ein USD-Marktwert wird mit diesem Kurs multipliziert. Die originale Quote
   bleibt in USD; Summen, Bänder, Liquidität, Stückvorschläge und der

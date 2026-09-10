@@ -8,9 +8,10 @@ ihre ISIN innerhalb von `identity`, während der Client sie oben liest.
 
 Stand: 2026-09-10. Dies ist der Integrationsvorschlag zu
 [T-37](../_tickets/30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
-keine bereits verfügbare Funktion. **Offen bleiben Mikes Feldbedarf und die
-Wahl zwischen ausgewählten Feldern und automatischer Zusatzanzeige.**
-Unabhängiger Review und Produktumsetzung stehen aus.
+keine bereits verfügbare Funktion. **Mike hat die automatische Zusatzanzeige
+in der Detailansicht gewählt.** Bereits in der Haupt-Info-Zeile dargestellte
+Felder werden dort nicht wiederholt; auch dynamische Felder können zur
+Hauptzeile gehören. Unabhängiger Review und Produktumsetzung stehen aus.
 
 ## Der aktuelle Vertrag
 
@@ -41,13 +42,14 @@ Instrumentkatalog; der Quote-Vertrag sagt sie ausdrücklich nicht zu. Sie darf
 weder aus einem Symbol berechnet noch als neues Quote-Pflichtfeld verlangt
 werden.
 
-Die bestehenden Depotpositionen, Auswahllisten und Cacheeinträge verwenden
-ISIN beziehungsweise Symbol. Für vorhandene ISIN-Positionen lässt sich die
-Zuordnung nach Normalisierung erhalten. Bei reinen Symbolpositionen muss ein
+Die bisherigen Depotpositionen, Auswahllisten und Cacheeinträge verwenden
+ISIN beziehungsweise Symbol. Nach Normalisierung kann diese einfache
+Zuordnung weiterverwendet werden. Bei reinen Symbolpositionen muss ein
 mehrdeutiger Abruf als `409` sichtbar bleiben; keinesfalls den ersten
-Katalogtreffer verwenden. Ein späterer Wechsel zu Listing-Schlüsseln braucht
-eine eigene Zuordnung der gespeicherten Positionen und ist kein beiläufiges
-Umbenennen des Cache-Schlüssels.
+Katalogtreffer verwenden. Ein späterer Wechsel zu Listing-Schlüsseln muss
+die neuen Daten eindeutig zuordnen. Für alte Entwicklungsstände ist kein
+Migrationspfad erforderlich: Einfach passende Daten können bleiben,
+inkompatible Positionen und Auswahllisten dürfen neu angelegt werden.
 
 ### Alle Verbraucher an derselben Grenze versorgen
 
@@ -71,20 +73,40 @@ Der Quote-Cache speichert die feste `QuoteCacheEntry`-Form in IndexedDB.
 Zusätzliche Felder müssen beim normalen Abruf, Einzelrefresh, Speichern und
 erneuten Laden erhalten bleiben. Bereits gespeicherte Einträge ohne Details
 bedeuten „noch nicht geladen“, nicht „StockInfo liefert keine Zusatzfelder“.
-Depot, Stückzahlen und Ziele werden dafür nicht gelöscht.
+Nach Mikes allgemeiner Projektregel vom 2026-09-10 wird kein Versionswechsel
+mit einer aufwendigen Migration abgesichert. Ein inkompatibler Cache darf
+neu aufgebaut werden; unpassende Entwicklungsdaten dürfen zurückgesetzt
+werden. Das korrekte Speichern und Laden des neuen Formats bleibt prüfpflichtig.
 
-## Zwei mögliche Umfänge für Zusatzfelder
+## Gewählt: automatische Zusatzanzeige in der Detailansicht
 
-**Ausgewählte Kennzahlen** passen zu einer konkreten fachlichen Verwendung.
-Jede bekommt einen benannten Anwendungsfall und einen geprüften Typ samt
-Einheit. Eine Zahl wird erst dann Bestandteil einer Berechnung, wenn Bedeutung
-und Maßstab feststehen. Bisher hat Mike keine zusätzlichen Felder benannt.
-
-**Automatische Zusatzanzeige** kann neue Plugin-Felder ohne Frontend-Release
-sichtbar machen. Dafür werden `details` und der Katalog aus `/fields` gemeinsam
-verwendet. Nur für Instrumenttyp und Identitätsform anwendbare Definitionen
-werden angeboten. Anzeige ist dabei keine automatische Nutzung in Summen,
+Neue Plugin-Felder sollen ohne feste Frontend-Feldliste sichtbar werden.
+Dafür werden `details` und der Katalog aus `/fields` gemeinsam verwendet.
+Nur für Instrumenttyp und Identitätsform anwendbare Definitionen werden
+angeboten. Anzeige ist dabei keine automatische Nutzung in Summen,
 Risikorechnung oder Rebalancing.
+
+**Die Hauptzeile bestimmt, was schon sichtbar ist.** Die Darstellung der
+Hauptzeile liefert für die jeweilige Position die kanonischen Feldschlüssel
+der dort tatsächlich angezeigten Informationen. Die Detailansicht zeigt die
+verbleibenden gültigen, anwendbaren Detailfelder. Dieser Abgleich arbeitet mit
+Feldnamen wie `risk-demo.score`, nicht mit übersetzten Beschriftungen oder
+einer fest codierten Liste der heutigen Core-Felder.
+
+Heutiger Einstieg ist `PositionsTable.vue`: Die Spaltendefinitionen erzeugen
+die Hauptzeile und reichen den Kontext beim Aufklappen an
+`PositionDrilldown.vue` weiter. Für spätere dynamische Spalten beschreibt
+dieselbe Spaltenkonfiguration auch deren Feldschlüssel. Es entsteht keine
+zweite, separat gepflegte Ausschlussliste. Ein allgemeiner Spalteneditor ist
+damit nicht beauftragt.
+
+Ein dynamisches `risk-demo.score` erscheint in den Details, solange es nicht
+in der Hauptzeile dargestellt wird. Kommt es dort hinzu, verschwindet die
+zusätzliche Wiederholung. Wird es dort wieder entfernt, steht es erneut im
+Detailbereich. Eine ausgeblendete oder für diese Position nicht dargestellte
+Spalte schließt das Feld nicht aus. Zwei gleich beschriftete Felder aus
+verschiedenen Plugins bleiben getrennt. Diese Fälle gehören in die späteren
+Darstellungstests.
 
 Bei einer generischen Anzeige ist folgende Behandlung vorgesehen: Eine
 Definition liefert `kind`, Beschriftungen, Einheit und Anwendbarkeit; der
@@ -152,8 +174,13 @@ nicht erneut. Im Beispiel wird deshalb **0** angezeigt. Die verdeckte manuelle
 
 Die vorhandenen kanonischen Kennzahlen `ter`, `volatility` und `accumulating`
 bleiben ihre bekannten Domain-Felder. Eine generische Zusatzliste darf sie
-nicht unbeabsichtigt doppelt anzeigen. Für jede neu in Berechnungen verwendete
-Kennzahl gehören Typ, Einheit und Zahlenmaßstab in einen eigenen Prüffall.
+nicht zusätzlich zu einer bereits vorhandenen Darstellung wiederholen.
+Die bestehenden festen Detailzellen, etwa für TER und Volatilität, werden
+deshalb in die gemeinsame Felddarstellung einbezogen; eine zweite Liste
+daneben wäre eine weitere Quelle für Dubletten. Auch ihr Ausschluss aus den
+Details folgt der tatsächlichen Hauptzeile. Für jede später neu in
+Berechnungen verwendete Kennzahl gehören Typ, Einheit und Zahlenmaßstab in
+einen eigenen Prüffall.
 
 ## Vergleich mit einer flachen Serverroute
 
@@ -176,10 +203,13 @@ begründet. T-37 beauftragt keine Änderung in StockInfo.
    normalisieren, ISIN- und Symbolwege einschließlich Refresh, Auswahl,
    Auswahllisten und Cache-Zuordnung gemeinsam prüfen. Fehlende Pflichtfelder
    dürfen keine scheinbar gültigen Werte erzeugen.
-2. **Gewählte Zusatzfelder integrieren:** abhängig von Mikes Entscheidung
-   explizite Kennzahlen oder eine Zusatzanzeige mit Feldkatalog. Werte samt
-   Metadaten speichern; Ausfall des Katalogs darf gültige Core-Kurse nicht
-   unbrauchbar machen.
+2. **Automatische Detailanzeige integrieren:** Feldkatalog und Detailwerte
+   zusammenführen, bereits in der Hauptzeile dargestellte Feldschlüssel
+   einschließlich dynamischer Spalten ausschließen. Werte samt Metadaten
+   speichern; Ausfall des Katalogs darf gültige Core-Kurse nicht unbrauchbar
+   machen. Prüffälle: neue Felder ohne Frontendänderung, dieselbe Kennzahl
+   in Hauptzeile/Details nur einmal, dynamische Spalte hinzufügen/entfernen,
+   gleiche Labels bei verschiedenen Schlüsseln und `0`/`false`.
 
 Die Währungskorrektur aus T-35 ist Voraussetzung für T-38. Sie betrifft Quote,
 Katalog und Detaildiagramm; insbesondere ist `instrument.currency` kein
@@ -204,8 +234,8 @@ Katalogkurs ohne `latest_currency` übernahm die Instrumentwährung USD.
 
 Diese Gegenprobe belegt das heutige Mapperverhalten. Die Regeln und der
 Umsetzungszuschnitt oben sind ein Vorschlag, kein bestandener Integrationstest.
-Es gab keinen Live-Kursabruf und keinen Browserlauf. Die Feldauswahl und der
-unabhängige Review sind offen.
+Es gab keinen Live-Kursabruf und keinen Browserlauf. Der Feldbedarf ist durch
+Mikes Antwort festgelegt; der unabhängige Review ist offen.
 
 Die Mapperprobe lässt sich im StockPortfolio-Projektverzeichnis ausführen.
 Sie benötigt die installierte TypeScript-Abhängigkeit und für diesen lokalen
