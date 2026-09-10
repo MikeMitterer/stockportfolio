@@ -119,6 +119,9 @@ mit derselben Kennung parallel starten.
 3. Die betroffenen Inhalte nach dem Abschnitt [Observer](AGENT-WORKFLOW.md#observer)
    lesen. Beobachtungen mit Fassung, Beleg, Auswirkung und Vorschlag nur im
    eigenen Chat melden; bekannte unveränderte Hinweise nicht wiederholen.
+   Belegte Fehlermuster nach dem dort beschriebenen Auftrag direkt in der
+   passenden Lessons-Datei erfassen, konkrete Vorbeugungsregeln für Implementer
+   und Gegenproben für Verifier formulieren und die Ergänzung im Chat nennen.
 4. Den zuletzt beobachteten Stand und gemeldete Hinweise im eigenen Chatkontext
    behalten. Keine Mailbox oder Produktdatei als Observer beschreiben.
 

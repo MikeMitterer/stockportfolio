@@ -1,0 +1,251 @@
+# T-37 · StockInfo-Vertrag und zusätzliche Kennzahlen für StockPortfolio klären
+
+StockPortfolio soll die **aktuelle StockInfo-Antwort korrekt verstehen** und
+gewünschte zusätzliche Plugin-Kennzahlen nutzen können. Der heutige Client
+basiert noch auf einem älteren Vertrag und übernimmt nur eine feste Feldliste.
+
+Beispiel: StockInfo liefert einen zusätzlichen Risikoscore als
+`details["risk-demo.score"].value`. StockPortfolio verwirft ihn im Mapper.
+Auch ein flaches Feld `"risk-demo.score": 7` würde dort derzeit nicht übernommen.
+
+Daneben erwartet der Mapper `isin` auf oberster Ebene. Im aktuellen
+StockInfo-Vertrag liegt eine ISIN innerhalb der passenden `identity`-Form.
+Eine neue Route für flache Details allein würde diese Lücke nicht beheben.
+
+Der [aktualisierte Integrationsvorschlag](../../docs/stockinfo-integration-proposal.md)
+liegt vor. Empfehlung: bestehende Antworten im Client normalisieren; eine neue
+flache Route ist für den belegten Bedarf nicht nötig. Dieses Ticket konkretisiert den benötigten
+Konsumentenvertrag und entscheidet, ob eine zusätzliche serverseitige
+Leseansicht sinnvoll ist. Noch keine Implementierung, keine Live-Abnahme.
+
+## Für dich
+
+**Entschieden: zusätzliche Plugin-Felder automatisch in der Detailansicht
+anzeigen.** Felder, die bereits in der aktuellen Haupt-Info-Zeile erscheinen,
+werden dort nicht wiederholt. Die Hauptzeile kann selbst dynamische Felder
+enthalten; entscheidend sind die tatsächlich dargestellten Feldschlüssel.
+
+### Bisherige Antworten
+
+**A/B · Feldbedarf und Anzeige — Mike, 2026-09-10:**
+
+> Ja, in der Detail-View wenn sie nicht sowieso Teil der aktuellen "Haupt-Info-Zeile" sein - theoretisch könnten das auch teilweise dynamische Felder sein, berücksichtige das
+
+Der Bedarf ist eine generische Anzeige, keine feste Wunschliste zusätzlicher
+Berechnungsfelder. Neue Kennzahlen ändern dadurch keine Portfolioformeln.
+
+Für die Bewertung ist kein manueller REST- oder Browser-Test erforderlich.
+Der unabhängige Reviewer prüft den Integrationsvorschlag gegen Vertrag und
+belegte Anforderungen.
+
+### Bisheriger Auftrag
+
+Mike, 2026-09-08: „Kannst du die Bewertung als Ticket in StockPortfolio definieren“.
+
+Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
+T-37 wurde damit vor T-38 zur Bewertung aktiviert. Die Feldentscheidungen sind
+oben dokumentiert und in den Integrationsvorschlag übernommen.
+
+## Umsetzung und technische Nachweise
+
+### Ergebnis und Grenzen
+
+Ergebnis dieses Tickets ist ein abgestimmter, prüfbarer Integrationsvorschlag:
+aktueller Identitätsvertrag, benötigte Zusatzfelder, Umgang mit Metadaten und
+Entscheidung zwischen bestehender Antwort mit Client-Normalisierung oder
+zusätzlicher StockInfo-Projektionsroute. Die Umsetzung wird danach gesondert
+zugeschnitten; keine neue Route allein durch dieses Ticket beauftragt.
+
+Repo: StockPortfolio. Betroffene Fremdschnittstelle: StockInfo.
+Zeitbudget: nicht beziffert. Status: Bewertung technisch freigegeben und
+am 2026-09-10 durch Mike abgeschlossen. Umsetzung folgt in T-39 und T-40.
+
+### Vorliegende Befunde
+
+- Bekannte Felder `ter`, `volatility` und `accumulating` liefert StockInfo
+  weiterhin auf oberster Ebene. Der Portfolio-Mapper übernimmt diese Werte.
+- `toQuoteCacheEntry` und `QuoteCacheEntry` bilden keine beliebigen Details ab.
+  Der API-Client lädt keinen Feldkatalog über `/fields`.
+- Der Quote-Store verwendet vier Wege: normale Abfrage und erzwungener Refresh,
+  jeweils per ISIN oder Symbol. Zusätzlich verwenden Katalog und UI
+  `GET /instruments`. Nur einen GET-Endpunkt umzustellen genügt nicht.
+- Eine isolierte Ausführung des echten transpilierten Mappers mit einer
+  synthetischen Antwort im aktuellen Identitätsformat liefert
+  `isin === undefined`. Ein zusätzliches Plugin-Feld bleibt sowohl als
+  Detailobjekt als auch auf oberster Ebene unberücksichtigt.
+
+Die erste Untersuchung inventarisierte 69 TypeScript-/Vue-Quelldateien mit
+Compiler-API und SFC-Parser. Kein Live-Kursabruf, Browserlauf oder vollständiger
+Integrationstest. Die Befunde gelten für die am 2026-09-08 gelesenen lokalen
+Arbeitsstände und müssen vor Umsetzung gegen den dann gültigen Vertrag geprüft
+werden. Vorhandene fremde Änderungen wurden nicht verändert.
+
+### Verify · einzige aktuelle Matrix
+
+Legende: ✅ Bewertungsprüfung ausgeführt · ◑ teilweise belegt · ➖ noch nicht nachgewiesen.
+Die Matrix bewertet den Abschluss dieser Bewertung, nicht eine bereits
+implementierte Integration. Menschliche Entscheidungen stehen oben.
+
+| # | Prüfung / Handgriff | Erwarteter Nachweis | AI |
+|---|---|---|:--:|
+| 1 | Aktuelle StockInfo-Antwortmodelle und Portfolio-Mapper gegenüberstellen; synthetische Antworten durch den echten Mapper schicken | Alle drei Identitätsformen und `listed` ohne ISIN geprüft; Quote- und Katalogmapper liefern jeweils `undefined`. Zielzuordnung und Grenzen im Vorschlag dokumentiert | ✅ |
+| 2 | Antworten von Quote, Refresh und Instrumentkatalog bis Cache und UI verfolgen | Vier Quote-/Refreshwege, Katalog, Auswahl, Cache und Hauptzeile/Detailansicht am Quellcode zugeordnet; keine Live-Ende-zu-Ende-Prüfung | ✅ |
+| 3 | Mikes Antworten A/B in konkrete Felder und Anwendungsfälle übersetzen | Automatische Detailanzeige; tatsächliche Hauptzeilen-Feldschlüssel einschließlich dynamischer Felder ausschließen; Anzeige ohne neue Berechnungen und Cacheanforderungen im Vorschlag festgelegt | ✅ |
+| 4 | Verschachtelte Antwort plus Mapper mit zusätzlicher flacher Route vergleichen | Vergleich und Empfehlung samt synthetischem Antwortausschnitt, vier Quote-/Refreshwegen und direkt konsumiertem Katalog dokumentiert | ✅ |
+| 5 | Gegenfälle im empfohlenen Vertrag durchgehen | Regeln für `0`, `false`, `null`, fehlendes Feld, Kollision, wirksamen/manuellen Wert, Einheit und Betragswährung dokumentiert; keine Produktumsetzung behauptet | ✅ |
+| 6 | Empfehlung und offene Restarbeit unabhängig prüfen | Fassung `2e4c378` unabhängig geprüft: Mapperprobe nachgestellt, Vertrags- und Verbraucherzuordnung am Quellcode gegengeprüft, Prüflauf wiederholt. Keine fälschlich behauptete Route, Implementierung oder Produktfreigabe | ✅ |
+
+**Nachweise 2026-09-10:**
+[Integrationsvorschlag](../../docs/stockinfo-integration-proposal.md), Abschnitte
+„Der aktuelle Vertrag“, „Werte und Metadaten zusammenhalten“, „Vergleich mit
+einer flachen Serverroute“ und „Was tatsächlich geprüft wurde“. `✅` bezeichnet
+hier die ausgeführte Bewertungsprüfung, keine Live-Integration. Die frühere
+Untersuchung vom 2026-09-08 bleibt als Ausgangsbefund erhalten.
+
+**Doku-Abgleich:** README (One currency, Not there yet), ursprüngliche
+MVP-Spec (API, Datenmodell, Rebalancing, Nicht im MVP), Board und Projektregeln
+inventarisiert. Planungsstand und Links aktualisiert; Produktanleitungen
+behaupten keine implementierte Integration. Die Antworten A/B sind verarbeitet;
+unabhängiger Review und Mikes Abschlussbestätigung liegen vor.
+
+### Prüfstand vor der Bewertungsübergabe · 2026-09-10
+
+Die Projektprüfungen liefen im vorgefundenen Arbeitsbaum einschließlich der
+bereits vorhandenen fremden Produktänderungen. Die Übergabe selbst enthält
+ausschließlich die dokumentierte Bewertung, Projektregel und Ticketpflege;
+sie gibt jene Produktänderungen nicht frei.
+
+| Befehl im Projektverzeichnis | Ergebnis |
+|---|---|
+| `make test` | 39 Testdateien, 589 Tests bestanden; `/tmp/stockportfolio-t37-test.log` |
+| `make lint` | Exit 0; `/tmp/stockportfolio-t37-lint.log` |
+| `make typecheck` | Exit 0; `/tmp/stockportfolio-t37-typecheck.log` |
+| `git diff --check` | Keine Whitespace-Fehler |
+
+Der kopierbare Mapperaufruf im Integrationsvorschlag wurde ausgeführt. Die
+lokalen Links in acht betroffenen Dokumenten und die aktive Ticket-/Prioritäts-
+Zuordnung wurden geprüft. Browser und Live-API sind für diese Bewertung
+nicht als durchgeführt angegeben. Die neuen Darstellungsregeln sind
+Akzeptanzfälle der folgenden Umsetzung, keine bereits bestandenen UI-Tests.
+
+### Regeln für die mögliche Projektion
+
+Nur die bereits wirksamen Werte aus dem vorhandenen Quote-/Cache-Service
+projizieren; keine zweite Beschaffungs- oder Vorranglogik. Qualifizierte
+Plugin-Namen erhalten, Core-Felder nicht überschreiben. Typen, Einheiten und
+wertabhängige Währungen dürfen nicht verloren gehen. Für generische Darstellung
+bleibt der Feldkatalog relevant. Dynamische Schlüssel werden durch Abflachen
+nicht zu statisch garantierten OpenAPI-Feldern.
+
+### Einstieg in die betroffenen Dateien
+
+- [API-Client](../../src/api/client.ts) und [API-Typen](../../src/api/types.ts)
+- [Mapper](../../src/api/mappers.ts) und [Cachetypen](../../src/types/portfolio.ts)
+- [Quote-Store](../../src/stores/quotes.ts) und [Instrument-Store](../../src/stores/instruments.ts)
+- [Instrumentliste](../../src/views/InstrumentsView.vue) und [Positionsdetail](../../src/components/PositionDrilldown.vue)
+- [Ausführliche Ausgangsbewertung in StockInfo](../../../StockInfo/docs/stockportfolio-quote-projection-review.md)
+
+Die Ausgangsbewertung liefert Belege, ist keine zweite gepflegte Ticketkopie.
+Die weitere Entscheidung und ihr Stand werden hier festgehalten.
+
+### Abgrenzung zu T-35
+
+Die Umsetzung des bewerteten Vertrags liegt in
+[T-39](../30-doing/T-39-identitaet-normalisieren.md) und
+[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), danach folgt
+[T-38](../30-doing/T-38-basiswaehrung-und-devisenkurse.md). T-39 übernimmt die gemeinsame
+Pflichtfeldprüfung einschließlich Kurswährung aus
+[T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md).
+T-40 zeigt Originalwerte; T-38 ergänzt Depotbewertung und FX-Umrechnung.
+Die Generationserkennung verbleibt in T-35.
+
+**Fortschreibung nach Review · 2026-09-10:** Mike hat im Observer-Chat die
+Abgrenzung dieser Überschneidungen beauftragt. Tickets, Integrationsvorschlag,
+STATUS und Übersichten wurden abgeglichen. Das unten dokumentierte Urteil
+bleibt auf Fassung `2e4c378` bezogen; es gibt keine Produktfreigabe für die
+hier zugeordneten Umsetzungstickets.
+
+### Side-Effects
+
+Nur Bewertungs- und Dokumentationsauftrag. Keine API-Umschaltung, Cachemigration,
+Änderung von Portfolio-Daten oder Produktimplementierung. Eine spätere Änderung
+muss vorhandene IndexedDB-Caches, ISIN-/Symbolzuordnung und alle Refresh-Wege
+berücksichtigen. Zusätzliche StockInfo-Arbeit erhält nach der Entscheidung
+gegebenenfalls ein verlinktes Umsetzungsticket.
+
+### Review Runde 1 · Verifier `claude` · 2026-09-10
+
+Geprüfte Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5` gegen Ausgangsstand
+`987894c`. **Urteil: technisch freigegeben (`approved`).** Kein Befund, der
+Nacharbeit erfordert. Die Freigabe betrifft die Bewertung, nicht eine
+Implementierung; Mikes Abschlussbestätigung stand zum Reviewzeitpunkt aus
+und ist unten unter „Auflösung“ dokumentiert.
+
+Unabhängig nachgestellt, nicht aus der Übergabe übernommen:
+
+- **Die Mapperprobe wurde selbst ausgeführt.** Ergebnis identisch zur
+  Darstellung im Vorschlag: `isin === undefined` für `listed`, `listed` ohne
+  ISIN, `pair` und `isin_only`, in Quote- **und** Katalogmapper; Detailwerte
+  `0`, `false`, `null`, `7` gehen verschachtelt wie flach verloren; Quote ohne
+  Währung wird EUR, Katalogkurs ohne `latest_currency` übernimmt `USD`;
+  `ter: 0` und `accumulating: false` überleben. `src/api/mappers.ts` trägt die
+  im Vorschlag genannte SHA-256 `d82421b3…3b9fbaaa` und ist gegenüber HEAD
+  unverändert.
+- **Der Vertragsstand stimmt.** StockInfo `778e449296e92bb46c0b430d9f0f9365442bf4b6`,
+  `core_version 4.3.0`; `listing_id` kommt im Quote-Vertrag tatsächlich nicht
+  vor; `/fields` steht unter `contract_endpoints` und liefert laut
+  `app/routers/fields.py` `generation_id`, `core_version` und `details_version`.
+  Die im Vorschlag als unverändert bezeichneten Vertrags- und Produktdateien
+  sind im StockInfo-Arbeitsbaum tatsächlich sauber.
+- **Der synthetische Detailausschnitt ist vertragstreu.** `app/detail_models.py`
+  führt `value`, `unit`, `currency`, `origin`, `source`, `as_of`, `shadowed`,
+  `manual_value`, `manual_currency`; `app/details.py` bestätigt mit
+  `effective = provider if has_provider else manual` und
+  `shadowed = has_provider and has_manual` die beschriebene Rangfolge. Die
+  angezeigte `0` bei verdeckter manueller `7` ist damit korrekt hergeleitet.
+- **Die Verbraucherzuordnung trifft zu.** Vier Quote-/Refreshwege liegen in
+  `src/stores/quotes.ts:372-376`; `AddPositionDialog.vue` liest `instrument.isin`
+  für Auswahlschlüssel *und* Dublettenprüfung, `InstrumentsView.vue` und
+  `DashboardView.vue` ebenfalls direkt; der Instrument-Store hält die rohe
+  `InstrumentSummary[]`; `PositionsTable.vue` erzeugt die Hauptzeile aus
+  `columns` und reicht über `renderExpand` an `PositionDrilldown.vue` weiter,
+  wo TER und Volatilität heute feste Zellen sind.
+- **Prüflauf wiederholt:** `make test` 39 Dateien / 589 Tests bestanden,
+  `make lint` und `make typecheck` Exit 0 — dieselben Zahlen wie in der
+  Übergabe. Der Lauf fand wie beim Coder im vorgefundenen Arbeitsbaum samt
+  fremder Produktänderungen statt und sagt daher nichts über diese fremden
+  Änderungen aus; der übergebene Diff enthält keinen Produktcode. In den sechs
+  geänderten Dokumenten ist kein lokaler Verweis tot.
+
+Zwei Hinweise ohne Nacharbeitsbedarf, gedacht für den Umsetzungszuschnitt:
+
+- **`details_version` steht heute auf `0`,** und `/fields` bezieht die
+  Definitionen über `repository.detail_catalog()` aus der Datenbank, nicht aus
+  dem Vertragsartefakt. Ohne installierte Plugin-Definition bleibt die generische
+  Zusatzliste leer. Der erste Darstellungstest braucht deshalb eine Instanz mit
+  mindestens einer Detaildefinition, sonst prüft er nichts.
+- **Die Übergabe enthält neben T-37 auch Einplanung und Ausarbeitung von T-38.**
+  Gedeckt durch Mikes im Ticket zitierte Aufträge und in STATUS als
+  Prioritätskette dokumentiert; aktiv bleibt T-37. Festgehalten, weil der
+  Reviewumfang damit über das aktive Ticket hinausreicht.
+
+Ausdrücklich gegengeprüft, weil es das belegte Fehlermuster des Autors ist
+([CODEX-LESSONS](../.agents/CODEX-LESSONS.md)): Der Vorschlag baut *weniger*
+statt mehr — er rät von einer neuen Serverroute ab, beauftragt keine Änderung
+in StockInfo und schließt einen allgemeinen Spalteneditor ausdrücklich aus.
+
+### Auflösung
+
+**Abgeschlossen am 2026-09-10.** Mike: „T-37 ist damit erledigt“.
+
+Der Integrationsvorschlag vom 2026-09-10 empfiehlt die bestehende
+Antwort mit Client-Normalisierung. Identitätsformen, Abrufwege, Metadaten und
+Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B sind
+entschieden: automatische Detailanzeige ohne Wiederholung tatsächlich in der
+Hauptzeile dargestellter Felder, einschließlich dynamischer Schlüssel.
+
+Bewertungsreview Runde 1 durch `claude` an Fassung
+`2e4c378ae49ffe147b55673101fdf4ed078ebed5` abgeschlossen: technisch
+freigegeben, keine Nacharbeit. Mit Mikes Bestätigung ist der Bewertungsauftrag
+abgeschlossen. Die gesonderte Produktumsetzung liegt in T-39 und T-40;
+ihre Prüfungen und Abnahmen bleiben offen.

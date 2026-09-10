@@ -64,11 +64,18 @@ Projekts.
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
   dasselbe. Damit lassen sich Mapper prüfen, ohne StockInfo zu starten.
-  StockPortfolio nutzt das bisher **nicht**; die Bewertung steht in
-  [T-37](_tickets/10-backlog/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
+  StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
+  `src/api/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
+  unter `tests/fixtures/stockinfo/`. Die Bewertung steht in
+  [T-37](_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
   Generation und Währung in
   [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
-  Beide sind nicht zur Umsetzung eingeplant.
+  T-37 ist als Bewertung abgeschlossen. T-39 normalisiert Identität und prüft
+  Kurs-Pflichtfelder einschließlich Währung; eine neue Depotposition setzt
+  einen erfolgreichen eindeutigen Kursabruf voraus. T-40 ergänzt `/fields`,
+  persistierte Detailwerte und die dynamische Detailanzeige. Sichtbare Spalten
+  liefern ihre Feldschlüssel für den Dublettenabgleich. Der
+  Generationsauftrag aus T-35 bleibt im Backlog.
 
 Lokal gegen den Dienst entwickeln — im StockInfo-Repo das Backend starten, hier
 den Dev-Server:
@@ -99,7 +106,7 @@ Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
 - [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
 - [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
 - [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
-- [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor der Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide.
+- [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
 
 **Das Board hier ist der neuere Stand, nicht die Kopie aus StockInfo.**
 Die Struktur wurde am 2026-09-10 von dort übernommen und seither
@@ -196,9 +203,15 @@ StockPortfolio ist Entwicklungsstand und wird bislang nur von Mike verwendet.
 Release 0.1.0 ist draußen; die Unraid-Vorlage lief nie auf einer echten Instanz,
 CORS gegen die produktive API ist ungeprüft.
 
-Migrationspfade, Kompatibilität und Ablösungshinweise brauchen konkreten Bedarf
-aus tatsächlich genutzten Daten, Installationen oder ausdrücklich benannten
-Verbrauchern. Keine Zusatzarbeit für hypothetische Verbreitung. Aktuelle
+**Keine Migrationspfade zwischen StockPortfolio-Versionen** (Mike, 2026-09-10).
+Was sich einfach übernehmen lässt, wird übernommen; der Rest darf neu angelegt
+werden. Keine Kompatibilitätsschichten oder aufwendige Datenüberführung allein
+zum Erhalten alter Entwicklungsstände. Persistenter Browserzustand darf zur
+Vereinfachung neuer Entwicklungen zurückgesetzt werden; neben localStorage
+liegen Depotdaten insbesondere in IndexedDB. Ein erforderlicher Reset wird als
+solcher beschrieben, statt eine verlustfreie Migration zu behaupten.
+
+Keine Zusatzarbeit für hypothetische Verbreitung. Aktuelle
 Dokumentation beschreibt den gültigen Stand direkt; verworfene
 Entwicklungsregeln brauchen keine Übergangshinweise. Prüfaufwand und
 Befundgewicht folgen dem belegten Schaden. Diese Einordnung gilt, bis Mike einen

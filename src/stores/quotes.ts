@@ -25,6 +25,14 @@ const MAX_CONCURRENT_REQUESTS = 6
 export interface QuoteFailure {
   key: string
   symbol: string
+  /**
+   * Kurzer Grund — für die Aufzählung „AAA.DE: …  ·  BBB.DE: …".
+   *
+   * Bewusst nicht der ausführliche Satz aus `describeFailure`: Der trägt
+   * Adresse **und** Herkunft, und bei zehn Positionen stünde er zehnmal in
+   * einem einzigen Toast. Wo er hilft — Einzel-Refresh, Papiere-Ansicht,
+   * Statusseite — steht er weiterhin.
+   */
   reason: string
 }
 
@@ -106,6 +114,15 @@ export const useQuotesStore = defineStore('quotes', () => {
     lastRefreshAt.value = newestFetchedAt(cached)
   }
 
+  /** Prüft einen Aufnahmekandidaten; Fehler gehen vor jeder Depotänderung zurück. */
+  async function loadOne(client: StockInfoClient, instrument: Pick<Position, 'isin' | 'symbol'>): Promise<void> {
+    const entry = toQuoteCacheEntry(await requestQuote(client, instrument, false))
+    const key = quoteKey(instrument)
+    await repository.put(key, entry)
+    quotes.value = new Map(quotes.value).set(key, entry)
+    failures.value = failures.value.filter((failure) => failure.key !== key)
+  }
+
   /**
    * Lädt Kurse für alle kursrelevanten Positionen.
    * Cash wird übersprungen; ein Fehlschlag bricht die übrigen nicht ab.
@@ -134,7 +151,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
 
       const known = previous.get(result.key)
-      if (known) nextQuotes.set(result.key, { ...known, stale: true })
+      if (known) nextQuotes.set(result.key, { ...known, cached: true, stale: true })
       nextFailures.push({
         key: result.key,
         symbol: result.symbol,
@@ -216,8 +233,8 @@ export const useQuotesStore = defineStore('quotes', () => {
       const sorted = sortOutcomes(results, quotes.value)
       // Kam gar nichts an, ist der Bestand nicht aufgefrischt — dann darf auch
       // der Zeitstempel nicht so tun.
-      const angekommen = results.some((outcome) => outcome.entry !== null)
-      await commit(sorted.quotes, sorted.failures, angekommen)
+      const receivedAny = results.some((outcome) => outcome.entry !== null)
+      await commit(sorted.quotes, sorted.failures, receivedAny)
 
       if (sorted.failures.length > 0) {
         consola.warn('quotes: Kurse teilweise nicht geladen', {
@@ -286,6 +303,12 @@ export const useQuotesStore = defineStore('quotes', () => {
       failures.value = failures.value.filter((failure) => failure.key !== key)
       await repository.put(key, entry)
     } catch (error) {
+      const previous = quotes.value.get(key)
+      if (previous) {
+        const stale = { ...previous, cached: true, stale: true }
+        quotes.value = new Map(quotes.value).set(key, stale)
+        await repository.put(key, stale)
+      }
       const reason = error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
       consola.error('quotes: Einzel-Refresh fehlgeschlagen', {
         symbol: position.symbol,
@@ -326,6 +349,7 @@ export const useQuotesStore = defineStore('quotes', () => {
     failures,
     lastRefreshAt,
     hydrate,
+    loadOne,
     loadQuotes,
     loadQuotesIfStale,
     refreshOne,
@@ -357,7 +381,7 @@ interface FetchOutcome {
  */
 function requestQuote(
   client: StockInfoClient,
-  position: Position,
+  position: Pick<Position, 'isin' | 'symbol'>,
   force: boolean,
 ): Promise<QuoteResponse> {
   if (position.isin) {
@@ -379,7 +403,10 @@ async function fetchOne(
     const response = await requestQuote(client, position, force)
     return { key, symbol: position.symbol, entry: toQuoteCacheEntry(response) }
   } catch (error) {
-    const reason = error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
+    // Kurzform im Sammellauf: Die Gründe werden je Position aneinandergereiht,
+    // und der ausführliche Satz stünde dort mit Adresse und Herkunft zehnmal
+    // untereinander. Der Einzel-Refresh unten nimmt weiterhin die lange Fassung.
+    const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
     return { key, symbol: position.symbol, entry: null, reason }
   }
 }

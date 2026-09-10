@@ -9,8 +9,9 @@ import {
   parseBackup,
   type Backup,
 } from '@/domain/backup'
-import { eur, formatterLocale, integer } from '@/domain/formatters'
+import { money, formatterLocale, integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { baseCurrencyOf } from '@/domain/fx'
 import type { Portfolio } from '@/types/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
@@ -43,6 +44,8 @@ const pending = ref<Backup | null>(null)
 const error = ref<string | null>(null)
 const done = ref<string | null>(null)
 
+const historyDayCount = computed(() => new Set(pending.value?.valueHistory.map(entry => entry.date)).size)
+
 const positionCount = computed(() => pending.value?.portfolio.positions.length ?? 0)
 
 /** Zeitpunkt der Sicherung, lesbar. */
@@ -74,7 +77,7 @@ async function exportNow(portfolio: Portfolio): Promise<void> {
   const exportedAt = new Date().toISOString()
   // Die Tageswerte gehören dazu: Sie lassen sich nicht neu berechnen, sie
   // entstehen nur dadurch, dass die App über Monate benutzt wird.
-  await valueHistory.load(portfolio.id)
+  const history = await valueHistory.exportAll(portfolio.id)
 
   const backup = buildBackup(
     portfolio,
@@ -82,7 +85,7 @@ async function exportNow(portfolio: Portfolio): Promise<void> {
     instrumentsStore.allowlist,
     __APP_VERSION__,
     exportedAt,
-    valueHistory.snapshots,
+    history,
   )
 
   // Eingerückt geschrieben: Die Datei soll sich im Zweifel auch von Hand lesen
@@ -241,12 +244,14 @@ const pendingCashTotal = computed(() =>
       <dl class="backup__facts">
         <dt class="backup__term">{{ t('backup.portfolio') }}</dt>
         <dd>{{ pending.portfolio.name }}</dd>
+        <dt>{{ t('fx.baseCurrency') }}</dt>
+        <dd>{{ baseCurrencyOf(pending.portfolio) }}</dd>
 
         <dt class="backup__term">{{ t('backup.positions') }}</dt>
         <dd class="tabular-nums">{{ positionCount }}</dd>
 
         <dt v-if="pendingCashTotal > 0" class="backup__term">{{ t('backup.ofWhichCash') }}</dt>
-        <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ eur(pendingCashTotal) }}</dd>
+        <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ money(pendingCashTotal, baseCurrencyOf(pending.portfolio)) }}</dd>
 
         <dt v-if="hiddenCount > 0" class="backup__term">{{ t('backup.hidden') }}</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">
@@ -261,8 +266,8 @@ const pendingCashTotal = computed(() =>
           {{ t('backup.valueHistory') }}
         </dt>
         <dd v-if="pending.valueHistory.length > 0" class="tabular-nums">
-          {{ t('units.days', pending.valueHistory.length, {
-            named: { count: integer(pending.valueHistory.length) },
+          {{ t('units.days', historyDayCount, {
+            named: { count: integer(historyDayCount) },
           }) }}
         </dd>
 

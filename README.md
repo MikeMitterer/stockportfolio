@@ -65,16 +65,66 @@ the missing sum is below that limit, the status stays `OK` and gets a small
 `min` marker. The deviation stays visible in the delta column — only the call to
 action is suppressed. The default is 0, i.e. off.
 
-### One currency
+### Portfolio base currency
 
-Everything is calculated in euro, and nothing is converted. A security quoted in
-another currency stays visible — with its own symbol and a red marker — but
-counts towards no total and no share. €10,000 plus $10,000 is not 20,000 of
-anything.
+Choose a currency for each portfolio in **Settings → Data → Portfolios**.
+New portfolios default to EUR; USD, CAD and other ISO currencies are available.
+Cash, security buffers and minimum trade amounts belong to that portfolio and
+use its currency. You can change the currency at any time. A confirmation
+shows the rate used to convert cash and absolute limits; holdings and percentage
+limits stay unchanged. Without a valid conversion rate, stored amounts and
+currency stay unchanged. The chart shows the selected currency series, and
+earlier series remain available when switching back.
 
-This is the quotation currency, not the risk currency: a euro-quoted MSCI World
-holds two thirds US dollars. The app cannot tell that apart and does not claim
-to.
+StockInfo FX rates convert foreign quotes into the portfolio currency before
+calculating totals, allocations, bands and trades. A rate of 0.8 EUR per USD
+turns a $100 holding into €80. Pence quotes (`GBp`) are first divided by 100
+into GBP. Original quotes and plugin amounts retain their own currencies.
+
+A stale FX rate remains usable with a persistent warning naming the pair and
+rate date. If no valid rate exists, the affected position stays visible and is
+excluded from totals and trades. Incomplete valuations do not overwrite daily
+values. Snapshots carry their currency; unlabelled old snapshots are omitted. Backups
+retain all currency series, while the chart shows only the selected currency. Historical backtests requiring FX are
+hidden with an explanation because StockInfo does not supply historical FX.
+
+Quotation currency does not describe currency exposure: a euro-quoted MSCI
+World still holds assets in other currencies. The app does not calculate that
+exposure.
+
+### Valid prices before adding a position
+
+Adding a security first fetches and validates its quote. If the symbol is
+ambiguous or the response lacks a valid price or quote currency, the dialog
+shows the reason and keeps the security out of the portfolio. A price shown
+in the instrument catalog alone is insufficient.
+
+When a later refresh fails, an existing position remains visible. Its last
+valid price is marked stale and may still be used; without a valid price the
+position is excluded from calculations and trade suggestions. Original quotes retain their currency, including `GBp` for pence; portfolio
+market values use the converted price.
+
+The client validates StockInfo Core 4.3.0 quote and catalog responses at one
+boundary. It preserves listed, pair and ISIN-only identities. IndexedDB
+schema 5 rebuilds older quote caches; portfolio positions remain stored.
+
+### Additional instrument information
+
+Open a position on the dashboard to see additional fields supplied by StockInfo
+plugins. On mobile, use **Additional information** on the position card. Fields
+already displayed in a configured main column are omitted from the details.
+TER and volatility use the same display as plugin fields.
+
+Labels, applicability and units come from StockInfo's field catalog. The app
+shows the effective value, its provider or manual origin, date and any overridden
+manual value. Zero and false remain values; missing values appear as a dash.
+Amounts keep the currency attached to that value and never change the portfolio
+calculations automatically.
+
+If the field catalog is unavailable, quotes and the existing core information
+remain usable. Older cached quotes without details are marked as not yet loaded;
+reload the quote to fetch them. The field catalog is loaded for the current
+session and API address, while detail values are stored with the quote.
 
 ### Value history
 
@@ -413,8 +463,7 @@ in the Docker tab.
 
 | Topic                                | State                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------- |
-| Base currency other than EUR         | open — scope undecided ([T-38](_tickets/10-backlog/T-38-basiswaehrung-und-devisenkurse.md)) |
-| Converting mixed-currency portfolios | open — StockInfo serves FX rates with their age; the app does not use them yet  |
+| Historical FX backtest               | unavailable — current FX rates cannot replace historical rates |
 | Threshold notifications              | deliberately outside the MVP                                                    |
 | CORS against the production API      | unverified — the container's origin has to be allowed                           |
 | Pruning the price-history cache      | open — it only ever grows                                                       |

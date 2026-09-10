@@ -22,6 +22,7 @@ import {
   type ValueSnapshot,
 } from '@/domain/portfolioHistory'
 import type { HistoryPoint } from '@/domain/sparkline'
+import { isCurrency } from '@/domain/fx'
 
 /** Tagesdatum als `YYYY-MM-DD` in der Zeitzone des Rechners. */
 export function isoDay(date: Date): string {
@@ -36,6 +37,9 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
   const snapshots = ref<ValueSnapshot[]>([])
   const backtest = ref<HistoryPoint[]>([])
   const loaded = ref<boolean>(false)
+  let activePortfolio = ''
+  let activeCurrency = ''
+  let loadSequence = 0
 
   /** Ab wann die Angabe echt ist — davor ist sie gerechnet. */
   const truthFrom = computed(() => truthStart(snapshots.value))
@@ -43,11 +47,18 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
   const snapshotLine = computed(() => snapshotPoints(snapshots.value))
 
   /** Lädt die Tageswerte eines Depots. */
-  async function load(portfolioId: string): Promise<void> {
+  async function load(portfolioId: string, currency: string): Promise<void> {
     if (!portfolioId) return
-
+    const sequence = ++loadSequence
+    activePortfolio = portfolioId
+    activeCurrency = currency
+    snapshots.value = []
+    backtest.value = []
+    loaded.value = false
     const entries = await repository.findByPortfolio(portfolioId)
-    snapshots.value = entries.map((entry) => ({ date: entry.date, total: entry.total }))
+    if (sequence !== loadSequence) return
+    snapshots.value = entries.filter(entry => entry.currency === currency)
+      .map((entry) => ({ date: entry.date, total: entry.total, currency: entry.currency }))
     loaded.value = true
   }
 
@@ -61,14 +72,15 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
    * @param total       Gesamtwert in der Basiswährung.
    * @param now         Gegenwart — als Parameter, damit es prüfbar bleibt.
    */
-  async function record(portfolioId: string, total: number, now = new Date()): Promise<void> {
-    if (!portfolioId || total <= 0) return
+  async function record(portfolioId: string, total: number, currency: string, now = new Date()): Promise<void> {
+    if (!portfolioId || !Number.isFinite(total) || total <= 0 || !isCurrency(currency)) return
 
     const date = isoDay(now)
     try {
-      await repository.put(portfolioId, date, total)
+      await repository.put(portfolioId, date, total, currency)
+      if (activePortfolio !== portfolioId || activeCurrency !== currency) return
       const others = snapshots.value.filter((entry) => entry.date !== date)
-      snapshots.value = [...others, { date, total }].sort((a, b) => a.date.localeCompare(b.date))
+      snapshots.value = [...others, { date, total, currency }].sort((a, b) => a.date.localeCompare(b.date))
     } catch (cause) {
       // Ein fehlender Tageswert ist kein Drama — die Kurve hat dann eine Lücke.
       consola.warn('valueHistory: Tageswert nicht gespeichert', { date, cause })
@@ -91,9 +103,16 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
 
     await repository.clearPortfolio(portfolioId)
     for (const entry of entries) {
-      await repository.put(portfolioId, entry.date, entry.total)
+      await repository.put(portfolioId, entry.date, entry.total, entry.currency)
     }
     snapshots.value = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+  }
+
+  /** Sicherungen erhalten alle Währungsreihen; die Anzeige filtert separat. */
+  async function exportAll(portfolioId: string): Promise<ValueSnapshot[]> {
+    const entries = await repository.findByPortfolio(portfolioId)
+    return entries.filter(entry => isCurrency(entry.currency))
+      .map(({ date, total, currency }) => ({ date, total, currency }))
   }
 
   /** Verwirft die Tageswerte eines gelöschten Depots. */
@@ -112,6 +131,7 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     record,
     computeBacktest,
     replaceAll,
+    exportAll,
     forget,
   }
 })

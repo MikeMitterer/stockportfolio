@@ -3,7 +3,8 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NModal, NCard, NSelect, NInputNumber, NButton, NAlert, NTag } from 'naive-ui'
 import { suggestAssetGroup } from '@/domain/assetGroup'
-import { eurCent, percent } from '@/domain/formatters'
+import { describeFailure } from '@/api/errors'
+import { money, percent } from '@/domain/formatters'
 import type { InstrumentSummary } from '@/api/types'
 import type { AssetGroup } from '@/types/portfolio'
 
@@ -15,6 +16,8 @@ const props = defineProps<{
   existingKeys: string[]
   /** Noch nicht vergebener Ziel-Anteil in Prozent. */
   remainingTargetPercent: number
+  /** Muss vor jeder Aufnahme einen eindeutig abrufbaren, gültigen Kurs prüfen. */
+  validateInstrument: (instrument: InstrumentSummary) => Promise<void>
 }>()
 
 const emit = defineEmits<{
@@ -36,6 +39,8 @@ const selectedKey = ref<string | null>(null)
 const units = ref<number>(0)
 const targetPercent = ref<number>(0)
 const group = ref<AssetGroup>('stocks')
+const submitting = ref(false)
+const admissionError = ref<string | null>(null)
 
 /** Instrumente, die noch nicht im Depot liegen. */
 const selectable = computed(() =>
@@ -46,15 +51,15 @@ const selectable = computed(() =>
 
 const options = computed(() =>
   selectable.value.map((instrument) => ({
-    label: `${instrument.symbol} — ${instrument.name ?? 'ohne Namen'}`,
-    value: instrument.isin ?? instrument.symbol,
+    label: `${instrument.symbol}${instrument.identity.kind === 'listed' ? ` (${instrument.identity.mic})` : ''} — ${instrument.name}`,
+    value: instrument.listing_id,
   })),
 )
 
 const selected = computed<InstrumentSummary | null>(
   () =>
     selectable.value.find(
-      (instrument) => (instrument.isin ?? instrument.symbol) === selectedKey.value,
+      (instrument) => instrument.listing_id === selectedKey.value,
     ) ?? null,
 )
 
@@ -67,6 +72,7 @@ const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
 
 // Bei Auswahl eines Papiers die Gruppe vorschlagen — überschreibbar.
 watch(selected, (instrument) => {
+  admissionError.value = null
   if (!instrument) return
   group.value = suggestAssetGroup(instrument.name, instrument.type)
 })
@@ -85,20 +91,31 @@ function reset(): void {
   units.value = 0
   targetPercent.value = 0
   group.value = 'stocks'
+  admissionError.value = null
 }
 
-function submit(): void {
+async function submit(): Promise<void> {
   const instrument = selected.value
-  if (!instrument || !canSubmit.value) return
+  if (!instrument || !canSubmit.value || submitting.value) return
 
-  emit('add', {
+  const payload = {
     instrument,
     units: units.value,
     targetPercent: targetPercent.value,
     group: group.value,
-  })
-  reset()
-  close()
+  }
+  submitting.value = true
+  admissionError.value = null
+  try {
+    await props.validateInstrument(instrument)
+    emit('add', payload)
+    reset()
+    close()
+  } catch (cause) {
+    admissionError.value = describeFailure(cause)
+  } finally {
+    submitting.value = false
+  }
 }
 
 // Beim Schließen aufräumen, damit der Dialog nicht mit Altwerten aufgeht.
@@ -111,7 +128,7 @@ watch(
 </script>
 
 <template>
-  <NModal :show="show" @update:show="emit('update:show', $event)">
+  <NModal :show="show" :mask-closable="!submitting" :close-on-esc="!submitting" @update:show="emit('update:show', $event)">
     <NCard
       class="addpos__card"
       :bordered="false"
@@ -120,6 +137,7 @@ watch(
       :title="t('actions.addPosition')"
     >
       <div class="addpos">
+        <NAlert v-if="admissionError" type="error" :bordered="false">{{ admissionError }}</NAlert>
         <NAlert v-if="selectable.length === 0" type="info" :bordered="false">
           {{ t('addPosition.allInPortfolio') }}
         </NAlert>
@@ -129,6 +147,7 @@ watch(
             <span class="addpos__label">{{ t('addPosition.instrument') }}</span>
             <NSelect
               v-model:value="selectedKey"
+              :disabled="submitting"
               :options="options"
               filterable
               placeholder="Symbol, ISIN oder Name suchen"
@@ -147,7 +166,7 @@ watch(
             <div>
               <div class="addpos__label">{{ t('table.price') }}</div>
               <div class="tabular-nums">
-                {{ selected.latest_price !== null ? eurCent(selected.latest_price) : 'noch keiner' }}
+                {{ selected.latest_price !== null && selected.latest_currency ? money(selected.latest_price, selected.latest_currency, 2) : t('currency.missingQuote') }}
               </div>
             </div>
             <div v-if="selected.ter !== null">
@@ -169,13 +188,14 @@ watch(
           <div class="addpos__pair">
             <label class="addpos__field">
               <span class="addpos__label">{{ t('table.units') }}</span>
-              <NInputNumber v-model:value="units" :min="0" :precision="0" :step="1" />
+              <NInputNumber v-model:value="units" :disabled="submitting" :min="0" :precision="0" :step="1" />
             </label>
 
             <label class="addpos__field">
               <span class="addpos__label">{{ t('table.targetPercent') }}</span>
               <NInputNumber
                 v-model:value="targetPercent"
+                :disabled="submitting"
                 :min="0"
                 :max="100"
                 :precision="2"
@@ -189,7 +209,7 @@ watch(
 
           <label class="addpos__field">
             <span class="addpos__label">{{ t('drilldown.group') }}</span>
-            <NSelect v-model:value="group" :options="groupOptions" />
+            <NSelect v-model:value="group" :disabled="submitting" :options="groupOptions" />
             <span class="addpos__hint">
               {{ t('addPosition.groupHint') }}
             </span>
@@ -203,12 +223,13 @@ watch(
 
       <template #footer>
         <div class="addpos__footer">
-          <NButton size="small" quaternary @click="close">{{ t('actions.cancel') }}</NButton>
+          <NButton size="small" quaternary :disabled="submitting" @click="close">{{ t('actions.cancel') }}</NButton>
           <NButton
             v-if="selectable.length > 0"
             size="small"
             type="primary"
             :disabled="!canSubmit"
+            :loading="submitting"
             @click="submit"
           >
             {{ t('actions.addPosition') }}

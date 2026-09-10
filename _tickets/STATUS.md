@@ -1,8 +1,12 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-Die Board-Struktur ist umgestellt. **Es ist kein neues Umsetzungsticket
-aktiviert.** T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 bis T-37
-sind nicht zur Umsetzung eingeplant.
+**T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
+im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
+T-39 und T-40 sind bereits technisch freigegeben; beide warten auf Mikes
+Abschlussabnahme unter `30-doing/`.
+T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
+abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
+T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
 
 **Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
 vom Owner und meldet Hinweise im eigenen Chat. Die Startbefehle und beide
@@ -20,10 +24,10 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `review_round`: `0`
 - `owner`: `none`
 - `updated_at`: `2026-09-10`
-- `last_reviewed_ticket`: `none`
-- `last_reviewed_commit`: `none`
-- `last_reviewed_round`: `0`
-- `workstream`: `none`
+- `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `last_reviewed_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
+- `last_reviewed_round`: `2`
+- `workstream`: `stockinfo-integration`
 - `priority_chain`: `none`
 - `priority_ticket`: `none`
 
@@ -47,6 +51,76 @@ nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 
 ## Kontext
 
+### Aktueller Auftrag
+
+Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
+Ursprüngliche Reihenfolge: T-37 vor T-38. T-37 liefert zunächst den im Ticket beschriebenen
+Integrationsvorschlag. Mike hat eine automatische Detailanzeige gewählt:
+Felder der tatsächlichen Hauptzeile einschließlich dynamischer Felder
+werden nicht wiederholt. Für T-38 hat Mike am 2026-09-10 eine vom Nutzer konfigurierbare
+Basiswährung **je Depot** festgelegt. Typische Wahl: EUR im Euroraum, USD in
+den USA; Hauptfall ist das Depot mit gewählter Währung. Veraltete FX-Kurse
+werden mit sichtbarer Warnung weiterverwendet. T-39 übernimmt die gemeinsame
+Kursprüfung einschließlich Währung aus T-35. T-40 zeigt Detailwerte in ihrer
+Originalwährung; T-38 ergänzt danach Depotbewertung und FX. T-35 bleibt mit
+seinem Generationsauftrag im Backlog.
+
+Arbeitsbranch: `t-38-basiswaehrung-und-devisenkurse`, auf der freigegebenen
+T-40-Fassung. Der frühere geplante Worktree wurde nicht angelegt.
+Das maßgebliche Board liegt unter
+`/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`.
+Vorgefundene fremde Produktänderungen im Hauptarbeitsbaum gehören nicht zu
+diesem Integrationsauftrag.
+
+Projektweite Entscheidung vom 2026-09-10: keine Migrationspfade zwischen
+StockPortfolio-Versionen. Einfach passende Daten übernehmen; inkompatible
+Entwicklungsdaten dürfen zurückgesetzt und neu angelegt werden. Maßgeblich
+ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
+
+Mike, 2026-09-10: „Leg die Umsetzungs-Tickets in doing an - das hat prio“.
+Aus dem freigegebenen T-37-Vorschlag entstanden dafür
+[T-39](30-doing/T-39-identitaet-normalisieren.md) — Identität normalisieren —
+und [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) — automatische
+Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
+inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
+vor T-38 beschreibt die bisherige Bearbeitung; aktuell hat T-38 Vorrang.
+
+**Aktueller Schritt:** T-38 Runde 2 ist durch `claude` technisch freigegeben,
+Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`. `codex` hat die Freigabe
+verarbeitet; keine erforderliche Nacharbeit. T-38, T-39 und T-40 warten auf
+Mikes Abschlussabnahme. Der Agentenauftrag ist `idle`; der Scheduler wartet.
+
+**Aktuelle Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
+Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die
+vorhandene Umsetzung braucht keine weiteren Folgetickets für denselben Umfang. Mike erlaubt,
+offene Fragen zur sinnvollen Ticketreihenfolge mit dem Observer zu klären,
+damit dafür die laufende Session nicht unterbrochen werden muss. Derzeit ist
+keine Reihenfolgefrage offen.
+
+**Frühere Reihenfolgeentscheidung:**
+Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
+„Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
+überprüfe die Reihenfolge, ich glaube das macht sinn“.
+Die damalige Kette war T-39 → T-40 → T-38. Für die weitere Arbeit gilt die
+oben festgehaltene jüngste Prioritätsklärung.
+Der Observer hat auf Mikes anschließenden Auftrag „Pass die Info entsprechend
+an“ die Ticketabgrenzung und Verweise aktualisiert. Auf Mikes weiteren Hinweis
+„Phase - immer noch blocked“ hat er den erledigten Klärungsblocker aufgehoben
+und `implementing` gesetzt. Rollen, Owner und Reviewzähler bleiben unverändert.
+
+T-39 liefert die gemeinsame Pflichtfeldprüfung einschließlich Kurswährung.
+T-40 und T-38 verwenden dieselben Typen, Mapper, Cache- und Anzeigebausteine
+weiter. T-40 erhält die Originalwerte; T-38 leitet daraus Depotwerte ab.
+Die konkreten Prüfpunkte stehen vollständig in den drei Tickets. Mike hat
+am 2026-09-10 klargestellt, dass die gesamte benötigte Information im
+entsprechenden Ticket liegen soll. Der T-37-Integrationsvorschlag bleibt
+ausschließlich als historische Bewertung erhalten.
+Die Freigabe von T-37 Runde 1 durch `claude` ist verarbeitet; keine Nacharbeit. T-38 war
+noch nicht begonnen — Branch und Worktree existierten beim Vorziehen nicht,
+es geht also keine angefangene Arbeit verloren. T-37 ist mit Mikes
+Bestätigung „T-37 ist damit erledigt“ nach `40-done/` verschoben.
+Der Scheduler bleibt aktiv.
+
 ### Übernahmestand
 
 Umstellung am 2026-09-10 nach dem Auftrag, die Struktur von StockInfo zu
@@ -61,11 +135,17 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-34](30-doing/T-34-einstellungen-fuers-aktualisieren.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #1–#4 und #6 offen. |
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
-| [T-37](10-backlog/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Erste Bewertung liegt vor; Umfangsentscheidungen A/B offen, ausdrücklich noch nicht zur Umsetzung eingeplant. |
+| [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
+| [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
+| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | In Runde 2 technisch freigegeben; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Mikes Abschlussabnahme offen. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
-Die vier Doing-Tickets sind übernommene offene Arbeit, keine vier gleichzeitig
-aktivierten Agentenaufträge. `20-ready/`, `80-iced/` und `90-rejected/` sind leer.
+T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
+Agentenaufträge. T-38, T-39 und T-40 warten auf die menschliche Abschlussabnahme.
+Es ist kein weiterer Produktauftrag aktiv.
+T-37 ist als Bewertung abgeschlossen.
+`80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
 
 ### Gemeinsame Regeln
@@ -82,7 +162,7 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-Leer. Empfänger ist bei aktiver Zuordnung `implementer`.
+Leer. T-38 Runde 2 verarbeitet; Befunde und Entscheidungen bleiben im Ticket.
 
 ## OUTBOX → Verifier
 

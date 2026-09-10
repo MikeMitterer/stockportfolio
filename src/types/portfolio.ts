@@ -3,6 +3,8 @@
  * Referenz: docs/superpowers/specs/2026-08-06-rebalancing-webapp-design.md §5.
  */
 
+import type { DetailValue } from './details'
+
 /**
  * Assetklassen.
  *
@@ -40,6 +42,10 @@ export interface Position {
 export interface Portfolio {
   id: string
   name: string
+  /** Neue Depots wählen ihre Währung; vorhandene Depots waren EUR. */
+  baseCurrency?: string
+  /** Geldschwellen gehören zum Depot und seiner Basiswährung. */
+  amountSettings?: { securityBuffer: AmountSetting; minTradeSize: AmountSetting }
   positions: Position[]
   createdAt: string
   updatedAt: string
@@ -106,7 +112,7 @@ export interface ExternalLink {
  * gleichaussehender Typen.
  */
 export interface AmountSetting {
-  /** `percent` = Anteil am Gesamtvermögen, `absolute` = fester Betrag in Euro. */
+  /** `percent` = Anteil am Gesamtvermögen, `absolute` = fester Betrag in der Depotwährung. */
   mode: 'percent' | 'absolute'
   value: number
 }
@@ -130,7 +136,6 @@ export interface Settings {
   minTradeSize: AmountSetting
   /** Auslöser und Terminabstand des Ausgleichs. */
   rebalancing: RebalancingSchedule
-  currency: 'EUR'
   refresh: { autoOnLoad: boolean; staleAfterMinutes: number }
   links: ExternalLink[]
   ui: {
@@ -156,7 +161,16 @@ export interface Settings {
 /** Zeitraum der Verlaufslinie in der Positionstabelle. */
 export type HistoryPeriod = 'day' | 'week' | 'month'
 
+/** Vollständige StockInfo-Identität; ein Symbol allein ist nicht eindeutig. */
+export type InstrumentIdentity =
+  | { kind: 'listed'; ticker: string; mic: string; isin?: string | null }
+  | { kind: 'pair'; base: string; quote_currency: string }
+  | { kind: 'isin_only'; isin: string }
+
 export interface QuoteCacheEntry {
+  /** null/fehlend: noch nicht geladen; leere Map: geladen, keine Zusatzwerte. */
+  details?: Record<string, DetailValue> | null
+  identity: InstrumentIdentity
   isin: string | null
   symbol: string
   price: number

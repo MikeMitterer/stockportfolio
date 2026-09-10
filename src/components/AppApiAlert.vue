@@ -19,7 +19,7 @@
  * erscheinen — sie ist eine Begrüßung mit schlechter Nachricht, keine
  * Einstellung.
  */
-import { computed, inject, nextTick, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NButton, NModal, NSpace } from 'naive-ui'
@@ -60,29 +60,12 @@ function merkeGemeldet(): void {
   }
 }
 
-/**
- * Der Knopf, der beim Öffnen den Fokus bekommt.
- *
- * Ohne das nimmt ihn das erste fokussierbare Element im Dialog — seit die
- * Adresse ein Verweis ist, also sie. Der Ring lag dann auf einer Angabe, die
- * man liest, statt auf der Handlung, die man als Nächstes tut; und Enter hätte
- * die Adresse in einem neuen Fenster geöffnet, statt erneut zu prüfen.
- *
- * Der Typ ist von Hand gesetzt: `NButton` bringt `focus()` zur Laufzeit mit,
- * führt es aber nicht in seinen Typen.
- */
-const retryButton = ref<{ focus?: () => void } | null>(null)
-
 watch(
   () => apiStatus.state,
-  async (state) => {
+  (state) => {
     if (state !== 'offline' || bereitsGemeldet()) return
     show.value = true
     merkeGemeldet()
-    // Ein Tick genügt, seit Naives eigener Autofokus abgeschaltet ist — er
-    // wartet nur darauf, dass der Dialog im Dokument steht.
-    await nextTick()
-    retryButton.value?.focus?.()
   },
   { immediate: true },
 )
@@ -97,10 +80,13 @@ watch(
 const reason = computed(() => {
   const satz = apiStatus.error ?? ''
   const url = apiStatus.errorUrl
-  if (!url || !satz.includes(url)) return { vor: satz, url: null, nach: '' }
+  const stelle = url ? satz.indexOf(url) : -1
+  if (!url || stelle < 0) return { vor: satz, url: null, nach: '' }
 
-  const [vor = '', nach = ''] = satz.split(url)
-  return { vor, url, nach }
+  // `indexOf` und `slice` statt `split`: Steht die Adresse zweimal im Satz —
+  // manche Browser packen sie schon in ihre eigene Fehlermeldung —, verwürfe
+  // `split` alles ab dem zweiten Vorkommen, und mit ihm die Herkunftsangabe.
+  return { vor: satz.slice(0, stelle), url, nach: satz.slice(stelle + url.length) }
 })
 
 async function pruefeErneut(): Promise<void> {
@@ -118,11 +104,19 @@ function zurStatusseite(): void {
 
 <template>
   <!--
-    `auto-focus="false"`: Naive nimmt sonst das erste fokussierbare Element im
-    Dialog — seit die Adresse ein Verweis ist, also sie. Der Ring lag damit auf
-    einer Angabe, die man liest, statt auf der Handlung, die man tut. Den Fokus
-    setzt deshalb der Watch oben. `trap-focus` bleibt an, sonst wanderte die
-    Tabulatortaste aus dem Dialog heraus.
+    Naives Autofokus bleibt **an**.
+
+    Ein Zwischenstand schaltete ihn ab, um den Ring von der Adresse auf „Erneut
+    prüfen" zu holen. Der eigene `focus()`-Aufruf dafür lief aber ins Leere —
+    `NButton` hat keins, nur `selfElRef` —, und übrig blieb ein Dialog ganz ohne
+    Fokus: keine Ansage für Vorleseprogramme, kein Einstieg für die Tastatur.
+    Den Fokus von Hand zu setzen scheitert an der Fokusfalle, die ihn
+    zurückholt; `nextTick`, Animationsbild und eine Runde der Ereignisschleife
+    sind durchprobiert (siehe `tests/components/appApiAlert.spec.ts`).
+
+    Also der Standard: Der Fokus landet auf dem ersten fokussierbaren Element,
+    heute der Adresse. Optisch ist das nicht ideal — funktional ist es richtig,
+    und ein Dialog ohne Fokus wäre deutlich schlechter.
   -->
   <NModal
     v-model:show="show"
@@ -130,7 +124,6 @@ function zurStatusseite(): void {
     type="error"
     :title="t('notify.apiOfflineTitle')"
     :closable="true"
-    :auto-focus="false"
   >
     <div class="apialert">
       <p class="apialert__reason">
@@ -155,7 +148,6 @@ function zurStatusseite(): void {
           {{ t('notify.apiOfflineSettings') }}
         </NButton>
         <NButton
-          ref="retryButton"
           type="primary"
           :loading="apiStatus.state === 'checking'" @click="pruefeErneut"
         >

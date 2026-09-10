@@ -13,7 +13,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import type { PositionResult } from '@/domain/rebalancing'
 
-function zeile(): PositionResult {
+function makeRow(): PositionResult {
   return {
     position: {
       id: 'a',
@@ -27,6 +27,7 @@ function zeile(): PositionResult {
       enabled: true,
     },
     quote: null,
+    basePrice: null, baseCurrency: 'EUR', originalMarketValue: 0, fx: null,
     marketValue: 1000,
     actualPercent: 50,
     targetValue: 1000,
@@ -44,12 +45,12 @@ function zeile(): PositionResult {
 
 function drilldown(refreshing: boolean) {
   return mount(PositionDrilldown, {
-    props: { row: zeile(), total: 2000, links: [], refreshing },
+    props: { row: makeRow(), total: 2000, links: [], refreshing },
   })
 }
 
 /** Der erste Knopf im Aktionsblock ist „Kurs neu laden". */
-function ladeKnopf(wrapper: ReturnType<typeof drilldown>) {
+function refreshButton(wrapper: ReturnType<typeof drilldown>) {
   return wrapper.find('.drill__actions button')
 }
 
@@ -57,16 +58,16 @@ beforeEach(() => setActivePinia(createPinia()))
 
 describe('Drilldown — Kurs neu laden', () => {
   it('dreht und nimmt keinen Klick an, solange der Kurs geholt wird', () => {
-    const knopf = ladeKnopf(drilldown(true))
+    const button = refreshButton(drilldown(true))
 
-    expect(knopf.classes()).toContain('n-button--loading')
-    expect(knopf.attributes('disabled')).toBeDefined()
+    expect(button.classes()).toContain('n-button--loading')
+    expect(button.attributes('disabled')).toBeDefined()
   })
 
   it('steht sonst normal da', () => {
-    const knopf = ladeKnopf(drilldown(false))
+    const button = refreshButton(drilldown(false))
 
-    expect(knopf.classes()).not.toContain('n-button--loading')
-    expect(knopf.attributes('disabled')).toBeUndefined()
+    expect(button.classes()).not.toContain('n-button--loading')
+    expect(button.attributes('disabled')).toBeUndefined()
   })
 })

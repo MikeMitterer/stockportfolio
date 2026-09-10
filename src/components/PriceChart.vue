@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { NButton, NButtonGroup, NSpin } from 'naive-ui'
 import { buildSparkline } from '@/domain/sparkline'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
-import { eurCent, formatterLocale, money, percentSigned } from '@/domain/formatters'
+import { formatterLocale, money, percentSigned } from '@/domain/formatters'
 import { useHistoryStore } from '@/stores/history'
 import type { Period } from '@/api/types'
 import type { StockInfoClient } from '@/api/client'
@@ -156,7 +156,7 @@ function axisDate(iso: string): string {
 
 /** Betrag in der Währung des Papiers — nicht jedes notiert in Euro. */
 function price(value: number): string {
-  return props.currency.toUpperCase() === 'EUR' ? eurCent(value) : money(value, props.currency)
+  return money(value, props.currency, 2)
 }
 
 /** Achsenbeschriftung: knapper als in der Tabelle, sonst wird die Achse breit. */

@@ -68,7 +68,10 @@ Der gemeinsame [Workflow](.agents/AGENT-WORKFLOW.md) regelt Rollen und Übergabe
 [Aktivierung](.agents/AGENT-ACTIVATION.md) und
 [Codex-Scheduler](.agents/CODEX-IN-CONTEXT-SCHEDULER.md) bleiben davon getrennt.
 Die Sammlungen [Claude](.agents/CLAUDE-LESSONS.md) und
-[Codex](.agents/CODEX-LESSONS.md) halten künftig belegte Erfahrungen fest.
+[Codex](.agents/CODEX-LESSONS.md) enthalten lokale Erfahrungen und eine
+kuratierte Startbasis mit gekennzeichneten Quellbelegen. Der Workflow legt
+Vorbeugung durch den Implementer, Gegenproben des Verifiers und die
+Mustererkennung samt Lessons-Pflege durch den Observer fest.
 Die Umstellung startet keine Agenten oder Timer.
 
 Der optionale Observer liest unabhängig vom Owner und meldet Hinweise in
@@ -133,12 +136,41 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 
 ## Neu erfasste Integrationsbewertung
 
-[T-37 · StockInfo-Vertrag und dynamische Felder](10-backlog/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md):
+[T-37 · StockInfo-Vertrag und dynamische Felder](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md):
 Identitätszuordnung, zusätzliche Kennzahlen und Nutzen einer flachen
-Quote-Ansicht bewerten. Offen, noch nicht zur Umsetzung eingeplant.
+Quote-Ansicht bewertet. Technisch freigegeben und durch Mike am 2026-09-10 abgeschlossen.
 
-[T-38 · Basiswährung außer EUR](10-backlog/T-38-basiswaehrung-und-devisenkurse.md):
-StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
-nutzt sie nicht. Zuschnitt offen — Umrechnung gemischter Depots und wählbare
-Basiswährung sind zwei verschiedene Umfänge. Ersetzt die überholte Anfrage
-`docs/stockinfo-currency-request.md`.
+Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
+[T-39 · Identität normalisieren](30-doing/T-39-identitaet-normalisieren.md) und
+[T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
+Beide sind bereits umgesetzt und technisch freigegeben. Nach Mikes jüngster
+Klarstellung hat die Depotwährung aus T-38 Vorrang; der aktive Auftrag steht in
+[STATUS](STATUS.md#maschinenlesbarer-zustand).
+T-39 ist technisch freigegeben und wartet auf Mikes Abschlussabnahme.
+T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
+
+| Ticket | Zuständiger Umfang |
+|---|---|
+| T-39 | Identität und gemeinsame Prüfung der Kurs-Pflichtfelder einschließlich Währung |
+| T-40 | Detailwerte mit Einheit und Originalwährung anzeigen; keine FX-Umrechnung |
+| T-38 | Depot-Basiswährung, Devisenkurse und daraus abgeleitete Depotbewertung |
+
+Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
+Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
+Kursprüfung ist in T-39 umgesetzt.
+
+[T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
+Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.
+Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
+Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
+712 Tests, Lint und Typecheck erfolgreich. Runde 2 ist durch Claude technisch
+freigegeben; Mikes Abschlussabnahme steht noch aus. Der Agentenauftrag ist idle.
+
+## Vorgemerktes projektübergreifendes Teilprojekt
+
+[T-41 · AgentLessons](10-backlog/T-41-agentlessons-projektuebergreifend-sammeln.md)
+hält das Konzept für lokale Einzel-Lessons, eine separate zentrale Aggregation
+und nachvollziehbar abgeleitete Regeln fest. Als eines der nächsten Teilprojekte
+vorgemerkt; noch nicht zur Umsetzung aktiviert. Der Auftrag umfasst später
+auch den Abgleich des Ticket-Skills. Alle Dateiverweise innerhalb von
+AgentLessons werden relativ gehalten.

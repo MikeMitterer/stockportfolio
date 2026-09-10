@@ -5,16 +5,21 @@
  * `src/domain/` und `src/components/` fließt, geht durch hier durch.
  */
 
-import type { InstrumentSummary, QuoteResponse } from './types'
+import type { DetailValueResponse, FieldsResponse, FxResponse, InstrumentSummary, QuoteResponse } from './types'
+import type { DetailValue, FieldCatalog } from '@/types/details'
+import type { FxRate } from '@/types/fx'
 import type { QuoteCacheEntry } from '@/types/portfolio'
+import { requireCurrency } from './normalizers'
 
 /** Mappt eine Kurs-Antwort auf den Domain-Cache-Eintrag. */
 export function toQuoteCacheEntry(response: QuoteResponse): QuoteCacheEntry {
   return {
+    details: mapDetails(response.details),
+    identity: response.identity,
     isin: response.isin,
     symbol: response.symbol,
     price: response.price,
-    currency: response.currency ?? 'EUR',
+    currency: requireCurrency(response.currency, 'currency', 'quote'),
     type: response.type,
     volatility: response.volatility,
     name: response.name,
@@ -34,18 +39,22 @@ export function instrumentToQuoteCacheEntry(
   instrument: InstrumentSummary,
 ): QuoteCacheEntry | null {
   if (instrument.latest_price === null) return null
+  const currency = requireCurrency(instrument.latest_currency, 'latest_currency', 'instruments')
+  if (!instrument.latest_fetched_at) return null
 
   return {
+    details: mapDetails(instrument.details),
+    identity: instrument.identity,
     isin: instrument.isin,
     symbol: instrument.symbol,
     price: instrument.latest_price,
-    currency: instrument.latest_currency ?? instrument.currency ?? 'EUR',
+    currency,
     type: instrument.type,
     volatility: instrument.volatility,
     name: instrument.name,
     ter: instrument.ter,
     accumulating: instrument.accumulating,
-    fetchedAt: instrument.latest_fetched_at ?? new Date().toISOString(),
+    fetchedAt: instrument.latest_fetched_at,
     cached: true,
     stale: false,
   }
@@ -54,4 +63,36 @@ export function instrumentToQuoteCacheEntry(
 /** Cache-Key-Konvention der API-Ebene: ISIN bevorzugt, Symbol als Fallback. */
 export function cacheKeyOf(entry: Pick<QuoteCacheEntry, 'isin' | 'symbol'>): string {
   return entry.isin ?? entry.symbol
+}
+
+function mapDetails(input: Record<string, DetailValueResponse> | null | undefined): Record<string, DetailValue> | null {
+  if (input == null) return null
+  return Object.fromEntries(Object.entries(input).map(([key, entry]) => [key, {
+    value: entry.value, unit: entry.unit, currency: entry.currency,
+    origin: entry.origin, source: entry.source, asOf: entry.as_of,
+    shadowed: entry.shadowed, manualValue: entry.manual_value, manualCurrency: entry.manual_currency,
+  }]))
+}
+
+export function toFieldCatalog(response: FieldsResponse): FieldCatalog {
+  return {
+    generationId: response.generation_id,
+    coreVersion: response.core_version,
+    detailsVersion: response.details_version,
+    definitions: response.details.map(entry => ({
+      name: entry.name, kind: entry.kind, unit: entry.unit,
+      labelEn: entry.label_en, labelDe: entry.label_de, overridable: entry.overridable,
+      sources: entry.sources, minimum: entry.minimum, maximum: entry.maximum,
+      currencyRequired: entry.currency_required,
+      scopes: entry.scopes.map(scope => ({
+        source: scope.source, instrumentTypes: scope.instrument_types, identityKinds: scope.identity_kinds,
+      })),
+    })),
+  }
+}
+
+export function toFxRate(response: FxResponse): FxRate {
+  return { base: response.base, quote: response.quote, rate: response.rate,
+    quoteTime: response.quote_time, fetchedAt: response.fetched_at,
+    cached: response.cached, stale: response.stale, source: response.source }
 }

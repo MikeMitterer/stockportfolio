@@ -290,22 +290,22 @@ describe('usePortfolioStore — mehrere Depots', () => {
 
     await store.createPortfolio('   ')
 
-    expect(store.portfolio?.name).toBe('Neues Depot')
+    expect(store.portfolio?.name).toBe(translate('seed.portfolioName'))
   })
 
   it('wechselt zwischen Depots, ohne Bestände zu vermischen', async () => {
     const store = usePortfolioStore()
     await store.load()
-    const ersteId = store.portfolio?.id as string
+    const firstId = store.portfolio?.id as string
     await store.addPosition(makePosition({ id: 'nur-im-ersten' }))
 
-    const zweiteId = await store.createPortfolio('Zweites')
+    const secondId = await store.createPortfolio('Zweites')
     expect(store.positions.some((p) => p.id === 'nur-im-ersten')).toBe(false)
 
-    await store.switchTo(ersteId)
+    await store.switchTo(firstId)
     expect(store.positions.some((p) => p.id === 'nur-im-ersten')).toBe(true)
 
-    await store.switchTo(zweiteId)
+    await store.switchTo(secondId)
     expect(store.positions.some((p) => p.id === 'nur-im-ersten')).toBe(false)
   })
 
@@ -322,12 +322,12 @@ describe('usePortfolioStore — mehrere Depots', () => {
   it('benennt auch ein Depot um, das gerade nicht aktiv ist', async () => {
     const store = usePortfolioStore()
     await store.load()
-    const ersteId = store.portfolio?.id as string
+    const firstId = store.portfolio?.id as string
     await store.createPortfolio('Zweites')
 
-    await store.renamePortfolio(ersteId, 'Umbenannt')
+    await store.renamePortfolio(firstId, 'Umbenannt')
 
-    expect(store.all.find((entry) => entry.id === ersteId)?.name).toBe('Umbenannt')
+    expect(store.all.find((entry) => entry.id === firstId)?.name).toBe('Umbenannt')
     expect(store.portfolio?.name).toBe('Zweites')
   })
 
@@ -344,25 +344,25 @@ describe('usePortfolioStore — mehrere Depots', () => {
   it('löscht ein Depot und lässt das aktive in Ruhe', async () => {
     const store = usePortfolioStore()
     await store.load()
-    const ersteId = store.portfolio?.id as string
-    const zweiteId = await store.createPortfolio('Zweites')
+    const firstId = store.portfolio?.id as string
+    const secondId = await store.createPortfolio('Zweites')
 
-    await store.deletePortfolio(ersteId)
+    await store.deletePortfolio(firstId)
 
     expect(store.all).toHaveLength(1)
-    expect(store.portfolio?.id).toBe(zweiteId)
+    expect(store.portfolio?.id).toBe(secondId)
   })
 
   it('wechselt weiter, wenn man das aktive Depot löscht', async () => {
     const store = usePortfolioStore()
     await store.load()
-    const ersteId = store.portfolio?.id as string
-    const zweiteId = await store.createPortfolio('Zweites')
+    const firstId = store.portfolio?.id as string
+    const secondId = await store.createPortfolio('Zweites')
 
-    const nextActive = await store.deletePortfolio(zweiteId)
+    const nextActive = await store.deletePortfolio(secondId)
 
-    expect(nextActive).toBe(ersteId)
-    expect(store.portfolio?.id).toBe(ersteId)
+    expect(nextActive).toBe(firstId)
+    expect(store.portfolio?.id).toBe(firstId)
   })
 
   it('lässt das letzte Depot stehen', async () => {
@@ -385,10 +385,10 @@ describe('usePortfolioStore — mehrere Depots', () => {
     const store = usePortfolioStore()
     await store.load()
     const id = store.portfolio?.id as string
-    const vorher = store.all.find((entry) => entry.id === id)?.positionCount ?? 0
+    const before = store.all.find((entry) => entry.id === id)?.positionCount ?? 0
 
     await store.addPosition(makePosition({ id: 'neu' }))
 
-    expect(store.all.find((entry) => entry.id === id)?.positionCount).toBe(vorher + 1)
+    expect(store.all.find((entry) => entry.id === id)?.positionCount).toBe(before + 1)
   })
 })

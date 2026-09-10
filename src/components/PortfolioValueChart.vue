@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NButtonGroup, NTooltip } from 'naive-ui'
 import { useIsCompact } from '@mmit/ux-foundation'
-import { eur, percentSigned, shortDate } from '@/domain/formatters'
+import { money, percentSigned, shortDate } from '@/domain/formatters'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
 import { withinDays } from '@/domain/portfolioHistory'
 import type { HistoryPoint } from '@/domain/sparkline'
@@ -17,6 +17,7 @@ import type { HistoryPoint } from '@/domain/sparkline'
  * Unterschied sähe eine gerechnete Kurve so verlässlich aus wie eine gemessene.
  */
 const props = defineProps<{
+  currency?: string
   /** Gerechnet aus heutigem Bestand und alten Kursen. */
   backtest: HistoryPoint[]
   /** Tatsächlich festgehaltene Tageswerte. */
@@ -41,7 +42,7 @@ const HEIGHT = 200
  * am Rand: Links steht der Betrag rechtsbündig vor der Achse, `€ 1.234.567` sind
  * bei 10 px rund 66 px plus Abstand. Unten steht ein Datum in `dateStyle:
  * 'medium'` — auf Deutsch „18. Aug. 2026", rund 70 px breit. Dessen Überstand
- * fängt nicht der Rand ab, sondern der Anker an den Enden (siehe `zeitAnker`),
+ * fängt nicht der Rand ab, sondern der Anker an den Enden (siehe `timeAnchor`),
  * sonst wäre rechts die halbe Datumsbreite verschenkt.
  */
 const MARGIN = { top: 12, right: 16, bottom: 26, left: 80 }
@@ -162,9 +163,9 @@ const timeTicks = computed(() =>
  * ausgerichtet ragte dort jeweils die halbe Datumsbreite hinaus, rechts also
  * sichtbar über den Rand.
  */
-function zeitAnker(index: number, anzahl: number): 'start' | 'middle' | 'end' {
+function timeAnchor(index: number, count: number): 'start' | 'middle' | 'end' {
   if (index === 0) return 'start'
-  if (index === anzahl - 1) return 'end'
+  if (index === count - 1) return 'end'
   return 'middle'
 }
 
@@ -217,6 +218,8 @@ const tooltipStyle = computed(() => {
   const flip = left > width.value - 140
   return { left: `${flip ? left - 12 : left + 12}px`, top: '8px', transform: flip ? 'translateX(-100%)' : '' }
 })
+const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
+
 </script>
 
 <template>
@@ -292,7 +295,7 @@ const tooltipStyle = computed(() => {
             text-anchor="end"
             class="value-chart__axis"
           >
-            {{ eur(tick) }}
+            {{ formatMoney(tick) }}
           </text>
         </g>
 
@@ -301,7 +304,7 @@ const tooltipStyle = computed(() => {
           :key="point.date"
           :x="x(point.date)"
           :y="HEIGHT - 8"
-          :text-anchor="zeitAnker(index, timeTicks.length)"
+          :text-anchor="timeAnchor(index, timeTicks.length)"
           class="value-chart__axis"
         >
           {{ shortDate(point.date) }}
@@ -328,7 +331,7 @@ const tooltipStyle = computed(() => {
 
       <div v-if="hoveredPoint" class="value-chart__tip" :style="tooltipStyle">
         <div class="value-chart__tip-date">{{ shortDate(hoveredPoint.date) }}</div>
-        <div class="value-chart__tip-value tabular-nums">{{ eur(hoveredPoint.close) }}</div>
+        <div class="value-chart__tip-value tabular-nums">{{ formatMoney(hoveredPoint.close) }}</div>
         <div
           class="value-chart__tip-change tabular-nums"
           :class="hoveredPoint.change >= 0 ? 'value-chart__change--rising' : 'value-chart__change--falling'"

@@ -10,7 +10,7 @@ import {
   NSpin,
   type DataTableColumns,
 } from 'naive-ui'
-import { eurCent, integer, percent } from '@/domain/formatters'
+import { money, integer, percent } from '@/domain/formatters'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -56,7 +56,7 @@ const filtered = computed<InstrumentSummary[]>(() => {
   })
 })
 
-const rowKey = (row: InstrumentSummary): string => instrumentsStore.keyOf(row)
+const rowKey = (row: InstrumentSummary): string => row.listing_id
 
 const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
   {
@@ -67,7 +67,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
       h('div', { class: 'cell-stack' }, [
         h('div', { class: 'cell-row' }, [
           h('span', { class: 'cell-symbol' }, row.symbol),
-          heldKeys.value.has(rowKey(row))
+          heldKeys.value.has(instrumentsStore.keyOf(row))
             ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => t('instruments.inPortfolio'))
             : null,
         ]),
@@ -85,7 +85,9 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'type',
     width: 90,
     render: (row) =>
-      h(NTag, { size: 'small', bordered: false }, () => (row.type === 'etf' ? t('dashboard.kindEtf') : t('dashboard.kindStock'))),
+      h(NTag, { size: 'small', bordered: false }, () => (
+        row.type === 'etf' ? t('dashboard.kindEtf') : row.type === 'stock' ? t('dashboard.kindStock') : row.type
+      )),
   },
   {
     title: t('table.price'),
@@ -95,7 +97,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     sorter: (a, b) => (a.latest_price ?? 0) - (b.latest_price ?? 0),
     render: (row) =>
       row.latest_price !== null
-        ? h('span', { class: 'cell-num' }, eurCent(row.latest_price))
+        ? h('span', { class: 'cell-num' }, row.latest_currency ? money(row.latest_price, row.latest_currency, 2) : '—')
         : h('span', { class: 'cell-num cell-num--muted cell-empty' }, 'noch keiner'),
   },
   {

@@ -25,7 +25,7 @@ niemand nachrechnen kann.
 Was dafür an StockInfo ginge, stand in `docs/stockinfo-currency-request.md`.
 Diese Anfrage ist seit 2026-09-10 überholt und entfernt — StockInfo liefert
 inzwischen Devisenkurse. Der offene Rest steht in
-[T-38](../10-backlog/T-38-basiswaehrung-und-devisenkurse.md); die Anfrage selbst
+[T-38](../30-doing/T-38-basiswaehrung-und-devisenkurse.md); die Anfrage selbst
 bleibt in der Git-Historie lesbar.
 
 ## Sichtbar ausschließen, nicht verschwinden lassen

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, h, inject, ref, watch } from 'vue'
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
+import { computed, h, inject, ref, watch, type ComputedRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDataTable, type DataTableColumns } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
@@ -10,7 +11,10 @@ import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import { safeStorage, UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
-import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
+import { useQuoteIssue } from '@/composables/useQuoteIssue'
+import { useFieldsStore } from '@/stores/fields'
+import { projectDetailFields } from '@/domain/detailFields'
+import { integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 import { useHistoryStore, type HistorySeries } from '@/stores/history'
@@ -19,6 +23,10 @@ import { useSettingsStore } from '@/stores/settings'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 type RowKey = string | number
+type PositionColumn = DataTableColumns<PositionResult>[number] & {
+  /** Genau die in dieser Spalte für diese Zeile dargestellten API-Felder. */
+  stockInfoFields?: (row: PositionResult) => string[]
+}
 
 const props = defineProps<{
   rows: PositionResult[]
@@ -30,6 +38,8 @@ const props = defineProps<{
   links: ExternalLink[]
   /** IDs der Positionen, deren Kurs gerade einzeln geholt wird. */
   refreshingIds?: Set<string>
+  /** Programmatische Spaltenkonfiguration; kein zusätzlicher Benutzereditor. */
+  detailColumns?: readonly string[]
 }>()
 
 const emit = defineEmits<{
@@ -38,7 +48,9 @@ const emit = defineEmits<{
   (event: 'refresh', id: string): void
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const quoteIssue = useQuoteIssue()
+const fieldsStore = useFieldsStore()
 
 /**
  * Kursverlauf für die Zeilen.
@@ -191,7 +203,26 @@ function renderExpandIcon({ expanded }: { expanded: boolean }) {
 
 // ─── Spalten ────────────────────────────────────────────────────────────────
 
-const columns = computed<DataTableColumns<PositionResult>>(() => [
+const dynamicColumns = computed<PositionColumn[]>(() => [...new Set(props.detailColumns ?? [])].map(key => {
+  const fieldFor = (row: PositionResult) => projectDetailFields(row.quote, fieldsStore.catalog?.definitions ?? [], [], locale.value)
+    .find(field => field.key === key)
+  return {
+    key: `detail:${key}`,
+    title: props.rows.map(fieldFor).find(field => field)?.label ?? key,
+    width: 160,
+    stockInfoFields: row => fieldFor(row) ? [key] : [],
+    render: row => {
+      const field = fieldFor(row)
+      return field ? h('span', { 'data-main-field': key }, field.value) : '—'
+    },
+  }
+}))
+
+watch(() => props.detailColumns, keys => {
+  if (keys?.length && client) void fieldsStore.load(client)
+}, { immediate: true, deep: true })
+
+const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
     type: 'expand',
     expandable: () => true,
@@ -200,6 +231,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         row,
         total: props.total,
         links: props.links,
+        visibleStockInfoFields: columns.value.flatMap(column => column.stockInfoFields?.(row) ?? []),
         refreshing: props.refreshingIds?.has(row.position.id) ?? false,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
         onRemove: (id: string) => emit('remove', id),
@@ -209,6 +241,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.symbol'),
     key: 'symbol',
+    stockInfoFields: row => row.position.group === 'cash' ? [] : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
     width: 220,
     render: (row) =>
       h('div', { class: 'cell-stack' }, [
@@ -273,6 +306,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
               row.position.displayName,
             )
           : null,
+        quoteIssue(row) ? h('span', { class: 'cell-num--missing' }, quoteIssue(row)) : null,
       ]),
   },
   {
@@ -287,7 +321,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         value: row.position.units,
         display:
           row.position.group === 'cash'
-            ? eur(row.position.units)
+            ? formatMoney(row.position.units)
             : integer(row.position.units),
         precision: row.position.group === 'cash' ? 2 : 0,
         min: 0,
@@ -298,6 +332,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
   {
     title: t('table.price'),
     key: 'price',
+    stockInfoFields: row => row.quote ? ['price', 'currency'] : [],
     align: 'right',
     width: 100,
     render: (row) =>
@@ -307,9 +342,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             { class: 'cell-num' },
             // Fremde Währung mit ihrem eigenen Zeichen: „628,20 €" für einen
             // USD-Kurs wäre schlicht falsch.
-            row.excludedReason === 'currency'
-              ? money(row.quote.price, row.quote.currency)
-              : eurCent(row.quote.price),
+            money(row.quote.price, row.quote.currency, 2),
           )
         : row.position.group === 'cash'
           ? h('span', { class: 'cell-num cell-num--muted' }, '—')
@@ -352,9 +385,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       h(
         'span',
         { class: 'cell-num cell-num--strong' },
-        row.excludedReason === 'currency' && row.quote
-          ? money(row.marketValue, row.quote.currency)
-          : eur(row.marketValue),
+        row.quote
+          ? row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : money(row.originalMarketValue, row.quote.currency)
+          : row.position.group === 'cash' ? formatMoney(row.marketValue) : '—',
       ),
   },
   {
@@ -433,11 +466,14 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         },
         row.excludedReason === 'currency'
           ? t('currency.statusForeign')
-          : t('currency.notCounted'),
+          : row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : t('currency.notCounted'),
       )
     },
   },
+  ...dynamicColumns.value,
 ])
+const { formatMoney } = usePortfolioCurrency()
+
 </script>
 
 <template>

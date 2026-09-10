@@ -7,9 +7,12 @@
  */
 
 import { ApiError, type ApiUrlSource } from './errors'
+import { normalizeFields, normalizeFx, normalizeInstruments, normalizeQuote } from './normalizers'
 import { translate } from '@/i18n'
 import type {
   DailyPoint,
+  FieldsResponse,
+  FxResponse,
   HealthResponse,
   InstrumentSummary,
   Period,
@@ -40,17 +43,28 @@ export class StockInfoClient {
 
   /** Katalog aller bekannten Instrumente. */
   async getInstruments(): Promise<InstrumentSummary[]> {
-    return this.request<InstrumentSummary[]>('/instruments')
+    return normalizeInstruments(await this.request<unknown>('/instruments'), `${this.baseUrl}/instruments`)
+  }
+
+  /** Felddefinitionen werden unabhängig von den Kursen geladen. */
+  async getFields(): Promise<FieldsResponse> {
+    return normalizeFields(await this.request<unknown>('/fields'), `${this.baseUrl}/fields`)
+  }
+
+  /** Eine Einheit Ausgangswährung entspricht rate Einheiten Zielwährung. */
+  async getFx(base: string, quote: string): Promise<FxResponse> {
+    const path = `/fx?base=${encodeURIComponent(base)}&quote=${encodeURIComponent(quote)}`
+    return normalizeFx(await this.request<unknown>(path), base, quote, `${this.baseUrl}${path}`)
   }
 
   /** Kurs zu einer ISIN (bevorzugt Xetra/EUR). */
   async getQuoteByIsin(isin: string): Promise<QuoteResponse> {
-    return this.request<QuoteResponse>(`/quote/${encodeURIComponent(isin)}`)
+    return this.requestQuote(`/quote/${encodeURIComponent(isin)}`)
   }
 
   /** Kurs zu einem vollständigen Yahoo-Symbol inkl. Suffix, z.B. `VGWL.DE`. */
   async getQuoteBySymbol(symbol: string): Promise<QuoteResponse> {
-    return this.request<QuoteResponse>(`/quote?symbol=${encodeURIComponent(symbol)}`)
+    return this.requestQuote(`/quote?symbol=${encodeURIComponent(symbol)}`)
   }
 
   /** Tages-Schlusskurse (EOD) zu einer ISIN. */
@@ -81,7 +95,7 @@ export class StockInfoClient {
 
   /** Erzwingt serverseitiges Neuladen eines Papiers. */
   async refreshByIsin(isin: string): Promise<QuoteResponse> {
-    return this.request<QuoteResponse>(`/refresh/${encodeURIComponent(isin)}`, 'POST')
+    return this.requestQuote(`/refresh/${encodeURIComponent(isin)}`, 'POST')
   }
 
   /**
@@ -92,7 +106,7 @@ export class StockInfoClient {
    * „neu laden" hätte den zwischengespeicherten Kurs geliefert.
    */
   async refreshBySymbol(symbol: string): Promise<QuoteResponse> {
-    return this.request<QuoteResponse>(
+    return this.requestQuote(
       `/refresh/by-symbol/${encodeURIComponent(symbol)}`,
       'POST',
     )
@@ -101,6 +115,11 @@ export class StockInfoClient {
   /** Health-Check der API. */
   async health(): Promise<HealthResponse> {
     return this.request<HealthResponse>('/health')
+  }
+
+  /** Alle Kurswege durchlaufen dieselbe Prüfung, bevor ein Store sie erhält. */
+  private async requestQuote(path: string, method: 'GET' | 'POST' = 'GET'): Promise<QuoteResponse> {
+    return normalizeQuote(await this.request<unknown>(path, method), `${this.baseUrl}${path}`)
   }
 
   /**
@@ -143,6 +162,12 @@ export class StockInfoClient {
 async function readErrorDetail(response: Response): Promise<string> {
   try {
     const body: unknown = await response.json()
+    if (body && typeof body === 'object' && 'code' in body && typeof body.code === 'string') {
+      if (body.code === 'symbol_ambiguous' && 'params' in body && body.params && typeof body.params === 'object' && 'symbol' in body.params && typeof body.params.symbol === 'string') {
+        return translate('errors.ambiguousSymbol', { symbol: body.params.symbol })
+      }
+      return body.code
+    }
     if (body && typeof body === 'object' && 'detail' in body) {
       const detail = (body as { detail: unknown }).detail
       if (typeof detail === 'string') return detail

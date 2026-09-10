@@ -26,6 +26,7 @@ afterEach(async () => {
 
 function makeQuoteResponse(symbol: string, price: number, isin: string | null): QuoteResponse {
   return {
+    identity: { kind: 'listed', ticker: symbol, mic: 'XETR', isin },
     isin,
     symbol,
     exchange: 'Xetra',
@@ -300,11 +301,11 @@ describe('useQuotesStore — loadQuotes mit force', () => {
 describe('useQuotesStore — Fortschritt', () => {
   it('zählt jeden fertigen Kurs mit und ist danach still', async () => {
     const store = useQuotesStore()
-    const stände: number[] = []
+    const totals: number[] = []
 
     const client = mockClient({
       getQuoteByIsin: vi.fn(async (isin: string) => {
-        stände.push(store.progressTotal)
+        totals.push(store.progressTotal)
         return makeQuoteResponse('AAA.DE', 100, isin)
       }) as unknown as StockInfoClient['getQuoteByIsin'],
     })
@@ -314,25 +315,25 @@ describe('useQuotesStore — Fortschritt', () => {
       makePosition({ id: 'b', isin: 'IE0000000002' }),
     ])
 
-    expect(stände).toEqual([2, 2])
+    expect(totals).toEqual([2, 2])
     expect(store.busy).toBe(false)
     expect(store.progressTotal).toBe(0)
   })
 
   it('zählt auch den Einzel-Refresh mit', async () => {
     const store = useQuotesStore()
-    let währenddessen = 0
+    let duringRequest = 0
 
     const client = mockClient({
       refreshByIsin: vi.fn(async (isin: string) => {
-        währenddessen = useQuotesStore().progressTotal
+        duringRequest = useQuotesStore().progressTotal
         return makeQuoteResponse('AAA.DE', 999, isin)
       }) as unknown as StockInfoClient['refreshByIsin'],
     })
 
     await store.refreshOne(client, makePosition({ id: 'a' }))
 
-    expect(währenddessen).toBe(1)
+    expect(duringRequest).toBe(1)
     expect(store.busy).toBe(false)
   })
 
@@ -351,15 +352,15 @@ describe('useQuotesStore — Fortschritt', () => {
 
   it('meldet den Knopf-Zustand nur beim erzwungenen Abruf', async () => {
     const store = useQuotesStore()
-    const beobachtet: boolean[] = []
+    const observed: boolean[] = []
 
     const client = mockClient({
       getQuoteByIsin: vi.fn(async (isin: string) => {
-        beobachtet.push(store.forcing)
+        observed.push(store.forcing)
         return makeQuoteResponse('AAA.DE', 100, isin)
       }) as unknown as StockInfoClient['getQuoteByIsin'],
       refreshByIsin: vi.fn(async (isin: string) => {
-        beobachtet.push(store.forcing)
+        observed.push(store.forcing)
         return makeQuoteResponse('AAA.DE', 999, isin)
       }) as unknown as StockInfoClient['refreshByIsin'],
     })
@@ -367,21 +368,21 @@ describe('useQuotesStore — Fortschritt', () => {
     await store.loadQuotes(client, [makePosition()])
     await store.loadQuotes(client, [makePosition()], { force: true })
 
-    expect(beobachtet).toEqual([false, true])
+    expect(observed).toEqual([false, true])
     expect(store.forcing).toBe(false)
   })
 
   it('lässt den Knopf in Ruhe, wenn es gar nichts zu holen gibt', async () => {
     const store = useQuotesStore()
-    let gesehen = false
+    let seen = false
 
     // Nur Cash: `loadQuotes` bricht ab, bevor irgendein Abruf ergeht.
     await store.loadQuotes(mockClient(), [makePosition({ group: 'cash', isin: null })], {
       force: true,
     })
-    gesehen = store.forcing || store.busy
+    seen = store.forcing || store.busy
 
-    expect(gesehen).toBe(false)
+    expect(seen).toBe(false)
   })
 })
 
@@ -529,11 +530,11 @@ describe('useQuotesStore — refreshOne', () => {
    */
   it('merkt sich die Position, solange ihr Kurs geholt wird', async () => {
     const position = makePosition({ id: 'a' })
-    let währendDesAbrufs: string[] = []
+    let duringRequest: string[] = []
 
     const client = mockClient({
       refreshByIsin: vi.fn(async () => {
-        währendDesAbrufs = [...useQuotesStore().refreshing]
+        duringRequest = [...useQuotesStore().refreshing]
         return makeQuoteResponse('AAA.DE', 999, 'IE0000000001')
       }) as unknown as StockInfoClient['refreshByIsin'],
     })
@@ -541,7 +542,7 @@ describe('useQuotesStore — refreshOne', () => {
 
     await store.refreshOne(client, position)
 
-    expect(währendDesAbrufs).toEqual(['a'])
+    expect(duringRequest).toEqual(['a'])
     expect([...store.refreshing]).toEqual([])
   })
 
@@ -595,17 +596,17 @@ describe('useQuotesStore — Zustand bei Fehlschlag und Überlappung', () => {
    * von 60 Minuten also eine Stunde lang.
    */
   it('lässt nach einem Totalausfall sofort wieder laden', async () => {
-    let scheitern = true
+    let shouldFail = true
     const client = mockClient({
       getQuoteByIsin: vi.fn(async (isin: string) => {
-        if (scheitern) throw new ApiError(503, 'Dienst weg', '/quote')
+        if (shouldFail) throw new ApiError(503, 'Dienst weg', '/quote')
         return makeQuoteResponse('AAA.DE', 100, isin)
       }) as unknown as StockInfoClient['getQuoteByIsin'],
     })
     const store = useQuotesStore()
 
     await store.loadQuotes(client, [makePosition()])
-    scheitern = false
+    shouldFail = false
     await store.loadQuotesIfStale(client, [makePosition()], 60)
 
     expect(store.quotes.get('IE0000000001')?.price).toBe(100)
@@ -663,25 +664,25 @@ describe('useQuotesStore — Zustand bei Fehlschlag und Überlappung', () => {
   it('hält den Ladezustand, bis auch der zweite Lauf fertig ist', async () => {
     // Halter statt loser Variable: TypeScript verengt eine `let`-Bindung, die
     // nur in einer Closure beschrieben wird, sonst auf `never`.
-    const langsam: { aufloesen: (() => void) | null } = { aufloesen: null }
+    const slow: { resolve: (() => void) | null } = { resolve: null }
     const client = mockClient({
       refreshByIsin: vi.fn(
         () =>
           new Promise((resolve) => {
-            langsam.aufloesen = () => resolve(makeQuoteResponse('AAA.DE', 999, 'IE0000000001'))
+            slow.resolve = () => resolve(makeQuoteResponse('AAA.DE', 999, 'IE0000000001'))
           }),
       ) as unknown as StockInfoClient['refreshByIsin'],
     })
     const store = useQuotesStore()
 
-    const erzwungen = store.loadQuotes(client, [makePosition()], { force: true })
+    const forced = store.loadQuotes(client, [makePosition()], { force: true })
     await store.loadQuotes(client, [makePosition()]) // schneller Lauf, dazwischen
 
     expect(store.forcing).toBe(true)
     expect(store.busy).toBe(true)
 
-    langsam.aufloesen?.()
-    await erzwungen
+    slow.resolve?.()
+    await forced
 
     expect(store.forcing).toBe(false)
     expect(store.busy).toBe(false)

@@ -15,7 +15,7 @@ import {
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
 export const DB_NAME = 'stockportfolio'
-export const DB_VERSION = 4
+export const DB_VERSION = 5
 
 /** Fester Schlüssel des Settings-Singletons. */
 export const SETTINGS_KEY = 'default'
@@ -94,7 +94,8 @@ export interface StockPortfolioDB extends DBSchema {
 
 /** Ein Tagesstand, zusammengesetzt aus Depot und Datum. */
 export interface ValueSnapshotEntry {
-  /** `<portfolioId>::<YYYY-MM-DD>` — ein Eintrag je Depot und Tag. */
+  currency: string
+  /** `<portfolioId>::<currency>::<YYYY-MM-DD>` — ein Eintrag je Depot, Währung und Tag. */
   key: string
   portfolioId: string
   date: string
@@ -178,6 +179,11 @@ export function getDb(): Promise<IDBPDatabase<StockPortfolioDB>> {
       // fehlt der Verlauf, wird er geholt.
       if (oldVersion < 3 && !db.objectStoreNames.contains('dailyHistory')) {
         db.createObjectStore('dailyHistory', { keyPath: 'key' })
+      }
+      // Alte Kurscaches können geratene Währungen und unvollständige
+      // Identitäten enthalten. Neu laden statt solche Werte zu migrieren.
+      if (oldVersion > 0 && oldVersion < 5) {
+        await transaction.objectStore('quoteCache').clear()
       }
     },
   })

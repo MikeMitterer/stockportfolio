@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NInput, NPopconfirm, NTag } from 'naive-ui'
+import { NButton, NInput, NModal, NPopconfirm, NSelect, NTag } from 'naive-ui'
 import { consola } from 'consola'
 import { formatAge } from '@/composables/useRelativeTime'
 import { integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
+import { ISO_CURRENCIES, fxKey } from '@/domain/fx'
+import { STOCK_INFO_CLIENT } from '@/api/client'
+import { useFxStore } from '@/stores/fx'
+import type { FxRate } from '@/types/fx'
 
 /**
  * Verwaltung mehrerer Depots.
@@ -20,12 +24,27 @@ import { useSettingsStore } from '@/stores/settings'
  * mehrdeutig, sobald es mehr als ein Depot gibt.
  */
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const client = inject(STOCK_INFO_CLIENT, null)
+const fx = useFxStore()
+const pendingCurrency = ref<{ id: string; from: string; to: string; rate: FxRate | null } | null>(null)
+const currencyDialog = ref(false)
+const changeDescription = computed(() => {
+  const pending = pendingCurrency.value
+  if (!pending) return ''
+  const description = t('fx.changeConfirm', { from: pending.from, to: pending.to })
+  if (!pending.rate) return description
+  const rate = pending.rate
+  const time = new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(rate.quoteTime))
+  return `${description} ${t('fx.changeRate', { from: rate.base, to: rate.quote, rate: rate.rate, time })}${rate.stale ? ` ${t('fx.stalePair', { pair: fxKey(rate.base, rate.quote), time })}` : ''}`
+})
 
 const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 
 const newName = ref<string>('')
+const newCurrency = ref('EUR')
+const currencyOptions = ISO_CURRENCIES.map(value => ({ value, label: value }))
 const busy = ref<boolean>(false)
 const error = ref<string | null>(null)
 
@@ -38,7 +57,7 @@ async function create(): Promise<void> {
   busy.value = true
   error.value = null
   try {
-    const id = await portfolioStore.createPortfolio(newName.value)
+    const id = await portfolioStore.createPortfolio(newName.value, newCurrency.value)
     await settingsStore.setActivePortfolio(id)
     newName.value = ''
   } catch (cause) {
@@ -71,6 +90,44 @@ async function rename(id: string, name: string): Promise<void> {
   }
 }
 
+async function changeCurrency(id: string, currency: string): Promise<void> {
+  const entry = portfolioStore.all.find(entry => entry.id === id)
+  if (!entry || entry.baseCurrency === currency) return
+  busy.value = true
+  error.value = null
+  try {
+    let rate: FxRate | null = null
+    if (entry.hasCurrencyAmounts) {
+      if (!client) throw new Error(t('fx.changeUnavailable'))
+      await fx.load(client, entry.baseCurrency, currency)
+      rate = fx.rates.get(fxKey(entry.baseCurrency, currency)) ?? null
+      if (!rate) throw new Error(t('fx.changeUnavailable'))
+    }
+    pendingCurrency.value = { id, from: entry.baseCurrency, to: currency, rate }
+    currencyDialog.value = true
+  } catch (cause) {
+    error.value = messageOf(cause)
+  } finally {
+    busy.value = false
+  }
+}
+
+async function confirmCurrency(): Promise<boolean> {
+  const pending = pendingCurrency.value
+  if (!pending) return false
+  busy.value = true
+  try {
+    await portfolioStore.setBaseCurrency(pending.id, pending.to, pending.rate)
+    pendingCurrency.value = null
+    return true
+  } catch (cause) {
+    error.value = messageOf(cause)
+    return false
+  } finally {
+    busy.value = false
+  }
+}
+
 async function remove(id: string): Promise<void> {
   busy.value = true
   error.value = null
@@ -92,6 +149,11 @@ function messageOf(cause: unknown): string {
 
 <template>
   <div class="depots">
+    <NModal
+      v-model:show="currencyDialog" preset="dialog" :title="t('fx.changeTitle')"
+      :content="changeDescription" :positive-text="t('actions.apply')" :negative-text="t('actions.cancel')"
+      :loading="busy" @positive-click="confirmCurrency"
+    />
     <p class="depots__intro">
       {{ t('portfolios.intro') }}
     </p>
@@ -104,7 +166,7 @@ function messageOf(cause: unknown): string {
       >
         <!--
           Der Name ist direkt editierbar, ohne Umschaltknopf: Umbenennen ist
-          die einzige Bearbeitung, die es hier gibt.
+          eine häufige Bearbeitung des Depots.
         -->
         <NInput
           :value="entry.name"
@@ -117,6 +179,14 @@ function messageOf(cause: unknown): string {
         <NTag v-if="entry.id === activeId" type="primary" size="small" :bordered="false">
           {{ t('portfolios.active') }}
         </NTag>
+
+        <div class="depots__currency" :title="t('fx.baseCurrency')">
+          <NSelect
+            :value="entry.baseCurrency" :options="currencyOptions" filterable size="small"
+            :disabled="busy" :input-props="{ 'aria-label': t('fx.baseCurrency') }"
+            @update:value="(currency: string) => changeCurrency(entry.id, currency)"
+          />
+        </div>
 
         <span class="depots__meta tabular-nums">
           {{ t('units.positions', entry.positionCount, { named: { count: integer(entry.positionCount) } }) }}
@@ -177,7 +247,12 @@ function messageOf(cause: unknown): string {
       <NButton size="small" secondary :loading="busy" @click="create">
         {{ t('portfolios.create') }}
       </NButton>
+      <div class="depots__currency">
+        <NSelect v-model:value="newCurrency" :options="currencyOptions" filterable size="small" :input-props="{ 'aria-label': t('fx.baseCurrency') }" />
+      </div>
     </div>
+
+    <p class="depots__meta">{{ t('fx.changeHint') }}</p>
 
     <p v-if="error" class="depots__error">{{ error }}</p>
   </div>
@@ -202,15 +277,18 @@ function messageOf(cause: unknown): string {
 
   &__row {
     @include row(var(--space-3));
+    flex-wrap: wrap;
     padding: var(--space-2) 0;
 
     & + & { border-top: 1px solid token(--border-default); }
   }
 
   &__name { max-width: 18rem; }
+  &__currency { width: 7rem; flex-shrink: 0; }
 
   &__meta {
     @include muted(var(--font-xs));
+    flex-shrink: 0;
 
     &--wide {
       display: none;
@@ -224,8 +302,17 @@ function messageOf(cause: unknown): string {
     margin-left: auto;
   }
 
+  &__row > &__meta { white-space: nowrap; }
+
+  &__row > &__name {
+    flex-basis: 100%;
+    max-width: none;
+    @include up(md) { flex-basis: auto; max-width: 18rem; }
+  }
+
   &__add {
     @include row(var(--space-2));
+    flex-wrap: wrap;
   }
 
   &__error {

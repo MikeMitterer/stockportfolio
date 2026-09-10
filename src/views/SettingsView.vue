@@ -21,7 +21,7 @@ import InfoHint from '@/components/InfoHint.vue'
 import PortfolioManager from '@/components/PortfolioManager.vue'
 import ExternalLinkEditor from '@/components/ExternalLinkEditor.vue'
 import { shortDate } from '@/domain/formatters'
-import { computeRebalancing } from '@/domain/rebalancing'
+import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import {
   REBALANCING_TRIGGERS,
   daysUntilDue,
@@ -65,11 +65,8 @@ const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
 /** Gesamtvermögen — nur als Bezugsgröße für die Puffer-Vorschau. */
-const total = computed(() => {
-  const portfolio = portfolioStore.portfolio
-  if (!portfolio) return 0
-  return computeRebalancing(portfolio, quotesStore.quotes, settingsStore.settings).total
-})
+const { result: valuation } = usePortfolioValuation()
+const total = computed(() => valuation.value?.total ?? 0)
 
 onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
@@ -176,11 +173,11 @@ async function setUpperBand(value: number | null): Promise<void> {
 }
 
 async function setSecurityBuffer(securityBuffer: AmountSetting): Promise<void> {
-  await settingsStore.patch({ securityBuffer })
+  await portfolioStore.setAmountSetting('securityBuffer', securityBuffer)
 }
 
 async function setMinTradeSize(minTradeSize: AmountSetting): Promise<void> {
-  await settingsStore.patch({ minTradeSize })
+  await portfolioStore.setAmountSetting('minTradeSize', minTradeSize)
 }
 
 async function setHistoryPeriod(value: HistoryPeriod): Promise<void> {
@@ -378,7 +375,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               -->
               <AmountSettingField
                 :label="t('settings.minTradeSize')"
-                :setting="settingsStore.settings.minTradeSize"
+                :setting="portfolioStore.portfolio?.amountSettings?.minTradeSize ?? settingsStore.settings.minTradeSize"
                 :total="total"
                 :hint="t('hints.minTradeSize')"
                 anchor="bands"
@@ -403,7 +400,7 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               -->
               <AmountSettingField
                 :label="t('settings.securityBuffer')"
-                :setting="settingsStore.settings.securityBuffer"
+                :setting="portfolioStore.portfolio?.amountSettings?.securityBuffer ?? settingsStore.settings.securityBuffer"
                 :total="total"
                 :hint="t('hints.securityBuffer')"
                 anchor="reserve"

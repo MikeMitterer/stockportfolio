@@ -16,6 +16,22 @@ benannten Instanzkennung. Fachliche Regeln stehen im
 4. Folgetermine im Abstand von 300 Sekunden aus dem geplanten Termin berechnen.
    Versäumte Termine überspringen; keine Folge sofortiger Nachhol-Durchläufe.
 
+### Lokaler Filecheck
+
+Der Observer verwendet den abgelegten
+[Filecheck](../../.agents/bin/observer-filecheck.py). Aus dem Projektverzeichnis:
+
+```bash
+python3 -B .agents/bin/observer-filecheck.py
+```
+
+Der Aufruf liefert Rollenfelder, Datei-Hashes und Git-HEAD als JSON und schreibt
+keine Dateien. Der bestehende Scheduler vergleicht die Snapshots und prüft die
+Observer-Zuordnung. Den Quelltext nicht bei jedem Durchlauf erneut als Befehl
+übertragen oder generieren. Änderungen am Check erfolgen an dieser einen Datei.
+Die Ablage ist vorläufig projektspezifisch; über eine allgemein wiederverwendbare
+Fassung entscheidet Mike später. Es entsteht kein zusätzlicher Timer.
+
 ## App mit ausführbarer In-Context-Zelle
 
 Nur verwenden, wenn `functions.exec` tatsächlich die Hilfen `notify` und

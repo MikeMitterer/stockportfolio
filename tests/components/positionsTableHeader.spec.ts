@@ -29,7 +29,7 @@ import { installFakeStorage } from '../fixtures/storage'
 const COLLAPSED_KEY = 'stockportfolio.table.collapsedGroups'
 
 /** Reihenfolge der Gruppen im Test — die erste ist die kritische. */
-const GRUPPEN: AssetGroup[] = ['stocks', 'bonds', 'metals']
+const GROUPS: AssetGroup[] = ['stocks', 'bonds', 'metals']
 
 function position(group: AssetGroup): Position {
   return {
@@ -49,6 +49,7 @@ function row(group: AssetGroup): PositionResult {
   return {
     position: position(group),
     quote: null,
+    basePrice: null, baseCurrency: 'EUR', originalMarketValue: 0, fx: null,
     marketValue: 1000,
     actualPercent: 33,
     targetValue: 1000,
@@ -83,19 +84,19 @@ function group(group: AssetGroup): GroupResult {
  * Methodenseite auf und wirft ohne Router. Wohin er zeigt, prüft dieser Test
  * nicht — er muss nur auflösbar sein.
  */
-function attrappenRouter(): Router {
+function stubRouter(): Router {
   return createRouter({
     history: createMemoryHistory(),
     routes: [{ path: '/:pathMatch(.*)*', component: { template: '<div />' } }],
   })
 }
 
-function tabelle() {
+function table() {
   return mount(PositionsTable, {
-    global: { plugins: [attrappenRouter()] },
+    global: { plugins: [stubRouter()] },
     props: {
-      rows: GRUPPEN.map(row),
-      groups: GRUPPEN.map(group),
+      rows: GROUPS.map(row),
+      groups: GROUPS.map(group),
       total: 3000,
       targetsExceeded: false,
       links: [],
@@ -104,10 +105,10 @@ function tabelle() {
 }
 
 /** Die Tabellen in Dokumentreihenfolge, je mit Sichtbarkeit und Kopfzeile. */
-function tabellen(wrapper: ReturnType<typeof tabelle>) {
-  return wrapper.findAll('.postable__table').map((tabelle) => ({
-    sichtbar: (tabelle.element as HTMLElement).style.display !== 'none',
-    traegtKopf: !tabelle.classes('postable__table--headless'),
+function tables(wrapper: ReturnType<typeof table>) {
+  return wrapper.findAll('.postable__table').map((table) => ({
+    visible: (table.element as HTMLElement).style.display !== 'none',
+    hasHeader: !table.classes('postable__table--headless'),
   }))
 }
 
@@ -118,63 +119,63 @@ describe('Spaltenkopfzeile der Positionstabelle', () => {
   })
 
   it('steht genau einmal, wenn alle Gruppen offen sind', () => {
-    const zustand = tabellen(tabelle())
+    const state = tables(table())
 
-    expect(zustand).toHaveLength(GRUPPEN.length)
-    expect(zustand.filter((t) => t.traegtKopf)).toHaveLength(1)
-    expect(zustand[0]?.traegtKopf).toBe(true)
+    expect(state).toHaveLength(GROUPS.length)
+    expect(state.filter((t) => t.hasHeader)).toHaveLength(1)
+    expect(state[0]?.hasHeader).toBe(true)
   })
 
   it('wandert zur ersten sichtbaren Tabelle, wenn die oberste Gruppe eingeklappt ist', async () => {
-    const wrapper = tabelle()
+    const wrapper = table()
 
     // Der Gruppenkopf ist die Schaltfläche zum Ein- und Ausklappen.
     await wrapper.findAll('button.groupheader')[0]?.trigger('click')
 
-    const zustand = tabellen(wrapper)
-    const mitKopf = zustand.filter((t) => t.traegtKopf)
+    const state = tables(wrapper)
+    const withHeader = state.filter((t) => t.hasHeader)
 
-    expect(zustand[0]?.sichtbar).toBe(false)
-    expect(mitKopf).toHaveLength(1)
+    expect(state[0]?.visible).toBe(false)
+    expect(withHeader).toHaveLength(1)
     // Der eigentliche Regressionskern: keine unsichtbare Tabelle trägt sie.
-    expect(mitKopf[0]?.sichtbar).toBe(true)
-    expect(zustand[1]?.traegtKopf).toBe(true)
+    expect(withHeader[0]?.visible).toBe(true)
+    expect(state[1]?.hasHeader).toBe(true)
   })
 
   it('lässt keine Kopfzeile übrig, wenn alle Gruppen eingeklappt sind', async () => {
-    const wrapper = tabelle()
+    const wrapper = table()
 
-    for (const kopf of wrapper.findAll('button.groupheader')) {
-      await kopf.trigger('click')
+    for (const header of wrapper.findAll('button.groupheader')) {
+      await header.trigger('click')
     }
 
-    const zustand = tabellen(wrapper)
+    const state = tables(wrapper)
 
-    expect(zustand.every((t) => !t.sichtbar)).toBe(true)
-    expect(zustand.filter((t) => t.traegtKopf)).toHaveLength(0)
+    expect(state.every((t) => !t.visible)).toBe(true)
+    expect(state.filter((t) => t.hasHeader)).toHaveLength(0)
   })
 
   it('holt die Kopfzeile zurück, sobald eine Gruppe wieder aufgeht', async () => {
-    const wrapper = tabelle()
-    const koepfe = wrapper.findAll('button.groupheader')
+    const wrapper = table()
+    const headers = wrapper.findAll('button.groupheader')
 
-    for (const kopf of koepfe) await kopf.trigger('click')
-    await koepfe[1]?.trigger('click')
+    for (const header of headers) await header.trigger('click')
+    await headers[1]?.trigger('click')
 
-    const zustand = tabellen(wrapper)
-    const mitKopf = zustand.filter((t) => t.traegtKopf)
+    const state = tables(wrapper)
+    const withHeader = state.filter((t) => t.hasHeader)
 
-    expect(mitKopf).toHaveLength(1)
-    expect(zustand[1]?.traegtKopf).toBe(true)
+    expect(withHeader).toHaveLength(1)
+    expect(state[1]?.hasHeader).toBe(true)
   })
 
   it('nimmt den eingeklappten Zustand aus dem Speicher — auch beim ersten Aufbau', () => {
-    localStorage.setItem(COLLAPSED_KEY, JSON.stringify([GRUPPEN[0]]))
+    localStorage.setItem(COLLAPSED_KEY, JSON.stringify([GROUPS[0]]))
 
-    const zustand = tabellen(tabelle())
+    const state = tables(table())
 
-    expect(zustand[0]?.sichtbar).toBe(false)
-    expect(zustand[0]?.traegtKopf).toBe(false)
-    expect(zustand[1]?.traegtKopf).toBe(true)
+    expect(state[0]?.visible).toBe(false)
+    expect(state[0]?.hasHeader).toBe(false)
+    expect(state[1]?.hasHeader).toBe(true)
   })
 })

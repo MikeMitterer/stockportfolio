@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PositionCard from '@/components/PositionCard.vue'
 import { assetColor } from '@/domain/assetColors'
-import { eur, percent } from '@/domain/formatters'
+import { percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 
 /**
@@ -34,6 +35,8 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
     }))
     .filter((entry) => entry.rows.length > 0),
 )
+const { formatMoney } = usePortfolioCurrency()
+
 </script>
 
 <template>
@@ -51,7 +54,7 @@ const renderedGroups = computed<RenderedGroup[]>(() =>
         <span class="tabular-nums">
           {{ percent(entry.group.actualPercent) }}
           <span class="cardlist__target">/ {{ percent(entry.group.targetPercent) }}</span>
-          <span class="cardlist__value">{{ eur(entry.group.actualValue) }}</span>
+          <span class="cardlist__value">{{ formatMoney(entry.group.actualValue) }}</span>
         </span>
       </div>
 

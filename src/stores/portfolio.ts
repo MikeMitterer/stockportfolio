@@ -8,9 +8,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
-import { AllowlistRepository, PortfolioRepository } from '@/db/repository'
+import { AllowlistRepository, PortfolioRepository, SettingsRepository } from '@/db/repository'
 import { demoPortfolio, emptyPortfolio } from '@/db/seed'
-import type { InstrumentKind, Portfolio, Position } from '@/types/portfolio'
+import { baseCurrencyOf, isCurrency } from '@/domain/fx'
+import { translate } from '@/i18n'
+import type { FxRate } from '@/types/fx'
+import type { AmountSetting, InstrumentKind, Portfolio, Position } from '@/types/portfolio'
 
 /** Kopf-Daten eines Depots für die Verwaltungsliste. */
 export interface PortfolioSummary {
@@ -18,6 +21,8 @@ export interface PortfolioSummary {
   name: string
   positionCount: number
   updatedAt: string
+  baseCurrency: string
+  hasCurrencyAmounts: boolean
 }
 
 export const usePortfolioStore = defineStore('portfolio', () => {
@@ -62,7 +67,19 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     }
 
     const entries = await repository.findAll()
-    portfolio.value = entries.find((entry) => entry.id === preferredId) ?? entries[0] ?? null
+    // Vorhandene Depots waren EUR; ihre bisherigen Geldschwellen direkt übernehmen.
+    const settings = await new SettingsRepository().load()
+    for (const entry of entries) {
+      if (entry.baseCurrency && entry.amountSettings) continue
+      entry.baseCurrency ??= 'EUR'
+      entry.amountSettings ??= {
+        securityBuffer: settings?.securityBuffer ?? { mode: 'percent', value: 0 },
+        minTradeSize: settings?.minTradeSize ?? { mode: 'absolute', value: 0 },
+      }
+      await repository.save(entry)
+    }
+    const selectedId = preferredId ?? portfolio.value?.id ?? settings?.activePortfolioId
+    portfolio.value = entries.find((entry) => entry.id === selectedId) ?? entries[0] ?? null
     loaded.value = true
     await refreshList()
   }
@@ -76,13 +93,60 @@ export const usePortfolioStore = defineStore('portfolio', () => {
    * @returns Die Kennung des neuen Depots — der Aufrufer muss sie in den
    *          Einstellungen als aktiv vermerken.
    */
-  async function createPortfolio(name: string): Promise<string> {
-    const fresh = emptyPortfolio(name.trim() || 'Neues Depot')
+  async function createPortfolio(name: string, baseCurrency = 'EUR'): Promise<string> {
+    if (!isCurrency(baseCurrency)) throw new Error(translate('fx.invalidCurrency'))
+    const fresh = emptyPortfolio(name.trim() || translate('seed.portfolioName'), baseCurrency)
     await repository.save(fresh)
     portfolio.value = fresh
     await refreshList()
     consola.info('portfolio: Depot angelegt', { id: fresh.id, name: fresh.name })
     return fresh.id
+  }
+
+  function hasCurrencyAmounts(entry: Portfolio): boolean {
+    return entry.positions.some(position => position.group === 'cash' && position.units !== 0)
+      || [entry.amountSettings?.securityBuffer, entry.amountSettings?.minTradeSize]
+        .some(setting => setting?.mode === 'absolute' && setting.value !== 0)
+  }
+
+  /** Bestände neu bewerten; nur gespeicherte Geldbeträge einmalig umrechnen. */
+  async function setBaseCurrency(id: string, currency: string, fx?: FxRate | null): Promise<void> {
+    if (!isCurrency(currency)) throw new Error(translate('fx.invalidCurrency'))
+    const entry = id === portfolio.value?.id ? portfolio.value : await repository.findById(id)
+    if (!entry || baseCurrencyOf(entry) === currency) return
+    const needsRate = hasCurrencyAmounts(entry)
+    if (needsRate && (!fx || fx.base !== baseCurrencyOf(entry) || fx.quote !== currency || !Number.isFinite(fx.rate) || fx.rate <= 0)) {
+      throw new Error(translate('fx.changeUnavailable'))
+    }
+    const rate = needsRate ? fx!.rate : 1
+    const convert = (value: number): number => {
+      const result = value * rate
+      if (!Number.isFinite(result)) throw new Error(translate('fx.changeUnavailable'))
+      return result
+    }
+    const convertSetting = (setting: AmountSetting): AmountSetting => ({
+      ...setting, value: setting.mode === 'absolute' ? convert(setting.value) : setting.value,
+    })
+    const changed: Portfolio = {
+      ...entry, baseCurrency: currency, updatedAt: new Date().toISOString(),
+      positions: entry.positions.map(position => position.group === 'cash' ? { ...position, units: convert(position.units) } : position),
+      ...(entry.amountSettings ? { amountSettings: {
+        securityBuffer: convertSetting(entry.amountSettings.securityBuffer),
+        minTradeSize: convertSetting(entry.amountSettings.minTradeSize),
+      } } : {}),
+    }
+    await repository.save(changed)
+    if (id === portfolio.value?.id) portfolio.value = changed
+    await refreshList()
+  }
+
+  async function setAmountSetting(name: 'securityBuffer' | 'minTradeSize', setting: AmountSetting): Promise<void> {
+    if (!portfolio.value || !Number.isFinite(setting.value) || setting.value < 0) return
+    const current = portfolio.value.amountSettings ?? {
+      securityBuffer: { mode: 'percent' as const, value: 0 }, minTradeSize: { mode: 'absolute' as const, value: 0 },
+    }
+    portfolio.value = { ...portfolio.value, amountSettings: { ...current, [name]: setting } }
+    await persist()
   }
 
   /** Wechselt das aktive Depot. */
@@ -203,6 +267,8 @@ export const usePortfolioStore = defineStore('portfolio', () => {
         name: entry.name,
         positionCount: entry.positions.length,
         updatedAt: entry.updatedAt,
+        baseCurrency: baseCurrencyOf(entry),
+        hasCurrencyAmounts: hasCurrencyAmounts(entry),
       }))
       .sort((a, b) => a.name.localeCompare(b.name, 'de'))
   }
@@ -318,6 +384,8 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     load,
     refreshList,
     createPortfolio,
+    setBaseCurrency,
+    setAmountSetting,
     switchTo,
     renamePortfolio,
     deletePortfolio,

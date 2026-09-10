@@ -84,11 +84,13 @@ const DEMO_POSITIONS: readonly (Omit<Position, 'id' | 'displayName'> & {
  * Leeres Depot mit einer Cash-Position — die gibt es genau einmal je
  * Portfolio und sie lässt sich nicht über den Instrumenten-Dialog anlegen.
  */
-export function emptyPortfolio(name = translate('seed.portfolioName')): Portfolio {
+export function emptyPortfolio(name = translate('seed.portfolioName'), baseCurrency = 'EUR'): Portfolio {
   const now = new Date().toISOString()
   return {
     id: newId(),
     name,
+    baseCurrency,
+    amountSettings: { securityBuffer: { mode: 'percent', value: 0 }, minTradeSize: { mode: 'absolute', value: 0 } },
     createdAt: now,
     updatedAt: now,
     positions: [
@@ -113,6 +115,8 @@ export function demoPortfolio(): Portfolio {
   return {
     id: newId(),
     name: translate('seed.demoName'),
+    baseCurrency: 'EUR',
+    amountSettings: { securityBuffer: { mode: 'percent', value: 0 }, minTradeSize: { mode: 'absolute', value: 0 } },
     createdAt: now,
     updatedAt: now,
     positions: DEMO_POSITIONS.map((position) => ({
