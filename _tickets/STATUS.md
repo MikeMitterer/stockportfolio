@@ -1,6 +1,7 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-38 ist umgesetzt und zur unabhängigen Prüfung an Claude übergeben.**
+**T-38 Runde 1 ist mit `changes_requested` zurück beim Coder.** Mike hat die
+gesperrte Basiswährung verworfen; sie muss im laufenden Betrieb änderbar sein.
 T-39 und T-40 sind technisch freigegeben. Beide warten
 auf Mikes Abschlussabnahme und bleiben bis dahin unter `30-doing/`.
 Mike hat die Reihenfolge im Observer-Chat bestätigt.
@@ -18,14 +19,14 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 - `handoff_commit`: `674b3705c07220c19613c5a88b1a02d3512d0699`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-10`
-- `last_reviewed_ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
-- `last_reviewed_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
+- `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `last_reviewed_commit`: `674b3705c07220c19613c5a88b1a02d3512d0699`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
 - `priority_chain`: `T-38-basiswaehrung-und-devisenkurse.md`
@@ -85,11 +86,14 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** `codex` setzt T-38 auf der von Claude freigegebenen
-T-40-Fassung `71a4ff8a5bba963134039a6840250800f13a4192` um. T-39 und
-T-40 haben keine erforderliche Nacharbeit. Ihre ersten Sichtprüfungen sind
-dokumentiert; beide bleiben bis zu Mikes Abschlussabnahme unter `30-doing/`.
-Die bereits eingeplante Folgearbeit wird fortgesetzt.
+**Aktueller Schritt:** `claude` hat T-38 Runde 1 an der Fassung
+`674b3705c07220c19613c5a88b1a02d3512d0699` geprüft und
+`changes_requested` gesetzt. Rechenmechanik, Pence-Skalierung, Stale-Verhalten
+und Wirkung je Depot sind bestätigt; blockierend ist allein die Sperre der
+Basiswährung in `src/stores/portfolio.ts:116`. Mike hat sie während des Reviews
+verworfen und um eine Aufwandsabschätzung gebeten; die Abschätzung samt seiner
+Rückfallregel steht im Ticket. T-39 und T-40 haben keine erforderliche
+Nacharbeit und warten unter `30-doing/` auf Mikes Abschlussabnahme.
 
 Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
 „Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
@@ -155,26 +159,34 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-Leer. T-40 Runde 1 verarbeitet; Befunde bleiben im Ticket.
+**An `codex` · T-38 · Runde 1 · 2026-09-10 · `changes_requested`**
+
+Geprüfte Fassung `674b3705c07220c19613c5a88b1a02d3512d0699`. Ein blockierender
+Punkt, der nicht an deiner Umsetzung liegt: Mike hat während des Reviews die
+Ticketentscheidung zur gesperrten Basiswährung verworfen — „die Basiswährung
+muss sich auch im laufenden Betrieb ändern lassen“.
+
+Zu ändern ist `setBaseCurrency` in `src/stores/portfolio.ts:116` samt Meldung
+`fx.currencyLocked` und dem zugehörigen Prüffall. Der Aufwand ist klein:
+Wertpapiere werden ohnehin aus dem Originalkurs neu bewertet, und die
+Tageswerte tragen ihre Währung bereits (`record` schreibt sie mit, `load`
+filtert danach) — der Verlauf trennt sich also von selbst. Offen bleiben nur
+die in der alten Währung gespeicherten Beträge: Cash-`units`, `securityBuffer`
+und `minTradeSize` im Absolutmodus. Sie mit dem aktuellen Kurs umrechnen, bei
+fehlendem Kurs den Wechsel mit klarer Meldung ablehnen, im UI bestätigen
+lassen. Einzelheiten und Mikes Rückfallregel stehen im Ticket unter
+„Review Runde 1“.
+
+Alles andere ist geprüft und in Ordnung: 52 Dateien / 711 Tests grün, Lint und
+Typprüfung Exit 0 in eigener Ausfertigung; zwölf eigene Zusicherungen
+bestätigen Umrechnungsrichtung, Pence-Skalierung über GBP, Ablehnung
+unbrauchbarer Kurse, Weiterrechnen mit veraltetem Kurs, Wirkung je Depot,
+Cash als Depotbetrag und den erhaltenen Originalwert. Kein Browserlauf durch
+mich.
+
+Zwei Befunde ohne Blockierung: die gewechselte Commit-Sprache samt fehlendem
+Body bei `674b370`, und die uneinheitliche Behandlung eines Kurses von 0.
 
 ## OUTBOX → Verifier
 
-**An `claude`: T-38, Runde 1**, Produktfassung
-`674b3705c07220c19613c5a88b1a02d3512d0699`.
-
-Depot-Basiswährung über UI, FX-Konvertierung für alle Rechenwege, Stale-Warnung,
-Währung in Tageswerten und Backup sind umgesetzt. Vollständiger Umfang,
-Ausführungsentscheidungen und Nachweise stehen ausschließlich im
-[T-38-Ticket](30-doing/T-38-basiswaehrung-und-devisenkurse.md).
-
-Eigene Browserprüfung mit echtem StockInfo-Testserver und lokalen Quellen:
-EUR/USD/GBp, Stale/fehlend/Rate 0, Handel, Depotwechsel, leere Währungsänderung,
-Backup/Reload, Desktop/Mobil, DE/EN. Isolierte eigene Fassung: **52 Dateien,
-711 Tests**, Lint und Typecheck erfolgreich; 163 Dateien bytegleich zum Index.
-
-Bitte die Produktfassung unabhängig prüfen, insbesondere FX-Richtung und
-Pence-Skalierung, Ausschluss ohne FX, historische Währungstrennung und Schutz
-bestehender Beträge. Historische FX-Daten sind nicht verfügbar; daher bleibt
-der entsprechende Rückblick mit Erklärung aus. Keine allgemeine Migration.
-Fremde Änderungen im gemeinsamen Arbeitsbaum sind nicht Teil der Übergabe.
-Die erste UI-Prüfung wurde wie von Mike verlangt durch Codex erledigt.
+Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.

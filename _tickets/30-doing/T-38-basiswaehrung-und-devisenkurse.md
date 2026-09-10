@@ -378,3 +378,145 @@ Bestände. Die eigene UI-Prüfung ersetzt nicht Mikes Abschlussabnahme.
   Typecheck erfolgreich. Keine fremden Produktänderungen Bestandteil der Fassung.
 - **Offen:** unabhängiger Review dieser Fassung und Mikes Abschlussabnahme.
   T-39/T-40 sind technisch freigegeben, ihre menschlichen Abnahmen bleiben offen.
+
+### Gemeinsame Ablage des Testservers · Entscheidung nach Übergabe
+
+Mike, 2026-09-10 im Observer-Chat: „Ich teile deine Einschätzung zur gemeinsamen
+Ablage. Dieses Script werden wir noch öfter benötigen“.
+
+Der StockInfo-Testserver wird bereits von T-39, T-40 und T-38 verwendet.
+Sein derzeitiger Ort unter `30-doing/` bindet die gemeinsame Prüfumgebung an
+das Archivieren von T-39. Als offene Nacharbeit den vorhandenen Helfer nach
+`scripts/stockinfo-test-server.py` im Projekt verschieben und die aktuellen
+Links und Startbefehle in allen drei Tickets auf diesen Ort umstellen.
+Keine zweite Scriptkopie anlegen; historische Prüffassungen bleiben erhalten.
+
+Der zuständige Coder führt die Verschiebung nach Verarbeitung des laufenden
+Reviews durch und belegt, dass die bisherigen Detail- und FX-Szenarien vom
+neuen Ort starten. Dabei alle Verweise auf den bisherigen Pfad inventarisieren
+und aktuelle Benutzungsanweisungen korrigieren. Dieser Nachtrag ändert weder
+die übergebene Produktfassung noch den bestehenden Prüfauftrag. Umsetzung
+und Nachweis der Ablageänderung sind noch offen und gehören vor Abschluss
+in den aktuellen Nachweisstand dieses Tickets.
+
+### Review Runde 1 · Verifier `claude` · 2026-09-10
+
+Geprüfte Fassung `674b3705c07220c19613c5a88b1a02d3512d0699` gegen `a1da528`.
+**Urteil: `changes_requested`.** Ein blockierender Punkt, und der liegt nicht
+an der Umsetzung: Mike hat die im Ticket festgehaltene Entscheidung zur
+gesperrten Basiswährung während dieses Reviews ausdrücklich verworfen.
+
+Die Rechenmechanik selbst ist geprüft und stimmt. Eigene Ausfertigung des
+Commits (`git archive`, nur geteilte Abhängigkeiten), `src/` und `tests/`
+byteweise gleich: **52 Dateien / 711 Tests grün**, Lint und Typprüfung Exit 0 —
+dieselben Zahlen wie in der Übergabe.
+
+#### Blockierend · Die Basiswährung muss sich im laufenden Betrieb ändern lassen
+
+Mike, 2026-09-10, während dieses Reviews:
+
+> Das ist ein Schmarren - die Basiswährung muss sich auch im laufenden Betrieb
+> ändern lassen.
+
+Damit entfällt die Grundlage von Umsetzungsentscheidung 1 oben („Die Währung
+darf nur bei einem leeren Depot … geändert werden"). Die Umsetzung folgt dieser
+Entscheidung korrekt — die Entscheidung selbst gilt nicht mehr. Betroffen ist
+genau eine Stelle: `src/stores/portfolio.ts:116` in `setBaseCurrency` wirft
+`fx.currencyLocked`, sobald `hasAmounts(entry)` zutrifft oder ein Tageswert
+aufgezeichnet ist. Dazu gehören die Meldung `fx.currencyLocked` in beiden
+Sprachen und der Prüffall „USD-/EUR-Depots mit Beständen bieten keinen
+Währungswechsel an".
+
+#### Aufwandsabschätzung des Wechsels
+
+Mike hat um eine Einschätzung gebeten, ob der Wechsel teuer wird. **Er wird es
+nicht.** Zwei der drei erwarteten Problemfelder sind in dieser Fassung bereits
+gelöst:
+
+- **Wertpapiere brauchen nichts.** Sie werden bei jeder Berechnung aus dem
+  unveränderten Originalkurs neu bewertet. Meine Gegenprobe zeigt dasselbe
+  Papier gleichzeitig als 100 EUR im EUR-Depot und 200 USD im USD-Depot. Es
+  gibt nichts zu migrieren.
+- **Die Tageswerte tragen ihre Währung schon.** `record(portfolioId, total,
+  currency, …)` schreibt sie mit, `load(portfolioId, currency)` filtert
+  `entries.filter(entry => entry.currency === currency)`. Nach einem Wechsel
+  zeigt der Verlauf also automatisch nur die Reihe der neuen Währung; die alten
+  Einträge bleiben unverändert erhalten und laufen weiter, falls jemand
+  zurückwechselt. Keine erfundene Historie, keine historischen Devisenkurse
+  nötig — genau der Grund, warum die Sperre für Tageswerte nicht gebraucht wird.
+
+Zu tun bleibt damit:
+
+1. **Sperre entfernen** — `setBaseCurrency` ohne `hasAmounts`/Snapshot-Riegel,
+   `fx.currencyLocked` durch einen Bestätigungstext ersetzen.
+2. **Beträge umrechnen**, die in der alten Währung gespeichert sind: Cash-`units`
+   sowie `securityBuffer` und `minTradeSize` im Absolutmodus. Der Kurs kommt
+   aus dem vorhandenen FX-Store; fehlt er, wird der Wechsel mit klarer Meldung
+   abgelehnt statt still falsch gerechnet.
+3. **Bestätigung im UI**, die benennt, was umgerechnet wird und dass der
+   Verlauf ab jetzt eine neue Reihe führt.
+4. Prüffälle dazu; der bisherige Sperrfall wird ersetzt.
+
+Das ist ein kleines Ticket — deutlich kleiner als T-38 selbst, weil weder
+Umrechnung noch Verlauf angefasst werden müssen.
+
+**Zur Rückfallidee, die Währung in die Umgebungsdatei zu legen:** Sie löst das
+Problem nicht, sie versteckt es. Dieselben Cashbeträge und Geldschwellen stehen
+nach einer geänderten Umgebungsvariable genauso in der alten Währung da — nur
+ohne Dialog, ohne Kurs zur Hand und ohne dass jemand gefragt wird. Zusätzlich
+fiele die Wahl je Depot weg, die in dieser Fassung bereits funktioniert und die
+Mike am 2026-09-10 ausdrücklich so festgelegt hat. Empfehlung: die vier Punkte
+oben umsetzen.
+
+**Mikes Rückfallregel, 2026-09-10:**
+
+> Bzw. wenn der Aufwand oder die Probleme die durch die Dynamik entstehen nicht
+> im Verhältnis zum Benefit stehen dann muss bei Start der Applikation, wenn
+> noch keine Daten erfasst sind bzw. das Depot leer ist. Sehr prominent die
+> Währungsauswahl kommuniziert werden.
+
+Nach der Abschätzung oben greift die Bedingung nicht: Der Aufwand steht sehr
+wohl im Verhältnis, weil Umrechnung und Verlauf bereits tragen. Die Regel bleibt
+trotzdem hier festgehalten — sollte Mike den Aufwand anders gewichten, ist die
+prominente Währungswahl beim ersten Start mit leerem Depot der beschlossene
+Ersatz. Unabhängig davon ist eine gut sichtbare Wahl bei der Depotanlage auch
+neben dem Wechsel sinnvoll; das ist eine eigene, kleine Entscheidung und kein
+Ersatz für die entfernte Sperre.
+
+#### Geprüft und in Ordnung
+
+Zwölf eigene Zusicherungen gegen `convertedPrice` und `computeRebalancing`,
+unabhängig von den mitgelieferten Tests formuliert, alle erfüllt:
+
+- **Die Umrechnungsrichtung folgt dem Vertrag.** `GET /fx?base=X&quote=Y`
+  bedeutet „1 X = rate Y"; der Client multipliziert den Originalkurs damit.
+  Ein Kurs, dessen `base`/`quote` nicht zur Anfrage passt, wird verworfen.
+- **Pence werden korrekt skaliert.** `GBp` läuft über `GBP` mit Faktor 0,01:
+  1.234,5 GBp bei GBP/EUR 1,2 ergeben 14,814 EUR je Stück. Das ist die Stelle,
+  an der eine Währungsumrechnung typischerweise um Faktor 100 daneben liegt.
+- **Unbrauchbare Kurse zählen nicht:** Rate 0, negative Rate und fehlender Kurs
+  führen zum sichtbaren Ausschluss. Die Beschriftung wurde mitgezogen —
+  „Devisenkurs fehlt" statt des früheren „fremde Währung".
+- **Ein veralteter Kurs wird weiterverwendet**, `stale` bleibt am Ergebnis
+  erhalten; `fx.stalePair` nennt Paar und Stand. Das entspricht Entscheidung B.
+- **Die Depotwährung wirkt je Depot**, nicht global; Cash gilt als Betrag der
+  Depotwährung; der Originalmarktwert bleibt neben dem Depotwert erhalten, es
+  wird also nicht doppelt umgerechnet.
+- Depots ohne Angabe gelten weiterhin als EUR-Depots.
+
+Der FX-Store ist wie der Feldkatalog gebaut: an die API-Adresse gebunden,
+Mehrfachabrufe zusammengefasst, Generationszähler gegen veraltete Antworten,
+und bei einem Fehlschlag bleibt der vorherige Kurs als `stale`/`cached`
+erhalten — konsistent zur Vertragsinvariante aus T-39.
+
+#### Weitere Befunde ohne Blockierung
+
+- **Die Commit-Sprache ist gewechselt.** `674b370`, `dcd384b`, `a1da528` und
+  `97b5aba` sind englisch betitelt, `674b370` hat zusätzlich gar keinen Body —
+  bei 54 Dateien. `AGENTS.md` verlangt Deutsch für Commit-Bodies, und alle
+  Commits bis `2cbfbf0` waren deutsch. Ab `71a4ff8` ist die Linie gekippt.
+- **Ein Kurs von 0 wird uneinheitlich behandelt.** Notiert das Papier in der
+  Depotwährung, ergibt `convertedPrice` einen Wert von 0 und die Position zählt
+  mit; in fremder Währung greift `price > 0` und die Position wird
+  ausgeschlossen. Praktisch irrelevant, weil StockInfo keinen Nullkurs liefert,
+  aber beide Wege sollten dieselbe Antwort geben.
