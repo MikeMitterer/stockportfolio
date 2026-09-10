@@ -275,3 +275,80 @@ betroffenen Sprachdateien zu `reportingFundCheck` umbenannt.
   historische T-37-Vorschlag ist keine zusätzlich erforderliche Spezifikation.
 
 Unabhängiges Prüfurteil und Mikes Abschlussabnahme stehen aus.
+
+### Review Runde 1 · Verifier `claude` · 2026-09-10
+
+Geprüfte Fassung `71a4ff8a5bba963134039a6840250800f13a4192` gegen `9b6f7b3`.
+**Urteil: technisch freigegeben (`approved`).** Keine Nacharbeit gefordert.
+Mikes Abnahme steht weiterhin aus.
+
+Geprüft wurde wieder in einer eigenen Ausfertigung des Commits (`git archive`,
+nur geteilte Abhängigkeiten). `src/` und `tests/` stimmen byteweise mit dem
+Commit überein; die fremden Änderungen des Hauptbaums sind außen vor.
+**46 Dateien / 679 Tests grün, Lint und Typprüfung Exit 0** — dieselben Zahlen
+wie in der Übergabe, mit der angegebenen Testadresse.
+
+**Vierzehn eigene Zusicherungen gegen `projectDetailFields`**, unabhängig von
+den mitgelieferten Tests formuliert, alle erfüllt:
+
+- Ein Zusatzfeld erscheint, solange es nicht in der Hauptzeile steht, und
+  verschwindet, sobald sein Schlüssel dort auftaucht — dasselbe für `ter`.
+- `0` und `false` sind Werte, `null` erscheint als fehlend.
+- `risk-a.score` und `risk-b.score` bleiben bei gleicher Beschriftung getrennt.
+- Ein Betrag verwendet die Währung **am Wert**; ohne Währung wird er nicht
+  dargestellt statt mit der Kurswährung gerechnet.
+- Der wirksame `value` steht vorn, `manual_value` bleibt daneben, `shadowed`
+  erhalten.
+- Eine der Definition widersprechende Einheit führt zu `—`.
+- Der Prozentmaßstab bleibt erhalten: `0.2` wird „0,2 %", nicht 20 %.
+- Ein unpassender Scope und ein Feld ohne Definition erscheinen nicht.
+- Ohne Kurs gibt es keine Zusatzfelder.
+
+Weiter am Quellcode bestätigt:
+
+- **Die Anwendbarkeitsprüfung spiegelt den Server exakt.** StockInfos
+  `DetailDefinition.applies()` ist `any(instrument_type in scope.instrument_types
+  and identity_kind in scope.identity_kinds)`; der Client prüft dieselbe
+  Bedingung, einschließlich der leeren Scope-Liste, die auch dort „von keiner
+  Quelle deklariert" bedeutet.
+- **Der Abgleich hängt an den tatsächlich gerenderten Spalten.** Jede Spalte
+  meldet über `stockInfoFields(row)` die für **diese Zeile** dargestellten
+  Feldschlüssel; der Drilldown bekommt deren Vereinigung. Das ist zeilengenau
+  — die Kursspalte meldet `price`/`currency` nur, wenn ein Kurs vorliegt — und
+  schließt dynamische Spalten ohne zweite Pflegeliste ein.
+- **Der Katalog wird im Normalfall geladen.** `PositionDetailFields.vue` holt
+  ihn selbst beim Öffnen; der zusätzliche Auslöser in `PositionsTable.vue`
+  betrifft nur konfigurierte dynamische Spalten.
+- **Ein Katalogausfall lässt die Kurse in Ruhe.** Der Store setzt nur
+  `catalog = null` und eine Fehlermeldung, die Ansicht zeigt eine Warnung mit
+  Wiederholen-Knopf. `sequence` und `pending` verhindern veraltete Antworten
+  und doppelte Abrufe; ein Adresswechsel verwirft den Katalog.
+- **Fehlend und leer sind unterschieden.** `details == null` heißt „noch nicht
+  geladen" und wird als Hinweis angezeigt; eine leere Map bedeutet geladen und
+  ohne Zusatzwerte.
+- **Werte werden als Text gerendert.** Kein `v-html` im gesamten `src/`-Baum.
+- **Keine Berechnung aus Zusatzfeldern:** weder `rebalancing.ts` noch
+  `tradePlan.ts` kennen die Detailprojektion.
+- **i18n vollständig zweisprachig:** der `detailFields`-Block steht in `de.ts`
+  und `en.ts` mit denselben Schlüsseln.
+
+**Grenze dieses Reviews:** kein Browserlauf und kein Live-Server. Die erste
+Sichtprüfung lag laut Auftrag bei Codex und ist oben dokumentiert.
+
+#### Befunde ohne Nacharbeitsbedarf
+
+- **Die Reihenfolge der Zusatzfelder bestimmt der Server.** Projiziert wird in
+  der Einfügereihenfolge von `details`, danach die Core-Rückfälle. Ordnet
+  StockInfo seine Schlüssel anders an, springt die Anzeigereihenfolge. Eine
+  stabile Sortierung wäre eine ruhigere Darstellung.
+- **`minimum` und `maximum` werden übernommen, aber nie angewendet.** Ein Wert
+  außerhalb des deklarierten Bereichs erscheint unkommentiert. Das verlangt das
+  Ticket nicht; als Anzeigehinweis wäre es später sinnvoll.
+- **Die Projektion läuft je Zeile mehrfach** — einmal je dynamischer Spalte für
+  `stockInfoFields`, einmal im `render`, dazu für die Sichtbarkeitsliste. Bei
+  Depotgrößen dieses Projekts unerheblich, bei großen Tabellen ein Kandidat für
+  eine gemeinsame Berechnung je Zeile.
+- **Weiterhin offen aus dem T-39-Review:** Die beiden `apiBaseUrl`-Tests
+  brauchen eine ausdrücklich gesetzte Testadresse und wären im frischen Checkout
+  rot. Codex hat das in der Übergabe erneut vermerkt; ein eigenes kleines
+  Ticket dafür fehlt weiterhin.

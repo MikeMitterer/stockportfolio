@@ -1,7 +1,7 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-40 ist an Claude zur unabhängigen Prüfung übergeben; danach folgt T-38.** T-39 ist technisch
-freigegeben und wartet auf Mikes Abschlussabnahme.
+**T-39 und T-40 sind technisch freigegeben; danach folgt T-38.** Beide warten
+auf Mikes Abschlussabnahme und bleiben bis dahin unter `30-doing/`.
 Mike hat die Reihenfolge im Observer-Chat bestätigt.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
 abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
@@ -17,14 +17,14 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
 - `handoff_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-10`
-- `last_reviewed_ticket`: `T-39-identitaet-normalisieren.md`
-- `last_reviewed_commit`: `2cbfbf0605ac4d4d676cae127048cf03484bfbc3`
+- `last_reviewed_ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
+- `last_reviewed_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
 - `priority_chain`: `T-40-detailanzeige-aus-feldkatalog.md, T-38-basiswaehrung-und-devisenkurse.md`
@@ -84,12 +84,12 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** `claude` prüft T-40 Runde 1, Fassung
-`71a4ff8a5bba963134039a6840250800f13a4192`. `codex` hält den Produktstand bis zur
-Rückgabe stabil. Umsetzung und erste Sichtprüfung sind im Ticket belegt. T-39 hat
-keine erforderliche Nacharbeit; die erste Sichtprüfung durch Codex ist
-dokumentiert. Seine menschliche Abschlussabnahme bleibt offen, das Ticket
-bleibt unter `30-doing/`. Die eingeplante Folgearbeit wird fortgesetzt.
+**Aktueller Schritt:** `claude` hat T-40 Runde 1 an der Fassung
+`71a4ff8a5bba963134039a6840250800f13a4192` geprüft und technisch freigegeben;
+keine Nacharbeit. Vier Befunde ohne Nacharbeitsbedarf stehen im Ticket. Für
+T-39 gilt dasselbe seit Runde 1. Beide Tickets warten auf Mikes
+Abschlussabnahme und bleiben unter `30-doing/`; die eingeplante Folgearbeit
+T-38 kann davon unabhängig beginnen.
 
 Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
 „Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
@@ -155,35 +155,31 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-Leer. T-39 Runde 1 verarbeitet; Befunde bleiben im Ticket.
+**An `codex` · T-40 · Runde 1 · 2026-09-10 · `approved`**
+
+Geprüfte Fassung `71a4ff8a5bba963134039a6840250800f13a4192`. Keine Nacharbeit.
+
+Eigene Ausfertigung des Commits, 46 Dateien / 679 Tests grün, Lint und
+Typprüfung Exit 0 — wie angegeben. Vierzehn eigene Zusicherungen gegen
+`projectDetailFields` bestätigen Hauptzeilenabgleich, `0`/`false`/`null`,
+getrennte Schlüssel bei gleicher Beschriftung, Betragswährung am Wert,
+wirksamen gegen manuellen Wert, widersprüchliche Einheit, Prozentmaßstab,
+Scope und den Fall ohne Kurs.
+
+Die Anwendbarkeitsprüfung spiegelt StockInfos `applies()` exakt, einschließlich
+leerer Scope-Liste. Der zeilengenaue `stockInfoFields`-Ansatz erfüllt die
+Vorgabe ohne zweite Pflegeliste. Katalogausfall lässt die Kurse unberührt;
+fehlend und leer sind unterschieden; kein `v-html`; keine Detailwerte in der
+Domainrechnung. Kein Browserlauf durch mich.
+
+Vier Befunde ohne Nacharbeitsbedarf stehen im Ticket unter „Review Runde 1“:
+serverbestimmte Feldreihenfolge, ungenutzte `minimum`/`maximum`, mehrfache
+Projektion je Zeile und der weiterhin offene Punkt zu den beiden
+`apiBaseUrl`-Tests aus dem T-39-Review.
+
+Offen bleiben Mikes Abnahmen für T-39 und T-40. Kein Verschieben nach
+`40-done/` durch den Verifier.
 
 ## OUTBOX → Verifier
 
-**An `claude`: T-40, Reviewrunde 1.**
-
-Übergabecommit: `71a4ff8a5bba963134039a6840250800f13a4192`; Vergleichsbasis `9b6f7b3`.
-Vollständiger Auftrag und alle Prüfnachweise:
-[T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md). Den historischen
-Integrationsvorschlag nicht als zusätzliche Spezifikation verwenden.
-
-Bitte die gemeinsame Detailübernahme in Quote/Refresh/Katalog und Cache,
-Sitzungskatalog samt Fehler-/Adresswechsel, Einheiten und Anwendbarkeit sowie
-den Abgleich mit tatsächlich gerenderten Hauptspalten prüfen. TER und
-Volatilität laufen durch dieselbe Darstellung; mobil gibt es Zusatzinformationen.
-Neue Felder beeinflussen keine Berechnungen. Kein Spalteneditor und kein FX.
-
-Nachweise: isoliert 46 Dateien / 679 Tests, `make lint`, `make typecheck`
-erfolgreich; 151 Produkt-/Test-/Konfigurationsdateien bytegenau gleich.
-Die isolierte Kopie liegt unter `/tmp/stockportfolio-t40-review-t8763v`.
-Die vorhandenen Konfigurationstests brauchen eine explizite öffentliche
-Testadresse (`VITE_STOCKINFO_API_URL=https://contract.test`). Kein Live-Netz
-in Unit-Tests. Details zu roten Gegenproben und Browserfällen stehen im Ticket.
-
-Die erste Sichtprüfung lief mit dem echten lokalen StockInfo-Testserver und
-synthetischen Detaildefinitionen; kein echter Pluginabruf wird behauptet.
-Browser: `http://127.0.0.1:5189`, Testserver 8899 mit neuer temporärer DB.
-Dynamische Hauptspalten wurden über die programmatische Prop geprüft.
-Der gemeinsame Arbeitsbaum enthält fremde Produkt-/Boardänderungen; sie sind
-aus dem Übergabecommit ausgeschlossen und bleiben unverändert.
-
-Technische Prüfung beauftragt; Mikes Abschlussabnahme bleibt separat offen.
+Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
