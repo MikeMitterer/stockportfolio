@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed } from 'vue'
 import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
-import { eur, eurSigned, percent } from '@/domain/formatters'
+import { percent } from '@/domain/formatters'
 import { assetColor } from '@/domain/assetColors'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { GroupResult } from '@/domain/rebalancing'
@@ -31,6 +32,8 @@ const color = computed(() => assetColor(props.group.group))
  * Andeutung — kräftiger las sich die Zeile wie ein Schaltfeld.
  */
 const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transparent)`)
+const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
+
 </script>
 
 <template>
@@ -62,7 +65,7 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
     </span>
 
     <span class="groupheader__figures tabular-nums">
-      <span class="groupheader__value">{{ eur(group.actualValue) }}</span>
+      <span class="groupheader__value">{{ formatMoney(group.actualValue) }}</span>
       <span>
         {{ percent(group.actualPercent) }}
         <span class="groupheader__target">/ {{ percent(group.targetPercent) }}</span>
@@ -71,7 +74,7 @@ const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transpar
         class="groupheader__delta"
         :class="group.deltaEuro >= 0 ? 'groupheader__delta--up' : 'groupheader__delta--down'"
       >
-        {{ eurSigned(group.deltaEuro) }}
+        {{ formatMoneySigned(group.deltaEuro) }}
       </span>
       <span class="groupheader__status">
         <SuggestionBadge :suggestion="group.suggestion" :below-min-trade="group.belowMinTrade" plain />

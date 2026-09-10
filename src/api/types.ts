@@ -128,3 +128,14 @@ export interface RefreshResult {
   total: number
   refreshed: number
 }
+/** Devisenkurs gemäß StockInfo Core 4.3.0. */
+export interface FxResponse {
+  base: string
+  quote: string
+  rate: number
+  quote_time: string
+  fetched_at: string
+  cached: boolean
+  stale: boolean
+  source: string | null
+}

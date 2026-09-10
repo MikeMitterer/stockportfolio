@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { eur, eurSigned, percent } from '@/domain/formatters'
+import { percent } from '@/domain/formatters'
 import { assetColor } from '@/domain/assetColors'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import type { GroupResult } from '@/domain/rebalancing'
@@ -25,6 +26,8 @@ const actualStyle = computed(() => ({
 const targetPosition = computed(() => ({
   left: `${(props.group.targetPercent / barMax.value) * 100}%`,
 }))
+const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
+
 </script>
 
 <template>
@@ -47,10 +50,10 @@ const targetPosition = computed(() => ({
 
     <div class="groupbar__actual tabular-nums">{{ percent(group.actualPercent) }}</div>
     <div class="groupbar__goal tabular-nums">/ {{ percent(group.targetPercent) }}</div>
-    <div class="groupbar__value tabular-nums">{{ eur(group.actualValue) }}</div>
+    <div class="groupbar__value tabular-nums">{{ formatMoney(group.actualValue) }}</div>
     <div class="groupbar__delta tabular-nums">
       <span :class="group.deltaEuro >= 0 ? 'groupbar__up' : 'groupbar__down'">
-        {{ eurSigned(group.deltaEuro) }}
+        {{ formatMoneySigned(group.deltaEuro) }}
       </span>
     </div>
     <div class="groupbar__status">

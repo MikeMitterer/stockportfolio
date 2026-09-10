@@ -35,7 +35,7 @@ sys.path.insert(0, str(stockinfo_root))
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
-from app.container import get_cached_quote_service, get_daily_history_service
+from app.container import get_cached_quote_service, get_daily_history_service, get_fx_service
 from app.db import init_db
 from app.detail_models import DetailDefinition, DetailInput
 from app.main import app
@@ -47,6 +47,7 @@ from app.services.daily_history import DailyHistoryService
 from app.services.daily_sync import DailyCloseSync
 from app.services.quote_cache import CachedQuoteService
 from app.services.quote_service import QuoteService
+from app.services.fx_service import CachedFxService
 from stockinfo_plugin.types import NotFound
 from tests.boundaries import EmptyEtfEnricher
 
@@ -122,6 +123,18 @@ class LocalDaily:
         ])
 
 
+class LocalFx:
+    """Kontrollierte Devisenquelle hinter StockInfos echtem FX-Service."""
+
+    name = "t38-local-fx"
+
+    def fetch_fx_rate(self, base: str, quote: str) -> SourceAnswer[float]:
+        rates = {"EUR": 1.0, "USD": 1.25, "GBP": 1 / 1.2, "CAD": 1.5}
+        if base not in rates or quote not in rates:
+            return SourceAnswer(None)
+        return SourceAnswer(rates[quote] / rates[base])
+
+
 @asynccontextmanager
 async def test_lifespan(application: FastAPI) -> AsyncIterator[None]:
     database = str(data_dir / "stockinfo.db")
@@ -145,6 +158,7 @@ async def test_lifespan(application: FastAPI) -> AsyncIterator[None]:
     application.dependency_overrides[get_cached_quote_service] = lambda: service
     history = DailyHistoryService(repository, daily, service)
     application.dependency_overrides[get_daily_history_service] = lambda: history
+    application.dependency_overrides[get_fx_service] = lambda: CachedFxService(LocalFx(), repository, 6)
     get_gate().start()
     print(json.dumps({"test_database": database, "symbols": [item["symbol"] for item in SEEDS]}), flush=True)
     yield
@@ -157,14 +171,24 @@ app.router.lifespan_context = test_lifespan
 async def test_faults(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     if request.url.path == "/__test/scenario" and request.method == "POST":
         changes = await request.json()
-        if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down"}:
+        if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down", "fx-stale", "fx-missing", "fx-invalid"}:
             return JSONResponse({"error": "unknown test mode"}, status_code=400)
         state.update({key: changes[key] for key in ("mode", "symbol") if key in changes})
         return JSONResponse(state, headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+    if request.url.path == "/fx" and state["mode"] == "fx-missing":
+        return JSONResponse({"code": "fx_source_unavailable"}, status_code=502,
+                            headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
     if request.url.path == "/fields" and state["mode"] == "fields-down":
         return JSONResponse({"code": "t40_test_fields_unavailable"}, status_code=503,
                             headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
     response = await call_next(request)
+    if request.url.path == "/fx" and response.status_code == 200 and state["mode"] in {"fx-stale", "fx-invalid"}:
+        body = json.loads(b"".join([chunk async for chunk in response.body_iterator]))
+        if state["mode"] == "fx-invalid":
+            body["rate"] = 0
+        else:
+            body.update(stale=True, cached=True, quote_time="2026-09-01T10:00:00Z")
+        return JSONResponse(body, headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
     if response.status_code != 200 or state["mode"] == "normal":
         return response
     is_quote = request.url.path.startswith(("/quote", "/refresh"))

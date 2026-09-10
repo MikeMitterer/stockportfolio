@@ -18,6 +18,7 @@ import type { HistoryPoint } from './sparkline'
 
 /** Ein Tagesstand des Depots, wie er gespeichert wird. */
 export interface ValueSnapshot {
+  currency: string
   /** ISO-Datum, `YYYY-MM-DD` — ein Eintrag je Tag. */
   date: string
   /** Gesamtwert in der Basiswährung. */

@@ -6,6 +6,8 @@
  */
 
 import { resolveAmount } from './amount'
+import { baseCurrencyOf, convertedPrice } from './fx'
+import type { FxMap, FxRate } from '@/types/fx'
 import { daysUntilDue, isDue, usesBands, usesCalendar } from './schedule'
 import type {
   AssetGroup,
@@ -32,7 +34,7 @@ export function quoteFor(position: Position, quotes: QuoteMap): QuoteCacheEntry 
 
 /**
  * Marktwert einer Position in ihrer Kurswährung (Excel Spalte K = G × I).
- * Für Cash: `units` ist der EUR-Betrag selbst.
+ * Für Cash: `units` ist der Betrag in der Depotwährung.
  * Für Wertpapiere: `units × Kurs`. Kein Kurs → 0 (mit Warning).
  */
 export function marketValue(position: Position, quote: QuoteCacheEntry | null): number {
@@ -46,11 +48,12 @@ export function groupMarketValue(
   group: AssetGroup,
   portfolio: Portfolio,
   quotes: QuoteMap,
-  baseCurrency = 'EUR',
+  baseCurrency = baseCurrencyOf(portfolio),
+  rates: FxMap = new Map(),
 ): number {
   return portfolio.positions
-    .filter((position) => position.group === group && countsIn(position, quotes, baseCurrency))
-    .reduce((sum, position) => sum + marketValue(position, quoteFor(position, quotes)), 0)
+    .filter((position) => position.group === group && countsIn(position, quotes, baseCurrency, rates))
+    .reduce((sum, position) => sum + (position.group === 'cash' ? position.units : position.units * (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)), 0)
 }
 
 /**
@@ -61,99 +64,67 @@ export function totalValue(
   portfolio: Portfolio,
   quotes: QuoteMap,
   rounding: number,
-  baseCurrency = 'EUR',
+  baseCurrency = baseCurrencyOf(portfolio),
+  rates: FxMap = new Map(),
 ): number {
   const raw = portfolio.positions
-    .filter((position) => countsIn(position, quotes, baseCurrency))
-    .reduce((sum, position) => sum + marketValue(position, quoteFor(position, quotes)), 0)
+    .filter((position) => countsIn(position, quotes, baseCurrency, rates))
+    .reduce((sum, position) => sum + (position.group === 'cash' ? position.units : position.units * (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)), 0)
   return roundToPlace(raw, rounding)
 }
 
-/**
- * Notiert das Papier in einer anderen Währung als der Basiswährung?
- *
- * Solche Positionen dürfen nicht in die Summen: 10.000 USD plus 10.000 EUR
- * ergibt keine 20.000 von irgendetwas. Die App rechnet in genau einer Währung
- * und sagt es, wenn etwas nicht hineinpasst — statt eine Zahl zu zeigen, die
- * niemand nachrechnen kann.
- *
- * Ohne Kurs gilt keine Abweichung: Dann fehlt schlicht die Angabe, und die
- * fehlende Kursmeldung ist bereits ihr eigener Hinweis.
- *
- * Achtung, das ist die **Notierungswährung**, nicht das Währungsrisiko: Ein
- * EUR-notierter MSCI World steckt zu zwei Dritteln in US-Dollar. Diese
- * Unterscheidung kann die App nicht treffen und behauptet sie auch nicht.
- *
- * @param quote        Kurs der Position, oder `null`.
- * @param baseCurrency Währung, in der gerechnet wird.
- */
-export function hasForeignCurrency(
-  quote: QuoteCacheEntry | null,
-  baseCurrency: string,
-): boolean {
-  if (!quote || !quote.currency) return false
-  return quote.currency.toUpperCase() !== baseCurrency.toUpperCase()
+/** Notierungswährung und Depotwährung sind unabhängig; GBp ist eine Einheit von GBP. */
+export function hasForeignCurrency(quote: QuoteCacheEntry | null, baseCurrency: string): boolean {
+  return !!quote && quote.currency.toUpperCase() !== baseCurrency.toUpperCase()
 }
 
-/**
- * Zählt die Position in Summen und Anteile?
- *
- * Ausgeschlossen sind abgeschaltete Positionen, fehlende Kurse und Kurse
- * in fremder Währung. In jedem Fall bleibt die Zeile sichtbar —
- * unsichtbare Ausschlüsse sind schlimmer als falsche Summen, weil man sie
- * nicht einmal suchen kann.
- */
-function countsIn(
-  position: Position,
-  quotes: QuoteMap,
-  baseCurrency: string,
-): boolean {
-  const quote = quoteFor(position, quotes)
-  return position.enabled && (position.group === 'cash' || quote !== null) && !hasForeignCurrency(quote, baseCurrency)
+/** Nur vollständige Bewertungen zählen; ausgeschlossene Zeilen bleiben sichtbar. */
+function countsIn(position: Position, quotes: QuoteMap, baseCurrency: string, rates: FxMap): boolean {
+  return position.enabled && (position.group === 'cash' || convertedPrice(quoteFor(position, quotes), baseCurrency, rates) !== null)
 }
 
 /** IST-% am Gesamtvermögen (Excel L = K × 100 / I3). */
-export function actualPercent(marketValueEur: number, total: number): number {
+export function actualPercent(positionValue: number, total: number): number {
   if (total === 0) return 0
-  return (marketValueEur * 100) / total
+  return (positionValue * 100) / total
 }
 
-/** Ziel-Wert einer Position in EUR (Excel R = I3 / 100 × M). */
+/** Ziel-Wert einer Position in der Depotwährung (Excel R = I3 / 100 × M). */
 export function targetValue(position: Position, total: number): number {
   return (total * position.targetPercent) / 100
 }
 
-/** Untere Bandgrenze in EUR (Excel Q = R − R × G22 %). */
+/** Untere Bandgrenze in der Depotwährung (Excel Q = R − R × G22 %). */
 export function lowerBand(target: number, bands: Bands): number {
   return target * (1 - bands.lowerPercent / 100)
 }
 
-/** Obere Bandgrenze in EUR (Excel S = R + R × H22 %). */
+/** Obere Bandgrenze in der Depotwährung (Excel S = R + R × H22 %). */
 export function upperBand(target: number, bands: Bands): number {
   return target * (1 + bands.upperPercent / 100)
 }
 
 /** Vorschlag: `sell` wenn MW über Upper, `buy` wenn unter Lower, sonst `ok`. */
-export function suggestion(marketValueEur: number, low: number, high: number): Suggestion {
-  if (marketValueEur > high) return 'sell'
-  if (marketValueEur < low) return 'buy'
+export function suggestion(positionValue: number, low: number, high: number): Suggestion {
+  if (positionValue > high) return 'sell'
+  if (positionValue < low) return 'buy'
   return 'ok'
 }
 
 /** Relatives Delta in % (Excel X = IF(R<>0, U × 100 / R, 100)). Positiv = übergewichtet. */
-export function relativeDeltaPercent(actualEur: number, targetEur: number): number {
-  if (targetEur === 0) return 0
-  return ((actualEur - targetEur) * 100) / targetEur
+export function relativeDeltaPercent(actualValue: number, targetAmount: number): number {
+  if (targetAmount === 0) return 0
+  return ((actualValue - targetAmount) * 100) / targetAmount
 }
 
 /** Anzahl Stück, um die die Position vom Ziel abweicht (Excel Z = U / I × -1). */
 export function unitsDelta(
-  actualEur: number,
-  targetEur: number,
+  actualValue: number,
+  targetAmount: number,
   quote: QuoteCacheEntry | null,
 ): number {
   if (!quote || quote.price === 0) return 0
-  return (targetEur - actualEur) / quote.price
+  return (targetAmount - actualValue) / quote.price
 }
 
 /**
@@ -172,11 +143,11 @@ export function roundToPlace(value: number, place: number): number {
  * Ist die Position „nahe" der Bandgrenze (Vorwarnstufe, gelber Badge)?
  * Kriterium: relatives Delta ist innerhalb 1 %-Punkt der Bandgrenze.
  */
-export function isNearBand(actualEur: number, low: number, high: number, target: number): boolean {
+export function isNearBand(actualValue: number, low: number, high: number, target: number): boolean {
   if (target === 0) return false
-  if (actualEur < low || actualEur > high) return false
-  const upperMargin = ((high - actualEur) * 100) / target
-  const lowerMargin = ((actualEur - low) * 100) / target
+  if (actualValue < low || actualValue > high) return false
+  const upperMargin = ((high - actualValue) * 100) / target
+  const lowerMargin = ((actualValue - low) * 100) / target
   return upperMargin <= 1 || lowerMargin <= 1
 }
 
@@ -188,7 +159,7 @@ export function isNearBand(actualEur: number, low: number, high: number, target:
  * Unterdrückt ein Signal, für das sich keine Order lohnt.
  *
  * Relative Bänder machen kleine Positionen empfindlich — das ist ihr Zweck,
- * sonst wären sie nie an der Reihe. In Euro gerechnet kippt derselbe Vorzug
+ * sonst wären sie nie an der Reihe. Als Geldbetrag gerechnet kippt derselbe Vorzug
  * aber: Ein Ziel von 2 % gibt bei einem Band von 6 % schon bei 120 € ein
  * Signal, und dafür lohnt keine Order. Wer solchen Signalen nicht folgt,
  * gewöhnt sich an, Signale zu übergehen — das ist schlimmer als keines.
@@ -196,7 +167,7 @@ export function isNearBand(actualEur: number, low: number, high: number, target:
  * Die Abweichung bleibt sichtbar; nur der Handlungsbedarf entfällt.
  *
  * @param suggestion Ergebnis des Bandvergleichs.
- * @param deltaEuro  Abstand zum Zielwert in Euro (Vorzeichen egal).
+ * @param deltaEuro  Abstand zum Zielwert in der Depotwährung (Vorzeichen egal).
  * @param minTrade   Mindestbetrag; `0` schaltet die Prüfung ab.
  */
 export function applyMinTrade(
@@ -213,7 +184,7 @@ export function applyMinTrade(
  * Urteil ohne Band: Am Termin zählt jede Abweichung vom Ziel.
  *
  * @param marketValue Aktueller Marktwert.
- * @param target      Zielwert in Euro.
+ * @param target      Zielwert in der Depotwährung.
  */
 export function calendarSuggestion(marketValue: number, target: number): Suggestion {
   if (marketValue < target) return 'buy'
@@ -232,7 +203,7 @@ export function calendarSuggestion(marketValue: number, target: number): Suggest
  * @param trigger     Eingestellter Auslöser.
  * @param due         Ist der Termin erreicht?
  * @param marketValue Aktueller Marktwert.
- * @param target      Zielwert in Euro.
+ * @param target      Zielwert in der Depotwährung.
  */
 export function combineSuggestion(
   bandVerdict: Suggestion,
@@ -251,6 +222,11 @@ export interface PositionResult {
   position: Position
   quote: QuoteCacheEntry | null
   marketValue: number
+  /** Preis je Stück und Marktwert in der Depotwährung; Originalquote bleibt erhalten. */
+  basePrice: number | null
+  baseCurrency: string
+  originalMarketValue: number
+  fx: FxRate | null
   actualPercent: number
   targetValue: number
   lowerBand: number
@@ -322,12 +298,13 @@ export function computeLiquidity(
   quotes: QuoteMap,
   settings: Settings,
   total: number,
+  rates: FxMap = new Map(),
 ): LiquidityResult {
   const liquidAssets =
-    groupMarketValue('moneymarket', portfolio, quotes, settings.currency) +
-    groupMarketValue('cash', portfolio, quotes, settings.currency)
+    groupMarketValue('moneymarket', portfolio, quotes, baseCurrencyOf(portfolio), rates) +
+    groupMarketValue('cash', portfolio, quotes, baseCurrencyOf(portfolio), rates)
 
-  const securityBuffer = resolveAmount(settings.securityBuffer, total)
+  const securityBuffer = resolveAmount(portfolio.amountSettings?.securityBuffer ?? settings.securityBuffer, total)
   const investmentReserve = liquidAssets - securityBuffer
 
   return {
@@ -399,11 +376,12 @@ export function computeRebalancing(
   quotes: QuoteMap,
   settings: Settings,
   now: Date = new Date(),
+  rates: FxMap = new Map(),
 ): RebalancingResult {
-  const baseCurrency = settings.currency
-  const total = totalValue(portfolio, quotes, settings.totalRounding, baseCurrency)
+  const baseCurrency = baseCurrencyOf(portfolio)
+  const total = totalValue(portfolio, quotes, settings.totalRounding, baseCurrency, rates)
   const bands = settings.bands
-  const minTrade = resolveAmount(settings.minTradeSize, total)
+  const minTrade = resolveAmount(portfolio.amountSettings?.minTradeSize ?? settings.minTradeSize, total)
   const trigger = settings.rebalancing.trigger
   const due =
     usesCalendar(trigger) &&
@@ -414,18 +392,22 @@ export function computeRebalancing(
   // ist, dass sie nirgends mitzählen.
   const rows: PositionResult[] = portfolio.positions.map((position) => {
     const quote = quoteFor(position, quotes)
-    const mv = marketValue(position, quote)
+    const converted = position.group === 'cash' ? { price: 1, fx: null } : convertedPrice(quote, baseCurrency, rates)
+    const originalMarketValue = marketValue(position, quote)
+    const mv = converted ? position.units * converted.price : 0
+    const valuation = { basePrice: converted?.price ?? null, baseCurrency, originalMarketValue, fx: converted?.fx ?? null }
 
     const excludedReason: PositionResult['excludedReason'] = !position.enabled
       ? 'disabled'
       : position.group !== 'cash' && !quote
         ? 'missing-quote'
-        : hasForeignCurrency(quote, baseCurrency) ? 'currency' : null
+        : !converted ? 'currency' : null
     if (excludedReason) {
       return {
         position,
         quote,
         marketValue: mv,
+        ...valuation,
         actualPercent: 0,
         targetValue: 0,
         lowerBand: 0,
@@ -453,13 +435,14 @@ export function computeRebalancing(
       position,
       quote,
       marketValue: mv,
+      ...valuation,
       actualPercent: actualPercent(mv, total),
       targetValue: target,
       lowerBand: low,
       upperBand: high,
       suggestion: verdict.suggestion,
       belowMinTrade: verdict.belowMinTrade,
-      unitsDelta: unitsDelta(mv, target, quote),
+      unitsDelta: position.group === 'cash' ? 0 : converted && converted.price > 0 ? (target - mv) / converted.price : 0,
       relativeDeltaPercent: relativeDeltaPercent(mv, target),
       // Ohne laufendes Band gibt es kein „knapp davor" — nur den Termin.
       isNearBand: usesBands(trigger) && isNearBand(mv, low, high, target),
@@ -469,7 +452,7 @@ export function computeRebalancing(
   })
 
   const groups: GroupResult[] = GROUPS.map((group) => {
-    const actualValue = groupMarketValue(group, portfolio, quotes, baseCurrency)
+    const actualValue = groupMarketValue(group, portfolio, quotes, baseCurrency, rates)
     const targetPercent = groupTargetPercent(group, portfolio)
     const target = (total * targetPercent) / 100
     const low = lowerBand(target, bands)
@@ -496,7 +479,7 @@ export function computeRebalancing(
     }
   })
 
-  const liquidity = computeLiquidity(portfolio, quotes, settings, total)
+  const liquidity = computeLiquidity(portfolio, quotes, settings, total, rates)
 
   const assignedTarget = targetPercentSum(portfolio)
 

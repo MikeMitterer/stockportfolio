@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NSpin, NTooltip } from 'naive-ui'
@@ -9,8 +10,10 @@ import { useAppNotification } from '@/composables/useAppNotification'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
-import { eur, eurCent, eurSigned, integer, percent, percentSigned } from '@/domain/formatters'
-import { computeRebalancing, type GroupResult } from '@/domain/rebalancing'
+import { integer, percent, percentSigned } from '@/domain/formatters'
+import type { GroupResult } from '@/domain/rebalancing'
+import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
+import FxNotice from '@/components/FxNotice.vue'
 import {
   computeTradePlan,
   hasTrades,
@@ -36,11 +39,7 @@ const apiStatus = useApiStatusStore()
 const ready = computed(() => portfolioStore.loaded && settingsStore.loaded)
 const hasHoldings = computed(() => portfolioStore.hasHoldings)
 
-const result = computed(() => {
-  const portfolio = portfolioStore.portfolio
-  if (!portfolio) return null
-  return computeRebalancing(portfolio, quotesStore.quotes, settingsStore.settings)
-})
+const { result, fx, loadFx } = usePortfolioValuation()
 
 onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
@@ -50,8 +49,8 @@ onMounted(async () => {
   // Health-Check: Gegen einen toten Dienst zu laden kostet je Position eine
   // Zeitüberschreitung und meldet hinterher fehlende Kurse.
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    const zustand = await apiStatus.ensureChecked(client)
-    if (zustand !== 'offline') {
+    const state = await apiStatus.ensureChecked(client)
+    if (state !== 'offline') {
       await quotesStore.loadQuotesIfStale(
         client,
         portfolioStore.positions,
@@ -85,7 +84,7 @@ const plan = computed(() => {
     result.value.liquidity.securityBuffer,
     {
       targets: targets.value,
-      minTrade: resolveAmount(settingsStore.settings.minTradeSize, result.value.total),
+      minTrade: resolveAmount(portfolioStore.portfolio?.amountSettings?.minTradeSize ?? settingsStore.settings.minTradeSize, result.value.total),
       trigger: settingsStore.settings.rebalancing.trigger,
       due: result.value.schedule.due,
     },
@@ -160,7 +159,7 @@ notify(
     title: t('rebalancing.underfundedTitle'),
     type: 'error',
     content: () =>
-      t('rebalancing.underfundedBody', { amount: eur(-(plan.value?.netCashFlow ?? 0)) }),
+      t('rebalancing.underfundedBody', { amount: formatMoney(-(plan.value?.netCashFlow ?? 0)) }),
   },
 )
 
@@ -177,8 +176,8 @@ notify(
     type: 'warning',
     content: () =>
       t('rebalancing.bufferBody', {
-        liquid: eur(plan.value?.liquidAfter ?? 0),
-        buffer: eur(result.value?.liquidity.securityBuffer ?? 0),
+        liquid: formatMoney(plan.value?.liquidAfter ?? 0),
+        buffer: formatMoney(result.value?.liquidity.securityBuffer ?? 0),
       }),
   },
 )
@@ -220,12 +219,15 @@ function deviationLabel(row: NonNullable<typeof plan.value>['rows'][number]): st
 /** Kurs je Stück — für die Anzeige in der Zeile. */
 function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | null {
   if (row.current.position.group === 'cash') return null
-  return row.current.quote?.price ?? null
+  return row.current.basePrice
 }
+const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrency()
+
 </script>
 
 <template>
   <div class="reb">
+    <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
     <div v-if="!ready" class="reb__loading">
       <NSpin size="large" />
     </div>
@@ -246,7 +248,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
         <div class="reb__figure">
           <span class="reb__caption">{{ t('rebalancing.freed') }}</span>
           <span class="reb__value reb__value--in tabular-nums">
-            {{ eur(plan.proceeds) }}
+            {{ formatMoney(plan.proceeds) }}
           </span>
           <span class="reb__caption-hint">{{ t('rebalancing.freedHint') }}</span>
         </div>
@@ -254,7 +256,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
         <div class="reb__figure">
           <span class="reb__caption">{{ t('rebalancing.spent') }}</span>
           <span class="reb__value reb__value--out tabular-nums">
-            {{ eur(plan.outlay) }}
+            {{ formatMoney(plan.outlay) }}
           </span>
           <span class="reb__caption-hint">{{ t('rebalancing.spentHint') }}</span>
         </div>
@@ -265,7 +267,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
             class="reb__value tabular-nums"
             :class="{ 'reb__value--out': plan.underfunded }"
           >
-            {{ eurSigned(plan.netCashFlow) }}
+            {{ formatMoneySigned(plan.netCashFlow) }}
           </span>
           <span class="reb__caption-hint">
             <template v-if="!planHasEntries">{{ t('rebalancing.nothingPlanned') }}</template>
@@ -311,7 +313,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
           <span class="reb__caption">
             {{ t('rebalancing.reserve') }}
           </span>
-          <span class="reb__value tabular-nums">{{ eur(plan.reserveAvailable) }}</span>
+          <span class="reb__value tabular-nums">{{ formatMoney(plan.reserveAvailable) }}</span>
           <span class="reb__caption-hint">
             {{ t('rebalancing.reserveHint') }}
           </span>
@@ -421,7 +423,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                   </td>
 
                   <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
-                    {{ priceOf(row) !== null ? eurCent(priceOf(row)!) : '—' }}
+                    {{ priceOf(row) !== null ? formatMoneyCents(priceOf(row)!) : '—' }}
                   </td>
 
                   <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
@@ -509,7 +511,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                           : 'reb__muted'
                     "
                   >
-                    {{ row.cashFlow === 0 ? '—' : eurSigned(row.cashFlow) }}
+                    {{ row.cashFlow === 0 ? '—' : formatMoneySigned(row.cashFlow) }}
                   </td>
 
                   <td class="reb__td">
@@ -561,7 +563,7 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     Math.abs(plan.netCashFlow) < 0.005 ? 'reb__flow--in' : ''
                   "
                 >
-                  {{ eurSigned(plan.netCashFlow) }}
+                  {{ formatMoneySigned(plan.netCashFlow) }}
                 </td>
                 <td class="reb__foot-note" colspan="3">
                   <template v-if="!planHasEntries">{{ t('rebalancing.footerNothing') }}</template>
@@ -569,10 +571,10 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
                     {{ t('rebalancing.footerBalanced') }}
                   </template>
                   <template v-else-if="plan.netCashFlow < 0">
-                    {{ t('rebalancing.footerShort', { amount: eur(-plan.netCashFlow) }) }}
+                    {{ t('rebalancing.footerShort', { amount: formatMoney(-plan.netCashFlow) }) }}
                   </template>
                   <template v-else>
-                    {{ t('rebalancing.footerLeftOver', { amount: eur(plan.netCashFlow) }) }}
+                    {{ t('rebalancing.footerLeftOver', { amount: formatMoney(plan.netCashFlow) }) }}
                   </template>
                 </td>
               </tr>

@@ -94,6 +94,7 @@ export interface StockPortfolioDB extends DBSchema {
 
 /** Ein Tagesstand, zusammengesetzt aus Depot und Datum. */
 export interface ValueSnapshotEntry {
+  currency: string
   /** `<portfolioId>::<YYYY-MM-DD>` — ein Eintrag je Depot und Tag. */
   key: string
   portfolioId: string

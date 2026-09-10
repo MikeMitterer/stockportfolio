@@ -1,5 +1,15 @@
 /** Deutscher Message-Katalog. Source of Truth für Key-Struktur. */
 export const de = {
+  fx: {
+    baseCurrency: 'Basiswährung', invalidCurrency: 'Bitte eine gültige Basiswährung wählen.',
+    currencyLocked: 'Die Basiswährung ist bei leeren Depots änderbar. Für bestehende Bestände, Betragsgrenzen oder Tageswerte lege ein neues Depot an.',
+    title: 'Devisenkurse', retry: 'Devisenkurse erneut laden',
+    stalePair: '{pair}: Veralteter Devisenkurs vom {time} wird weiterverwendet.',
+    missingPair: '{pair}: Kein gültiger Devisenkurs. Betroffene Positionen zählen nicht in Summen und Handelsvorschläge.',
+    converted: 'Bewertet mit {price} je Stück · {pair}',
+    historyUnavailable: 'Für Fremdwährungspositionen fehlen historische Devisenkurse. Der Rückblick bleibt deshalb leer; aufgezeichnete Tageswerte werden in der Depotwährung angezeigt.',
+    amountCurrency: 'Betrag in {currency}',
+  },
   detailFields: {
     title: 'Zusatzinformationen',
     yes: 'Ja', no: 'Nein', ter: 'TER',
@@ -122,7 +132,7 @@ export const de = {
     projectedDelta: 'Neues Delta',
     volatility: 'Volatilität',
     optimalUnits: 'Bestand optimal',
-    deltaEuro: 'Delta €',
+    deltaEuro: 'Delta',
     lowerBand: 'Lower Band',
     upperBand: 'Upper Band',
     reportingFundCheck: 'myOEKB — Meldefond-Check',
@@ -175,14 +185,14 @@ export const de = {
   },
 
   currency: {
-    badgeTitle: 'Notiert in {currency} — zählt nicht in die Summen',
-    statusForeign: 'fremde Währung',
+    badgeTitle: 'Kein verwendbarer Devisenkurs für {currency} — zählt nicht in die Summen',
+    statusForeign: 'Devisenkurs fehlt',
     notCounted: 'zählt nicht mit',
     missingQuote: 'Kein gültiger Kurs — zählt nicht mit',
     inactive: 'inaktiv',
     warningTitle: 'Fremde Währung',
     warningBody:
-      '{positions} {verb} nicht in {base} und {counts} deshalb nicht mit: {list}. Summen und Anteile beziehen sich nur auf den Rest — die App rechnet in einer einzigen Währung und wandelt nichts um.',
+      'Für die Umrechnung nach {base} fehlen gültige Devisenkurse: {list}. Betroffene Positionen zählen nicht in die Summen.',
     verb: 'notiert | notieren',
     counts: 'zählt | zählen',
   },
@@ -340,7 +350,7 @@ export const de = {
   portfolios: {
     heading: 'Depots',
     intro:
-      'Mehrere Depots nebeneinander — etwa eines für die Kinder oder eine Variante zum Durchrechnen. Gerechnet wird immer nur mit dem aktiven; sein Name steht in der Statuszeile am unteren Rand. Toleranzbänder, Sicherheitspuffer und Darstellung gelten für alle gemeinsam.',
+      'Mehrere Depots nebeneinander — etwa eines für die Kinder oder eine Variante zum Durchrechnen. Gerechnet wird immer nur mit dem aktiven; sein Name steht in der Statuszeile am unteren Rand. Basiswährung, Sicherheitspuffer und Mindesthandelsbetrag gehören zum jeweiligen Depot. Toleranzbänder und Darstellung gelten gemeinsam.',
     active: 'aktiv',
     namePlaceholder: 'Name des Depots',
     newPlaceholder: 'Name des neuen Depots',
@@ -426,6 +436,7 @@ export const de = {
   },
 
   dashboard: {
+    empty: 'Noch keine Wertpapiere im Depot',
     positionsHeading: 'Positionen — Bestand und Ziel sind direkt änderbar',
     positionsShort: 'Positionen',
     assetClasses: 'Assetklassen',
@@ -445,7 +456,7 @@ export const de = {
     isin: 'ISIN',
     quoteAge: 'Kurs-Stand',
     details: 'Details',
-    amountEuro: 'Betrag (€)',
+    amountEuro: 'Betrag in {currency}',
     unitsDelta: 'Δ Bestand (Stück)',
     ter: 'TER',
     targetValue: 'Ziel-Wert',
@@ -555,11 +566,11 @@ export const de = {
     planBody:
       'Der Plan rechnet, er bucht nicht. Man trägt Stückzahlen ein und sieht sofort, was das kostet oder einbringt und wo die Anteile danach liegen. Die Aufträge gibt man bei seiner Bank auf und pflegt die Bestände danach selbst nach.',
     planBody2:
-      'Die Delta-Spalte nennt die Stückzahl bis zum Ziel. Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas in Euro gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht. Jeder Kauf muss im Plan bezahlt werden — aus einem Verkauf oder aus Cash beziehungsweise Geldmarkt. Einen abstrakten Topf, aus dem man schöpft, gibt es nicht.',
+      'Die Delta-Spalte nennt die Stückzahl bis zum Ziel. Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas in der Depotwährung gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht. Jeder Kauf muss im Plan bezahlt werden — aus einem Verkauf oder aus Cash beziehungsweise Geldmarkt. Einen abstrakten Topf, aus dem man schöpft, gibt es nicht.',
 
     limitsHeading: 'Was die App bewusst nicht tut',
     limitsCurrency:
-      'Sie rechnet in einer einzigen Währung und wandelt nichts um. Ein fremd notiertes Papier bleibt sichtbar, zählt aber in keine Summe — 10.000 USD plus 10.000 EUR ergibt keine 20.000 von irgendetwas.',
+      'Sie bewertet jedes Depot in seiner gewählten Basiswährung. Fremde Notierungen werden mit den Devisenkursen von StockInfo umgerechnet. Ohne gültigen Devisenkurs zählt die Position nicht mit; bei einem veralteten Kurs wird mit sichtbarer Warnung weitergerechnet.',
     limitsRisk:
       'Sie sagt nichts über Währungsrisiko. Ein EUR-notierter MSCI World steckt zu zwei Dritteln in US-Dollar; das ist eine andere Frage als die Notierungswährung.',
     limitsAdvice:
@@ -586,12 +597,14 @@ export const de = {
     historyPeriod:
       'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
     dataStatus:
-      'Vollständig heißt: Zu jeder Position liegt ein aktueller Kurs in der Basiswährung vor, alle zählen in die Summen. Unvollständig sind Papiere, deren Kurs nicht geladen werden konnte oder die in fremder Währung notieren — sie bleiben sichtbar, zählen aber nirgends mit. Ob eine Position gekauft oder verkauft werden sollte, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
+      'Vollständig heißt: Für jede Position sind Kurs und nötige Währungsumrechnung verfügbar. Fehlende Kurse oder Devisenkurse machen die Bewertung unvollständig. Betroffene Positionen bleiben sichtbar und werden aus den Summen ausgeschlossen; veraltete verwendbare Kurse sind gewarnt. Ob eine Position gekauft oder verkauft werden sollte, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
     moneymarket:
       'Geldmarktnahe Papiere schwanken kaum und zählen deshalb zusammen mit Cash zur verfügbaren Liquidität. Laufzeit-Anleihen tun das nicht.',
   },
 
   backupErrors: {
+    invalidAmountSettings: 'Ungültige Geldschwellen in der Sicherung.',
+    invalidCurrency: 'Ungültige Depotwährung in der Sicherung.',
     invalidJson: 'Die Datei enthält kein gültiges JSON.',
     notAnObject: 'Die Datei enthält kein Objekt.',
     wrongKind: 'Das ist keine StockPortfolio-Sicherung — die Kennung fehlt oder passt nicht.',

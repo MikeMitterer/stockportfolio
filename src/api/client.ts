@@ -7,11 +7,12 @@
  */
 
 import { ApiError, type ApiUrlSource } from './errors'
-import { normalizeFields, normalizeInstruments, normalizeQuote } from './normalizers'
+import { normalizeFields, normalizeFx, normalizeInstruments, normalizeQuote } from './normalizers'
 import { translate } from '@/i18n'
 import type {
   DailyPoint,
   FieldsResponse,
+  FxResponse,
   HealthResponse,
   InstrumentSummary,
   Period,
@@ -48,6 +49,12 @@ export class StockInfoClient {
   /** Felddefinitionen werden unabhängig von den Kursen geladen. */
   async getFields(): Promise<FieldsResponse> {
     return normalizeFields(await this.request<unknown>('/fields'), `${this.baseUrl}/fields`)
+  }
+
+  /** Eine Einheit Ausgangswährung entspricht rate Einheiten Zielwährung. */
+  async getFx(base: string, quote: string): Promise<FxResponse> {
+    const path = `/fx?base=${encodeURIComponent(base)}&quote=${encodeURIComponent(quote)}`
+    return normalizeFx(await this.request<unknown>(path), base, quote, `${this.baseUrl}${path}`)
   }
 
   /** Kurs zu einer ISIN (bevorzugt Xetra/EUR). */

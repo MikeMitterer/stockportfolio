@@ -91,8 +91,8 @@ describe('buildBacktest', () => {
 describe('snapshotPoints', () => {
   it('sortiert nach Datum', () => {
     const points = snapshotPoints([
-      { date: '2026-02-01', total: 200 },
-      { date: '2026-01-01', total: 100 },
+      { date: '2026-02-01', total: 200, currency: 'EUR' },
+      { date: '2026-01-01', total: 100, currency: 'EUR' },
     ])
 
     expect(points.map((point) => point.date)).toEqual(['2026-01-01', '2026-02-01'])
@@ -122,8 +122,8 @@ describe('truthStart', () => {
   it('nennt den ersten Schnappschuss', () => {
     expect(
       truthStart([
-        { date: '2026-03-01', total: 2 },
-        { date: '2026-01-01', total: 1 },
+        { date: '2026-03-01', total: 2, currency: 'EUR' },
+        { date: '2026-01-01', total: 1, currency: 'EUR' },
       ]),
     ).toBe('2026-01-01')
   })

@@ -7,7 +7,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { SettingsRepository } from '@/db/repository'
-import type { AmountSetting, Bands, ExternalLink, Settings } from '@/types/portfolio'
+import type { Bands, ExternalLink, Settings } from '@/types/portfolio'
 
 /**
  * Voreingestellte externe Verweise.
@@ -64,7 +64,6 @@ export function defaultSettings(activePortfolioId: string): Settings {
     // ohne Zutun des Nutzers wäre eine stille Verhaltensänderung. Der Termin
     // kommt dazu, wenn er ihn einschaltet.
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: defaultLinks(),
     ui: {
@@ -87,23 +86,12 @@ export function defaultSettings(activePortfolioId: string): Settings {
 export function withDefaults(stored: Partial<Settings>): Settings {
   const base = defaultSettings(stored.activePortfolioId ?? '')
 
-  // `saveAssetGrenze` hieß bis T-18 so; den Wert übernehmen, damit niemand
-  // seinen Puffer verliert. Bis T-20 war der Puffer außerdem eine blanke Zahl
-  // — die war immer ein fester Betrag.
-  const legacy = (stored as { saveAssetGrenze?: number }).saveAssetGrenze
-  const storedBuffer = stored.securityBuffer as AmountSetting | number | undefined
-  const buffer: AmountSetting =
-    typeof storedBuffer === 'number'
-      ? { mode: 'absolute', value: storedBuffer }
-      : (storedBuffer ??
-        (typeof legacy === 'number' ? { mode: 'absolute', value: legacy } : base.securityBuffer))
-
   return {
     ...base,
     ...stored,
     bands: { ...base.bands, ...stored.bands },
     refresh: { ...base.refresh, ...stored.refresh },
-    securityBuffer: buffer,
+    securityBuffer: stored.securityBuffer ?? base.securityBuffer,
     minTradeSize: stored.minTradeSize ?? base.minTradeSize,
     rebalancing: { ...base.rebalancing, ...stored.rebalancing },
     links: stored.links?.length ? stored.links : base.links,

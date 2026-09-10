@@ -90,7 +90,7 @@ export interface TradePlanRow {
    * Bestand, Kurs und Ziel — die Zahl steht also von Anfang an da.
    *
    * Nützliche Eigenschaft: Summieren sich die Ziel-Anteile auf 100 %, heben
-   * sich die Deltas in Euro gegenseitig auf. Wer allen Deltas folgt, bekommt
+   * sich die Deltas in der Depotwährung gegenseitig auf. Wer allen Deltas folgt, bekommt
    * einen Plan, der von selbst aufgeht.
    */
   deltaUnits: number
@@ -117,7 +117,7 @@ export interface TradePlanRow {
 export interface TradePlanOptions {
   /** Probeweise Ziele; leer heißt: Ziele aus dem Depot. */
   targets?: TargetMap
-  /** Mindest-Handelsvolumen in Euro; 0 schaltet es ab. */
+  /** Mindest-Handelsvolumen in der Depotwährung; 0 schaltet es ab. */
   minTrade?: number
   /** Auslöser des Ausgleichs. */
   trigger?: RebalancingTrigger
@@ -128,7 +128,7 @@ export interface TradePlanOptions {
 export interface TradePlanResult {
   rows: TradePlanRow[]
   /**
-   * Summe aller Geldflüsse. Null heißt: der Plan geht auf — jeder Euro, der
+   * Summe aller Geldflüsse. Null heißt: der Plan geht auf — jeder Betrag, der
    * gekauft wird, kommt aus einem Verkauf oder aus Cash/Geldmarkt.
    * Negativ heißt: es fehlt Deckung.
    */
@@ -154,7 +154,7 @@ export interface TradePlanResult {
 /**
  * Rechnet den Plan durch.
  *
- * Es gibt kein abstraktes Budget: Jeder Euro, der gekauft wird, muss im Plan
+ * Es gibt kein abstraktes Budget: Jeder Betrag, der gekauft wird, muss im Plan
  * sichtbar herkommen — aus dem Verkauf eines Papiers oder aus einer Entnahme
  * bei Cash bzw. Geldmarkt (dort als negative Stückzahl eingetragen). Der
  * Sicherheitspuffer begrenzt, wie weit Cash und Geldmarkt dabei sinken dürfen.
@@ -302,7 +302,7 @@ function coverageUnitsFor(
 /** Kurs je Stück; Cash rechnet mit 1, weil `units` dort der Betrag ist. */
 function priceOfRow(row: PositionResult): number {
   if (row.position.group === 'cash') return 1
-  return row.quote?.price ?? 0
+  return row.basePrice ?? 0
 }
 
 /** Leert den Plan. */

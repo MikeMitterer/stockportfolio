@@ -170,8 +170,8 @@ describe('parseBackup — der gute Fall', () => {
         '0.1.0',
         '2026-08-10T18:00:00.000Z',
         [
-          { date: '2026-08-09', total: 160000 },
-          { date: '2026-08-08', total: 158000 },
+          { date: '2026-08-09', total: 160000, currency: 'EUR' },
+          { date: '2026-08-08', total: 158000, currency: 'EUR' },
         ],
       ),
     )
@@ -190,7 +190,7 @@ describe('parseBackup — der gute Fall', () => {
     const result = parseBackup(
       validRaw((data) => {
         data.valueHistory = [
-          { date: '2026-08-09', total: 160000 },
+          { date: '2026-08-09', total: 160000, currency: 'EUR' },
           { date: '2026-08-10', total: 'viel' },
           { total: 1 },
         ]
@@ -199,7 +199,7 @@ describe('parseBackup — der gute Fall', () => {
 
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    expect(result.backup.valueHistory).toEqual([{ date: '2026-08-09', total: 160000 }])
+    expect(result.backup.valueHistory).toEqual([{ date: '2026-08-09', total: 160000, currency: 'EUR' }])
   })
 
   it('nimmt eine Sicherung ohne Tageswerte an', () => {
@@ -389,13 +389,13 @@ describe('Freigabeliste', () => {
     // Deswegen die ganze Sicherung zu verweigern stünde in keinem Verhältnis.
     const result = parseBackup(
       validRaw((data) => {
-        data.allowlist = { gut: false, kaputt: 'nein', auchGut: true }
+        data.allowlist = { valid: false, invalid: 'nein', alsoValid: true }
       }),
     )
 
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    expect(result.backup.allowlist).toEqual({ gut: false, auchGut: true })
+    expect(result.backup.allowlist).toEqual({ valid: false, alsoValid: true })
   })
 
   it('nimmt auch eine Liste statt eines Objekts hin, ohne zu werfen', () => {
@@ -404,5 +404,28 @@ describe('Freigabeliste', () => {
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.backup.allowlist).toEqual({})
+  })
+})
+
+
+describe('Depotwährung und Geldschwellen in Sicherungen', () => {
+  it.each([null, {}, { securityBuffer: { mode: 'absolute', value: -1 }, minTradeSize: { mode: 'absolute', value: 0 } }, { securityBuffer: { mode: 'absolute', value: 300 }, minTradeSize: { mode: 'other', value: 20 } }])('lehnt fehlerhafte Geldschwellen ab statt sie still auf null zu setzen', amountSettings => {
+    const result = parseBackup(validRaw(data => {
+      Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
+    }))
+    expect(result).toEqual({ ok: false, error: { key: 'invalidAmountSettings' } })
+  })
+
+  it('erhält USD-Geldschwellen und nur passende Tageswerte', () => {
+    const amountSettings = { securityBuffer: { mode: 'absolute', value: 300 }, minTradeSize: { mode: 'absolute', value: 20 } }
+    const result = parseBackup(validRaw(data => {
+      Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
+      data.valueHistory = [{ date: '2026-09-01', total: 100, currency: 'USD' }, { date: '2026-09-02', total: 90, currency: 'EUR' }, { date: '2026-09-03', total: 80 }]
+    }))
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.portfolio.baseCurrency).toBe('USD')
+    expect(result.backup.portfolio.amountSettings).toEqual(amountSettings)
+    expect(result.backup.valueHistory).toEqual([{ date: '2026-09-01', total: 100, currency: 'USD' }])
   })
 })

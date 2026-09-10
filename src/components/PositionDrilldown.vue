@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -11,13 +12,7 @@ import {
   NButton,
   NPopconfirm,
 } from 'naive-ui'
-import {
-  eur,
-  money,
-  eurSigned,
-  integer,
-  number,
-} from '@/domain/formatters'
+import { money, integer, number,  } from '@/domain/formatters'
 import { formatAge } from '@/composables/useRelativeTime'
 import { resolveKind, resolveLinks } from '@/domain/links'
 import PriceChart from '@/components/PriceChart.vue'
@@ -110,12 +105,14 @@ const kindLabel = computed(() => {
 const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
 
 const optimalUnits = computed(() =>
-  props.row.quote && props.row.quote.price > 0
-    ? Math.round(props.row.targetValue / props.row.quote.price)
+  props.row.basePrice && props.row.basePrice > 0
+    ? Math.round(props.row.targetValue / props.row.basePrice)
     : null,
 )
 
 const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
+const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
+
 </script>
 
 <template>
@@ -140,7 +137,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           <div class="drill__pair">
             <label class="drill__field">
               <span class="drill__label">
-                {{ isCash ? t('dashboard.amountEuro') : t('table.units') }}
+                {{ isCash ? t('dashboard.amountEuro', { currency: row.baseCurrency }) : t('table.units') }}
               </span>
               <NInputNumber
                 :value="row.position.units"
@@ -247,24 +244,27 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           <div>
             <div class="drill__label">{{ t('table.price') }}</div>
             <div class="tabular-nums">{{ row.quote ? money(row.quote.price, row.quote.currency, 2) : '—' }}</div>
+            <small v-if="row.quote && row.basePrice !== null && row.quote.currency !== row.baseCurrency">
+              {{ t('fx.converted', { price: money(row.basePrice, row.baseCurrency, 2), pair: `${row.quote.currency}/${row.baseCurrency}` }) }}
+            </small>
           </div>
           <div>
             <div class="drill__label">{{ t('table.marketValue') }}</div>
-            <div class="tabular-nums">{{ row.quote ? money(row.marketValue, row.quote.currency) : isCash ? eur(row.marketValue) : '—' }}</div>
+            <div class="tabular-nums">{{ row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : row.quote ? money(row.originalMarketValue, row.quote.currency) : isCash ? formatMoney(row.marketValue) : '—' }}</div>
           </div>
 
           <template v-if="row.isActive">
             <div>
               <div class="drill__label">{{ t('drilldown.lowerBand') }}</div>
-              <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
+              <div class="tabular-nums">{{ formatMoney(row.lowerBand) }}</div>
             </div>
             <div>
               <div class="drill__label">{{ t('dashboard.targetValue') }}</div>
-              <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
+              <div class="tabular-nums">{{ formatMoney(row.targetValue) }}</div>
             </div>
             <div>
               <div class="drill__label">{{ t('drilldown.upperBand') }}</div>
-              <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
+              <div class="tabular-nums">{{ formatMoney(row.upperBand) }}</div>
             </div>
             <div>
               <div class="drill__label">{{ t('drilldown.deltaEuro') }}</div>
@@ -272,7 +272,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
                 class="tabular-nums"
                 :class="row.suggestion === 'ok' ? 'drill__ok' : 'drill__out'"
               >
-                {{ eurSigned(deltaEuro) }}
+                {{ formatMoneySigned(deltaEuro) }}
               </div>
             </div>
 

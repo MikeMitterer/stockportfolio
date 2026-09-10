@@ -1,11 +1,24 @@
 /** Gemeinsame Laufzeitprüfung für Quote, Refresh und Instrumentkatalog. */
 import { ApiError } from './errors'
 import { translate } from '@/i18n'
-import type { DetailDefinitionResponse, DetailValueResponse, FieldsResponse, InstrumentSummary, QuoteResponse } from './types'
+import type { DetailDefinitionResponse, DetailValueResponse, FieldsResponse, FxResponse, InstrumentSummary, QuoteResponse } from './types'
 import type { DetailScalar } from '@/types/details'
 import type { InstrumentIdentity } from '@/types/portfolio'
 
 const currencies = new Set<string>(Intl.supportedValuesOf('currency'))
+
+/** Das Antwortpaar muss genau zur angefragten Umrechnung gehören. */
+export function normalizeFx(input: unknown, base: string, quote: string, url: string): FxResponse {
+  const data = object(input, 'fx', url)
+  if (!currencies.has(base) || !currencies.has(quote) || data.base !== base || data.quote !== quote) invalid('fx.base/quote', url)
+  const rate = finiteNumber(data.rate, 'fx.rate', url)
+  if (rate <= 0) invalid('fx.rate', url)
+  const cached = boolean(data.cached, 'fx.cached', url)
+  const stale = boolean(data.stale, 'fx.stale', url)
+  if (stale && !cached) invalid('fx.stale/cached', url)
+  return { base, quote, rate, cached, stale, source: optionalText(data.source),
+    quote_time: timestamp(data.quote_time, 'fx.quote_time', url), fetched_at: timestamp(data.fetched_at, 'fx.fetched_at', url) }
+}
 
 function invalid(field: string, url: string): never {
   throw new ApiError(200, translate('errors.invalidResponse', { field }), url)

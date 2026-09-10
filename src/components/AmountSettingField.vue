@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed } from 'vue'
 import { NInputNumber, NSelect } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import InfoHint from '@/components/InfoHint.vue'
 import { convertAmount, resolveAmount } from '@/domain/amount'
-import { eur } from '@/domain/formatters'
+
 import type { AmountSetting } from '@/types/portfolio'
 
 /**
- * Eingabe für einen Betrag, der wahlweise in Euro oder in Prozent gilt.
+ * Eingabe für einen Betrag, der wahlweise in Basiswährung oder in Prozent gilt.
  *
  * Zwei Einstellungen brauchen genau dieses Feld — Sicherheitspuffer und
  * Mindest-Handelsvolumen. Beide mit derselben Umschaltung, derselben
@@ -31,7 +32,7 @@ const props = defineProps<{
   anchor?: string
   /** Kontrollzeile bei Wert 0 — was heißt „aus"? */
   zeroHint: string
-  /** Schrittweite im Euro-Modus; in Prozent ist es immer 1. */
+  /** Schrittweite im Basiswährung-Modus; in Prozent ist es immer 1. */
   absoluteStep?: number
 }>()
 
@@ -43,11 +44,11 @@ const { t } = useI18n()
 
 const modeOptions = computed(() => [
   { label: t('settings.bufferPercent'), value: 'percent' as const },
-  { label: t('settings.bufferAbsolute'), value: 'absolute' as const },
+  { label: t('fx.amountCurrency', { currency: baseCurrency.value }), value: 'absolute' as const },
 ])
 
-/** Der eingestellte Betrag in Euro — im Prozent-Modus die eigentliche Zahl. */
-const euro = computed(() => resolveAmount(props.setting, props.total))
+/** Der eingestellte Betrag in Basiswährung — im Prozent-Modus die eigentliche Zahl. */
+const resolvedValue = computed(() => resolveAmount(props.setting, props.total))
 
 function setValue(value: number | null): void {
   if (value === null) return
@@ -57,6 +58,8 @@ function setValue(value: number | null): void {
 function setMode(mode: AmountSetting['mode']): void {
   emit('update', convertAmount(props.setting, mode, props.total))
 }
+const { formatMoney, baseCurrency } = usePortfolioCurrency()
+
 </script>
 
 <template>
@@ -83,12 +86,12 @@ function setMode(mode: AmountSetting['mode']): void {
     </div>
 
     <!--
-      Der Euro-Betrag als Kontrolle: Im Prozent-Modus sieht man sonst nicht,
+      Der Basiswährung-Betrag als Kontrolle: Im Prozent-Modus sieht man sonst nicht,
       worüber man gerade entscheidet.
     -->
     <span class="amount__hint">
       <template v-if="setting.value === 0">{{ zeroHint }}</template>
-      <template v-else>{{ t('settings.bufferEquals', { amount: eur(euro) }) }}</template>
+      <template v-else>{{ t('settings.bufferEquals', { amount: formatMoney(resolvedValue) }) }}</template>
     </span>
   </label>
 </template>

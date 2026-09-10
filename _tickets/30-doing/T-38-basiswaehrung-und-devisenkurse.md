@@ -4,25 +4,23 @@ StockPortfolio soll **Depots in ihrer jeweils konfigurierten Basiswährung
 richtig berechnen**. Jedes Depot hat eine eigene, vom Nutzer wählbare
 Basiswährung (Mike, 2026-09-10).
 
-Heute ist Euro fest verdrahtet: Die App summiert Marktwerte und leitet daraus
-Anteile, Bänder und Handelsvorschläge ab. Diese Summe stimmt nur, wenn alle
-Beträge dieselbe Währung haben — 10.000 USD plus 10.000 EUR ergibt keine 20.000
-von irgendetwas.
+**Umgesetzt durch Codex am 2026-09-10; unabhängiger Review und menschliche
+Abschlussabnahme stehen noch aus.** Die UI bietet die Währungswahl pro Depot.
+Fremd notierte Positionen werden über StockInfo-FX umgerechnet. Ein brauchbarer
+veralteter Kurs bleibt mit dauerhafter Warnung verwendbar; fehlt ein gültiger
+Kurs, wird die Position aus Bewertung und Handelsvorschlägen ausgeschlossen.
 
-Fremd notierte Positionen bleiben deshalb seit [T-22](../40-done/T-22-currency.md)
-sichtbar, zählen aber in keine Summe. Das war die ehrliche Antwort, solange der
-Dienst nichts anderes anbot.
-
-Beispiel: Ein Kanadier hält ein CAD-notiertes Papier an der TSX. Die App zeigt
-es an und nimmt es aus jeder Summe — seine Prozentanteile beziehen sich damit
-auf ein Depot, das kleiner ist als seines.
+Ausgangsproblem: Seit T-22 blieben fremd notierte Positionen zwar sichtbar,
+zählten aber nicht in Summen. Ein CAD-Depot mit USD-Papieren wurde dadurch
+unvollständig bewertet. Die neue Bewertung erhält Originalkurse und verwendet
+für alle Depotbeträge denselben umgerechneten Stückpreis.
 
 ## Was sich geändert hat
 
 **StockInfo hat den Devisenkurs gebaut.** `GET /fx?base=EUR&quote=USD` liefert
 `rate`, `quote_time`, `fetched_at`, `cached`, `stale` und optional `source` — also die
 Alterskennzeichnung, ohne die ein stiller alter Kurs jede Prozentzahl dieser App
-verzerren würde. StockPortfolio ruft den Endpunkt bis heute nicht auf.
+verzerren würde. StockPortfolio verwendet diesen Endpunkt jetzt für benötigte Währungspaare.
 
 Die Wahl der Notierung ist ein eigener Vorgang. Welche Notierung eines
 Papiers man bekommt, wählt man nicht pro Abfrage. StockInfo führt genau
@@ -39,9 +37,8 @@ anderer Vorgang und bleibt bei StockInfo.
 ## Für dich
 
 Entschieden sind die Basiswährung je Depot und das Weiterrechnen bei
-veralteten Devisenkursen mit sichtbarer Warnung. Die technische Umsetzung
-wird als zusammenhängende Funktion geplant; Teilaufgaben erhalten getrennte
-Prüfpunkte.
+veralteten Devisenkursen mit sichtbarer Warnung. Die zusammenhängende Funktion
+ist umgesetzt; die Prüfpunkte und Belege stehen unten.
 
 Die Umsetzung erfolgt zusammenhängend in diesem Ticket: FX-Anbindung,
 Bewertung und Depotwahl brauchen dieselbe Rechengrundlage. Dafür ist keine
@@ -91,10 +88,9 @@ Dieses Ticket ist die vollständige Arbeitsgrundlage für Umsetzung und Review.
 Der historische Integrationsvorschlag ist keine zusätzliche Spezifikation.
 Ausführungsentscheidungen und Nachweise werden hier ergänzt.
 
-Status: am 2026-09-10 nach technischer Freigabe von T-39 und T-40
-zur Umsetzung durch `codex` aktiviert. Repo:
-StockPortfolio, betroffene Fremdschnittstelle: StockInfo. Zeitbudget noch
-nicht geschätzt. Der aktive Auftrag steht ausschließlich in STATUS.
+Status: am 2026-09-10 nach technischer Freigabe von T-39 und T-40 durch
+`codex` umgesetzt und selbst geprüft. Repo: StockPortfolio, Fremdschnittstelle:
+StockInfo. Der aktive Owner und die Reviewfassung stehen ausschließlich in STATUS.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
 Basiswährung je Depot und Umgang mit veralteten Kursen sind geklärt.
@@ -111,14 +107,13 @@ Währung; daraus abgeleitete Depotwerte gehören zur gewählten Basiswährung.
 Ein Detailbetrag von 100 USD bleibt auch in einem EUR-Depot als 100 USD
 sichtbar. Beliebige Plugin-Kennzahlen werden nicht automatisch umgerechnet.
 
-### Vorliegende Befunde
+### Ausgangsbefunde vor der Umsetzung
 
 - `GET /fx` ist im StockInfo-Vertrag beschrieben (`contract/core-contract.json`,
   Abschnitte `endpoints.fx` und `core.fx`) und in `app/routers/fx.py`
-  implementiert; Query-Parameter `base` und `quote`. Gegen eine laufende Instanz
-  wurde das hier nicht geprüft.
-- In `src/` gibt es keinen Aufruf von `/fx`. Der API-Client kennt den Endpunkt
-  nicht.
+  implementiert; Query-Parameter `base` und `quote`. Die spätere Live-Prüfung steht unten; zum Zeitpunkt dieser Vorprüfung
+  lag sie noch nicht vor.
+- Vor Beginn gab es in `src/` keinen `/fx`-Aufruf.
 - Die Ausgabe ist bereits währungsfähig: `money(value, currency)` in
   `src/domain/formatters.ts` formatiert jeden ISO-Code. Fest auf Euro steht der
   Rest der Rechnung, nicht die Anzeige.
@@ -127,7 +122,7 @@ sichtbar. Beliebige Plugin-Kennzahlen werden nicht automatisch umgerechnet.
   ist gebaut, Stufe 1 anders gelöst, Stufe 3 blieb bewusst weg. Nachlesbar in
   der Git-Historie.
 
-### Technische Abgrenzung nach der Depot-Entscheidung
+### Technische Abgrenzung nach der Depot-Entscheidung (Vorprüfung)
 
 Vorprüfung vom 2026-09-10, noch keine Umsetzung:
 
@@ -169,19 +164,19 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|---|
-| 1 | `/fx` gegen eine laufende StockInfo-Instanz aufrufen | Antwort erfüllt den FX-Vertrag; `source` wird übernommen, wenn vorhanden, ist aber kein Pflichtfeld | ➖ |
-| 2 | Unbekannte Zielwährung anfragen | klarer Fehlerstatus statt stiller Ersatzwährung | ➖ |
-| 3 | Position in Fremdwährung im Depot | Marktwert zählt umgerechnet in die Summe; der Kurs bleibt in seiner Originalwährung sichtbar | ➖ |
-| 4 | Devisenkurs mit `stale: true` | Auswirkung gemäß Entscheidung B, im UI erkennbar | ➖ |
-| 5 | Dieselbe USD-Position samt Plugin-Detailbetrag in einem EUR- und einem USD-Depot bewerten | Depotwerte folgen ihrer Basiswährung; Originalkurs und Detailbetrag bleiben im gemeinsamen Cache unverändert, die Detailanzeige löst keine zusätzliche Umrechnung aus | ➖ |
+| 1 | `/fx` gegen eine laufende StockInfo-Instanz aufrufen | Antwort erfüllt den FX-Vertrag; `source` wird übernommen, wenn vorhanden, ist aber kein Pflichtfeld | ✅ |
+| 2 | Unbekannte Zielwährung anfragen | klarer Fehlerstatus statt stiller Ersatzwährung | ✅ |
+| 3 | Position in Fremdwährung im Depot | Marktwert zählt umgerechnet in die Summe; der Kurs bleibt in seiner Originalwährung sichtbar | ✅ |
+| 4 | Devisenkurs mit `stale: true` | Auswirkung gemäß Entscheidung B, im UI erkennbar | ✅ |
+| 5 | Dieselbe USD-Position samt Plugin-Detailbetrag in einem EUR- und einem USD-Depot bewerten | Depotwerte folgen ihrer Basiswährung; Originalkurs und Detailbetrag bleiben im gemeinsamen Cache unverändert, die Detailanzeige löst keine zusätzliche Umrechnung aus | ✅ |
 
-Durchgehend ➖: Die Bearbeitung ist eingeplant; eine Umsetzung und deren
-Verifikation liegen noch nicht vor.
+Alle fünf Punkte wurden von Codex an der laufenden Testinstanz geprüft.
+Die Kurse stammen aus einer kontrollierten lokalen Quelle, nicht aus einem
+externen Devisenprovider. Details und zusätzliche UI-Fälle stehen unten.
 
 **Doku-Abgleich · Zuschnitt vom 2026-09-10:** Reihenfolge und Abhängigkeiten
-mit T-39, T-40, T-35, STATUS, Boardübersicht, README und Integrationsvorschlag
-abgeglichen. Gemeinsame Kursprüfung liegt bei T-39, reine Detailanzeige bei
-T-40, Depotbewertung und FX hier. Die Funktion ist noch nicht verfügbar.
+mit T-39, T-40, T-35, STATUS, Boardübersicht und README abgeglichen. Gemeinsame Kursprüfung liegt bei T-39, reine Detailanzeige bei
+T-40, Depotbewertung und FX hier. Die Umsetzung und ihre Nachweise sind unten ergänzt.
 
 ```bash
 curl -s "http://localhost:8000/fx?base=EUR&quote=USD"                                    # #1 Erfolgsfall
@@ -241,7 +236,132 @@ bleibt die einzige vollständige Spezifikation; es entsteht kein paralleler Plan
    Abschließend isolierte eigene Fassung: `make test`, `make lint`,
    `make typecheck`, Bezeichnerinventar und unabhängiger Review durch Claude.
 
-- [ ] Depotdaten und FX-Vertrag mit roten Gegenproben
-- [ ] Gemeinsame Umrechnung, Store und Rechenwege
-- [ ] UI, Sicherung und währungsgetrennte Tageswerte
+- [x] Depotdaten und FX-Vertrag mit roten Gegenproben
+- [x] Gemeinsame Umrechnung, Store und Rechenwege
+- [x] UI, Sicherung und währungsgetrennte Tageswerte
 - [ ] Sichtprüfung, isolierte Gesamtprüfung und Reviewübergabe
+
+
+### Umsetzung · Codex · 2026-09-10
+
+- `Portfolio.baseCurrency` und `amountSettings` gehören zum Depot. Neue Depots
+  haben EUR als UI-Vorgabe, keine Geldschwellen und eine leere Cashzeile. Bereits
+  vorhandene EUR-Depots übernehmen passende Einstellungen direkt. Es gibt keine
+  allgemeine Migration; der alte numerische `saveAssetGrenze`-Sonderweg entfällt.
+- `normalizeFx` prüft das angefragte gerichtete Währungspaar, positive endliche
+  Rate, vollständige Zeitpunkte und Cacheflags. Der Store teilt parallele
+  Anfragen, trennt API-Adressen und verwirft verspätete alte Antworten. Bei einem
+  Fehler wird nur ein bereits geprüfter Kurs als veraltet weiterverwendet.
+- `convertedPrice` erhält den Originalkurs und liefert den Depotpreis. Dieser
+  trägt Positionen, Gruppen, Gesamtwert, Liquidität, Bänder, Stückvorschläge und
+  Handelssimulator. GBp wird vor GBP-FX durch 100 geteilt. Originale Pluginbeträge
+  aus T-40 bleiben unverändert.
+- `usePortfolioValuation` verbindet Dashboard, Rebalancing und Einstellungen mit
+  demselben Rechenweg. `FxNotice` zeigt benötigte fehlende/veraltete Paare dauerhaft,
+  samt Kursstand und Wiederholung. Depotbeträge und Wertdiagramm folgen der
+  gewählten Währung; originale Aktienkurse bleiben separat erkennbar.
+- Snapshot-Datensätze führen ihre Währung mit. Unpassende oder unbeschriftete
+  alte Werte werden beim Laden/Import verworfen; unvollständige Bewertungen
+  überschreiben keinen bestehenden Tageswert. Historische FX-Backtests werden
+  mangels historischer Devisenkurse mit Erklärung ausgelassen. Die konstante
+  GBp→GBP-Skalierung ist auch für die Preishistorie zulässig.
+- Backupformat 3 erhält Depotwährung und Geldschwellen. Fehlerhafte vorhandene
+  Geldschwellen werden abgelehnt, statt sie still durch null zu ersetzen.
+
+### Eigene UI-Prüfung · Codex · 2026-09-10
+
+Mike: „T-38 natürlich auch UI-Tests von dir“. Die folgenden Handgriffe wurden
+von Codex selbst im isolierten Chrome-Kontext `stockportfolio-t39` ausgeführt.
+Vite: `http://127.0.0.1:5189`; StockInfo: `http://127.0.0.1:8899`.
+Es wurden nur selbst angelegte Testdepots verwendet. Die Testdatenbank des
+Servers entstand beim Start neu; der Browserkontext wurde aus T-39/T-40
+weiterverwendet, also kein behaupteter kompletter Browser-Frischstart.
+
+StockInfos tatsächliche FastAPI-Routen, `CachedFxService`, QuoteService und
+SQLite-Repository laufen mit kontrollierten lokalen Quellen. Der bestehende
+[T-39-Testserver](T-39-stockinfo-server.py) wurde um `LocalFx` erweitert:
+USD/EUR = 0,8; EUR/USD = 1,25; GBP/EUR = 1,2. Fehlerantworten werden ausdrücklich
+als Testfälle eingespeist. StockInfo-Produktdateien wurden nicht verändert.
+
+| Handgriff | Beobachtetes Ergebnis |
+|---|---|
+| USD-Depot über Einstellungen → Daten anlegen | `T38 USA USD` mit USD angelegt, neue Betragsgrenzen 0; EUR-Depot bleibt separat erhalten. |
+| VTI mit 10 Stück und EUNL mit 10 Stück über den Assetdialog hinzufügen | Im USD-Depot VTI 292,40 USD → 2.924 USD; EUNL 129,70 EUR × 1,25 → 162,125 USD/Stück und 1.621,25 USD Marktwert. Originalkurs bleibt EUR. |
+| Zum EUR-Depot wechseln | VTI mit 2 Stück → 467,84 EUR; PEN.L mit 2 × 1.234,5 GBp → 29,628 EUR. Originalkurse USD/GBp bleiben erhalten. |
+| Dieselbe VTI-Quote mit Detailbetrag im EUR-/USD-Depot betrachten | Originalquote und `risk-a.amount = 100 USD` bleiben unverändert; nur die Depotbewertung wechselt. |
+| `fx-stale`, dann Aktualisieren | EUR/USD wird mit Datum 01.09.2026 12:00 als veraltet gewarnt; EUNL bleibt aktiv und mit 1.621,25 USD bewertet. |
+| `fx-missing`, Wiederholung bei vorhandenem Kurs | Zuletzt gültiger Kurs bleibt als veraltet verwendbar und sichtbar gewarnt. |
+| Seite bei `fx-missing` neu laden, Sitzungskurs fehlt | EUNL bleibt sichtbar, ist mit fehlendem FX ausgeschlossen; VTI zählt weiter. Datenstatus unvollständig; EUNL fehlt in Handelsvorschlägen. |
+| Ungültige Rate 0 ohne früheren Sitzungskurs | Keine Ersatzrate und kein Trade für EUNL; weiterhin ausgeschlossen. |
+| Fehlendes FX bei vorhandenem vollständigem Tageswert | Der USD-Tageswert 5.000 USD bleibt erhalten; der unvollständige Zwischenwert ersetzt ihn nicht. IDB-Prüfung bestätigt getrennten EUR-Tageswert. |
+| `normal`, FX wiederholen; im Handel 2 EUNL-Stück eingeben | Stückpreis intern 162,125 USD; Ausgabe 324,25 USD und Cashflow −324,25 USD. UI zeigt den auf zwei Stellen gerundeten Stückpreis 162,13 USD. |
+| Leeres CAD-Depot anlegen und UI-Währung auf GBP ändern | GBP bleibt nach Neuladen erhalten. USD-/EUR-Depots mit Beständen bieten keinen Währungswechsel an. |
+| USD-Mindesthandelsbetrag auf 20 setzen | Feld nennt USD; 20 USD bleiben je Depot erhalten. EUR-/GBP-Depots behalten Grenze 0. |
+| USD-Sicherung herunterladen und wieder einspielen | Die tatsächliche Download-Blob enthält Schema 3, USD, 20 USD Mindesthandel und USD-Tageswert. Vorschau zeigt USD; Bestätigen und Neuladen erhalten diese Daten. |
+| Wertdiagramm öffnen | Achsen zeigen USD; gemessener Tageswert vorhanden, kein erfundener historischer FX-Rückblick. |
+| Desktop 1440×1000 und schmal 500×1000 ansehen, DE/EN wechseln | Warnung, Werte und Depotwahl lesbar. Ein bei der Prüfung gefundener Überlauf der Depotverwaltung wurde behoben und erneut per Screenshot geprüft. |
+| `/fx?base=EUR&quote=ZZZ` anfragen | HTTP 404 mit `fx_pair_not_found`, keine Ersatzwährung. |
+
+Die Backup-Datei wurde über den echten Downloadknopf erzeugt. Für den Import
+wurde diese Datei per `DataTransfer` an das Dateiinput übergeben; Vorschau und
+Bestätigungsdialog liefen normal. Betragseingaben erfolgten über die UI;
+zusätzliche DOM-/Komponenten- und IndexedDB-Leseprüfungen belegten ungerundete
+Rechenwerte. Screenshots wurden direkt angesehen, nicht als Dateien abgelegt.
+Der Browserlauf verwendete den gemeinsamen Arbeitsbaum; die anschließenden
+Gesamtprüfungen liefen ausschließlich auf der isolierten eigenen Fassung.
+
+**Testserver starten** (aus StockPortfolio, vorhandene StockInfo-Umgebung):
+
+```bash
+/Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python \
+  _tickets/30-doing/T-39-stockinfo-server.py \
+  --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo \
+  --detail-fixtures tests/fixtures/stockinfo --port 8899
+```
+
+`POST /__test/scenario` mit `{"mode":"fx-stale"}`, `fx-missing`, `fx-invalid`
+oder `normal` steuert die FX-Fälle. Diese Route gehört ausschließlich zum
+lokalen Testharness. Nach der Prüfung wurde `normal` wiederhergestellt.
+
+### Automatische Prüfung und Doku-Abgleich
+
+- Rote Gegenproben für FX-Vertrag, Store, Depotwährung, Tageswerte und ungültige
+  Backup-Geldschwellen wurden vor der jeweiligen Korrektur ausgeführt.
+- Die isolierte eigene Fassung besteht aus HEAD plus ausschließlich vorgemerkten
+  T-38-Änderungen. Fremde Health-/Meldungsänderungen und Lessons-Dateien sind
+  ausgeschlossen; die beiden gemeinsam bearbeiteten Views sind hunkweise getrennt.
+- `VITE_STOCKINFO_API_URL=https://contract.test make test`: **52 Dateien,
+  711 Tests erfolgreich**. Die öffentliche Testadresse erfüllt die bestehende
+  Build-URL-Gegenprobe; kein Testzugriff auf einen externen Provider.
+- `make lint`, `make typecheck` und `git diff --cached --check`: erfolgreich.
+- **163 Produkt-, Test- und Konfigurationsdateien** der geprüften Kopie byteweise
+  mit dem Git-Index verglichen: keine Abweichung. Kopie:
+  `/var/folders/1g/t8rp3mj157z2kfc6ch_t3nw40000gn/T/stockportfolio-t38-review-bd85c34v`.
+  Logs: `/tmp/stockportfolio-t38-isolated-{test,lint,typecheck}.log`.
+- Bezeichnerinventar per TypeScript-Compiler-API für **50 berührte TS-/Vue-Dateien**
+  und Python-AST für den Testserver. Vorgefundene deutsche lokale Namen in
+  ohnehin berührten Dateien wurden übersetzt; keine deutsche Bezeichneraltlast
+  im geprüften Inventar. Fachliche Währungskürzel und bestehende Themennamen bleiben.
+- Gemeinsamer Arbeitsbaum vor der abschließenden Bezeichnerbereinigung:
+  53 Dateien/719 Tests erfolgreich. Das ist Zusatzbeleg, keine Ersatzprüfung
+  der eigenen Fassung; die Differenz stammt aus fremden Änderungen.
+
+**Doku-Abgleich:** README beschreibt unter „Portfolio base currency“ die
+Bedienung, Umrechnung, Warnung und Historiengrenze; alte „One currency“- und
+Nicht-verfügbar-Aussagen sind entfernt. Boardübersicht und STATUS werden mit
+der Übergabe nachgezogen. Der Designentwurf vom 06.08. ist als damalige
+0.1.0-Fassung gekennzeichnet; T-39/T-40-Pläne bleiben historische Nachweise.
+Das historische Integrationspapier wurde für T-38 weder gelesen noch geändert.
+Unraid-Konfiguration bleibt passend, da die Basiswährung eine Depotentscheidung
+im Browser ist und keine Containeroption. Methodentexte in DE/EN sind aktualisiert.
+
+**Lessons angewandt:** „Entscheidungen in allen aktuellen Aussagen nachziehen“
+über den vorstehenden Doku-Abgleich; SI-CX-01 über frische fake-indexeddb-Tests,
+neu gestartete Serverdatenbank und ausdrücklich benannte Browser-Vorbereitung;
+SI-R-02 über einfache EUR-Übernahme ohne allgemeine Migration. Die technische
+Freigabe wird ausschließlich beim zugeordneten Verifier `claude` angefragt.
+
+**Grenzen:** Kein Live-Devisenprovider geprüft; deterministische Testkurse.
+Kein historischer FX-Endpunkt verfügbar; deshalb kein gemischter historischer
+Rückblick. Neue Depots mit neuer Währung sind der vorgesehene Weg für bestehende
+Bestände. Die eigene UI-Prüfung ersetzt nicht Mikes Abschlussabnahme.

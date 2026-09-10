@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NInput, NPopconfirm, NTag } from 'naive-ui'
+import { NButton, NInput, NPopconfirm, NSelect, NTag } from 'naive-ui'
 import { consola } from 'consola'
 import { formatAge } from '@/composables/useRelativeTime'
 import { integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
+import { ISO_CURRENCIES } from '@/domain/fx'
 
 /**
  * Verwaltung mehrerer Depots.
@@ -26,6 +27,8 @@ const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 
 const newName = ref<string>('')
+const newCurrency = ref('EUR')
+const currencyOptions = ISO_CURRENCIES.map(value => ({ value, label: value }))
 const busy = ref<boolean>(false)
 const error = ref<string | null>(null)
 
@@ -38,7 +41,7 @@ async function create(): Promise<void> {
   busy.value = true
   error.value = null
   try {
-    const id = await portfolioStore.createPortfolio(newName.value)
+    const id = await portfolioStore.createPortfolio(newName.value, newCurrency.value)
     await settingsStore.setActivePortfolio(id)
     newName.value = ''
   } catch (cause) {
@@ -66,6 +69,14 @@ async function activate(id: string): Promise<void> {
 async function rename(id: string, name: string): Promise<void> {
   try {
     await portfolioStore.renamePortfolio(id, name)
+  } catch (cause) {
+    error.value = messageOf(cause)
+  }
+}
+
+async function changeCurrency(id: string, currency: string): Promise<void> {
+  try {
+    await portfolioStore.setBaseCurrency(id, currency)
   } catch (cause) {
     error.value = messageOf(cause)
   }
@@ -104,7 +115,7 @@ function messageOf(cause: unknown): string {
       >
         <!--
           Der Name ist direkt editierbar, ohne Umschaltknopf: Umbenennen ist
-          die einzige Bearbeitung, die es hier gibt.
+          eine häufige Bearbeitung des Depots.
         -->
         <NInput
           :value="entry.name"
@@ -117,6 +128,14 @@ function messageOf(cause: unknown): string {
         <NTag v-if="entry.id === activeId" type="primary" size="small" :bordered="false">
           {{ t('portfolios.active') }}
         </NTag>
+
+        <div class="depots__currency" :title="entry.currencyEditable ? t('fx.baseCurrency') : t('fx.currencyLocked')">
+          <NSelect
+            :value="entry.baseCurrency" :options="currencyOptions" filterable size="small"
+            :disabled="!entry.currencyEditable || busy" :input-props="{ 'aria-label': t('fx.baseCurrency') }"
+            @update:value="(currency: string) => changeCurrency(entry.id, currency)"
+          />
+        </div>
 
         <span class="depots__meta tabular-nums">
           {{ t('units.positions', entry.positionCount, { named: { count: integer(entry.positionCount) } }) }}
@@ -177,7 +196,12 @@ function messageOf(cause: unknown): string {
       <NButton size="small" secondary :loading="busy" @click="create">
         {{ t('portfolios.create') }}
       </NButton>
+      <div class="depots__currency">
+        <NSelect v-model:value="newCurrency" :options="currencyOptions" filterable size="small" :input-props="{ 'aria-label': t('fx.baseCurrency') }" />
+      </div>
     </div>
+
+    <p class="depots__meta">{{ t('fx.currencyLocked') }}</p>
 
     <p v-if="error" class="depots__error">{{ error }}</p>
   </div>
@@ -202,15 +226,18 @@ function messageOf(cause: unknown): string {
 
   &__row {
     @include row(var(--space-3));
+    flex-wrap: wrap;
     padding: var(--space-2) 0;
 
     & + & { border-top: 1px solid token(--border-default); }
   }
 
   &__name { max-width: 18rem; }
+  &__currency { width: 7rem; flex-shrink: 0; }
 
   &__meta {
     @include muted(var(--font-xs));
+    flex-shrink: 0;
 
     &--wide {
       display: none;
@@ -224,8 +251,17 @@ function messageOf(cause: unknown): string {
     margin-left: auto;
   }
 
+  &__row > &__meta { white-space: nowrap; }
+
+  &__row > &__name {
+    flex-basis: 100%;
+    max-width: none;
+    @include up(md) { flex-basis: auto; max-width: 18rem; }
+  }
+
   &__add {
     @include row(var(--space-2));
+    flex-wrap: wrap;
   }
 
   &__error {

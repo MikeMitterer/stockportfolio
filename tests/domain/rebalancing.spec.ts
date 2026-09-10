@@ -434,7 +434,6 @@ describe('Mindest-Handelsvolumen im Aggregat', () => {
     securityBuffer: { mode: 'absolute', value: 0 },
     minTradeSize: { mode: 'absolute', value: 0 },
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
     ui: { notificationSeconds: 0, historyPeriod: 'month' },
@@ -519,7 +518,6 @@ describe('Auslöser im Aggregat', () => {
     securityBuffer: { mode: 'absolute', value: 0 },
     minTradeSize: { mode: 'absolute', value: 0 },
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
     ui: { notificationSeconds: 0, historyPeriod: 'month' },
@@ -605,7 +603,6 @@ describe('computeRebalancing', () => {
     securityBuffer: { mode: 'absolute', value: 0 },
     minTradeSize: { mode: 'absolute', value: 0 },
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
     ui: {
@@ -871,7 +868,6 @@ describe('computeLiquidity', () => {
       securityBuffer: { mode, value: buffer },
       minTradeSize: { mode: 'absolute', value: 0 },
       rebalancing: { trigger: 'bands', intervalMonths: 12 },
-      currency: 'EUR',
       refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
       links: [],
       ui: {
@@ -1015,7 +1011,6 @@ describe('Fremdwährung', () => {
     securityBuffer: { mode: 'absolute', value: 0 },
     minTradeSize: { mode: 'absolute', value: 0 },
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    currency: 'EUR',
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
     ui: { notificationSeconds: 0, historyPeriod: 'month' },
@@ -1072,13 +1067,14 @@ describe('Fremdwährung', () => {
     expect(result.rows[1]?.excludedReason).toBe('currency')
   })
 
-  it('zeigt den Marktwert der Zeile trotzdem an', () => {
+  it('erhält den Originalmarktwert separat, wenn der Depotwert nicht berechenbar ist', () => {
     // In ihrer eigenen Währung ist die Zahl richtig — sie passt nur nicht in
     // die Summe. Sie zu verstecken hieße, dem Nutzer seine Position zu
     // unterschlagen.
     const result = computeRebalancing(portfolioWithCurrencies([{ isin: 'F' }]), quotesWithCurrencies({ F: 'USD' }), settings)
 
-    expect(result.rows[0]?.marketValue).toBe(1000)
+    expect(result.rows[0]?.originalMarketValue).toBe(1000)
+    expect(result.rows[0]?.basePrice).toBeNull()
   })
 
   it('hält die Investitionsreserve frei von fremden Währungen', () => {

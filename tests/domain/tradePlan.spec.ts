@@ -51,7 +51,6 @@ const SETTINGS: Settings = {
   securityBuffer: { mode: 'absolute', value: 0 },
   minTradeSize: { mode: 'absolute', value: 0 },
   rebalancing: { trigger: 'bands', intervalMonths: 12 },
-  currency: 'EUR',
   refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
   links: [],
   ui: {
@@ -190,7 +189,7 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
         // Ziel 10 % von 10.000 € = 1.000 €; Kurs 100 € → 10 Stück wären exakt
-        makePosition({ id: 'ziel', isin: 'Z', symbol: 'Z.DE', units: 0, targetPercent: 10 }),
+        makePosition({ id: 'target', isin: 'Z', symbol: 'Z.DE', units: 0, targetPercent: 10 }),
         makePosition({ id: 'rest', isin: 'R', symbol: 'R.DE', units: 100, targetPercent: 90 }),
       ],
     }
@@ -205,8 +204,8 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
   it('meldet die Abweichung in Prozentpunkten', () => {
     const { result } = targetSetup()
     // Gesamt 10.000 €. 9 Stück kaufen → 900 € = 9,0 % bei Ziel 10 % → −1,0 %-Punkte
-    const plan = computeTradePlan(result.rows, { ziel: 9 }, result.total, SETTINGS.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+    const plan = computeTradePlan(result.rows, { target: 9 }, result.total, SETTINGS.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.percentAfter).toBeCloseTo(9, 6)
     expect(row?.deviationAfter).toBeCloseTo(-1, 6)
@@ -215,8 +214,8 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
   it('meldet die Abweichung auch relativ zum Ziel', () => {
     const { result } = targetSetup()
     // −1,0 von 10 sind −10 % relativ
-    const plan = computeTradePlan(result.rows, { ziel: 9 }, result.total, SETTINGS.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+    const plan = computeTradePlan(result.rows, { target: 9 }, result.total, SETTINGS.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.relativeDeviationAfter).toBeCloseTo(-10, 6)
   })
@@ -224,8 +223,8 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
   it('Ziel knapp verfehlt, aber im Band → gilt als in Ordnung', () => {
     const { result } = targetSetup()
     // 9,5 Stück gibt es nicht; 9 Stück = 9,0 % bei Band 9,0 % bis 12,0 %
-    const plan = computeTradePlan(result.rows, { ziel: 9 }, result.total, SETTINGS.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+    const plan = computeTradePlan(result.rows, { target: 9 }, result.total, SETTINGS.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.inBandAfter).toBe(true)
     expect(row?.suggestionAfter).toBe('ok')
@@ -236,8 +235,8 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
   it('Ziel deutlich verfehlt und außerhalb des Bandes → nicht in Ordnung', () => {
     const { result } = targetSetup()
     // 5 Stück = 500 € = 5,0 %, unteres Band liegt bei 9,0 %
-    const plan = computeTradePlan(result.rows, { ziel: 5 }, result.total, SETTINGS.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+    const plan = computeTradePlan(result.rows, { target: 5 }, result.total, SETTINGS.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.inBandAfter).toBe(false)
     expect(row?.suggestionAfter).toBe('buy')
@@ -245,8 +244,8 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
 
   it('Ziel exakt getroffen → Abweichung null', () => {
     const { result } = targetSetup()
-    const plan = computeTradePlan(result.rows, { ziel: 10 }, result.total, SETTINGS.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+    const plan = computeTradePlan(result.rows, { target: 10 }, result.total, SETTINGS.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.deviationAfter).toBeCloseTo(0, 6)
     expect(row?.inBandAfter).toBe(true)
@@ -257,15 +256,15 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
     const withoutTarget: Portfolio = {
       ...portfolio,
       positions: portfolio.positions.map((position) =>
-        position.id === 'ziel' ? { ...position, targetPercent: 0 } : position,
+        position.id === 'target' ? { ...position, targetPercent: 0 } : position,
       ),
     }
     const recalculated = computeRebalancing(withoutTarget, new Map([
       ['Z', makeQuote({ isin: 'Z', price: 100 })],
       ['R', makeQuote({ isin: 'R', price: 100 })],
     ]), SETTINGS)
-    const plan = computeTradePlan(recalculated.rows, { ziel: 5 }, recalculated.total, SETTINGS.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
+    const plan = computeTradePlan(recalculated.rows, { target: 5 }, recalculated.total, SETTINGS.bands, 0)
+    const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.relativeDeviationAfter).toBe(0)
   })
@@ -742,7 +741,7 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     positions: [
-      makePosition({ id: 'klein', isin: 'K', symbol: 'K.DE', units: 188, targetPercent: 2 }),
+      makePosition({ id: 'small', isin: 'K', symbol: 'K.DE', units: 188, targetPercent: 2 }),
       makePosition({
         id: 'rest',
         isin: null,
@@ -759,7 +758,7 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
   it('meldet ohne Grenze einen Nachkauf', () => {
     const result = computeRebalancing(portfolio, quotes, settings)
     const plan = computeTradePlan(result.rows, {}, result.total, settings.bands, 0)
-    const row = plan.rows.find((entry) => entry.current.position.id === 'klein')!
+    const row = plan.rows.find((entry) => entry.current.position.id === 'small')!
     expect(row.suggestionAfter).toBe('buy')
     expect(row.belowMinTradeAfter).toBe(false)
   })
@@ -767,7 +766,7 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
   it('schweigt, solange die fehlende Summe unter der Grenze liegt', () => {
     const result = computeRebalancing(portfolio, quotes, settings)
     const plan = computeTradePlan(result.rows, {}, result.total, settings.bands, 0, { minTrade: 500 })
-    const row = plan.rows.find((entry) => entry.current.position.id === 'klein')!
+    const row = plan.rows.find((entry) => entry.current.position.id === 'small')!
     expect(row.suggestionAfter).toBe('ok')
     expect(row.belowMinTradeAfter).toBe(true)
   })
@@ -775,10 +774,10 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
   it('greift auf den Zustand *nach* dem Trade, nicht auf den davor', () => {
     const result = computeRebalancing(portfolio, quotes, settings)
     // 100 Stück zu 10 € kaufen — danach fehlen 1.000 € statt 120 € zu viel.
-    const plan = computeTradePlan(result.rows, { klein: 100 }, result.total, settings.bands, 0, {
+    const plan = computeTradePlan(result.rows, { small: 100 }, result.total, settings.bands, 0, {
       minTrade: 500,
     })
-    const row = plan.rows.find((entry) => entry.current.position.id === 'klein')!
+    const row = plan.rows.find((entry) => entry.current.position.id === 'small')!
     expect(row.suggestionAfter).toBe('sell')
     expect(row.belowMinTradeAfter).toBe(false)
   })

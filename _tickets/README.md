@@ -156,8 +156,8 @@ Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
 Kursprüfung ist in T-39 umgesetzt.
 
 [T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
-StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
-nutzt sie nicht. Konfigurierbare Basiswährung je Depot und Weiterrechnen bei
-veralteten FX-Kursen mit sichtbarer Warnung sind entschieden. Nach T-39 und T-40
-zur Umsetzung aktiviert. Ersetzt die überholte Anfrage
-`docs/stockinfo-currency-request.md`.
+Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.
+Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
+Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
+711 Tests, Lint und Typecheck erfolgreich. Unabhängiger Review durch Claude
+und Mikes Abschlussabnahme stehen noch aus.

@@ -225,9 +225,9 @@ export class ValueSnapshotRepository {
    * @param date        ISO-Datum `YYYY-MM-DD`.
    * @param total       Gesamtwert.
    */
-  async put(portfolioId: string, date: string, total: number): Promise<void> {
+  async put(portfolioId: string, date: string, total: number, currency: string): Promise<void> {
     const db = await getDb()
-    await db.put('valueSnapshots', { key: `${portfolioId}::${date}`, portfolioId, date, total })
+    await db.put('valueSnapshots', { key: `${portfolioId}::${date}`, portfolioId, date, total, currency })
   }
 
   /** Verwirft alle Tageswerte eines Depots — für „Depot gelöscht". */

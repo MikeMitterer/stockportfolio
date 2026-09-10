@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
@@ -11,8 +12,10 @@ import { useValueHistoryStore } from '@/stores/valueHistory'
 import { withinDays, type BacktestInput } from '@/domain/portfolioHistory'
 import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
-import { eur, eurSigned, integer, percent, shortDate } from '@/domain/formatters'
-import { computeRebalancing } from '@/domain/rebalancing'
+import { integer, percent, shortDate } from '@/domain/formatters'
+import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
+import FxNotice from '@/components/FxNotice.vue'
+import { baseCurrencyOf, majorCurrency } from '@/domain/fx'
 import { nextDueDate, usesBands } from '@/domain/schedule'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
@@ -64,11 +67,7 @@ async function onLoadDemo(): Promise<void> {
   }
 }
 
-const result = computed(() => {
-  const portfolio = portfolioStore.portfolio
-  if (!portfolio) return null
-  return computeRebalancing(portfolio, quotesStore.quotes, settingsStore.settings)
-})
+const { result, fx, loadFx } = usePortfolioValuation()
 
 const bandsActive = computed(() => usesBands(settingsStore.settings.rebalancing.trigger))
 
@@ -171,7 +170,7 @@ notify(
         positions: t('units.positions', count, { named: { count: integer(count) } }),
         verb: t('currency.verb', count),
         counts: t('currency.counts', count),
-        base: settingsStore.settings.currency,
+        base: portfolioStore.portfolio?.baseCurrency ?? 'EUR',
         list: foreignCurrencySummary.value,
       })
     },
@@ -300,12 +299,15 @@ const valueChartOpen = ref<boolean>(false)
 const valueHistoryLoading = ref<boolean>(false)
 
 /** Bestände mit ihrem Kursverlauf — Grundlage des Rückblicks. */
+const needsHistoricalFx = computed(() => (result.value?.rows ?? []).some(row => row.position.enabled && row.quote && majorCurrency(row.quote.currency) !== row.baseCurrency))
+const completeValuation = computed(() => !!result.value && result.value.rows.every(row => !row.position.enabled || row.isActive))
 const backtestInputs = computed<BacktestInput[]>(() =>
+  needsHistoricalFx.value || !completeValuation.value ? [] :
   (result.value?.rows ?? [])
     .filter((row) => row.isActive)
     .map((row) => ({
       units: row.position.units,
-      points: historyStore.get(row.position, BACKTEST_PERIOD).points,
+      points: historyStore.get(row.position, BACKTEST_PERIOD).points.map(point => ({ ...point, close: row.quote?.currency === 'GBp' ? point.close / 100 : point.close })),
       constantValue: row.marketValue,
     })),
 )
@@ -322,7 +324,7 @@ async function loadValueHistory(): Promise<void> {
 
   valueHistoryLoading.value = true
   try {
-    await valueHistory.load(portfolio.id)
+    await valueHistory.load(portfolio.id, baseCurrencyOf(portfolio))
 
     await Promise.all(
       portfolioStore.positions
@@ -330,7 +332,9 @@ async function loadValueHistory(): Promise<void> {
         .map((position) => historyStore.ensure(client ?? null, position, BACKTEST_PERIOD)),
     )
 
+    if (portfolioStore.portfolio?.id !== portfolio.id) return
     valueHistory.computeBacktest(backtestInputs.value)
+    await recordCurrentValue()
   } finally {
     valueHistoryLoading.value = false
   }
@@ -379,10 +383,22 @@ onMounted(async () => {
   await portfolioStore.backfillKinds(quotesStore.quotes)
 
   // Der Tageswert wird festgehalten, sobald die Kurse stehen — einmal je Tag.
-  const total = result.value?.total ?? 0
-  await valueHistory.record(portfolioStore.portfolio?.id ?? '', total)
+  await loadFx()
   await loadValueHistory()
 })
+
+/** Unvollständige Summen sind keine Tageswerte des ganzen Depots. */
+async function recordCurrentValue(): Promise<void> {
+  const portfolio = portfolioStore.portfolio
+  if (!portfolio || !valueHistory.loaded || fx.loading || !completeValuation.value) return
+  await valueHistory.record(portfolio.id, result.value?.total ?? 0, baseCurrencyOf(portfolio))
+}
+
+watch(() => [result.value, fx.loading], () => {
+  valueHistory.computeBacktest(backtestInputs.value)
+  void recordCurrentValue()
+})
+watch(() => portfolioStore.portfolio?.id, () => { if (ready.value) void loadValueHistory() })
 
 watch(groupsCollapsed, (collapsed) => {
   safeStorage.write(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')
@@ -391,10 +407,14 @@ watch(groupsCollapsed, (collapsed) => {
 function toggleGroups(): void {
   groupsCollapsed.value = !groupsCollapsed.value
 }
+const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
+
 </script>
 
 <template>
   <div class="dashboard">
+    <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
+    <p v-if="needsHistoricalFx" class="dashboard__history-note">{{ t('fx.historyUnavailable') }}</p>
     <!-- Erst-Ladezustand -->
     <div v-if="!ready" class="dashboard__loading">
       <NSpin size="large" />
@@ -405,7 +425,7 @@ function toggleGroups(): void {
       das Beispiel-Depot lässt die App ausprobieren, ohne dass jemand
       fremde Bestände für die eigenen hält.
     -->
-    <NEmpty v-else-if="!hasHoldings" class="dashboard__empty" description="Noch keine Wertpapiere im Depot">
+    <NEmpty v-else-if="!hasHoldings" class="dashboard__empty" :description="t('dashboard.empty')">
       <template #extra>
         <div class="dashboard__empty-actions">
           <p class="dashboard__empty-hint">
@@ -429,7 +449,7 @@ function toggleGroups(): void {
       <section class="dashboard__kpis">
         <KpiCard
           :label="t('kpi.total')"
-          :value="eur(result.total)"
+          :value="formatMoney(result.total)"
           :trend="trendPoints"
           expandable
           :expanded="valueChartOpen"
@@ -440,7 +460,7 @@ function toggleGroups(): void {
           :explanation="t('hints.investmentReserve')"
           anchor="reserve"
           settings-tab="calc"
-          :value="eurSigned(result.liquidity.investmentReserve)"
+          :value="formatMoneySigned(result.liquidity.investmentReserve)"
           :hint="t('kpi.investmentReserveHint')"
           :tone="liquidityTone"
         />
@@ -450,7 +470,7 @@ function toggleGroups(): void {
           anchor="reserve"
           settings-tab="calc"
           :value="percent(result.liquidity.investmentReservePercent)"
-          :hint="t('kpi.securityBufferHint', { buffer: eur(result.liquidity.securityBuffer) })"
+          :hint="t('kpi.securityBufferHint', { buffer: formatMoney(result.liquidity.securityBuffer) })"
         />
         <!--
           Beschreibt die Datenlage, nicht den Handlungsbedarf: Ein „Buy" in der
@@ -473,6 +493,7 @@ function toggleGroups(): void {
       -->
       <section v-if="valueChartOpen" class="dashboard__value">
         <PortfolioValueChart
+          :currency="baseCurrencyOf(portfolioStore.portfolio)"
           :backtest="valueHistory.backtest"
           :snapshots="valueHistory.snapshotLine"
           :truth-from="valueHistory.truthFrom"

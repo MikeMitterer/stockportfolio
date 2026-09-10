@@ -9,8 +9,9 @@
  * Reine Funktionen, kein DOM: Weder Datei-Auswahl noch Download stehen hier.
  */
 
+import { baseCurrencyOf, isCurrency } from '@/domain/fx'
 import type { ValueSnapshot } from '@/domain/portfolioHistory'
-import type { AssetGroup, InstrumentKind, Portfolio, Position, Settings } from '@/types/portfolio'
+import type { AmountSetting, AssetGroup, InstrumentKind, Portfolio, Position, Settings } from '@/types/portfolio'
 
 /** Erkennungsmerkmal der Datei — verhindert das Einlesen fremder JSON-Dateien. */
 export const BACKUP_KIND = 'stockportfolio-backup'
@@ -22,12 +23,9 @@ export const BACKUP_KIND = 'stockportfolio-backup'
  * abgelehnt statt geraten: Ein stillschweigend falsch interpretiertes Feld
  * wäre schlimmer als eine klare Fehlermeldung.
  *
- * Bleibt bei 1, obwohl die Freigabeliste dazugekommen ist: Das Feld ist rein
- * additiv. Eine ältere App überliest es, eine neuere kommt ohne es aus. Die
- * Fassung hochzuzählen würde nur dazu führen, dass eine ältere App eine Datei
- * ablehnt, die sie problemlos lesen könnte.
+ * Fassung 3 kennzeichnet Basiswährung, Geldschwellen und Währung der Tageswerte.
  */
-export const BACKUP_SCHEMA_VERSION = 2
+export const BACKUP_SCHEMA_VERSION = 3
 
 export interface Backup {
   kind: typeof BACKUP_KIND
@@ -213,7 +211,7 @@ export function parseBackup(raw: string): ParseResult {
       // dass später ein Feld hinzugekommen ist.
       settings: data.settings as unknown as Settings,
       allowlist: parseAllowlist(data.allowlist),
-      valueHistory: parseValueHistory(data.valueHistory),
+      valueHistory: parseValueHistory(data.valueHistory, baseCurrencyOf(portfolio)),
     },
   }
 }
@@ -243,6 +241,16 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
   if (typeof value.id !== 'string' || value.id === '') return { key: 'noPortfolioId' }
   if (typeof value.name !== 'string') return { key: 'noPortfolioName' }
   if (!Array.isArray(value.positions)) return { key: 'noPositions' }
+  if (value.baseCurrency !== undefined && !isCurrency(value.baseCurrency)) return { key: 'invalidCurrency' }
+
+  let amountSettings: Portfolio['amountSettings']
+  if (value.amountSettings !== undefined) {
+    if (!isRecord(value.amountSettings)) return { key: 'invalidAmountSettings' }
+    const securityBuffer = parseAmountSetting(value.amountSettings.securityBuffer)
+    const minTradeSize = parseAmountSetting(value.amountSettings.minTradeSize)
+    if (!securityBuffer || !minTradeSize) return { key: 'invalidAmountSettings' }
+    amountSettings = { securityBuffer, minTradeSize }
+  }
 
   const positions: Position[] = []
   const seen = new Set<string>()
@@ -263,6 +271,8 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
   return {
     id: value.id,
     name: value.name,
+    baseCurrency: value.baseCurrency as string | undefined ?? 'EUR',
+    ...(amountSettings ? { amountSettings } : {}),
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
     // Der letzte Ausgleich gehört zum Depot: Ohne ihn stünde ein
@@ -279,18 +289,19 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
  * abzulehnen: Ein unlesbarer Tageswert ist ein Schönheitsfehler in der Kurve,
  * kein Grund, ein Depot nicht wiederherzustellen.
  */
-function parseValueHistory(value: unknown): ValueSnapshot[] {
+function parseValueHistory(value: unknown, currency: string): ValueSnapshot[] {
   if (!Array.isArray(value)) return []
 
   return value
     .filter(
       (entry): entry is ValueSnapshot =>
         isRecord(entry) &&
+        entry.currency === currency &&
         typeof entry.date === 'string' &&
         typeof entry.total === 'number' &&
         Number.isFinite(entry.total),
     )
-    .map((entry) => ({ date: entry.date, total: entry.total }))
+    .map((entry) => ({ date: entry.date, total: entry.total, currency: entry.currency }))
     .sort((a, b) => a.date.localeCompare(b.date))
 }
 
@@ -337,4 +348,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value)
+}
+
+/** Vorhandene Geldschwellen müssen vollständig und gültig sein. */
+function parseAmountSetting(value: unknown): AmountSetting | null {
+  return isRecord(value) && (value.mode === 'absolute' || value.mode === 'percent') && isFiniteNumber(value.value) && value.value >= 0
+    ? { mode: value.mode, value: value.value } : null
 }

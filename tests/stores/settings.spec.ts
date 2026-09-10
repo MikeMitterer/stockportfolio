@@ -23,26 +23,26 @@ afterEach(async () => {
 
 describe('withDefaults', () => {
   it('ergänzt fehlende Verweise', () => {
-    const alt: Partial<Settings> = {
+    const stored: Partial<Settings> = {
       activePortfolioId: 'p1',
       securityBuffer: { mode: 'absolute', value: 5000 },
     }
-    const merged = withDefaults(alt)
+    const merged = withDefaults(stored)
 
     expect(merged.links.length).toBeGreaterThan(0)
     expect(merged.securityBuffer).toEqual({ mode: 'absolute', value: 5000 })
   })
 
   it('behält vorhandene Werte bei', () => {
-    const alt: Partial<Settings> = {
+    const stored: Partial<Settings> = {
       activePortfolioId: 'p1',
       bands: { lowerPercent: 3, upperPercent: 7 },
     }
-    expect(withDefaults(alt).bands).toEqual({ lowerPercent: 3, upperPercent: 7 })
+    expect(withDefaults(stored).bands).toEqual({ lowerPercent: 3, upperPercent: 7 })
   })
 
   it('überschreibt eigene Verweise nicht', () => {
-    const eigene = [
+    const customLinks = [
       {
         id: 'meiner',
         label: 'Meiner',
@@ -51,35 +51,13 @@ describe('withDefaults', () => {
         enabled: true,
       },
     ]
-    expect(withDefaults({ links: eigene }).links).toEqual(eigene)
+    expect(withDefaults({ links: customLinks }).links).toEqual(customLinks)
   })
 
   it('füllt Teilangaben in verschachtelten Feldern auf', () => {
     const merged = withDefaults({ refresh: { autoOnLoad: false } as Settings['refresh'] })
     expect(merged.refresh.autoOnLoad).toBe(false)
     expect(merged.refresh.staleAfterMinutes).toBe(60)
-  })
-
-  it('übernimmt den alten Feldnamen saveAssetGrenze als Sicherheitspuffer', () => {
-    // Bis T-18 hieß das Feld so. Wer die App vorher genutzt hat, darf seinen
-    // Puffer nicht verlieren.
-    const alt = { activePortfolioId: 'p1', saveAssetGrenze: 42_000 } as Partial<Settings>
-    expect(withDefaults(alt).securityBuffer).toEqual({ mode: 'absolute', value: 42_000 })
-  })
-
-  it('der neue Feldname hat Vorrang vor dem alten', () => {
-    const beide = {
-      activePortfolioId: 'p1',
-      securityBuffer: { mode: 'absolute', value: 10_000 },
-      saveAssetGrenze: 42_000,
-    } as Partial<Settings>
-    expect(withDefaults(beide).securityBuffer).toEqual({ mode: 'absolute', value: 10_000 })
-  })
-
-  it('deutet einen blanken Zahlenwert als festen Betrag', () => {
-    // Bis T-20 war der Puffer eine nackte Zahl — und die war immer in Euro.
-    const alt = { activePortfolioId: 'p1', securityBuffer: 7000 } as unknown as Partial<Settings>
-    expect(withDefaults(alt).securityBuffer).toEqual({ mode: 'absolute', value: 7000 })
   })
 
   it('legt ohne gespeicherten Puffer keinen Betrag fest', () => {
@@ -108,16 +86,16 @@ describe('useSettingsStore — load', () => {
   it('ergänzt Verweise in einem alten Datensatz und schreibt sie zurück', async () => {
     // Datensatz ohne `links`, wie ihn eine ältere Fassung hinterlassen hätte.
     const repository = new SettingsRepository()
-    const alt = defaultSettings('p1')
-    delete (alt as Partial<Settings>).links
-    await repository.save(alt as Settings)
+    const stored = defaultSettings('p1')
+    delete (stored as Partial<Settings>).links
+    await repository.save(stored as Settings)
 
     const store = useSettingsStore()
     await store.load('p1')
 
     expect(store.settings.links.length).toBeGreaterThan(0)
-    const wiederGeladen = await repository.load()
-    expect(wiederGeladen?.links.length).toBeGreaterThan(0)
+    const reloaded = await repository.load()
+    expect(reloaded?.links.length).toBeGreaterThan(0)
   })
 })
 
@@ -136,9 +114,9 @@ describe('useSettingsStore — Verweise', () => {
       },
     ])
 
-    const gespeichert = await new SettingsRepository().load()
-    expect(gespeichert?.links).toHaveLength(1)
-    expect(gespeichert?.links[0]?.id).toBe('nur-einer')
+    const saved = await new SettingsRepository().load()
+    expect(saved?.links).toHaveLength(1)
+    expect(saved?.links[0]?.id).toBe('nur-einer')
   })
 
   it('setzt auf die Vorgaben zurück', async () => {
@@ -153,13 +131,13 @@ describe('useSettingsStore — Verweise', () => {
 
   it('die Vorgaben trennen ETF- und Aktien-Profile', () => {
     const links = defaultLinks()
-    const etfProfil = links.find((link) => link.id === 'extraetf-etf')
-    const aktienProfil = links.find((link) => link.id === 'extraetf-stock')
+    const etfProfile = links.find((link) => link.id === 'extraetf-etf')
+    const stockProfile = links.find((link) => link.id === 'extraetf-stock')
 
-    expect(etfProfil?.appliesTo).toEqual(['etf'])
-    expect(aktienProfil?.appliesTo).toEqual(['stock'])
-    expect(etfProfil?.urlTemplate).toContain('etf-profile')
-    expect(aktienProfil?.urlTemplate).toContain('stock-profile')
+    expect(etfProfile?.appliesTo).toEqual(['etf'])
+    expect(stockProfile?.appliesTo).toEqual(['stock'])
+    expect(etfProfile?.urlTemplate).toContain('etf-profile')
+    expect(stockProfile?.urlTemplate).toContain('stock-profile')
   })
 
   it('der Meldefonds-Nachweis gilt nur für Fonds', () => {
@@ -176,17 +154,17 @@ describe('withDefaults — Meldungs-Zähler', () => {
   it('behält eine gespeicherte 0 — Meldungen sollen dann stehen bleiben', () => {
     // 0 ist ein gültiger Wert, kein „nicht gesetzt". Ein `||`-Rückfall hätte
     // ihn stillschweigend überschrieben.
-    const alt: Partial<Settings> = {
+    const stored: Partial<Settings> = {
       activePortfolioId: 'p1',
       ui: { notificationSeconds: 0, historyPeriod: 'month' },
     }
-    expect(withDefaults(alt).ui.notificationSeconds).toBe(0)
+    expect(withDefaults(stored).ui.notificationSeconds).toBe(0)
   })
 
   it('ergänzt den Zähler bei Einstellungen aus einer älteren Fassung', () => {
     // Solche Datensätze kennen den Zähler noch nicht.
-    const alt = { activePortfolioId: 'p1', ui: {} } as unknown as Partial<Settings>
-    expect(withDefaults(alt).ui.notificationSeconds).toBe(
+    const stored = { activePortfolioId: 'p1', ui: {} } as unknown as Partial<Settings>
+    expect(withDefaults(stored).ui.notificationSeconds).toBe(
       defaultSettings('p1').ui.notificationSeconds,
     )
   })
@@ -235,22 +213,22 @@ describe('withDefaults — Zeitraum der Verlaufslinie', () => {
   })
 
   it('behält eine gespeicherte Wahl', () => {
-    const alt = {
+    const stored = {
       activePortfolioId: 'p1',
       ui: { notificationSeconds: 8, historyPeriod: 'day' },
     } as unknown as Partial<Settings>
 
-    expect(withDefaults(alt).ui.historyPeriod).toBe('day')
+    expect(withDefaults(stored).ui.historyPeriod).toBe('day')
   })
 
   it('ergänzt ihn bei Einstellungen aus einer älteren Fassung', () => {
     // Solche Datensätze kennen nur den Meldungs-Zähler.
-    const alt = {
+    const stored = {
       activePortfolioId: 'p1',
       ui: { notificationSeconds: 8 },
     } as unknown as Partial<Settings>
 
-    expect(withDefaults(alt).ui.historyPeriod).toBe('month')
+    expect(withDefaults(stored).ui.historyPeriod).toBe('month')
   })
 })
 
@@ -286,8 +264,8 @@ describe('Einstellungen zum Aktualisieren', () => {
     await store.load('p1')
     await store.patch({ refresh: { autoOnLoad: false, staleAfterMinutes: 15 } })
 
-    const wieder = await new SettingsRepository().load()
+    const reloaded = await new SettingsRepository().load()
 
-    expect(wieder?.refresh).toEqual({ autoOnLoad: false, staleAfterMinutes: 15 })
+    expect(reloaded?.refresh).toEqual({ autoOnLoad: false, staleAfterMinutes: 15 })
   })
 })

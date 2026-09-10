@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, ref } from 'vue'
 import { NButton } from 'naive-ui'
 import { UxCaret } from '@mmit/ux-foundation'
@@ -8,7 +9,7 @@ import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDetailFields from '@/components/PositionDetailFields.vue'
 import { assetColor } from '@/domain/assetColors'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
-import { eur, integer, money, percent } from '@/domain/formatters'
+import { integer, money, percent } from '@/domain/formatters'
 import type { PositionResult } from '@/domain/rebalancing'
 
 /**
@@ -33,6 +34,8 @@ const color = computed(() => assetColor(props.row.position.group))
 const title = computed(() =>
   isCash.value ? props.row.position.displayName : props.row.position.symbol,
 )
+const { formatMoney } = usePortfolioCurrency()
+
 </script>
 
 <template>
@@ -74,7 +77,7 @@ const title = computed(() =>
         </template>
         <template v-else>{{ row.position.displayName }}</template>
       </span>
-      <span class="poscard__value tabular-nums">{{ row.quote ? money(row.marketValue, row.quote.currency) : isCash ? eur(row.marketValue) : '—' }}</span>
+      <span class="poscard__value tabular-nums">{{ row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : row.quote ? money(row.originalMarketValue, row.quote.currency) : isCash ? formatMoney(row.marketValue) : '—' }}</span>
     </div>
 
     <!-- IST gegen Ziel -->

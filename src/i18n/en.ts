@@ -7,6 +7,16 @@
 import type { MessageSchema } from './de'
 
 export const en: MessageSchema = {
+  fx: {
+    baseCurrency: 'Base currency', invalidCurrency: 'Choose a valid base currency.',
+    currencyLocked: 'The base currency can be changed for empty portfolios. Create a new portfolio for existing holdings, amount limits or recorded values.',
+    title: 'Exchange rates', retry: 'Reload exchange rates',
+    stalePair: '{pair}: Using a stale exchange rate from {time}.',
+    missingPair: '{pair}: No valid exchange rate. Affected positions are excluded from totals and trade suggestions.',
+    converted: 'Valued at {price} per unit · {pair}',
+    historyUnavailable: 'Historical exchange rates are unavailable for foreign currency holdings. The look back remains empty; recorded daily values are shown in the portfolio currency.',
+    amountCurrency: 'Amount in {currency}',
+  },
   detailFields: {
     title: 'Additional information',
     yes: 'Yes', no: 'No', ter: 'TER',
@@ -123,7 +133,7 @@ export const en: MessageSchema = {
     projectedDelta: 'New delta',
     volatility: 'Volatility',
     optimalUnits: 'Units at target',
-    deltaEuro: 'Delta €',
+    deltaEuro: 'Delta',
     lowerBand: 'Lower band',
     upperBand: 'Upper band',
     reportingFundCheck: 'myOEKB — reporting fund check',
@@ -175,13 +185,13 @@ export const en: MessageSchema = {
   },
 
   currency: {
-    badgeTitle: 'Quoted in {currency} — excluded from totals',
-    statusForeign: 'foreign currency',
+    badgeTitle: 'No usable exchange rate for {currency} — excluded from totals',
+    statusForeign: 'exchange rate missing',
     notCounted: 'not counted',
     missingQuote: 'No valid quote — not counted',
     inactive: 'inactive',
     warningTitle: 'Foreign currency',
-    warningBody: '{positions} {verb} not in {base} and therefore {counts} not counted: {list}. Totals and shares refer to the rest only — the app calculates in a single currency and converts nothing.',
+    warningBody: 'Valid exchange rates into {base} are missing: {list}. Affected positions are excluded from totals.',
     verb: 'is quoted | are quoted',
     counts: 'is | are',
   },
@@ -328,7 +338,7 @@ export const en: MessageSchema = {
 
   portfolios: {
     heading: 'Portfolios',
-    intro: 'Several portfolios side by side — one for the kids, say, or a variant to think through. Only the active one is used for calculations; its name is shown in the status bar. Tolerance bands, safety buffer and appearance apply to all of them.',
+    intro: 'Several portfolios side by side — one for the kids, say, or a variant to think through. Only the active one is used for calculations; its name is shown in the status bar. Base currency, safety buffer and minimum trade amount belong to each portfolio. Tolerance bands and appearance are shared.',
     active: 'active',
     namePlaceholder: 'Portfolio name',
     newPlaceholder: 'Name of the new portfolio',
@@ -413,6 +423,7 @@ export const en: MessageSchema = {
   },
 
   dashboard: {
+    empty: 'No securities in this portfolio yet',
     positionsHeading: 'Positions — holdings and targets are editable in place',
     positionsShort: 'Positions',
     assetClasses: 'Asset classes',
@@ -432,7 +443,7 @@ export const en: MessageSchema = {
     isin: 'ISIN',
     quoteAge: 'Price age',
     details: 'Details',
-    amountEuro: 'Amount (€)',
+    amountEuro: 'Amount in {currency}',
     unitsDelta: 'Δ holding (units)',
     ter: 'TER',
     targetValue: 'Target value',
@@ -547,7 +558,7 @@ export const en: MessageSchema = {
 
     limitsHeading: 'What the app deliberately does not do',
     limitsCurrency:
-      'It calculates in a single currency and converts nothing. An instrument quoted elsewhere stays visible but counts towards no total — 10,000 USD plus 10,000 EUR is not 20,000 of anything.',
+      'Each portfolio is valued in its chosen base currency. Foreign quotes are converted using StockInfo exchange rates. Without a valid exchange rate the position is excluded; a stale rate remains usable with a visible warning.',
     limitsRisk:
       'It says nothing about currency risk. A EUR-quoted MSCI World holds two thirds in US dollars; that is a different question from the quoting currency.',
     limitsAdvice:
@@ -574,12 +585,14 @@ export const en: MessageSchema = {
     historyPeriod:
       'Period of the small line next to the price. A month, a week or a day — with “one day” it shows the change from the last trading day to today.',
     dataStatus:
-      'Complete means: every position has a current price in the base currency and counts towards the totals. Incomplete are securities whose price could not be loaded or that are quoted in another currency — they stay visible but count towards nothing. Whether a position should be bought or sold is not shown here but in the status column of each row.',
+      'Complete means that each position has a price and any required currency conversion. Missing prices or exchange rates make the valuation incomplete. Affected positions remain visible and are excluded from totals; usable stale rates carry a warning. Whether a position should be bought or sold is not shown here but in the status column of each row.',
     moneymarket:
       'Money-market instruments barely fluctuate and therefore count, together with cash, as available liquidity. Bonds with a maturity do not.',
   },
 
   backupErrors: {
+    invalidAmountSettings: 'Invalid portfolio amount settings in backup.',
+    invalidCurrency: 'Invalid portfolio currency in backup.',
     invalidJson: 'The file does not contain valid JSON.',
     notAnObject: 'The file does not contain an object.',
     wrongKind: 'This is not a StockPortfolio backup — the marker is missing or does not match.',

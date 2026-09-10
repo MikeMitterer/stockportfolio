@@ -9,8 +9,9 @@ import {
   parseBackup,
   type Backup,
 } from '@/domain/backup'
-import { eur, formatterLocale, integer } from '@/domain/formatters'
+import { money, formatterLocale, integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { baseCurrencyOf } from '@/domain/fx'
 import type { Portfolio } from '@/types/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
@@ -74,7 +75,7 @@ async function exportNow(portfolio: Portfolio): Promise<void> {
   const exportedAt = new Date().toISOString()
   // Die Tageswerte gehören dazu: Sie lassen sich nicht neu berechnen, sie
   // entstehen nur dadurch, dass die App über Monate benutzt wird.
-  await valueHistory.load(portfolio.id)
+  await valueHistory.load(portfolio.id, baseCurrencyOf(portfolio))
 
   const backup = buildBackup(
     portfolio,
@@ -241,12 +242,14 @@ const pendingCashTotal = computed(() =>
       <dl class="backup__facts">
         <dt class="backup__term">{{ t('backup.portfolio') }}</dt>
         <dd>{{ pending.portfolio.name }}</dd>
+        <dt>{{ t('fx.baseCurrency') }}</dt>
+        <dd>{{ baseCurrencyOf(pending.portfolio) }}</dd>
 
         <dt class="backup__term">{{ t('backup.positions') }}</dt>
         <dd class="tabular-nums">{{ positionCount }}</dd>
 
         <dt v-if="pendingCashTotal > 0" class="backup__term">{{ t('backup.ofWhichCash') }}</dt>
-        <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ eur(pendingCashTotal) }}</dd>
+        <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ money(pendingCashTotal, baseCurrencyOf(pending.portfolio)) }}</dd>
 
         <dt v-if="hiddenCount > 0" class="backup__term">{{ t('backup.hidden') }}</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">

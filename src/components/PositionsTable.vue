@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, h, inject, ref, watch, type ComputedRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDataTable, type DataTableColumns } from 'naive-ui'
@@ -13,7 +14,7 @@ import LinkIcons from '@/components/LinkIcons.vue'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields } from '@/domain/detailFields'
-import { eur, integer, money, percent } from '@/domain/formatters'
+import { integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 import { useHistoryStore, type HistorySeries } from '@/stores/history'
@@ -320,7 +321,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         value: row.position.units,
         display:
           row.position.group === 'cash'
-            ? eur(row.position.units)
+            ? formatMoney(row.position.units)
             : integer(row.position.units),
         precision: row.position.group === 'cash' ? 2 : 0,
         min: 0,
@@ -385,8 +386,8 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         'span',
         { class: 'cell-num cell-num--strong' },
         row.quote
-          ? money(row.marketValue, row.quote.currency)
-          : row.position.group === 'cash' ? eur(row.marketValue) : '—',
+          ? row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : money(row.originalMarketValue, row.quote.currency)
+          : row.position.group === 'cash' ? formatMoney(row.marketValue) : '—',
       ),
   },
   {
@@ -471,6 +472,8 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
   },
   ...dynamicColumns.value,
 ])
+const { formatMoney } = usePortfolioCurrency()
+
 </script>
 
 <template>

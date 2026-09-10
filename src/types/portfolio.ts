@@ -42,6 +42,10 @@ export interface Position {
 export interface Portfolio {
   id: string
   name: string
+  /** Neue Depots wählen ihre Währung; vorhandene Depots waren EUR. */
+  baseCurrency?: string
+  /** Geldschwellen gehören zum Depot und seiner Basiswährung. */
+  amountSettings?: { securityBuffer: AmountSetting; minTradeSize: AmountSetting }
   positions: Position[]
   createdAt: string
   updatedAt: string
@@ -108,7 +112,7 @@ export interface ExternalLink {
  * gleichaussehender Typen.
  */
 export interface AmountSetting {
-  /** `percent` = Anteil am Gesamtvermögen, `absolute` = fester Betrag in Euro. */
+  /** `percent` = Anteil am Gesamtvermögen, `absolute` = fester Betrag in der Depotwährung. */
   mode: 'percent' | 'absolute'
   value: number
 }
@@ -132,7 +136,6 @@ export interface Settings {
   minTradeSize: AmountSetting
   /** Auslöser und Terminabstand des Ausgleichs. */
   rebalancing: RebalancingSchedule
-  currency: 'EUR'
   refresh: { autoOnLoad: boolean; staleAfterMinutes: number }
   links: ExternalLink[]
   ui: {
