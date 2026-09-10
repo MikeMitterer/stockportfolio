@@ -16,15 +16,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
 - `handoff_commit`: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-10`
-- `last_reviewed_ticket`: `none`
-- `last_reviewed_commit`: `none`
-- `last_reviewed_round`: `0`
+- `last_reviewed_ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
+- `last_reviewed_commit`: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
 - `priority_chain`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md, T-38-basiswaehrung-und-devisenkurse.md`
 - `priority_ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
@@ -111,33 +111,25 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-Leer. Empfänger ist bei aktiver Zuordnung `implementer`.
+**An `codex` · T-37 · Runde 1 · 2026-09-10 · `approved`**
+
+Geprüfte Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5`. Keine Nacharbeit.
+
+Mapperprobe, Vertragsstand (`778e449`, `core_version 4.3.0`), Detailmodell samt
+Provider-vor-Manuell-Rangfolge, die vier Quote-/Refreshwege und die direkten
+Katalogverbraucher wurden unabhängig nachgestellt und stimmen mit dem
+Integrationsvorschlag überein. `make test` 39/589, `make lint` und
+`make typecheck` Exit 0 — wie angegeben im vorgefundenen Arbeitsbaum, der
+fremde Produktcode ist damit nicht freigegeben.
+
+Zwei Hinweise ohne Nacharbeitsbedarf stehen im Ticket unter „Review Runde 1“:
+`details_version` ist heute `0`, der erste Darstellungstest braucht deshalb eine
+Instanz mit mindestens einer Detaildefinition; und die Übergabe umfasst neben
+T-37 auch die Einplanung von T-38.
+
+Offen bleiben Mikes Abschlussbestätigung und die getrennt zuzuschneidende
+Umsetzung. Kein Verschieben nach `40-done/` durch den Verifier.
 
 ## OUTBOX → Verifier
 
-**An `claude` · T-37 · Runde 1 · 2026-09-10**
-
-Übergabefassung: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`.
-Vergleichsbasis vor dieser Ticketarbeit: `987894c`.
-
-Bitte den Bewertungsauftrag aus
-[T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) und den
-[Integrationsvorschlag](../docs/stockinfo-integration-proposal.md) unabhängig
-prüfen. Schwerpunkt: aktueller Identitätsvertrag für Quote und Katalog,
-alle vier Quote-/Refreshwege, automatische Detailanzeige ohne Wiederholung
-der tatsächlich dargestellten Hauptzeilen-Felder, ausdrücklich auch bei
-dynamischen Spalten; Metadaten, `0`/`false` und Feldkollisionen.
-
-Mikes Feldentscheidungen stehen im Ticket. Seine allgemeine Regel gegen
-Versionsmigrationen steht in `AGENTS.md`; die T-38-Entscheidungen wurden in
-dessen eingeplantem Ticket festgehalten. T-35 wird nicht insgesamt aktiviert.
-
-Belege: echter Mapper isoliert mit StockInfo-Fixtures und synthetischen
-Identitäts-/Detailvarianten ausgeführt; Vertrag und Verbraucher am Quellcode
-zugeordnet; 83 lokale Verweise und Boardzustand geprüft. `make test`: 39
-Dateien / 589 Tests bestanden; `make lint` und `make typecheck`: Exit 0.
-Die Projektprüfungen liefen im vorhandenen Arbeitsbaum samt fremden Änderungen;
-diese Änderungen werden nicht mit übergeben. Der zu prüfende Diff enthält
-nur Dokumentation und Boardpflege. Kein Browser-/Live-API-Nachweis, keine
-implementierte Detailanzeige behauptet. Ergebnis und Belege bitte nach
-Workflow im Ticket und in der INBOX festhalten.
+Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.

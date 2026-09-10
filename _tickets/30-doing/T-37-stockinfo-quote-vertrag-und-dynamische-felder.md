@@ -93,7 +93,7 @@ implementierte Integration. Menschliche Entscheidungen stehen oben.
 | 3 | Mikes Antworten A/B in konkrete Felder und Anwendungsfälle übersetzen | Automatische Detailanzeige; tatsächliche Hauptzeilen-Feldschlüssel einschließlich dynamischer Felder ausschließen; Anzeige ohne neue Berechnungen und Cacheanforderungen im Vorschlag festgelegt | ✅ |
 | 4 | Verschachtelte Antwort plus Mapper mit zusätzlicher flacher Route vergleichen | Vergleich und Empfehlung samt synthetischem Antwortausschnitt, vier Quote-/Refreshwegen und direkt konsumiertem Katalog dokumentiert | ✅ |
 | 5 | Gegenfälle im empfohlenen Vertrag durchgehen | Regeln für `0`, `false`, `null`, fehlendes Feld, Kollision, wirksamen/manuellen Wert, Einheit und Betragswährung dokumentiert; keine Produktumsetzung behauptet | ✅ |
-| 6 | Empfehlung und offene Restarbeit unabhängig prüfen | Freigegebener Integrationsvorschlag und getrennt zugeschnittene Umsetzung; keine fälschlich behauptete Route oder Produktfreigabe | ➖ |
+| 6 | Empfehlung und offene Restarbeit unabhängig prüfen | Fassung `2e4c378` unabhängig geprüft: Mapperprobe nachgestellt, Vertrags- und Verbraucherzuordnung am Quellcode gegengeprüft, Prüflauf wiederholt. Keine fälschlich behauptete Route, Implementierung oder Produktfreigabe | ✅ |
 
 **Nachweise 2026-09-10:**
 [Integrationsvorschlag](../../docs/stockinfo-integration-proposal.md), Abschnitte
@@ -163,6 +163,66 @@ muss vorhandene IndexedDB-Caches, ISIN-/Symbolzuordnung und alle Refresh-Wege
 berücksichtigen. Zusätzliche StockInfo-Arbeit erhält nach der Entscheidung
 gegebenenfalls ein verlinktes Umsetzungsticket.
 
+### Review Runde 1 · Verifier `claude` · 2026-09-10
+
+Geprüfte Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5` gegen Ausgangsstand
+`987894c`. **Urteil: technisch freigegeben (`approved`).** Kein Befund, der
+Nacharbeit erfordert. Die Freigabe betrifft die Bewertung, nicht eine
+Implementierung; Mikes Abschlussbestätigung steht weiterhin aus.
+
+Unabhängig nachgestellt, nicht aus der Übergabe übernommen:
+
+- **Die Mapperprobe wurde selbst ausgeführt.** Ergebnis identisch zur
+  Darstellung im Vorschlag: `isin === undefined` für `listed`, `listed` ohne
+  ISIN, `pair` und `isin_only`, in Quote- **und** Katalogmapper; Detailwerte
+  `0`, `false`, `null`, `7` gehen verschachtelt wie flach verloren; Quote ohne
+  Währung wird EUR, Katalogkurs ohne `latest_currency` übernimmt `USD`;
+  `ter: 0` und `accumulating: false` überleben. `src/api/mappers.ts` trägt die
+  im Vorschlag genannte SHA-256 `d82421b3…3b9fbaaa` und ist gegenüber HEAD
+  unverändert.
+- **Der Vertragsstand stimmt.** StockInfo `778e449296e92bb46c0b430d9f0f9365442bf4b6`,
+  `core_version 4.3.0`; `listing_id` kommt im Quote-Vertrag tatsächlich nicht
+  vor; `/fields` steht unter `contract_endpoints` und liefert laut
+  `app/routers/fields.py` `generation_id`, `core_version` und `details_version`.
+  Die im Vorschlag als unverändert bezeichneten Vertrags- und Produktdateien
+  sind im StockInfo-Arbeitsbaum tatsächlich sauber.
+- **Der synthetische Detailausschnitt ist vertragstreu.** `app/detail_models.py`
+  führt `value`, `unit`, `currency`, `origin`, `source`, `as_of`, `shadowed`,
+  `manual_value`, `manual_currency`; `app/details.py` bestätigt mit
+  `effective = provider if has_provider else manual` und
+  `shadowed = has_provider and has_manual` die beschriebene Rangfolge. Die
+  angezeigte `0` bei verdeckter manueller `7` ist damit korrekt hergeleitet.
+- **Die Verbraucherzuordnung trifft zu.** Vier Quote-/Refreshwege liegen in
+  `src/stores/quotes.ts:372-376`; `AddPositionDialog.vue` liest `instrument.isin`
+  für Auswahlschlüssel *und* Dublettenprüfung, `InstrumentsView.vue` und
+  `DashboardView.vue` ebenfalls direkt; der Instrument-Store hält die rohe
+  `InstrumentSummary[]`; `PositionsTable.vue` erzeugt die Hauptzeile aus
+  `columns` und reicht über `renderExpand` an `PositionDrilldown.vue` weiter,
+  wo TER und Volatilität heute feste Zellen sind.
+- **Prüflauf wiederholt:** `make test` 39 Dateien / 589 Tests bestanden,
+  `make lint` und `make typecheck` Exit 0 — dieselben Zahlen wie in der
+  Übergabe. Der Lauf fand wie beim Coder im vorgefundenen Arbeitsbaum samt
+  fremder Produktänderungen statt und sagt daher nichts über diese fremden
+  Änderungen aus; der übergebene Diff enthält keinen Produktcode. In den sechs
+  geänderten Dokumenten ist kein lokaler Verweis tot.
+
+Zwei Hinweise ohne Nacharbeitsbedarf, gedacht für den Umsetzungszuschnitt:
+
+- **`details_version` steht heute auf `0`,** und `/fields` bezieht die
+  Definitionen über `repository.detail_catalog()` aus der Datenbank, nicht aus
+  dem Vertragsartefakt. Ohne installierte Plugin-Definition bleibt die generische
+  Zusatzliste leer. Der erste Darstellungstest braucht deshalb eine Instanz mit
+  mindestens einer Detaildefinition, sonst prüft er nichts.
+- **Die Übergabe enthält neben T-37 auch Einplanung und Ausarbeitung von T-38.**
+  Gedeckt durch Mikes im Ticket zitierte Aufträge und in STATUS als
+  Prioritätskette dokumentiert; aktiv bleibt T-37. Festgehalten, weil der
+  Reviewumfang damit über das aktive Ticket hinausreicht.
+
+Ausdrücklich gegengeprüft, weil es das belegte Fehlermuster des Autors ist
+([CODEX-LESSONS](../.agents/CODEX-LESSONS.md)): Der Vorschlag baut *weniger*
+statt mehr — er rät von einer neuen Serverroute ab, beauftragt keine Änderung
+in StockInfo und schließt einen allgemeinen Spalteneditor ausdrücklich aus.
+
 ### Auflösung
 
 Offen. Der Integrationsvorschlag vom 2026-09-10 empfiehlt die bestehende
@@ -170,5 +230,8 @@ Antwort mit Client-Normalisierung. Identitätsformen, Abrufwege, Metadaten und
 Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B sind
 entschieden: automatische Detailanzeige ohne Wiederholung tatsächlich in der
 Hauptzeile dargestellter Felder, einschließlich dynamischer Schlüssel.
-Keine unabhängige Freigabe und keine Implementierung. Bewertungsreview Runde 1
-an `claude` übergeben, Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5`.
+
+Bewertungsreview Runde 1 durch `claude` an Fassung
+`2e4c378ae49ffe147b55673101fdf4ed078ebed5` abgeschlossen: technisch
+freigegeben, keine Nacharbeit. Weiterhin offen sind Mikes Abschlussbestätigung
+und die Implementierung, die gesondert zugeschnitten wird.
