@@ -8,7 +8,7 @@
 > - **GitHub-Issue** → `→ #NN`, dann entfernen
 > - **beantwortet** → Antwort steht durable woanders (Commit/Doku/Issue) → löschen
 >
-> Merksatz: Tickets akkumulieren (in `solved/`), Fragen **drainieren** (nach GitHub / raus).
+> Merksatz: Tickets akkumulieren (in `40-done/`), Fragen **drainieren** (nach GitHub / raus).
 
 ---
 
