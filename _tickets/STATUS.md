@@ -60,12 +60,12 @@ den USA; Hauptfall ist das Depot mit gewählter Währung. Veraltete FX-Kurse
 werden mit sichtbarer Warnung weiterverwendet. T-38 folgt mit Umrechnung. Die Abhängigkeit zu
 T-35 wird geprüft; damit ist T-35 nicht insgesamt aktiviert.
 
-T-37-Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. T-38 wird isoliert
-auf `t-38-depot-currency` unter `/tmp/stockportfolio-t38-worktree` umgesetzt.
-Das maßgebliche Board bleibt
-`/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`; die
-Ticketkopie im Worktree ist keine zweite Rollenquelle. Vorgefundene fremde
-Produktänderungen im Hauptarbeitsbaum gehören nicht zu T-38.
+Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. Der geplante T-38-Worktree
+wurde nicht angelegt; auch der zugehörige Branch existiert nicht.
+Das maßgebliche Board liegt unter
+`/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`.
+Vorgefundene fremde Produktänderungen im Hauptarbeitsbaum gehören nicht zu
+diesem Integrationsauftrag.
 
 Projektweite Entscheidung vom 2026-09-10: keine Migrationspfade zwischen
 StockPortfolio-Versionen. Einfach passende Daten übernehmen; inkompatible

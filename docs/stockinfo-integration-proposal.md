@@ -11,7 +11,9 @@ Stand: 2026-09-10. Dies ist der Integrationsvorschlag zu
 keine bereits verfügbare Funktion. **Mike hat die automatische Zusatzanzeige
 in der Detailansicht gewählt.** Bereits in der Haupt-Info-Zeile dargestellte
 Felder werden dort nicht wiederholt; auch dynamische Felder können zur
-Hauptzeile gehören. Unabhängiger Review und Produktumsetzung stehen aus.
+Hauptzeile gehören. Claude hat den Vorschlag in Runde 1 am 2026-09-10
+technisch freigegeben (Übergabecommit `2e4c378ae49ffe147b55673101fdf4ed078ebed5`).
+Die Produktumsetzung steht aus; sie ist in T-39 und T-40 gesondert erfasst.
 
 ## Der aktuelle Vertrag
 
@@ -235,7 +237,9 @@ Katalogkurs ohne `latest_currency` übernahm die Instrumentwährung USD.
 Diese Gegenprobe belegt das heutige Mapperverhalten. Die Regeln und der
 Umsetzungszuschnitt oben sind ein Vorschlag, kein bestandener Integrationstest.
 Es gab keinen Live-Kursabruf und keinen Browserlauf. Der Feldbedarf ist durch
-Mikes Antwort festgelegt; der unabhängige Review ist offen.
+Mikes Antwort festgelegt. Der anschließende unabhängige Review durch Claude
+hat die Bewertung in Runde 1 technisch freigegeben; eine Produktabnahme
+ist damit nicht verbunden.
 
 Die Mapperprobe lässt sich im StockPortfolio-Projektverzeichnis ausführen.
 Sie benötigt die installierte TypeScript-Abhängigkeit und für diesen lokalen
