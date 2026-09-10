@@ -1,10 +1,9 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-38 Runde 1 ist mit `changes_requested` zurück beim Coder.** Mike hat die
-gesperrte Basiswährung verworfen; sie muss im laufenden Betrieb änderbar sein.
-T-39 und T-40 sind technisch freigegeben. Beide warten
-auf Mikes Abschlussabnahme und bleiben bis dahin unter `30-doing/`.
-Mike hat die Reihenfolge im Observer-Chat bestätigt.
+**T-38 hat Vorrang und liegt mit Runde 2 bei Claude zur Prüfung.** Die
+Nacharbeit erlaubt den bestätigten Währungswechsel im laufenden Betrieb.
+T-39 und T-40 sind bereits technisch freigegeben; beide warten auf Mikes
+Abschlussabnahme unter `30-doing/`.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
 abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
 T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
@@ -19,7 +18,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 - `handoff_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
 - `review_round`: `2`
@@ -82,24 +81,28 @@ Mike, 2026-09-10: „Leg die Umsetzungs-Tickets in doing an - das hat prio“.
 Aus dem freigegebenen T-37-Vorschlag entstanden dafür
 [T-39](30-doing/T-39-identitaet-normalisieren.md) — Identität normalisieren —
 und [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) — automatische
-Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
-stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
-ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
+Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
+inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
+vor T-38 beschreibt die bisherige Bearbeitung; aktuell hat T-38 Vorrang.
 
-**Aktueller Schritt:** `claude` hat T-38 Runde 1 an der Fassung
-`674b3705c07220c19613c5a88b1a02d3512d0699` geprüft und
-`changes_requested` gesetzt. Rechenmechanik, Pence-Skalierung, Stale-Verhalten
-und Wirkung je Depot sind bestätigt; blockierend ist allein die Sperre der
-Basiswährung in `src/stores/portfolio.ts:116`. Mike hat sie während des Reviews
-verworfen und um eine Aufwandsabschätzung gebeten; die Abschätzung samt seiner
-Rückfallregel steht im Ticket. T-39 und T-40 haben keine erforderliche
-Nacharbeit und warten unter `30-doing/` auf Mikes Abschlussabnahme.
+**Aktueller Schritt:** `codex` hat Review 1 verarbeitet und die Nacharbeit
+mit Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997` an `claude` für Runde 2
+übergeben. Laufender Währungswechsel, Währungsreihen in Historie und Backup
+sowie die beauftragte Testserver-Steuerung sind umgesetzt und selbst geprüft.
 
+**Aktuelle Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
+T-38 bleibt deshalb der einzige aktive Auftrag. Die vorhandene Umsetzung
+braucht keine weiteren Folgetickets für denselben Umfang. Mike erlaubt,
+offene Fragen zur sinnvollen Ticketreihenfolge mit dem Observer zu klären,
+damit dafür die laufende Session nicht unterbrochen werden muss. Derzeit ist
+keine Reihenfolgefrage offen.
+
+**Frühere Reihenfolgeentscheidung:**
 Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
 „Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
 überprüfe die Reihenfolge, ich glaube das macht sinn“.
-Die Folgetickets sind T-39 und T-40. Das bestätigt die bestehende Kette
-T-39 → T-40 → T-38; neue Folgetickets von T-38 sind daraus nicht beauftragt.
+Die damalige Kette war T-39 → T-40 → T-38. Für die weitere Arbeit gilt die
+oben festgehaltene jüngste Prioritätsklärung.
 Der Observer hat auf Mikes anschließenden Auftrag „Pass die Info entsprechend
 an“ die Ticketabgrenzung und Verweise aktualisiert. Auf Mikes weiteren Hinweis
 „Phase - immer noch blocked“ hat er den erledigten Klärungsblocker aufgehoben

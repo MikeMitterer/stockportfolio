@@ -140,7 +140,8 @@ Quote-Ansicht bewertet. Technisch freigegeben und durch Mike am 2026-09-10 abges
 Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 [T-39 · Identität normalisieren](30-doing/T-39-identitaet-normalisieren.md) und
 [T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
-Sie stehen seit 2026-09-10 vor T-38; die Reihenfolge steht in
+Beide sind bereits umgesetzt und technisch freigegeben. Nach Mikes jüngster
+Klarstellung hat die Depotwährung aus T-38 Vorrang; der aktive Auftrag steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
 T-39 ist technisch freigegeben und wartet auf Mikes Abschlussabnahme.
 T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
