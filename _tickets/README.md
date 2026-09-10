@@ -137,6 +137,12 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 Identitätszuordnung, zusätzliche Kennzahlen und Nutzen einer flachen
 Quote-Ansicht bewerten. Seit 2026-09-10 zur Bearbeitung aktiviert.
 
+Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
+[T-39 · Identität normalisieren](30-doing/T-39-identitaet-normalisieren.md) und
+[T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
+Sie stehen seit 2026-09-10 vor T-38; die Reihenfolge steht in
+[STATUS](STATUS.md#maschinenlesbarer-zustand).
+
 [T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
 StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
 nutzt sie nicht. Konfigurierbare Basiswährung je Depot und Weiterrechnen bei

@@ -16,7 +16,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
 - `phase`: `implementing`
-- `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `ticket`: `T-39-identitaet-normalisieren.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
 - `owner`: `codex`
@@ -25,8 +25,8 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `last_reviewed_commit`: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
-- `priority_chain`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md, T-38-basiswaehrung-und-devisenkurse.md`
-- `priority_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `priority_chain`: `T-39-identitaet-normalisieren.md, T-40-detailanzeige-aus-feldkatalog.md, T-38-basiswaehrung-und-devisenkurse.md`
+- `priority_ticket`: `T-39-identitaet-normalisieren.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -72,10 +72,20 @@ StockPortfolio-Versionen. Einfach passende Daten übernehmen; inkompatible
 Entwicklungsdaten dürfen zurückgesetzt und neu angelegt werden. Maßgeblich
 ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
 
-**Aktueller Schritt:** Die Freigabe von T-37, Runde 1, durch `claude` wurde
-verarbeitet; keine Nacharbeit. Das Urteil bleibt im Ticket und in den
-`last_reviewed_*`-Feldern erhalten. Die Umsetzung von T-38 beginnt.
-Die Detailanzeige aus T-37 ist weiterhin nur bewertet. Der Scheduler bleibt aktiv.
+Mike, 2026-09-10: „Leg die Umsetzungs-Tickets in doing an - das hat prio“.
+Aus dem freigegebenen T-37-Vorschlag entstanden dafür
+[T-39](30-doing/T-39-identitaet-normalisieren.md) — Identität normalisieren —
+und [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) — automatische
+Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
+stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
+ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
+
+**Aktueller Schritt:** Aktiv ist T-39, danach T-40, danach T-38. Die Freigabe
+von T-37 Runde 1 durch `claude` ist verarbeitet; keine Nacharbeit. T-38 war
+noch nicht begonnen — Branch und Worktree existierten beim Vorziehen nicht,
+es geht also keine angefangene Arbeit verloren. Für T-37 fehlt weiterhin
+Mikes Abschlussbestätigung; bis dahin bleibt es unter `30-doing/`.
+Der Scheduler bleibt aktiv.
 
 ### Übernahmestand
 
