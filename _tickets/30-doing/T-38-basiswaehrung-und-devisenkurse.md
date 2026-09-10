@@ -20,7 +20,7 @@ auf ein Depot, das kleiner ist als seines.
 ## Was sich geändert hat
 
 **StockInfo hat den Devisenkurs gebaut.** `GET /fx?base=EUR&quote=USD` liefert
-`rate`, `quote_time`, `fetched_at`, `cached`, `stale` und `source` — also die
+`rate`, `quote_time`, `fetched_at`, `cached`, `stale` und optional `source` — also die
 Alterskennzeichnung, ohne die ein stiller alter Kurs jede Prozentzahl dieser App
 verzerren würde. StockPortfolio ruft den Endpunkt bis heute nicht auf.
 
@@ -87,15 +87,24 @@ weiterhin; sie rechtfertigen keinen pauschalen Ausbau der Datenmigration.
 
 ## Umsetzung und technische Nachweise
 
-Status: am 2026-09-10 nach T-37 zur Umsetzung aktiviert. Repo: StockPortfolio, betroffene
-Fremdschnittstelle: StockInfo. Zeitbudget noch nicht geschätzt.
+Status: nach T-39 und T-40 eingeplant, derzeit nicht aktiv. Repo:
+StockPortfolio, betroffene Fremdschnittstelle: StockInfo. Zeitbudget noch
+nicht geschätzt. Der aktive Auftrag steht ausschließlich in STATUS.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
 Basiswährung je Depot und Umgang mit veralteten Kursen sind geklärt.
 
-**Hängt an [T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md).** Solange eine
-fehlende Kurswährung als EUR geraten wird, kann keine Umrechnung stimmen; T-35
-entfernt diesen Ersatzwert.
+**Voraussetzung ist [T-39](T-39-identitaet-normalisieren.md).** Dort werden
+Identität und Core-Pflichtfelder einschließlich Kurswährung geprüft und die
+geratenen Ersatzwährungen entfernt. T-38 verwendet diese Prüfung weiter.
+Der Generationsauftrag aus T-35 bleibt separat im Backlog.
+
+**[T-40](T-40-detailanzeige-aus-feldkatalog.md) liefert zuvor die
+Detailanzeige.** T-38 ergänzt die Bewertung je Depot und den FX-Abruf.
+Originalkurse und Plugin-Detailbeträge behalten im gemeinsamen Cache ihre
+Währung; daraus abgeleitete Depotwerte gehören zur gewählten Basiswährung.
+Ein Detailbetrag von 100 USD bleibt auch in einem EUR-Depot als 100 USD
+sichtbar. Beliebige Plugin-Kennzahlen werden nicht automatisch umgerechnet.
 
 ### Vorliegende Befunde
 
@@ -132,10 +141,10 @@ Vorprüfung vom 2026-09-10, noch keine Umsetzung:
   Handelssimulator müssen denselben umgerechneten Stückpreis verwenden.
 - `GBp` bezeichnet Pence und ist nicht `GBP`. Vor einem FX-Abruf ist der
   Betrag durch 100 in GBP umzusetzen; Großschreiben allein wäre falsch.
-- Fehlende Kurswährung wird an der API-Grenze abgelehnt. Beim Katalog ist
-  `latest_currency` maßgeblich; `instrument.currency` ist kein Ersatz dafür.
-  Dies ist der notwendige Währungsanteil aus T-35, nicht dessen gesamter
-  Generationsauftrag.
+- Die Pflichtfeldprüfung einschließlich `currency` und `latest_currency`
+  kommt aus T-39. T-38 ergänzt die Prüfung des FX-Vertrags und verwendet
+  dieselben Kursmodelle und Mapper weiter; es entsteht keine zweite
+  Kursvalidierung.
 - `ValueSnapshot` und `ValueSnapshotEntry` speichern bisher keine Währung.
   Tageswerte verschiedener Basiswährungen dürfen nicht in einer Linie
   zusammengerechnet werden. Der historische Rückblick benötigt außerdem
@@ -155,13 +164,19 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|---|
-| 1 | `/fx` gegen eine laufende StockInfo-Instanz aufrufen | Antwort enthält `rate`, `quote_time`, `stale` und `source` | ➖ |
+| 1 | `/fx` gegen eine laufende StockInfo-Instanz aufrufen | Antwort erfüllt den FX-Vertrag; `source` wird übernommen, wenn vorhanden, ist aber kein Pflichtfeld | ➖ |
 | 2 | Unbekannte Zielwährung anfragen | klarer Fehlerstatus statt stiller Ersatzwährung | ➖ |
 | 3 | Position in Fremdwährung im Depot | Marktwert zählt umgerechnet in die Summe; der Kurs bleibt in seiner Originalwährung sichtbar | ➖ |
 | 4 | Devisenkurs mit `stale: true` | Auswirkung gemäß Entscheidung B, im UI erkennbar | ➖ |
+| 5 | Dieselbe USD-Position samt Plugin-Detailbetrag in einem EUR- und einem USD-Depot bewerten | Depotwerte folgen ihrer Basiswährung; Originalkurs und Detailbetrag bleiben im gemeinsamen Cache unverändert, die Detailanzeige löst keine zusätzliche Umrechnung aus | ➖ |
 
 Durchgehend ➖: Die Bearbeitung ist eingeplant; eine Umsetzung und deren
 Verifikation liegen noch nicht vor.
+
+**Doku-Abgleich · Zuschnitt vom 2026-09-10:** Reihenfolge und Abhängigkeiten
+mit T-39, T-40, T-35, STATUS, Boardübersicht, README und Integrationsvorschlag
+abgeglichen. Gemeinsame Kursprüfung liegt bei T-39, reine Detailanzeige bei
+T-40, Depotbewertung und FX hier. Die Funktion ist noch nicht verfügbar.
 
 ```bash
 curl -s "http://localhost:8000/fx?base=EUR&quote=USD"                                    # #1 Erfolgsfall

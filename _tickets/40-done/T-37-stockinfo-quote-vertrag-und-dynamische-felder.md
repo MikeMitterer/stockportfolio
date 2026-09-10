@@ -43,7 +43,7 @@ belegte Anforderungen.
 Mike, 2026-09-08: „Kannst du die Bewertung als Ticket in StockPortfolio definieren“.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
-T-37 ist damit vor T-38 zur Bearbeitung aktiviert. Die Feldentscheidungen sind
+T-37 wurde damit vor T-38 zur Bewertung aktiviert. Die Feldentscheidungen sind
 oben dokumentiert und in den Integrationsvorschlag übernommen.
 
 ## Umsetzung und technische Nachweise
@@ -57,8 +57,8 @@ zusätzlicher StockInfo-Projektionsroute. Die Umsetzung wird danach gesondert
 zugeschnitten; keine neue Route allein durch dieses Ticket beauftragt.
 
 Repo: StockPortfolio. Betroffene Fremdschnittstelle: StockInfo.
-Zeitbudget: nicht beziffert. Status: technische Bewertung und Feldbedarf
-dokumentiert; Bewertungsreview Runde 1 an `claude` übergeben.
+Zeitbudget: nicht beziffert. Status: Bewertung technisch freigegeben und
+am 2026-09-10 durch Mike abgeschlossen. Umsetzung folgt in T-39 und T-40.
 
 ### Vorliegende Befunde
 
@@ -106,7 +106,7 @@ Untersuchung vom 2026-09-08 bleibt als Ausgangsbefund erhalten.
 MVP-Spec (API, Datenmodell, Rebalancing, Nicht im MVP), Board und Projektregeln
 inventarisiert. Planungsstand und Links aktualisiert; Produktanleitungen
 behaupten keine implementierte Integration. Die Antworten A/B sind verarbeitet;
-unabhängiger Review und erforderliche Abschlussbestätigung bleiben offen.
+unabhängiger Review und Mikes Abschlussbestätigung liegen vor.
 
 ### Prüfstand vor der Bewertungsübergabe · 2026-09-10
 
@@ -150,10 +150,20 @@ Die weitere Entscheidung und ihr Stand werden hier festgehalten.
 
 ### Abgrenzung zu T-35
 
-[T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md) behandelt Generation und
-Währung. Dieses Ticket behandelt Antwortstruktur, Identitätszuordnung und
-zusätzliche Kennzahlen. Währungsmetadaten berücksichtigen, aber keine neue
-Währungsumrechnung oder Generationserkennung parallel zu T-35 entwerfen.
+Die Umsetzung des bewerteten Vertrags liegt in
+[T-39](../30-doing/T-39-identitaet-normalisieren.md) und
+[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), danach folgt
+[T-38](../30-doing/T-38-basiswaehrung-und-devisenkurse.md). T-39 übernimmt die gemeinsame
+Pflichtfeldprüfung einschließlich Kurswährung aus
+[T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md).
+T-40 zeigt Originalwerte; T-38 ergänzt Depotbewertung und FX-Umrechnung.
+Die Generationserkennung verbleibt in T-35.
+
+**Fortschreibung nach Review · 2026-09-10:** Mike hat im Observer-Chat die
+Abgrenzung dieser Überschneidungen beauftragt. Tickets, Integrationsvorschlag,
+STATUS und Übersichten wurden abgeglichen. Das unten dokumentierte Urteil
+bleibt auf Fassung `2e4c378` bezogen; es gibt keine Produktfreigabe für die
+hier zugeordneten Umsetzungstickets.
 
 ### Side-Effects
 
@@ -168,7 +178,8 @@ gegebenenfalls ein verlinktes Umsetzungsticket.
 Geprüfte Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5` gegen Ausgangsstand
 `987894c`. **Urteil: technisch freigegeben (`approved`).** Kein Befund, der
 Nacharbeit erfordert. Die Freigabe betrifft die Bewertung, nicht eine
-Implementierung; Mikes Abschlussbestätigung steht weiterhin aus.
+Implementierung; Mikes Abschlussbestätigung stand zum Reviewzeitpunkt aus
+und ist unten unter „Auflösung“ dokumentiert.
 
 Unabhängig nachgestellt, nicht aus der Übergabe übernommen:
 
@@ -225,7 +236,9 @@ in StockInfo und schließt einen allgemeinen Spalteneditor ausdrücklich aus.
 
 ### Auflösung
 
-Offen. Der Integrationsvorschlag vom 2026-09-10 empfiehlt die bestehende
+**Abgeschlossen am 2026-09-10.** Mike: „T-37 ist damit erledigt“.
+
+Der Integrationsvorschlag vom 2026-09-10 empfiehlt die bestehende
 Antwort mit Client-Normalisierung. Identitätsformen, Abrufwege, Metadaten und
 Gegenfälle sind dokumentiert. Feldbedarf und Auswahlverhalten A/B sind
 entschieden: automatische Detailanzeige ohne Wiederholung tatsächlich in der
@@ -233,5 +246,6 @@ Hauptzeile dargestellter Felder, einschließlich dynamischer Schlüssel.
 
 Bewertungsreview Runde 1 durch `claude` an Fassung
 `2e4c378ae49ffe147b55673101fdf4ed078ebed5` abgeschlossen: technisch
-freigegeben, keine Nacharbeit. Weiterhin offen sind Mikes Abschlussbestätigung
-und die Implementierung, die gesondert zugeschnitten wird.
+freigegeben, keine Nacharbeit. Mit Mikes Bestätigung ist der Bewertungsauftrag
+abgeschlossen. Die gesonderte Produktumsetzung liegt in T-39 und T-40;
+ihre Prüfungen und Abnahmen bleiben offen.

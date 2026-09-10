@@ -7,7 +7,7 @@ Währung. Die größere Lücke liegt davor: Quote und Instrumentkatalog liefern
 ihre ISIN innerhalb von `identity`, während der Client sie oben liest.
 
 Stand: 2026-09-10. Dies ist der Integrationsvorschlag zu
-[T-37](../_tickets/30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
+[T-37](../_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
 keine bereits verfügbare Funktion. **Mike hat die automatische Zusatzanzeige
 in der Detailansicht gewählt.** Bereits in der Haupt-Info-Zeile dargestellte
 Felder werden dort nicht wiederholt; auch dynamische Felder können zur
@@ -201,6 +201,11 @@ begründet. T-37 beauftragt keine Änderung in StockInfo.
 
 ## Umsetzung getrennt zuschneiden
 
+Die Umsetzung folgt **T-39 → T-40 → T-38**. Der Zuschnitt wurde am
+2026-09-10 auf Mikes Auftrag im Observer-Chat um die eindeutige Zuordnung
+der gemeinsamen Kursprüfung ergänzt. Diese Fortschreibung ist keine
+nachträgliche Erweiterung des Reviewurteils zu Fassung `2e4c378`.
+
 1. **Identitätsvertrag anpassen:** Quote und Katalog validieren und
    normalisieren, ISIN- und Symbolwege einschließlich Refresh, Auswahl,
    Auswahllisten und Cache-Zuordnung gemeinsam prüfen. Fehlende Pflichtfelder
@@ -213,12 +218,19 @@ begründet. T-37 beauftragt keine Änderung in StockInfo.
    in Hauptzeile/Details nur einmal, dynamische Spalte hinzufügen/entfernen,
    gleiche Labels bei verschiedenen Schlüsseln und `0`/`false`.
 
-Die Währungskorrektur aus T-35 ist Voraussetzung für T-38. Sie betrifft Quote,
-Katalog und Detaildiagramm; insbesondere ist `instrument.currency` kein
-Ersatz für fehlendes `latest_currency`. T-35 enthält außerdem einen deutlich
-größeren Generationsauftrag, der durch T-37/T-38 nicht pauschal aktiviert wird.
-Die konkrete Zuordnung gemeinsam betroffener Prüfungen wird vor der
-Produktumsetzung festgehalten.
+Die gemeinsame API-Prüfung aus Schritt 1 liegt in
+[T-39](../_tickets/30-doing/T-39-identitaet-normalisieren.md), einschließlich
+der Währungskorrektur aus T-35. Sie betrifft Quote, Katalog und Detaildiagramm;
+`instrument.currency` ersetzt kein fehlendes `latest_currency`. Der
+Generationsauftrag bleibt bei T-35. Es entsteht kein zweiter Kursdecoder.
+
+[T-40](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md) setzt
+Schritt 2 um und zeigt Plugin-Beträge in ihrer Originalwährung.
+[T-38](../_tickets/30-doing/T-38-basiswaehrung-und-devisenkurse.md) ergänzt
+anschließend FX und die Bewertung je Depot. Ein Plugin-Detailbetrag von
+100 USD bleibt auch in einem EUR-Depot als 100 USD sichtbar. Die gemeinsame
+Formatierung und die erweiterten Typen und Mapper werden weiterverwendet;
+die Depotbewertung überschreibt keine Originalwerte im gemeinsamen Cache.
 
 ## Was tatsächlich geprüft wurde
 

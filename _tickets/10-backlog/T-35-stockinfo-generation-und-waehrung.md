@@ -21,6 +21,29 @@ Header, Fixtures) und **T-25** (implementiert und rotiert die Generation).
 
 ---
 
+## Zuschnitt nach T-37 · 2026-09-10
+
+**Die gemeinsame Kursprüfung wird in
+[T-39](../30-doing/T-39-identitaet-normalisieren.md) umgesetzt.** Dazu gehören
+Identität, Core-Pflichtfelder und die bislang geratene Kurswährung in Quote,
+Katalog und Detaildiagramm. T-35 baut dafür keinen zweiten Decoder.
+
+Die Prüfpunkte #1–#3 sowie die nicht generationsbezogenen Vertragsfälle
+aus #24, #26 und #27 werden dort nachgewiesen. Die Nummern und bisherigen
+Antworten unten bleiben als Referenz erhalten; die Übergabe des Umfangs ist
+kein bestandener Nachweis. Bei Wiederaufnahme von T-35 werden die Belege aus
+T-39 übernommen und nur zusätzliche Generationsfälle hier geprüft.
+
+Der Generationswechsel, Cache-Namespace und die Bestätigung der Generation
+bleiben Gegenstand dieses Backlog-Tickets. Die Detailanzeige liegt bei
+[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), Depotbewertung und
+FX-Umrechnung bei [T-38](../30-doing/T-38-basiswaehrung-und-devisenkurse.md).
+Die nachfolgenden technischen Erläuterungen beschreiben die Anforderungen;
+für ihre Umsetzung gilt diese Zuordnung.
+
+**Doku-Abgleich:** T-39, T-40, T-38 und Integrationsvorschlag verweisen auf
+dieselbe Aufteilung. T-35 ist dadurch nicht zur Umsetzung aktiviert.
+
 ## Verify
 
 Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ keine Live-Verifikation.
@@ -338,7 +361,7 @@ konnten die drei EUR-Rückfälle den Vertragsbruch verbergen** *(Codex,
 2026-08-21)*. Der Server liefert keine Währung, TypeScript merkt nichts, `??`
 füllt EUR ein, die Summe stimmt scheinbar.
 
-Deshalb braucht die API-Grenze einen echten Decoder. Zu validieren sind
+Den Decoder an der API-Grenze liefert T-39. Zu validieren sind
 mindestens Preis, Währung, Identität, Zeitpunkte und die je Antwort
 verbindlichen Core-Felder. Unbekannte `details` bleiben ausdrücklich erlaubt.
 

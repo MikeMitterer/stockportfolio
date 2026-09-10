@@ -1,10 +1,10 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**Die Zuordnung der nächsten Arbeitsfolge wird geklärt.** Im Board steht
-T-39 → T-40 → T-38; Mikes jüngste Nachricht nennt dagegen zuerst Folgetickets
-von T-38, dann T-37. Bis zur Klärung beginnt keine Produktumsetzung.
-T-37 ist als Bewertung technisch freigegeben und wartet im Doing-Ordner
-auf Mikes Abschlussbestätigung.
+**T-39 ist zur Umsetzung aktiviert, danach folgen T-40 und T-38.** Mike hat
+die Reihenfolge im Observer-Chat bestätigt. Der daraus entstandene
+Klärungsblocker ist aufgehoben.
+T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
+abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
 T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
 
 **Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
@@ -17,7 +17,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `blocked`
+- `phase`: `implementing`
 - `ticket`: `T-39-identitaet-normalisieren.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
@@ -59,8 +59,10 @@ Felder der tatsächlichen Hauptzeile einschließlich dynamischer Felder
 werden nicht wiederholt. Für T-38 hat Mike am 2026-09-10 eine vom Nutzer konfigurierbare
 Basiswährung **je Depot** festgelegt. Typische Wahl: EUR im Euroraum, USD in
 den USA; Hauptfall ist das Depot mit gewählter Währung. Veraltete FX-Kurse
-werden mit sichtbarer Warnung weiterverwendet. T-38 folgt mit Umrechnung. Die Abhängigkeit zu
-T-35 wird geprüft; damit ist T-35 nicht insgesamt aktiviert.
+werden mit sichtbarer Warnung weiterverwendet. T-39 übernimmt die gemeinsame
+Kursprüfung einschließlich Währung aus T-35. T-40 zeigt Detailwerte in ihrer
+Originalwährung; T-38 ergänzt danach Depotbewertung und FX. T-35 bleibt mit
+seinem Generationsauftrag im Backlog.
 
 Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. Der geplante T-38-Worktree
 wurde nicht angelegt; auch der zugehörige Branch existiert nicht.
@@ -82,17 +84,27 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** Die Umsetzung ist bis zur Zuordnung der jüngsten
-Prioritätsanweisung angehalten. Mike, 2026-09-10: „Erst die Folgetickets von
-T-38 dann T-37 sonst passieren Dinge wieder doppelt“. Die bereits angelegten
-T-39 und T-40 sind Folgetickets von T-37; zu T-38 existieren noch keine.
-Codex hat im Chat gefragt, ob T-39 → T-40 → T-38 gemeint ist oder zuerst neue
-Folgetickets zur Depotwährung aus T-38 kommen sollen. Die bisherige Kette
-bleibt bis zur Antwort dokumentiert, erzeugt in `blocked` aber keinen Auftrag.
+**Aktueller Schritt:** `codex` setzt T-39 um. Die Reihenfolge ist geklärt;
+eine weitere Bestätigung derselben Priorität ist nicht erforderlich.
+
+Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
+„Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
+überprüfe die Reihenfolge, ich glaube das macht sinn“.
+Die Folgetickets sind T-39 und T-40. Das bestätigt die bestehende Kette
+T-39 → T-40 → T-38; neue Folgetickets von T-38 sind daraus nicht beauftragt.
+Der Observer hat auf Mikes anschließenden Auftrag „Pass die Info entsprechend
+an“ die Ticketabgrenzung und Verweise aktualisiert. Auf Mikes weiteren Hinweis
+„Phase - immer noch blocked“ hat er den erledigten Klärungsblocker aufgehoben
+und `implementing` gesetzt. Rollen, Owner und Reviewzähler bleiben unverändert.
+
+T-39 liefert die gemeinsame Pflichtfeldprüfung einschließlich Kurswährung.
+T-40 und T-38 verwenden dieselben Typen, Mapper, Cache- und Anzeigebausteine
+weiter. T-40 erhält die Originalwerte; T-38 leitet daraus Depotwerte ab.
+Die konkreten Prüfpunkte stehen in den drei Tickets.
 Die Freigabe von T-37 Runde 1 durch `claude` ist verarbeitet; keine Nacharbeit. T-38 war
 noch nicht begonnen — Branch und Worktree existierten beim Vorziehen nicht,
-es geht also keine angefangene Arbeit verloren. Für T-37 fehlt weiterhin
-Mikes Abschlussbestätigung; bis dahin bleibt es unter `30-doing/`.
+es geht also keine angefangene Arbeit verloren. T-37 ist mit Mikes
+Bestätigung „T-37 ist damit erledigt“ nach `40-done/` verschoben.
 Der Scheduler bleibt aktiv.
 
 ### Übernahmestand
@@ -109,13 +121,15 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-34](30-doing/T-34-einstellungen-fuers-aktualisieren.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #1–#4 und #6 offen. |
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
-| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; menschlicher Abschluss offen, keine aktive Implementierung. |
-| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Zur Umsetzung aktiviert; UI-Basiswährung je Depot und Weiterrechnen bei veralteten FX-Kursen mit Warnung entschieden. |
+| [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
+| [T-39](30-doing/T-39-identitaet-normalisieren.md) | Als nächstes Ticket zugeordnet; gemeinsame Identitäts- und Pflichtfeldprüfung einschließlich Kurswährung. Phase siehe Zustandsblock. |
+| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Nach T-39 eingeplant; Detailanzeige in Originalwährung ohne FX-Umrechnung. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Nach T-40 eingeplant; Depot-Basiswährung und FX-Bewertung mit Warnung bei veralteten Kursen. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. Die nächste Umsetzung wartet auf die oben beschriebene
-Zuordnung; T-37 wartet auf Abschlussbestätigung.
+Agentenaufträge. T-39 ist aktiv; T-40 und T-38 folgen in dieser Reihenfolge.
+T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
 

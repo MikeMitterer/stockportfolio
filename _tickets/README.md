@@ -133,9 +133,9 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 
 ## Neu erfasste Integrationsbewertung
 
-[T-37 · StockInfo-Vertrag und dynamische Felder](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md):
+[T-37 · StockInfo-Vertrag und dynamische Felder](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md):
 Identitätszuordnung, zusätzliche Kennzahlen und Nutzen einer flachen
-Quote-Ansicht bewerten. Seit 2026-09-10 zur Bearbeitung aktiviert.
+Quote-Ansicht bewertet. Technisch freigegeben und durch Mike am 2026-09-10 abgeschlossen.
 
 Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 [T-39 · Identität normalisieren](30-doing/T-39-identitaet-normalisieren.md) und
@@ -143,9 +143,19 @@ Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 Sie stehen seit 2026-09-10 vor T-38; die Reihenfolge steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
 
+| Ticket | Zuständiger Umfang |
+|---|---|
+| T-39 | Identität und gemeinsame Prüfung der Kurs-Pflichtfelder einschließlich Währung |
+| T-40 | Detailwerte mit Einheit und Originalwährung anzeigen; keine FX-Umrechnung |
+| T-38 | Depot-Basiswährung, Devisenkurse und daraus abgeleitete Depotbewertung |
+
+Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
+Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
+Kursprüfung wird in T-39 umgesetzt.
+
 [T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
 StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
 nutzt sie nicht. Konfigurierbare Basiswährung je Depot und Weiterrechnen bei
-veralteten FX-Kursen mit sichtbarer Warnung sind entschieden. Nach T-37
+veralteten FX-Kursen mit sichtbarer Warnung sind entschieden. Nach T-39 und T-40
 eingeplant. Ersetzt die überholte Anfrage
 `docs/stockinfo-currency-request.md`.

@@ -50,6 +50,16 @@ Die Detailwerte samt Metadaten müssen den Weg durch Cache und Neuladen
 überstehen. Ein Eintrag ohne Details heißt „noch nicht geladen", nicht
 „StockInfo liefert nichts".
 
+**Abgrenzung zu [T-38](T-38-basiswaehrung-und-devisenkurse.md):** Ein
+Plugin-Betrag von 100 USD wird hier mit seiner Originalwährung angezeigt.
+T-40 lädt keine Devisenkurse und rechnet ihn nicht in die Depotwährung um.
+Die spätere Depotbewertung verändert weder diesen Detailwert noch den
+Originalkurs im gemeinsamen Cache.
+
+Typen, Mapper, Cache und Betragsformatierung werden auf der Grundlage von
+T-39 erweitert. T-38 verwendet diese Strukturen weiter. Die Anzeige kann
+deshalb vor der Depotumrechnung fertiggestellt und unabhängig geprüft werden.
+
 **Nicht in diesem Ticket:** ein allgemeiner Spalteneditor, neue Berechnungen
 aus Zusatzfeldern und jede Änderung an StockInfo.
 
@@ -93,13 +103,18 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 3 | Dynamische Spalte hinzufügen und entfernen | Der Abgleich folgt der tatsächlichen Spaltenkonfiguration, nicht einer festen Liste | ➖ |
 | 4 | Werte `0`, `false` und `null` liefern | `0` und `false` erscheinen; `null` erscheint als fehlend, nicht als Null | ➖ |
 | 5 | `risk-a.score` und `risk-b.score` mit gleicher Beschriftung liefern | Beide bleiben getrennt sichtbar | ➖ |
-| 6 | Detail mit Betrag und eigener Währung liefern | Die Währung am Wert wird verwendet, nicht die Kurswährung | ➖ |
+| 6 | Detailbetrag 100 USD bei einer abweichenden Kurswährung liefern | Anzeige bleibt 100 USD; keine Ersatzwährung und kein FX-Abruf durch die Detailanzeige | ➖ |
 | 7 | Wert mit `shadowed: true` und abweichendem `manual_value` | Angezeigt wird `value`; der manuelle Wert bleibt Zusatzinformation | ➖ |
 | 8 | `/fields` ausfallen lassen | Kurse und Kernanzeige bleiben nutzbar; nur die Zusatzliste fehlt | ➖ |
 | 9 | Cache schreiben, App neu laden | Detailwerte samt Metadaten überleben; leerer Detailteil bedeutet „nicht geladen" | ➖ |
 | 10 | TER und Volatilität prüfen | Erscheinen genau einmal, über dieselbe Felddarstellung | ➖ |
 
 Durchgehend ➖: noch keine Umsetzung.
+
+**Doku-Abgleich · Zuschnitt vom 2026-09-10:** T-39 liefert die gemeinsame
+Pflichtfeldprüfung; T-38 übernimmt ausschließlich Depotbewertung und FX.
+Die Grenze zwischen Originalwert und umgerechnetem Depotwert ist auch im
+Integrationsvorschlag und in T-38 festgehalten. Keine Produktfunktion behauptet.
 
 ```bash
 curl -s "https://stockinfo.int.mikemitterer.at/fields" | head -40      # #1 Katalog und Versionen

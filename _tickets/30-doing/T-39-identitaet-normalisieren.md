@@ -1,4 +1,4 @@
-# T-39 · Identität aus StockInfo normalisieren statt `isin` oben zu erwarten
+# T-39 · Identität normalisieren und Pflichtfelder an der API-Grenze prüfen
 
 StockPortfolio soll ein Wertpapier **eindeutig wiedererkennen**, egal über
 welchen der fünf Abrufwege es hereinkommt. Heute liest der Mapper `isin` auf
@@ -42,14 +42,26 @@ der erste Katalogtreffer ist kein Ersatz. Eine unbekannte Identitätsform wird
 als nicht unterstützt gemeldet, nicht geraten. Fehlt ein Core-Pflichtfeld, wird
 die Antwort abgewiesen, bevor daraus ein scheinbar gültiger Cacheeintrag wird.
 
+**Die Pflichtfeldprüfung umfasst die Kurswährung.** Eine Quote ohne gültige
+`currency` erzeugt keinen neuen Cacheeintrag. Bei einem Katalogeintrag mit
+`latest_price` ist `latest_currency` erforderlich; `instrument.currency`
+ersetzt sie nicht. Die bisherigen EUR-Rückfälle in Mapper und Detaildiagramm
+entfallen. Ein vorhandener gültiger Kurs darf höchstens als veraltet erhalten
+bleiben; ohne gültigen Kurs bleibt die Position sichtbar und außerhalb der
+Berechnung. Der Grund muss erkennbar sein.
+
+Dieser Anteil aus [T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md)
+wird hier einmal umgesetzt und geprüft. T-40 und T-38 nutzen dieselbe
+API-Grenze, dieselben normalisierten Kurse und die dazugehörigen Tests.
+
 Nach der Projektregel in [AGENTS.md](../../AGENTS.md#tatsächlicher-entwicklungsstand)
 braucht ein inkompatibler Cache keine Migration; er darf neu aufgebaut werden.
 Ein nötiger Reset wird als solcher beschrieben.
 
-**Nicht in diesem Ticket:** die geratene Ersatzwährung (`currency ?? 'EUR'`,
-`latest_currency ?? instrument.currency`) gehört zu
-[T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md), die
-Detailfelder zu [T-40](T-40-detailanzeige-aus-feldkatalog.md).
+**Nicht in diesem Ticket:** die Detailanzeige aus
+[T-40](T-40-detailanzeige-aus-feldkatalog.md), Depot-Basiswährung und
+Devisenumrechnung aus [T-38](T-38-basiswaehrung-und-devisenkurse.md) sowie
+Generationswechsel aus T-35.
 
 ## Für dich
 
@@ -81,8 +93,9 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 3 | Position ohne ISIN per Symbol abrufen und erzwungen aktualisieren | Zuordnung über das Symbol bleibt stabil; keine erfundene ISIN | ➖ |
 | 4 | Mehrdeutiges Symbol abrufen | `409` bleibt als Fehler sichtbar; kein stiller erster Treffer | ➖ |
 | 5 | Katalog laden, Position anlegen, Dublette versuchen | Auswahlliste, Auswahlschlüssel und Dublettenprüfung arbeiten auf der normalisierten Kennung | ➖ |
-| 6 | Antwort ohne Core-Pflichtfeld einspielen | Abweisung an der API-Grenze, kein Cacheeintrag | ➖ |
+| 6 | Quote ohne `currency`, Katalogkurs mit `latest_price` ohne `latest_currency` sowie weitere fehlende Core-Pflichtfelder einspielen | Abweisung an der gemeinsamen API-Grenze; kein neuer Cacheeintrag, kein Ersatz durch EUR oder Instrumentwährung | ➖ |
 | 7 | Cache schreiben, App neu laden | Normalisierte Einträge überleben; ein nötiger Reset ist im Ticket beschrieben | ➖ |
+| 8 | Ungültige Kursantwort mit und ohne älteren gültigen Cacheeintrag; Position und Detaildiagramm ansehen | Älterer Kurs höchstens als veraltet; sonst Position ohne verwertbaren Kurs und mit erkennbarem Grund; kein erfundener EUR-Betrag in Summe oder Diagramm | ➖ |
 
 Durchgehend ➖: noch keine Umsetzung.
 
@@ -100,3 +113,8 @@ curl -s -o /dev/null -w "%{http_code}\n" \
 
 Spätere automatisierte Tests bekommen eigene versionierte Fixtures; sie dürfen
 nicht vom Nachbar-Checkout abhängen.
+
+**Doku-Abgleich · Zuschnitt vom 2026-09-10:** Auf Mikes Auftrag im
+Observer-Chat wurden T-35, T-38, T-40, der Integrationsvorschlag und die
+Boardübersicht auf diese gemeinsame Pflichtfeldprüfung ausgerichtet.
+Die Nachweise sind weiterhin offen; die Zuordnung ist keine Umsetzung.
