@@ -39,6 +39,7 @@ function makePortfolio(overrides: Partial<Portfolio> = {}): Portfolio {
 
 function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
   return {
+    identity: { kind: 'isin_only', isin: 'IE0000000001' },
     isin: 'IE0000000001',
     symbol: 'AAA.DE',
     price: 100,

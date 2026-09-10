@@ -7,14 +7,16 @@
 
 import type { InstrumentSummary, QuoteResponse } from './types'
 import type { QuoteCacheEntry } from '@/types/portfolio'
+import { requireCurrency } from './normalizers'
 
 /** Mappt eine Kurs-Antwort auf den Domain-Cache-Eintrag. */
 export function toQuoteCacheEntry(response: QuoteResponse): QuoteCacheEntry {
   return {
+    identity: response.identity,
     isin: response.isin,
     symbol: response.symbol,
     price: response.price,
-    currency: response.currency ?? 'EUR',
+    currency: requireCurrency(response.currency, 'currency', 'quote'),
     type: response.type,
     volatility: response.volatility,
     name: response.name,
@@ -34,18 +36,21 @@ export function instrumentToQuoteCacheEntry(
   instrument: InstrumentSummary,
 ): QuoteCacheEntry | null {
   if (instrument.latest_price === null) return null
+  const currency = requireCurrency(instrument.latest_currency, 'latest_currency', 'instruments')
+  if (!instrument.latest_fetched_at) return null
 
   return {
+    identity: instrument.identity,
     isin: instrument.isin,
     symbol: instrument.symbol,
     price: instrument.latest_price,
-    currency: instrument.latest_currency ?? instrument.currency ?? 'EUR',
+    currency,
     type: instrument.type,
     volatility: instrument.volatility,
     name: instrument.name,
     ter: instrument.ter,
     accumulating: instrument.accumulating,
-    fetchedAt: instrument.latest_fetched_at ?? new Date().toISOString(),
+    fetchedAt: instrument.latest_fetched_at,
     cached: true,
     stale: false,
   }

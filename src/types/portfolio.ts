@@ -156,7 +156,14 @@ export interface Settings {
 /** Zeitraum der Verlaufslinie in der Positionstabelle. */
 export type HistoryPeriod = 'day' | 'week' | 'month'
 
+/** Vollständige StockInfo-Identität; ein Symbol allein ist nicht eindeutig. */
+export type InstrumentIdentity =
+  | { kind: 'listed'; ticker: string; mic: string; isin?: string | null }
+  | { kind: 'pair'; base: string; quote_currency: string }
+  | { kind: 'isin_only'; isin: string }
+
 export interface QuoteCacheEntry {
+  identity: InstrumentIdentity
   isin: string | null
   symbol: string
   price: number

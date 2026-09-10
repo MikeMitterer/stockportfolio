@@ -64,12 +64,16 @@ Projekts.
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
   dasselbe. Damit lassen sich Mapper prüfen, ohne StockInfo zu starten.
-  StockPortfolio nutzt das bisher **nicht**; die Bewertung steht in
+  StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
+  `src/api/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
+  unter `tests/fixtures/stockinfo/`. Die Bewertung steht in
   [T-37](_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
   Generation und Währung in
   [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
-  T-37 ist als Bewertung abgeschlossen. T-39 setzt Identität und Kursprüfung
-  einschließlich Währung um; T-40 folgt mit der Detailanzeige. Der
+  T-37 ist als Bewertung abgeschlossen. T-39 normalisiert Identität und prüft
+  Kurs-Pflichtfelder einschließlich Währung; eine neue Depotposition setzt
+  einen erfolgreichen eindeutigen Kursabruf voraus. T-40 folgt mit `/fields`
+  und der dynamischen Detailanzeige. Der
   Generationsauftrag aus T-35 bleibt im Backlog.
 
 Lokal gegen den Dienst entwickeln — im StockInfo-Repo das Backend starten, hier

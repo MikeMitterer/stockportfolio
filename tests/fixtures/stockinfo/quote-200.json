@@ -1,0 +1,46 @@
+{
+  "endpoint": "/quote/{isin}",
+  "model": "quote",
+  "contract_compliant": true,
+  "violates": null,
+  "note": "Der Regelfall: ein europäischer ETF, frisch beschafft. Zeigt Pflichtfelder samt Währung und die ETF-Kennzahlen als optionale Ergänzung.",
+  "request": {
+    "method": "GET",
+    "path": "/quote/IE00B4L5Y983"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "StockInfo-Generation": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "body": {
+      "identity": {
+        "kind": "listed",
+        "ticker": "EUNL",
+        "mic": "XETR",
+        "isin": "IE00B4L5Y983"
+      },
+      "symbol": "EUNL.DE",
+      "exchange": "Xetra",
+      "name": "iShares Core MSCI World UCITS ETF",
+      "type": "etf",
+      "currency": "EUR",
+      "price": 128.7,
+      "quote_time": "2026-08-21T17:35:00+00:00",
+      "volume": 152340,
+      "ter": 0.2,
+      "provider": "iShares",
+      "replication": "Physical",
+      "fund_size": 89123000000.0,
+      "fund_domicile": "Ireland",
+      "fund_currency": "USD",
+      "volatility": 11.4,
+      "accumulating": true,
+      "source": "yfinance+justetf",
+      "cached": false,
+      "stale": false,
+      "fetched_at": "2026-08-21T17:36:12+00:00"
+    }
+  }
+}

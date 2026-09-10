@@ -41,8 +41,8 @@ und `normalizeInstruments(input: unknown, url: string): InstrumentSummary[]`.
 Alle vier Quote-/Refreshmethoden verwenden `normalizeQuote`; der Katalog
 verwendet `normalizeInstruments` vor Übergabe an den Instrument-Store.
 
-- [ ] Vertragsfixtures für Quote und Katalog aus geprüftem StockInfo-Stand kopieren.
-- [ ] Failing Tests: `listed`, `listed` ohne ISIN, `pair`, `isin_only` durch
+- [x] Vertragsfixtures für Quote und Katalog aus geprüftem StockInfo-Stand kopieren.
+- [x] Failing Tests: `listed`, `listed` ohne ISIN, `pair`, `isin_only` durch
   echte Clientmethoden schicken und Cache-Ergebnis prüfen:
 
   ```ts
@@ -51,18 +51,18 @@ verwendet `normalizeInstruments` vor Übergabe an den Instrument-Store.
   expect(response.identity).toEqual(payload.identity)
   ```
 
-- [ ] `npm test -- tests/api/contract.spec.ts` ausführen; fehlende
+- [x] `npm test -- tests/api/contract.spec.ts` ausführen; fehlende
   Normalisierung und akzeptierte ungültige Antworten als rote Fälle belegen.
-- [ ] Pflichtfelder anhand Core 4.3.0 prüfen: Identität, Symbol, Name, offener
+- [x] Pflichtfelder anhand Core 4.3.0 prüfen: Identität, Symbol, Name, offener
   Typ, endlicher Preis, Kurswährung, Zeitstempel, boolesche Altersflags;
   Katalog zusätzlich Listingkennung, Historienanzahl und Herkunftslisten.
   Optionale bekannte Felder auf passenden Typ oder `null` normalisieren.
   Unbekannte Zusatzfelder beeinflussen die Kernantwort nicht.
-- [ ] Alle drei Identitätsformen erhalten; unbekannte Formen mit i18n-Fehler
+- [x] Alle drei Identitätsformen erhalten; unbekannte Formen mit i18n-Fehler
   abweisen. Quote benötigt keine Listingkennung. `409` bleibt erhalten.
-- [ ] Bei vorhandenem Katalogpreis `latest_currency` verlangen; `GBp`
+- [x] Bei vorhandenem Katalogpreis `latest_currency` verlangen; `GBp`
   unverändert erhalten. EUR-/Instrumentwährungsersatz entfernen.
-- [ ] Bestehende Testantworten an den neuen Vertrag anpassen und gezielt prüfen.
+- [x] Bestehende Testantworten an den neuen Vertrag anpassen und gezielt prüfen.
 
 ## 2. Persistenz und Fehlerfolgen
 
@@ -70,7 +70,7 @@ Dateien: `src/db/schema.ts`, `src/stores/quotes.ts`,
 `src/domain/rebalancing.ts`; Tests in `tests/stores/quotes.spec.ts`,
 `tests/db/repository.spec.ts`, `tests/domain/rebalancing.spec.ts`.
 
-- [ ] Failing Test für Einzelrefresh nach gültigem Kurs, gefolgt von
+- [x] Failing Test für Einzelrefresh nach gültigem Kurs, gefolgt von
   ungültiger Kursantwort:
 
   ```ts
@@ -80,13 +80,13 @@ Dateien: `src/db/schema.ts`, `src/stores/quotes.ts`,
   expect(store.failures[0]?.reason).toContain('currency')
   ```
 
-- [ ] Gezielten Testlauf ausführen; bisherigen frischen Altwert nachweisen.
-- [ ] Fehlerbehandlung setzt vorhandenen Kurs auf `cached: true, stale: true`
+- [x] Gezielten Testlauf ausführen; bisherigen frischen Altwert nachweisen.
+- [x] Fehlerbehandlung setzt vorhandenen Kurs auf `cached: true, stale: true`
   und persistiert ihn. Ohne gültigen Kurs bleibt die Position ausgeschlossen
   und erzeugt keinen Handelsvorschlag.
-- [ ] Cacheformat erhält vollständige Identität. Alten Quote-Cache beim
+- [x] Cacheformat erhält vollständige Identität. Alten Quote-Cache beim
   Schemawechsel leeren; Depotpositionen und andere passende Daten erhalten.
-- [ ] Speichern/Neuladen und Schemawechsel mit fake-indexeddb prüfen.
+- [x] Speichern/Neuladen und Schemawechsel mit fake-indexeddb prüfen.
 
 ## 3. Anzeige, Verbraucher und Übergabe
 
@@ -94,12 +94,25 @@ Dateien: `src/components/PositionDrilldown.vue`, gegebenenfalls
 `src/components/PositionsTable.vue`, bestehende Anzeige- und Katalogtests,
 `README.md`, Ticket und Board.
 
-- [ ] Failing Anzeigeprüfung: ohne gültige Kurswährung kein als EUR
+- [x] Failing Anzeigeprüfung: ohne gültige Kurswährung kein als EUR
   beschriftetes Diagramm; vorhandene Originalwährung bleibt sichtbar.
-- [ ] Detaildiagramm nur mit bekannter Kurswährung anzeigen; fehlenden Kurs
+- [x] Detaildiagramm nur mit bekannter Kurswährung anzeigen; fehlenden Kurs
   verständlich kennzeichnen. Katalogauswahl und Dublettenprüfung mit echtem
   normalisiertem Client-Ergebnis prüfen.
-- [ ] `make test`, `make lint`, `make typecheck`, `git diff --check` ausführen.
+- [x] `make test`, `make lint`, `make typecheck`, `git diff --check` ausführen.
 - [ ] Prüfnachweise und Cache-Neuaufbau im Ticket dokumentieren, Produktdiff
   getrennt von vorgefundenen fremden Änderungen committen und an `claude`
   zur unabhängigen Prüfung übergeben.
+
+## Ergänzung aus Mikes Sichtprüfung
+
+- [x] Eine neue Depotposition erst nach erfolgreichem eindeutigen Kursabruf
+  anlegen. Fehler halten den Dialog offen; bestehende Positionen dürfen bei
+  späteren Fehlern weiterhin sichtbar bleiben.
+- [x] Börsenlistings im Dialog über die Katalog-Listingkennung unterscheiden.
+  Das ändert den Quote-Vertrag nicht; mehrdeutige Symbolabrufe bleiben gesperrt.
+- [x] Fehler pro Position dauerhaft anzeigen, veraltete Werte kenntlich machen
+  und Fremdwährungswerte auch in Detailansicht und Mobilkarte richtig beschriften.
+- [x] Erste Browserprüfung selbst durchführen: echter lokaler StockInfo-Server,
+  temporäre Datenbank und kontrollierte Testquelle. Aufbau und Einschränkungen
+  stehen in T-39.

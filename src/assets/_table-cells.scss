@@ -104,6 +104,7 @@
   color: rgb(var(--text-muted));
 
   &--warning {
+    text-transform: none;
     border-color: rgb(var(--status-out) / 0.5);
     color: rgb(var(--status-out));
   }

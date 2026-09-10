@@ -31,7 +31,7 @@ export function quoteFor(position: Position, quotes: QuoteMap): QuoteCacheEntry 
 }
 
 /**
- * Marktwert einer Position in EUR (Excel Spalte K = G × I).
+ * Marktwert einer Position in ihrer Kurswährung (Excel Spalte K = G × I).
  * Für Cash: `units` ist der EUR-Betrag selbst.
  * Für Wertpapiere: `units × Kurs`. Kein Kurs → 0 (mit Warning).
  */
@@ -98,8 +98,8 @@ export function hasForeignCurrency(
 /**
  * Zählt die Position in Summen und Anteile?
  *
- * Zwei Gründe schließen sie aus: Der Nutzer hat sie abgeschaltet, oder sie
- * notiert in einer fremden Währung. Beide Male bleibt die Zeile sichtbar —
+ * Ausgeschlossen sind abgeschaltete Positionen, fehlende Kurse und Kurse
+ * in fremder Währung. In jedem Fall bleibt die Zeile sichtbar —
  * unsichtbare Ausschlüsse sind schlimmer als falsche Summen, weil man sie
  * nicht einmal suchen kann.
  */
@@ -108,7 +108,8 @@ function countsIn(
   quotes: QuoteMap,
   baseCurrency: string,
 ): boolean {
-  return position.enabled && !hasForeignCurrency(quoteFor(position, quotes), baseCurrency)
+  const quote = quoteFor(position, quotes)
+  return position.enabled && (position.group === 'cash' || quote !== null) && !hasForeignCurrency(quote, baseCurrency)
 }
 
 /** IST-% am Gesamtvermögen (Excel L = K × 100 / I3). */
@@ -273,7 +274,7 @@ export interface PositionResult {
    * „abgeschaltet" ist eine Entscheidung des Nutzers, „fremde Währung" ein
    * Zustand, den er so nicht gewollt hat.
    */
-  excludedReason: 'disabled' | 'currency' | null
+  excludedReason: 'disabled' | 'currency' | 'missing-quote' | null
   /**
    * Die Position liegt außerhalb ihres Bandes, aber der nötige Trade wäre
    * kleiner als das Mindest-Handelsvolumen.
@@ -415,7 +416,12 @@ export function computeRebalancing(
     const quote = quoteFor(position, quotes)
     const mv = marketValue(position, quote)
 
-    if (!position.enabled) {
+    const excludedReason: PositionResult['excludedReason'] = !position.enabled
+      ? 'disabled'
+      : position.group !== 'cash' && !quote
+        ? 'missing-quote'
+        : hasForeignCurrency(quote, baseCurrency) ? 'currency' : null
+    if (excludedReason) {
       return {
         position,
         quote,
@@ -429,26 +435,7 @@ export function computeRebalancing(
         relativeDeltaPercent: 0,
         isNearBand: false,
         isActive: false,
-        excludedReason: 'disabled',
-        belowMinTrade: false,
-      }
-    }
-
-    if (hasForeignCurrency(quote, baseCurrency)) {
-      return {
-        position,
-        quote,
-        marketValue: mv,
-        actualPercent: 0,
-        targetValue: 0,
-        lowerBand: 0,
-        upperBand: 0,
-        suggestion: 'ok' as Suggestion,
-        unitsDelta: 0,
-        relativeDeltaPercent: 0,
-        isNearBand: false,
-        isActive: false,
-        excludedReason: 'currency',
+        excludedReason,
         belowMinTrade: false,
       }
     }

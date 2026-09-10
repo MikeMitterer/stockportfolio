@@ -9,6 +9,7 @@ import type { InstrumentSummary, QuoteResponse } from '@/api/types'
 /** Vollständige Antwort wie die API sie für einen ETF liefert. */
 function fullQuote(overrides: Partial<QuoteResponse> = {}): QuoteResponse {
   return {
+    identity: { kind: 'isin_only', isin: 'IE00B3RBWM25' },
     isin: 'IE00B3RBWM25',
     symbol: 'VGWL.DE',
     exchange: 'Xetra',
@@ -35,12 +36,13 @@ function fullQuote(overrides: Partial<QuoteResponse> = {}): QuoteResponse {
 /** Minimale Antwort — nur die laut Schema erforderlichen Felder sind gesetzt. */
 function minimalQuote(): QuoteResponse {
   return {
+    identity: { kind: 'listed', ticker: 'XYZ', mic: 'XETR' },
     isin: null,
     symbol: 'XYZ.DE',
     exchange: null,
-    name: null,
-    type: null,
-    currency: null,
+    name: 'XYZ',
+    type: 'stock',
+    currency: 'EUR',
     price: 42,
     quote_time: '2026-08-07T10:00:00+00:00',
     volume: null,
@@ -78,16 +80,16 @@ describe('toQuoteCacheEntry', () => {
     expect(entry.fetchedAt).toBe('2026-08-07T10:51:55.777289+00:00')
   })
 
-  it('fällt bei fehlender Währung auf EUR zurück', () => {
-    const entry = toQuoteCacheEntry(minimalQuote())
-    expect(entry.currency).toBe('EUR')
+  it('weist fehlende Kurswährung auch beim direkten Mapperaufruf ab', () => {
+    const response = { ...minimalQuote(), currency: null } as unknown as QuoteResponse
+    expect(() => toQuoteCacheEntry(response)).toThrow('currency')
   })
 
   it('behält null-Felder als null (kein Default-Wert erfunden)', () => {
     const entry = toQuoteCacheEntry(minimalQuote())
     expect(entry.isin).toBeNull()
     expect(entry.volatility).toBeNull()
-    expect(entry.name).toBeNull()
+    expect(entry.name).toBe('XYZ')
     expect(entry.ter).toBeNull()
     expect(entry.accumulating).toBeNull()
   })
@@ -100,6 +102,10 @@ describe('toQuoteCacheEntry', () => {
 describe('instrumentToQuoteCacheEntry', () => {
   function instrument(overrides: Partial<InstrumentSummary> = {}): InstrumentSummary {
     return {
+      identity: { kind: 'isin_only', isin: 'DE000A0S9GB0' },
+      listing_id: 'test-listing',
+      manual_fields: [],
+      shadowed_fields: [],
       isin: 'DE000A0S9GB0',
       symbol: '4GLD.DE',
       exchange: 'Xetra',
@@ -140,11 +146,10 @@ describe('instrumentToQuoteCacheEntry', () => {
     expect(entry?.currency).toBe('EUR')
   })
 
-  it('fällt auf currency zurück wenn latest_currency fehlt', () => {
-    const entry = instrumentToQuoteCacheEntry(
+  it('weist fehlende Kurswährung auch bei bekannter Instrumentwährung ab', () => {
+    expect(() => instrumentToQuoteCacheEntry(
       instrument({ currency: 'USD', latest_currency: null }),
-    )
-    expect(entry?.currency).toBe('USD')
+    )).toThrow('latest_currency')
   })
 })
 

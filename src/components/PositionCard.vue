@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n'
 import DeltaBar from '@/components/DeltaBar.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { assetColor } from '@/domain/assetColors'
-import { eur, eurCent, integer, percent } from '@/domain/formatters'
+import { useQuoteIssue } from '@/composables/useQuoteIssue'
+import { eur, integer, money, percent } from '@/domain/formatters'
 import type { PositionResult } from '@/domain/rebalancing'
 
 /**
@@ -20,6 +21,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const quoteIssue = useQuoteIssue()
 
 const isCash = computed(() => props.row.position.group === 'cash')
 const color = computed(() => assetColor(props.row.position.group))
@@ -31,6 +33,7 @@ const title = computed(() =>
 
 <template>
   <article class="poscard" :class="{ 'poscard--inactive': !row.isActive }">
+    <p v-if="quoteIssue(row)" role="status">{{ quoteIssue(row) }}</p>
     <!-- Kopf: Papier und Status -->
     <div class="poscard__head">
       <div class="poscard__ident">
@@ -42,7 +45,7 @@ const title = computed(() =>
         <div class="poscard__names">
           <div class="poscard__title-row">
             <span class="poscard__title">{{ title }}</span>
-            <span v-if="!row.isActive" class="poscard__tag">{{ t('currency.inactive') }}</span>
+            <span v-if="!row.isActive" class="poscard__tag">{{ row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : row.excludedReason === 'currency' ? row.quote?.currency : t('currency.inactive') }}</span>
           </div>
           <div v-if="!isCash" class="poscard__subtitle">{{ row.position.displayName }}</div>
         </div>
@@ -63,11 +66,11 @@ const title = computed(() =>
       <span class="poscard__meta tabular-nums">
         <template v-if="!isCash">
           {{ t('common.units', { count: integer(row.position.units) }) }}
-          <template v-if="row.quote"> · {{ eurCent(row.quote.price) }}</template>
+          <template v-if="row.quote"> · {{ money(row.quote.price, row.quote.currency, 2) }}</template>
         </template>
         <template v-else>{{ row.position.displayName }}</template>
       </span>
-      <span class="poscard__value tabular-nums">{{ eur(row.marketValue) }}</span>
+      <span class="poscard__value tabular-nums">{{ row.quote ? money(row.marketValue, row.quote.currency) : isCash ? eur(row.marketValue) : '—' }}</span>
     </div>
 
     <!-- IST gegen Ziel -->
@@ -137,7 +140,7 @@ const title = computed(() =>
     border: 1px solid token(--border-default);
     border-radius: 0.25rem;
     font-size: 0.625rem;
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.025em;
     @include muted(null);
   }

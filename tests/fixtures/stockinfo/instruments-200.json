@@ -1,0 +1,102 @@
+{
+  "endpoint": "/instruments",
+  "model": "instrument",
+  "contract_compliant": true,
+  "violates": null,
+  "note": "Der Bestand. Zeigt beide Listen: `manual_fields` — hier kommt der angezeigte Wert von Hand; `shadowed_fields` — hier liegt ein eingetragener Wert, den die Quelle gerade überstimmt, abrufbar unter manual_<feld>. Ein Konsument, der beide ignoriert, zeigt Werte ohne ihre Herkunft.",
+  "request": {
+    "method": "GET",
+    "path": "/instruments"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "StockInfo-Generation": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "body": [
+      {
+        "identity": {
+          "kind": "listed",
+          "ticker": "EUNL",
+          "mic": "XETR",
+          "isin": "IE00B4L5Y983"
+        },
+        "symbol": "EUNL.DE",
+        "listing_id": "018f3a2c-7b41-7c9e-a3d2-5f1b9c4e2a10",
+        "exchange": "Xetra",
+        "name": "iShares Core MSCI World UCITS ETF",
+        "type": "etf",
+        "currency": "EUR",
+        "provider": "iShares",
+        "ter": 0.2,
+        "replication": "Physical",
+        "fund_size": 89123000000.0,
+        "fund_domicile": "Ireland",
+        "fund_currency": "USD",
+        "volatility": 11.4,
+        "accumulating": true,
+        "source": "yfinance+justetf",
+        "meta_fetched_at": "2026-08-21T17:36:12+00:00",
+        "latest_price": 128.7,
+        "latest_quote_time": "2026-08-21T17:35:00+00:00",
+        "latest_currency": "EUR",
+        "latest_fetched_at": "2026-08-21T17:36:12+00:00",
+        "history_count": 412,
+        "manual_ter": null,
+        "manual_volatility": null,
+        "manual_accumulating": null,
+        "manual_provider": null,
+        "manual_replication": null,
+        "manual_fund_size": null,
+        "manual_fund_domicile": null,
+        "manual_fund_currency": null,
+        "manual_fields": [],
+        "shadowed_fields": []
+      },
+      {
+        "identity": {
+          "kind": "listed",
+          "ticker": "VTI",
+          "mic": "ARCX",
+          "isin": "US9229087690"
+        },
+        "symbol": "VTI",
+        "listing_id": "018f3a2c-7b41-7c9e-a3d2-5f1b9c4e2a11",
+        "exchange": "NYSEArca",
+        "name": "Vanguard Total Stock Market ETF",
+        "type": "etf",
+        "currency": "USD",
+        "provider": "Vanguard",
+        "ter": 0.03,
+        "replication": null,
+        "fund_size": null,
+        "fund_domicile": "USA",
+        "fund_currency": null,
+        "volatility": 14.2,
+        "accumulating": false,
+        "source": "yfinance",
+        "meta_fetched_at": "2026-08-21T17:36:44+00:00",
+        "latest_price": 291.4,
+        "latest_quote_time": "2026-08-21T20:00:00+00:00",
+        "latest_currency": "USD",
+        "latest_fetched_at": "2026-08-21T20:01:03+00:00",
+        "history_count": 88,
+        "manual_ter": 0.04,
+        "manual_volatility": null,
+        "manual_accumulating": null,
+        "manual_provider": null,
+        "manual_replication": null,
+        "manual_fund_size": null,
+        "manual_fund_domicile": "USA",
+        "manual_fund_currency": null,
+        "manual_fields": [
+          "fund_domicile"
+        ],
+        "shadowed_fields": [
+          "ter"
+        ]
+      }
+    ]
+  }
+}

@@ -213,6 +213,11 @@ async function openAddDialog(): Promise<void> {
   showAddDialog.value = true
 }
 
+async function validateNewInstrument(instrument: InstrumentSummary): Promise<void> {
+  if (!client) throw new Error(t('notify.noClient'))
+  await quotesStore.loadOne(client, instrument)
+}
+
 async function onAddPosition(payload: {
   instrument: InstrumentSummary
   units: number
@@ -233,8 +238,6 @@ async function onAddPosition(payload: {
     targetPercent,
     enabled: true,
   })
-
-  if (client) await quotesStore.loadQuotes(client, portfolioStore.positions)
 }
 
 // ─── Editier-Aktionen — gehen an den Store, der sofort persistiert ─────────
@@ -361,8 +364,8 @@ onMounted(async () => {
    * Zwei Meldungen für eine Ursache, die vorher feststand.
    */
   if (settingsStore.settings.refresh.autoOnLoad && client) {
-    const zustand = await apiStatus.ensureChecked(client)
-    if (zustand !== 'offline') {
+    const status = await apiStatus.ensureChecked(client)
+    if (status !== 'offline') {
       await quotesStore.loadQuotesIfStale(
         client,
         portfolioStore.positions,
@@ -599,6 +602,7 @@ function toggleGroups(): void {
       :available="instrumentsStore.allowedInstruments"
       :existing-keys="existingKeys"
       :remaining-target-percent="remainingTargetPercent"
+      :validate-instrument="validateNewInstrument"
       @add="onAddPosition"
     />
   </div>

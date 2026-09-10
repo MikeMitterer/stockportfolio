@@ -12,6 +12,7 @@ import type { Portfolio, Position, QuoteCacheEntry, QuoteMap, Settings } from '@
 
 function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
   return {
+    identity: { kind: 'isin_only', isin: 'ISIN' },
     isin: 'ISIN',
     symbol: 'TEST.DE',
     price: 100,
@@ -253,17 +254,17 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
 
   it('Ziel 0 % führt nicht zu einer Division durch null', () => {
     const { portfolio } = targetSetup()
-    const ohneZiel: Portfolio = {
+    const withoutTarget: Portfolio = {
       ...portfolio,
       positions: portfolio.positions.map((position) =>
         position.id === 'ziel' ? { ...position, targetPercent: 0 } : position,
       ),
     }
-    const neu = computeRebalancing(ohneZiel, new Map([
+    const recalculated = computeRebalancing(withoutTarget, new Map([
       ['Z', makeQuote({ isin: 'Z', price: 100 })],
       ['R', makeQuote({ isin: 'R', price: 100 })],
     ]), SETTINGS)
-    const plan = computeTradePlan(neu.rows, { ziel: 5 }, neu.total, SETTINGS.bands, 0)
+    const plan = computeTradePlan(recalculated.rows, { ziel: 5 }, recalculated.total, SETTINGS.bands, 0)
     const row = plan.rows.find((entry) => entry.current.position.id === 'ziel')
 
     expect(row?.relativeDeviationAfter).toBe(0)
@@ -318,7 +319,7 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
-        makePosition({ id: 'aktie', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 50 }),
+        makePosition({ id: 'stock', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 50 }),
         makePosition({
           id: 'cash',
           isin: null,
@@ -347,7 +348,7 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
     const { result } = liquidSetup()
     const plan = computeTradePlan(
       result.rows,
-      { cash: -600, aktie: 6 },
+      { cash: -600, stock: 6 },
       result.total,
       SETTINGS.bands, 400)
 
@@ -359,7 +360,7 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
     const { result } = liquidSetup()
     const plan = computeTradePlan(
       result.rows,
-      { cash: -700, aktie: 7 },
+      { cash: -700, stock: 7 },
       result.total,
       SETTINGS.bands, 400)
 
@@ -371,7 +372,7 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
     const { result } = liquidSetup()
     const plan = computeTradePlan(
       result.rows,
-      { cash: -500, aktie: 5 },
+      { cash: -500, stock: 5 },
       result.total,
       SETTINGS.bands, 0)
 
@@ -412,10 +413,10 @@ describe('Ablauf aus der Praxis', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
         // Übergewichtet: soll abgebaut werden
-        makePosition({ id: 'gross', isin: 'G', symbol: 'G.DE', units: 30, targetPercent: 40 }),
+        makePosition({ id: 'large', isin: 'G', symbol: 'G.DE', units: 30, targetPercent: 40 }),
         // Untergewichtet: sollen aufgebaut werden
-        makePosition({ id: 'klein1', isin: 'K1', symbol: 'K1.DE', units: 5, targetPercent: 30 }),
-        makePosition({ id: 'klein2', isin: 'K2', symbol: 'K2.DE', units: 5, targetPercent: 30 }),
+        makePosition({ id: 'small1', isin: 'K1', symbol: 'K1.DE', units: 5, targetPercent: 30 }),
+        makePosition({ id: 'small2', isin: 'K2', symbol: 'K2.DE', units: 5, targetPercent: 30 }),
       ],
     }
     const quotes: QuoteMap = new Map([
@@ -430,7 +431,7 @@ describe('Ablauf aus der Praxis', () => {
     // 14 Stück verkaufen (1.400 €), je 7 Stück zukaufen (je 700 €).
     const plan = computeTradePlan(
       result.rows,
-      { gross: -14, klein1: 7, klein2: 7 },
+      { large: -14, small1: 7, small2: 7 },
       result.total,
       SETTINGS.bands, 0)
 
@@ -439,12 +440,12 @@ describe('Ablauf aus der Praxis', () => {
     expect(plan.netCashFlow).toBe(0)
 
     // Danach: gross 1.600 €, klein1/2 je 1.200 € — genau auf Ziel.
-    const nachher = Object.fromEntries(
+    const valuesAfter = Object.fromEntries(
       plan.rows.map((row) => [row.current.position.id, row.marketValueAfter]),
     )
-    expect(nachher.gross).toBe(1_600)
-    expect(nachher.klein1).toBe(1_200)
-    expect(nachher.klein2).toBe(1_200)
+    expect(valuesAfter.large).toBe(1_600)
+    expect(valuesAfter.small1).toBe(1_200)
+    expect(valuesAfter.small2).toBe(1_200)
 
     // Und alle im Band.
     expect(plan.rows.every((row) => row.suggestionAfter === 'ok')).toBe(true)
@@ -465,27 +466,27 @@ describe('computeTradePlan — Delta bis zum Ziel', () => {
 
   it('hängt nicht am Plan — das Delta steht auch ohne eingetragene Trades da', () => {
     const { result } = makeSetup()
-    const ohnePlan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
-    const mitPlan = computeTradePlan(result.rows, { a: -5 }, result.total, SETTINGS.bands, 0)
+    const withoutPlan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
+    const withPlan = computeTradePlan(result.rows, { a: -5 }, result.total, SETTINGS.bands, 0)
 
-    const deltaOf = (plan: typeof ohnePlan, id: string) =>
+    const deltaOf = (plan: typeof withoutPlan, id: string) =>
       plan.rows.find((row) => row.current.position.id === id)?.deltaUnits
 
-    expect(deltaOf(mitPlan, 'a')).toBe(deltaOf(ohnePlan, 'a'))
+    expect(deltaOf(withPlan, 'a')).toBe(deltaOf(withoutPlan, 'a'))
   })
 
   it('heben sich die Deltas in Euro auf, wenn die Ziele 100 % ergeben', () => {
     const { result } = makeSetup()
     const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
 
-    const summe = plan.rows.reduce(
+    const totalDelta = plan.rows.reduce(
       (total, row) => total + row.deltaUnits * (row.current.quote?.price ?? 0),
       0,
     )
-    expect(summe).toBeCloseTo(0, 6)
+    expect(totalDelta).toBeCloseTo(0, 6)
   })
 
-  it('meldet 0 statt Unendlich, wenn kein Kurs vorliegt', () => {
+  it('bietet ohne Kurs keinen Handel für die Position an', () => {
     const portfolio: Portfolio = {
       id: 'p1',
       name: 'Test',
@@ -496,7 +497,7 @@ describe('computeTradePlan — Delta bis zum Ziel', () => {
     const result = computeRebalancing(portfolio, new Map(), SETTINGS)
     const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
 
-    expect(plan.rows[0]?.deltaUnits).toBe(0)
+    expect(plan.rows).toEqual([])
   })
 })
 
@@ -548,7 +549,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
         makePosition({ id: 'eqqq', isin: 'E', units: 6, targetPercent: 50 }),
         makePosition({ id: 'ftse', isin: 'F', units: 8, targetPercent: 20 }),
         makePosition({
-          id: 'geldmarkt',
+          id: 'moneyMarket',
           isin: 'G',
           group: 'moneymarket',
           units: 6,
@@ -564,30 +565,30 @@ describe('computeTradePlan — probeweise Ziele', () => {
     const result = computeRebalancing(portfolio, quotes, SETTINGS)
 
     // Gesamt 2.000 €. Geldmarkt: 600 € = 30 % — genau auf Ziel, Delta 0.
-    const vorher = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
-    expect(vorher.rows.find((row) => row.current.position.id === 'geldmarkt')?.deltaUnits).toBe(0)
+    const before = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
+    expect(before.rows.find((row) => row.current.position.id === 'moneyMarket')?.deltaUnits).toBe(0)
 
     // EQQQ auf 1.000 € bringen (+4 Stück), bezahlt aus dem Geldmarkt.
-    const trades = { eqqq: 4, geldmarkt: -4 }
+    const trades = { eqqq: 4, moneyMarket: -4 }
 
     // Ohne Zielanpassung fällt der Geldmarkt auf 10 % bei Ziel 30 % — die
     // Zeile stünde dauerhaft auf „Kaufen", obwohl das so gewollt war.
-    const ohneAnpassung = computeTradePlan(result.rows, trades, result.total, SETTINGS.bands, 0)
-    const gmOhne = ohneAnpassung.rows.find((row) => row.current.position.id === 'geldmarkt')
-    expect(gmOhne?.percentAfter).toBeCloseTo(10, 6)
-    expect(gmOhne?.inBandAfter).toBe(false)
+    const withoutAdjustment = computeTradePlan(result.rows, trades, result.total, SETTINGS.bands, 0)
+    const moneyMarketWithoutAdjustment = withoutAdjustment.rows.find((row) => row.current.position.id === 'moneyMarket')
+    expect(moneyMarketWithoutAdjustment?.percentAfter).toBeCloseTo(10, 6)
+    expect(moneyMarketWithoutAdjustment?.inBandAfter).toBe(false)
 
     // Mit probeweise nachgezogenen Zielen geht die Rechnung auf.
-    const mitAnpassung = computeTradePlan(
+    const withAdjustment = computeTradePlan(
       result.rows,
       trades,
       result.total,
       SETTINGS.bands,
       0,
-      { targets: { eqqq: 50, ftse: 40, geldmarkt: 10 } },
+      { targets: { eqqq: 50, ftse: 40, moneyMarket: 10 } },
     )
-    expect(mitAnpassung.targetSum).toBeCloseTo(100, 6)
-    expect(mitAnpassung.rows.every((row) => row.inBandAfter)).toBe(true)
+    expect(withAdjustment.targetSum).toBeCloseTo(100, 6)
+    expect(withAdjustment.rows.every((row) => row.inBandAfter)).toBe(true)
   })
 })
 
@@ -600,9 +601,9 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
-        makePosition({ id: 'aktie', isin: 'A', units: 10, targetPercent: 40 }),
+        makePosition({ id: 'stock', isin: 'A', units: 10, targetPercent: 40 }),
         makePosition({
-          id: 'geldmarkt',
+          id: 'moneyMarket',
           isin: 'G',
           group: 'moneymarket',
           units: 30,
@@ -632,21 +633,21 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
     const result = liquiditySetup()
     const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
 
-    expect(coverageOf(plan, 'geldmarkt')).toBeNull()
+    expect(coverageOf(plan, 'moneyMarket')).toBeNull()
     expect(coverageOf(plan, 'cash')).toBeNull()
   })
 
   it('nennt die Stückzahl, die den Kauf deckt', () => {
     // 5 Stück Aktie à 100 € = 500 € Lücke → 5 Stück Geldmarkt à 100 €.
     const result = liquiditySetup()
-    const plan = computeTradePlan(result.rows, { aktie: 5 }, result.total, SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { stock: 5 }, result.total, SETTINGS.bands, 0)
 
-    expect(coverageOf(plan, 'geldmarkt')).toBe(-5)
+    expect(coverageOf(plan, 'moneyMarket')).toBe(-5)
   })
 
   it('rechnet bei Cash mit dem Betrag statt mit Stücken', () => {
     const result = liquiditySetup()
-    const plan = computeTradePlan(result.rows, { aktie: 4 }, result.total, SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { stock: 4 }, result.total, SETTINGS.bands, 0)
 
     expect(coverageOf(plan, 'cash')).toBe(-400)
   })
@@ -660,9 +661,9 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
-        makePosition({ id: 'aktie', isin: 'A', units: 10, targetPercent: 50 }),
+        makePosition({ id: 'stock', isin: 'A', units: 10, targetPercent: 50 }),
         makePosition({
-          id: 'geldmarkt',
+          id: 'moneyMarket',
           isin: 'G',
           group: 'moneymarket',
           units: 30,
@@ -675,17 +676,17 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
       ['G', makeQuote({ isin: 'G', price: 100 })],
     ])
     const result = computeRebalancing(portfolio, quotes, SETTINGS)
-    const plan = computeTradePlan(result.rows, { aktie: 1 }, result.total, SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { stock: 1 }, result.total, SETTINGS.bands, 0)
 
-    expect(coverageOf(plan, 'geldmarkt')).toBe(-3)
+    expect(coverageOf(plan, 'moneyMarket')).toBe(-3)
   })
 
   it('verkauft nie mehr, als die Position hergibt', () => {
     // 100 Stück Aktie = 10.000 € Lücke, der Geldmarkt hat nur 30 Stück.
     const result = liquiditySetup()
-    const plan = computeTradePlan(result.rows, { aktie: 100 }, result.total, SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { stock: 100 }, result.total, SETTINGS.bands, 0)
 
-    expect(coverageOf(plan, 'geldmarkt')).toBe(-30)
+    expect(coverageOf(plan, 'moneyMarket')).toBe(-30)
   })
 
   it('zeigt in der nächsten Zeile den Rest, wenn eine Quelle nicht reicht', () => {
@@ -694,39 +695,39 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
     const result = liquiditySetup()
     const plan = computeTradePlan(
       result.rows,
-      { aktie: 100, geldmarkt: -30 },
+      { stock: 100, moneyMarket: -30 },
       result.total,
       SETTINGS.bands,
       0,
     )
 
-    expect(coverageOf(plan, 'geldmarkt')).toBeNull() // nichts mehr da
+    expect(coverageOf(plan, 'moneyMarket')).toBeNull() // nichts mehr da
     expect(coverageOf(plan, 'cash')).toBe(-500)
     expect(plan.underfunded).toBe(true)
   })
 
   it('gilt nur für Cash und Geldmarkt — Aktien sind keine Deckung', () => {
     const result = liquiditySetup()
-    const plan = computeTradePlan(result.rows, { aktie: 5 }, result.total, SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { stock: 5 }, result.total, SETTINGS.bands, 0)
 
-    expect(coverageOf(plan, 'aktie')).toBeNull()
+    expect(coverageOf(plan, 'stock')).toBeNull()
   })
 
   it('schließt die Lücke, wenn man den Vorschlag übernimmt', () => {
     const result = liquiditySetup()
-    const erst = computeTradePlan(result.rows, { aktie: 5 }, result.total, SETTINGS.bands, 0)
-    const uebernommen = coverageOf(erst, 'geldmarkt') as number
+    const initial = computeTradePlan(result.rows, { stock: 5 }, result.total, SETTINGS.bands, 0)
+    const accepted = coverageOf(initial, 'moneyMarket') as number
 
-    const danach = computeTradePlan(
+    const afterAcceptance = computeTradePlan(
       result.rows,
-      { aktie: 5, geldmarkt: uebernommen },
+      { stock: 5, moneyMarket: accepted },
       result.total,
       SETTINGS.bands,
       0,
     )
 
-    expect(danach.underfunded).toBe(false)
-    expect(danach.netCashFlow).toBeCloseTo(0, 6)
+    expect(afterAcceptance.underfunded).toBe(false)
+    expect(afterAcceptance.netCashFlow).toBeCloseTo(0, 6)
   })
 })
 

@@ -102,22 +102,27 @@ const byCurrency = new Map<string, Intl.NumberFormat>()
  * @param value    Betrag.
  * @param currency ISO-Code, z.B. `USD`.
  */
-export function money(value: number, currency: string): string {
+export function money(value: number, currency: string, decimals = 0): string {
+  if (currency === 'GBp') {
+    return `${formatter(`pence-${decimals}`, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value)} GBp`
+  }
   const code = currency.toUpperCase()
-  let currencyFormatter = byCurrency.get(code)
+  const key = `${code}:${decimals}`
+  let currencyFormatter = byCurrency.get(key)
   if (!currencyFormatter) {
     try {
       currencyFormatter = new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: code,
-        maximumFractionDigits: 0,
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
       })
     } catch {
       // Unbekannter Code — dann lieber die nackte Zahl mit angehängtem Kürzel
       // als eine Ausnahme mitten in der Tabelle.
       return `${INT().format(value)} ${code}`
     }
-    byCurrency.set(code, currencyFormatter)
+    byCurrency.set(key, currencyFormatter)
   }
   return currencyFormatter.format(value)
 }

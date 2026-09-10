@@ -166,6 +166,7 @@ export const en: MessageSchema = {
     badgeTitle: 'Quoted in {currency} — excluded from totals',
     statusForeign: 'foreign currency',
     notCounted: 'not counted',
+    missingQuote: 'No valid quote — not counted',
     inactive: 'inactive',
     warningTitle: 'Foreign currency',
     warningBody: '{positions} {verb} not in {base} and therefore {counts} not counted: {list}. Totals and shares refer to the rest only — the app calculates in a single currency and converts nothing.',
@@ -174,6 +175,10 @@ export const en: MessageSchema = {
   },
 
   errors: {
+    ambiguousSymbol: 'Symbol "{symbol}" is ambiguous. No unique quote is available.',
+    staleQuote: 'An outdated quote is being used.',
+    invalidResponse: 'Invalid StockInfo response: field "{field}" is missing or invalid. The quote was not accepted.',
+    unsupportedIdentity: 'StockInfo returned an unsupported identity: "{kind}". The quote was not accepted.',
     urlFrom: {
       runtime: 'Address from the container’s STOCKINFO_API_URL',
       'container-build':

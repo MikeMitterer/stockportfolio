@@ -76,6 +76,22 @@ This is the quotation currency, not the risk currency: a euro-quoted MSCI World
 holds two thirds US dollars. The app cannot tell that apart and does not claim
 to.
 
+### Valid prices before adding a position
+
+Adding a security first fetches and validates its quote. If the symbol is
+ambiguous or the response lacks a valid price or quote currency, the dialog
+shows the reason and keeps the security out of the portfolio. A price shown
+in the instrument catalog alone is insufficient.
+
+When a later refresh fails, an existing position remains visible. Its last
+valid price is marked stale and may still be used; without a valid price the
+position is excluded from calculations and trade suggestions. Quotes and
+market values retain their original currency, including `GBp` for pence.
+
+The client validates StockInfo Core 4.3.0 quote and catalog responses at one
+boundary. It preserves listed, pair and ISIN-only identities. IndexedDB
+schema 5 rebuilds older quote caches; portfolio positions remain stored.
+
 ### Value history
 
 The total-value tile carries a small line and the change over the last 90 days;

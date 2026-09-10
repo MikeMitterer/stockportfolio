@@ -42,6 +42,7 @@ import type {
 
 function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
   return {
+    identity: { kind: 'isin_only', isin: 'IE0000000000' },
     isin: 'IE0000000000',
     symbol: 'TEST.DE',
     price: 100,
@@ -470,10 +471,10 @@ describe('Mindest-Handelsvolumen im Aggregat', () => {
   })
 
   it('lässt die Abweichung sichtbar — unterdrückt wird das Signal, nicht die Zahl', () => {
-    const ohne = rowOf({ mode: 'absolute', value: 0 })
-    const mit = rowOf({ mode: 'absolute', value: 500 })
-    expect(mit.relativeDeltaPercent).toBeCloseTo(ohne.relativeDeltaPercent, 6)
-    expect(mit.marketValue).toBe(ohne.marketValue)
+    const withoutMinimum = rowOf({ mode: 'absolute', value: 0 })
+    const withMinimum = rowOf({ mode: 'absolute', value: 500 })
+    expect(withMinimum.relativeDeltaPercent).toBeCloseTo(withoutMinimum.relativeDeltaPercent, 6)
+    expect(withMinimum.marketValue).toBe(withoutMinimum.marketValue)
   })
 
   it('rechnet die Grenze im Prozent-Modus aufs Gesamtvermögen', () => {
@@ -543,23 +544,23 @@ describe('Auslöser im Aggregat', () => {
     return result.rows.find((row) => row.position.id === 'a')!.suggestion
   }
 
-  const vorTermin = new Date(2026, 5, 1)
-  const nachTermin = new Date(2027, 5, 1)
+  const beforeDueDate = new Date(2026, 5, 1)
+  const afterDueDate = new Date(2027, 5, 1)
 
   it('schweigt mit Bändern zu einer Abweichung innerhalb des Bandes', () => {
-    expect(suggestionOf(base, nachTermin)).toBe('ok')
+    expect(suggestionOf(base, afterDueDate)).toBe('ok')
   })
 
   it('meldet bei „calendar" erst zum Termin', () => {
     const settings: Settings = { ...base, rebalancing: { trigger: 'calendar', intervalMonths: 12 } }
-    expect(suggestionOf(settings, vorTermin)).toBe('ok')
-    expect(suggestionOf(settings, nachTermin)).toBe('buy')
+    expect(suggestionOf(settings, beforeDueDate)).toBe('ok')
+    expect(suggestionOf(settings, afterDueDate)).toBe('buy')
   })
 
   it('meldet bei „both" vor dem Termin nach Band, danach nach Ziel', () => {
     const settings: Settings = { ...base, rebalancing: { trigger: 'both', intervalMonths: 12 } }
-    expect(suggestionOf(settings, vorTermin)).toBe('ok')
-    expect(suggestionOf(settings, nachTermin)).toBe('buy')
+    expect(suggestionOf(settings, beforeDueDate)).toBe('ok')
+    expect(suggestionOf(settings, afterDueDate)).toBe('buy')
   })
 
   it('lässt die Mindestgröße auch am Termin gelten', () => {
@@ -569,19 +570,19 @@ describe('Auslöser im Aggregat', () => {
       minTradeSize: { mode: 'absolute', value: 10 },
     }
     // Es fehlt genau 1 € — dafür wird auch am Stichtag keine Order gegeben.
-    expect(suggestionOf(settings, nachTermin)).toBe('ok')
+    expect(suggestionOf(settings, afterDueDate)).toBe('ok')
   })
 
   it('meldet den Terminstand mit', () => {
     const settings: Settings = { ...base, rebalancing: { trigger: 'calendar', intervalMonths: 12 } }
-    const result = computeRebalancing(portfolio, quotes, settings, vorTermin)
+    const result = computeRebalancing(portfolio, quotes, settings, beforeDueDate)
     expect(result.schedule.active).toBe(true)
     expect(result.schedule.due).toBe(false)
     expect(result.schedule.daysUntilDue).toBeGreaterThan(0)
   })
 
   it('lässt den Terminstand ruhen, solange nur Bänder gelten', () => {
-    const result = computeRebalancing(portfolio, quotes, base, nachTermin)
+    const result = computeRebalancing(portfolio, quotes, base, afterDueDate)
     expect(result.schedule.active).toBe(false)
     expect(result.schedule.due).toBe(false)
   })
@@ -976,7 +977,7 @@ describe('Fremdwährung', () => {
    * 20.000 von irgendetwas.
    */
 
-  function depotMit(
+  function portfolioWithCurrencies(
     entries: { isin: string; group?: Position['group']; enabled?: boolean }[],
   ): Portfolio {
     return {
@@ -998,7 +999,7 @@ describe('Fremdwährung', () => {
     }
   }
 
-  function kurseMit(entries: Record<string, string>): QuoteMap {
+  function quotesWithCurrencies(entries: Record<string, string>): QuoteMap {
     return new Map(
       Object.entries(entries).map(([isin, currency]) => [
         isin,
@@ -1038,15 +1039,15 @@ describe('Fremdwährung', () => {
   })
 
   it('lässt eine fremde Währung nicht in die Gesamtsumme', () => {
-    const portfolio = depotMit([{ isin: 'E' }, { isin: 'F' }])
-    const quotes = kurseMit({ E: 'EUR', F: 'USD' })
+    const portfolio = portfolioWithCurrencies([{ isin: 'E' }, { isin: 'F' }])
+    const quotes = quotesWithCurrencies({ E: 'EUR', F: 'USD' })
 
     expect(totalValue(portfolio, quotes, 0, 'EUR')).toBe(1000)
   })
 
   it('lässt sie auch nicht in die Gruppensumme', () => {
-    const portfolio = depotMit([{ isin: 'E' }, { isin: 'F' }])
-    const quotes = kurseMit({ E: 'EUR', F: 'USD' })
+    const portfolio = portfolioWithCurrencies([{ isin: 'E' }, { isin: 'F' }])
+    const quotes = quotesWithCurrencies({ E: 'EUR', F: 'USD' })
 
     expect(groupMarketValue('stocks', portfolio, quotes, 'EUR')).toBe(1000)
   })
@@ -1054,7 +1055,7 @@ describe('Fremdwährung', () => {
   it('behält die Zeile in der Liste, mit Grund', () => {
     // Ein unsichtbarer Ausschluss ist schlimmer als eine falsche Summe: Man
     // kann ihn nicht einmal suchen.
-    const result = computeRebalancing(depotMit([{ isin: 'F' }]), kurseMit({ F: 'USD' }), settings)
+    const result = computeRebalancing(portfolioWithCurrencies([{ isin: 'F' }]), quotesWithCurrencies({ F: 'USD' }), settings)
 
     expect(result.rows).toHaveLength(1)
     expect(result.rows[0]?.isActive).toBe(false)
@@ -1064,8 +1065,8 @@ describe('Fremdwährung', () => {
   it('unterscheidet abgeschaltet von fremder Währung', () => {
     // „Abgeschaltet" ist eine Entscheidung des Nutzers, „fremde Währung" ein
     // Zustand, den er so nicht gewollt hat.
-    const portfolio = depotMit([{ isin: 'E', enabled: false }, { isin: 'F' }])
-    const result = computeRebalancing(portfolio, kurseMit({ E: 'EUR', F: 'USD' }), settings)
+    const portfolio = portfolioWithCurrencies([{ isin: 'E', enabled: false }, { isin: 'F' }])
+    const result = computeRebalancing(portfolio, quotesWithCurrencies({ E: 'EUR', F: 'USD' }), settings)
 
     expect(result.rows[0]?.excludedReason).toBe('disabled')
     expect(result.rows[1]?.excludedReason).toBe('currency')
@@ -1075,17 +1076,17 @@ describe('Fremdwährung', () => {
     // In ihrer eigenen Währung ist die Zahl richtig — sie passt nur nicht in
     // die Summe. Sie zu verstecken hieße, dem Nutzer seine Position zu
     // unterschlagen.
-    const result = computeRebalancing(depotMit([{ isin: 'F' }]), kurseMit({ F: 'USD' }), settings)
+    const result = computeRebalancing(portfolioWithCurrencies([{ isin: 'F' }]), quotesWithCurrencies({ F: 'USD' }), settings)
 
     expect(result.rows[0]?.marketValue).toBe(1000)
   })
 
   it('hält die Investitionsreserve frei von fremden Währungen', () => {
-    const portfolio = depotMit([
+    const portfolio = portfolioWithCurrencies([
       { isin: 'C', group: 'cash' },
       { isin: 'F', group: 'moneymarket' },
     ])
-    const quotes = kurseMit({ C: 'EUR', F: 'USD' })
+    const quotes = quotesWithCurrencies({ C: 'EUR', F: 'USD' })
 
     // Cash zählt mit seinem Betrag (100), der USD-Geldmarkt gar nicht.
     const result = computeLiquidity(portfolio, quotes, settings, 1000)

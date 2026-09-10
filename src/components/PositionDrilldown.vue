@@ -3,6 +3,7 @@ import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   NCard,
+  NAlert,
   NInputNumber,
   NInput,
   NSelect,
@@ -12,7 +13,7 @@ import {
 } from 'naive-ui'
 import {
   eur,
-  eurCent,
+  money,
   eurSigned,
   integer,
   number,
@@ -21,6 +22,7 @@ import {
 import { formatAge } from '@/composables/useRelativeTime'
 import { resolveKind, resolveLinks } from '@/domain/links'
 import PriceChart from '@/components/PriceChart.vue'
+import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
@@ -40,8 +42,9 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const quoteIssue = useQuoteIssue()
 
-const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
+const client = inject<StockInfoClient | null>(STOCK_INFO_CLIENT, null)
 
 const isCash = computed(() => props.row.position.group === 'cash')
 
@@ -124,6 +127,7 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
     ist der aufgeklappte Bereich rund halb so hoch.
   -->
   <div class="drill">
+    <NAlert v-if="quoteIssue(row)" type="warning" :bordered="false">{{ quoteIssue(row) }}</NAlert>
     <div class="drill__columns">
       <!-- ─── Position bearbeiten ──────────────────────────────────────── -->
       <NCard :bordered="false" size="small" class="drill__card drill__card--full">
@@ -241,43 +245,45 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
           </div>
           <div>
             <div class="drill__label">{{ t('table.price') }}</div>
-            <div class="tabular-nums">{{ row.quote ? eurCent(row.quote.price) : '—' }}</div>
+            <div class="tabular-nums">{{ row.quote ? money(row.quote.price, row.quote.currency, 2) : '—' }}</div>
           </div>
           <div>
             <div class="drill__label">{{ t('table.marketValue') }}</div>
-            <div class="tabular-nums">{{ eur(row.marketValue) }}</div>
+            <div class="tabular-nums">{{ row.quote ? money(row.marketValue, row.quote.currency) : isCash ? eur(row.marketValue) : '—' }}</div>
           </div>
 
-          <div>
-            <div class="drill__label">{{ t('drilldown.lowerBand') }}</div>
-            <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
-          </div>
-          <div>
-            <div class="drill__label">{{ t('dashboard.targetValue') }}</div>
-            <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
-          </div>
-          <div>
-            <div class="drill__label">{{ t('drilldown.upperBand') }}</div>
-            <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
-          </div>
-          <div>
-            <div class="drill__label">{{ t('drilldown.deltaEuro') }}</div>
-            <div
-              class="tabular-nums"
-              :class="row.suggestion === 'ok' ? 'drill__ok' : 'drill__out'"
-            >
-              {{ eurSigned(deltaEuro) }}
+          <template v-if="row.isActive">
+            <div>
+              <div class="drill__label">{{ t('drilldown.lowerBand') }}</div>
+              <div class="tabular-nums">{{ eur(row.lowerBand) }}</div>
             </div>
-          </div>
+            <div>
+              <div class="drill__label">{{ t('dashboard.targetValue') }}</div>
+              <div class="tabular-nums">{{ eur(row.targetValue) }}</div>
+            </div>
+            <div>
+              <div class="drill__label">{{ t('drilldown.upperBand') }}</div>
+              <div class="tabular-nums">{{ eur(row.upperBand) }}</div>
+            </div>
+            <div>
+              <div class="drill__label">{{ t('drilldown.deltaEuro') }}</div>
+              <div
+                class="tabular-nums"
+                :class="row.suggestion === 'ok' ? 'drill__ok' : 'drill__out'"
+              >
+                {{ eurSigned(deltaEuro) }}
+              </div>
+            </div>
 
-          <div v-if="optimalUnits !== null">
-            <div class="drill__label">{{ t('drilldown.optimalUnits') }}</div>
-            <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
-          </div>
-          <div>
-            <div class="drill__label">{{ t('dashboard.unitsDelta') }}</div>
-            <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
-          </div>
+            <div v-if="optimalUnits !== null">
+              <div class="drill__label">{{ t('drilldown.optimalUnits') }}</div>
+              <div class="tabular-nums">{{ integer(optimalUnits) }}</div>
+            </div>
+            <div>
+              <div class="drill__label">{{ t('dashboard.unitsDelta') }}</div>
+              <div class="tabular-nums">{{ number(row.unitsDelta) }}</div>
+            </div>
+          </template>
           <div v-if="row.quote?.volatility != null">
             <div class="drill__label">{{ t('drilldown.volatility') }}</div>
             <div class="tabular-nums">{{ percent(row.quote.volatility) }}</div>
@@ -323,10 +329,12 @@ const deltaEuro = computed(() => props.row.targetValue - props.row.marketValue)
       class="drill__card"
     >
       <PriceChart
+        v-if="row.quote"
         :position="row.position"
         :client="client"
-        :currency="row.quote?.currency ?? 'EUR'"
+        :currency="row.quote.currency"
       />
+      <p v-else>{{ t('currency.missingQuote') }}</p>
     </NCard>
   </div>
 </template>

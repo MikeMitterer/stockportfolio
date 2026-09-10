@@ -10,7 +10,8 @@ import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import { safeStorage, UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
-import { eur, eurCent, integer, money, percent } from '@/domain/formatters'
+import { useQuoteIssue } from '@/composables/useQuoteIssue'
+import { eur, integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 import { useHistoryStore, type HistorySeries } from '@/stores/history'
@@ -39,6 +40,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const quoteIssue = useQuoteIssue()
 
 /**
  * Kursverlauf für die Zeilen.
@@ -273,6 +275,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
               row.position.displayName,
             )
           : null,
+        quoteIssue(row) ? h('span', { class: 'cell-num--missing' }, quoteIssue(row)) : null,
       ]),
   },
   {
@@ -307,9 +310,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
             { class: 'cell-num' },
             // Fremde Währung mit ihrem eigenen Zeichen: „628,20 €" für einen
             // USD-Kurs wäre schlicht falsch.
-            row.excludedReason === 'currency'
-              ? money(row.quote.price, row.quote.currency)
-              : eurCent(row.quote.price),
+            money(row.quote.price, row.quote.currency, 2),
           )
         : row.position.group === 'cash'
           ? h('span', { class: 'cell-num cell-num--muted' }, '—')
@@ -352,9 +353,9 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
       h(
         'span',
         { class: 'cell-num cell-num--strong' },
-        row.excludedReason === 'currency' && row.quote
+        row.quote
           ? money(row.marketValue, row.quote.currency)
-          : eur(row.marketValue),
+          : row.position.group === 'cash' ? eur(row.marketValue) : '—',
       ),
   },
   {
@@ -433,7 +434,7 @@ const columns = computed<DataTableColumns<PositionResult>>(() => [
         },
         row.excludedReason === 'currency'
           ? t('currency.statusForeign')
-          : t('currency.notCounted'),
+          : row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : t('currency.notCounted'),
       )
     },
   },

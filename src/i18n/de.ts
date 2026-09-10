@@ -166,6 +166,7 @@ export const de = {
     badgeTitle: 'Notiert in {currency} — zählt nicht in die Summen',
     statusForeign: 'fremde Währung',
     notCounted: 'zählt nicht mit',
+    missingQuote: 'Kein gültiger Kurs — zählt nicht mit',
     inactive: 'inaktiv',
     warningTitle: 'Fremde Währung',
     warningBody:
@@ -179,6 +180,10 @@ export const de = {
    * unerreichbare Adresse nennt — sonst weiß niemand, wo er sie ändert.
    */
   errors: {
+    ambiguousSymbol: 'Symbol „{symbol}“ ist mehrdeutig. Kein eindeutiger Kurs verfügbar.',
+    staleQuote: 'Ein veralteter Kurs wird verwendet.',
+    invalidResponse: 'Ungültige StockInfo-Antwort: Feld „{field}“ fehlt oder ist ungültig. Der Kurs wird nicht übernommen.',
+    unsupportedIdentity: 'StockInfo liefert eine nicht unterstützte Identität: „{kind}“. Der Kurs wird nicht übernommen.',
     urlFrom: {
       runtime: 'Adresse aus STOCKINFO_API_URL des Containers',
       'container-build':

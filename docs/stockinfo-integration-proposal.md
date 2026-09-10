@@ -3,17 +3,19 @@
 **Empfehlung: die vorhandenen Antworten im Client normalisieren.** Eine neue
 flache Route ist für StockPortfolio derzeit nicht nötig. Die bestehende
 `details`-Map liefert bereits den wirksamen Wert mit Herkunft, Einheit und
-Währung. Die größere Lücke liegt davor: Quote und Instrumentkatalog liefern
-ihre ISIN innerhalb von `identity`, während der Client sie oben liest.
+Währung. T-39 schließt inzwischen die vorgelagerte Vertragslücke: Quote und
+Instrumentkatalog werden gemeinsam geprüft; die ISIN wird aus `identity`
+abgeleitet und die vollständige Identität bleibt erhalten.
 
 Stand: 2026-09-10. Dies ist der Integrationsvorschlag zu
 [T-37](../_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
-keine bereits verfügbare Funktion. **Mike hat die automatische Zusatzanzeige
+mit Fortschreibung zur Umsetzung von T-39. **Mike hat die automatische Zusatzanzeige
 in der Detailansicht gewählt.** Bereits in der Haupt-Info-Zeile dargestellte
 Felder werden dort nicht wiederholt; auch dynamische Felder können zur
 Hauptzeile gehören. Claude hat den Vorschlag in Runde 1 am 2026-09-10
 technisch freigegeben (Übergabecommit `2e4c378ae49ffe147b55673101fdf4ed078ebed5`).
-Die Produktumsetzung steht aus; sie ist in T-39 und T-40 gesondert erfasst.
+Die Identitäts- und Kursprüfung aus T-39 ist implementiert und zur unabhängigen
+Prüfung vorgesehen. Die automatische Zusatzanzeige aus T-40 steht weiter aus.
 
 ## Der aktuelle Vertrag
 
@@ -66,10 +68,13 @@ inkompatible Positionen und Auswahllisten dürfen neu angelegt werden.
 | `GET /fields` | Bisher nicht angebunden | Nur für die gewählte Detaildarstellung ergänzen |
 
 Beim Katalog genügt `instrumentToQuoteCacheEntry` allein nicht. Der
-Instruments-Store speichert heute die rohe Antwort; `AddPositionDialog`,
+Instruments-Store erhielt in der Ausgangsfassung die rohe Antwort; `AddPositionDialog`,
 `InstrumentsView` und `DashboardView` lesen selbst `instrument.isin`.
-Auch Auswahlliste und Dublettenprüfung hängen daran. Ein normalisierter
-Katalogtyp muss diese Verbraucher gemeinsam erreichen.
+Auch Auswahlliste und Dublettenprüfung hängen daran. T-39 versorgt sie gemeinsam
+mit dem normalisierten Katalogtyp. Der Auswahldialog unterscheidet Listings
+über ihre `listing_id`; Depot- und Cacheschlüssel bleiben ISIN oder Symbol.
+Vor dem Anlegen einer Position muss ein eindeutiger gültiger Kurs abrufbar
+sein. Ein `409` verhindert die Aufnahme auch bei vorhandenem Katalogpreis.
 
 Der Quote-Cache speichert die feste `QuoteCacheEntry`-Form in IndexedDB.
 Zusätzliche Felder müssen beim normalen Abruf, Einzelrefresh, Speichern und
@@ -232,7 +237,7 @@ anschließend FX und die Bewertung je Depot. Ein Plugin-Detailbetrag von
 Formatierung und die erweiterten Typen und Mapper werden weiterverwendet;
 die Depotbewertung überschreibt keine Originalwerte im gemeinsamen Cache.
 
-## Was tatsächlich geprüft wurde
+## Historische Gegenprobe aus T-37
 
 Der echte TypeScript-Mapper wurde mit `typescript.transpileModule` isoliert
 als ES-Modul geladen. Quote- und Katalog-Fixture sowie synthetische Varianten
@@ -246,58 +251,29 @@ als auch als oberstes Feld verloren. Die vorhandenen Core-Felder behielten
 `ter: 0` und `accumulating: false`. Eine Quote ohne Währung erhielt EUR; ein
 Katalogkurs ohne `latest_currency` übernahm die Instrumentwährung USD.
 
-Diese Gegenprobe belegt das heutige Mapperverhalten. Die Regeln und der
+Diese Gegenprobe belegt das Mapperverhalten der oben genannten Ausgangsfassung. Die Regeln und der
 Umsetzungszuschnitt oben sind ein Vorschlag, kein bestandener Integrationstest.
 Es gab keinen Live-Kursabruf und keinen Browserlauf. Der Feldbedarf ist durch
 Mikes Antwort festgelegt. Der anschließende unabhängige Review durch Claude
 hat die Bewertung in Runde 1 technisch freigegeben; eine Produktabnahme
 ist damit nicht verbunden.
 
-Die Mapperprobe lässt sich im StockPortfolio-Projektverzeichnis ausführen.
-Sie benötigt die installierte TypeScript-Abhängigkeit und für diesen lokalen
-Vergleich die oben bezeichneten HTTP-Fixtures im benachbarten StockInfo-Repo.
-Spätere automatisierte Produkttests erhalten eigene versionierte Fixtures;
-sie dürfen nicht vom Nachbar-Checkout abhängen.
+Die damalige isolierte Transpile-Probe gilt nur für die Ausgangsfassung.
+Die aktuelle Normalisierung hängt bewusst von weiteren Clientmodulen ab.
+Reproduzierbare Produkttests verwenden nun versionierte HTTP-Fixtures unter
+`tests/fixtures/stockinfo/`, ohne Nachbar-Checkout oder Live-Netz:
 
 ```bash
-node --input-type=module <<'NODE'
-import fs from 'node:fs';
-import ts from 'typescript';
-const source = fs.readFileSync('src/api/mappers.ts', 'utf8');
-const compiled = ts.transpileModule(source, {
-  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 }
-});
-const mapper = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputText).toString('base64')}`);
-const quote = JSON.parse(fs.readFileSync('../StockInfo/contract/fixtures/quote-200.json', 'utf8')).response.body;
-const instrument = JSON.parse(fs.readFileSync('../StockInfo/contract/fixtures/instruments-200.json', 'utf8')).response.body[0];
-const identities = [
-  quote.identity,
-  { kind: 'listed', ticker: 'TEST', mic: 'XETR' },
-  { kind: 'pair', base: 'BTC', quote_currency: 'EUR' },
-  { kind: 'isin_only', isin: 'DE000TEST001' }
-];
-for (const identity of identities) {
-  console.log(identity.kind,
-    mapper.toQuoteCacheEntry({ ...quote, identity }).isin,
-    mapper.instrumentToQuoteCacheEntry({ ...instrument, identity }).isin);
-}
-for (const value of [0, false, null, 7]) {
-  const nested = mapper.toQuoteCacheEntry({ ...quote, details: { 'risk-demo.score': { value } } });
-  const flat = mapper.toQuoteCacheEntry({ ...quote, 'risk-demo.score': value });
-  console.log(value, Object.hasOwn(nested, 'details'), Object.hasOwn(flat, 'risk-demo.score'));
-}
-console.log('missing currency',
-  mapper.toQuoteCacheEntry({ ...quote, currency: undefined }).currency,
-  mapper.instrumentToQuoteCacheEntry({ ...instrument, latest_currency: null, currency: 'USD' }).currency);
-console.log('core zero/false',
-  mapper.toQuoteCacheEntry({ ...quote, ter: 0 }).ter,
-  mapper.toQuoteCacheEntry({ ...quote, accumulating: false }).accumulating);
-NODE
+npm test -- --run tests/api/contract.spec.ts tests/stores/quoteContract.spec.ts tests/components/quoteContract.spec.ts
 ```
+
+T-39 dokumentiert zusätzlich die erste Browserprüfung mit einem echten lokalen
+StockInfo-Server, separater Testdatenbank und kontrollierter Kursquelle. Die
+Befunde aus T-37 werden dadurch nicht rückwirkend zu Produktnachweisen.
 
 **Doku-Abgleich:** `README.md` (One currency, Not there yet), ursprüngliche
 MVP-Spec (API-Client, Datenmodell, Rebalancing, Nicht im MVP), Board und
 Projektregeln wurden inventarisiert. Produktanleitungen beschreiben weiterhin
 das vorhandene Verhalten. Die Planung und ihre Links wurden in Board, README
-und Projektregeln nachgeführt; diese Datei beschreibt die vorgeschlagene
-Integration ausdrücklich als noch nicht verfügbar.
+und Projektregeln nachgeführt; die Fortschreibung trennt die implementierte Vertragsprüfung aus T-39 von der
+noch ausstehenden Zusatzanzeige aus T-40.

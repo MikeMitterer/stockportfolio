@@ -6,6 +6,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiBaseUrl, StockInfoClient } from '@/api/client'
 import { ApiError } from '@/api/errors'
+import quoteFixture from '../fixtures/stockinfo/quote-200.json'
+import catalogFixture from '../fixtures/stockinfo/instruments-200.json'
 
 /** Baut eine fetch-Attrappe, die eine JSON-Antwort liefert. */
 function jsonFetch(body: unknown, status = 200): typeof globalThis.fetch {
@@ -28,7 +30,7 @@ describe('StockInfoClient — URL-Bildung', () => {
   })
 
   it('encodiert die ISIN im Pfad', async () => {
-    const spy = jsonFetch({})
+    const spy = jsonFetch(quoteFixture.response.body)
     const client = new StockInfoClient('https://example.test', spy)
 
     await client.getQuoteByIsin('IE00B3RBWM25')
@@ -40,7 +42,7 @@ describe('StockInfoClient — URL-Bildung', () => {
   })
 
   it('übergibt das Symbol als Query-Parameter', async () => {
-    const spy = jsonFetch({})
+    const spy = jsonFetch(quoteFixture.response.body)
     const client = new StockInfoClient('https://example.test', spy)
 
     await client.getQuoteBySymbol('VGWL.DE')
@@ -64,7 +66,7 @@ describe('StockInfoClient — URL-Bildung', () => {
   })
 
   it('nutzt POST für refreshByIsin', async () => {
-    const spy = jsonFetch({})
+    const spy = jsonFetch(quoteFixture.response.body)
     const client = new StockInfoClient('https://example.test', spy)
 
     await client.refreshByIsin('IE00B3RBWM25')
@@ -134,7 +136,7 @@ describe('StockInfoClient — Erfolgsfall', () => {
   })
 
   it('liefert Arrays für Listen-Endpunkte', async () => {
-    const payload = [{ symbol: 'A.DE' }, { symbol: 'B.DE' }]
+    const payload = catalogFixture.response.body
     const client = new StockInfoClient('https://example.test', jsonFetch(payload))
 
     await expect(client.getInstruments()).resolves.toHaveLength(2)

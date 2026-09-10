@@ -1,10 +1,12 @@
 /**
- * Typen der StockInfo-API, abgeleitet aus dem OpenAPI-Schema
- * (https://stockinfo.int.mikemitterer.at/openapi.json, Version 0.5.0).
+ * Geprüfte Client-Antworten gemäß StockInfo Core 4.3.0.
+ * `isin` wird aus `identity` abgeleitet, nicht als API-Oberfeld erwartet.
  *
  * Feldnamen bleiben snake_case wie die API sie liefert — die Übersetzung
  * in Domain-Typen passiert ausschließlich in `mappers.ts`.
  */
+
+import type { InstrumentIdentity } from '@/types/portfolio'
 
 /** Zeitraum für History-Endpunkte. */
 export type Period = '1w' | '1m' | '3m' | '1y' | 'max'
@@ -14,12 +16,13 @@ export type InstrumentType = 'stock' | 'etf'
 
 /** Vollständige Kurs- und Metadaten-Antwort für ein Wertpapier. */
 export interface QuoteResponse {
+  identity: InstrumentIdentity
   isin: string | null
   symbol: string
   exchange: string | null
-  name: string | null
-  type: string | null
-  currency: string | null
+  name: string
+  type: string
+  currency: string
   price: number
   quote_time: string
   volume: number | null
@@ -37,6 +40,10 @@ export interface QuoteResponse {
 
 /** Eintrag aus `GET /instruments` — Katalog aller bekannten Papiere. */
 export interface InstrumentSummary {
+  identity: InstrumentIdentity
+  listing_id: string
+  manual_fields: string[]
+  shadowed_fields: string[]
   isin: string | null
   symbol: string
   exchange: string | null
