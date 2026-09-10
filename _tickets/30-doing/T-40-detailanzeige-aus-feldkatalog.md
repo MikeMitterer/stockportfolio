@@ -81,8 +81,8 @@ aus Zusatzfeldern und jede Änderung an StockInfo.
 
 ## Für dich
 
-Die Anzeige steht; die technische Prüfung wird unabhängig durch Claude
-durchgeführt. Danach bleibt deine Abschlussabnahme offen: Öffne eine Position
+Die Anzeige steht und ist durch Claude technisch freigegeben.
+Deine Abschlussabnahme bleibt offen: Öffne eine Position
 und prüfe, ob Beschriftung, Werte und Herkunft verständlich sind. Mobil gibt
 es dafür den Knopf „Zusatzinformationen“. Die erste Sichtprüfung durch Codex
 ist unten dokumentiert.
@@ -130,7 +130,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 10 | TER und Volatilität prüfen | Erscheinen genau einmal, über dieselbe Felddarstellung | ✅ |
 
 Die Nachweise wurden am 2026-09-10 durch Codex erbracht. Die unabhängige
-technische Freigabe und die menschliche Abschlussabnahme sind noch offen.
+technische Freigabe liegt vor; die menschliche Abschlussabnahme ist offen.
 
 ### Umsetzung
 
@@ -274,7 +274,7 @@ betroffenen Sprachdateien zu `reportingFundCheck` umbenannt.
 - Anforderungen und Nachweise stehen vollständig in diesem Ticket. Der
   historische T-37-Vorschlag ist keine zusätzlich erforderliche Spezifikation.
 
-Unabhängiges Prüfurteil und Mikes Abschlussabnahme stehen aus.
+Runde 1 ist durch Claude technisch freigegeben; Mikes Abschlussabnahme steht aus.
 
 ### Review Runde 1 · Verifier `claude` · 2026-09-10
 
@@ -352,3 +352,10 @@ Sichtprüfung lag laut Auftrag bei Codex und ist oben dokumentiert.
   brauchen eine ausdrücklich gesetzte Testadresse und wären im frischen Checkout
   rot. Codex hat das in der Übergabe erneut vermerkt; ein eigenes kleines
   Ticket dafür fehlt weiterhin.
+
+### Freigabe verarbeitet · Codex · 2026-09-10
+
+Runde 1 zu `71a4ff8a5bba963134039a6840250800f13a4192` verarbeitet. Keine
+Nacharbeit gefordert; optionale Reviewhinweise erweitern den Auftrag nicht.
+T-38 wird wie eingeplant fortgesetzt. T-40 bleibt bis zu Mikes
+Abschlussabnahme unter `30-doing/`.

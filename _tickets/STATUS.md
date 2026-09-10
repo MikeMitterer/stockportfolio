@@ -17,18 +17,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
-- `handoff_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
-- `review_round`: `1`
+- `phase`: `implementing`
+- `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
 - `last_reviewed_commit`: `71a4ff8a5bba963134039a6840250800f13a4192`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
-- `priority_chain`: `T-40-detailanzeige-aus-feldkatalog.md, T-38-basiswaehrung-und-devisenkurse.md`
-- `priority_ticket`: `T-40-detailanzeige-aus-feldkatalog.md`
+- `priority_chain`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `priority_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -64,8 +64,8 @@ Kursprüfung einschließlich Währung aus T-35. T-40 zeigt Detailwerte in ihrer
 Originalwährung; T-38 ergänzt danach Depotbewertung und FX. T-35 bleibt mit
 seinem Generationsauftrag im Backlog.
 
-Arbeitsbranch: `t-40-detailanzeige-aus-feldkatalog`. Der geplante T-38-Worktree
-wurde nicht angelegt; auch der zugehörige Branch existiert nicht.
+Arbeitsbranch: `t-38-basiswaehrung-und-devisenkurse`, auf der freigegebenen
+T-40-Fassung. Der frühere geplante Worktree wurde nicht angelegt.
 Das maßgebliche Board liegt unter
 `/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`.
 Vorgefundene fremde Produktänderungen im Hauptarbeitsbaum gehören nicht zu
@@ -84,12 +84,11 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** `claude` hat T-40 Runde 1 an der Fassung
-`71a4ff8a5bba963134039a6840250800f13a4192` geprüft und technisch freigegeben;
-keine Nacharbeit. Vier Befunde ohne Nacharbeitsbedarf stehen im Ticket. Für
-T-39 gilt dasselbe seit Runde 1. Beide Tickets warten auf Mikes
-Abschlussabnahme und bleiben unter `30-doing/`; die eingeplante Folgearbeit
-T-38 kann davon unabhängig beginnen.
+**Aktueller Schritt:** `codex` setzt T-38 auf der von Claude freigegebenen
+T-40-Fassung `71a4ff8a5bba963134039a6840250800f13a4192` um. T-39 und
+T-40 haben keine erforderliche Nacharbeit. Ihre ersten Sichtprüfungen sind
+dokumentiert; beide bleiben bis zu Mikes Abschlussabnahme unter `30-doing/`.
+Die bereits eingeplante Folgearbeit wird fortgesetzt.
 
 Mike hat im Observer-Chat am 2026-09-10 ausdrücklich geschrieben:
 „Aktuell sollen die Folgetickets von T-37 erledigt werden erst dann T-38
@@ -130,12 +129,12 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
 | [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
-| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 an Claude übergeben, menschliche Abschlussabnahme offen. |
-| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Nach T-40 eingeplant; Depot-Basiswährung und FX-Bewertung mit Warnung bei veralteten Kursen. |
+| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Zur Umsetzung aktiviert; Depot-Basiswährung und FX-Bewertung mit Warnung bei veralteten Kursen. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-40 ist im Review; T-38 folgt danach. T-39 wartet auf die
+Agentenaufträge. T-38 ist aktiv; T-39 und T-40 warten auf die
 menschliche Abschlussabnahme.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
@@ -155,30 +154,7 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-**An `codex` · T-40 · Runde 1 · 2026-09-10 · `approved`**
-
-Geprüfte Fassung `71a4ff8a5bba963134039a6840250800f13a4192`. Keine Nacharbeit.
-
-Eigene Ausfertigung des Commits, 46 Dateien / 679 Tests grün, Lint und
-Typprüfung Exit 0 — wie angegeben. Vierzehn eigene Zusicherungen gegen
-`projectDetailFields` bestätigen Hauptzeilenabgleich, `0`/`false`/`null`,
-getrennte Schlüssel bei gleicher Beschriftung, Betragswährung am Wert,
-wirksamen gegen manuellen Wert, widersprüchliche Einheit, Prozentmaßstab,
-Scope und den Fall ohne Kurs.
-
-Die Anwendbarkeitsprüfung spiegelt StockInfos `applies()` exakt, einschließlich
-leerer Scope-Liste. Der zeilengenaue `stockInfoFields`-Ansatz erfüllt die
-Vorgabe ohne zweite Pflegeliste. Katalogausfall lässt die Kurse unberührt;
-fehlend und leer sind unterschieden; kein `v-html`; keine Detailwerte in der
-Domainrechnung. Kein Browserlauf durch mich.
-
-Vier Befunde ohne Nacharbeitsbedarf stehen im Ticket unter „Review Runde 1“:
-serverbestimmte Feldreihenfolge, ungenutzte `minimum`/`maximum`, mehrfache
-Projektion je Zeile und der weiterhin offene Punkt zu den beiden
-`apiBaseUrl`-Tests aus dem T-39-Review.
-
-Offen bleiben Mikes Abnahmen für T-39 und T-40. Kein Verschieben nach
-`40-done/` durch den Verifier.
+Leer. T-40 Runde 1 verarbeitet; Befunde bleiben im Ticket.
 
 ## OUTBOX → Verifier
 

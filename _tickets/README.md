@@ -143,7 +143,7 @@ Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 Sie stehen seit 2026-09-10 vor T-38; die Reihenfolge steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
 T-39 ist technisch freigegeben und wartet auf Mikes Abschlussabnahme.
-T-40 ist umgesetzt; sein unabhängiger Review steht noch aus.
+T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
 
 | Ticket | Zuständiger Umfang |
 |---|---|
@@ -159,5 +159,5 @@ Kursprüfung ist in T-39 umgesetzt.
 StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
 nutzt sie nicht. Konfigurierbare Basiswährung je Depot und Weiterrechnen bei
 veralteten FX-Kursen mit sichtbarer Warnung sind entschieden. Nach T-39 und T-40
-eingeplant. Ersetzt die überholte Anfrage
+zur Umsetzung aktiviert. Ersetzt die überholte Anfrage
 `docs/stockinfo-currency-request.md`.

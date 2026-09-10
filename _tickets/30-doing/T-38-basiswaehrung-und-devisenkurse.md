@@ -43,9 +43,9 @@ veralteten Devisenkursen mit sichtbarer Warnung. Die technische Umsetzung
 wird als zusammenhängende Funktion geplant; Teilaufgaben erhalten getrennte
 Prüfpunkte.
 
-| Frage | Deine Entscheidung |
-|---|---|
-| C · Groß genug zum Aufteilen? Naheliegender Schnitt: (1) `/fx` anbinden und umrechnen, (2) Basiswährung konfigurierbar machen. | |
+Die Umsetzung erfolgt zusammenhängend in diesem Ticket: FX-Anbindung,
+Bewertung und Depotwahl brauchen dieselbe Rechengrundlage. Dafür ist keine
+weitere Umfangsentscheidung erforderlich.
 
 ### Bisherige Antworten
 
@@ -87,7 +87,12 @@ weiterhin; sie rechtfertigen keinen pauschalen Ausbau der Datenmigration.
 
 ## Umsetzung und technische Nachweise
 
-Status: nach T-39 und T-40 eingeplant, derzeit nicht aktiv. Repo:
+Dieses Ticket ist die vollständige Arbeitsgrundlage für Umsetzung und Review.
+Der historische Integrationsvorschlag ist keine zusätzliche Spezifikation.
+Ausführungsentscheidungen und Nachweise werden hier ergänzt.
+
+Status: am 2026-09-10 nach technischer Freigabe von T-39 und T-40
+zur Umsetzung durch `codex` aktiviert. Repo:
 StockPortfolio, betroffene Fremdschnittstelle: StockInfo. Zeitbudget noch
 nicht geschätzt. Der aktive Auftrag steht ausschließlich in STATUS.
 
