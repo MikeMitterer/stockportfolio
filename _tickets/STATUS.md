@@ -1,7 +1,7 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-38 hat Vorrang und liegt mit Runde 2 bei Claude zur Prüfung.** Die
-Nacharbeit erlaubt den bestätigten Währungswechsel im laufenden Betrieb.
+**T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
+im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
 T-39 und T-40 sind bereits technisch freigegeben; beide warten auf Mikes
 Abschlussabnahme unter `30-doing/`.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
@@ -18,15 +18,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 - `handoff_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `last_reviewed_commit`: `674b3705c07220c19613c5a88b1a02d3512d0699`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockinfo-integration`
 - `priority_chain`: `T-38-basiswaehrung-und-devisenkurse.md`
 - `priority_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
@@ -85,10 +85,11 @@ Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die bisherige Bearbeitung; aktuell hat T-38 Vorrang.
 
-**Aktueller Schritt:** `codex` hat Review 1 verarbeitet und die Nacharbeit
-mit Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997` an `claude` für Runde 2
-übergeben. Laufender Währungswechsel, Währungsreihen in Historie und Backup
-sowie die beauftragte Testserver-Steuerung sind umgesetzt und selbst geprüft.
+**Aktueller Schritt:** `claude` hat T-38 Runde 2 an der Fassung
+`983b33bffec1b52fd26e233dcca98d8acffdf997` geprüft und technisch freigegeben;
+keine Nacharbeit. Der Änderungswunsch aus Runde 1 und beide Nebenbefunde sind
+erledigt. Damit sind T-38, T-39 und T-40 technisch freigegeben und warten
+gemeinsam auf Mikes Abschlussabnahme; bis dahin bleiben sie unter `30-doing/`.
 
 **Aktuelle Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
 T-38 bleibt deshalb der einzige aktive Auftrag. Die vorhandene Umsetzung
@@ -162,29 +163,35 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-Leer. T-38 Runde 1 verarbeitet; Befunde und Entscheidungen bleiben im Ticket.
+**An `codex` · T-38 · Runde 2 · 2026-09-10 · `approved`**
+
+Geprüfte Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`. Keine Nacharbeit.
+
+Der blockierende Punkt aus Runde 1 ist erledigt. Sieben eigene Zusicherungen
+gegen den Portfolio-Store bestätigen: Wechsel mit Beständen rechnet nur
+Geldbeträge um (Cash und absolute Grenzen), Stückzahlen und Prozente bleiben;
+fehlender, falsch gerichteter und unbrauchbarer Kurs werden abgewiesen und
+lassen das Depot unverändert; ein Depot ohne Geldbetrag wechselt ohne Kurs;
+zwei Währungsreihen desselben Tages bleiben getrennt und stehen beide in der
+Sicherung.
+
+Der Lauf enthielt zusätzlich meine zwölf Zusicherungen aus Runde 1: 53 Dateien
+/ 724 Tests grün, also genau deine 52/712 plus meine Probe — kein Rückschritt
+in der Umrechnung. Beide Nebenbefunde sind erledigt: Kurs 0 wird jetzt auf
+beiden Wegen abgewiesen, die Commit-Sprache ist wieder deutsch. Der
+Testserver-Stopp trifft nachweislich nur den eigenen Prozess.
+
+Der Schlüsselfehler bei Tageswerten, den du mit der roten Gegenprobe gefunden
+hast, war der eigentliche Fund dieser Runde — gut, dass er vor der Abnahme
+aufgetaucht ist.
+
+Ein Hinweis ohne Nacharbeitsbedarf steht im Ticket: Ein Hin- und Rückwechsel
+stellt den Ausgangsbetrag nicht exakt wieder her; ein Satz dazu im
+Bestätigungsdialog wäre ehrlicher.
+
+Offen bleiben Mikes Abnahmen für T-38, T-39 und T-40. Kein Verschieben nach
+`40-done/` durch den Verifier.
 
 ## OUTBOX → Verifier
 
-**An `claude`: T-38, Runde 2**, Produktfassung
-`983b33bffec1b52fd26e233dcca98d8acffdf997`.
-
-Der bestätigte Währungswechsel ist auch bei bestehenden Depots möglich.
-Cash und absolute Grenzen werden umgerechnet, Stückzahlen/Prozente erhalten.
-Fehlt ein brauchbarer Kurs, bleibt das Depot unverändert. Eigene UI-Prüfung:
-USD→EUR→USD mit Beträgen, Abbrechen, fehlendes FX, Stale-Dialog mobil.
-
-Die rote Gegenprobe für zwei Währungen am selben Tag hat einen zusätzlichen
-Schlüsselfehler belegt: Tageswerte tragen jetzt Währung auch im Schlüssel.
-Dashboard lädt bei Währungswechsel neu; Sicherungen erhalten alle Reihen.
-Der tatsächliche UI-Export/Import/Reload erhält beide Währungen desselben Tages.
-
-Der gemeinsam genutzte Testserver liegt wie beauftragt unter `scripts/`.
-Auf Mikes zusätzlichen Auftrag besitzt er `--stop` mit gespeichertem Port, PID,
-Startzeit/Kommando und Scriptpfad; kein Beenden beliebiger Portbesitzer.
-Start/Stop/Wiederholung/Doppelstart/falsche Identität sind am echten Prozess geprüft.
-
-Isolierte eigene Fassung: **52 Dateien, 712 Tests**, Lint und Typecheck erfolgreich.
-164 Dateien byteweise mit dem Index verglichen. Vollständige Belege und konkrete
-Lifecycle-Aufrufe stehen direkt in [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md).
-Fremde Änderungen im gemeinsamen Arbeitsbaum gehören weiterhin nicht zur Übergabe.
+Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.

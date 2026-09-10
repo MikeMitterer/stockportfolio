@@ -635,3 +635,60 @@ einfache Zustandsdatei, keine zusätzliche Laufzeit.
   erfolgreich; 164 Dateien mit dem Index abgeglichen.
 - Bitte die neue Entscheidung samt Historien-/Backup-Wechsel und die
   beauftragte Start-/Stop-Ergänzung unabhängig prüfen. Mikes Abnahme bleibt offen.
+
+### Review Runde 2 · Verifier `claude` · 2026-09-10
+
+Geprüfte Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997` gegen `674b370`.
+**Urteil: technisch freigegeben (`approved`).** Der blockierende Punkt aus
+Runde 1 ist erledigt, beide Nebenbefunde ebenfalls. Mikes Abnahme steht aus.
+
+Eigene Ausfertigung des Commits, `src/` byteweise gleich. Der Lauf enthielt
+zusätzlich meine zwölf Zusicherungen aus Runde 1: **53 Dateien / 724 Tests
+grün** — das sind genau die gemeldeten 52/712 plus meine Probe. Die
+Umrechnungsmechanik ist also unverändert korrekt, es gibt keinen Rückschritt.
+
+**Der Währungswechsel im laufenden Betrieb ist umgesetzt.** Sieben eigene
+Zusicherungen gegen den Portfolio-Store, alle erfüllt:
+
+- Ein Depot mit Beständen wechselt, und **nur Geldbeträge werden umgerechnet**:
+  Cash 1.000 → 1.100 bei Kurs 1,1, absoluter Sicherheitspuffer 500 → 550.
+  Stückzahlen, Ziel-Prozente und eine prozentuale Geldschwelle bleiben
+  unverändert — richtig, denn sie sind nicht in Währung ausgedrückt.
+- **Ohne Kurs bleibt das Depot unangetastet.** Kein Kurs, falsche Richtung
+  (`USD/EUR` statt `EUR/USD`) und eine Rate von 0 werden abgewiesen; Währung,
+  Cashbetrag und Puffer stehen danach unverändert da. Der Wurf erfolgt vor
+  jedem Schreibvorgang.
+- Ein Depot ohne gespeicherten Geldbetrag wechselt ohne Kurs.
+- Die Verwaltungsliste meldet `hasCurrencyAmounts` korrekt.
+- **Zwei Währungsreihen desselben Tages bleiben getrennt**, und die Sicherung
+  enthält beide.
+
+Der letzte Punkt geht auf einen Fehler zurück, den der Coder selbst mit einer
+roten Gegenprobe gefunden hat: Der Tageswert-Schlüssel enthielt die Währung
+nicht, ein zweiter Eintrag desselben Tages hätte den ersten überschrieben. Der
+Schlüssel lautet jetzt `<portfolioId>::<currency>::<date>`, und
+`findByPortfolio` entdoppelt zusätzlich nach Datum und Währung — damit
+überleben auch Einträge im alten Schlüsselformat unbeschadet. Das ist der
+Fund, den dieser Auftrag eigentlich erst möglich gemacht hat.
+
+Im Aufrufer holt `PortfolioManager` den gerichteten Kurs `alt → neu`, bevor der
+Bestätigungsdialog erscheint, nennt Kurs und Stand und warnt bei `stale`.
+Ohne Kurs erscheint kein Dialog, sondern eine Fehlermeldung.
+
+Beide Nebenbefunde aus Runde 1 sind erledigt: `convertedPrice` weist einen
+Kurs von 0 jetzt auf **beiden** Wegen ab, und die Commit-Sprache ist mit
+`983b33b` wieder deutsch.
+
+Der gemeinsame Testserver unter `scripts/` beendet mit `--stop` ausschließlich
+den eigenen Prozess: gespeicherte PID plus Identitätsvergleich über Status,
+Startzeit und Kommando vor `os.kill`. Kein Zugriff auf fremde Portbesitzer.
+
+**Grenze dieses Reviews:** kein Browserlauf. Die UI-Prüfung lag beim Coder und
+ist im Ticket dokumentiert.
+
+#### Befund ohne Nacharbeitsbedarf
+
+- **Ein Hin- und Rückwechsel stellt den Ausgangsbetrag nicht exakt wieder her.**
+  1.000 EUR → USD → EUR ergibt bei nicht reziproken Kursen etwa 999,90 EUR.
+  Das ist Arithmetik, kein Fehler; im Bestätigungsdialog wäre ein Satz dazu
+  ehrlicher als die stillschweigende Annahme, der Weg sei umkehrbar.
