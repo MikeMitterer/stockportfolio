@@ -1,8 +1,10 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-38 ist zur Umsetzung aktiviert.** T-37 ist als Bewertung technisch
-freigegeben und wartet im Doing-Ordner auf Mikes Abschlussbestätigung.
-Mike hat die Reihenfolge T-37 → T-38 am 2026-09-10 beauftragt.
+**Die Zuordnung der nächsten Arbeitsfolge wird geklärt.** Im Board steht
+T-39 → T-40 → T-38; Mikes jüngste Nachricht nennt dagegen zuerst Folgetickets
+von T-38, dann T-37. Bis zur Klärung beginnt keine Produktumsetzung.
+T-37 ist als Bewertung technisch freigegeben und wartet im Doing-Ordner
+auf Mikes Abschlussbestätigung.
 T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
 
 **Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
@@ -15,7 +17,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `blocked`
 - `ticket`: `T-39-identitaet-normalisieren.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
@@ -51,7 +53,7 @@ nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 ### Aktueller Auftrag
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
-Reihenfolge: T-37 vor T-38. T-37 liefert zunächst den im Ticket beschriebenen
+Ursprüngliche Reihenfolge: T-37 vor T-38. T-37 liefert zunächst den im Ticket beschriebenen
 Integrationsvorschlag. Mike hat eine automatische Detailanzeige gewählt:
 Felder der tatsächlichen Hauptzeile einschließlich dynamischer Felder
 werden nicht wiederholt. Für T-38 hat Mike am 2026-09-10 eine vom Nutzer konfigurierbare
@@ -80,8 +82,14 @@ Detailanzeige. Beide liegen auf Mikes Ansage direkt unter `30-doing/` und
 stehen vor T-38. Angelegt hat sie `claude`; das ist Board-Arbeit auf
 ausdrücklichen Auftrag, keine begonnene Implementierung und kein Reviewurteil.
 
-**Aktueller Schritt:** Aktiv ist T-39, danach T-40, danach T-38. Die Freigabe
-von T-37 Runde 1 durch `claude` ist verarbeitet; keine Nacharbeit. T-38 war
+**Aktueller Schritt:** Die Umsetzung ist bis zur Zuordnung der jüngsten
+Prioritätsanweisung angehalten. Mike, 2026-09-10: „Erst die Folgetickets von
+T-38 dann T-37 sonst passieren Dinge wieder doppelt“. Die bereits angelegten
+T-39 und T-40 sind Folgetickets von T-37; zu T-38 existieren noch keine.
+Codex hat im Chat gefragt, ob T-39 → T-40 → T-38 gemeint ist oder zuerst neue
+Folgetickets zur Depotwährung aus T-38 kommen sollen. Die bisherige Kette
+bleibt bis zur Antwort dokumentiert, erzeugt in `blocked` aber keinen Auftrag.
+Die Freigabe von T-37 Runde 1 durch `claude` ist verarbeitet; keine Nacharbeit. T-38 war
 noch nicht begonnen — Branch und Worktree existierten beim Vorziehen nicht,
 es geht also keine angefangene Arbeit verloren. Für T-37 fehlt weiterhin
 Mikes Abschlussbestätigung; bis dahin bleibt es unter `30-doing/`.
@@ -106,7 +114,8 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-38 ist aktiv; T-37 wartet auf Abschlussbestätigung.
+Agentenaufträge. Die nächste Umsetzung wartet auf die oben beschriebene
+Zuordnung; T-37 wartet auf Abschlussbestätigung.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
 
