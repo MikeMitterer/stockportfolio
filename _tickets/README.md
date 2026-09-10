@@ -160,5 +160,5 @@ Kursprüfung ist in T-39 umgesetzt.
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.
 Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
 Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
-712 Tests, Lint und Typecheck erfolgreich. Runde 2 mit laufendem Währungswechsel
-bei bestehenden Depots liegt bei Claude; Mikes Abschlussabnahme steht noch aus.
+712 Tests, Lint und Typecheck erfolgreich. Runde 2 ist durch Claude technisch
+freigegeben; Mikes Abschlussabnahme steht noch aus. Der Agentenauftrag ist idle.

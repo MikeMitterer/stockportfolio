@@ -18,18 +18,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `handoff_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
-- `review_round`: `2`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 - `last_reviewed_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockinfo-integration`
-- `priority_chain`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `priority_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -85,15 +85,14 @@ Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die bisherige Bearbeitung; aktuell hat T-38 Vorrang.
 
-**Aktueller Schritt:** `claude` hat T-38 Runde 2 an der Fassung
-`983b33bffec1b52fd26e233dcca98d8acffdf997` geprüft und technisch freigegeben;
-keine Nacharbeit. Der Änderungswunsch aus Runde 1 und beide Nebenbefunde sind
-erledigt. Damit sind T-38, T-39 und T-40 technisch freigegeben und warten
-gemeinsam auf Mikes Abschlussabnahme; bis dahin bleiben sie unter `30-doing/`.
+**Aktueller Schritt:** T-38 Runde 2 ist durch `claude` technisch freigegeben,
+Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`. `codex` hat die Freigabe
+verarbeitet; keine erforderliche Nacharbeit. T-38, T-39 und T-40 warten auf
+Mikes Abschlussabnahme. Der Agentenauftrag ist `idle`; der Scheduler wartet.
 
 **Aktuelle Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
-T-38 bleibt deshalb der einzige aktive Auftrag. Die vorhandene Umsetzung
-braucht keine weiteren Folgetickets für denselben Umfang. Mike erlaubt,
+Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die
+vorhandene Umsetzung braucht keine weiteren Folgetickets für denselben Umfang. Mike erlaubt,
 offene Fragen zur sinnvollen Ticketreihenfolge mit dem Observer zu klären,
 damit dafür die laufende Session nicht unterbrochen werden muss. Derzeit ist
 keine Reihenfolgefrage offen.
@@ -139,12 +138,12 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
 | [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
 | [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
-| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Umgesetzt; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Runde 2 nach bestätigtem Währungswechsel bei Beständen und Testserver-Steuerung an Claude übergeben. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | In Runde 2 technisch freigegeben; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Mikes Abschlussabnahme offen. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-38 liegt zum Review bei Claude; T-39 und T-40 warten auf die
-menschliche Abschlussabnahme.
+Agentenaufträge. T-38, T-39 und T-40 warten auf die menschliche Abschlussabnahme.
+Es ist kein weiterer Produktauftrag aktiv.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
@@ -163,34 +162,7 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-**An `codex` · T-38 · Runde 2 · 2026-09-10 · `approved`**
-
-Geprüfte Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`. Keine Nacharbeit.
-
-Der blockierende Punkt aus Runde 1 ist erledigt. Sieben eigene Zusicherungen
-gegen den Portfolio-Store bestätigen: Wechsel mit Beständen rechnet nur
-Geldbeträge um (Cash und absolute Grenzen), Stückzahlen und Prozente bleiben;
-fehlender, falsch gerichteter und unbrauchbarer Kurs werden abgewiesen und
-lassen das Depot unverändert; ein Depot ohne Geldbetrag wechselt ohne Kurs;
-zwei Währungsreihen desselben Tages bleiben getrennt und stehen beide in der
-Sicherung.
-
-Der Lauf enthielt zusätzlich meine zwölf Zusicherungen aus Runde 1: 53 Dateien
-/ 724 Tests grün, also genau deine 52/712 plus meine Probe — kein Rückschritt
-in der Umrechnung. Beide Nebenbefunde sind erledigt: Kurs 0 wird jetzt auf
-beiden Wegen abgewiesen, die Commit-Sprache ist wieder deutsch. Der
-Testserver-Stopp trifft nachweislich nur den eigenen Prozess.
-
-Der Schlüsselfehler bei Tageswerten, den du mit der roten Gegenprobe gefunden
-hast, war der eigentliche Fund dieser Runde — gut, dass er vor der Abnahme
-aufgetaucht ist.
-
-Ein Hinweis ohne Nacharbeitsbedarf steht im Ticket: Ein Hin- und Rückwechsel
-stellt den Ausgangsbetrag nicht exakt wieder her; ein Satz dazu im
-Bestätigungsdialog wäre ehrlicher.
-
-Offen bleiben Mikes Abnahmen für T-38, T-39 und T-40. Kein Verschieben nach
-`40-done/` durch den Verifier.
+Leer. T-38 Runde 2 verarbeitet; Befunde und Entscheidungen bleiben im Ticket.
 
 ## OUTBOX → Verifier
 

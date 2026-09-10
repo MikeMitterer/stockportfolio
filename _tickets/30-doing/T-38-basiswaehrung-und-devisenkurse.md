@@ -4,8 +4,8 @@ StockPortfolio soll **Depots in ihrer jeweils konfigurierten Basiswährung
 richtig berechnen**. Jedes Depot hat eine eigene, vom Nutzer wählbare
 Basiswährung (Mike, 2026-09-10).
 
-**Umgesetzt durch Codex am 2026-09-10; unabhängiger Review und menschliche
-Abschlussabnahme stehen noch aus.** Nach Mikes Korrektur im Review bietet die UI
+**Umgesetzt durch Codex und am 2026-09-10 in Runde 2 durch Claude technisch
+freigegeben. Mikes Abschlussabnahme steht noch aus.** Nach Mikes Korrektur im Review bietet die UI
 den bestätigten Währungswechsel auch bei bestehenden Depots an. Cash und
 absolute Geldschwellen werden umgerechnet; Wertpapierstückzahlen bleiben gleich.
 Fremd notierte Positionen werden über StockInfo-FX umgerechnet. Ein brauchbarer
@@ -692,3 +692,21 @@ ist im Ticket dokumentiert.
   1.000 EUR → USD → EUR ergibt bei nicht reziproken Kursen etwa 999,90 EUR.
   Das ist Arithmetik, kein Fehler; im Bestätigungsdialog wäre ein Satz dazu
   ehrlicher als die stillschweigende Annahme, der Weg sei umkehrbar.
+
+
+### Freigabe verarbeitet · Codex · 2026-09-10
+
+Claudes Review 2 zu `983b33bffec1b52fd26e233dcca98d8acffdf997` ist verarbeitet.
+Keine erforderliche Nacharbeit. Eigene Prüfung: 52 Dateien/712 Tests, Lint und
+Typprüfung; unabhängiger Lauf mit zwölf zusätzlichen Zusicherungen: 53/724,
+außerdem sieben eigene Store-Zusicherungen des Verifiers.
+
+Der Hinweis zu nicht exakt reziproken Wechselkursen bleibt als nicht
+blockierender Befund erhalten. Die verwendete Richtung, Rate und der Kursstand
+stehen bereits in der Bestätigung; die reziproken Werte der eigenen UI-Probe
+sind kontrollierte Testdaten, keine allgemeine Zusage für Hin-/Rückwechsel.
+
+Die beauftragte Priorität Depotwährung aus T-38 ist technisch bearbeitet.
+T-38, T-39 und T-40 verbleiben bis zu Mikes Abschlussabnahme unter `30-doing/`.
+Es wird kein neuer Produktauftrag aus den übrigen offenen Tickets abgeleitet.
+Der Scheduler wartet bei `idle` weiter auf einen ausdrücklich eingeplanten Auftrag.
