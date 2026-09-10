@@ -65,10 +65,10 @@ Projekts.
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
   dasselbe. Damit lassen sich Mapper prüfen, ohne StockInfo zu starten.
   StockPortfolio nutzt das bisher **nicht**; die Bewertung steht in
-  [T-37](_tickets/10-backlog/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
+  [T-37](_tickets/30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
   Generation und Währung in
   [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
-  Beide sind nicht zur Umsetzung eingeplant.
+  T-37 ist zur Bewertung aktiviert; T-35 bleibt im Backlog.
 
 Lokal gegen den Dienst entwickeln — im StockInfo-Repo das Backend starten, hier
 den Dev-Server:

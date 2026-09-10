@@ -34,6 +34,10 @@ Umfang geklärt und eine passende Testumgebung vorbereitet ist.
 
 Mike, 2026-09-08: „Kannst du die Bewertung als Ticket in StockPortfolio definieren“.
 
+Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
+T-37 ist damit vor T-38 zur Bearbeitung aktiviert. Die Vertragsprüfung läuft;
+die offenen Feldentscheidungen werden im Chat abgefragt.
+
 ## Umsetzung und technische Nachweise
 
 ### Ergebnis und Grenzen
@@ -45,7 +49,7 @@ zusätzlicher StockInfo-Projektionsroute. Die Umsetzung wird danach gesondert
 zugeschnitten; keine neue Route allein durch dieses Ticket beauftragt.
 
 Repo: StockPortfolio. Betroffene Fremdschnittstelle: StockInfo.
-Zeitbudget: noch nicht eingeplant. Status: offen, Bewertung begonnen.
+Zeitbudget: nicht beziffert. Status: aktiv, Bewertung wird vervollständigt.
 
 ### Vorliegende Befunde
 
@@ -104,7 +108,7 @@ Die weitere Entscheidung und ihr Stand werden hier festgehalten.
 
 ### Abgrenzung zu T-35
 
-[T-35](T-35-stockinfo-generation-und-waehrung.md) behandelt Generation und
+[T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md) behandelt Generation und
 Währung. Dieses Ticket behandelt Antwortstruktur, Identitätszuordnung und
 zusätzliche Kennzahlen. Währungsmetadaten berücksichtigen, aber keine neue
 Währungsumrechnung oder Generationserkennung parallel zu T-35 entwerfen.

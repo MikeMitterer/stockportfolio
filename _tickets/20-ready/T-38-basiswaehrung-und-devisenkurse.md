@@ -44,10 +44,13 @@ solange der Umfang offen ist.
 
 ## Umsetzung und technische Nachweise
 
-Status: offen, nicht zur Umsetzung eingeplant. Repo: StockPortfolio, betroffene
+Status: am 2026-09-10 nach T-37 eingeplant. Repo: StockPortfolio, betroffene
 Fremdschnittstelle: StockInfo. Zeitbudget noch nicht geschätzt.
 
-**Hängt an [T-35](T-35-stockinfo-generation-und-waehrung.md).** Solange eine
+Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
+Die Fragen zu Basiswährung und veralteten Kursen werden im Chat geklärt.
+
+**Hängt an [T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md).** Solange eine
 fehlende Kurswährung als EUR geraten wird, kann keine Umrechnung stimmen; T-35
 entfernt diesen Ersatzwert.
 
@@ -78,7 +81,8 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 3 | Position in Fremdwährung im Depot | Marktwert zählt umgerechnet in die Summe; der Kurs bleibt in seiner Originalwährung sichtbar | ➖ |
 | 4 | Devisenkurs mit `stale: true` | Auswirkung gemäß Entscheidung B, im UI erkennbar | ➖ |
 
-Durchgehend ➖: Es gibt noch keine Umsetzung und keinen Auftrag dazu.
+Durchgehend ➖: Die Bearbeitung ist eingeplant; eine Umsetzung und deren
+Verifikation liegen noch nicht vor.
 
 ```bash
 curl -s "http://localhost:8000/fx?base=EUR&quote=USD"                                    # #1 Erfolgsfall

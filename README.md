@@ -413,7 +413,7 @@ in the Docker tab.
 
 | Topic                                | State                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------- |
-| Base currency other than EUR         | open — scope undecided ([T-38](_tickets/10-backlog/T-38-basiswaehrung-und-devisenkurse.md)) |
+| Base currency other than EUR         | planned after T-37 — scope under discussion ([T-38](_tickets/20-ready/T-38-basiswaehrung-und-devisenkurse.md)) |
 | Converting mixed-currency portfolios | open — StockInfo serves FX rates with their age; the app does not use them yet  |
 | Threshold notifications              | deliberately outside the MVP                                                    |
 | CORS against the production API      | unverified — the container's origin has to be allowed                           |
