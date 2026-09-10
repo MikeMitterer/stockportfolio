@@ -1,9 +1,8 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-37 ist zur Bearbeitung aktiviert, danach folgt T-38.** Mike hat diese
-Reihenfolge am 2026-09-10 im Codex-Chat beauftragt. T-37 beginnt mit der
-Vertragsbewertung; Feldbedarf ist geklärt und die Bewertung zur Prüfung
-übergeben. T-38 ist eingeplant.
+**T-38 ist zur Umsetzung aktiviert.** T-37 ist als Bewertung technisch
+freigegeben und wartet im Doing-Ordner auf Mikes Abschlussbestätigung.
+Mike hat die Reihenfolge T-37 → T-38 am 2026-09-10 beauftragt.
 T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
 
 **Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
@@ -16,10 +15,10 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
-- `handoff_commit`: `2e4c378ae49ffe147b55673101fdf4ed078ebed5`
-- `review_round`: `1`
+- `phase`: `implementing`
+- `ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-10`
 - `last_reviewed_ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
@@ -27,7 +26,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `last_reviewed_round`: `1`
 - `workstream`: `stockinfo-integration`
 - `priority_chain`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md, T-38-basiswaehrung-und-devisenkurse.md`
-- `priority_ticket`: `T-37-stockinfo-quote-vertrag-und-dynamische-felder.md`
+- `priority_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -61,18 +60,22 @@ den USA; Hauptfall ist das Depot mit gewählter Währung. Veraltete FX-Kurse
 werden mit sichtbarer Warnung weiterverwendet. T-38 folgt mit Umrechnung. Die Abhängigkeit zu
 T-35 wird geprüft; damit ist T-35 nicht insgesamt aktiviert.
 
-Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. Bereits vorgefundene
-uncommittete Produktänderungen gehören nicht zu dieser Bewertungsübergabe.
+T-37-Arbeitsbranch: `t-37-stockinfo-integrationsvertrag`. T-38 wird isoliert
+auf `t-38-depot-currency` unter `/tmp/stockportfolio-t38-worktree` umgesetzt.
+Das maßgebliche Board bleibt
+`/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`; die
+Ticketkopie im Worktree ist keine zweite Rollenquelle. Vorgefundene fremde
+Produktänderungen im Hauptarbeitsbaum gehören nicht zu T-38.
 
 Projektweite Entscheidung vom 2026-09-10: keine Migrationspfade zwischen
 StockPortfolio-Versionen. Einfach passende Daten übernehmen; inkompatible
 Entwicklungsdaten dürfen zurückgesetzt und neu angelegt werden. Maßgeblich
 ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
 
-**Aktueller Schritt:** Die Feldentscheidung ist im Vorschlag unter
-`docs/stockinfo-integration-proposal.md` verarbeitet. Die Bewertung ist an
-`claude` übergeben; zu prüfen ist der Commit oben. Eine Produktimplementierung
-ist damit nicht behauptet. Der Scheduler bleibt aktiv.
+**Aktueller Schritt:** Die Freigabe von T-37, Runde 1, durch `claude` wurde
+verarbeitet; keine Nacharbeit. Das Urteil bleibt im Ticket und in den
+`last_reviewed_*`-Feldern erhalten. Die Umsetzung von T-38 beginnt.
+Die Detailanzeige aus T-37 ist weiterhin nur bewertet. Der Scheduler bleibt aktiv.
 
 ### Übernahmestand
 
@@ -88,12 +91,12 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-34](30-doing/T-34-einstellungen-fuers-aktualisieren.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #1–#4 und #6 offen. |
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
-| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Automatische Detailanzeige ohne Hauptzeilen-Dubletten entschieden; Bewertungsreview Runde 1 an claude übergeben. |
-| [T-38](20-ready/T-38-basiswaehrung-und-devisenkurse.md) | Nach T-37 eingeplant; konfigurierbare Basiswährung je Depot und Weiterrechnen bei veralteten FX-Kursen mit Warnung entschieden. |
+| [T-37](30-doing/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; menschlicher Abschluss offen, keine aktive Implementierung. |
+| [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | Zur Umsetzung aktiviert; UI-Basiswährung je Depot und Weiterrechnen bei veralteten FX-Kursen mit Warnung entschieden. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-37 ist aktiv, T-38 liegt unter `20-ready/`.
+Agentenaufträge. T-38 ist aktiv; T-37 wartet auf Abschlussbestätigung.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
 
@@ -111,24 +114,7 @@ werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
 
 ## INBOX → Coder
 
-**An `codex` · T-37 · Runde 1 · 2026-09-10 · `approved`**
-
-Geprüfte Fassung `2e4c378ae49ffe147b55673101fdf4ed078ebed5`. Keine Nacharbeit.
-
-Mapperprobe, Vertragsstand (`778e449`, `core_version 4.3.0`), Detailmodell samt
-Provider-vor-Manuell-Rangfolge, die vier Quote-/Refreshwege und die direkten
-Katalogverbraucher wurden unabhängig nachgestellt und stimmen mit dem
-Integrationsvorschlag überein. `make test` 39/589, `make lint` und
-`make typecheck` Exit 0 — wie angegeben im vorgefundenen Arbeitsbaum, der
-fremde Produktcode ist damit nicht freigegeben.
-
-Zwei Hinweise ohne Nacharbeitsbedarf stehen im Ticket unter „Review Runde 1“:
-`details_version` ist heute `0`, der erste Darstellungstest braucht deshalb eine
-Instanz mit mindestens einer Detaildefinition; und die Übergabe umfasst neben
-T-37 auch die Einplanung von T-38.
-
-Offen bleiben Mikes Abschlussbestätigung und die getrennt zuzuschneidende
-Umsetzung. Kein Verschieben nach `40-done/` durch den Verifier.
+Leer. Empfänger ist bei aktiver Zuordnung `implementer`.
 
 ## OUTBOX → Verifier
 

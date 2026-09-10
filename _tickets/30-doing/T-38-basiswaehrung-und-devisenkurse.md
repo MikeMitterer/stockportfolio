@@ -87,7 +87,7 @@ weiterhin; sie rechtfertigen keinen pauschalen Ausbau der Datenmigration.
 
 ## Umsetzung und technische Nachweise
 
-Status: am 2026-09-10 nach T-37 eingeplant. Repo: StockPortfolio, betroffene
+Status: am 2026-09-10 nach T-37 zur Umsetzung aktiviert. Repo: StockPortfolio, betroffene
 Fremdschnittstelle: StockInfo. Zeitbudget noch nicht geschätzt.
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.

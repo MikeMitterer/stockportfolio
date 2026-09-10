@@ -137,7 +137,7 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 Identitätszuordnung, zusätzliche Kennzahlen und Nutzen einer flachen
 Quote-Ansicht bewerten. Seit 2026-09-10 zur Bearbeitung aktiviert.
 
-[T-38 · Basiswährung außer EUR](20-ready/T-38-basiswaehrung-und-devisenkurse.md):
+[T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
 StockInfo liefert inzwischen Devisenkurse samt Alterskennzeichnung; die App
 nutzt sie nicht. Konfigurierbare Basiswährung je Depot und Weiterrechnen bei
 veralteten FX-Kursen mit sichtbarer Warnung sind entschieden. Nach T-37
