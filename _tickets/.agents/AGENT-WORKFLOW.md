@@ -37,7 +37,8 @@ aktiv. Backlog, Done, Iced und Rejected starten keine Arbeit.
 ## Übergabe und Review
 
 Der Coder bearbeitet den vereinbarten Umfang und dokumentiert prüfbare Belege
-im Ticket. Vor der Übergabe die Sammlung zur eigenen Autorenschaft lesen:
+im Ticket. Bereits vor der Umsetzung und erneut vor der Übergabe die Sammlung
+zur eigenen Autorenschaft lesen:
 [Claude](CLAUDE-LESSONS.md), [Codex](CODEX-LESSONS.md), bei gemischter Arbeit beide.
 Vorhandene menschliche Antworten, Kennungen und historische Befunde erhalten.
 
@@ -73,15 +74,70 @@ Neue Arbeit braucht eine ausdrückliche Einplanung.
 ## Belegte Erfahrungen
 
 Die Lessons-Dateien benennen die Autorenschaft untersuchter Arbeit, keine
-festen Rollen. Ein Muster erst mit zwei Belegen oder bei einer ausdrücklich
-falschen Vollständigkeitsbehauptung aufnehmen. Pro Eintrag Erkennungsregel,
-Prüffrage und Belege nennen. Einzelne Fehler bleiben im Ticket.
+festen Rollen. Ein Muster mit zwei konkreten Belegen oder bei einer ausdrücklich
+falschen Vollständigkeitsbehauptung aufnehmen. Eine ausdrücklich vom Nutzer
+beauftragte Einzelfall-Lehre ebenfalls erfassen und als solche kennzeichnen;
+keine weiteren Vorfälle erfinden. Sonstige einzelne Fehler bleiben im Ticket.
+
+**Aus jeder Erkenntnis folgt eine Handlung für beide Arbeitsrollen.** Ein neuer
+oder wesentlich ergänzter Eintrag enthält Herkunft und Geltungsbereich,
+Erkennungsregel, eine konkrete Implementer-Regel zur Vorbeugung, eine
+Verifier-Prüfung samt erwartbarem Beleg sowie die ursprünglichen Fundstellen.
+Allgemeine Zuständigkeiten stehen hier, Projektvorgaben in AGENTS.md; Lessons
+verweisen darauf und halten den Anlass fest. Bestehende passende Einträge
+ergänzen. Unklare Autorenschaft offenlassen, nicht aus dem aktuellen Owner ableiten.
+
+- **Implementer:** Vor Beginn die einschlägigen Muster auswählen und ihre
+  Vorbeugung in die Arbeit einbeziehen. Bei Übergabe knapp im Ticket nennen,
+  welche Lessons einschlägig waren und welche Prüfung sie abdeckt; vorhandene
+  Prüfnachweise verlinken. Daraus entsteht kein zusätzlicher pauschaler Testlauf.
+- **Verifier:** Die Sammlung des Autors vor dem Review lesen und die passenden
+  Gegenproben an der übergebenen Fassung prüfen. Eine zitierte Lesson oder ein
+  grüner Gesamtlauf allein beweist ihre Einhaltung nicht. Ergebnis oder Lücke
+  bei den betreffenden Ticketbefunden festhalten.
+- **Observer:** Beide Sammlungen kennen, neue Befunde mit vorhandenen Mustern
+  vergleichen und daraus konkrete Vorbeugungs- und Prüfregeln ableiten. Bei
+  Wiederholung prüfen, ob eine Regel fehlt, unklar ist oder nicht angewendet
+  wurde; genau diese Lücke verbessern und im Chat mit Beleg benennen.
+
+**Ein neues Board beginnt mit der kuratierten Startbasis des Ticket-Skills.**
+Die lokal enthaltenen Regeln funktionieren ohne andere Projekte. Bei Einrichtung
+oder Übernahme zusätzlich die Lessons eines benannten, verfügbaren Quellprojekts
+sichten. Übertragbare Regeln mit Quelle, Fassung und ursprünglicher
+Autorenschaft kuratiert in die lokalen Sammlungen aufnehmen; sie ausdrücklich
+als externe Startbasis kennzeichnen. Das ist keine Behauptung lokaler Vorfälle.
+Übernahme, Anpassung und Auslassungen mit Grund in den Lessons festhalten.
+Quellrollen, Reviewzähler und projektspezifische Regeln nicht mitkopieren.
+Die lokale Fassung muss ohne Zugriff auf das Quellprojekt verständlich bleiben.
+Ohne Quellprojekt die allgemeine Startbasis des Ticket-Skills prüfen und
+passend übernehmen; verbleibende Wissenslücken offen nennen. Bestehende lokale
+Erfahrungen erhalten. Spätere Übernahmen erfolgen gezielt, ohne automatische
+Synchronisation oder Vorrang fremder Regeln.
+**Eigenständige Entwicklung und Wissenstransfer:** Jedes Board entwickelt
+seine Lessons eigenständig weiter, auch zuvor übernommene Regeln. Der Observer
+unterscheidet projektspezifische Erkenntnisse von übertragbaren Ursachen und
+formuliert für Letztere einen konkreten Nachtrag zur Startbasis im Ticket-Skill.
+Der Nachtrag enthält allgemeine Erkennung, Vorbeugung, Gegenprobe und Herkunft.
+Globale Übernahme nur im Rahmen eines entsprechenden Auftrags; lokale
+Lessons-Erlaubnis allein reicht dafür nicht.
+
+Die Skill-Vorlagen sind eine kuratierte Startbasis für weitere Projekte.
+Sie überschreiben keine eigenständig weiterentwickelten Projekt-Lessons.
+Beim beauftragten Abgleich Herkunft und Übernahmestand berücksichtigen und
+inhaltlich entscheiden: ergänzen, lokal anpassen, bereits abgedeckt oder
+nicht passend. Lokale Belege und Anpassungen erhalten. Widersprechen sich
+Erfahrungen, zunächst deren Geltungsbereiche prüfen; keine Fassung allein
+wegen ihres Datums bevorzugen. Unterschiedliche Anforderungen dürfen
+unterschiedliche Regeln ergeben. Keine automatische Synchronisation.
 
 ## Observer
 
 Der Observer betrachtet den Ticketablauf, widersprüchliche aktuelle Aussagen,
 fehlende Übergaben, Unterschiede zwischen Dokumentation und belegtem Stand
-sowie wiederkehrende Probleme über mehrere Tickets hinweg. Er unterstützt
+sowie wiederkehrende Probleme über mehrere Tickets hinweg. Bei Folgetickets
+vergleicht er außerdem Reihenfolge, Abhängigkeiten und gemeinsam betroffene
+Funktionen: Dieselbe Validierung, Datenhaltung oder Anzeige darf nicht in
+mehreren Tickets unabhängig neu entstehen. Er unterstützt
 Mike mit Hinweisen; technische Abnahme bleibt beim Verifier.
 
 Seine vollständige Kennung steht in `observer` in STATUS. Sie muss von
@@ -104,6 +160,22 @@ Ticket beziehungsweise Fassung, konkreten Beleg, Auswirkung und Vorschlag.
 Ein möglicher fachlicher Fehler ist ein Hinweis an Mike, keine technische
 Freigabe oder automatische Nacharbeit. Ticketergänzungen übernimmt die
 zuständige Arbeitsinstanz nach Einordnung beziehungsweise Mikes Auftrag.
+
+**Belegte Fehlermuster pflegt der Observer direkt in den Lessons-Dateien**
+(Mike, 2026-09-10: „Wenn du Fehlermuster entdeckst - die gehören in die
+jeweiligen -Lessons.md-Files“). Die Datei richtet sich nach der belegten
+Autorenschaft der untersuchten Arbeit, nicht nach der Rolle des Entdeckers.
+Bestehende Einträge ergänzen statt doppelte Regeln anzulegen. Es gelten die
+[Belegregeln und Rollenpflichten](#belegte-erfahrungen). Der Auftrag umfasst
+ausdrücklich das Erkennen und Erfassen von Fehlermustern sowie das Aufstellen
+konkreter Regeln für Implementer und Verifier zur Vermeidung weiterer Fehler
+(Mike, 2026-09-10). Diese Regeln bleiben innerhalb des vereinbarten Umfangs;
+sie vergeben keine neue Arbeit und ersetzen kein unabhängiges Review.
+
+Diese laufende Erlaubnis umfasst die Lessons-Pflege. Andere Board- oder
+Produktänderungen entstehen daraus nicht; gesonderte Aufträge von Mike
+gelten im jeweils benannten Umfang. Im Chat den neuen oder ergänzten
+Lessons-Eintrag kurz nennen.
 
 Der eigene Loop läuft im Abstand von fünf Minuten. Zuerst Zuordnung und
 Änderungen am Board einschließlich `.agents/`, Git-Stand und relevanten

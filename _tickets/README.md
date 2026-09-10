@@ -68,7 +68,10 @@ Der gemeinsame [Workflow](.agents/AGENT-WORKFLOW.md) regelt Rollen und Übergabe
 [Aktivierung](.agents/AGENT-ACTIVATION.md) und
 [Codex-Scheduler](.agents/CODEX-IN-CONTEXT-SCHEDULER.md) bleiben davon getrennt.
 Die Sammlungen [Claude](.agents/CLAUDE-LESSONS.md) und
-[Codex](.agents/CODEX-LESSONS.md) halten künftig belegte Erfahrungen fest.
+[Codex](.agents/CODEX-LESSONS.md) enthalten lokale Erfahrungen und eine
+kuratierte Startbasis mit gekennzeichneten Quellbelegen. Der Workflow legt
+Vorbeugung durch den Implementer, Gegenproben des Verifiers und die
+Mustererkennung samt Lessons-Pflege durch den Observer fest.
 Die Umstellung startet keine Agenten oder Timer.
 
 Der optionale Observer liest unabhängig vom Owner und meldet Hinweise in
@@ -162,3 +165,12 @@ Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
 Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
 712 Tests, Lint und Typecheck erfolgreich. Runde 2 ist durch Claude technisch
 freigegeben; Mikes Abschlussabnahme steht noch aus. Der Agentenauftrag ist idle.
+
+## Vorgemerktes projektübergreifendes Teilprojekt
+
+[T-41 · AgentLessons](10-backlog/T-41-agentlessons-projektuebergreifend-sammeln.md)
+hält das Konzept für lokale Einzel-Lessons, eine separate zentrale Aggregation
+und nachvollziehbar abgeleitete Regeln fest. Als eines der nächsten Teilprojekte
+vorgemerkt; noch nicht zur Umsetzung aktiviert. Der Auftrag umfasst später
+auch den Abgleich des Ticket-Skills. Alle Dateiverweise innerhalb von
+AgentLessons werden relativ gehalten.
