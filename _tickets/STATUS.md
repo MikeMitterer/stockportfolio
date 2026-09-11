@@ -1,8 +1,9 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**T-41: Der erste Schritt ist zur unabhängigen Prüfung an `claude` übergeben.**
-Einzel-Lessons, gemeinsamer Anfangsbestand und Agentenanleitungen sind umgesetzt.
-Runde 1; der gesamte spätere Collector-Auftrag bleibt offen.
+**T-41: Der erste Schritt ist durch `claude` in Runde 1 technisch freigegeben.**
+Codex hat die Rückgabe verarbeitet; keine erforderliche Nacharbeit.
+Mikes Abschlussabnahme und der spätere Collector-Auftrag bleiben offen.
+Der begrenzte Agentenauftrag ist beendet; der Rollen-Scheduler wartet bei `idle`.
 
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
 im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
@@ -23,18 +24,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `phase`: `idle`
+- `ticket`: `none`
 - `handoff_commit`: `3c27df814bc1d9ad723f3aad1356f965fe074efb`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-11`
-- `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `last_reviewed_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
-- `last_reviewed_round`: `2`
-- `workstream`: `agent-lessons`
-- `priority_chain`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
-- `priority_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `last_reviewed_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `last_reviewed_commit`: `3c27df814bc1d9ad723f3aad1356f965fe074efb`
+- `last_reviewed_round`: `1`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -64,7 +65,7 @@ weitere Codex-Instanz arbeitet als Observer“.
 
 Das Ticket liegt unter
 [30-doing/T-41](30-doing/T-41-agentlessons-projektuebergreifend-sammeln.md).
-`codex` hat den ersten Schritt umgesetzt; `claude` prüft jetzt und hat den Owner,
+`codex` hat den ersten Schritt umgesetzt und die technische Freigabe von `claude` verarbeitet;
 `codex-observer` beobachtet. Alle drei Kennungen sind verschieden.
 
 Der beauftragte erste Schritt steht im Ticket unter „Vorgeschlagener erster
@@ -84,8 +85,10 @@ Abschlussabnahme; die Aktivierung von T-41 ändert daran nichts.
 
 **StockInfo-Freigabe liegt vor · Mike, 2026-09-11:** „StockInfo-Anteil passt“.
 `codex` hat dort den begrenzten Anteil aktiviert, als T-70-Verweis auf dieses
-T-41. Aktivierungscommit `5fc549b`; inzwischen steht StockInfo für die gemeinsame
-Prüfung auf `ready_for_claude`, Owner `claude` (Boardcommit `00978b7`). Keine zweite fachliche Ticketfassung. Der Rollenblocker ist erledigt.
+T-41. Aktivierungscommit `5fc549b`; Claude hat den Anteil in Runde 1 hier
+mitgeprüft. Die Rückgabe ist dort nachgetragen (`2f755b9`): `portfolio_review`,
+Owner `mike`, keine aktive Kette. Keine zweite fachliche Ticketfassung.
+Der Rollenblocker ist erledigt.
 Der erste Schritt mit Schema und Inventar ist umgesetzt; die bisherigen
 Sammeldateien sind reine Linkeinstiege ohne zweiten handgepflegten Inhalt.
 **Formatänderung für alle Autoren:** Vor der nächsten Lessons-Pflege
@@ -219,70 +222,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer. Freigabe und Prüferwartungen verarbeitet; im Ausführungsplan von T-41 berücksichtigt.
+Leer. Freigabe verarbeitet; R1-01 und R1-02 für die nächste Berührung im Ticket festgehalten.
 
 ## OUTBOX → Verifier
 
-**An `claude` · von `codex` · T-41, Runde 1 · 2026-09-11**
-
-Bitte den beauftragten **ersten Schritt** unabhängig prüfen: lokale Lessons
-als Einzeldateien, vorhandene Ableitungen als gemeinsamer Anfangsbestand,
-Ticket-Skill und Agenten-Infos. Vollständige Nachweise und Zuordnung aller
-alten Fundstellen stehen in [T-41](30-doing/T-41-agentlessons-projektuebergreifend-sammeln.md#nachweise-des-ersten-schritts--codex-2026-09-11).
-
-| Ablage | Prüffassung | Vergleich |
-|---|---|---|
-| StockPortfolio | `3c27df814bc1d9ad723f3aad1356f965fe074efb` | gegen `85d6472`; anschließender Boardcommit nur Nachweise/Übergabe |
-| StockInfo | `b498c665a4e58defc1405d551ef808dabfc420cc` | gegen `5fc549b`; Boardübergabe separat `00978b7` |
-| PersonalSkills | `69d3308a82f2afb503430324c8a08a37b75c55c7` | gegen `456bccf`, den getrennt gesicherten vorgefundenen Skill-Stand |
-| AgentLessons | `691db2ee2844d51acfa642482234b82cdada13e8` | erster Commit unter `~/.local/share/agent-lessons/`, ohne Remote |
-
-StockInfo-T-70 bleibt ein reiner Verweis; dort `ready_for_claude`, Runde 1,
-Owner `claude`. Diesen Anteil hier mitprüfen, keinen zweiten Reviewlauf aus
-T-70 erzeugen. Die lokale XDG-Konfiguration ist
-`~/.config/agent-lessons/config.yaml`: `schema_version: 1`,
-`project_root: /Volumes/DevLocal`. Sonstige Strukturverweise sind relativ.
-
-**Dateien:** In beiden Projekten `AGENTS.md`, `_tickets/README.md`,
-`.agents/AGENT-WORKFLOW.md`, die beiden alten Lessons-Einstiege sowie neue
-`LESSONS-ACCESS.md`, `LESSONS-PROCESS.md` und `lessons/*.md`. Im Skill
-`SKILL.md`, Referenzen `board-setup.md`, `lessons-bootstrap.md`, `lesson-format.md`
-und die betreffenden versteckten Board-Vorlagen. Zentral `INDEX.md`,
-`projects.yaml`, `collected/` und `shared/`.
-
-**Nachweise:** 21 lokale Lessons, zwölf vorhandene Ableitungen, fünf gesonderte
-Verfahrensabschnitte; 38/38 Inhaltskerne erhalten. Original- und Archiv-Hashes,
-eindeutige IDs und getrennte Herkunfts-/Rollenfelder geprüft. Die lokale
-T-38-Erfahrung ist SP-R-01. SI-P-02 bleibt begründet ein Muster mit vollständiger
-Beleggeschichte. Linkeinstiege haben keine zweite Wissenskopie; neue Dateien
-müssen über das Verzeichnisinventar berücksichtigt werden.
-
-Keine defekten Links/Anker im geprüften Bestand. Die verschobene zentrale
-Sammlung mit Pfad-Leerzeichen ist ohne Quellprojekte lesbar (33 Einträge).
-StockPortfolio: 720 Tests, Lint und Typecheck grün. StockInfo-Gesamtlauf auf
-frischem Datenpfad: 1193 Backend, 323 Plugin-Vertrag, 50 Beispiel, 378 Dashboard
-bestanden; insgesamt 30 übersprungen, Dashboard-Lint grün. Skill-Validator und
-Diff-Whitespace-Checks erfolgreich. Rohbelege in `/tmp/t41-lessons-work/`.
-
-**Grenzen:** Collector, periodischer Lauf, KI-Ableitung und deren Tests sind
-noch offen. Gemeinsame Fassungen haben `needs_review`/`partial`; keine neue
-vollständige fachliche Auswertung oder technische Freigabe behauptet. Der
-Gesamtauftrag T-41 ist durch diese Teilübergabe nicht abgeschlossen.
-
-Gelesener Hausstandard: `/Users/macminipro/.codex/skills/code-standards/SKILL.md`,
-Referenzen `documentation.md` und `python.md` für temporäre Prüfhelfer.
-
-| Gruppe | Ergebnis |
-|---|---|
-| Architektur, DRY, Funktionen und Namen | ✅ Original, Archiv und Ableitung getrennt; englische YAML-Schlüssel. |
-| BashLib, Bash-Fehler und Exit-Codes | ➖ Kein Shell-Code im T-41-Diff. |
-| Skript-CLI, Hilfe und ANSI-Ausgabe | ➖ Keine neue CLI. |
-| TypeScript, Vue und i18n | ➖ Kein Frontend-Code. |
-| Python, FastAPI und Webhooks | ➖ Kein Python-Produktcode. |
-| Datenbanken und Persistenzgrenzen | ➖ Keine Datenbankänderung. |
-| Fehler, Logging und Tests | ✅ Nachweise auf tatsächlich ausgeführte Prüfungen begrenzt. |
-| Markdown und Inhaltsverzeichnisse | ✅ Links, Anker, Navigation und Inhalte abgeglichen. |
-
-Vorgefundene T-31–T-34-Archivverschiebungen in StockPortfolio und die separate
-CLI-Dokumentänderung in PersonalSkills sind nicht Teil der Prüffassungen.
-Ab jetzt bleibt der übergebene Inhalt bis zur Rückgabe stabil.
+Leer. Die Übergabe zu Runde 1 ist geprüft; Ergebnis und Befunde stehen im Ticket.

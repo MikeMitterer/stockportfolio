@@ -15,7 +15,8 @@ markiert; keine lokale Erfahrung wird automatisch überschrieben.
 **Stand:** Konzept am 2026-09-10 im Observer-Chat besprochen, Ablageort am
 2026-09-11 geändert. Mike hat den Namen `AgentLessons` bestätigt. Der erste
 Schritt ist umgesetzt: lokale Einzeldateien, gemeinsamer Anfangsbestand und
-angepasste Agentenanleitungen. Der unabhängige Review ist offen. Aggregation
+angepasste Agentenanleitungen. Claude hat diesen ersten Schritt in Runde 1
+technisch freigegeben. Die menschliche Abschlussabnahme ist offen. Aggregation
 und automatische Regelableitung sind noch nicht umgesetzt.
 Mike hat den ersten Umsetzungsschritt am 2026-09-11 aktiviert; das Ticket
 liegt unter `30-doing/`. StockInfo ist nach Mikes Freigabe ebenfalls aktiviert
@@ -1190,6 +1191,99 @@ Verfahrensdatei und als Verfahrensempfehlung in der Skill-Referenz erhalten.
 SI-P-02 bleibt bewusst ein Erkenntniszusammenhang; der kurze Rollen-Einstieg
 erschließt die vollständige Originalgeschichte darunter.
 
+## Review Runde 1 · claude, 2026-09-11
+
+**Technische Freigabe für den beauftragten ersten Schritt.** Zwei Befunde
+zur Lesbarkeit, keiner davon blockierend; keine Korrektheitsfehler gefunden.
+Geprüfte Fassungen: StockPortfolio `3c27df81`, StockInfo `b498c66`,
+PersonalSkills `69d3308`, AgentLessons `691db2e`. Der StockInfo-Anteil aus
+T-70 ist hier mitgeprüft; dort entsteht kein zweiter Reviewlauf.
+
+### Eigenständig nachgerechnet, nicht übernommen
+
+| Prüfung | Ergebnis |
+|---|---|
+| Vier Übergabecommits vorhanden | ✅ alle vier aufgelöst, Betreffzeilen passen |
+| Mengengerüst 21 / 12 / 5 = 38 | ✅ 16 SI + 5 SP Lessons, 12 `AL-R-*`, 5 Abschnitte in `LESSONS-PROCESS.md` |
+| Herkunfts-Hashes | ✅ `SI-P-01` und `AL-R-01` `file_sha256` aus Git neu berechnet, exakte Übereinstimmung |
+| Startbasis nicht als Projektlesson | ✅ 9 + 3 Verdichtungen liegen als 12 Regeln in `shared/`, nicht in `collected/stockportfolio/` |
+| Linkeinstiege ohne zweite Wissenskopie | ✅ 99 KB auf 68 Zeilen; alte Anker erhalten, Inhalt nur als Verweis |
+| Relative Verweise | ✅ 529 Links selbst geprüft, 0 defekt |
+| Absolute Pfade in der Sammlung | ✅ keine in Struktur- oder Konfigurationsverweisen |
+| Pfadregel aus C2 | ✅ `projects.yaml` rein relativ, Projektbasis allein in `~/.config/agent-lessons/config.yaml` |
+| Verify-Matrix ehrlich | ✅ ➖/◑ wo unbelegt, ✅ nur mit Nachweis |
+| Testaussage | ✅ selbst ausgeführt: 720/720 Tests in 53 Dateien, `lint` und `typecheck` Exit 0 |
+| Skill ohne zweite Wissenskopie | ✅ Vorlagen −161/−61 Zeilen, Format- und Zugriffsreferenz ergänzt |
+| Prüffassung stabil | ✅ im Arbeitsbaum nur `STATUS.md` aus diesem Review geändert |
+
+Die fünf Fallstricke aus „Vorgeschlagener erster Schritt“ sind einzeln belegt:
+Verfahrensabschnitte liegen außerhalb `lessons/`, die Startbasis in `shared/`,
+Kennungen tragen Projektpräfixe, `SI-P-02` ist begründet eine Lesson geblieben
+(gemeinsame Ursache, vollständige Beleggeschichte erhalten), und die Doku
+beschreibt den tatsächlichen Stand.
+
+### Befund R1-01 · Feldpaarung in `shared/` führt in die Irre
+
+In `shared/AL-R-*.md` steht unter `sources[]` ein `path` auf die Archivfassung
+(`../collected/…`), daneben ein `sha256`, der **nicht** zu dieser Datei gehört,
+sondern zur Lesson im Quellprojekt. Wer den Hash gegen den genannten Pfad
+rechnet, bekommt eine Abweichung.
+
+Die Daten sind richtig — die Archivfassung hält denselben Wert als
+`archive.source_sha256`, und die Zuordnung ist darüber auflösbar. Die
+Feldpaarung liest sich aber als Paar. Dieser Review hat vier Schritte
+gebraucht, um den vermeintlichen Widerspruch auszuräumen; die nächste Prüfung
+läuft in dieselbe Falle.
+
+**Vorschlag:** Feld in `source_sha256` umbenennen oder einen Satz ergänzen,
+worauf sich der Wert bezieht. Nicht blockierend.
+
+### Befund R1-02 · Leerer Abschnitt in den StockInfo-Einstiegen
+
+`CLAUDE-LESSONS.md` und `CODEX-LESSONS.md` in StockInfo behalten die
+Überschrift `## Übersicht` ohne jeden Inhalt. StockPortfolios Einstieg hat an
+derselben Stelle eine neu aufgebaute Liste. Die Absicht ist im Ticket erklärt
+(„Übersicht ist Navigation“), das Ergebnis ist aber uneinheitlich und liest
+sich als Fehler.
+
+**Vorschlag:** Entweder wie in StockPortfolio neu aufbauen oder die Überschrift
+entfernen. Kosmetisch.
+
+### Nicht geprüft und ausdrücklich offen
+
+Collector, periodischer Lauf, KI-Ableitung und deren Gegenproben sind nicht
+Teil dieser Fassung; Codex hat das so übergeben. Die gemeinsamen Regeln stehen
+auf `needs_review`/`partial` — dieser Review bestätigt ihre **Überführung**,
+nicht ihre fachliche Neubewertung. Verify 4, 8 und 11 bleiben zu Recht
+teilweise, die übrigen Zielprüfungen unverifiziert.
+
+Diese Freigabe ist technisch und deckt nur den beauftragten ersten Schritt.
+Der Gesamtauftrag T-41 ist nicht abgeschlossen; **Mikes Abschlussabnahme
+steht aus**, und das Ticket bleibt unter `30-doing/`.
+
+### Verarbeitung der Freigabe · codex, 2026-09-11
+
+Claudes technische Freigabe gilt für alle vier übergebenen Prüffassungen.
+R1-01 und R1-02 bleiben gemäß Rückgabe nicht blockierende Hinweise für die
+nächste Berührung: Hash-Feld verständlicher benennen beziehungsweise die
+leere Übersicht als Linkliste füllen. Die zugehörigen Daten und Altanker
+sind erhalten; keine eigene Nacharbeitsrunde eröffnet. Der Review hat die
+Überführung geprüft, keine vollständige fachliche Neuauswertung der Regeln.
+Daher bleiben `needs_review`/`partial` im gemeinsamen Bestand unverändert.
+
+Die StockInfo-Rückgabe ist in dessen STATUS und im T-70-Verweis nachgetragen
+(`2f755b9`), ohne zweiten Review oder zweite Nachweismatrix. Beide Boards
+haben keinen weiteren automatischen Arbeitsauftrag. T-41 und T-70 bleiben
+für die noch offene menschliche Einordnung unter `30-doing/`; Collector,
+periodischer Lauf und KI-Ableitung bleiben außerhalb dieses ersten Schritts.
+Der Rollen-Scheduler in StockPortfolio wartet bei `idle` weiter.
+
+**Doku-Abgleich der Rückgabe:** Aktuelle Zusammenfassungen in Ticket,
+StockPortfolio-Board-README und beiden STATUS-Dateien sowie T-70 nachgezogen.
+Die geprüften Lessons, Agentenregeln, Skill-Dateien und zentralen Daten sind
+unverändert. Produktprüfungen wurden für diese reinen Ergebnisnachträge nicht
+noch einmal wiederholt.
+
 ### Side-Effects
 
 Die spätere Umsetzung betrifft den Lessons-Zugriff und die Pflegeprozesse der
@@ -1214,10 +1308,13 @@ aber nicht verändert.
 
 ### Auflösung
 
-**Erster Schritt umgesetzt; unabhängiger Review offen · codex, 2026-09-11.** Mike hat den StockInfo-Anteil mit
-„StockInfo-Anteil passt“ freigegeben. Dort gelten `implementer: codex`,
-`reviewer: claude`, `observer: unassigned`, `owner: codex`, `implementing`
-und T-70 als Verweis auf dieses Ticket; Aktivierungscommit `5fc549b`.
+**Erster Schritt technisch freigegeben · claude, Runde 1, 2026-09-11.**
+Codex hat die Rückgabe verarbeitet. Keine erforderliche Nacharbeit; die
+menschliche Abschlussabnahme bleibt offen. T-41 bleibt unter `30-doing/`.
+Der begrenzte Agentenauftrag ist beendet; dieses Board wartet mit `idle`.
+StockInfos mitgeprüfter Anteil ist unter T-70 nachgetragen, Boardcommit
+`2f755b9`; dort gemäß eigenem Workflow `portfolio_review`, Owner `mike`,
+ohne aktive Kette. Der nächste Collector-Schritt ist noch nicht aktiviert.
 Die drei Quell-Repositories verwenden den Branch `t-41-agentlessons-einzeldateien`.
 
 **Historischer Rollenblocker, inzwischen aufgehoben:**

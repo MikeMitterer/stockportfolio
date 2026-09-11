@@ -184,7 +184,7 @@ Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
 Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
 712 Tests, Lint und Typecheck erfolgreich. Runde 2 ist durch Claude technisch
 freigegeben; Mikes Abschlussabnahme steht noch aus. Dieser technische Auftrag
-ist bearbeitet; aktuell läuft der erste Schritt von T-41.
+ist bearbeitet; auch der erste Schritt von T-41 ist inzwischen technisch freigegeben.
 
 [↑ Übersicht](#übersicht)
 
@@ -195,8 +195,9 @@ hält das Konzept für lokale Einzel-Lessons, eine separate zentrale Aggregation
 und nachvollziehbar abgeleitete Regeln fest. Mike hat es am 2026-09-11 aktiviert
 und nach `30-doing/` verschoben; erster Schritt ist die Aufteilung der Lessons
 in Einzeldateien samt Abgleich von Ticket-Skill und Agenten-Infos. Dieser
-Bestand ist jetzt überführt; der unabhängige Review ist noch offen. Collector
-und automatische Regelableitung sind weiterhin geplant. Verweise
+Bestand ist überführt und durch Claude in Runde 1 technisch freigegeben.
+Mikes Abschlussabnahme ist offen. Collector und automatische Regelableitung
+sind weiterhin geplant und noch nicht aktiviert. Verweise
 innerhalb von AgentLessons bleiben relativ; registrierte Projektquellen werden
 über eine benannte Basis aufgelöst.
 
