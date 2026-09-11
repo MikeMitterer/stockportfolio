@@ -106,7 +106,7 @@ nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
 
 ## Roadmap (MVP-Reihenfolge)
 
-Stand nach dem Release 0.1.0. „Teilweise" heißt: Das Ticket ist nicht
+Stand nach dem Release 0.1.0. „Teilweise“ heißt: Das Ticket ist nicht
 geschlossen — was fehlt, steht in der Zeile.
 
 | # | Titel | Stand |
@@ -190,7 +190,7 @@ Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
 Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
 712 Tests, Lint und Typecheck erfolgreich. Runde 2 ist durch Claude technisch
 freigegeben; Mikes Abschlussabnahme steht noch aus. Dieser technische Auftrag
-ist bearbeitet; auch der erste Schritt von T-41 ist inzwischen technisch freigegeben.
+ist bearbeitet.
 
 [↑ Übersicht](#übersicht)
 

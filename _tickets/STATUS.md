@@ -5,16 +5,14 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-41: Schritt 1 einschließlich R1-F1/R1-F2 ist in Runde 2 technisch freigegeben.**
-`codex` hat Claudes Rückgabe ohne Befunde verarbeitet; der begrenzte Auftrag
-ist beendet. Mikes Abschlussabnahme bleibt offen. Collector und KI-Ableitung
-sind weiterhin nicht aktiviert. Seine neue CLI-/Mehrfachaufrufanforderung ist
-im Ticket samt offenen Prüfpunkten 32/33 festgehalten.
+**Kein Auftrag ist aktiv.** T-41 und T-42 sind am 2026-09-11 nach AgentLessons
+umgezogen und erzeugen hier keine Arbeit mehr; Einzelheiten stehen unter
+[AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
 im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
-T-39 und T-40 sind bereits technisch freigegeben; beide warten auf Mikes
-Abschlussabnahme unter `30-doing/`.
+T-39 und T-40 sind bereits technisch freigegeben; alle drei warten unter
+`30-doing/` auf Mikes Abschlussabnahme.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
 abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
 T-31 bis T-34 sind durch Mike am 2026-09-10 abgeschlossen und liegen unter
@@ -34,13 +32,13 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `observer`: `codex-observer`
 - `phase`: `idle`
 - `ticket`: `none`
-- `handoff_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
-- `review_round`: `2`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-11`
-- `last_reviewed_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
-- `last_reviewed_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `none`
+- `last_reviewed_commit`: `none`
+- `last_reviewed_round`: `0`
 - `workstream`: `none`
 - `priority_chain`: `none`
 - `priority_ticket`: `none`
@@ -61,20 +59,22 @@ Eine technische Freigabe ist noch kein Ticketabschluss.
 enthalten bei Belegung Dateinamen ohne Ordner. Aktive Arbeit wird unter
 `30-doing/` aufgelöst. Der letzte Review kann zu einem archivierten Ticket
 gehören und startet keine erneute Arbeit. Die Felder oben enthalten keine
-nachträglich erfundene Übernahme der früheren Ticket-Reviews.
+nachträglich erfundene Übernahme der früheren Ticket-Reviews. Die Reviewfelder
+stehen auf `none`, seit der zuletzt geprüfte Auftrag nach AgentLessons
+umgezogen ist; sein Reviewstand wird auf dem dortigen Board geführt.
 
 ## Kontext
 
 ### AgentLessons ist umgezogen · 2026-09-11
 
 Mike: „OK - wir ziehen um: /Volumes/DevLocal/DevKI/Production/AgentLessons …
-Du kannst t-41 und t-42 dorthin mitnehmen."
+Du kannst t-41 und t-42 dorthin mitnehmen“.
 
 T-41 und T-42 werden in `/Volumes/DevLocal/DevKI/Production/AgentLessons`
-weitergeführt; hier stehen nur noch Verweise. Das
-neue Board ist vollständig eingerichtet, die Rollen sind wie hier zugeordnet
-(`codex`, `claude`, `codex-observer`), und der Reviewbezug aus Runde 2 ist
-übernommen, damit kein abgeschlossenes Review wiederholt wird.
+weitergeführt; hier stehen nur noch Verweise. Das neue Board ist vollständig
+eingerichtet, die Rollen sind wie hier zugeordnet (`codex`, `claude`,
+`codex-observer`), und der Reviewbezug aus Runde 2 ist übernommen, damit kein
+abgeschlossenes Review wiederholt wird.
 
 **In StockPortfolio bleibt der erledigte Anteil:** lokale Lessons als
 Einzeldateien unter `.agents/lessons/`, die Linkeinstiege,
@@ -85,6 +85,11 @@ auf dem AgentLessons-Board**.
 Der Workstream dieses Boards ist damit wieder frei. Offen bleiben hier T-38,
 T-39 und T-40 mit ausstehender Abschlussabnahme sowie T-35 und T-36 im Backlog.
 
+**Formatänderung für alle Autoren:** Vor der nächsten Lessons-Pflege
+[LESSONS-ACCESS.md](.agents/LESSONS-ACCESS.md) lesen. Originale liegen unter
+`lessons/`, gemeinsame Regeln in AgentLessons, Metadaten haben Formatfassung 1.
+Die bisherigen Sammeldateien sind reine Linkeinstiege ohne zweiten
+handgepflegten Inhalt.
 
 ### ACTIVITY · zentraler Helfer · 2026-09-11
 
@@ -95,64 +100,8 @@ AgentLessons-Board.
 Alle Projekte verwenden denselben Befehl; keine Kopie unter `.agents/bin`.
 Neue Einträge oben, ein bis zwei Sätze, Standard letzte 50. Agenten schreiben
 nur eigene Meldungen und lesen ACTIVITY nicht als Kontext. Übernahme nach dem
-Workflow, Konventionsstand `2026-09-11-activity-feed`.
-Dies ist ein direkter Observer-Auftrag, kein neuer Coder-/Verifier-Auftrag und
-keine Erweiterung der abgeschlossenen T-41-Prüffassung.
-
-### Aktiviert · T-41 AgentLessons
-
-**Mike, 2026-09-11:** „Damit aktivieren wir das Ticket nach doing und STATUS.md
-dient als Kommunikationskanal, du bist verifier, Codex führt aus“, dazu „Eine
-weitere Codex-Instanz arbeitet als Observer“.
-
-Das Ticket lag unter `30-doing/` und wird seit dem Umzug im AgentLessons-Board
-geführt.
-`codex` hat den ersten Schritt umgesetzt und die technische Freigabe von `claude` verarbeitet;
-`codex-observer` beobachtet. Alle drei Kennungen sind verschieden.
-
-Der beauftragte erste Schritt steht im Ticket unter „Vorgeschlagener erster
-Schritt“: Lessons in Einzeldateien aufteilen, Ticket-Skill anpassen,
-Agenten-Infos in beiden Projekten nachziehen. Umfang, die fünf Fallstricke und
-die Reihenfolge stehen dort; sie sind Teil des Auftrags.
-
-Der Auftrag berührt drei getrennte Ablagen. StockPortfolio läuft über dieses
-Board. **StockInfo hat ein eigenes Board mit eigenen Rollen und eigenen
-Commits** — dort vor dem ersten Edit die eigene `STATUS.md` lesen und bei
-abweichender Rollenzuordnung den Konflikt melden statt ihn zu umgehen. Der
-Skill `task-verification-workflow` liegt zentral in PersonalSkills und wird
-auch von KanTandem verwendet.
-
-T-38, T-39 und T-40 bleiben unter `30-doing/` und warten unverändert auf Mikes
-Abschlussabnahme; die Aktivierung von T-41 ändert daran nichts.
-
-**StockInfo-Freigabe liegt vor · Mike, 2026-09-11:** „StockInfo-Anteil passt“.
-`codex` hat dort den begrenzten Anteil aktiviert, als T-70-Verweis auf dieses
-T-41. Aktivierungscommit `5fc549b`; Claude hat den Anteil in Runde 1 hier
-mitgeprüft. Die damalige Rückgabe ist dort nachgetragen (`2f755b9`).
-Für R1-F2 wurde T-70 reaktiviert (`79d84e3`); Claude hat `2165f64`
-in Runde 2 mitgeprüft. Die Freigabe ist dort verarbeitet (`89a302e`):
-`portfolio_review`, Owner `mike`, keine aktive Kette. Keine zweite fachliche Ticketfassung.
-Der Rollenblocker ist erledigt.
-Der erste Schritt mit Schema und Inventar ist umgesetzt; die bisherigen
-Sammeldateien sind reine Linkeinstiege ohne zweiten handgepflegten Inhalt.
-**Formatänderung für alle Autoren:** Vor der nächsten Lessons-Pflege
-[LESSONS-ACCESS.md](.agents/LESSONS-ACCESS.md) lesen: Originale liegen unter
-`lessons/`, gemeinsame Regeln in AgentLessons, Metadaten haben Formatfassung 1.
-
-### Beauftragte Konzeptdurchsicht · T-41
-
-Mike, 2026-09-11: T-41 einschließlich Claudes Ergänzungen durchsehen;
-Kommunikation über STATUS. `codex` hat die Konzeptdurchsicht dokumentiert.
-Die Befunde und Vorschläge stehen unter
-T-41, Abschnitt „Konzeptdurchsicht durch codex“ — das vollständige Ticket liegt
-seit dem Umzug im AgentLessons-Board.
-`claude` hat C1 bis C5 angenommen und eingearbeitet. `codex` hat die Rückmeldung
-abgeglichen und verbliebene widersprüchliche Aussagen im Ticket nachgezogen.
-Die Konzeptdurchsicht ist abgeschlossen; es ist keine fachliche Rückfrage offen.
-Mike hat vorerst gegen ein Git-Remote entschieden. KanTandem übernimmt nach
-seiner Bewertung einer Bewährungsphase. Die damalige Durchsicht allein
-aktivierte keine Umsetzung. Inzwischen ist der erste Umsetzungsschritt
-ausdrücklich aktiviert; die StockInfo-Freigabe ist inzwischen ebenfalls erteilt.
+Workflow, Konventionsstand `2026-09-11-activity-feed`. Eine Meldung nennt den
+konkreten Gegenstand, nicht nur Ticket und Phase.
 
 ### Historischer Integrationsauftrag · bis 2026-09-10
 
@@ -248,7 +197,6 @@ T-31 bis T-34 sind auf Mikes Auftrag im Observer-Chat abgeschlossen:
 „Schließ ab und bereinige die Aussage“. Die bisherigen Einzelantworten bleiben
 erhalten; neue Einzelprüfurteile wurden nicht ergänzt.
 T-38, T-39 und T-40 warten auf die menschliche Abschlussabnahme.
-Inzwischen ist T-41 als AgentLessons-Auftrag aktiviert; siehe oben.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
@@ -267,25 +215,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**Von `codex-observer` · ACTIVITY umgestellt · 2026-09-11:** Ab der nächsten
-Tätigkeitsmeldung `agent-activity <eigene Kennung> "kurze Meldung"` verwenden.
-Eine zentrale Installation für alle Projekte; neueste Meldung oben, Standard
-letzte 50. ACTIVITY nicht als Kontext lesen und nicht manuell überschreiben.
-Details und Nachweise in T-42 im AgentLessons-Board.
-Der Tickets-Skill enthält die Übernahme für bestehende und künftige Boards;
-die T-41-Freigabe wird dadurch nicht erweitert.
-
-T-41: Claudes Runde-2-Freigabe verarbeitet; Nachweise und die neue
-Skriptpräzisierung stehen in T-41. Der StockInfo-Verweis ist nachgezogen.
+Leer.
 
 ## OUTBOX → Verifier
 
-Leer. ACTIVITY-Umstellung von `codex-observer` übernommen: Der globale Helfer
-ist installiert, diese Datei ist anhängend mit neuester Meldung oben, und
-`claude` schreibt seither über `agent-activity`.
-
-Zwei Hinweise zurück an den Observer: T-42 ist am 2026-09-11 nach AgentLessons
-umgezogen; dieses Board nennt nur noch den neuen Ort und verlinkt kein Ticket
-mehr unter `30-doing/`. Und Mike hat die Regel präzisiert — eine Meldung nennt den konkreten
-Gegenstand, nicht nur Ticket und Phase; das ist im umgezogenen T-42
-festgehalten und für Workflow und Skill vorgemerkt.
+Leer.
