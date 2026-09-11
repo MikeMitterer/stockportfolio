@@ -7,6 +7,16 @@ Der Ablageort zeigt den Arbeitsstand. Rollen, Reihenfolge und genaue Phase
 stehen in [STATUS.md](STATUS.md). Seit dem 2026-09-10 verwendet StockPortfolio
 dieselbe Board-Struktur wie StockInfo und der Skill `task-verification-workflow`.
 
+## Übersicht
+
+- [Ablage](#ablage)
+- [Von der Aufnahme bis zum Abschluss](#von-der-aufnahme-bis-zum-abschluss)
+- [Nachweise und Agentenregeln](#nachweise-und-agentenregeln)
+- [Roadmap (MVP-Reihenfolge)](#roadmap-mvp-reihenfolge)
+- [Offen](#offen)
+- [Neu erfasste Integrationsbewertung](#neu-erfasste-integrationsbewertung)
+- [Aktives projektübergreifendes Teilprojekt](#aktives-projektübergreifendes-teilprojekt)
+
 ## Ablage
 
 ```text
@@ -27,6 +37,8 @@ Tickets und Begleitdateien liegen gemeinsam im jeweiligen Ordner. Im Root
 bleiben die drei Board-Dateien. Leere Statusordner enthalten `.gitkeep`,
 damit sie in einem neuen Checkout vorhanden sind. Bei Inventaren und
 Linkprüfungen den versteckten Ordner [.agents/](.agents/) einschließen.
+
+[↑ Übersicht](#übersicht)
 
 ## Von der Aufnahme bis zum Abschluss
 
@@ -50,6 +62,8 @@ Bei jedem Wechsel aktuelle Verweise mitführen. Prüfskripte bleiben beim
 Ticket und müssen den Projekt-Root unabhängig von ihrer Ordnertiefe finden.
 Vor dem Abschluss das gesamte Ticket auf widersprüchliche Aussagen prüfen.
 
+[↑ Übersicht](#übersicht)
+
 ## Nachweise und Agentenregeln
 
 Jedes Ticket hat eine verbindliche aktuelle technische Verify-Matrix.
@@ -67,12 +81,11 @@ fachlicher Überarbeitung entfällt die zusätzliche Ticket-Statusspalte.
 Der gemeinsame [Workflow](.agents/AGENT-WORKFLOW.md) regelt Rollen und Übergaben.
 [Aktivierung](.agents/AGENT-ACTIVATION.md) und
 [Codex-Scheduler](.agents/CODEX-IN-CONTEXT-SCHEDULER.md) bleiben davon getrennt.
-Die Sammlungen [Claude](.agents/CLAUDE-LESSONS.md) und
-[Codex](.agents/CODEX-LESSONS.md) enthalten lokale Erfahrungen und eine
-kuratierte Startbasis mit gekennzeichneten Quellbelegen. Der Workflow legt
-Vorbeugung durch den Implementer, Gegenproben des Verifiers und die
-Mustererkennung samt Lessons-Pflege durch den Observer fest.
-Die Umstellung startet keine Agenten oder Timer.
+Die Linkeinstiege [Claude](.agents/CLAUDE-LESSONS.md) und
+[Codex](.agents/CODEX-LESSONS.md) verweisen auf lokale Einzeldateien.
+[Zugriff und Pflege](.agents/LESSONS-ACCESS.md) beschreiben das vollständige
+Verzeichnisinventar und den gemeinsamen Bestand in AgentLessons. Der Workflow
+regelt Vorbeugung, unabhängige Gegenprüfung und Lessons-Pflege.
 
 Der optionale Observer liest unabhängig vom Owner und meldet Hinweise in
 seinem eigenen Chat. Seine Instanzkennung steht in STATUS. Die
@@ -82,6 +95,8 @@ Wiedereinstieg. Eine technische Abnahme bleibt Aufgabe des Verifiers.
 
 [QUESTIONS.md](QUESTIONS.md) sammelt kurzfristige Fragen. Erledigte Einträge
 nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
+
+[↑ Übersicht](#übersicht)
 
 ## Roadmap (MVP-Reihenfolge)
 
@@ -123,6 +138,8 @@ geschlossen — was fehlt, steht in der Zeile.
 | T-UI | Frühe UI-Vorschau | [erledigt](40-done/T-UI-preview.md) |
 | T-26 | Wertentwicklung des Depots — Rückblick und Tageswerte | [erledigt](40-done/T-26-wertentwicklung.md) |
 
+[↑ Übersicht](#übersicht)
+
 ## Offen
 
 Kein Ticket, aber notiert, damit es nicht verloren geht:
@@ -134,6 +151,8 @@ Kein Ticket, aber notiert, damit es nicht verloren geht:
 | Verlaufs-Zwischenspeicher | wird nie aufgeräumt, wächst nur |
 | Feste Spaltenbreiten in der Positionstabelle | zehn Stück; blockieren einen späteren Schriftwechsel |
 
+[↑ Übersicht](#übersicht)
+
 ## Neu erfasste Integrationsbewertung
 
 [T-37 · StockInfo-Vertrag und dynamische Felder](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md):
@@ -143,8 +162,8 @@ Quote-Ansicht bewertet. Technisch freigegeben und durch Mike am 2026-09-10 abges
 Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 [T-39 · Identität normalisieren](30-doing/T-39-identitaet-normalisieren.md) und
 [T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
-Beide sind bereits umgesetzt und technisch freigegeben. Nach Mikes jüngster
-Klarstellung hat die Depotwährung aus T-38 Vorrang; der aktive Auftrag steht in
+Beide sind bereits umgesetzt und technisch freigegeben. Anschließend wurde
+auch die Depotwährung aus T-38 technisch freigegeben; der aktive Auftrag steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
 T-39 ist technisch freigegeben und wartet auf Mikes Abschlussabnahme.
 T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
@@ -164,13 +183,26 @@ Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.
 Veraltete verwendbare FX-Kurse bleiben mit dauerhafter Warnung aktiv; fehlende
 Kurse schließen Positionen aus Bewertung und Trades aus. Isolierte Prüfung:
 712 Tests, Lint und Typecheck erfolgreich. Runde 2 ist durch Claude technisch
-freigegeben; Mikes Abschlussabnahme steht noch aus. Der Agentenauftrag ist idle.
+freigegeben; Mikes Abschlussabnahme steht noch aus. Dieser technische Auftrag
+ist bearbeitet; aktuell läuft der erste Schritt von T-41.
 
-## Vorgemerktes projektübergreifendes Teilprojekt
+[↑ Übersicht](#übersicht)
 
-[T-41 · AgentLessons](10-backlog/T-41-agentlessons-projektuebergreifend-sammeln.md)
+## Aktives projektübergreifendes Teilprojekt
+
+[T-41 · AgentLessons](30-doing/T-41-agentlessons-projektuebergreifend-sammeln.md)
 hält das Konzept für lokale Einzel-Lessons, eine separate zentrale Aggregation
-und nachvollziehbar abgeleitete Regeln fest. Als eines der nächsten Teilprojekte
-vorgemerkt; noch nicht zur Umsetzung aktiviert. Der Auftrag umfasst später
-auch den Abgleich des Ticket-Skills. Alle Dateiverweise innerhalb von
-AgentLessons werden relativ gehalten.
+und nachvollziehbar abgeleitete Regeln fest. Mike hat es am 2026-09-11 aktiviert
+und nach `30-doing/` verschoben; erster Schritt ist die Aufteilung der Lessons
+in Einzeldateien samt Abgleich von Ticket-Skill und Agenten-Infos. Dieser
+Bestand ist jetzt überführt; der unabhängige Review ist noch offen. Collector
+und automatische Regelableitung sind weiterhin geplant. Verweise
+innerhalb von AgentLessons bleiben relativ; registrierte Projektquellen werden
+über eine benannte Basis aufgelöst.
+
+Der Bestand liegt seit Mikes Entscheidung vom 2026-09-11 unter
+`~/.local/share/agent-lessons/`. KanTandem beschreibt dasselbe Thema in seinem
+Konzeptabschnitt 0d; beide Fassungen sollen sich ergänzen statt auseinander
+zu laufen. Die Abgrenzung steht im Ticket.
+
+[↑ Übersicht](#übersicht)

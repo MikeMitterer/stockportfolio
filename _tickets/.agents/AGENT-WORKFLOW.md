@@ -100,35 +100,14 @@ ergänzen. Unklare Autorenschaft offenlassen, nicht aus dem aktuellen Owner able
   Wiederholung prüfen, ob eine Regel fehlt, unklar ist oder nicht angewendet
   wurde; genau diese Lücke verbessern und im Chat mit Beleg benennen.
 
-**Ein neues Board beginnt mit der kuratierten Startbasis des Ticket-Skills.**
-Die lokal enthaltenen Regeln funktionieren ohne andere Projekte. Bei Einrichtung
-oder Übernahme zusätzlich die Lessons eines benannten, verfügbaren Quellprojekts
-sichten. Übertragbare Regeln mit Quelle, Fassung und ursprünglicher
-Autorenschaft kuratiert in die lokalen Sammlungen aufnehmen; sie ausdrücklich
-als externe Startbasis kennzeichnen. Das ist keine Behauptung lokaler Vorfälle.
-Übernahme, Anpassung und Auslassungen mit Grund in den Lessons festhalten.
-Quellrollen, Reviewzähler und projektspezifische Regeln nicht mitkopieren.
-Die lokale Fassung muss ohne Zugriff auf das Quellprojekt verständlich bleiben.
-Ohne Quellprojekt die allgemeine Startbasis des Ticket-Skills prüfen und
-passend übernehmen; verbleibende Wissenslücken offen nennen. Bestehende lokale
-Erfahrungen erhalten. Spätere Übernahmen erfolgen gezielt, ohne automatische
-Synchronisation oder Vorrang fremder Regeln.
-**Eigenständige Entwicklung und Wissenstransfer:** Jedes Board entwickelt
-seine Lessons eigenständig weiter, auch zuvor übernommene Regeln. Der Observer
-unterscheidet projektspezifische Erkenntnisse von übertragbaren Ursachen und
-formuliert für Letztere einen konkreten Nachtrag zur Startbasis im Ticket-Skill.
-Der Nachtrag enthält allgemeine Erkennung, Vorbeugung, Gegenprobe und Herkunft.
-Globale Übernahme nur im Rahmen eines entsprechenden Auftrags; lokale
-Lessons-Erlaubnis allein reicht dafür nicht.
-
-Die Skill-Vorlagen sind eine kuratierte Startbasis für weitere Projekte.
-Sie überschreiben keine eigenständig weiterentwickelten Projekt-Lessons.
-Beim beauftragten Abgleich Herkunft und Übernahmestand berücksichtigen und
-inhaltlich entscheiden: ergänzen, lokal anpassen, bereits abgedeckt oder
-nicht passend. Lokale Belege und Anpassungen erhalten. Widersprechen sich
-Erfahrungen, zunächst deren Geltungsbereiche prüfen; keine Fassung allein
-wegen ihres Datums bevorzugen. Unterschiedliche Anforderungen dürfen
-unterschiedliche Regeln ergeben. Keine automatische Synchronisation.
+**Lokale Lessons liegen einzeln unter `lessons/`; gemeinsame Regeln in
+AgentLessons.** [Zugriff, Herkunft und Pflege](LESSONS-ACCESS.md) regeln die
+Lesepflicht einschließlich Verzeichnisinventar, fehlender Sammlung und neuer
+Fassungen. Die früheren Sammeldateien sind nur Linkeinstiege. Der Ticket-Skill
+liefert das Format und die Einrichtung, keine eigene Kopie des Wissens.
+Die übernommene [Verfahrensempfehlung](LESSONS-PROCESS.md) bleibt als solche
+gekennzeichnet. Globale Pflege braucht einen Auftrag; keine automatische
+Synchronisation oder Übernahme fremder Rollen und Betriebsvorgaben.
 
 ## Observer
 

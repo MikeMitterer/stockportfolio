@@ -44,22 +44,22 @@ von StockInfo: dessen `AGENTS.md`, dessen Board und die Rollen aus dessen
 bleiben getrennt; eine Änderung am Dienst gehört nicht in einen Commit dieses
 Projekts.
 
-- **`src/api/client.ts` ist die einzige Stelle mit `fetch`.**  
+- **`src/api/client.ts` ist die einzige Stelle mit `fetch`.**
   Neue Endpunkte kommen dort dazu, mit Typ in `src/api/types.ts` und Mapper in
   `src/api/mappers.ts`. Der Client bekommt `fetch` injiziert; kein Test ruft
   den echten Dienst.
 
-- **Die Basisadresse hat keine Rückfallebene.**  
+- **Die Basisadresse hat keine Rückfallebene.**
   Zur Laufzeit gilt `config.js` — im Container aus `STOCKINFO_API_URL`
   geschrieben —, sonst `VITE_STOCKINFO_API_URL` aus der lokalen `.env`
   (Vorlage: `.env.example`). Fehlt beides, wirft die App `MissingApiUrlError`
   und sagt das. Eine fest eingebaute Adresse wäre für jeden außer ihrem
   Besitzer ein Name, der nicht auflöst.
 
-- **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**  
+- **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
 
-- **Den Vertrag liefert StockInfo maschinenlesbar mit.**  
+- **Den Vertrag liefert StockInfo maschinenlesbar mit.**
   `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
@@ -117,6 +117,12 @@ Phasen oder Übergabefassungen übernehmen — die beiden Boards laufen getrennt
 Dateinamen und Produktnamen sind keine Rollenverteilung. Der Autor kann seine
 eigene Fassung nicht unabhängig abnehmen, und eine technische Freigabe ist noch
 kein Ticketabschluss.
+
+Lokale Lessons liegen als Einzeldateien unter `_tickets/.agents/lessons/`.
+Die alten Sammeldateien sind Linkeinstiege. Verzeichnisinventar, gemeinsamer
+AgentLessons-Bestand und Herkunft folgen
+[Lessons lesen und pflegen](_tickets/.agents/LESSONS-ACCESS.md); die gemeinsame
+Sammlung wird noch nicht automatisch aktualisiert.
 
 [↑ Übersicht](#übersicht)
 
