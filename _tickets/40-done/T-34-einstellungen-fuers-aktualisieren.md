@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | in-progress | ~30 min | UI-only | — |
+| root | done | ~30 min | UI-only | — |
 
 **Löst:** `refresh.autoOnLoad` und `refresh.staleAfterMinutes` standen im
 Datenmodell, hatten aber kein Feld in den Einstellungen. Wer sie ändern wollte,
@@ -10,7 +10,16 @@ musste die Sicherung exportieren, die JSON anpassen und wieder einspielen.
 
 ---
 
+**Abgeschlossen am 2026-09-10.** Mike hat T-31 bis T-34 im Observer-Chat
+gemeinsam abgeschlossen: „Schließ ab und bereinige die Aussage“.
+Es steht keine weitere Abnahme dieses Tickets an.
+
 ## Verify
+
+Historischer Prüfstand vom 2026-08-19. Die Fußnoten nennen die tatsächlich
+verwendete Prüfmethode; Originalantworten bleiben erhalten. Beim Abschluss
+wurde keine neue Live-Prüfung durchgeführt. Spätere Ergänzungen durch die
+anderen Tickets ersetzen keine ursprünglichen Prüfurteile.
 
 Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) ·
 ◑ teilweise (Fußnote) · ➖ keine Live-Verifikation (nur Unit/Review).
@@ -65,7 +74,8 @@ Genau dagegen laufen die drei neuen Tests.
 - [x] Der Wert überlebt einen Neustart und liegt beim Depot.
 - [x] Das Minuten-Feld ist gesperrt, wenn der Schalter aus ist — zeigt aber weiter seinen Wert.
 - [x] Beide Kataloge gepflegt, keine harten Texte.
-- [ ] #1–#4, #6 vom Menschen gesehen.
+- [x] Menschlicher Abschluss durch Mike am 2026-09-10; die zuvor offenen
+  Einzelabnahmen werden nicht weiter angefordert. Keine einzelnen Prüfurteile ergänzt.
 
 ### Side-Effects
 
@@ -78,4 +88,12 @@ unterscheiden — dafür gibt es den Schalter.
 
 ### Auflösung
 
-Wird zuletzt gefüllt. Commit-Hash(es), Lint-Status, Findings.
+Abgeschlossen auf Mikes ausdrücklichen Auftrag vom 2026-09-10. Die Umsetzung
+ist im aktuellen Code vorhanden; die damaligen Test- und Buildbelege stehen
+oben. Keine offene Nacharbeit aus diesem Ticket dokumentiert.
+
+**Doku-Abgleich:** Abschluss und Ablage der vier Tickets sowie ihre Verweise
+in STATUS bereinigt. Die Schonfrist aus T-33 begrenzt automatische Abrufe und
+damit die Fortschrittsanzeige aus T-31/T-32; ihre Bedienbarkeit ist durch T-34
+erledigt. Keine Änderung am Produktverhalten; Produktanleitungen bleiben
+unverändert.

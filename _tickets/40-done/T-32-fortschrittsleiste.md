@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | in-progress | ~1 h | UI + Store | — |
+| root | done | ~1 h | UI + Store | — |
 
 **Löst:** Der Spinner am Knopf drehte bei **jedem** Kursabruf mit, auch beim
 Seitenaufruf — er behauptete eine Handlung, die es nicht gab, und sperrte den
@@ -11,7 +11,16 @@ Hintergrund passiert.
 
 ---
 
+**Abgeschlossen am 2026-09-10.** Mike hat T-31 bis T-34 im Observer-Chat
+gemeinsam abgeschlossen: „Schließ ab und bereinige die Aussage“.
+Es steht keine weitere Abnahme dieses Tickets an.
+
 ## Verify
+
+Historischer Prüfstand vom 2026-08-19. Die Fußnoten nennen die tatsächlich
+verwendete Prüfmethode; Originalantworten bleiben erhalten. Beim Abschluss
+wurde keine neue Live-Prüfung durchgeführt. Spätere Ergänzungen durch die
+anderen Tickets ersetzen keine ursprünglichen Prüfurteile.
 
 Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) ·
 ◑ teilweise (Fußnote) · ➖ keine Live-Verifikation (nur Unit/Review).
@@ -54,8 +63,12 @@ Zwei Anzeigen, zwei verschiedene Fragen:
 | Leiste oben | „Passiert gerade etwas?" | `busy` — jeder Kursabruf |
 | Spinner am Knopf | „Ist mein Klick angekommen?" | `forcing` bzw. `refreshing` je Position |
 
-Abgedeckt sind alle fünf Auslöser: Seitenaufruf, Ansichtswechsel, Beispiel-Depot
-und neue Position, Klick auf „Aktualisieren", Einzel-Refresh im Drilldown.
+Die Anzeigen begleiten tatsächliche Abrufe durch Seitenaufruf, Ansichtswechsel,
+Beispiel-Depot und neue Position, Klick auf „Aktualisieren" sowie Einzel-Refresh
+im Drilldown. Verhindert die Schonfrist aus
+[T-33](T-33-schonfrist-automatisches-laden.md) einen automatischen Abruf,
+bleiben beide Anzeigen ruhig. Die alten Verify-Zeilen #1/#6 beschreiben den
+Stand vor dieser Ergänzung.
 
 Der Fortschritt steht als **zwei Zähler** im Store, nicht als Objekt je Vorgang:
 Es können mehrere gleichzeitig laufen — ein Einzel-Refresh, während der
@@ -76,7 +89,8 @@ Fundament ziehen, sobald eine zweite App sie braucht.
 - [x] Der Spinner am Knopf erscheint nur nach einem Klick — und nur, wenn tatsächlich etwas geholt wird.
 - [x] Mehrere gleichzeitige Vorgänge ergeben einen gemeinsamen Balken.
 - [x] Ein Fehlschlag lässt weder Leiste noch Spinner stehen.
-- [ ] #3, #5, #6, #8 vom Menschen gesehen.
+- [x] Menschlicher Abschluss durch Mike am 2026-09-10; die zuvor offenen
+  Einzelabnahmen werden nicht weiter angefordert. Keine einzelnen Prüfurteile ergänzt.
 
 ### Side-Effects
 
@@ -89,4 +103,12 @@ einem Abruf, der aus dem Speicher des Dienstes kommt, unbemerkt auf.
 
 ### Auflösung
 
-Wird zuletzt gefüllt. Commit-Hash(es), Lint-Status, Findings.
+Abgeschlossen auf Mikes ausdrücklichen Auftrag vom 2026-09-10. Die Umsetzung
+ist im aktuellen Code vorhanden; die damaligen Test- und Buildbelege stehen
+oben. Keine offene Nacharbeit aus diesem Ticket dokumentiert.
+
+**Doku-Abgleich:** Abschluss und Ablage der vier Tickets sowie ihre Verweise
+in STATUS bereinigt. Die Schonfrist aus T-33 begrenzt automatische Abrufe und
+damit die Fortschrittsanzeige aus T-31/T-32; ihre Bedienbarkeit ist durch T-34
+erledigt. Keine Änderung am Produktverhalten; Produktanleitungen bleiben
+unverändert.

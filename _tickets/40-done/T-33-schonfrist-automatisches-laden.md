@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | in-progress | ~30 min | Store + Views | — |
+| root | done | ~30 min | Store + Views | — |
 
 **Löst:** Jeder Wechsel zwischen Dashboard und Ausgleichen baute die Ansicht neu
 auf und löste einen vollen Durchgang aus — n HTTP-Anfragen für Kurse, die zehn
@@ -10,7 +10,16 @@ Sekunden alt sein konnten.
 
 ---
 
+**Abgeschlossen am 2026-09-10.** Mike hat T-31 bis T-34 im Observer-Chat
+gemeinsam abgeschlossen: „Schließ ab und bereinige die Aussage“.
+Es steht keine weitere Abnahme dieses Tickets an.
+
 ## Verify
+
+Historischer Prüfstand vom 2026-08-19. Die Fußnoten nennen die tatsächlich
+verwendete Prüfmethode; Originalantworten bleiben erhalten. Beim Abschluss
+wurde keine neue Live-Prüfung durchgeführt. Spätere Ergänzungen durch die
+anderen Tickets ersetzen keine ursprünglichen Prüfurteile.
 
 Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) ·
 ◑ teilweise (Fußnote) · ➖ keine Live-Verifikation (nur Unit/Review).
@@ -69,21 +78,32 @@ oder dem Laden des Beispiel-Depots — dort werden die Kurse gerade gebraucht.
 - [x] Fehlt ein Kurs, wird trotz Frist geladen.
 - [x] Klick und Einzel-Refresh bleiben unberührt.
 - [x] Kein zweiter Wert für dieselbe Frage.
-- [ ] #4, #5 vom Menschen gesehen.
+- [x] Menschlicher Abschluss durch Mike am 2026-09-10; die zuvor offenen
+  Einzelabnahmen werden nicht weiter angefordert. Keine einzelnen Prüfurteile ergänzt.
 
 ### Side-Effects
 
 **F5 ist mit betroffen.** Seiten-Reload und Ansichtswechsel laufen durch
 dieselbe Stelle (`onMounted`) und sind technisch nicht zu unterscheiden. Ein
 Reload holt also ebenfalls keine Kurse mehr, solange die vorhandenen jünger als
-60 Minuten sind. Das ist vertretbar, weil der Knopf der Weg zum echten Refresh
-ist — aber es ist eine Verhaltensänderung, die man beim Testen bemerkt.
+die eingestellte Schonfrist (Vorgabe 60 Minuten) sind. Der Knopf bleibt der
+Weg zum echten Refresh.
 
-**Die Einstellung ist nirgends bedienbar.** Weder `staleAfterMinutes` noch
-`autoOnLoad` haben ein Feld in den Einstellungen; beide leben allein von ihrer
-Vorgabe. Wer sie heute ändern will, muss die Sicherung exportieren, den Wert in
-der JSON anpassen und sie wieder einspielen. Ein eigenes Ticket wert.
+**Die Einstellung ist über [T-34](T-34-einstellungen-fuers-aktualisieren.md)
+bedienbar.** Unter Einstellungen → Daten → „Kurse aktualisieren“ stehen der
+Schalter für `autoOnLoad` und das Minutenfeld für `staleAfterMinutes` bereit.
+Die Werte werden je Depot gespeichert; ein Bearbeiten der Sicherungsdatei ist
+dafür nicht erforderlich. Die Verify-Matrix oben dokumentiert die damalige
+Prüfung mit der Vorgabe von 60 Minuten.
 
 ### Auflösung
 
-Wird zuletzt gefüllt. Commit-Hash(es), Lint-Status, Findings.
+Abgeschlossen auf Mikes ausdrücklichen Auftrag vom 2026-09-10. Die Umsetzung
+ist im aktuellen Code vorhanden; die damaligen Test- und Buildbelege stehen
+oben. Keine offene Nacharbeit aus diesem Ticket dokumentiert.
+
+**Doku-Abgleich:** Abschluss und Ablage der vier Tickets sowie ihre Verweise
+in STATUS bereinigt. Die Schonfrist aus T-33 begrenzt automatische Abrufe und
+damit die Fortschrittsanzeige aus T-31/T-32; ihre Bedienbarkeit ist durch T-34
+erledigt. Keine Änderung am Produktverhalten; Produktanleitungen bleiben
+unverändert.
