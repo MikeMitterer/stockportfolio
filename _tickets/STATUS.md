@@ -328,3 +328,12 @@ Der jüngste Auftrag an den Observer zur weiteren ACTIVITY-Umstellung bleibt
 separat und darf diesen Handoff nicht erweitern; siehe unverarbeiteten Kontext oben.
 Die fremden T-31–T-34-Verschiebungen und `code-standards/references/cli.md`
 sind unverändert uncommittet und nicht Teil dieser Prüffassung.
+
+**Neue Nutzerpräzisierung nach dem Handoff · für den späteren Skriptauftrag:**
+Mike im Codex-Chat: „Wo liegt dann das Script? Muss über die cmdline aufrufbar
+sein, den Script-Konventionen folgen und muss einen Mehrfachaufruf standhalten“.
+Der beschlossene Ort ist `bin/agent-lessons` im Sammlungsrepo, mit CLI-Symlink
+`~/.local/bin/agent-lessons`. Wiederholte und gleichzeitig gestartete Läufe
+müssen ohne Duplikate oder beschädigte Daten enden. Codex trägt diese
+Präzisierung nach der Rückgabe ins Ticket ein; sie erweitert nicht rückwirkend
+die eingefrorene Runde 2. Noch kein Skript implementiert.
