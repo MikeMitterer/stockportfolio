@@ -19,7 +19,7 @@ Tätigkeitsmeldungen, neueste oben. Coder, Verifier und Observer schreiben sie �
 - [Roadmap (MVP-Reihenfolge)](#roadmap-mvp-reihenfolge)
 - [Offen](#offen)
 - [Neu erfasste Integrationsbewertung](#neu-erfasste-integrationsbewertung)
-- [Aktives projektübergreifendes Teilprojekt](#aktives-projektübergreifendes-teilprojekt)
+- [Umgezogen: AgentLessons](#umgezogen-agentlessons)
 
 ## Ablage
 
@@ -194,22 +194,19 @@ ist bearbeitet; auch der erste Schritt von T-41 ist inzwischen technisch freigeg
 
 [↑ Übersicht](#übersicht)
 
-## Aktives projektübergreifendes Teilprojekt
+## Umgezogen: AgentLessons
 
-[T-41 · AgentLessons](30-doing/T-41-agentlessons-projektuebergreifend-sammeln.md)
-hält das Konzept für lokale Einzel-Lessons, eine separate zentrale Aggregation
-und nachvollziehbar abgeleitete Regeln fest. Mike hat es am 2026-09-11 aktiviert
-und nach `30-doing/` verschoben; erster Schritt ist die Aufteilung der Lessons
-in Einzeldateien samt Abgleich von Ticket-Skill und Agenten-Infos. Dieser
-Bestand ist überführt und durch Claude in Runde 1 technisch freigegeben.
-Mikes Abschlussabnahme ist offen. Collector und automatische Regelableitung
-sind weiterhin geplant und noch nicht aktiviert. Verweise
-innerhalb von AgentLessons bleiben relativ; registrierte Projektquellen werden
-über eine benannte Basis aufgelöst.
+**T-41 und T-42 werden seit dem 2026-09-11 in einem eigenen Repository geführt:**
+`/Volumes/DevLocal/DevKI/Production/AgentLessons`. Dort liegen die vollständigen
+Tickets samt Reviewgeschichte, dort erfolgt auch Mikes Abschlussabnahme. Dieses
+Board hält nur noch den Verweis.
 
-Der Bestand liegt seit Mikes Entscheidung vom 2026-09-11 unter
-`~/.local/share/agent-lessons/`. KanTandem beschreibt dasselbe Thema in seinem
-Konzeptabschnitt 0d; beide Fassungen sollen sich ergänzen statt auseinander
-zu laufen. Die Abgrenzung steht im Ticket.
+In StockPortfolio bleibt der fertige Anteil: die lokalen Lessons als
+Einzeldateien unter `.agents/lessons/`, die Sammeldateien als Linkeinstiege,
+`LESSONS-ACCESS.md`, `LESSONS-PROCESS.md` und `ACTIVITY.md`. Der gemeinsame
+Bestand liegt unter `~/.local/share/agent-lessons/`; Collector und automatische
+Regelableitung sind geplant und noch nicht aktiviert. KanTandem beschreibt
+dasselbe Thema in seinem Konzeptabschnitt 0d — die Abgrenzung steht im
+umgezogenen Ticket.
 
 [↑ Übersicht](#übersicht)

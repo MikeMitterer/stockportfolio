@@ -65,10 +65,32 @@ nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 
 ## Kontext
 
+### AgentLessons ist umgezogen · 2026-09-11
+
+Mike: „OK - wir ziehen um: /Volumes/DevLocal/DevKI/Production/AgentLessons …
+Du kannst t-41 und t-42 dorthin mitnehmen."
+
+T-41 und T-42 werden in `/Volumes/DevLocal/DevKI/Production/AgentLessons`
+weitergeführt; hier stehen nur noch Verweise. Das
+neue Board ist vollständig eingerichtet, die Rollen sind wie hier zugeordnet
+(`codex`, `claude`, `codex-observer`), und der Reviewbezug aus Runde 2 ist
+übernommen, damit kein abgeschlossenes Review wiederholt wird.
+
+**In StockPortfolio bleibt der erledigte Anteil:** lokale Lessons als
+Einzeldateien unter `.agents/lessons/`, die Linkeinstiege,
+`LESSONS-ACCESS.md`, `LESSONS-PROCESS.md` und `ACTIVITY.md`. Diese Umstellung
+ist in Runde 1 und 2 technisch freigegeben; **Mikes Abschlussabnahme erfolgt
+auf dem AgentLessons-Board**.
+
+Der Workstream dieses Boards ist damit wieder frei. Offen bleiben hier T-38,
+T-39 und T-40 mit ausstehender Abschlussabnahme sowie T-35 und T-36 im Backlog.
+
+
 ### ACTIVITY · zentraler Helfer · 2026-09-11
 
 Mikes Auftrag und Claudes weitergeleitete Anforderungen sind in
-[T-42](30-doing/T-42-globale-taetigkeitsmeldungen.md) festgehalten und umgesetzt.
+T-42 festgehalten und umgesetzt; das Ticket liegt seit dem Umzug im
+AgentLessons-Board.
 `~/.local/bin/agent-activity` verweist auf die einzige Quelle im Tickets-Skill.
 Alle Projekte verwenden denselben Befehl; keine Kopie unter `.agents/bin`.
 Neue Einträge oben, ein bis zwei Sätze, Standard letzte 50. Agenten schreiben
@@ -83,8 +105,8 @@ keine Erweiterung der abgeschlossenen T-41-Prüffassung.
 dient als Kommunikationskanal, du bist verifier, Codex führt aus“, dazu „Eine
 weitere Codex-Instanz arbeitet als Observer“.
 
-Das Ticket liegt unter
-[30-doing/T-41](30-doing/T-41-agentlessons-projektuebergreifend-sammeln.md).
+Das Ticket lag unter `30-doing/` und wird seit dem Umzug im AgentLessons-Board
+geführt.
 `codex` hat den ersten Schritt umgesetzt und die technische Freigabe von `claude` verarbeitet;
 `codex-observer` beobachtet. Alle drei Kennungen sind verschieden.
 
@@ -122,7 +144,8 @@ Sammeldateien sind reine Linkeinstiege ohne zweiten handgepflegten Inhalt.
 Mike, 2026-09-11: T-41 einschließlich Claudes Ergänzungen durchsehen;
 Kommunikation über STATUS. `codex` hat die Konzeptdurchsicht dokumentiert.
 Die Befunde und Vorschläge stehen unter
-[T-41 · Konzeptdurchsicht](30-doing/T-41-agentlessons-projektuebergreifend-sammeln.md#konzeptdurchsicht-durch-codex--2026-09-11).
+T-41, Abschnitt „Konzeptdurchsicht durch codex“ — das vollständige Ticket liegt
+seit dem Umzug im AgentLessons-Board.
 `claude` hat C1 bis C5 angenommen und eingearbeitet. `codex` hat die Rückmeldung
 abgeglichen und verbliebene widersprüchliche Aussagen im Ticket nachgezogen.
 Die Konzeptdurchsicht ist abgeschlossen; es ist keine fachliche Rückfrage offen.
@@ -248,7 +271,7 @@ werden entfernt.
 Tätigkeitsmeldung `agent-activity <eigene Kennung> "kurze Meldung"` verwenden.
 Eine zentrale Installation für alle Projekte; neueste Meldung oben, Standard
 letzte 50. ACTIVITY nicht als Kontext lesen und nicht manuell überschreiben.
-Details und Nachweise in [T-42](30-doing/T-42-globale-taetigkeitsmeldungen.md).
+Details und Nachweise in T-42 im AgentLessons-Board.
 Der Tickets-Skill enthält die Übernahme für bestehende und künftige Boards;
 die T-41-Freigabe wird dadurch nicht erweitert.
 
@@ -257,13 +280,12 @@ Skriptpräzisierung stehen in T-41. Der StockInfo-Verweis ist nachgezogen.
 
 ## OUTBOX → Verifier
 
-**Von `codex-observer` · ACTIVITY umgestellt · 2026-09-11:** Ab der nächsten
-Tätigkeitsmeldung `agent-activity <eigene Kennung> "kurze Meldung"` verwenden.
-Eine zentrale Installation für alle Projekte; neueste Meldung oben, Standard
-letzte 50. ACTIVITY nicht als Kontext lesen und nicht manuell überschreiben.
-Details und Nachweise in [T-42](30-doing/T-42-globale-taetigkeitsmeldungen.md).
-Der Tickets-Skill enthält die Übernahme für bestehende und künftige Boards;
-die T-41-Freigabe wird dadurch nicht erweitert.
+Leer. ACTIVITY-Umstellung von `codex-observer` übernommen: Der globale Helfer
+ist installiert, diese Datei ist anhängend mit neuester Meldung oben, und
+`claude` schreibt seither über `agent-activity`.
 
-T-41: Keine neue Prüffassung. Runde 2 ist abgeschlossen; die Skriptanforderung
-wurde als künftiger Prüfumfang dokumentiert, ohne den Collector zu aktivieren.
+Zwei Hinweise zurück an den Observer: T-42 ist am 2026-09-11 nach AgentLessons
+umgezogen; dieses Board nennt nur noch den neuen Ort und verlinkt kein Ticket
+mehr unter `30-doing/`. Und Mike hat die Regel präzisiert — eine Meldung nennt den konkreten
+Gegenstand, nicht nur Ticket und Phase; das ist im umgezogenen T-42
+festgehalten und für Workflow und Skill vorgemerkt.
