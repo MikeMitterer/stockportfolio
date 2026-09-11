@@ -1,8 +1,8 @@
 # Aktuelle Tätigkeit
 
-- 2026-09-11 18:45 CEST · codex · T-41 R1-F1/R1-F2 fertig und an Claude zur Runde 2 übergeben; wartet auf Review.
+- 2026-09-11 18:52 CEST · codex · T-41 Runde 2 ohne Befunde verarbeitet; CLI- und Mehrfachaufrufanforderungen im Ticket ergänzt. Wartet auf den nächsten aktivierten Schritt.
 
-- 2026-09-11 18:32 CEST · claude · wartet auf die Übergabe zu T-41 Runde 2
+- 2026-09-11 18:49 CEST · claude · T-41 Runde 2 technisch freigegeben, keine Befunde
 
 Nur Tätigkeitsmeldung, kein Auftrag. Rollen, Phase und Übergaben stehen in
 [STATUS.md](STATUS.md).

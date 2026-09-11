@@ -4,10 +4,11 @@
 und Verifier dort für alle Tickets ihren konkreten Arbeitsschritt und den
 Zeitpunkt; Pflege nach [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-41: Der erste Schritt ist durch `claude` in Runde 1 technisch freigegeben.**
-Die Folgeaufträge R1-F1 und R1-F2 sind umgesetzt und für Runde 2 an `claude`
-übergeben: gemeinsame Konfiguration, sprechende Dateinamen, ID-Verweise und
-aktualisierte Agenten-/Skill-Anleitungen. Collector und KI-Ableitung bleiben außerhalb.
+**T-41: Schritt 1 einschließlich R1-F1/R1-F2 ist in Runde 2 technisch freigegeben.**
+`codex` hat Claudes Rückgabe ohne Befunde verarbeitet; der begrenzte Auftrag
+ist beendet. Mikes Abschlussabnahme bleibt offen. Collector und KI-Ableitung
+sind weiterhin nicht aktiviert. Seine neue CLI-/Mehrfachaufrufanforderung ist
+im Ticket samt offenen Prüfpunkten 32/33 festgehalten.
 
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
 im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
@@ -30,18 +31,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `phase`: `idle`
+- `ticket`: `none`
 - `handoff_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-11`
 - `last_reviewed_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
-- `last_reviewed_commit`: `3c27df814bc1d9ad723f3aad1356f965fe074efb`
-- `last_reviewed_round`: `1`
-- `workstream`: `agent-lessons`
-- `priority_chain`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
-- `priority_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `last_reviewed_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
+- `last_reviewed_round`: `2`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -150,8 +151,9 @@ Abschlussabnahme; die Aktivierung von T-41 ändert daran nichts.
 `codex` hat dort den begrenzten Anteil aktiviert, als T-70-Verweis auf dieses
 T-41. Aktivierungscommit `5fc549b`; Claude hat den Anteil in Runde 1 hier
 mitgeprüft. Die damalige Rückgabe ist dort nachgetragen (`2f755b9`).
-Für R1-F2 wurde T-70 reaktiviert (`79d84e3`) und ist nun mit eigener
-Prüffassung in `ready_for_claude`, Runde 2, Owner `claude`. Keine zweite fachliche Ticketfassung.
+Für R1-F2 wurde T-70 reaktiviert (`79d84e3`); Claude hat `2165f64`
+in Runde 2 mitgeprüft. Die Freigabe ist dort verarbeitet (`89a302e`):
+`portfolio_review`, Owner `mike`, keine aktive Kette. Keine zweite fachliche Ticketfassung.
 Der Rollenblocker ist erledigt.
 Der erste Schritt mit Schema und Inventar ist umgesetzt; die bisherigen
 Sammeldateien sind reine Linkeinstiege ohne zweiten handgepflegten Inhalt.
@@ -286,54 +288,10 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer. R1-F2 übernommen; ACTIVITY gepflegt. Observer übernimmt auf Mikes Auftrag
-ACTIVITY und Koordination im Skill; Codex verändert diesen Anteil nicht parallel.
+Leer. Claudes Runde-2-Freigabe verarbeitet; Nachweise und die neue
+Skriptpräzisierung stehen in T-41. Der StockInfo-Verweis ist nachgezogen.
 
 ## OUTBOX → Verifier
 
-**An `claude` · von `codex` · T-41 Runde 2 · 2026-09-11**
-
-R1-F1 und R1-F2 vollständig zur unabhängigen Prüfung. Bitte R1-01/R1-02,
-Datei-/Referenzinventar und Prüfpunkt 25 am frischen Vorlagenboard prüfen.
-
-| Ablage | Prüffassung |
-|---|---|
-| StockPortfolio | `9ab91989789fbe78fe5d87aabef082140ee190c5` (ab `17c38b5`) |
-| StockInfo | `2165f649e22527cb1b37a0a411d58214cc7d1d91` (ab `b498c66`, T-70 nur Verweis) |
-| PersonalSkills | `74bd6f4e0c246d20b6dabb4b4d0492c939c26b30` (ab `69d3308`, enthält F1 `bbda4c3` und Observer `d6681a7`) |
-| AgentLessons | `ce16f60ac64089da870d54e9b12a2f6e68d5b4bb` (ab `691db2e`, enthält F1 `a89cad6`) |
-
-Lokale `~/.config/agent-lessons/config.yaml`: SHA-256
-`6030ffc0a2330ee0caaa4ac25e004a520ee40aedc90ca9a45a034dce298dd883`.
-
-54 Umbenennungen (21 lokal / 21 archiviert / zwölf Regeln); IDs, Herkunft und
-Belege erhalten. Alle 227 geprüften Links/Anker auflösbar. ID-Gegenprobe mit
-altem Pfad, Titeländerung und doppelter ID bestanden; NFC/NFD ergibt denselben
-ASCII-Namen. Sammlungsportabilität mit 33 Dateien ohne Quellprojekte geprüft.
-Das neue Vorlagenboard liegt unter `/tmp/t41-frisches-board-un4m0lb1/_tickets`;
-Anleitung und Beispieldateien sind ohne T-41 prüfbar. Die doppelte Demo-ID
-ist absichtlich für die Negativprobe angelegt.
-
-StockPortfolio erneut: 720 Tests / 53 Dateien, Lint und Typprüfung Exit 0
-(18:40 CEST). StockInfo-Produkt unverändert; frühere Gesamtläufe bleiben
-historische Belege, kein neuer Produktlauf für die Dateiumbenennung behauptet.
-Details, Scope, Doku-Abgleich und getrennte Belege stehen am Ticketende;
-Manifeste/Logs unter `/tmp/t41-r1-f1/` und `/tmp/t41-r1-f2/`.
-
-Die aktuelle ID-Auflösung führen Agenten gemäß Anleitung aus. Kein Collector,
-keine automatische Reparatur beliebiger Markdown-Links; die fachliche
-Neubewertung aller gemeinsamen Regeln bleibt außerhalb dieser Überführung.
-ACTIVITY/Observer-Regeln aus `d6681a7` sind im Prüfumfang wie vorgemerkt.
-Der jüngste Auftrag an den Observer zur weiteren ACTIVITY-Umstellung bleibt
-separat und darf diesen Handoff nicht erweitern; siehe unverarbeiteten Kontext oben.
-Die fremden T-31–T-34-Verschiebungen und `code-standards/references/cli.md`
-sind unverändert uncommittet und nicht Teil dieser Prüffassung.
-
-**Neue Nutzerpräzisierung nach dem Handoff · für den späteren Skriptauftrag:**
-Mike im Codex-Chat: „Wo liegt dann das Script? Muss über die cmdline aufrufbar
-sein, den Script-Konventionen folgen und muss einen Mehrfachaufruf standhalten“.
-Der beschlossene Ort ist `bin/agent-lessons` im Sammlungsrepo, mit CLI-Symlink
-`~/.local/bin/agent-lessons`. Wiederholte und gleichzeitig gestartete Läufe
-müssen ohne Duplikate oder beschädigte Daten enden. Codex trägt diese
-Präzisierung nach der Rückgabe ins Ticket ein; sie erweitert nicht rückwirkend
-die eingefrorene Runde 2. Noch kein Skript implementiert.
+Leer. Keine neue Prüffassung. Runde 2 ist abgeschlossen; die Skriptanforderung
+wurde als künftiger Prüfumfang dokumentiert, ohne den Collector zu aktivieren.

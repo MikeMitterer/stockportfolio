@@ -17,7 +17,8 @@ markiert; keine lokale Erfahrung wird automatisch überschrieben.
 Schritt ist umgesetzt: lokale Einzeldateien, gemeinsamer Anfangsbestand und
 angepasste Agentenanleitungen. Claude hat diesen ersten Schritt in Runde 1
 technisch freigegeben. Die Folgeaufträge R1-F1 und R1-F2 sind inzwischen umgesetzt
-und werden zur zweiten Prüfrunde übergeben. Die menschliche Abschlussabnahme ist offen. Aggregation
+und durch Claude in Runde 2 technisch freigegeben. Die menschliche
+Abschlussabnahme ist offen. Aggregation
 und automatische Regelableitung sind noch nicht umgesetzt.
 Mike hat den ersten Umsetzungsschritt am 2026-09-11 aktiviert; das Ticket
 liegt unter `30-doing/`. StockInfo ist nach Mikes Freigabe ebenfalls aktiviert
@@ -1036,8 +1037,7 @@ Legende: ✅ bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ nic
 | 22 | Zwei menschliche Eingänge ohne Fehlerbeleg erfassen: einen Lernvorschlag und eine ausdrücklich gesetzte Präferenz | Der Vorschlag wird angenommen und bleibt bis zur Prüfung Kandidat; die Präferenz wird als menschliche Entscheidung geführt. Beide bewahren Originaltext und Urheberschaft, keiner wird als empirisch belegtes Muster ausgegeben und keiner mangels Belegen abgewiesen | ➖ |
 | 23 | `~/.cache/agent-lessons/` vollständig löschen und erneut ausführen; danach ein registriertes Quellprojekt entfernen und eine fachlich unabhängige Lesson ändern | Kein Verlust an Regeln, eingesammelten Fassungen, Auswertungs- und Verbrauchsbelegen; letzter Lauf, Fehler, gemessener Verbrauch und offene Restarbeit bleiben im State-Ordner lesbar; die unveränderte Auswertung löst keinen neuen KI-Aufruf aus; die Fassungen des entfernten Projekts bleiben abrufbar | ➖ |
 | 24 | Das Skript gegen einen Bestand mit unbekannter Formatfassung laufen lassen; ohne vorhandene Konfiguration starten; über den Symlink aus `~/.local/bin/` aufrufen | Sichtbarer Abbruch mit benannter erwarteter und vorgefundener Fassung; keine geratene Verarbeitung und kein Überschreiben; fehlende Konfiguration wird als Fehler gemeldet und nicht aus einer Restdatei im Bestand ergänzt; der Aufruf über den Symlink verhält sich wie der direkte, ohne den Ort der Sammlung aus dem eigenen Verzeichnis abzuleiten; kein absoluter Pfad im Repo | ➖ |
-| 25 | Aus der aktuellen Skill-Vorlage ein leeres Board einrichten, ohne dieses Ticket zu lesen | Die eingerichteten Dateien folgen den geltenden Konventionen: Konfiguration mit Basis und Projektliste in einer Datei, Dateinamen mit Kennung und sprechendem Titel ohne Umlaute, Auflösung über die Kennung; keine Wissenskopie im Skill | ➖ |
-
+| 25a | Aus der aktuellen Skill-Vorlage ein leeres Board einrichten, ohne dieses Ticket zu lesen | Die eingerichteten Dateien folgen den geltenden Konventionen: Konfiguration mit Basis und Projektliste in einer Datei, Dateinamen mit Kennung und sprechendem Titel ohne Umlaute, Auflösung über die Kennung; keine Wissenskopie im Skill | ✅ |
 | 25 | Alle vier bisherigen Sammeldateien vollständig inventarisieren und jeden fachlichen Abschnitt zuordnen | 21 lokale Lessons, zwölf Ableitungen, fünf Verfahrensabschnitte; 38/38 Inhaltskerne erhalten. Navigation und identischer Rundenlimit-Verweis erzeugen keine Lesson | ✅ |
 | 26 | YAML-Köpfe, eindeutige IDs, getrennte Rollenfelder und alle Quellenbezüge prüfen | 21 lokale IDs, 33 zentrale Einträge; Original- und Archiv-Hashes stimmen, keine erfundene historische Autorenschaft | ✅ |
 | 27 | Neue lokale Verweise und Vorlagen prüfen; zentrale Sammlung ohne Quellprojekte an einen Pfad mit Leerzeichen kopieren | Keine defekten Dateilinks oder Anker; alle 33 zentralen Einträge samt Quellenbezügen aus verschobener Sammlung lesbar | ✅ |
@@ -1045,6 +1045,8 @@ Legende: ✅ bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ nic
 | 29 | Skill und betroffene Projektanleitungen gegen den tatsächlich installierten Stand lesen | Format, lokale Auswahl und Grenzen stimmen überein; keine schon laufende Aggregation oder KI-Ableitung behauptet; Skill-Validator erfolgreich | ✅ |
 | 30 | Vorgeschriebene StockPortfolio-Checks ausführen | `make test`: 720 Tests in 53 Dateien bestanden; `make lint` und `make typecheck`: Exit 0 | ✅ |
 | 31 | StockInfo-Gesamtlauf mit frischem Datenpfad ausführen | Backend 1193/29 übersprungen, Plugin-Vertrag 323/1 übersprungen, Beispiel 50, Dashboard 378 in 52 Dateien; Dashboard-Lint und Gesamt-Exit 0 | ✅ |
+| 32 | `agent-lessons` aus einem fremden Arbeitsverzeichnis über den PATH aufrufen; ohne Argumente, mit `-h`/`--help`, gültigen und ungültigen Optionen | CLI nach `code-standards` samt Script-/CLI-Regeln: verständliche Hilfe, konsistente Optionen, sinnvolle Exit-Codes und keine festen Projektpfade; Symlink und Direktaufruf gleichwertig | ➖ |
+| 33 | Denselben Bestand mehrfach nacheinander sowie zwei Aufrufe gleichzeitig verarbeiten; einen Lauf abbrechen und neu starten | Keine doppelten Archivfassungen, Regeln oder unnötigen KI-Aufrufe; kein verlorener oder halb geschriebener Bestand; paralleler Zugriff kontrolliert serialisiert oder mit klarer Meldung abgewiesen; anschließender normaler Aufruf weiterhin möglich | ➖ |
 
 ### Nachweise des ersten Schritts · codex, 2026-09-11
 
@@ -1559,6 +1561,56 @@ Die Grenze bleibt: Der Skill bekommt **keine zweite Kopie des Wissens.**
 Verfahren, Format und Einrichtung dort; Lessons und abgeleitete Regeln in den
 Projekten beziehungsweise AgentLessons.
 
+## Review Runde 2 · claude, 2026-09-11
+
+**Technisch freigegeben. Keine Befunde.** Beide Befunde aus Runde 1 sind
+behoben, R1-F1 und R1-F2 sind vollständig umgesetzt, und der Skill trägt die
+Konventionen. Geprüfte Fassungen: StockPortfolio `9ab9198`, StockInfo
+`2165f64`, PersonalSkills `74bd6f4`, AgentLessons `ce16f60`.
+
+### Eigenständig nachgerechnet
+
+| Prüfung | Ergebnis |
+|---|---|
+| Vier Übergabecommits | ✅ alle aufgelöst |
+| R1-F1 · `projects.yaml` entfernt, Konfiguration zusammengelegt | ✅ Bestand enthält nur noch `collected/`, `shared/`, `INDEX.md`; `config.yaml` führt `project_root` und `projects` |
+| R1-F1 · Konfigurations-Hash | ✅ SHA-256 selbst berechnet, exakte Übereinstimmung |
+| R1-F2 · 54 Umbenennungen | ✅ 5 + 16 lokal, 21 archiviert, 12 Regeln |
+| R1-F2 · Schreibweise | ✅ alle Dateinamen reines ASCII, Bindestriche, Umlaute aufgelöst |
+| R1-F2 · Kennungen erhalten | ✅ alle 16 StockInfo-IDs in Projekt und Archiv identisch |
+| R1-F2 · Titel gleich Überschrift | ✅ Stichprobe ohne Abweichung |
+| **Inhalte unverändert trotz Umbenennung** | ✅ Hash-Kette identisch über Regelangabe, Projektdatei und `archive.source_sha256` |
+| R1-01 behoben | ✅ zwei Feldkommentare erklären ID als Schlüssel und Herkunft des `sha256` |
+| R1-02 behoben | ✅ `## Übersicht` trägt in beiden StockInfo-Einstiegen ein echtes Verzeichnis |
+| Verweise | ✅ 561 Links selbst geprüft, 0 defekt |
+| `INDEX.md` nachgezogen | ✅ keine Nennung von `projects.yaml` mehr |
+| Skill · Namensschema | ✅ in `lesson-format.md`, `board-setup.md` und `lessons-bootstrap.md`, samt NFC/NFD-Begründung |
+| Skill · Konfigurationszusammenlegung | ✅ `project_root` und `projects` gemeinsam beschrieben |
+| Prüfpunkt 25 · frisches Vorlagenboard | ✅ Struktur samt `.agents/lessons/`, Demodateien folgen der Schreibweise, ACTIVITY in vier Dateien verankert |
+| Produktstand | ✅ selbst ausgeführt: 720/720 Tests in 53 Dateien, Lint und Typprüfung Exit 0 |
+
+Die absichtlich doppelte Kennung `DEMO-CX-01` im Vorlagenboard ist als
+Negativprobe angelegt und über den Dateinamen selbst als solche erkennbar.
+
+### Bekannte Grenze, kein Befund
+
+**Die Behebung von R1-01 ist dokumentarisch, nicht strukturell.** Die
+Feldkommentare erklären, dass die ID der Schlüssel ist und `path` abgeleitet
+wird — erzeugt wird `path` aber weiterhin von Hand, weil es den Collector noch
+nicht gibt. Bis dahin kann ein Pfad still veralten, ohne dass etwas warnt. Das
+ist die richtige Reihenfolge und war so beauftragt; es sollte nur niemand
+annehmen, die Regel sei bereits erzwungen.
+
+Unverändert offen und außerhalb dieser Runde: Collector, periodischer Lauf,
+KI-Ableitung und die fachliche Neubewertung der gemeinsamen Regeln, die
+weiterhin auf `needs_review`/`partial` stehen. Die ACTIVITY-Umstellung liegt
+beim Observer und war ausdrücklich nicht Teil dieser Übergabe. Die nach dem
+Handoff eingegangene Präzisierung zum Skriptort erweitert diese Runde
+zutreffend nicht.
+
+Diese Freigabe ist technisch. **Mikes Abschlussabnahme steht aus**; T-41
+bleibt unter `30-doing/`.
+
 ### Side-Effects
 
 Die spätere Umsetzung betrifft den Lessons-Zugriff und die Pflegeprozesse der
@@ -1585,11 +1637,13 @@ aber nicht verändert.
 
 **Erster Schritt technisch freigegeben · claude, Runde 1, 2026-09-11.**
 Die anschließend beauftragten Ergänzungen R1-F1 und R1-F2 sind umgesetzt;
-Runde 2 prüft den erweiterten Stand. Die menschliche Abschlussabnahme bleibt
+Claude hat den erweiterten Stand in Runde 2 ohne Befunde freigegeben.
+Codex hat die Rückgabe verarbeitet; der begrenzte Auftrag ist beendet.
+Die menschliche Abschlussabnahme bleibt
 offen; T-41 und der StockInfo-Verweis T-70 bleiben unter `30-doing/`.
-StockInfo ist für seinen Anteil erneut aktiviert (`79d84e3`). Verbindlich
-sind die jeweiligen STATUS-Felder; der frühere `idle`-/`portfolio_review`-Stand
-beschreibt nur die verarbeitete erste Freigabe. Collector und KI-Ableitung
+StockInfos Anteil `2165f64` ist ebenfalls mitgeprüft und zurückgegeben. Verbindlich
+sind die jeweiligen STATUS-Felder: hier `idle`, in StockInfo `portfolio_review`
+mit Owner `mike`, ohne aktive Kette. Collector und KI-Ableitung
 sind weiterhin nicht aktiviert. Die Repositories verwenden den Branch
 `t-41-agentlessons-einzeldateien`.
 
@@ -1736,3 +1790,41 @@ Lokale `config.yaml`, SHA-256 `6030ffc0a2330ee0caaa4ac25e004a520ee40aedc90ca9a45
 Portabilität auch nach der Umbenennung geprüft: alle 33 Sammlungsdateien
 an einen Pfad mit Leerzeichen kopiert, interne Links und Quellen-Hashes
 ohne Zugriff auf die Quell-Repositories aufgelöst (`portability.json`).
+
+## Verarbeitung der Runde 2 und Skriptanforderung · codex, 2026-09-11
+
+Claudes Freigabe für `9ab9198` sowie StockInfo `2165f64`, PersonalSkills
+`74bd6f4` und AgentLessons `ce16f60` ist verarbeitet. Keine Befunde und keine
+erforderliche Nacharbeit. Die INBOX wird geleert; T-41/T-70 bleiben bis zur
+menschlichen Abschlussentscheidung unter `30-doing/`. Die technische Freigabe
+betrifft den ersten Schritt einschließlich R1-F1/R1-F2, nicht den Collector.
+
+Der nachträglich eingefügte Vorlagenprüfpunkt heißt jetzt **25a**, damit die
+bestehende Inventarprüfung **25** ihre Kennung behält. Claudes Verweis auf
+„Prüfpunkt 25“ zum frischen Board meint diesen Vorlagenpunkt; sein Prüfurteil
+bleibt unverändert. Die ursprüngliche doppelte Nummer war redaktionell mehrdeutig.
+
+**Mike, im Codex-Chat nach Übergabe von Runde 2:** „Wo liegt dann das Script?
+Muss über die cmdline aufrufbar sein, den Script-Konventionen folgen und muss
+einen Mehrfachaufruf standhalten“.
+
+Für das AgentLessons-Sammelskript gilt damit: echte Datei
+`~/.local/share/agent-lessons/bin/agent-lessons`, bei anderem `XDG_DATA_HOME`
+entsprechend dort; aufrufbar als `agent-lessons` über den Symlink
+`~/.local/bin/agent-lessons`. Es folgt `code-standards` samt den relevanten
+Script- und CLI-Regeln. Wiederholte Aufrufe müssen ohne Duplikate funktionieren;
+gleichzeitige Aufrufe dürfen keinen Bestand beschädigen oder fremde Ergebnisse
+überschreiben. Ein abgebrochener Lauf muss einen erneuten Aufruf zulassen.
+Die konkreten Nachweise stehen in den neuen, noch offenen Prüfpunkten 32/33;
+Prüfpunkt 18 deckt zusätzlich die Wiederverwendung ohne erneuten KI-Aufruf ab.
+
+Dies präzisiert den nächsten Skriptschritt. Es behauptet weder eine vorhandene
+CLI noch erweitert es rückwirkend Claudes abgeschlossene Runde 2. Der bisher
+aktivierte Umfang schließt den Collector weiterhin aus. Die getrennte
+ACTIVITY-Umstellung bleibt beim ausdrücklich beauftragten Observer.
+
+**Doku-Abgleich:** Skriptort und CLI-Zugang stimmen mit dem bereits beschlossenen
+Abschnitt „Das Skript liegt im Repo“ überein. Die vorhandenen Script-Konventionen
+stehen bereits im zentralen `code-standards`-Skill; hier entsteht keine neue
+allgemeine Board-Konvention oder zweite Regelkopie. Die zwei neuen Nachweise
+sind offen, bis die Skriptumsetzung aktiviert und geprüft ist.
