@@ -1033,6 +1033,7 @@ Legende: ✅ bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ nic
 | 28 | Alte Einstiege, Verfahren und SI-P-02 fachlich gegen den Zuschnitt prüfen | Linkeinstiege ohne zweite Wissensfassung; Verfahren außerhalb `lessons/`; SI-P-02 als ein Mechanismus mit vollständiger Beleggeschichte begründet | ✅ |
 | 29 | Skill und betroffene Projektanleitungen gegen den tatsächlich installierten Stand lesen | Format, lokale Auswahl und Grenzen stimmen überein; keine schon laufende Aggregation oder KI-Ableitung behauptet; Skill-Validator erfolgreich | ✅ |
 | 30 | Vorgeschriebene StockPortfolio-Checks ausführen | `make test`: 720 Tests in 53 Dateien bestanden; `make lint` und `make typecheck`: Exit 0 | ✅ |
+| 31 | StockInfo-Gesamtlauf mit frischem Datenpfad ausführen | Backend 1193/29 übersprungen, Plugin-Vertrag 323/1 übersprungen, Beispiel 50, Dashboard 378 in 52 Dateien; Dashboard-Lint und Gesamt-Exit 0 | ✅ |
 
 ### Nachweise des ersten Schritts · codex, 2026-09-11
 
@@ -1049,7 +1050,8 @@ seinen bereits vorher vorhandenen, teils unversionierten Skill-Stand als
 Vergleichsbasis. Dessen Inhalt wurde gegen das vor der Umsetzung eingefrorene
 Inventar geprüft; er ist keine von Codex für T-41 neu erstellte Funktion.
 Die unabhängige Änderung an `code-standards/references/cli.md` bleibt offen.
-StockPortfolios Prüffassung wird nach dem Produktcommit in STATUS eingetragen.
+StockPortfolios Prüffassung ist `3c27df814bc1d9ad723f3aad1356f965fe074efb`.
+Der anschließende Boardcommit ergänzt nur Nachweise und die Übergabe.
 
 **Vollständigkeitsprüfung:** Die ursprünglichen Abschnitte wurden aus den
 vier Sammeldateien vollständig ermittelt und mit der folgenden Zuordnung
@@ -1086,9 +1088,16 @@ prüft dieser Schritt noch nicht; deshalb bleiben Verify 4, 8 und 11 teilweise.
 `make lint` und `make typecheck` jeweils Exit 0. Skill-Prüfung mit
 `StockInfo/.venv/bin/python` und
 `~/.codex/skills/.system/skill-creator/scripts/quick_validate.py`: `Skill is valid!`.
-`git diff --check` für die jeweiligen T-41-Diffs erfolgreich. Für StockInfo
-wurden Dokumente, Metadaten, Verweise und Inhaltserhalt geprüft; keine
-unveränderten Backend-/Dashboard-Funktionen als neu getestet ausgegeben.
+`git diff --check` für die jeweiligen T-41-Diffs erfolgreich. StockInfos
+vorgeschriebener Gesamtlauf wurde zusätzlich mit einem zuvor nicht vorhandenen
+Datenpfad ausgeführt:
+`env DATABASE_PATH=/tmp/t41-lessons-work/stockinfo-fresh/stockinfo.db PYTHONDONTWRITEBYTECODE=1 PYTEST_ADDOPTS='-p no:cacheprovider' make test`.
+Ergebnis: Backend 1193 bestanden / 29 übersprungen, Plugin-Vertrag 323 bestanden /
+1 übersprungen, Beispielpaket 50 bestanden, Dashboard 378 bestanden in 52 Dateien;
+Dashboard-Lint ebenfalls erfolgreich, Gesamt-Exit 0. Vorhandene Deprecation-
+Warnungen zu Starlette/httpx und Sass; keine daraus abgeleitete Zusatzarbeit.
+Diese Läufe belegen den unveränderten Produktstand, nicht die fachliche
+Richtigkeit der abgeleiteten Lessons.
 Die einmaligen Prüfhelfer und Rohprotokolle liegen für diesen Review unter
 `/tmp/t41-lessons-work/` (`check.py`, `completeness.py`, `portability.py`,
 zugehörige JSON-Ergebnisse und `stockportfolio-*.log`), kein neues Testsubsystem.
