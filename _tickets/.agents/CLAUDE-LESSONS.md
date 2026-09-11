@@ -11,7 +11,7 @@ Verzeichnis inventarisieren; keine zweite Inhaltsfassung hier pflegen.
 
 ## Datenerhalt im Review nur am Lesepfad begründet
 
-[Weiterlesen](lessons/SP-R-01.md)
+[Weiterlesen](lessons/SP-R-01-datenerhalt-im-review-nur-am-lesepfad-begruendet.md)
 
 ### SI-P-01 und SI-P-10 · Nur die tatsächlich geprüfte Tiefe behaupten
 

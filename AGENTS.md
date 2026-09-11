@@ -104,6 +104,7 @@ Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
 `30-doing/`; Backlog, Done, Iced und Rejected erzeugen keinen Auftrag.
 
 - [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
+- [`_tickets/ACTIVITY.md`](_tickets/ACTIVITY.md) — letzte Tätigkeitsmeldung mit Zeitpunkt; Coder und Verifier pflegen sie für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 - [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
 - [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
 - [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
@@ -239,6 +240,11 @@ Grenzen gelten.
   Schritte als nummerierte Liste, Vergleiche bei Bedarf als Tabelle.
 - Anleitungen beschreiben die Benutzung und das aktuelle Verhalten. Interne
   Arbeitsabläufe und Review-Geschichte gehören in die Tickets.
+
+Änderungen an Board- oder Lessons-Konventionen werden im selben Auftrag im
+Skill `task-verification-workflow` samt Referenzen und Vorlagen nachgezogen.
+Der Doku-Abgleich nennt das Ergebnis, auch wenn dort keine Änderung nötig ist.
+Der Skill beschreibt Verfahren und Format; er erhält keine zweite Wissenskopie.
 
 Bei Änderungen an Verhalten, Verträgen, Konfiguration, Installation oder
 beschlossenem Umfang gehört der **Doku-Abgleich zum selben Auftrag**. Mike muss

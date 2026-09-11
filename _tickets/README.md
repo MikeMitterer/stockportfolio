@@ -7,6 +7,10 @@ Der Ablageort zeigt den Arbeitsstand. Rollen, Reihenfolge und genaue Phase
 stehen in [STATUS.md](STATUS.md). Seit dem 2026-09-10 verwendet StockPortfolio
 dieselbe Board-Struktur wie StockInfo und der Skill `task-verification-workflow`.
 
+**Was gerade passiert:** [ACTIVITY.md](ACTIVITY.md) zeigt die letzte
+Tätigkeitsmeldung samt Zeitpunkt. Coder und Verifier pflegen sie nach dem
+[Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit); das gilt für alle Tickets.
+
 ## Übersicht
 
 - [Ablage](#ablage)
@@ -30,11 +34,12 @@ _tickets/
 ├── 90-rejected/   # bewusst verworfen
 ├── README.md      # Board-Anleitung
 ├── STATUS.md      # Rollen, Reihenfolge, Phase und Mailbox
+├── ACTIVITY.md    # letzte Tätigkeitsmeldung der arbeitenden Instanz
 └── QUESTIONS.md   # kurzfristige Fragen
 ```
 
 Tickets und Begleitdateien liegen gemeinsam im jeweiligen Ordner. Im Root
-bleiben die drei Board-Dateien. Leere Statusordner enthalten `.gitkeep`,
+bleiben die vier Board-Dateien. Leere Statusordner enthalten `.gitkeep`,
 damit sie in einem neuen Checkout vorhanden sind. Bei Inventaren und
 Linkprüfungen den versteckten Ordner [.agents/](.agents/) einschließen.
 
@@ -87,8 +92,9 @@ Die Linkeinstiege [Claude](.agents/CLAUDE-LESSONS.md) und
 Verzeichnisinventar und den gemeinsamen Bestand in AgentLessons. Der Workflow
 regelt Vorbeugung, unabhängige Gegenprüfung und Lessons-Pflege.
 
-Der optionale Observer liest unabhängig vom Owner und meldet Hinweise in
-seinem eigenen Chat. Seine Instanzkennung steht in STATUS. Die
+Der optionale Observer beaufsichtigt Coder und Verifier unabhängig vom Owner.
+Er koordiniert bei Bedarf über die STATUS-Mailboxen und berichtet wesentliche
+Hinweise und Eingriffe in seinem Chat. Seine Instanzkennung steht in STATUS. Die
 [Aktivierung](.agents/AGENT-ACTIVATION.md) enthält beide Scheduler-Varianten,
 die Startbefehle `codex-observer` und `claude-observer` sowie Stoppen und
 Wiedereinstieg. Eine technische Abnahme bleibt Aufgabe des Verifiers.

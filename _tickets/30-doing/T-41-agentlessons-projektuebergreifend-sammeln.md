@@ -16,11 +16,12 @@ markiert; keine lokale Erfahrung wird automatisch überschrieben.
 2026-09-11 geändert. Mike hat den Namen `AgentLessons` bestätigt. Der erste
 Schritt ist umgesetzt: lokale Einzeldateien, gemeinsamer Anfangsbestand und
 angepasste Agentenanleitungen. Claude hat diesen ersten Schritt in Runde 1
-technisch freigegeben. Die menschliche Abschlussabnahme ist offen. Aggregation
+technisch freigegeben. Die Folgeaufträge R1-F1 und R1-F2 sind inzwischen umgesetzt
+und werden zur zweiten Prüfrunde übergeben. Die menschliche Abschlussabnahme ist offen. Aggregation
 und automatische Regelableitung sind noch nicht umgesetzt.
 Mike hat den ersten Umsetzungsschritt am 2026-09-11 aktiviert; das Ticket
 liegt unter `30-doing/`. StockInfo ist nach Mikes Freigabe ebenfalls aktiviert
-(T-70, Commit `5fc549b`); siehe Auflösung und `STATUS.md`.
+(T-70, erneut aktiviert für R1-F2 mit `79d84e3`); siehe Auflösung und `STATUS.md`.
 
 **Ablageort, Mike 2026-09-11:** Der Bestand liegt unter
 `~/.local/share/agent-lessons/`. Der zuvor bestätigte Ort
@@ -205,18 +206,22 @@ nur ihre dafür freigegebenen lokalen Quellen. StockInfo-Lessons bleiben in
 StockInfo, StockPortfolio-Lessons in StockPortfolio. Die gemeinsame Sammlung
 liegt im eigenständigen Projekt `AgentLessons`:
 
+**Zielbild.** Mit `+` markierte Teile sind noch nicht vorhanden; der Collector
+ist nicht Teil des ersten Schritts.
+
 ```text
 ~/.local/share/agent-lessons/
-├── bin/
-│   └── agent-lessons      # Sammel- und Auswertungsskript, die echte Datei
-├── projects.yaml          # registrierte Projektquellen
-├── collected/             # eingesammelte Projektfassungen
+├── bin/                                 +
+│   └── agent-lessons                    +  Sammel- und Auswertungsskript
+├── collected/                              eingesammelte Projektfassungen
 │   ├── stockinfo/
 │   └── stockportfolio/
-├── shared/                # kuratierte Regeln mit Quellenbezügen
-└── INDEX.md               # erzeugte Übersicht und Auswertungsstand
+├── shared/                                 kuratierte Regeln mit Quellenbezügen
+└── INDEX.md                                Übersicht und Auswertungsstand
 
-~/.local/bin/agent-lessons # Symlink auf bin/agent-lessons, nicht versioniert
+~/.local/bin/agent-lessons                +  Symlink, nicht versioniert
+
+~/.config/agent-lessons/config.yaml          Projektbasis und registrierte Quellen
 ```
 
 `collected/` und `INDEX.md` werden nicht von Hand gepflegt. `shared/` enthält
@@ -248,7 +253,7 @@ lässt und was nicht**. Danach richtet sich, was Historie und Sicherung braucht.
 | Auswertungsnachweise — welche Fassung wurde bewertet | Nein, das ist der Prüfbeleg | Repo |
 | `bin/` — Sammel- und Auswertungsskript | Ja, aber formatgekoppelt | Repo; Symlink aus `~/.local/bin/` macht es aufrufbar |
 | `INDEX.md` | Ja, aus dem Obigen | Repo, siehe unten |
-| `projects.yaml` — welche Projekte, welche Unterpfade | Ja, aber Handarbeit | Repo |
+| Registrierte Quellen — welche Projekte, welche Unterpfade | Ja, aber Handarbeit | `~/.config/agent-lessons/config.yaml`, zusammen mit der Basis |
 | Wurzelverzeichnis der Projekte | — maschinenabhängig | `~/.config/agent-lessons/` |
 | Letzter Lauf, Fehler, tatsächlicher Verbrauch, offene Restarbeit | Nein, das sind Lauf- und Verbrauchsbelege | `~/.local/state/agent-lessons/` |
 | Übersichten, Suchdaten | Ja, aus dem Obigen ableitbar | `~/.cache/agent-lessons/` |
@@ -322,12 +327,16 @@ Prüfpunkt 24 verlangt einen sichtbaren Abbruch statt geratener Verarbeitung.
 
 #### Genau eine maschinenabhängige Angabe — in beiden Richtungen
 
-`projects.yaml` bleibt im Repo und nennt nur, **welche** Projekte registriert
-sind und unter welchem relativen Unterpfad ihre Lessons liegen. Das
+**Basis und registrierte Quellen stehen gemeinsam in
+`~/.config/agent-lessons/config.yaml`** (Mike, 2026-09-11). Das
 Wurzelverzeichnis des Arbeitsbereichs — auf diesem Rechner `/Volumes/DevLocal`
-— steht allein in `~/.config/agent-lessons/config.yaml`. Eine Projektbasis
-direkt in `projects.yaml` ist damit ausgeschlossen; sonst steht dieselbe
-Maschinenangabe an zwei Stellen.
+— und die Projekte mit ihren relativen Unterpfaden liegen damit in einer
+Datei, die sich selbst erklärt. Eine eigene `projects.yaml` im Bestand
+entfällt.
+
+Der versionierte Bestand enthält danach nur noch Wissen: `collected/`,
+`shared/` und `INDEX.md`. Kein maschinenabhängiger Pfad gerät in die
+Versionsverwaltung, und der Collector liest genau eine Konfigurationsquelle.
 
 **Der Zugriff läuft in beide Richtungen und braucht dieselbe Regel.** Die
 Sammlung findet ihre Quellen über die Projektbasis. Umgekehrt findet ein Board
@@ -548,17 +557,17 @@ Maschinenabhängigkeit, die der Ortswechsel beseitigen soll.
 | Verweisart | Regel |
 |---|---|
 | Innerhalb AgentLessons: `shared/` ↔ `collected/` ↔ `INDEX.md`, Quellenbezüge, Regelzuordnungen, Beispiele | Strikt relativ zum jeweiligen Dokument. Unverändert gültig, vom Ortswechsel nicht betroffen. |
-| `projects.yaml` → registrierte Projektquellen | Eine benannte Basis, darunter relative Projektpfade. |
+| Konfiguration → registrierte Projektquellen | Basis und relative Projektpfade gemeinsam in `~/.config/agent-lessons/config.yaml`. |
 
 Innerhalb der Sammlung gilt unverändert: keine fest eingebauten
 Benutzerverzeichnisse, Volumes oder anderen absoluten Dateipfade, auch nicht
 indirekt als Datei-URLs. Beispiele: vom Index auf `shared/R-012-fresh-state.md`,
 aus dieser Regel auf `../collected/stockinfo/L-026.md`.
 
-Für externe Quellen steht das Wurzelverzeichnis einmal in der lokalen
-`config.yaml` unter dem XDG-Konfigurationsort. `projects.yaml` enthält
-relative Projektpfade; sie werden unabhängig vom Aufrufverzeichnis gegen
-diese Basis aufgelöst.
+Für externe Quellen stehen Wurzelverzeichnis und Projektliste gemeinsam in
+der lokalen `config.yaml` unter dem XDG-Konfigurationsort. Die Projektpfade
+sind relativ und werden unabhängig vom Aufrufverzeichnis gegen diese Basis
+aufgelöst.
 Damit steht der maschinenabhängige Teil an genau einer erklärten Stelle,
 statt verstreut in erzeugten Dateien zu landen. Der zentrale Katalog bleibt
 ohne Zugriff auf die ursprünglichen Projekte lesbar; deren Unerreichbarkeit
@@ -1026,7 +1035,8 @@ Legende: ✅ bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ nic
 | 21 | Eine Lesson samt Abdeckung, Gültigkeit und Belegen auf das KanTandem-Schema aus 0d abbilden; darunter eine aktive Regel mit Teilabdeckung und eine bewusst lokale Erfahrung | Abdeckung und Gültigkeit bleiben getrennt erkennbar; jedes Pflichtfeld hat eine benannte Entsprechung in Lernkandidat oder Erfahrungsversion; fehlende Entsprechungen sind einzeln ausgewiesen statt zusammengefasst | ➖ |
 | 22 | Zwei menschliche Eingänge ohne Fehlerbeleg erfassen: einen Lernvorschlag und eine ausdrücklich gesetzte Präferenz | Der Vorschlag wird angenommen und bleibt bis zur Prüfung Kandidat; die Präferenz wird als menschliche Entscheidung geführt. Beide bewahren Originaltext und Urheberschaft, keiner wird als empirisch belegtes Muster ausgegeben und keiner mangels Belegen abgewiesen | ➖ |
 | 23 | `~/.cache/agent-lessons/` vollständig löschen und erneut ausführen; danach ein registriertes Quellprojekt entfernen und eine fachlich unabhängige Lesson ändern | Kein Verlust an Regeln, eingesammelten Fassungen, Auswertungs- und Verbrauchsbelegen; letzter Lauf, Fehler, gemessener Verbrauch und offene Restarbeit bleiben im State-Ordner lesbar; die unveränderte Auswertung löst keinen neuen KI-Aufruf aus; die Fassungen des entfernten Projekts bleiben abrufbar | ➖ |
-| 24 | Das Skript gegen einen Bestand mit unbekannter Formatfassung laufen lassen; ohne vorhandene Konfiguration starten; über den Symlink aus `~/.local/bin/` aufrufen | Sichtbarer Abbruch mit benannter erwarteter und vorgefundener Fassung; keine geratene Verarbeitung und kein Überschreiben; fehlende Konfiguration wird als Fehler gemeldet; der Aufruf über den Symlink verhält sich wie der direkte, ohne den Ort der Sammlung aus dem eigenen Verzeichnis abzuleiten; kein absoluter Pfad im Repo | ➖ |
+| 24 | Das Skript gegen einen Bestand mit unbekannter Formatfassung laufen lassen; ohne vorhandene Konfiguration starten; über den Symlink aus `~/.local/bin/` aufrufen | Sichtbarer Abbruch mit benannter erwarteter und vorgefundener Fassung; keine geratene Verarbeitung und kein Überschreiben; fehlende Konfiguration wird als Fehler gemeldet und nicht aus einer Restdatei im Bestand ergänzt; der Aufruf über den Symlink verhält sich wie der direkte, ohne den Ort der Sammlung aus dem eigenen Verzeichnis abzuleiten; kein absoluter Pfad im Repo | ➖ |
+| 25 | Aus der aktuellen Skill-Vorlage ein leeres Board einrichten, ohne dieses Ticket zu lesen | Die eingerichteten Dateien folgen den geltenden Konventionen: Konfiguration mit Basis und Projektliste in einer Datei, Dateinamen mit Kennung und sprechendem Titel ohne Umlaute, Auflösung über die Kennung; keine Wissenskopie im Skill | ➖ |
 
 | 25 | Alle vier bisherigen Sammeldateien vollständig inventarisieren und jeden fachlichen Abschnitt zuordnen | 21 lokale Lessons, zwölf Ableitungen, fünf Verfahrensabschnitte; 38/38 Inhaltskerne erhalten. Navigation und identischer Rundenlimit-Verweis erzeugen keine Lesson | ✅ |
 | 26 | YAML-Köpfe, eindeutige IDs, getrennte Rollenfelder und alle Quellenbezüge prüfen | 21 lokale IDs, 33 zentrale Einträge; Original- und Archiv-Hashes stimmen, keine erfundene historische Autorenschaft | ✅ |
@@ -1145,43 +1155,43 @@ Ziele liegen im jeweils genannten Quellprojekt unter `_tickets/.agents/`.
 | Herkunft | Alte Fundstelle | Neue Datei |
 |---|---|---|
 | stockinfo / `CLAUDE-LESSONS.md` | Gemeinsame Vorgabe zum Rundenlimit | `LESSONS-PROCESS.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | R-01 · Integrationsaufwand verdrängt die fachliche Architekturentscheidung | `lessons/SI-R-01.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | R-01 · Integrationsaufwand verdrängt die fachliche Architekturentscheidung | `lessons/SI-R-01-integrationsaufwand-verdraengt-die-fachliche-architekturentscheidung.md` |
 | stockinfo / `CLAUDE-LESSONS.md` | Leitplanken für das spätere Skill-Proposal | `LESSONS-PROCESS.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-01 · Testtiefe wird in der Übergabe überzeichnet | `lessons/SI-P-01.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-02 · Punktuelle Korrektur wird als vollständige Regelumsetzung gemeldet | `lessons/SI-P-02.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-03 · Prüfwerkzeuge räumen fremde Ressourcen mit auf | `lessons/SI-P-03.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-04 · Negativtests prüfen nur die Fehlerbeschriftung | `lessons/SI-P-04.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-05 · Ein abgebrochener Prüflauf meldet sich als bestanden | `lessons/SI-P-05.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-06 · Weiterarbeiten, während eine Übergabe offen ist | `lessons/SI-P-06.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-07 · Eine neue Zwischenlage wird gebaut statt benannt | `lessons/SI-P-07.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-08 · Der Test erzeugt den entscheidenden Unterschied nicht | `lessons/SI-P-08.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-09 · Eine Testanforderung wächst zum unbeauftragten Subsystem | `lessons/SI-P-09.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-10 · Ein Integrationstest berührt seine Außengrenze nicht | `lessons/SI-P-10.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-11 · Die Übergabe steht in der Mailbox, bevor es sie gibt | `lessons/SI-P-11.md` |
-| stockinfo / `CLAUDE-LESSONS.md` | P-12 · Die Fundstellenliste des Reviews ist eine abgeschnittene Ausgabe | `lessons/SI-P-12.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-01 · Testtiefe wird in der Übergabe überzeichnet | `lessons/SI-P-01-testtiefe-wird-in-der-uebergabe-ueberzeichnet.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-02 · Punktuelle Korrektur wird als vollständige Regelumsetzung gemeldet | `lessons/SI-P-02-punktuelle-korrektur-wird-als-vollstaendige-regelumsetzung-gemeldet.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-03 · Prüfwerkzeuge räumen fremde Ressourcen mit auf | `lessons/SI-P-03-pruefwerkzeuge-raeumen-fremde-ressourcen-mit-auf.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-04 · Negativtests prüfen nur die Fehlerbeschriftung | `lessons/SI-P-04-negativtests-pruefen-nur-die-fehlerbeschriftung.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-05 · Ein abgebrochener Prüflauf meldet sich als bestanden | `lessons/SI-P-05-ein-abgebrochener-prueflauf-meldet-sich-als-bestanden.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-06 · Weiterarbeiten, während eine Übergabe offen ist | `lessons/SI-P-06-weiterarbeiten-waehrend-eine-uebergabe-offen-ist.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-07 · Eine neue Zwischenlage wird gebaut statt benannt | `lessons/SI-P-07-eine-neue-zwischenlage-wird-gebaut-statt-benannt.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-08 · Der Test erzeugt den entscheidenden Unterschied nicht | `lessons/SI-P-08-der-test-erzeugt-den-entscheidenden-unterschied-nicht.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-09 · Eine Testanforderung wächst zum unbeauftragten Subsystem | `lessons/SI-P-09-eine-testanforderung-waechst-zum-unbeauftragten-subsystem.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-10 · Ein Integrationstest berührt seine Außengrenze nicht | `lessons/SI-P-10-ein-integrationstest-beruehrt-seine-aussengrenze-nicht.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-11 · Die Übergabe steht in der Mailbox, bevor es sie gibt | `lessons/SI-P-11-die-uebergabe-steht-in-der-mailbox-bevor-es-sie-gibt.md` |
+| stockinfo / `CLAUDE-LESSONS.md` | P-12 · Die Fundstellenliste des Reviews ist eine abgeschnittene Ausgabe | `lessons/SI-P-12-die-fundstellenliste-des-reviews-ist-eine-abgeschnittene-ausgabe.md` |
 | stockinfo / `CODEX-LESSONS.md` | Verwendung | `LESSONS-PROCESS.md` |
-| stockinfo / `CODEX-LESSONS.md` | R-02 · Entwicklungsstand wird wie ein breit ausgerolltes Produkt behandelt | `lessons/SI-R-02.md` |
-| stockinfo / `CODEX-LESSONS.md` | CX-01 · Der grüne Gesamtlauf steht auf Reststand statt auf Frischstart | `lessons/SI-CX-01.md` |
-| stockinfo / `CODEX-LESSONS.md` | T-66 · Fachbefund übernommen, Gewichtung nicht eigenständig geprüft | `lessons/SI-T-66.md` |
+| stockinfo / `CODEX-LESSONS.md` | R-02 · Entwicklungsstand wird wie ein breit ausgerolltes Produkt behandelt | `lessons/SI-R-02-entwicklungsstand-wird-wie-ein-breit-ausgerolltes-produkt-behandelt.md` |
+| stockinfo / `CODEX-LESSONS.md` | CX-01 · Der grüne Gesamtlauf steht auf Reststand statt auf Frischstart | `lessons/SI-CX-01-der-gruene-gesamtlauf-steht-auf-reststand-statt-auf-frischstart.md` |
+| stockinfo / `CODEX-LESSONS.md` | T-66 · Fachbefund übernommen, Gewichtung nicht eigenständig geprüft | `lessons/SI-T-66-fachbefund-uebernommen-gewichtung-nicht-eigenstaendig-geprueft.md` |
 | stockinfo / `CODEX-LESSONS.md` | Wann ein Befund zum Muster wird | `LESSONS-PROCESS.md` |
-| stockportfolio / `CODEX-LESSONS.md` | Einfache Startbefehle nicht zu einem eigenen System ausbauen | `lessons/SP-CX-01.md` |
-| stockportfolio / `CODEX-LESSONS.md` | Entscheidungen in allen aktuellen Aussagen nachziehen | `lessons/SP-CX-02.md` |
-| stockportfolio / `CODEX-LESSONS.md` | Laufende Wartezelle belegt keinen regelmäßigen Durchlauf | `lessons/SP-CX-03.md` |
-| stockportfolio / `CODEX-LESSONS.md` | Wiederverwendete Prüfhilfen vom Ticket-Lebenszyklus lösen | `lessons/SP-CX-04.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | Zusätzlicher lokaler Beleg · StockPortfolio, 2026-09-10 | `lessons/SP-R-01.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-01 und SI-P-10 · Nur die tatsächlich geprüfte Tiefe behaupten | `shared/AL-R-01.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-02 und SI-P-12 · Eine vollständige Korrektur braucht ein Inventar | `shared/AL-R-02.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-03 · Nur eigene Testressourcen aufräumen | `shared/AL-R-03.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-04 und SI-P-08 · Die Gegenprobe muss richtig und falsch unterscheiden | `shared/AL-R-04.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-05 · Ein abgebrochener Lauf ist kein Erfolg | `shared/AL-R-05.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-06 und SI-P-11 · Erst einen fertigen Stand übergeben, dann stabil halten | `shared/AL-R-06.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-07 · Zwischenzustände ausdrücklich benennen | `shared/AL-R-07.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-09 · Einfache Anforderungen nicht zum Subsystem ausbauen | `shared/AL-R-08.md` |
-| stockportfolio / `CLAUDE-LESSONS.md` | SI-R-01 · Befund und Gewichtung getrennt belegen | `shared/AL-R-09.md` |
+| stockportfolio / `CODEX-LESSONS.md` | Einfache Startbefehle nicht zu einem eigenen System ausbauen | `lessons/SP-CX-01-einfache-startbefehle-nicht-zu-einem-eigenen-system-ausbauen.md` |
+| stockportfolio / `CODEX-LESSONS.md` | Entscheidungen in allen aktuellen Aussagen nachziehen | `lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md` |
+| stockportfolio / `CODEX-LESSONS.md` | Laufende Wartezelle belegt keinen regelmäßigen Durchlauf | `lessons/SP-CX-03-laufende-wartezelle-belegt-keinen-regelmaessigen-durchlauf.md` |
+| stockportfolio / `CODEX-LESSONS.md` | Wiederverwendete Prüfhilfen vom Ticket-Lebenszyklus lösen | `lessons/SP-CX-04-wiederverwendete-pruefhilfen-vom-ticket-lebenszyklus-loesen.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | Zusätzlicher lokaler Beleg · StockPortfolio, 2026-09-10 | `lessons/SP-R-01-datenerhalt-im-review-nur-am-lesepfad-begruendet.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-01 und SI-P-10 · Nur die tatsächlich geprüfte Tiefe behaupten | `shared/AL-R-01-nur-die-tatsaechlich-gepruefte-tiefe-behaupten.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-02 und SI-P-12 · Eine vollständige Korrektur braucht ein Inventar | `shared/AL-R-02-eine-vollstaendige-korrektur-braucht-ein-inventar.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-03 · Nur eigene Testressourcen aufräumen | `shared/AL-R-03-nur-eigene-testressourcen-aufraeumen.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-04 und SI-P-08 · Die Gegenprobe muss richtig und falsch unterscheiden | `shared/AL-R-04-die-gegenprobe-muss-richtig-und-falsch-unterscheiden.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-05 · Ein abgebrochener Lauf ist kein Erfolg | `shared/AL-R-05-ein-abgebrochener-lauf-ist-kein-erfolg.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-06 und SI-P-11 · Erst einen fertigen Stand übergeben, dann stabil halten | `shared/AL-R-06-erst-einen-fertigen-stand-uebergeben-dann-stabil-halten.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-07 · Zwischenzustände ausdrücklich benennen | `shared/AL-R-07-zwischenzustaende-ausdruecklich-benennen.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-P-09 · Einfache Anforderungen nicht zum Subsystem ausbauen | `shared/AL-R-08-einfache-anforderungen-nicht-zum-subsystem-ausbauen.md` |
+| stockportfolio / `CLAUDE-LESSONS.md` | SI-R-01 · Befund und Gewichtung getrennt belegen | `shared/AL-R-09-befund-und-gewichtung-getrennt-belegen.md` |
 | stockportfolio / `CLAUDE-LESSONS.md` | SI-Leitplanken · Bei wiederholter Nacharbeit den Zuschnitt prüfen | `LESSONS-PROCESS.md` |
-| stockportfolio / `CODEX-LESSONS.md` | SI-CX-01 · Frischer Zustand statt unbemerkter Testreste | `shared/AL-R-10.md` |
-| stockportfolio / `CODEX-LESSONS.md` | SI-R-02 · Aufwand braucht einen tatsächlich betroffenen Verbraucher | `shared/AL-R-11.md` |
-| stockportfolio / `CODEX-LESSONS.md` | SI-T-66 und SI-P-09 · Auch eine übernommene Schlussfolgerung prüfen | `shared/AL-R-12.md` |
+| stockportfolio / `CODEX-LESSONS.md` | SI-CX-01 · Frischer Zustand statt unbemerkter Testreste | `shared/AL-R-10-frischer-zustand-statt-unbemerkter-testreste.md` |
+| stockportfolio / `CODEX-LESSONS.md` | SI-R-02 · Aufwand braucht einen tatsächlich betroffenen Verbraucher | `shared/AL-R-11-aufwand-braucht-einen-tatsaechlich-betroffenen-verbraucher.md` |
+| stockportfolio / `CODEX-LESSONS.md` | SI-T-66 und SI-P-09 · Auch eine übernommene Schlussfolgerung prüfen | `shared/AL-R-12-auch-eine-uebernommene-schlussfolgerung-pruefen.md` |
 
 Die doppelte Passage „Gemeinsame Vorgabe zum Rundenlimit“ aus beiden
 StockInfo-Einstiegen steht einmal in `LESSONS-PROCESS.md`. „Übersicht“ ist
@@ -1284,6 +1294,271 @@ Die geprüften Lessons, Agentenregeln, Skill-Dateien und zentralen Daten sind
 unverändert. Produktprüfungen wurden für diese reinen Ergebnisnachträge nicht
 noch einmal wiederholt.
 
+## Folgeauftrag R1-F1 · Konfiguration zusammenlegen · 2026-09-11
+
+**Mike:** „Zusammenlegung so wie du es in ~/.config/agent-lessons/config.yaml
+vorschlägst.“
+
+**Anlass:** Beim Lesen von `projects.yaml` ist nicht erkennbar, wogegen die
+Unterpfade aufgelöst werden. Mikes Einwand: „So muss der BasisPfad im Code
+selbst sein - nicht optimal.“ Der Basispfad liegt zwar nicht im Code, sondern
+in `~/.config/agent-lessons/config.yaml` — die Aufteilung auf zwei Dateien
+erklärt sich aber nicht von selbst.
+
+**Entscheidung:** Basis und Projektliste stehen künftig gemeinsam in
+`~/.config/agent-lessons/config.yaml`. Die Datei `projects.yaml` im Bestand
+entfällt.
+
+```yaml
+schema_version: 1
+project_root: /Volumes/DevLocal
+projects:
+  stockinfo:
+    path: DevWeb/Production/StockInfo
+    lessons: _tickets/.agents/lessons
+  stockportfolio:
+    path: DevWeb/Production/StockPortfolio
+    lessons: _tickets/.agents/lessons
+```
+
+**Begründung und Preis:** Die Registrierung von Quellen ist Konfiguration,
+kein Wissen. Zusammengelegt erklärt sich die Datei selbst, der versionierte
+Bestand enthält nur noch `collected/`, `shared/` und `INDEX.md`, und kein
+maschinenabhängiger Pfad gerät in die Versionsverwaltung. Der Preis ist,
+dass die Projektliste nicht mehr mitversioniert wird; sie sieht je Rechner
+ohnehin anders aus, und was tatsächlich eingesammelt wurde, steht im Index.
+
+**Umfang für `codex`:**
+
+1. `projects.yaml` entfernen, Inhalt nach `~/.config/agent-lessons/config.yaml`
+   übernehmen.
+2. `INDEX.md` nachziehen — Zeile zu `projects.yaml` beschreibt sonst einen
+   Stand, den es nicht mehr gibt.
+3. Ticket-Skill und Agenten-Infos auf Nennungen der Datei prüfen.
+4. Die beiden Befunde aus Runde 1 mitnehmen, wenn die Dateien ohnehin
+   angefasst werden: **R1-01** Feldpaarung `path`/`sha256` in `shared/`,
+   **R1-02** leerer Abschnitt `## Übersicht` in den StockInfo-Einstiegen.
+
+Der Collector bleibt außerhalb dieses Auftrags. Prüfpunkt 24 deckt bereits ab,
+dass eine fehlende Konfiguration sichtbar scheitert statt geraten zu werden.
+
+**Übernommen durch codex · 2026-09-11.** Die Quellenregistrierung wird ohne
+Inhaltsverlust in die vorhandene Konfiguration übernommen und die alte Datei
+entfernt. INDEX und Skill-Referenz beschreiben anschließend diesen einen Ort.
+R1-01 wird mit einem kurzen Kommentar direkt vor `sources` in den zwölf Regeln
+geklärt; Feldnamen, Hashwerte und Formatfassung ändern sich nicht. Die Aussage
+zur technischen Überführung wird vom noch offenen fachlichen Review getrennt.
+
+**Ursprüngliche Abgrenzung von R1-F1, durch R1-F2 erweitert:**
+Die damalige Inventarsuche fand `projects.yaml` in den Agenten-Infos beider Projekte
+nicht. Sie benötigen deshalb keine Dateiumstellung. StockInfo wird in R1-F1
+nicht bearbeitet; R1-02 bleibt entsprechend der bedingten Beauftragung für die
+nächste Berührung seiner Linkeinstiege offen. Für R1-F2 ist StockInfo anschließend mit eigener Zuordnung reaktiviert worden
+(`79d84e3`); dabei ist R1-02 an beiden Linkeinstiegen mit erledigt.
+
+Umfang: 16 Zielpfade einschließlich der entfernten Datei und der lokalen
+Konfiguration, dazu Ticket/STATUS. Maximal 200 geänderte Daten-/Dokuzeilen
+außerhalb der Board-Nachweise, kein Produktcode. Vor Schreiben werden die
+Vorzustände verglichen. Geprüft werden YAML-Gleichheit der Quellenregistrierung,
+auflösbare Projektpfade, unveränderte Regelmetadaten und Archivdateien,
+fehlende zweite Registrierungsdatei sowie der Doku-Abgleich. Die vorgeschriebenen
+StockPortfolio-Checks laufen vor der nächsten Übergabe.
+
+
+## Folgeauftrag R1-F2 · Sprechende Dateinamen · 2026-09-11
+
+**Mike:** „Die Benennung der Files wie SP-CX-02 - hat das einen technischen
+Grund? Aus meiner Sicht wäre SP-CX-02_EntscheidungInAllenAktuellenAussagen-
+Nachziehen besser - damit wäre das auch für mich verständlich.“
+
+**Antwort: kein technischer Grund.** Die Kennung trägt die geforderte stabile
+Identität; der Titel wurde nur weggelassen. Die Referenzen in `shared/` führen
+ohnehin `id` **und** `path` — die ID ist also bereits der Schlüssel.
+
+**Entscheidung:** Dateinamen bekommen einen sprechenden Titel nach der Kennung,
+in der Schreibweise der vorhandenen Ticketdateien: Bindestriche,
+Kleinschreibung, **aufgelöste Umlaute**.
+
+```text
+SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md
+SI-P-01-testtiefe-wird-in-der-uebergabe-ueberzeichnet.md
+AL-R-01-nur-die-tatsaechlich-gepruefte-tiefe-behaupten.md
+```
+
+Das ist keine neue Konvention, sondern die vorhandene:
+`T-38-basiswaehrung-und-devisenkurse.md`,
+`T-41-agentlessons-projektuebergreifend-sammeln.md`. Umlaute bleiben
+ausdrücklich draußen. Zusammengesetzte Zeichen (NFC) und Grundbuchstaben mit
+kombinierenden Zeichen (NFD) werden je nach Dateisystem und Werkzeug anders
+behandelt. Git beschreibt auf macOS `core.precomposeUnicode`; APFS erhält die
+angelieferte Normalisierung. ASCII-Dateinamen vermeiden diese Unterschiede.
+Die Agentenanleitungen und der Skill verlinken die offiziellen Erläuterungen.
+
+**Umfang für `codex`:**
+
+1. Alle 21 lokalen Lessons, 21 Archivfassungen und 12 gemeinsamen Regeln
+   umbenennen. Kennung bleibt unverändert und führend.
+2. **Die ID wird der Referenzschlüssel.** `sources[].id` löst auf; `path` ist
+   abgeleitet und darf regeneriert werden. Eine spätere Titeländerung ändert
+   die referenzierte Identität nicht. Markdown-Links werden dabei nachgezogen.
+3. Alle Verweise nachziehen: `INDEX.md`, `shared/`, Linkeinstiege,
+   Zuordnungstabelle in diesem Ticket, Skill-Referenzen.
+4. Titel im Dateinamen und `#`-Überschrift in der Datei müssen übereinstimmen.
+
+**Warum jetzt:** Codex fasst dieselben Dateien in R1-F1 ohnehin an. Später
+sind es 54 Umbenennungen plus jede Referenz, womöglich gegen einen Collector,
+der Pfade bereits zwischenspeichert.
+
+Nebenwirkung: Wird `path` abgeleitet, verliert Befund **R1-01** seinen
+Stachel — die irreführende Paarung von `path` und `sha256` entfällt, wenn der
+Pfad nicht mehr von Hand gepflegt wird.
+
+## Projektweite Entscheidung · Aktuelle Tätigkeit in eigener Datei
+
+**Mike, 2026-09-11, Observer-Chat:** „Passt. Halte das so fest“, anschließend:
+„Das gilt aber nicht nur für dieses Ticket, das gilt ab jetzt für alle Tickets“.
+
+**Anlass:** STATUS nennt Auftrag und zuständige Instanz, lässt aber den
+tatsächlichen Arbeitsschritt und das Alter der letzten Fortschrittsmeldung
+nicht ausreichend erkennen. Eine kurze eigene Datei lässt sich mit weniger
+Lesekontext aktualisieren und abrufen.
+
+**Ab sofort gilt ticketübergreifend:** `_tickets/ACTIVITY.md` enthält nur die
+letzte Tätigkeitsmeldung. Die jeweils arbeitende Instanz nennt Instanz,
+Zeitpunkt mit Zeitzone, Arbeitsschritt, letztes Ergebnis, nächsten Schritt
+und gegebenenfalls ein Hindernis. Bei Arbeitsbeginn, wesentlichem Fortschritt,
+Übergabe oder Warten ersetzt sie die bisherige Meldung. Keine laufende Historie
+und keine Meldung nur wegen eines Scheduler-Takts. STATUS bleibt verbindlich
+für Rollen, Auftrag, Phase und Übergaben; oben steht ein Link zur Tätigkeit.
+
+**Lokal eingerichtet durch `codex-observer` auf diesen Auftrag:** Workflow,
+Board-README und AGENTS-Einstieg nennen die Regel. ACTIVITY ist angelegt und
+aus STATUS erreichbar. Bei Anlage war der fehlende erste Eintrag ausdrücklich
+benannt; inzwischen hat Claude eine eigene Meldung eingetragen. Der Observer
+behauptet keine fremde Tätigkeit.
+
+**Zentral umgesetzt:** Mike hat den Observer anschließend direkt mit dem
+Skill-Abgleich beauftragt. Skill und Vorlagen sind in PersonalSkills `d6681a7`
+aktualisiert; siehe [Nachweis](#zentraler-skill-und-startprompt-aktualisiert).
+
+**Doku-Abgleich:** `AGENTS.md`, Board-README (Einstieg und Ablage), Workflow
+(„Aktuelle Tätigkeit“) und STATUS (Einstieg und Nachricht) abgeglichen.
+Produktanleitungen sind nicht betroffen; App und Konfiguration bleiben gleich.
+
+## Projektweite Entscheidung · Observer koordiniert die Arbeitsrollen
+
+**Mike, 2026-09-11, Observer-Chat:** „du bist der Observer, du bist praktisch
+der Aufseher von Verifier und Coder. Du darfst, falls notwendig, die beiden
+steuern, ihne was mitteilen usw.“
+
+Der Observer darf Coder und Verifier innerhalb des bestehenden Auftrags
+koordinieren: Hinweise und konkrete Anweisungen geben, Rückmeldungen anfordern
+und die Arbeitsreihenfolge im vereinbarten Umfang klären. Nachrichten gehen
+über die vorhandenen STATUS-Mailboxen; dauerhafte Befunde und Entscheidungen
+kommen ins Ticket. Wesentliche Eingriffe werden im Observer-Chat berichtet.
+Die bisherige Beschränkung auf Meldungen allein im eigenen Chat entfällt.
+Umsetzung und unabhängige Abnahme bleiben bei Coder beziehungsweise Verifier.
+
+**Lokal festgehalten:** Workflow, Aktivierungsanleitung und Board-README
+beschreiben dieselbe Befugnis. Beide Arbeitsinstanzen sind über STATUS
+informiert. Rollenzuordnung, Phase und Reviewrunde wurden nicht verändert.
+Der Observer hat den Ticket-Skill und seine Vorlagen danach auf Mikes direkten
+Auftrag aktualisiert; siehe [Nachweis](#zentraler-skill-und-startprompt-aktualisiert).
+
+**Doku-Abgleich:** Observer-Abschnitt im Workflow, Observer-Durchlauf in der
+Aktivierung, Board-README und STATUS-Einstieg auf die neue Befugnis abgeglichen.
+Der Codex-Scheduler verweist bereits auf diesen Durchlauf und benötigt keine
+eigene Regelkopie. Produktanleitungen sind nicht betroffen.
+
+## Der Ticket-Skill trägt die Konventionen mit
+
+**Mike, 2026-09-11:** „Halte in dem Ticket auch fest, dass der Ticket-Skill
+über die Änderungen und Konventionen informiert wird.“
+
+**Das ist keine Einmalaufgabe, sondern eine stehende Auflage.** Der Skill
+`task-verification-workflow` in PersonalSkills ist die Vorlage, aus der neue
+Boards entstehen. Eine hier beschlossene Konvention, die dort fehlt, wird im
+nächsten Projekt nicht falsch angewendet — sie entsteht dort gar nicht erst,
+und der Bestand läuft ab dem ersten Tag auseinander.
+
+„Informiert" heißt deshalb: **Der Skill wird geändert**, nicht bloß mit einem
+Hinweis versehen. Er beschreibt Verfahren, Format und Einrichtung; den
+Wissensbestand hält weiterhin AgentLessons.
+
+### Bereits übernommen
+
+Aus dem ersten Schritt sind Einzeldateien, Format, Zugriffsregeln und die
+XDG-Orte im Skill angekommen: `SKILL.md`, `references/lesson-format.md`,
+`references/lessons-bootstrap.md`, `references/board-setup.md` sowie die
+Board-Vorlagen samt `LESSONS-ACCESS.md` und leerem `lessons/`. Die Kennung mit
+Projektpräfix und die vier XDG-Orte stehen dort bereits.
+
+### Zentraler Skill und Startprompt aktualisiert
+
+**Direkter Auftrag an `codex-observer`, Mike, 2026-09-11:** „Halte das auch im
+Tickets-Skill fest. Andere Projekt, zukünftige und aktuelle müssen diese Infos
+übernehmen können - auch dort dürfen die Infos nicht in Vergessenheit geraten“.
+Zusätzlich nennt Mike ausdrücklich `~/.local/bin/agent-session.sh`.
+
+**Umgesetzt in PersonalSkills `d6681a7`:** ACTIVITY für alle Tickets und
+Observer-Koordination im bestehenden Auftrag. Neun Skill-Dateien: Einstieg,
+`references/board-conventions.md`, `references/board-setup.md`, Board-README,
+STATUS- und ACTIVITY-Vorlage, Workflow-/Aktivierungsvorlage und
+`assets/agent-session.sh`. Die installierte Basis unter `~/.local/bin/` ist
+bytegleich zur neuen Quelle; Farben und Symlinks sind unverändert. Codex und
+Claude erreichen denselben Quell-Skill über ihre bestehenden Symlinks.
+
+**Dauerhafte Auffindbarkeit:** Konventionsstand
+`2026-09-11-activity-observer` im Skill-Einstieg, lokalen Workflow und in der
+Vorlage. Rollen-Startprompts fordern bei verfügbarem Skill den Abgleich an.
+Bestehende Boards übernehmen gezielt über die neue Anleitung, halten offene
+Teile fest und erhalten lokale Nutzerentscheidungen, Rollen, offene Nachrichten
+und Prüffassungen. Neue Boards enthalten ACTIVITY und die passenden Links.
+Andere Projektboards wurden damit nicht automatisch geändert; laufende
+Sessions behalten ihren bisherigen Startauftrag bis zur ausdrücklichen Änderung.
+
+**Eigene Prüfbelege:** Zehn Startprompt-Fälle mit CLI-Doubles bestanden:
+Codex/Claude jeweils Observer, Verifier, Coder, Neutral sowie beide Hilfeaufrufe.
+Argumente mit Leerzeichen erhalten; keine echten CLIs gestartet. Bash-Syntax,
+ShellCheck und Skill-Validator erfolgreich. 84 lokale Links/Anker im Kandidaten
+und zusammengesetzten Vorlagenboard geprüft, keine Fehler. Eine getrennte
+lesende Gegenprüfung bestätigte die Szenarien neues Board, bestehendes Board
+und expliziter Nur-Lese-Auftrag; die dabei gefundene zweite Strukturübersicht
+wurde ebenfalls ergänzt. Kein unabhängiges T-41-Prüfurteil daraus abgeleitet.
+
+Der Commit enthält nur den eigenen Patch. Parallele Coder-Änderungen an
+R1-F1/R1-F2 und die vorgefundene CLI-Dokumentänderung wurden nicht mitcommittet.
+Vorbereiteter Patch und Prüfbestand: `/tmp/observer-skill-update.qlXATj/`.
+Die dauerhaften Regeln liegen im Skill, nicht nur in diesem Ticket.
+**Doku-Abgleich:** Skill-Einstieg, beide Strukturübersichten, Lieferumfang,
+Abschlussprüfung, Vorlagen, Übernahmeanleitung und Startprompts stimmen überein.
+StockPortfolio-Einstieg, Workflow, Aktivierung und STATUS sind nachgezogen.
+
+### Mit R1-F1 und R1-F2 übernommen
+
+| Konvention | Umsetzung im Ticket-Skill |
+|---|---|
+| Basis und Projektliste gemeinsam in `config.yaml` | `references/lessons-bootstrap.md` mit vollständigem Beispiel; `SKILL.md` und Zugriffsvorlage nennen denselben Ort. |
+| Dateiname aus ID und sprechendem Titel | `references/lesson-format.md`, Skill-Einstieg, Einrichtung und Zugriffsvorlage regeln Schema und Übereinstimmung mit der Überschrift. |
+| ID als Referenzschlüssel, abgeleiteter Pfad | Format und Zugriffsvorlage beschreiben YAML-Inventar, eindeutige ID-Suche, Hashprüfung sowie fehlende und doppelte IDs. |
+| ASCII-Titel und aufgelöste Umlaute | Format und Zugriffsvorlage erklären NFC/NFD mit offiziellen Quellen; `ä/ö/ü/ß` werden `ae/oe/ue/ss`. |
+
+Die Konventionen sind ohne T-41 aus einer frisch kopierten Vorlage anwendbar;
+Prüfbeleg unten. ACTIVITY und Observer-Koordination stammen separat aus dem
+oben dokumentierten Observer-Commit `d6681a7`.
+
+### Dauerhafte Zuständigkeit
+
+Wer eine Konvention an diesem Board beschließt, prüft im selben Auftrag, ob
+der Skill sie trägt, und zieht sie dort nach. Das Ergebnis gehört in den
+Doku-Abgleich des jeweiligen Tickets — auch wenn keine Anpassung nötig war,
+dann mit Grund. Für PersonalSkills gelten dessen eigene Regeln: Arbeitsbranch,
+`AGENTS.md` vor dem ersten Edit, Bearbeitung nur im Quell-Repo.
+
+Die Grenze bleibt: Der Skill bekommt **keine zweite Kopie des Wissens.**
+Verfahren, Format und Einrichtung dort; Lessons und abgeleitete Regeln in den
+Projekten beziehungsweise AgentLessons.
+
 ### Side-Effects
 
 Die spätere Umsetzung betrifft den Lessons-Zugriff und die Pflegeprozesse der
@@ -1309,13 +1584,14 @@ aber nicht verändert.
 ### Auflösung
 
 **Erster Schritt technisch freigegeben · claude, Runde 1, 2026-09-11.**
-Codex hat die Rückgabe verarbeitet. Keine erforderliche Nacharbeit; die
-menschliche Abschlussabnahme bleibt offen. T-41 bleibt unter `30-doing/`.
-Der begrenzte Agentenauftrag ist beendet; dieses Board wartet mit `idle`.
-StockInfos mitgeprüfter Anteil ist unter T-70 nachgetragen, Boardcommit
-`2f755b9`; dort gemäß eigenem Workflow `portfolio_review`, Owner `mike`,
-ohne aktive Kette. Der nächste Collector-Schritt ist noch nicht aktiviert.
-Die drei Quell-Repositories verwenden den Branch `t-41-agentlessons-einzeldateien`.
+Die anschließend beauftragten Ergänzungen R1-F1 und R1-F2 sind umgesetzt;
+Runde 2 prüft den erweiterten Stand. Die menschliche Abschlussabnahme bleibt
+offen; T-41 und der StockInfo-Verweis T-70 bleiben unter `30-doing/`.
+StockInfo ist für seinen Anteil erneut aktiviert (`79d84e3`). Verbindlich
+sind die jeweiligen STATUS-Felder; der frühere `idle`-/`portfolio_review`-Stand
+beschreibt nur die verarbeitete erste Freigabe. Collector und KI-Ableitung
+sind weiterhin nicht aktiviert. Die Repositories verwenden den Branch
+`t-41-agentlessons-einzeldateien`.
 
 **Historischer Rollenblocker, inzwischen aufgehoben:**
 Die hiesige Zuordnung ist konsistent: `implementer: codex`, `owner: codex`,
@@ -1399,3 +1675,64 @@ Abnahme; T-41 bleibt im Backlog, alle Umsetzungsprüfungen bleiben offen.
 **Doku-Abgleich:** Betroffene Abschnitte im Ticket und STATUS abgeglichen.
 Das Board-README beschreibt weiterhin das geplante Teilprojekt; Produktanleitungen
 und geltende Agentenregeln benötigen für diese Konzeptkorrektur keine Änderung.
+
+## Nachweise der Folgeaufträge R1-F1 und R1-F2 · codex, 2026-09-11
+
+**Umgesetzt:** Projektbasis und beide Quellen stehen gemeinsam in der lokalen
+`config.yaml`; `projects.yaml` ist entfernt. 54 Dateien tragen nun ID und
+sprechenden ASCII-Titel: 21 lokale Lessons, 21 Archive, zwölf gemeinsame Regeln.
+Die IDs und ursprünglichen Herkunftsbelege sind erhalten. INDEX, Quellenpfade,
+Linkeinstiege, diese Zuordnungstabelle und die Agenten-/Skill-Anleitungen folgen
+den neuen Namen. Der umbenannte Archivstand nennt den aktuellen Originalpfad
+und dessen Hash. R1-01 ist mit ID als Schlüssel und eindeutig bezeichnetem
+Original-Hash geklärt; R1-02 durch ausgefüllte Übersichten in beiden
+StockInfo-Einstiegen erledigt.
+
+**Abgrenzung:** 68 Zielpfade im F2-Manifest, davon 54 Umbenennungen, plus die
+Board-Nachweise. Die F1-Abgrenzung wurde durch den ausdrücklich gemeinsam
+beauftragten F2-Umfang erweitert. Keine Produktimplementierung geändert.
+ID-Auflösung ist ein vorgeschriebener Arbeitsschritt der Agenten und wurde
+bei der Überführung angewendet. Es gibt noch keinen Collector und keine
+automatische Reparatur beliebiger alter Markdown-Links.
+
+| Prüfung | Tatsächlicher Beleg |
+|---|---|
+| Konfiguration | Beide bisherigen Registrierungen verlustfrei erhalten, Projektpfade auflösbar, keine zweite Registrierungsdatei; F1 `checks.json`. |
+| Gesamtes Dateiinventar | 54 Namen entsprechen ID und erster Überschrift nach dem YAML-Kopf; IDs, Herkunft und Belegtext erhalten; F2 `checks.json`. |
+| Referenzen | 227 Links und Anker ohne Fehler; Archiv-Hashes entsprechen lokalen Quellen, gemeinsame Regeln lösen die Quelle über ID auf. |
+| Übertragung | Alle 54 alten Dateipfade entfernt. 66 der 68 Zielinhalte bytegleich zum geprüften Manifest; die zwei Skill-Dateien enthalten zusätzlich den separat committed Observer-Patch `d6681a7`. Eigene Diff-Anteile danach erneut vollständig gelesen. |
+| Gegenproben | Umbenannte Lesson trotz absichtlich altem Pfad über ID gefunden; doppelte ID abgewiesen; NFC- und NFD-Titel ergeben denselben ASCII-Dateinamen. |
+| Neues Board ohne T-41 | Aktuelle Vorlagen unter `/tmp/t41-frisches-board-un4m0lb1/_tickets` zusammengesetzt; Zugriffsanleitung allein enthält Namens-, Umlaut-, ID- und Konfigurationsregeln. Beispieldatei angelegt, Titel geändert, über unveränderte ID gefunden; doppelte ID abgewiesen. `fresh-board.json` hält das Ergebnis fest. |
+| StockPortfolio | `make test`: 720 Tests in 53 Dateien erfolgreich; `make lint` und `make typecheck`: Exit 0. Erneuter Lauf 2026-09-11, 18:40 CEST, Logs unter `/tmp/t41-r1-f2/`. |
+| StockInfo | Für R1-F2 keine Produktdatei geändert. Der Gesamtlauf aus Schritt 1 bleibt dessen Regressionstestbeleg: 1193 Backend / 29 übersprungen, 323 Plugin-API / 1 übersprungen, 50 Beispiel, 378 Dashboard. Keine erneute Ausführung für die reine Dateiumbenennung behauptet. |
+
+Prüfhilfen und genaue Manifeste liegen temporär unter `/tmp/t41-r1-f1/` und
+`/tmp/t41-r1-f2/`; sie sind weder Collector noch neue installierte Infrastruktur.
+Das vollständige ID-Inventar und die Zuordnung stehen dauerhaft in den
+versionierten Dateien. Die Namens-/Referenzprüfung wurde zunächst auf der
+Vorschau ausgeführt und anschließend deren tatsächliche Übertragung verglichen.
+Die neuen Vorlagen wurden aus dem tatsächlich installierten Skill kopiert.
+
+**Lessons angewendet:** SP-CX-01 / AL-R-08 begrenzen die Änderung auf Dateien
+und Anleitungen; kein eigener Resolver-Dienst. SP-CX-02 / AL-R-02 verlangen
+Inventar und Abgleich der aktuellen Aussagen einschließlich Skill und Ticket.
+AL-R-01 trennt Strukturprüfung, Produktregression und noch ausstehende
+unabhängige Abnahme. AL-R-06 verlangt getrennte Produktcommits vor STATUS-Handoff.
+
+**Doku-Abgleich:** Beide `LESSONS-ACCESS.md`, die Linkeinstiege und betroffene
+Prozessverweise, AgentLessons-INDEX samt Quellenköpfen, Skill-Einstieg,
+`lesson-format.md`, `lessons-bootstrap.md`, `board-setup.md` und Zugriffsvorlage
+sowie die aktuellen Ticket-/STATUS-Aussagen beschreiben denselben Stand.
+Die stehende Skill-Pflegepflicht ist in `AGENTS.md` und im Skill verankert.
+ACTIVITY und Observer-Koordination wurden durch den gesondert beauftragten
+Observer nachgezogen. Produkt-README, Fach-Dokumentation und Unraid-Vorlage
+benötigen keine Anpassung: Produktverhalten, API und Betriebskonfiguration
+ändern sich durch die Lessons-Namen nicht.
+
+**Getrennte Prüffassungen:** StockInfo `2165f649e22527cb1b37a0a411d58214cc7d1d91`;
+PersonalSkills `74bd6f4e0c246d20b6dabb4b4d0492c939c26b30` (enthält Observer `d6681a7` und F1 `bbda4c3`);
+AgentLessons `ce16f60ac64089da870d54e9b12a2f6e68d5b4bb` (enthält F1 `a89cad6`).
+Lokale `config.yaml`, SHA-256 `6030ffc0a2330ee0caaa4ac25e004a520ee40aedc90ca9a45a034dce298dd883`.
+Portabilität auch nach der Umbenennung geprüft: alle 33 Sammlungsdateien
+an einen Pfad mit Leerzeichen kopiert, interne Links und Quellen-Hashes
+ohne Zugriff auf die Quell-Repositories aufgelöst (`portability.json`).

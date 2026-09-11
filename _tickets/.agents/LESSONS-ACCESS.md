@@ -41,6 +41,15 @@ ungültigem relativem Wert den Standardort unter Home. Dasselbe gilt für
 [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir/latest/).
 Keinen relativen Verzeichnisaufstieg vom Projektvolume zum Home fest einbauen.
 
+Projektbasis und Quellenregistrierung stehen gemeinsam in
+`${XDG_CONFIG_HOME:-$HOME/.config}/agent-lessons/config.yaml` unter
+`project_root` und `projects`. Die Projektpfade unter `projects` sind relativ
+zu `project_root`, der Lessons-Pfad relativ zum jeweiligen Projekt. Im
+Wissensbestand liegt keine zweite Registrierungsdatei. Bei fehlender
+Konfiguration nicht aus einer Restdatei im Bestand ergänzen oder Werte erraten;
+die fehlende Konfiguration sichtbar nennen. Ein Collector, der das automatisch
+prüft, ist noch nicht implementiert.
+
 Die Sammlung ist ein eigenständiges Git-Repository ohne Remote. Ihre Quellen
 sind relativ zu der benannten Projektbasis registriert. Zum Lesen gemeinsamer
 Regeln sind die Quell-Repositories nicht erforderlich: kompakte Belege und der
@@ -70,6 +79,36 @@ Implementer-Regel, Verifier-Prüfung und Originalbelege. Eine ausdrückliche
 menschliche Vorgabe bleibt eine Vorgabe; ein Vorschlag wird nicht allein wegen
 seines Absenders zur geprüften Regel. Der Workflow bestimmt die Aufnahme.
 
+Eine Datei heißt `<ID>-<titel-in-kleinschreibung>.md`. Die ID bleibt exakt
+erhalten; der Titelteil verwendet nur `a-z`, `0-9` und einfache Bindestriche.
+Leerzeichen und Satzzeichen werden Bindestriche; `ä/ö/ü/ß` werden `ae/oe/ue/ss`.
+Der erste Markdown-Titel nach dem YAML-Kopf lautet `# <ID> · <Titel>` und
+liefert denselben Titel. Beispiel:
+`SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md` mit
+`# SP-CX-02 · Entscheidungen in allen aktuellen Aussagen nachziehen`.
+
+Umlaute können als zusammengesetztes Zeichen (NFC) oder als Grundbuchstabe
+mit kombinierendem Zeichen (NFD) vorliegen. Die Behandlung hängt von
+Dateisystem und Werkzeug ab; nicht jedes macOS-Dateisystem speichert pauschal
+NFD. Git beschreibt dafür auf macOS `core.precomposeUnicode`; APFS erhält die
+angelieferte Normalisierung. ASCII-Dateinamen vermeiden diese Unterschiede.
+[Git-Konfiguration](https://git-scm.com/docs/git-config#Documentation/git-config.txt-coreprecomposeUnicode),
+[Apple-Dateisystembeschreibung](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/APFS_Guide/FAQ/FAQ.html).
+
+Die ID ist der Referenzschlüssel. Zum Auflösen die YAML-Köpfe der passenden
+Einzeldateien inventarisieren und nach `id` suchen; Kommentare und Belegtext
+sind keine Kennungsquelle. `sources[].id` verweist auf die Archiv-Lesson.
+`sources[].path` wird daraus relativ zur Regeldatei erzeugt und darf jederzeit
+regeneriert werden. Ein alter Pfad entscheidet nicht über die gefundene Lesson.
+Den angegebenen Original-Hash anschließend mit `archive.source_sha256` prüfen;
+fehlende oder mehrdeutige Kennungen beziehungsweise eine andere Fassung melden,
+statt anhand eines Dateinamens zu raten.
+
+Bei Titeländerung ID beibehalten, Datei und Überschrift zusammen ändern und
+den Index sowie Markdown-Verweise aus dem ID-Inventar nachziehen. Bis der
+Collector existiert, führen die zuständigen Agenten diese Schritte aus.
+Es gibt derzeit keine automatische Reparatur beliebiger alter Markdown-URLs.
+
 Die vollständige Formatbeschreibung liegt im Skill `task-verification-workflow`
 unter `references/lesson-format.md`. Formatänderungen in den Lesekanälen aller
 Autoren ankündigen; unbekannte Fassungen nicht still als Fassung 1 behandeln.
@@ -83,7 +122,7 @@ Die zwölf Startregeln `AL-R-01` bis `AL-R-12` wurden am 2026-09-11 aus den
 bisherigen übernommenen Abschnitten nach `shared/` verschoben. Ihre erste
 Kuratierung stammt vom 2026-09-10 aus StockInfo, Fassung
 `778e449296e92bb46c0b430d9f0f9365442bf4b6`. Die lokale T-38-Ergänzung ist
-[SP-R-01](lessons/SP-R-01.md), keine weitere StockInfo-Episode.
+[SP-R-01](lessons/SP-R-01-datenerhalt-im-review-nur-am-lesepfad-begruendet.md), keine weitere StockInfo-Episode.
 
 Die bisherige Auswahl bleibt erhalten: injiziertes `fetch` und
 `fake-indexeddb` nach AGENTS.md. StockInfos Online-Testpflichten,

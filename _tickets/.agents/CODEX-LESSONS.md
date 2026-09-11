@@ -21,25 +21,25 @@ Verzeichnis inventarisieren; keine zweite Inhaltsfassung hier pflegen.
 
 ## Einfache Startbefehle nicht zu einem eigenen System ausbauen
 
-[Weiterlesen](lessons/SP-CX-01.md)
+[Weiterlesen](lessons/SP-CX-01-einfache-startbefehle-nicht-zu-einem-eigenen-system-ausbauen.md)
 
 [↑ Übersicht](#übersicht)
 
 ## Entscheidungen in allen aktuellen Aussagen nachziehen
 
-[Weiterlesen](lessons/SP-CX-02.md)
+[Weiterlesen](lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md)
 
 [↑ Übersicht](#übersicht)
 
 ## Laufende Wartezelle belegt keinen regelmäßigen Durchlauf
 
-[Weiterlesen](lessons/SP-CX-03.md)
+[Weiterlesen](lessons/SP-CX-03-laufende-wartezelle-belegt-keinen-regelmaessigen-durchlauf.md)
 
 [↑ Übersicht](#übersicht)
 
 ## Wiederverwendete Prüfhilfen vom Ticket-Lebenszyklus lösen
 
-[Weiterlesen](lessons/SP-CX-04.md)
+[Weiterlesen](lessons/SP-CX-04-wiederverwendete-pruefhilfen-vom-ticket-lebenszyklus-loesen.md)
 
 ### SI-CX-01 · Frischer Zustand statt unbemerkter Testreste
 

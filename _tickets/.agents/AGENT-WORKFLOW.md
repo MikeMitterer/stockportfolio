@@ -7,6 +7,10 @@ die Umstellung des Boards aktiviert keine Umsetzung und keinen Review.
 Ein optionaler Observer ist eine dritte, eigenständige Instanz. Seine Zuordnung
 steht im Feld `observer` derselben STATUS-Datei; sein Auftrag ist unten definiert.
 
+**Übernahmestand der Board-Konventionen: `2026-09-11-activity-observer`.**
+Am 2026-09-11 inhaltlich abgeglichen: ACTIVITY, Observer-Koordination und
+installierter Rollen-Launcher. Keine lokale Abweichung von diesen beiden Regeln.
+
 ## Einstieg und Rollen
 
 Vor fachlicher Arbeit [README.md](../README.md), STATUS und das betreffende
@@ -19,6 +23,26 @@ Für Ticketformate gilt `task-verification-workflow`, für Produktcode
 `owner` die aktuell zuständige Instanz. Rolle und Produktname sind getrennt.
 Der Autor kann seine eigene Fassung nicht unabhängig abnehmen. Eine nicht
 zugeordnete Rolle oder inaktive Phase erzeugt keinen Arbeitsauftrag.
+
+## Aktuelle Tätigkeit
+
+**Gilt ab sofort für alle Tickets** (Mike, 2026-09-11): Die jeweils arbeitende
+Instanz hält ihre aktuelle Tätigkeit knapp in [ACTIVITY.md](../ACTIVITY.md)
+fest. Das gilt für den Coder bei der Umsetzung und den Verifier beim Review.
+
+Die Meldung nennt Instanz, Zeitpunkt mit Zeitzone, aktuellen Arbeitsschritt,
+letztes Ergebnis, nächsten Schritt und gegebenenfalls ein Hindernis. Bei
+Arbeitsbeginn, wesentlichem Fortschritt, Übergabe oder Wechsel ins Warten
+aktualisieren; die vorherige Meldung ersetzen. Keine fortlaufende Historie
+und keine Aktualisierung allein wegen eines verstrichenen Scheduler-Takts.
+Eine ältere Meldung belegt keine weiterhin laufende Tätigkeit.
+
+STATUS bleibt allein verbindlich für Rollen, Auftrag, Phase und Übergaben.
+ACTIVITY meldet die tatsächliche Tätigkeit und vergibt keinen Auftrag.
+Der Observer schreibt keine Tätigkeitsmeldungen für andere Instanzen.
+Dauerhafte Ergebnisse und Prüfnachweise bleiben im Ticket. Der sichtbare Link
+oben in STATUS führt zur kurzen Datei; für reine Fortschrittsmeldungen muss
+STATUS nicht geändert werden. Die Rollenprüfung vor jedem Turn bleibt nötig.
 
 ## Ticketpfade und Arbeitsbeginn
 
@@ -116,8 +140,15 @@ fehlende Übergaben, Unterschiede zwischen Dokumentation und belegtem Stand
 sowie wiederkehrende Probleme über mehrere Tickets hinweg. Bei Folgetickets
 vergleicht er außerdem Reihenfolge, Abhängigkeiten und gemeinsam betroffene
 Funktionen: Dieselbe Validierung, Datenhaltung oder Anzeige darf nicht in
-mehreren Tickets unabhängig neu entstehen. Er unterstützt
-Mike mit Hinweisen; technische Abnahme bleibt beim Verifier.
+mehreren Tickets unabhängig neu entstehen.
+
+**Der Observer beaufsichtigt und koordiniert Coder und Verifier** (Mike,
+2026-09-11). Er darf bei Bedarf beiden Hinweise und konkrete Anweisungen im
+bestehenden Auftrag geben, Rückmeldungen anfordern, die Arbeitsreihenfolge
+innerhalb des vereinbarten Umfangs klären und auf fehlende Fortschrittsmeldungen,
+Übergaben oder Nachweise hinweisen. Dafür braucht er keine erneute Erlaubnis
+für jede Nachricht. Umsetzung bleibt beim Coder, unabhängige Abnahme beim
+Verifier; Mikes Entscheidungen haben Vorrang.
 
 Seine vollständige Kennung steht in `observer` in STATUS. Sie muss von
 `implementer`, `reviewer` und `owner` verschieden sein. Die Standardnamen für
@@ -129,16 +160,19 @@ Durchlauf vergleicht er die eigene Kennung exakt mit der aktuellen Zuordnung.
 Fehlt sie, wurde sie geändert oder kollidiert sie mit einer Arbeitsrolle,
 beendet er seinen eigenen Scheduler. Er wechselt nicht selbst in eine andere Rolle.
 
-Er ändert keine Produktdateien, Tickets oder Mailboxen, keine menschlichen
-Antworten, Rollen, Phasen, Prioritäten, Freigaben oder Reviewzähler. Er startet
-keine Folgearbeit und keine zusätzlichen Verifier. Ein fehlender oder beendeter
-Observer blockiert die übrige Arbeit nicht und schafft keine neue Abnahmestufe.
+Er kommuniziert über die vorhandenen Mailboxen in STATUS: INBOX an den Coder,
+OUTBOX an den Verifier. Nachrichten nennen Absender, Empfänger, Ticket/Fassung,
+Beleg und die erwartete Handlung. Bestehende unverarbeitete Nachrichten bleiben
+erhalten; verarbeitete Nachrichten entfernt der Empfänger. Dauerhafte Befunde
+und Entscheidungen darf der Observer im Ticket festhalten. Wesentliche
+Eingriffe und Hinweise berichtet er zusätzlich in seinem eigenen Chat.
 
-Beobachtungen erscheinen ausschließlich in seinem eigenen Chat und nennen
-Ticket beziehungsweise Fassung, konkreten Beleg, Auswirkung und Vorschlag.
-Ein möglicher fachlicher Fehler ist ein Hinweis an Mike, keine technische
-Freigabe oder automatische Nacharbeit. Ticketergänzungen übernimmt die
-zuständige Arbeitsinstanz nach Einordnung beziehungsweise Mikes Auftrag.
+Eine Koordinationsnachricht erzeugt keine neue Reviewrunde. Der Observer
+ändert keine Produktdateien, menschlichen Antworten, Rollenzuordnungen,
+Phasen, Prioritätsfelder, Freigaben oder Reviewzähler. Er aktiviert keine
+unbeauftragten Tickets und startet keine zusätzlichen Verifier. Ein fehlender
+oder beendeter Observer blockiert die übrige Arbeit nicht und schafft keine
+neue Abnahmestufe. Konkrete weitergehende Aufträge von Mike bleiben möglich.
 
 **Belegte Fehlermuster pflegt der Observer direkt in den Lessons-Dateien**
 (Mike, 2026-09-10: „Wenn du Fehlermuster entdeckst - die gehören in die
@@ -151,10 +185,11 @@ konkreter Regeln für Implementer und Verifier zur Vermeidung weiterer Fehler
 (Mike, 2026-09-10). Diese Regeln bleiben innerhalb des vereinbarten Umfangs;
 sie vergeben keine neue Arbeit und ersetzen kein unabhängiges Review.
 
-Diese laufende Erlaubnis umfasst die Lessons-Pflege. Andere Board- oder
-Produktänderungen entstehen daraus nicht; gesonderte Aufträge von Mike
-gelten im jeweils benannten Umfang. Im Chat den neuen oder ergänzten
-Lessons-Eintrag kurz nennen.
+Lessons-Pflege und die oben beschriebene Koordination sind laufend erlaubt.
+Weitere Board- oder Produktänderungen brauchen einen entsprechenden Auftrag
+von Mike. Im Chat den neuen oder ergänzten Lessons-Eintrag kurz nennen.
+Ein ausdrücklich engerer Nur-Lese-Auftrag hat Vorrang: dann Hinweise und
+Nachträge ausschließlich im Chat melden, keine Dateien oder Mailboxen ändern.
 
 Der eigene Loop läuft im Abstand von fünf Minuten. Zuerst Zuordnung und
 Änderungen am Board einschließlich `.agents/`, Git-Stand und relevanten
