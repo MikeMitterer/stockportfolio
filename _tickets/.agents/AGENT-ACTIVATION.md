@@ -77,6 +77,9 @@ seiner ID beendet; andere Jobs bleiben bestehen.
 4. Ticket, [gemeinsamen Workflow](AGENT-WORKFLOW.md) und passende Hausregeln
    lesen. Ausschließlich den fälligen Schritt der eigenen Rolle ausführen.
    Eine technische Freigabe startet keine erneute Implementierung.
+5. Die eigene Tätigkeit nach [Workflow](AGENT-WORKFLOW.md#aktuelle-tätigkeit)
+   über `agent-activity` festhalten; ACTIVITY nicht als Kontext lesen.
+   Ein unveränderter Leerdurchlauf braucht keine Meldung.
 
 ## Observer-Shortcuts im Terminal
 
@@ -117,13 +120,16 @@ mit derselben Kennung parallel starten.
    STATUS, Ticketablage, `.agents/`, Git-Stand und relevante Dokumentationsänderungen.
    Ohne relevante Änderung endet der fachliche Durchlauf.
 3. Die betroffenen Inhalte nach dem Abschnitt [Observer](AGENT-WORKFLOW.md#observer)
-   lesen. Beobachtungen mit Fassung, Beleg, Auswirkung und Vorschlag nur im
-   eigenen Chat melden; bekannte unveränderte Hinweise nicht wiederholen.
+   lesen. Bei Bedarf Coder und Verifier über INBOX beziehungsweise OUTBOX
+   koordinieren; Fassung, Beleg und erwartete Handlung nennen. Wesentliche
+   Hinweise und Eingriffe im eigenen Chat melden; bekannte unveränderte
+   Hinweise nicht wiederholen. Dauerhafte Entscheidungen ins Ticket aufnehmen.
    Belegte Fehlermuster nach dem dort beschriebenen Auftrag direkt in der
    passenden Lessons-Datei erfassen, konkrete Vorbeugungsregeln für Implementer
    und Gegenproben für Verifier formulieren und die Ergänzung im Chat nennen.
 4. Den zuletzt beobachteten Stand und gemeldete Hinweise im eigenen Chatkontext
-   behalten. Keine Mailbox oder Produktdatei als Observer beschreiben.
+   behalten. Koordination nach dem Workflow; keine Produktdateien oder
+   Rollen-/Übergabefelder verändern.
 
 ## Stoppen und Wiedereinstieg
 

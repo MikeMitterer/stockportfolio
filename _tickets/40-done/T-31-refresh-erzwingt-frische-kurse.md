@@ -2,7 +2,7 @@
 
 | Repo | Status | Time-box | Scope | GH-Issue |
 |---|---|---|---|---|
-| root | in-progress | ~1 h | UI + Store + Client | — |
+| root | done | ~1 h | UI + Store + Client | — |
 
 **Löst:** Der Knopf tat je nach Zeitpunkt etwas anderes. `GET /quote/{isin}`
 respektiert im Dienst eine TTL von sechs Stunden — innerhalb davon kam der Kurs
@@ -11,7 +11,16 @@ ist die TTL richtig, für einen ausdrücklichen Klick nicht.
 
 ---
 
+**Abgeschlossen am 2026-09-10.** Mike hat T-31 bis T-34 im Observer-Chat
+gemeinsam abgeschlossen: „Schließ ab und bereinige die Aussage“.
+Es steht keine weitere Abnahme dieses Tickets an.
+
 ## Verify
+
+Historischer Prüfstand vom 2026-08-19. Die Fußnoten nennen die tatsächlich
+verwendete Prüfmethode; Originalantworten bleiben erhalten. Beim Abschluss
+wurde keine neue Live-Prüfung durchgeführt. Spätere Ergänzungen durch die
+anderen Tickets ersetzen keine ursprünglichen Prüfurteile.
 
 Legende: ✅ live bestätigt · ⚠️ bestätigt mit Einschränkung (Fußnote) ·
 ◑ teilweise (Fußnote) · ➖ keine Live-Verifikation (nur Unit/Review).
@@ -56,9 +65,11 @@ Nachgesehen im Dienst (`${DEV_LOCAL}/DevWeb/Production/StockInfo`):
 - TTL ist `Settings.cache_ttl_hours`, Vorgabe sechs Stunden (`app/config.py:27`).
 
 `loadQuotes` bekommt daher `{ force }`. Gesetzt wird es an genau einer Stelle —
-dem Klick in `App.vue`. Die vier übrigen Aufrufer (Seitenaufruf,
-Ansichtswechsel in Dashboard und Ausgleichen, Depotwechsel) bleiben unverändert
-und damit TTL-freundlich.
+dem Klick in `App.vue`. Automatische Aufrufe erzwingen keinen Providerabruf.
+Die Schonfrist aus [T-33](T-33-schonfrist-automatisches-laden.md) kann den
+automatischen Abruf ganz vermeiden; [T-34](T-34-einstellungen-fuers-aktualisieren.md)
+macht diese Einstellung bedienbar. Die alten Verify-Zeilen #2/#3 beschreiben
+den Stand vor dieser Ergänzung.
 
 Die Wahl des Endpunkts steht jetzt in **einer** Funktion `requestQuote(client,
 position, force)` — zwei Achsen, ISIN oder Symbol und TTL oder erzwungen.
@@ -80,7 +91,8 @@ das behandelt werden müsste.
 - [x] Automatisches Laden bleibt bei der TTL.
 - [x] Papiere ohne ISIN bekommen ebenfalls einen echten Refresh — global wie einzeln.
 - [x] Die Endpunkt-Wahl steht an einer Stelle.
-- [ ] #3, #4, #6, #7 vom Menschen gesehen.
+- [x] Menschlicher Abschluss durch Mike am 2026-09-10; die zuvor offenen
+  Einzelabnahmen werden nicht weiter angefordert. Keine einzelnen Prüfurteile ergänzt.
 
 ### Side-Effects
 
@@ -97,4 +109,12 @@ Dienst den alten Wert als `stale` statt eines Fehlers.
 
 ### Auflösung
 
-Wird zuletzt gefüllt. Commit-Hash(es), Lint-Status, Findings.
+Abgeschlossen auf Mikes ausdrücklichen Auftrag vom 2026-09-10. Die Umsetzung
+ist im aktuellen Code vorhanden; die damaligen Test- und Buildbelege stehen
+oben. Keine offene Nacharbeit aus diesem Ticket dokumentiert.
+
+**Doku-Abgleich:** Abschluss und Ablage der vier Tickets sowie ihre Verweise
+in STATUS bereinigt. Die Schonfrist aus T-33 begrenzt automatische Abrufe und
+damit die Fortschrittsanzeige aus T-31/T-32; ihre Bedienbarkeit ist durch T-34
+erledigt. Keine Änderung am Produktverhalten; Produktanleitungen bleiben
+unverändert.

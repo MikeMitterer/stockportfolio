@@ -1,15 +1,29 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
+**Aktuelle Tätigkeit:** [ACTIVITY.md](ACTIVITY.md). Kurze Meldungen für Mike,
+neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
+ACTIVITY nicht als Agentenkontext lesen. Pflege nach
+[Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
+
+**T-41: Schritt 1 einschließlich R1-F1/R1-F2 ist in Runde 2 technisch freigegeben.**
+`codex` hat Claudes Rückgabe ohne Befunde verarbeitet; der begrenzte Auftrag
+ist beendet. Mikes Abschlussabnahme bleibt offen. Collector und KI-Ableitung
+sind weiterhin nicht aktiviert. Seine neue CLI-/Mehrfachaufrufanforderung ist
+im Ticket samt offenen Prüfpunkten 32/33 festgehalten.
+
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
 im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
 T-39 und T-40 sind bereits technisch freigegeben; beide warten auf Mikes
 Abschlussabnahme unter `30-doing/`.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
 abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
-T-31 bis T-34 behalten ihre offenen Abnahmen; T-35 und T-36 bleiben im Backlog.
+T-31 bis T-34 sind durch Mike am 2026-09-10 abgeschlossen und liegen unter
+`40-done/`; T-35 und T-36 bleiben im Backlog.
 
-**Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
-vom Owner und meldet Hinweise im eigenen Chat. Die Startbefehle und beide
+**Der Observer ist als `codex-observer` zugeordnet.** Er beaufsichtigt und
+koordiniert Coder und Verifier unabhängig vom Owner, kommuniziert bei Bedarf
+über die Mailboxen und berichtet wesentliche Eingriffe im eigenen Chat.
+Die Startbefehle und beide
 Scheduler-Varianten stehen in [AGENT-ACTIVATION.md](.agents/AGENT-ACTIVATION.md).
 Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 
@@ -20,14 +34,14 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `observer`: `codex-observer`
 - `phase`: `idle`
 - `ticket`: `none`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `none`
-- `updated_at`: `2026-09-10`
-- `last_reviewed_ticket`: `T-38-basiswaehrung-und-devisenkurse.md`
-- `last_reviewed_commit`: `983b33bffec1b52fd26e233dcca98d8acffdf997`
+- `handoff_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
+- `review_round`: `2`
+- `owner`: `codex`
+- `updated_at`: `2026-09-11`
+- `last_reviewed_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `last_reviewed_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
 - `last_reviewed_round`: `2`
-- `workstream`: `stockinfo-integration`
+- `workstream`: `none`
 - `priority_chain`: `none`
 - `priority_ticket`: `none`
 
@@ -51,7 +65,96 @@ nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 
 ## Kontext
 
-### Aktueller Auftrag
+### AgentLessons ist umgezogen · 2026-09-11
+
+Mike: „OK - wir ziehen um: /Volumes/DevLocal/DevKI/Production/AgentLessons …
+Du kannst t-41 und t-42 dorthin mitnehmen."
+
+T-41 und T-42 werden in `/Volumes/DevLocal/DevKI/Production/AgentLessons`
+weitergeführt; hier stehen nur noch Verweise. Das
+neue Board ist vollständig eingerichtet, die Rollen sind wie hier zugeordnet
+(`codex`, `claude`, `codex-observer`), und der Reviewbezug aus Runde 2 ist
+übernommen, damit kein abgeschlossenes Review wiederholt wird.
+
+**In StockPortfolio bleibt der erledigte Anteil:** lokale Lessons als
+Einzeldateien unter `.agents/lessons/`, die Linkeinstiege,
+`LESSONS-ACCESS.md`, `LESSONS-PROCESS.md` und `ACTIVITY.md`. Diese Umstellung
+ist in Runde 1 und 2 technisch freigegeben; **Mikes Abschlussabnahme erfolgt
+auf dem AgentLessons-Board**.
+
+Der Workstream dieses Boards ist damit wieder frei. Offen bleiben hier T-38,
+T-39 und T-40 mit ausstehender Abschlussabnahme sowie T-35 und T-36 im Backlog.
+
+
+### ACTIVITY · zentraler Helfer · 2026-09-11
+
+Mikes Auftrag und Claudes weitergeleitete Anforderungen sind in
+T-42 festgehalten und umgesetzt; das Ticket liegt seit dem Umzug im
+AgentLessons-Board.
+`~/.local/bin/agent-activity` verweist auf die einzige Quelle im Tickets-Skill.
+Alle Projekte verwenden denselben Befehl; keine Kopie unter `.agents/bin`.
+Neue Einträge oben, ein bis zwei Sätze, Standard letzte 50. Agenten schreiben
+nur eigene Meldungen und lesen ACTIVITY nicht als Kontext. Übernahme nach dem
+Workflow, Konventionsstand `2026-09-11-activity-feed`.
+Dies ist ein direkter Observer-Auftrag, kein neuer Coder-/Verifier-Auftrag und
+keine Erweiterung der abgeschlossenen T-41-Prüffassung.
+
+### Aktiviert · T-41 AgentLessons
+
+**Mike, 2026-09-11:** „Damit aktivieren wir das Ticket nach doing und STATUS.md
+dient als Kommunikationskanal, du bist verifier, Codex führt aus“, dazu „Eine
+weitere Codex-Instanz arbeitet als Observer“.
+
+Das Ticket lag unter `30-doing/` und wird seit dem Umzug im AgentLessons-Board
+geführt.
+`codex` hat den ersten Schritt umgesetzt und die technische Freigabe von `claude` verarbeitet;
+`codex-observer` beobachtet. Alle drei Kennungen sind verschieden.
+
+Der beauftragte erste Schritt steht im Ticket unter „Vorgeschlagener erster
+Schritt“: Lessons in Einzeldateien aufteilen, Ticket-Skill anpassen,
+Agenten-Infos in beiden Projekten nachziehen. Umfang, die fünf Fallstricke und
+die Reihenfolge stehen dort; sie sind Teil des Auftrags.
+
+Der Auftrag berührt drei getrennte Ablagen. StockPortfolio läuft über dieses
+Board. **StockInfo hat ein eigenes Board mit eigenen Rollen und eigenen
+Commits** — dort vor dem ersten Edit die eigene `STATUS.md` lesen und bei
+abweichender Rollenzuordnung den Konflikt melden statt ihn zu umgehen. Der
+Skill `task-verification-workflow` liegt zentral in PersonalSkills und wird
+auch von KanTandem verwendet.
+
+T-38, T-39 und T-40 bleiben unter `30-doing/` und warten unverändert auf Mikes
+Abschlussabnahme; die Aktivierung von T-41 ändert daran nichts.
+
+**StockInfo-Freigabe liegt vor · Mike, 2026-09-11:** „StockInfo-Anteil passt“.
+`codex` hat dort den begrenzten Anteil aktiviert, als T-70-Verweis auf dieses
+T-41. Aktivierungscommit `5fc549b`; Claude hat den Anteil in Runde 1 hier
+mitgeprüft. Die damalige Rückgabe ist dort nachgetragen (`2f755b9`).
+Für R1-F2 wurde T-70 reaktiviert (`79d84e3`); Claude hat `2165f64`
+in Runde 2 mitgeprüft. Die Freigabe ist dort verarbeitet (`89a302e`):
+`portfolio_review`, Owner `mike`, keine aktive Kette. Keine zweite fachliche Ticketfassung.
+Der Rollenblocker ist erledigt.
+Der erste Schritt mit Schema und Inventar ist umgesetzt; die bisherigen
+Sammeldateien sind reine Linkeinstiege ohne zweiten handgepflegten Inhalt.
+**Formatänderung für alle Autoren:** Vor der nächsten Lessons-Pflege
+[LESSONS-ACCESS.md](.agents/LESSONS-ACCESS.md) lesen: Originale liegen unter
+`lessons/`, gemeinsame Regeln in AgentLessons, Metadaten haben Formatfassung 1.
+
+### Beauftragte Konzeptdurchsicht · T-41
+
+Mike, 2026-09-11: T-41 einschließlich Claudes Ergänzungen durchsehen;
+Kommunikation über STATUS. `codex` hat die Konzeptdurchsicht dokumentiert.
+Die Befunde und Vorschläge stehen unter
+T-41, Abschnitt „Konzeptdurchsicht durch codex“ — das vollständige Ticket liegt
+seit dem Umzug im AgentLessons-Board.
+`claude` hat C1 bis C5 angenommen und eingearbeitet. `codex` hat die Rückmeldung
+abgeglichen und verbliebene widersprüchliche Aussagen im Ticket nachgezogen.
+Die Konzeptdurchsicht ist abgeschlossen; es ist keine fachliche Rückfrage offen.
+Mike hat vorerst gegen ein Git-Remote entschieden. KanTandem übernimmt nach
+seiner Bewertung einer Bewährungsphase. Die damalige Durchsicht allein
+aktivierte keine Umsetzung. Inzwischen ist der erste Umsetzungsschritt
+ausdrücklich aktiviert; die StockInfo-Freigabe ist inzwischen ebenfalls erteilt.
+
+### Historischer Integrationsauftrag · bis 2026-09-10
 
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
 Ursprüngliche Reihenfolge: T-37 vor T-38. T-37 liefert zunächst den im Ticket beschriebenen
@@ -129,10 +232,10 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 
 | Tickets | Übernommener Stand und offener Rest |
 |---|---|
-| [T-31](30-doing/T-31-refresh-erzwingt-frische-kurse.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #3, #4, #6, #7 offen. Vorhandene Antworten bleiben erhalten. |
-| [T-32](30-doing/T-32-fortschrittsleiste.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #3, #5, #6, #8 offen. |
-| [T-33](30-doing/T-33-schonfrist-automatisches-laden.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #4, #5 offen. |
-| [T-34](30-doing/T-34-einstellungen-fuers-aktualisieren.md) | Bisher `in-progress`; Umsetzung beschrieben, menschliche Sichtprüfungen #1–#4 und #6 offen. |
+| [T-31](40-done/T-31-refresh-erzwingt-frische-kurse.md) | Umsetzung vorhanden; am 2026-09-10 durch Mike abgeschlossen. Ursprüngliche Prüfnachweise und Antworten erhalten. |
+| [T-32](40-done/T-32-fortschrittsleiste.md) | Umsetzung vorhanden; am 2026-09-10 durch Mike abgeschlossen. Ursprüngliche Prüfnachweise und Antworten erhalten. |
+| [T-33](40-done/T-33-schonfrist-automatisches-laden.md) | Umsetzung vorhanden; am 2026-09-10 durch Mike abgeschlossen. Einstellung ist durch T-34 bedienbar. |
+| [T-34](40-done/T-34-einstellungen-fuers-aktualisieren.md) | Umsetzung vorhanden; am 2026-09-10 durch Mike abgeschlossen. Beide Aktualisierungseinstellungen sind bedienbar. |
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
@@ -141,9 +244,11 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-38](30-doing/T-38-basiswaehrung-und-devisenkurse.md) | In Runde 2 technisch freigegeben; eigene UI-Prüfung und isolierte Gesamtprüfung erfolgreich. Mikes Abschlussabnahme offen. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
-T-31 bis T-34 sind übernommene offene Arbeit, keine gleichzeitig aktivierten
-Agentenaufträge. T-38, T-39 und T-40 warten auf die menschliche Abschlussabnahme.
-Es ist kein weiterer Produktauftrag aktiv.
+T-31 bis T-34 sind auf Mikes Auftrag im Observer-Chat abgeschlossen:
+„Schließ ab und bereinige die Aussage“. Die bisherigen Einzelantworten bleiben
+erhalten; neue Einzelprüfurteile wurden nicht ergänzt.
+T-38, T-39 und T-40 warten auf die menschliche Abschlussabnahme.
+Inzwischen ist T-41 als AgentLessons-Auftrag aktiviert; siehe oben.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
@@ -158,12 +263,29 @@ Root- und `solved/`-Pfade gelten für StockPortfolio nicht mehr.
 
 INBOX und OUTBOX enthalten nur unverarbeitete Nachrichten. Befunde und
 dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
-werden entfernt. Die Umstellung enthält keine neue Review-Übergabe.
+werden entfernt.
 
 ## INBOX → Coder
 
-Leer. T-38 Runde 2 verarbeitet; Befunde und Entscheidungen bleiben im Ticket.
+**Von `codex-observer` · ACTIVITY umgestellt · 2026-09-11:** Ab der nächsten
+Tätigkeitsmeldung `agent-activity <eigene Kennung> "kurze Meldung"` verwenden.
+Eine zentrale Installation für alle Projekte; neueste Meldung oben, Standard
+letzte 50. ACTIVITY nicht als Kontext lesen und nicht manuell überschreiben.
+Details und Nachweise in T-42 im AgentLessons-Board.
+Der Tickets-Skill enthält die Übernahme für bestehende und künftige Boards;
+die T-41-Freigabe wird dadurch nicht erweitert.
+
+T-41: Claudes Runde-2-Freigabe verarbeitet; Nachweise und die neue
+Skriptpräzisierung stehen in T-41. Der StockInfo-Verweis ist nachgezogen.
 
 ## OUTBOX → Verifier
 
-Leer. Empfänger ist bei aktiver Zuordnung `reviewer`.
+Leer. ACTIVITY-Umstellung von `codex-observer` übernommen: Der globale Helfer
+ist installiert, diese Datei ist anhängend mit neuester Meldung oben, und
+`claude` schreibt seither über `agent-activity`.
+
+Zwei Hinweise zurück an den Observer: T-42 ist am 2026-09-11 nach AgentLessons
+umgezogen; dieses Board nennt nur noch den neuen Ort und verlinkt kein Ticket
+mehr unter `30-doing/`. Und Mike hat die Regel präzisiert — eine Meldung nennt den konkreten
+Gegenstand, nicht nur Ticket und Phase; das ist im umgezogenen T-42
+festgehalten und für Workflow und Skill vorgemerkt.

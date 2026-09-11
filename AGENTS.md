@@ -44,22 +44,22 @@ von StockInfo: dessen `AGENTS.md`, dessen Board und die Rollen aus dessen
 bleiben getrennt; eine Änderung am Dienst gehört nicht in einen Commit dieses
 Projekts.
 
-- **`src/api/client.ts` ist die einzige Stelle mit `fetch`.**  
+- **`src/api/client.ts` ist die einzige Stelle mit `fetch`.**
   Neue Endpunkte kommen dort dazu, mit Typ in `src/api/types.ts` und Mapper in
   `src/api/mappers.ts`. Der Client bekommt `fetch` injiziert; kein Test ruft
   den echten Dienst.
 
-- **Die Basisadresse hat keine Rückfallebene.**  
+- **Die Basisadresse hat keine Rückfallebene.**
   Zur Laufzeit gilt `config.js` — im Container aus `STOCKINFO_API_URL`
   geschrieben —, sonst `VITE_STOCKINFO_API_URL` aus der lokalen `.env`
   (Vorlage: `.env.example`). Fehlt beides, wirft die App `MissingApiUrlError`
   und sagt das. Eine fest eingebaute Adresse wäre für jeden außer ihrem
   Besitzer ein Name, der nicht auflöst.
 
-- **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**  
+- **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
 
-- **Den Vertrag liefert StockInfo maschinenlesbar mit.**  
+- **Den Vertrag liefert StockInfo maschinenlesbar mit.**
   `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
@@ -104,6 +104,7 @@ Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
 `30-doing/`; Backlog, Done, Iced und Rejected erzeugen keinen Auftrag.
 
 - [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
+- [`_tickets/ACTIVITY.md`](_tickets/ACTIVITY.md) — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 - [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
 - [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
 - [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
@@ -117,6 +118,12 @@ Phasen oder Übergabefassungen übernehmen — die beiden Boards laufen getrennt
 Dateinamen und Produktnamen sind keine Rollenverteilung. Der Autor kann seine
 eigene Fassung nicht unabhängig abnehmen, und eine technische Freigabe ist noch
 kein Ticketabschluss.
+
+Lokale Lessons liegen als Einzeldateien unter `_tickets/.agents/lessons/`.
+Die alten Sammeldateien sind Linkeinstiege. Verzeichnisinventar, gemeinsamer
+AgentLessons-Bestand und Herkunft folgen
+[Lessons lesen und pflegen](_tickets/.agents/LESSONS-ACCESS.md); die gemeinsame
+Sammlung wird noch nicht automatisch aktualisiert.
 
 [↑ Übersicht](#übersicht)
 
@@ -233,6 +240,11 @@ Grenzen gelten.
   Schritte als nummerierte Liste, Vergleiche bei Bedarf als Tabelle.
 - Anleitungen beschreiben die Benutzung und das aktuelle Verhalten. Interne
   Arbeitsabläufe und Review-Geschichte gehören in die Tickets.
+
+Änderungen an Board- oder Lessons-Konventionen werden im selben Auftrag im
+Skill `task-verification-workflow` samt Referenzen und Vorlagen nachgezogen.
+Der Doku-Abgleich nennt das Ergebnis, auch wenn dort keine Änderung nötig ist.
+Der Skill beschreibt Verfahren und Format; er erhält keine zweite Wissenskopie.
 
 Bei Änderungen an Verhalten, Verträgen, Konfiguration, Installation oder
 beschlossenem Umfang gehört der **Doku-Abgleich zum selben Auftrag**. Mike muss

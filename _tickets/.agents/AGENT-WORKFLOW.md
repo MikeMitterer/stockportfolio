@@ -7,6 +7,10 @@ die Umstellung des Boards aktiviert keine Umsetzung und keinen Review.
 Ein optionaler Observer ist eine dritte, eigenständige Instanz. Seine Zuordnung
 steht im Feld `observer` derselben STATUS-Datei; sein Auftrag ist unten definiert.
 
+**Übernahmestand der Board-Konventionen: `2026-09-11-activity-feed`.**
+Am 2026-09-11 inhaltlich abgeglichen: ACTIVITY, Observer-Koordination und
+installierter Rollen-Launcher. Zentraler ACTIVITY-Helfer; keine lokale Abweichung.
+
 ## Einstieg und Rollen
 
 Vor fachlicher Arbeit [README.md](../README.md), STATUS und das betreffende
@@ -19,6 +23,43 @@ Für Ticketformate gilt `task-verification-workflow`, für Produktcode
 `owner` die aktuell zuständige Instanz. Rolle und Produktname sind getrennt.
 Der Autor kann seine eigene Fassung nicht unabhängig abnehmen. Eine nicht
 zugeordnete Rolle oder inaktive Phase erzeugt keinen Arbeitsauftrag.
+
+## Aktuelle Tätigkeit
+
+Für alle Tickets melden Coder, Verifier und Observer jeweils nur die eigene
+Tätigkeit: eine Zeile mit ein bis zwei kurzen Sätzen. Neueste Meldungen stehen
+oben; vorherige Einträge bleiben bis zur eingestellten Begrenzung erhalten.
+Bei Arbeitsbeginn, wesentlichem Fortschritt, Übergabe oder Wechsel ins Warten
+melden, nicht allein wegen eines Scheduler-Takts. Eine ältere Meldung belegt
+keine weiterhin laufende Tätigkeit.
+
+Aus dem Projekt oder einem Unterordner den globalen Helfer aufrufen:
+
+```bash
+agent-activity claude "prüft die übergebene Fassung"
+```
+
+`claude` durch die eigene vollständige Instanzkennung ersetzen. Der Helfer liegt
+einmal unter `~/.local/bin/agent-activity`, findet das nächste `_tickets`-Board
+mit STATUS und legt eine fehlende ACTIVITY an. Keine Skriptkopie unter
+`.agents/bin` oder in anderen Projektverzeichnissen. Gleichzeitige Aufrufe
+werden mit einer Sperre und atomarem Dateiersatz verarbeitet. Standardmäßig
+bleiben 50 Einträge; `-k N` beziehungsweise `--keep N` setzt die Grenze für
+diesen Aufruf. Alle Schreiber eines Boards verwenden dieselbe vereinbarte
+Grenze. Ohne andere Vereinbarung gilt 50.
+
+**Agenten schreiben ACTIVITY, lesen sie aber nicht als Kontext oder Auftrag.**
+Die Datei dient ausschließlich dem Nutzer. Nur der Helfer liest intern die
+bisherigen Einträge, um sie beim Schreiben zu erhalten und zu begrenzen.
+Kein manuelles Lesen-Ändern-Schreiben neben dem Helfer, sonst greift seine
+Sperre nicht. Fehlt er oder scheitert der Aufruf, den Fehler im Chat melden
+und die zentrale Einrichtung nachholen; keine Projektkopie als Ersatz bauen.
+Ein ausdrücklicher Nur-Lese-Auftrag verbietet auch diesen Schreibaufruf.
+
+STATUS bleibt allein verbindlich für Rollen, Auftrag, Phase und Übergaben
+und verlinkt [ACTIVITY.md](../ACTIVITY.md) sichtbar am Anfang. Die Rollenprüfung
+vor jedem Durchlauf bleibt nötig. Dauerhafte Ergebnisse und Prüfnachweise
+gehören ins Ticket. Keine Tätigkeit einer anderen Instanz behaupten.
 
 ## Ticketpfade und Arbeitsbeginn
 
@@ -100,35 +141,14 @@ ergänzen. Unklare Autorenschaft offenlassen, nicht aus dem aktuellen Owner able
   Wiederholung prüfen, ob eine Regel fehlt, unklar ist oder nicht angewendet
   wurde; genau diese Lücke verbessern und im Chat mit Beleg benennen.
 
-**Ein neues Board beginnt mit der kuratierten Startbasis des Ticket-Skills.**
-Die lokal enthaltenen Regeln funktionieren ohne andere Projekte. Bei Einrichtung
-oder Übernahme zusätzlich die Lessons eines benannten, verfügbaren Quellprojekts
-sichten. Übertragbare Regeln mit Quelle, Fassung und ursprünglicher
-Autorenschaft kuratiert in die lokalen Sammlungen aufnehmen; sie ausdrücklich
-als externe Startbasis kennzeichnen. Das ist keine Behauptung lokaler Vorfälle.
-Übernahme, Anpassung und Auslassungen mit Grund in den Lessons festhalten.
-Quellrollen, Reviewzähler und projektspezifische Regeln nicht mitkopieren.
-Die lokale Fassung muss ohne Zugriff auf das Quellprojekt verständlich bleiben.
-Ohne Quellprojekt die allgemeine Startbasis des Ticket-Skills prüfen und
-passend übernehmen; verbleibende Wissenslücken offen nennen. Bestehende lokale
-Erfahrungen erhalten. Spätere Übernahmen erfolgen gezielt, ohne automatische
-Synchronisation oder Vorrang fremder Regeln.
-**Eigenständige Entwicklung und Wissenstransfer:** Jedes Board entwickelt
-seine Lessons eigenständig weiter, auch zuvor übernommene Regeln. Der Observer
-unterscheidet projektspezifische Erkenntnisse von übertragbaren Ursachen und
-formuliert für Letztere einen konkreten Nachtrag zur Startbasis im Ticket-Skill.
-Der Nachtrag enthält allgemeine Erkennung, Vorbeugung, Gegenprobe und Herkunft.
-Globale Übernahme nur im Rahmen eines entsprechenden Auftrags; lokale
-Lessons-Erlaubnis allein reicht dafür nicht.
-
-Die Skill-Vorlagen sind eine kuratierte Startbasis für weitere Projekte.
-Sie überschreiben keine eigenständig weiterentwickelten Projekt-Lessons.
-Beim beauftragten Abgleich Herkunft und Übernahmestand berücksichtigen und
-inhaltlich entscheiden: ergänzen, lokal anpassen, bereits abgedeckt oder
-nicht passend. Lokale Belege und Anpassungen erhalten. Widersprechen sich
-Erfahrungen, zunächst deren Geltungsbereiche prüfen; keine Fassung allein
-wegen ihres Datums bevorzugen. Unterschiedliche Anforderungen dürfen
-unterschiedliche Regeln ergeben. Keine automatische Synchronisation.
+**Lokale Lessons liegen einzeln unter `lessons/`; gemeinsame Regeln in
+AgentLessons.** [Zugriff, Herkunft und Pflege](LESSONS-ACCESS.md) regeln die
+Lesepflicht einschließlich Verzeichnisinventar, fehlender Sammlung und neuer
+Fassungen. Die früheren Sammeldateien sind nur Linkeinstiege. Der Ticket-Skill
+liefert das Format und die Einrichtung, keine eigene Kopie des Wissens.
+Die übernommene [Verfahrensempfehlung](LESSONS-PROCESS.md) bleibt als solche
+gekennzeichnet. Globale Pflege braucht einen Auftrag; keine automatische
+Synchronisation oder Übernahme fremder Rollen und Betriebsvorgaben.
 
 ## Observer
 
@@ -137,8 +157,15 @@ fehlende Übergaben, Unterschiede zwischen Dokumentation und belegtem Stand
 sowie wiederkehrende Probleme über mehrere Tickets hinweg. Bei Folgetickets
 vergleicht er außerdem Reihenfolge, Abhängigkeiten und gemeinsam betroffene
 Funktionen: Dieselbe Validierung, Datenhaltung oder Anzeige darf nicht in
-mehreren Tickets unabhängig neu entstehen. Er unterstützt
-Mike mit Hinweisen; technische Abnahme bleibt beim Verifier.
+mehreren Tickets unabhängig neu entstehen.
+
+**Der Observer beaufsichtigt und koordiniert Coder und Verifier** (Mike,
+2026-09-11). Er darf bei Bedarf beiden Hinweise und konkrete Anweisungen im
+bestehenden Auftrag geben, Rückmeldungen anfordern, die Arbeitsreihenfolge
+innerhalb des vereinbarten Umfangs klären und auf fehlende Fortschrittsmeldungen,
+Übergaben oder Nachweise hinweisen. Dafür braucht er keine erneute Erlaubnis
+für jede Nachricht. Umsetzung bleibt beim Coder, unabhängige Abnahme beim
+Verifier; Mikes Entscheidungen haben Vorrang.
 
 Seine vollständige Kennung steht in `observer` in STATUS. Sie muss von
 `implementer`, `reviewer` und `owner` verschieden sein. Die Standardnamen für
@@ -150,16 +177,19 @@ Durchlauf vergleicht er die eigene Kennung exakt mit der aktuellen Zuordnung.
 Fehlt sie, wurde sie geändert oder kollidiert sie mit einer Arbeitsrolle,
 beendet er seinen eigenen Scheduler. Er wechselt nicht selbst in eine andere Rolle.
 
-Er ändert keine Produktdateien, Tickets oder Mailboxen, keine menschlichen
-Antworten, Rollen, Phasen, Prioritäten, Freigaben oder Reviewzähler. Er startet
-keine Folgearbeit und keine zusätzlichen Verifier. Ein fehlender oder beendeter
-Observer blockiert die übrige Arbeit nicht und schafft keine neue Abnahmestufe.
+Er kommuniziert über die vorhandenen Mailboxen in STATUS: INBOX an den Coder,
+OUTBOX an den Verifier. Nachrichten nennen Absender, Empfänger, Ticket/Fassung,
+Beleg und die erwartete Handlung. Bestehende unverarbeitete Nachrichten bleiben
+erhalten; verarbeitete Nachrichten entfernt der Empfänger. Dauerhafte Befunde
+und Entscheidungen darf der Observer im Ticket festhalten. Wesentliche
+Eingriffe und Hinweise berichtet er zusätzlich in seinem eigenen Chat.
 
-Beobachtungen erscheinen ausschließlich in seinem eigenen Chat und nennen
-Ticket beziehungsweise Fassung, konkreten Beleg, Auswirkung und Vorschlag.
-Ein möglicher fachlicher Fehler ist ein Hinweis an Mike, keine technische
-Freigabe oder automatische Nacharbeit. Ticketergänzungen übernimmt die
-zuständige Arbeitsinstanz nach Einordnung beziehungsweise Mikes Auftrag.
+Eine Koordinationsnachricht erzeugt keine neue Reviewrunde. Der Observer
+ändert keine Produktdateien, menschlichen Antworten, Rollenzuordnungen,
+Phasen, Prioritätsfelder, Freigaben oder Reviewzähler. Er aktiviert keine
+unbeauftragten Tickets und startet keine zusätzlichen Verifier. Ein fehlender
+oder beendeter Observer blockiert die übrige Arbeit nicht und schafft keine
+neue Abnahmestufe. Konkrete weitergehende Aufträge von Mike bleiben möglich.
 
 **Belegte Fehlermuster pflegt der Observer direkt in den Lessons-Dateien**
 (Mike, 2026-09-10: „Wenn du Fehlermuster entdeckst - die gehören in die
@@ -172,10 +202,11 @@ konkreter Regeln für Implementer und Verifier zur Vermeidung weiterer Fehler
 (Mike, 2026-09-10). Diese Regeln bleiben innerhalb des vereinbarten Umfangs;
 sie vergeben keine neue Arbeit und ersetzen kein unabhängiges Review.
 
-Diese laufende Erlaubnis umfasst die Lessons-Pflege. Andere Board- oder
-Produktänderungen entstehen daraus nicht; gesonderte Aufträge von Mike
-gelten im jeweils benannten Umfang. Im Chat den neuen oder ergänzten
-Lessons-Eintrag kurz nennen.
+Lessons-Pflege und die oben beschriebene Koordination sind laufend erlaubt.
+Weitere Board- oder Produktänderungen brauchen einen entsprechenden Auftrag
+von Mike. Im Chat den neuen oder ergänzten Lessons-Eintrag kurz nennen.
+Ein ausdrücklich engerer Nur-Lese-Auftrag hat Vorrang: dann Hinweise und
+Nachträge ausschließlich im Chat melden, keine Dateien oder Mailboxen ändern.
 
 Der eigene Loop läuft im Abstand von fünf Minuten. Zuerst Zuordnung und
 Änderungen am Board einschließlich `.agents/`, Git-Stand und relevanten
