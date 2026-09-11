@@ -7,8 +7,8 @@ Der Ablageort zeigt den Arbeitsstand. Rollen, Reihenfolge und genaue Phase
 stehen in [STATUS.md](STATUS.md). Seit dem 2026-09-10 verwendet StockPortfolio
 dieselbe Board-Struktur wie StockInfo und der Skill `task-verification-workflow`.
 
-**Was gerade passiert:** [ACTIVITY.md](ACTIVITY.md) zeigt die letzte
-Tätigkeitsmeldung samt Zeitpunkt. Coder und Verifier pflegen sie nach dem
+**Was gerade passiert:** [ACTIVITY.md](ACTIVITY.md) zeigt kurze
+Tätigkeitsmeldungen, neueste oben. Coder, Verifier und Observer schreiben sie über `agent-activity` nach dem
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit); das gilt für alle Tickets.
 
 ## Übersicht
@@ -34,7 +34,7 @@ _tickets/
 ├── 90-rejected/   # bewusst verworfen
 ├── README.md      # Board-Anleitung
 ├── STATUS.md      # Rollen, Reihenfolge, Phase und Mailbox
-├── ACTIVITY.md    # letzte Tätigkeitsmeldung der arbeitenden Instanz
+├── ACTIVITY.md    # kurze Tätigkeitsmeldungen, neueste oben
 └── QUESTIONS.md   # kurzfristige Fragen
 ```
 

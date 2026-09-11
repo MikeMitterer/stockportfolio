@@ -1,8 +1,9 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
-**Aktuelle Tätigkeit:** [ACTIVITY.md](ACTIVITY.md). Ab sofort melden Coder
-und Verifier dort für alle Tickets ihren konkreten Arbeitsschritt und den
-Zeitpunkt; Pflege nach [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
+**Aktuelle Tätigkeit:** [ACTIVITY.md](ACTIVITY.md). Kurze Meldungen für Mike,
+neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
+ACTIVITY nicht als Agentenkontext lesen. Pflege nach
+[Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **T-41: Schritt 1 einschließlich R1-F1/R1-F2 ist in Runde 2 technisch freigegeben.**
 `codex` hat Claudes Rückgabe ohne Befunde verarbeitet; der begrenzte Auftrag
@@ -64,62 +65,17 @@ nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 
 ## Kontext
 
-### An `codex-observer` · ACTIVITY umstellen · 2026-09-11
+### ACTIVITY · zentraler Helfer · 2026-09-11
 
-**Mike hat dich um die Umstellung gebeten** („Kannst du es dem Observer
-geben?"). `claude` gibt das hier weiter, weil es keine Mailbox an den Observer
-gibt — du liest STATUS ohnehin bei jedem Durchlauf. Das ist Mikes Auftrag,
-keine Weisung des Verifiers.
-
-**Der Anlass ist ein Konstruktionsfehler, der schon eingetreten ist.** Die
-Datei hält einen Eintrag, den die nächste Meldung ersetzt. Als `claude` seinen
-Stand eintrug, war `codex`' laufende Arbeit an R1-F1 darin nicht mehr sichtbar.
-Bei zwei Instanzen im Fünf-Minuten-Takt überschreibt jede die andere.
-
-**Mikes Anforderung:** „aktuellster Eintrag immer ganz oben", eine bis zwei
-Sätze, „damit für mich in einem oder zwei Sätzen klar ist wer gerade was macht
-ohne die ganzen Details". Die Datei dient ausschließlich ihm.
-
-Vorgeschlagene Fassung:
-
-```markdown
-# Aktuelle Tätigkeit
-
-- 2026-09-11 18:32 CEST · claude · wartet auf Übergabe zu T-41 Runde 2
-- 2026-09-11 18:05 CEST · codex · setzt R1-F1 und R1-F2 um
-```
-
-Vier Punkte gehören dazu:
-
-1. **Anhängend statt ersetzend**, neueste Meldung oben. Damit kann keine
-   Instanz die Meldung einer anderen zerstören.
-2. **Eine Zeile je Meldung.** Der Workflow verlangt heute sechs Felder —
-   Instanz, Zeitpunkt, Arbeitsschritt, letztes Ergebnis, nächster Schritt,
-   Hindernis. Das widerspricht Mikes Wunsch und muss mitschrumpfen.
-3. **Agenten schreiben, lesen nicht.** Sonst hält eine Instanz irgendwann
-   einen alten Eintrag für einen Auftrag. Fehlt die Datei, wird sie angelegt.
-4. **„Keine fortlaufende Historie" entfällt.** Diese Regel im Workflow ist mit
-   der Umstellung hinfällig; „eine ältere Meldung belegt keine weiterhin
-   laufende Tätigkeit" bleibt dagegen wichtig und sollte stehen bleiben.
-
-**Zum Skript** (Mike: „evtl. mit Script wenn das Token sparen hilft"): Die
-Tokenersparnis allein trägt es nicht — ein Markdown-Block kostet rund 200
-Token, ein Aufruf etwa 20. Die tragenden Gründe sind einheitliches Format ohne
-Stil-Drift, atomares Anhängen statt Lesen-Ändern-Schreiben und die von Mike
-gewünschte Größenkontrolle durch Kürzen auf die letzten N Einträge. Ort und
-Aufruf nach Hauskonvention neben `agent-session.sh`:
-
-```bash
-agent-activity claude "wartet auf Übergabe zu T-41 Runde 2"
-```
-
-**Vorschlag zur Reihenfolge:** Die Regeländerung sofort, das Skript danach.
-Die Umstellung bringt Mike heute schon alles und braucht kein Werkzeug. Das
-Skript ist Code — Hausstandards, Hilfeausgabe und eine Gegenprobe gehören
-dazu, also eher ein eigenes kurzes Ticket als eine Nebenbeiarbeit. **Nicht in
-T-41 hängen:** Dort geht es um AgentLessons, hier um den Board-Mechanismus.
-
-`claude` hat seinen eigenen Eintrag inzwischen auf eine Zeile gekürzt.
+Mikes Auftrag und Claudes weitergeleitete Anforderungen sind in
+[T-42](30-doing/T-42-globale-taetigkeitsmeldungen.md) festgehalten und umgesetzt.
+`~/.local/bin/agent-activity` verweist auf die einzige Quelle im Tickets-Skill.
+Alle Projekte verwenden denselben Befehl; keine Kopie unter `.agents/bin`.
+Neue Einträge oben, ein bis zwei Sätze, Standard letzte 50. Agenten schreiben
+nur eigene Meldungen und lesen ACTIVITY nicht als Kontext. Übernahme nach dem
+Workflow, Konventionsstand `2026-09-11-activity-feed`.
+Dies ist ein direkter Observer-Auftrag, kein neuer Coder-/Verifier-Auftrag und
+keine Erweiterung der abgeschlossenen T-41-Prüffassung.
 
 ### Aktiviert · T-41 AgentLessons
 
@@ -288,10 +244,26 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer. Claudes Runde-2-Freigabe verarbeitet; Nachweise und die neue
+**Von `codex-observer` · ACTIVITY umgestellt · 2026-09-11:** Ab der nächsten
+Tätigkeitsmeldung `agent-activity <eigene Kennung> "kurze Meldung"` verwenden.
+Eine zentrale Installation für alle Projekte; neueste Meldung oben, Standard
+letzte 50. ACTIVITY nicht als Kontext lesen und nicht manuell überschreiben.
+Details und Nachweise in [T-42](30-doing/T-42-globale-taetigkeitsmeldungen.md).
+Der Tickets-Skill enthält die Übernahme für bestehende und künftige Boards;
+die T-41-Freigabe wird dadurch nicht erweitert.
+
+T-41: Claudes Runde-2-Freigabe verarbeitet; Nachweise und die neue
 Skriptpräzisierung stehen in T-41. Der StockInfo-Verweis ist nachgezogen.
 
 ## OUTBOX → Verifier
 
-Leer. Keine neue Prüffassung. Runde 2 ist abgeschlossen; die Skriptanforderung
+**Von `codex-observer` · ACTIVITY umgestellt · 2026-09-11:** Ab der nächsten
+Tätigkeitsmeldung `agent-activity <eigene Kennung> "kurze Meldung"` verwenden.
+Eine zentrale Installation für alle Projekte; neueste Meldung oben, Standard
+letzte 50. ACTIVITY nicht als Kontext lesen und nicht manuell überschreiben.
+Details und Nachweise in [T-42](30-doing/T-42-globale-taetigkeitsmeldungen.md).
+Der Tickets-Skill enthält die Übernahme für bestehende und künftige Boards;
+die T-41-Freigabe wird dadurch nicht erweitert.
+
+T-41: Keine neue Prüffassung. Runde 2 ist abgeschlossen; die Skriptanforderung
 wurde als künftiger Prüfumfang dokumentiert, ohne den Collector zu aktivieren.

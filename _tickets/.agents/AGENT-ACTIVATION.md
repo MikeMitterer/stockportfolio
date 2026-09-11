@@ -78,7 +78,8 @@ seiner ID beendet; andere Jobs bleiben bestehen.
    lesen. Ausschließlich den fälligen Schritt der eigenen Rolle ausführen.
    Eine technische Freigabe startet keine erneute Implementierung.
 5. Die eigene Tätigkeit nach [Workflow](AGENT-WORKFLOW.md#aktuelle-tätigkeit)
-   in ACTIVITY festhalten; ein unveränderter Leerdurchlauf braucht keine Meldung.
+   über `agent-activity` festhalten; ACTIVITY nicht als Kontext lesen.
+   Ein unveränderter Leerdurchlauf braucht keine Meldung.
 
 ## Observer-Shortcuts im Terminal
 
@@ -116,7 +117,7 @@ mit derselben Kennung parallel starten.
    Kein Vergleich mit einem historischen Kontextabsatz. Bei Rollenwechsel,
    fehlendem Feld oder Kollision den eigenen Scheduler beenden.
 2. Unabhängig vom Owner den Stand seit dem letzten Durchlauf prüfen:
-   STATUS, ACTIVITY, Ticketablage, `.agents/`, Git-Stand und relevante Dokumentationsänderungen.
+   STATUS, Ticketablage, `.agents/`, Git-Stand und relevante Dokumentationsänderungen.
    Ohne relevante Änderung endet der fachliche Durchlauf.
 3. Die betroffenen Inhalte nach dem Abschnitt [Observer](AGENT-WORKFLOW.md#observer)
    lesen. Bei Bedarf Coder und Verifier über INBOX beziehungsweise OUTBOX

@@ -7,9 +7,9 @@ die Umstellung des Boards aktiviert keine Umsetzung und keinen Review.
 Ein optionaler Observer ist eine dritte, eigenständige Instanz. Seine Zuordnung
 steht im Feld `observer` derselben STATUS-Datei; sein Auftrag ist unten definiert.
 
-**Übernahmestand der Board-Konventionen: `2026-09-11-activity-observer`.**
+**Übernahmestand der Board-Konventionen: `2026-09-11-activity-feed`.**
 Am 2026-09-11 inhaltlich abgeglichen: ACTIVITY, Observer-Koordination und
-installierter Rollen-Launcher. Keine lokale Abweichung von diesen beiden Regeln.
+installierter Rollen-Launcher. Zentraler ACTIVITY-Helfer; keine lokale Abweichung.
 
 ## Einstieg und Rollen
 
@@ -26,23 +26,40 @@ zugeordnete Rolle oder inaktive Phase erzeugt keinen Arbeitsauftrag.
 
 ## Aktuelle Tätigkeit
 
-**Gilt ab sofort für alle Tickets** (Mike, 2026-09-11): Die jeweils arbeitende
-Instanz hält ihre aktuelle Tätigkeit knapp in [ACTIVITY.md](../ACTIVITY.md)
-fest. Das gilt für den Coder bei der Umsetzung und den Verifier beim Review.
+Für alle Tickets melden Coder, Verifier und Observer jeweils nur die eigene
+Tätigkeit: eine Zeile mit ein bis zwei kurzen Sätzen. Neueste Meldungen stehen
+oben; vorherige Einträge bleiben bis zur eingestellten Begrenzung erhalten.
+Bei Arbeitsbeginn, wesentlichem Fortschritt, Übergabe oder Wechsel ins Warten
+melden, nicht allein wegen eines Scheduler-Takts. Eine ältere Meldung belegt
+keine weiterhin laufende Tätigkeit.
 
-Die Meldung nennt Instanz, Zeitpunkt mit Zeitzone, aktuellen Arbeitsschritt,
-letztes Ergebnis, nächsten Schritt und gegebenenfalls ein Hindernis. Bei
-Arbeitsbeginn, wesentlichem Fortschritt, Übergabe oder Wechsel ins Warten
-aktualisieren; die vorherige Meldung ersetzen. Keine fortlaufende Historie
-und keine Aktualisierung allein wegen eines verstrichenen Scheduler-Takts.
-Eine ältere Meldung belegt keine weiterhin laufende Tätigkeit.
+Aus dem Projekt oder einem Unterordner den globalen Helfer aufrufen:
 
-STATUS bleibt allein verbindlich für Rollen, Auftrag, Phase und Übergaben.
-ACTIVITY meldet die tatsächliche Tätigkeit und vergibt keinen Auftrag.
-Der Observer schreibt keine Tätigkeitsmeldungen für andere Instanzen.
-Dauerhafte Ergebnisse und Prüfnachweise bleiben im Ticket. Der sichtbare Link
-oben in STATUS führt zur kurzen Datei; für reine Fortschrittsmeldungen muss
-STATUS nicht geändert werden. Die Rollenprüfung vor jedem Turn bleibt nötig.
+```bash
+agent-activity claude "prüft die übergebene Fassung"
+```
+
+`claude` durch die eigene vollständige Instanzkennung ersetzen. Der Helfer liegt
+einmal unter `~/.local/bin/agent-activity`, findet das nächste `_tickets`-Board
+mit STATUS und legt eine fehlende ACTIVITY an. Keine Skriptkopie unter
+`.agents/bin` oder in anderen Projektverzeichnissen. Gleichzeitige Aufrufe
+werden mit einer Sperre und atomarem Dateiersatz verarbeitet. Standardmäßig
+bleiben 50 Einträge; `-k N` beziehungsweise `--keep N` setzt die Grenze für
+diesen Aufruf. Alle Schreiber eines Boards verwenden dieselbe vereinbarte
+Grenze. Ohne andere Vereinbarung gilt 50.
+
+**Agenten schreiben ACTIVITY, lesen sie aber nicht als Kontext oder Auftrag.**
+Die Datei dient ausschließlich dem Nutzer. Nur der Helfer liest intern die
+bisherigen Einträge, um sie beim Schreiben zu erhalten und zu begrenzen.
+Kein manuelles Lesen-Ändern-Schreiben neben dem Helfer, sonst greift seine
+Sperre nicht. Fehlt er oder scheitert der Aufruf, den Fehler im Chat melden
+und die zentrale Einrichtung nachholen; keine Projektkopie als Ersatz bauen.
+Ein ausdrücklicher Nur-Lese-Auftrag verbietet auch diesen Schreibaufruf.
+
+STATUS bleibt allein verbindlich für Rollen, Auftrag, Phase und Übergaben
+und verlinkt [ACTIVITY.md](../ACTIVITY.md) sichtbar am Anfang. Die Rollenprüfung
+vor jedem Durchlauf bleibt nötig. Dauerhafte Ergebnisse und Prüfnachweise
+gehören ins Ticket. Keine Tätigkeit einer anderen Instanz behaupten.
 
 ## Ticketpfade und Arbeitsbeginn
 
