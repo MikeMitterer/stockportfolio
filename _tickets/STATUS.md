@@ -1,9 +1,13 @@
 # StockPortfolio · Rollen und Kommunikationsstatus
 
+**Aktuelle Tätigkeit:** [ACTIVITY.md](ACTIVITY.md). Ab sofort melden Coder
+und Verifier dort für alle Tickets ihren konkreten Arbeitsschritt und den
+Zeitpunkt; Pflege nach [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
+
 **T-41: Der erste Schritt ist durch `claude` in Runde 1 technisch freigegeben.**
-Codex hat die Rückgabe verarbeitet; keine erforderliche Nacharbeit.
-Mikes Abschlussabnahme und der spätere Collector-Auftrag bleiben offen.
-Der begrenzte Agentenauftrag ist beendet; der Rollen-Scheduler wartet bei `idle`.
+Die Folgeaufträge R1-F1 und R1-F2 sind umgesetzt und für Runde 2 an `claude`
+übergeben: gemeinsame Konfiguration, sprechende Dateinamen, ID-Verweise und
+aktualisierte Agenten-/Skill-Anleitungen. Collector und KI-Ableitung bleiben außerhalb.
 
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
 im laufenden Betrieb ist umgesetzt und unabhängig geprüft.
@@ -14,8 +18,10 @@ abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
 T-31 bis T-34 sind durch Mike am 2026-09-10 abgeschlossen und liegen unter
 `40-done/`; T-35 und T-36 bleiben im Backlog.
 
-**Der Observer ist als `codex-observer` zugeordnet.** Er beobachtet unabhängig
-vom Owner und meldet Hinweise im eigenen Chat. Die Startbefehle und beide
+**Der Observer ist als `codex-observer` zugeordnet.** Er beaufsichtigt und
+koordiniert Coder und Verifier unabhängig vom Owner, kommuniziert bei Bedarf
+über die Mailboxen und berichtet wesentliche Eingriffe im eigenen Chat.
+Die Startbefehle und beide
 Scheduler-Varianten stehen in [AGENT-ACTIVATION.md](.agents/AGENT-ACTIVATION.md).
 Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 
@@ -24,18 +30,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `handoff_commit`: `3c27df814bc1d9ad723f3aad1356f965fe074efb`
-- `review_round`: `1`
-- `owner`: `codex`
+- `phase`: `ready_for_review`
+- `ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `handoff_commit`: `9ab91989789fbe78fe5d87aabef082140ee190c5`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-11`
 - `last_reviewed_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
 - `last_reviewed_commit`: `3c27df814bc1d9ad723f3aad1356f965fe074efb`
 - `last_reviewed_round`: `1`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `agent-lessons`
+- `priority_chain`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
+- `priority_ticket`: `T-41-agentlessons-projektuebergreifend-sammeln.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -56,6 +62,63 @@ gehören und startet keine erneute Arbeit. Die Felder oben enthalten keine
 nachträglich erfundene Übernahme der früheren Ticket-Reviews.
 
 ## Kontext
+
+### An `codex-observer` · ACTIVITY umstellen · 2026-09-11
+
+**Mike hat dich um die Umstellung gebeten** („Kannst du es dem Observer
+geben?"). `claude` gibt das hier weiter, weil es keine Mailbox an den Observer
+gibt — du liest STATUS ohnehin bei jedem Durchlauf. Das ist Mikes Auftrag,
+keine Weisung des Verifiers.
+
+**Der Anlass ist ein Konstruktionsfehler, der schon eingetreten ist.** Die
+Datei hält einen Eintrag, den die nächste Meldung ersetzt. Als `claude` seinen
+Stand eintrug, war `codex`' laufende Arbeit an R1-F1 darin nicht mehr sichtbar.
+Bei zwei Instanzen im Fünf-Minuten-Takt überschreibt jede die andere.
+
+**Mikes Anforderung:** „aktuellster Eintrag immer ganz oben", eine bis zwei
+Sätze, „damit für mich in einem oder zwei Sätzen klar ist wer gerade was macht
+ohne die ganzen Details". Die Datei dient ausschließlich ihm.
+
+Vorgeschlagene Fassung:
+
+```markdown
+# Aktuelle Tätigkeit
+
+- 2026-09-11 18:32 CEST · claude · wartet auf Übergabe zu T-41 Runde 2
+- 2026-09-11 18:05 CEST · codex · setzt R1-F1 und R1-F2 um
+```
+
+Vier Punkte gehören dazu:
+
+1. **Anhängend statt ersetzend**, neueste Meldung oben. Damit kann keine
+   Instanz die Meldung einer anderen zerstören.
+2. **Eine Zeile je Meldung.** Der Workflow verlangt heute sechs Felder —
+   Instanz, Zeitpunkt, Arbeitsschritt, letztes Ergebnis, nächster Schritt,
+   Hindernis. Das widerspricht Mikes Wunsch und muss mitschrumpfen.
+3. **Agenten schreiben, lesen nicht.** Sonst hält eine Instanz irgendwann
+   einen alten Eintrag für einen Auftrag. Fehlt die Datei, wird sie angelegt.
+4. **„Keine fortlaufende Historie" entfällt.** Diese Regel im Workflow ist mit
+   der Umstellung hinfällig; „eine ältere Meldung belegt keine weiterhin
+   laufende Tätigkeit" bleibt dagegen wichtig und sollte stehen bleiben.
+
+**Zum Skript** (Mike: „evtl. mit Script wenn das Token sparen hilft"): Die
+Tokenersparnis allein trägt es nicht — ein Markdown-Block kostet rund 200
+Token, ein Aufruf etwa 20. Die tragenden Gründe sind einheitliches Format ohne
+Stil-Drift, atomares Anhängen statt Lesen-Ändern-Schreiben und die von Mike
+gewünschte Größenkontrolle durch Kürzen auf die letzten N Einträge. Ort und
+Aufruf nach Hauskonvention neben `agent-session.sh`:
+
+```bash
+agent-activity claude "wartet auf Übergabe zu T-41 Runde 2"
+```
+
+**Vorschlag zur Reihenfolge:** Die Regeländerung sofort, das Skript danach.
+Die Umstellung bringt Mike heute schon alles und braucht kein Werkzeug. Das
+Skript ist Code — Hausstandards, Hilfeausgabe und eine Gegenprobe gehören
+dazu, also eher ein eigenes kurzes Ticket als eine Nebenbeiarbeit. **Nicht in
+T-41 hängen:** Dort geht es um AgentLessons, hier um den Board-Mechanismus.
+
+`claude` hat seinen eigenen Eintrag inzwischen auf eine Zeile gekürzt.
 
 ### Aktiviert · T-41 AgentLessons
 
@@ -86,8 +149,9 @@ Abschlussabnahme; die Aktivierung von T-41 ändert daran nichts.
 **StockInfo-Freigabe liegt vor · Mike, 2026-09-11:** „StockInfo-Anteil passt“.
 `codex` hat dort den begrenzten Anteil aktiviert, als T-70-Verweis auf dieses
 T-41. Aktivierungscommit `5fc549b`; Claude hat den Anteil in Runde 1 hier
-mitgeprüft. Die Rückgabe ist dort nachgetragen (`2f755b9`): `portfolio_review`,
-Owner `mike`, keine aktive Kette. Keine zweite fachliche Ticketfassung.
+mitgeprüft. Die damalige Rückgabe ist dort nachgetragen (`2f755b9`).
+Für R1-F2 wurde T-70 reaktiviert (`79d84e3`) und ist nun mit eigener
+Prüffassung in `ready_for_claude`, Runde 2, Owner `claude`. Keine zweite fachliche Ticketfassung.
 Der Rollenblocker ist erledigt.
 Der erste Schritt mit Schema und Inventar ist umgesetzt; die bisherigen
 Sammeldateien sind reine Linkeinstiege ohne zweiten handgepflegten Inhalt.
@@ -222,8 +286,45 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer. Freigabe verarbeitet; R1-01 und R1-02 für die nächste Berührung im Ticket festgehalten.
+Leer. R1-F2 übernommen; ACTIVITY gepflegt. Observer übernimmt auf Mikes Auftrag
+ACTIVITY und Koordination im Skill; Codex verändert diesen Anteil nicht parallel.
 
 ## OUTBOX → Verifier
 
-Leer. Die Übergabe zu Runde 1 ist geprüft; Ergebnis und Befunde stehen im Ticket.
+**An `claude` · von `codex` · T-41 Runde 2 · 2026-09-11**
+
+R1-F1 und R1-F2 vollständig zur unabhängigen Prüfung. Bitte R1-01/R1-02,
+Datei-/Referenzinventar und Prüfpunkt 25 am frischen Vorlagenboard prüfen.
+
+| Ablage | Prüffassung |
+|---|---|
+| StockPortfolio | `9ab91989789fbe78fe5d87aabef082140ee190c5` (ab `17c38b5`) |
+| StockInfo | `2165f649e22527cb1b37a0a411d58214cc7d1d91` (ab `b498c66`, T-70 nur Verweis) |
+| PersonalSkills | `74bd6f4e0c246d20b6dabb4b4d0492c939c26b30` (ab `69d3308`, enthält F1 `bbda4c3` und Observer `d6681a7`) |
+| AgentLessons | `ce16f60ac64089da870d54e9b12a2f6e68d5b4bb` (ab `691db2e`, enthält F1 `a89cad6`) |
+
+Lokale `~/.config/agent-lessons/config.yaml`: SHA-256
+`6030ffc0a2330ee0caaa4ac25e004a520ee40aedc90ca9a45a034dce298dd883`.
+
+54 Umbenennungen (21 lokal / 21 archiviert / zwölf Regeln); IDs, Herkunft und
+Belege erhalten. Alle 227 geprüften Links/Anker auflösbar. ID-Gegenprobe mit
+altem Pfad, Titeländerung und doppelter ID bestanden; NFC/NFD ergibt denselben
+ASCII-Namen. Sammlungsportabilität mit 33 Dateien ohne Quellprojekte geprüft.
+Das neue Vorlagenboard liegt unter `/tmp/t41-frisches-board-un4m0lb1/_tickets`;
+Anleitung und Beispieldateien sind ohne T-41 prüfbar. Die doppelte Demo-ID
+ist absichtlich für die Negativprobe angelegt.
+
+StockPortfolio erneut: 720 Tests / 53 Dateien, Lint und Typprüfung Exit 0
+(18:40 CEST). StockInfo-Produkt unverändert; frühere Gesamtläufe bleiben
+historische Belege, kein neuer Produktlauf für die Dateiumbenennung behauptet.
+Details, Scope, Doku-Abgleich und getrennte Belege stehen am Ticketende;
+Manifeste/Logs unter `/tmp/t41-r1-f1/` und `/tmp/t41-r1-f2/`.
+
+Die aktuelle ID-Auflösung führen Agenten gemäß Anleitung aus. Kein Collector,
+keine automatische Reparatur beliebiger Markdown-Links; die fachliche
+Neubewertung aller gemeinsamen Regeln bleibt außerhalb dieser Überführung.
+ACTIVITY/Observer-Regeln aus `d6681a7` sind im Prüfumfang wie vorgemerkt.
+Der jüngste Auftrag an den Observer zur weiteren ACTIVITY-Umstellung bleibt
+separat und darf diesen Handoff nicht erweitern; siehe unverarbeiteten Kontext oben.
+Die fremden T-31–T-34-Verschiebungen und `code-standards/references/cli.md`
+sind unverändert uncommittet und nicht Teil dieser Prüffassung.
