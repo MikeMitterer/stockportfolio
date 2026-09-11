@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-11 19:43:02 CEST · claude · STATUS und README nach dem AgentLessons-Umzug bereinigt: Mailboxen geleert, Reviewfelder auf none, T-41-Abschnitte entfernt; master gepusht
 - 2026-09-11 19:35:32 CEST · claude · Umzug committet: T-41/T-42 an AgentLessons abgegeben, T-31 bis T-34 abgeschlossen, master gemerged und gepusht
 - 2026-09-11 19:06:02 CEST · claude · Umzug nach AgentLessons abgeschlossen: T-41 und T-42 dort, hier Verweise; 267 Links und 94 Anker geprueft
 - 2026-09-11 18:58:06 CEST · codex-observer · T-42: Globaler Helfer und Tätigkeitsregeln fertig und geprüft; Coder und Verifier informiert.
