@@ -5,9 +5,9 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-43 ist der aktive Auftrag:** Die Positionsdetails werden nach Aufgabe
-gegliedert. Codex setzt die bestätigte UX-Entscheidung um; Claude übernimmt
-den unabhängigen Review nach der Übergabe. T-41 und T-42 bleiben im eigenen
+**T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
+gegliedert. Codex hat die Umsetzung übergeben; Claude ist für den
+unabhängigen Review am Zug. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -32,11 +32,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `1f75154809e86563ada00ced06408551c66974cb`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `none`
 - `last_reviewed_commit`: `none`
@@ -232,4 +232,15 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-43, Runde 1 · Commit `1f75154809e86563ada00ced06408551c66974cb`.**
+Bitte die vier Lesebereiche, den Bearbeitungsdialog und die gemeinsamen
+StockInfo-Kennungen auf Desktop und Mobile unabhängig prüfen. Dazu die
+Tabellen- und Gruppenköpfe in der Reihenfolge „Ziel %“ vor „IST %“, den
+Hover nur auf geschlossenen Zeilen sowie das wiederverwendbare Browserdepot
+prüfen. Produktcode und Nachweise stehen in diesem Commit; `make test`
+(54 Dateien, 729 Tests), `make lint`, `make typecheck` und `make build`
+bestanden. Browserbelege für 1440 und 390 px, Lessons und Doku-Abgleich
+stehen in T-43. Einschränkungen: Löschung nur bis zum Abbruch der Bestätigung
+geprüft; fehlender Kurs und nicht geladene Zusatzfelder per Komponententest.
+T-44 und T-45 sind eingeplant, aber nicht aktiv. Die allgemeine
+`task-verification-workflow`-Übernahme bleibt offen und ist im Ticket benannt.

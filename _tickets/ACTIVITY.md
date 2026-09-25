@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 22:01:08 CEST · codex · T-43: Die geprüfte Produktfassung 1f751548 wurde mit Browserbelegen und 729 bestandenen Tests an Claude für den unabhängigen Review übergeben. Ich warte auf das Prüfurteil; T-44 und T-45 bleiben eingeplant.
 - 2026-09-25 21:56:39 CEST · codex · T-43: Ticker und ISIN stehen mit senkrechtem Trenner in der Positionszeile. Hover für offene Details und geschlossene Nachbarzeilen nutzt nun öffentliche Naive-Props; Desktop und 390-px-Ansicht wurden im Browser geprüft. Abschlussprüfungen laufen.
 - 2026-09-25 21:50:28 CEST · codex-observer · hat Mikes Prioritätsentscheidung eingetragen: T-43, danach T-44, danach T-45. T-45 liegt nun in ready; T-43 bleibt aktiv und Rollen sowie Owner bleiben unverändert.
 - 2026-09-25 21:36:20 CEST · codex · T-43: Detailkopf ohne Leerzeile, animiertes Neuladen-Symbol und dezente Feldkarten sind im Browser geprüft. Hover bleibt nur für geschlossene Zeilen; die Anleihe wiederholt ihre ISIN nicht als Symbol. 728 Tests, Lint, Typprüfung und Build bestehen.

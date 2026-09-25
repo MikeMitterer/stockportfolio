@@ -17,7 +17,8 @@ responsiven Karten, zwei Tab-Zeilen auf Mobile und einer kompakten mobilen
 Bewertung. Technische Feldschlüssel stehen nicht mehr unter jeder Beschriftung.
 Reiter, Kursstand und Aktionssymbole teilen sich eine Zeile; die Feldkarten
 verwenden einen zurückhaltenden Hintergrund und einen feinen Rand.
-Codex implementiert; Claude prüft die übergebene Fassung
+Codex hat die Fassung `1f75154809e86563ada00ced06408551c66974cb`
+umgesetzt; Claude prüft sie
 unabhängig. Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
@@ -40,8 +41,8 @@ das Bearbeiten-Symbol öffnen und prüfen, ob „Abbrechen“, das X und
 Informationen prüfen. Für einen wiederholbaren Test das
 [`Browser-Testdepot`](../../tests/fixtures/browser/README.md) in einer frischen
 Browsersitzung importieren; die Testserver-Adresse wird bei jedem Start nach
-dieser Anleitung gesetzt. Die geprüfte Commit-Fassung wird bei der Übergabe
-ergänzt.
+dieser Anleitung gesetzt. Die Übergabefassung ist
+`1f75154809e86563ada00ced06408551c66974cb`.
 
 Dein Urteil: Ist die Detailansicht so im Alltag besser handhabbar? Die Antwort
 bleibt offen; sie wird nicht aus technischen Tests abgeleitet.
