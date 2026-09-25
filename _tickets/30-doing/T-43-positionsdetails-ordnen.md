@@ -366,6 +366,34 @@ Bedienanleitung.
 Die Beobachtung zu „Lower Band“/„Upper Band“ aus Runde 1 bleibt unverändert
 außerhalb des Umfangs.
 
+### Reviewer-Prüfung (Claude, Runde 3, Fassung `9a92abe`)
+
+**Technische Freigabe.** `make test` (54 Dateien, 729 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Der Produktstand war seit dem Handoff-Commit stabil.
+
+Diff `3855bb7..9a92abe` gelesen: `PositionCard.vue` (`border-bottom` wird zu
+vollem `border` plus `border-radius` und eigener Kartenfläche),
+`PositionCardList.vue` (`gap: var(--space-2)` zwischen Karten, Gruppenkopf
+mit `border-radius` und `margin-top` außer beim ersten), `DashboardView.vue`
+(gemeinsamer Panel-Rahmen und die untere Trennlinie der Kopfzeile gelten nur
+noch `@include up(md)` — derselbe Schwellwert wie `COMPACT_BREAKPOINT_PX`,
+kein neuer Ad-hoc-Bruchpunkt; oberhalb bleibt die Desktop-Tabelle unverändert
+gerahmt). `--space-2` ist im Fundament `0.5rem` = 8 px, deckt sich exakt mit
+der „8 px Abstand“-Angabe der Codex-Probe.
+
+Live im Browser mit dem importierten Testdepot nachvollzogen: Desktop-Tabelle
+optisch unverändert, weiterhin ohne Scrollbalken. Die 390-px-Probe der
+Kartentrennung konnte in dieser Sitzung erneut nicht erzwungen werden
+(`resize_window` ohne Wirkung auf `innerWidth` in diesem Lauf, dieselbe
+Werkzeuggrenze wie in Runde 2); anhand der gelesenen CSS (Randfarbe, Radius,
+Abstand und der auf `up(md)` begrenzte Panel-Rahmen) und der mit dem
+Fundament-Token übereinstimmenden Codex-Angabe als plausibel befunden.
+
+**Ergebnis:** Fassung `9a92abe` technisch freigegeben. Kein `changes_requested`.
+Die Beobachtung zu „Lower Band“/„Upper Band“ aus Runde 1 bleibt unverändert
+außerhalb des Umfangs.
+
 ### Side-Effects
 
 Der große Kurschart und sein Zeitraumabruf werden erst beim Öffnen des
@@ -385,8 +413,7 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 
 ### Auflösung
 
-Fassungen `1f75154` und `3855bb7` technisch freigegeben (Runde 1 und 2,
-`claude`); die mobile Kartenansicht aus `9a92abe` wartet auf Runde 3.
-Mikes Abschlussentscheidung —
+Fassungen `1f75154`, `3855bb7` und `9a92abe` technisch freigegeben
+(Runde 1 bis 3, `claude`). Mikes Abschlussentscheidung —
 einschließlich seines Alltagsurteils zur Detailansicht laut „Für dich“ —
 bleibt offen und wird getrennt dokumentiert.

@@ -6,11 +6,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
-gegliedert. Claude hat die Folgekorrekturen aus `3855bb7` in Runde 2
-technisch freigegeben (Belege im Ticket); Fassung `1f75154` war bereits in
-Runde 1 freigegeben. Die neue mobile Kartenansicht aus `9a92abe` liegt
-Claude für Runde 3 vor. T-41 und T-42 bleiben im eigenen
-AgentLessons-Repository; Einzelheiten stehen unter
+gegliedert. Claude hat die mobile Kartenansicht aus `9a92abe` in Runde 3
+technisch freigegeben (Belege im Ticket); die Fassungen `1f75154` und
+`3855bb7` waren bereits in Runde 1 und 2 freigegeben. Codex ist für die
+Verarbeitung und Mikes Abschlussabnahme am Zug. T-41 und T-42 bleiben im
+eigenen AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
@@ -34,15 +34,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
 - `handoff_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
 - `review_round`: `3`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
-- `last_reviewed_commit`: `3855bb7b1b0bd6a3503e92458e386082d5469744`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
+- `last_reviewed_round`: `3`
 - `workstream`: `position-detail-ux`
 - `priority_chain`: `T-43-positionsdetails-ordnen.md → T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `priority_ticket`: `T-43-positionsdetails-ordnen.md`
@@ -230,17 +230,18 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-43, Runde 3 · Commit `9a92abe5b6295b8e27c10ae1df3f685908ef7b49` ·
+technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
+(grün). Diff `3855bb7..9a92abe` gelesen (`PositionCard.vue`,
+`PositionCardList.vue`, `DashboardView.vue`); der Panel-Rahmen ist korrekt
+auf `@include up(md)` begrenzt (derselbe Schwellwert wie `COMPACT_BREAKPOINT_PX`),
+Desktop-Tabelle bleibt ungerahmt unverändert. `--space-2` (8 px) deckt sich
+mit der „8 px Abstand“-Angabe. Die 390-px-Probe der Kartentrennung konnte in
+dieser Sitzung erneut nicht erzwungen werden (`resize_window` ohne Wirkung);
+anhand CSS und Codex-Beleg als plausibel eingestuft — kein Blocker. Details
+im Ticket unter „Reviewer-Prüfung (Runde 3)“. Runde 1/2 und Mikes offene
+Abschlussabnahme sind erhalten.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-43, Runde 3 · Commit `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`.**
-Bitte die mobile Positionsliste nach Mikes Rückmeldung prüfen: Die gemeinsame
-Panel-Umrandung entfällt nur mobil; jede Position hat eine eigene dezente
-Karte mit Abstand und die Gruppenköpfe bleiben sichtbar. Bei 390 px habe ich
-geschlossene und geöffnete Karten ohne horizontalen Überlauf geprüft; die
-Tabs der geöffneten Karte bleiben innerhalb der Karte. Desktop-Panelfläche
-und Tabelle blieben unverändert. `make test` (54 Dateien, 729 Tests),
-`make lint`, `make typecheck` und `make build` bestanden. Die Browserbelege
-und der Doku-Abgleich stehen im Ticket. Bitte nur diese Folgefassung prüfen;
-Runde 1/2 und Mikes offene Abschlussabnahme erhalten.
+Leer.
