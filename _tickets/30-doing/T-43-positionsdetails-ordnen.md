@@ -85,6 +85,7 @@ oder ISIN als Kennung verwendet. Bei gelisteten Assets mit ISIN stehen beide
 Kennungen sichtbar nebeneinander, auch auf der Mobilkarte und im Rebalancing.
 Ein senkrechter Strich trennt Ticker und ISIN in der jeweiligen Positionszeile;
 die wiederholte Vorsilbe „ISIN“ entfällt dort.
+Im Desktop-Dashboard steht die Spalte „Ziel %“ vor „IST %“.
 In „Informationen“ werden ISIN und Symbol als getrennte Felder gezeigt, soweit
 StockInfo sie ausweist. Für `identity.kind = isin_only` erscheint kein
 künstliches Symbol; die Anleihe `DE0001135275` zeigt nur ihre ISIN. Der
@@ -189,6 +190,8 @@ Der Desktop-Browser zeigte bei EUNL.DE und VTI Symbol plus ISIN in der
 Positionszeile mit senkrechtem Trenner; bei der Anleihe nur die ISIN.
 Die Mobilkarte zeigte beide Kennungen ebenfalls in einer Zeile bei 390 px;
 `scrollWidth` blieb 390 px.
+Der Desktop-Browser zeigte in der Tabellenkopfzeile „Marktwert“, „Ziel %“,
+„IST %“, „Delta“ in dieser Reihenfolge.
 
 `make test`: 54 Dateien, 729 Tests bestanden. `make lint`, `make typecheck`
 und `make build` bestanden. Der Build meldet den vorhandenen Hinweis zum

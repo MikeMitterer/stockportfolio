@@ -414,17 +414,6 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
       ),
   },
   {
-    title: t('table.actualPercent'),
-    key: 'actualPercent',
-    align: 'right',
-    width: 90,
-    sorter: (a, b) => a.actualPercent - b.actualPercent,
-    render: (row) =>
-      row.isActive
-        ? h('span', { class: 'cell-num' }, percent(row.actualPercent))
-        : h('span', { class: 'cell-num cell-num--muted' }, '—'),
-  },
-  {
     title: t('table.targetPercent'),
     key: 'targetPercent',
     align: 'right',
@@ -444,6 +433,17 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         onCommit: (targetPercent: number | null) =>
           targetPercent !== null && emit('update', row.position.id, { targetPercent }),
       }),
+  },
+  {
+    title: t('table.actualPercent'),
+    key: 'actualPercent',
+    align: 'right',
+    width: 90,
+    sorter: (a, b) => a.actualPercent - b.actualPercent,
+    render: (row) =>
+      row.isActive
+        ? h('span', { class: 'cell-num' }, percent(row.actualPercent))
+        : h('span', { class: 'cell-num cell-num--muted' }, '—'),
   },
   {
     // Der Begriff ist erklärungsbedürftig: „relativ zum Ziel" ist etwas
