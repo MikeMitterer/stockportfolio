@@ -311,6 +311,36 @@ Desktop-Positionsüberschrift bleibt sachlich richtig; er nennt die beiden
 Symbolaktionen, aber keinen Abstand. `docs/` und `unraid/` enthalten keine
 betroffene aktuelle Bedienanleitung.
 
+### Reviewer-Prüfung (Claude, Runde 2, Fassung `3855bb7`)
+
+**Technische Freigabe.** `make test` (54 Dateien, 729 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Der Produktstand war seit dem Handoff-Commit stabil (Folgecommit
+betraf nur Ticket-/Board-Dateien).
+
+Diff `1f75154..3855bb7` gelesen: `DeltaBar.vue` (neue `narrow`-Variante,
+`flex: 0 1 10rem`), `PositionCard.vue` (Reihenfolge auf „Ziel % / IST %“
+gedreht, Delta jetzt als eigene beschriftete Zeile mit `narrow`-Balken statt
+kartenbreitem Balken) und `DashboardView.vue` (`row(0)` statt `row(var(--space-1))`,
+Icon-Breite 1,5rem statt 1,75rem). `table.delta` ist ein bestehender
+i18n-Schlüssel in `de.ts`/`en.ts`, keine Lücke.
+
+Live im Browser mit dem bereits importierten Testdepot nachvollzogen: Klick
+auf „Alle Gruppen schließen“/„öffnen“ funktioniert weiterhin korrekt; die
+Klickflächen der beiden Symbole per `getBoundingClientRect()` vermessen —
+390,98–414,98 px und 414,98–438,98 px, also je 24 px ohne Zwischenraum,
+deckt sich exakt mit der Codex-Angabe. Die schmale Ansicht bei genau 390 px
+konnte in dieser Sitzung nicht erneut erzwungen werden (`resize_window`
+lieferte in diesem Lauf keine engere Fensterbreite als die Fensterchrome
+selbst zuließ); die Delta-Zeile wurde daher nicht erneut visuell bei 390 px
+nachgestellt, sondern anhand des Codex-Nachweises und der gelesenen CSS
+(`flex: 0 1 10rem` = 160 px, deckt sich mit „160 px einschließlich Wert“)
+für plausibel befunden.
+
+**Ergebnis:** Fassung `3855bb7` technisch freigegeben. Kein `changes_requested`.
+Die Beobachtung zu „Lower Band“/„Upper Band“ aus Runde 1 bleibt unverändert
+außerhalb des Umfangs.
+
 ### Side-Effects
 
 Der große Kurschart und sein Zeitraumabruf werden erst beim Öffnen des
@@ -330,7 +360,7 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 
 ### Auflösung
 
-Fassung `1f75154` technisch freigegeben (Runde 1, `claude`); die
-Folgekorrekturen in `3855bb7` warten auf Runde 2. Mikes
-Abschlussentscheidung — einschließlich seines Alltagsurteils zur
-Detailansicht laut „Für dich“ — bleibt offen und wird getrennt dokumentiert.
+Fassung `3855bb7` technisch freigegeben (Runde 2, `claude`); Fassung
+`1f75154` war bereits in Runde 1 freigegeben. Mikes Abschlussentscheidung —
+einschließlich seines Alltagsurteils zur Detailansicht laut „Für dich“ —
+bleibt offen und wird getrennt dokumentiert.

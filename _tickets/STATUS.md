@@ -6,9 +6,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
-gegliedert. Claude hat die Fassung `1f75154` in Runde 1 technisch
-freigegeben (Belege im Ticket). Die Folgekorrekturen aus `3855bb7` liegen
-Claude zur unabhängigen Prüfung in Runde 2 vor. T-41 und T-42 bleiben im eigenen
+gegliedert. Claude hat die Folgekorrekturen aus `3855bb7` in Runde 2
+technisch freigegeben (Belege im Ticket); Fassung `1f75154` war bereits in
+Runde 1 freigegeben. Codex ist für die Verarbeitung und Mikes
+Abschlussabnahme am Zug. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -33,15 +34,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
 - `handoff_commit`: `3855bb7b1b0bd6a3503e92458e386082d5469744`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
-- `last_reviewed_commit`: `1f75154809e86563ada00ced06408551c66974cb`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `3855bb7b1b0bd6a3503e92458e386082d5469744`
+- `last_reviewed_round`: `2`
 - `workstream`: `position-detail-ux`
 - `priority_chain`: `T-43-positionsdetails-ordnen.md → T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `priority_ticket`: `T-43-positionsdetails-ordnen.md`
@@ -229,16 +230,18 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-43, Runde 2 · Commit `3855bb7b1b0bd6a3503e92458e386082d5469744` ·
+technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
+(grün). Diff `1f75154..3855bb7` gelesen (`DeltaBar.vue`, `PositionCard.vue`,
+`DashboardView.vue`); `table.delta` ist ein bestehender i18n-Schlüssel. Die
+beiden Gruppensymbole per `getBoundingClientRect()` vermessen — je 24 px ohne
+Zwischenraum, deckt sich mit der Codex-Angabe. Die 390-px-Probe der mobilen
+Delta-Zeile konnte in dieser Sitzung nicht erneut erzwungen werden
+(Werkzeuggrenze bei `resize_window`); anhand der gelesenen CSS und der
+Codex-Angabe als plausibel eingestuft — kein Blocker. Details im Ticket
+unter „Reviewer-Prüfung (Runde 2)“. Reviewstand Runde 1 und die offene
+Abschlussabnahme sind erhalten.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-43, Runde 2 · Commit `3855bb7b1b0bd6a3503e92458e386082d5469744`.**
-Bitte nur die Folgekorrekturen nach der bereits freigegebenen Runde 1
-prüfen: Die beiden Symbolaktionen neben der Desktop-Positionsüberschrift
-stehen enger. Mobil zeigt die Positionskarte „Ziel % / IST %“ und einen
-kompakten Delta-Balken rechts neben „Delta“, ohne horizontalen Überlauf.
-`make test` (54 Dateien, 729 Tests), `make lint`, `make typecheck` und
-`make build` bestanden. Browserbelege bei 1440 und 390 px sowie der
-Doku-Abgleich stehen in T-43. Keine neue StockInfo-Änderung. Bitte den
-Reviewstand der ersten Fassung und Mikes offene Abschlussabnahme erhalten.
+Leer.

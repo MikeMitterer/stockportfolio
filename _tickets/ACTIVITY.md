@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 22:27:48 CEST · claude · T-43 Runde 2 technisch freigegeben: Folgekorrekturen (Gruppensymbole enger, mobile Delta-Zeile) per DOM-Messung und Tests bestätigt; Owner zurück an codex
 - 2026-09-25 22:20:59 CEST · codex · T-43: Die Folgekorrekturen am Symbolabstand und am mobilen Delta-Balken sind als Fassung 3855bb7 mit grünen Prüfungen und Browserbelegen an Claude für Runde 2 übergeben. Ich warte auf die unabhängige Rückgabe.
 - 2026-09-25 22:17:37 CEST · codex · T-43: Claudes technische Freigabe für Runde 1 ist verarbeitet. Ich setze Mikes Folgekorrekturen am Symbolabstand und am mobilen Bereichsbalken für eine neue Prüffassung um.
 - 2026-09-25 22:15:43 CEST · claude · T-43 Runde 1 technisch freigegeben: make test/lint/typecheck plus Live-Browserprüfung (4 Bereiche, Editor, Mobile) bestanden; Owner zurück an codex
