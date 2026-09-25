@@ -5,11 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
-gegliedert. Claude hat die mobile Kartenansicht aus `9a92abe` in Runde 3
-technisch freigegeben (Belege im Ticket); die Fassungen `1f75154` und
-`3855bb7` waren bereits in Runde 1 und 2 freigegeben. Codex ist für die
-Verarbeitung und Mikes Abschlussabnahme am Zug. T-41 und T-42 bleiben im
+**T-44 ist der aktive Auftrag:** Aktien und ETFs werden als eigene Gruppen
+geführt; die Verweisfilter erhalten Depotgruppen. T-43 wurde von Claude in
+Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
+Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
 eigenen AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -34,18 +33,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-43-positionsdetails-ordnen.md`
-- `handoff_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
-- `review_round`: `3`
+- `phase`: `implementing`
+- `ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
 - `last_reviewed_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
 - `last_reviewed_round`: `3`
-- `workstream`: `position-detail-ux`
-- `priority_chain`: `T-43-positionsdetails-ordnen.md → T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
-- `priority_ticket`: `T-43-positionsdetails-ordnen.md`
+- `workstream`: `asset-groups-and-links`
+- `priority_chain`: `T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
+- `priority_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -141,21 +140,20 @@ Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
-**Aktueller Schritt:** T-43 ist für Codex zur Umsetzung aktiviert. Nach der
-Übergabe prüft Claude die Fassung. T-38 Runde 2 ist durch `claude` technisch
+**Aktueller Schritt:** T-44 ist für Codex zur Umsetzung aktiviert. Nach der
+Übergabe prüft Claude die Fassung. T-43 wurde nach drei freigegebenen
+Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
 T-38, T-39 und T-40 warten weiter auf Mikes Abschlussabnahme.
 T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
-zeilengenauen Dublettenabgleich. T-43 ordnet diese vorhandene Darstellung
-neu und prüft ihren Erhalt am Desktop und mobil. T-40 wird dafür weder
-erneut implementiert noch neu reviewed; seine menschliche Abschlussabnahme
-bleibt getrennt. Der aktive Agentenauftrag bleibt T-43.
-Danach folgt [T-44](30-doing/T-44-aktien-etfs-und-linkgruppen-trennen.md)
+zeilengenauen Dublettenabgleich. T-43 hat diese Darstellung neu geordnet
+und ist abgeschlossen. T-40 wird dafür weder erneut implementiert noch neu
+reviewed; seine menschliche Abschlussabnahme bleibt getrennt.
+Der aktive Auftrag ist [T-44](30-doing/T-44-aktien-etfs-und-linkgruppen-trennen.md)
 mit der Trennung von Aktien und ETFs sowie den Linkgruppen. Mike hat am
 2026-09-25 ausdrücklich „Nimm T-45 in die Pri-Chain auf“ beauftragt:
 [T-45](20-ready/T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md)
-folgt auf T-44. Die Reihenfolge aktiviert T-44 und T-45 noch nicht;
-`ticket` und `priority_ticket` bleiben T-43.
+folgt auf T-44. T-45 ist noch nicht aktiviert.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
 Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die

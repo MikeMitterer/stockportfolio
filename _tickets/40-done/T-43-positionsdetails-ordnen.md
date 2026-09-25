@@ -23,7 +23,7 @@ Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
 Die technische Grundlage für die StockInfo-Zusatzwerte ist in
-[T-40](T-40-detailanzeige-aus-feldkatalog.md) bereits umgesetzt und unabhängig
+[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md) bereits umgesetzt und unabhängig
 freigegeben. T-43 folgt darauf als Umbau der Bedienansicht. Der T-40-Review
 wird nicht wiederholt; Mikes Abschlussabnahme für T-40 bleibt offen.
 
@@ -413,6 +413,6 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 ### Auflösung
 
 Fassungen `1f75154`, `3855bb7` und `9a92abe` technisch freigegeben
-(Runde 1 bis 3, `claude`). Mikes Abschlussentscheidung —
-einschließlich seines Alltagsurteils zur Detailansicht laut „Für dich“ —
-bleibt offen und wird getrennt dokumentiert.
+(Runde 1 bis 3, `claude`). Mike hat die überarbeitete Ansicht am
+2026-09-25 mit „Passt, mach mit dem nächsten Ticket weiter“ abgenommen.
+T-43 ist abgeschlossen; T-44 folgt als eigenständiger Auftrag.

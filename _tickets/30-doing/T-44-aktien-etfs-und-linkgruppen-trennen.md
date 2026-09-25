@@ -13,13 +13,13 @@ auch wenn das betreffende Papier technisch ein ETF ist.
 **Zusätzlicher UI-Befund von Mike, 2026-09-25:** Im gezeigten Dashboard sind
 die Zahlen der Cash-Gruppenzeile gegenüber den Zeilen darüber nach rechts
 versetzt. Die Gruppenköpfe sollen ihre Werte in bündigen Spalten zeigen.
+In der mobilen Navigation soll das Rebalancing-Symbol entfallen; der
+Menüpunkt bleibt erreichbar und verständlich beschriftet.
 
 **Stand:** Mike hat beide Änderungen am 2026-09-25 beauftragt und dieses
-Ticket ausdrücklich direkt für `30-doing/` verlangt. Die Umsetzung ist offen.
-T-43 bleibt laut [`STATUS.md`](../STATUS.md) der aktive Auftrag; dieses Ticket
-folgt danach in der Prioritätskette. Diese Einordnung ändert weder Rollen
-noch Owner oder das aktuelle Prioritätsticket und startet keine parallele
-Implementierung.
+Ticket ausdrücklich direkt für `30-doing/` verlangt. Nach Mikes Abnahme von
+T-43 ist T-44 laut [`STATUS.md`](../STATUS.md) der aktive Auftrag. Codex setzt
+ihn um; die technische Prüfung und Mikes Abschlussentscheidung stehen aus.
 
 Für Mike ist vor der Umsetzung keine weitere Entscheidung nötig. Nach einer
 technischen Prüfung bleibt die Bedien- und Abschlussabnahme offen.
@@ -67,6 +67,9 @@ verschieben. Die Ausrichtung gilt auch nach der Trennung von Aktien und ETFs
 und bei unterschiedlich langen übersetzten Gruppennamen. Die bestehenden
 Spaltenbreiten werden gemeinsam festgelegt statt mit Sonderabständen für Cash.
 
+Das Rebalancing-Symbol im mobilen Menü wird ausgeblendet. Der Menütext und
+die Navigation bleiben erhalten; Desktop bleibt unverändert.
+
 In „Einstellungen → Verweise“ sind dieselben Depotgruppen als Filter wählbar,
 einschließlich Cash. Eine leere Gruppenauswahl bedeutet „alle Gruppen“.
 Der vorhandene Filter nach Instrumenttyp (`stock` oder `etf`) bleibt nutzbar;
@@ -98,6 +101,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | 5 | Gruppenoptionen in Dashboard, Positionsformular und Verweis-Einstellungen vergleichen | Dieselben zentralen Schlüssel, Reihenfolge und Übersetzungen werden verwendet; begründete Kontextfilter sind sichtbar | ➖ |
 | 6 | Gruppenköpfe mit kurzen und langen Werten bei Desktopbreite vergleichen | Marktwert, Anteile, Abweichung und Status stehen bei Cash und den übrigen Gruppen bündig untereinander | ➖ |
 | 7 | `make test`, `make lint`, `make typecheck` ausführen und Doku-Abgleich durchführen | Prüfungen bestehen; `README.md` und weitere aktuelle Anleitungen beschreiben sechs Gruppen und die Verweisfilter korrekt | ➖ |
+| 8 | Mobiles Menü öffnen und Rebalancing anwählen | Kein Rebalancing-Symbol; Menütext und Navigation bleiben nutzbar | ➖ |
 
 Der Implementer ergänzt konkrete Testumgebung, Belege, einschlägige Lessons
 und den Doku-Abgleich vor einer Übergabe. Ein unabhängiger Review beginnt

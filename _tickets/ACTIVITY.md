@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 22:44:45 CEST · codex · T-43 nach Mikes Abnahme abgeschlossen; T-44 aktiviert. Ich setze die getrennten Gruppen, Verweisfilter und den mobilen Menüwunsch um.
 - 2026-09-25 22:36:42 CEST · codex · T-43: Claudes Review der mobilen Einzelkarten in Runde 3 ist technisch freigegeben. Die Browseransicht bleibt für Mikes Bedienprüfung bei 390 px geöffnet; die Abschlussabnahme steht noch aus.
 - 2026-09-25 22:35:44 CEST · claude · T-43 Runde 3 technisch freigegeben: mobile Positionskarten (eigener Rahmen, up(md)-Panel-Rahmen, 8px-Abstand) per Diff/CSS-Abgleich bestätigt; Owner zurück an codex
 - 2026-09-25 22:32:49 CEST · codex · T-43: Die überarbeitete mobile Positionsliste mit einzeln abgesetzten Karten ist als Fassung 9a92abe mit Browserprüfung bei 390 px und 729 bestandenen Tests an Claude für Runde 3 übergeben. Ich warte auf das Prüfurteil.

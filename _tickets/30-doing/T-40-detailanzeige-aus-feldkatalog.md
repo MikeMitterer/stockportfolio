@@ -88,7 +88,7 @@ T-43-Umbau gibt es dafür den Bereich „Zusatzinformationen“, auch mobil. Die
 erste Sichtprüfung durch Codex steht unten und bezieht sich auf die damalige
 T-40-Fassung.
 
-[T-43](T-43-positionsdetails-ordnen.md) ordnet die Positionsansicht neu. Die
+[T-43](../40-done/T-43-positionsdetails-ordnen.md) ordnet die Positionsansicht neu. Die
 Zusatzwerte stehen dort in einem eigenen Bereich. T-43 prüft, ob Feldprojektion,
 Herkunft und Originalwährung beim Umbau erhalten bleiben. Die technische
 Freigabe dieses Tickets wird dadurch nicht erneut geöffnet; deine

@@ -184,8 +184,8 @@ T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
 Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
 Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
 Kursprüfung ist in T-39 umgesetzt.
-T-43 ist laut STATUS der aktive UI-Auftrag. Die menschlichen
-Abschlussabnahmen von T-40 und T-43 bleiben getrennt.
+T-43 wurde nach technischer Freigabe durch Mike abgeschlossen. T-44 ist laut
+STATUS der aktive Auftrag. Die menschliche Abschlussabnahme von T-40 bleibt offen.
 
 [T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.
