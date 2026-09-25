@@ -5,8 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein Auftrag ist aktiv.** T-41 und T-42 sind am 2026-09-11 nach AgentLessons
-umgezogen und erzeugen hier keine Arbeit mehr; Einzelheiten stehen unter
+**T-43 ist der aktive Auftrag:** Die Positionsdetails werden nach Aufgabe
+gegliedert. Codex setzt die bestätigte UX-Entscheidung um; Claude übernimmt
+den unabhängigen Review nach der Übergabe. T-41 und T-42 bleiben im eigenen
+AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
 **T-38 ist in Runde 2 technisch freigegeben.** Der bestätigte Währungswechsel
@@ -30,18 +32,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-43-positionsdetails-ordnen.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
 - `owner`: `codex`
-- `updated_at`: `2026-09-11`
+- `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `none`
 - `last_reviewed_commit`: `none`
 - `last_reviewed_round`: `0`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `position-detail-ux`
+- `priority_chain`: `T-43-positionsdetails-ordnen.md`
+- `priority_ticket`: `T-43-positionsdetails-ordnen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -135,14 +137,14 @@ Aus dem freigegebenen T-37-Vorschlag entstanden dafür
 und [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) — automatische
 Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
-vor T-38 beschreibt die bisherige Bearbeitung; aktuell hat T-38 Vorrang.
+vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
-**Aktueller Schritt:** T-38 Runde 2 ist durch `claude` technisch freigegeben,
-Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`. `codex` hat die Freigabe
-verarbeitet; keine erforderliche Nacharbeit. T-38, T-39 und T-40 warten auf
-Mikes Abschlussabnahme. Der Agentenauftrag ist `idle`; der Scheduler wartet.
+**Aktueller Schritt:** T-43 ist für Codex zur Umsetzung aktiviert. Nach der
+Übergabe prüft Claude die Fassung. T-38 Runde 2 ist durch `claude` technisch
+freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
+T-38, T-39 und T-40 warten weiter auf Mikes Abschlussabnahme.
 
-**Aktuelle Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
+**Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
 Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die
 vorhandene Umsetzung braucht keine weiteren Folgetickets für denselben Umfang. Mike erlaubt,
 offene Fragen zur sinnvollen Ticketreihenfolge mit dem Observer zu klären,
