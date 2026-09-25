@@ -74,6 +74,7 @@ const { formatMoney } = usePortfolioCurrency()
 .cardlist {
   display: flex;
   flex-direction: column;
+  gap: var(--space-2);
 
   /*
    * Die Assetfarbe kennzeichnet den Bereich, sie füllt ihn nicht: 7 % Anteil
@@ -84,13 +85,16 @@ const { formatMoney } = usePortfolioCurrency()
     align-items: baseline;
     justify-content: space-between;
     gap: var(--space-3);
-    padding: 0.375rem var(--space-4);
+    padding: 0.5rem var(--space-3);
+    border-radius: var(--radius-sm);
     background-color: color-mix(in srgb, var(--group-color) 7%, transparent);
     font-size: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     @include muted(null);
   }
+
+  &__group:not(:first-child) { margin-top: var(--space-2); }
 
   &__name {
     @include row(var(--space-2));

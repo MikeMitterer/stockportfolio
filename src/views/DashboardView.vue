@@ -777,10 +777,12 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   }
 
   &__panel {
-    overflow: hidden;
-    border: 1px solid token(--border-default);
-    border-radius: 0.75rem;
-    background-color: token(--surface-card);
+    @include up(md) {
+      overflow: hidden;
+      border: 1px solid token(--border-default);
+      border-radius: 0.75rem;
+      background-color: token(--surface-card);
+    }
   }
 
   /*
@@ -794,10 +796,12 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
     flex-wrap: wrap;
     justify-content: space-between;
-    padding: var(--space-3) var(--space-4);
-    border-bottom: 1px solid token(--border-default);
+    padding: 0 0 var(--space-2);
 
-    @include up(md) { padding: var(--space-4) 1.25rem; }
+    @include up(md) {
+      padding: var(--space-4) 1.25rem;
+      border-bottom: 1px solid token(--border-default);
+    }
   }
 
   &__panel-title {

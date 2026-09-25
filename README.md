@@ -356,6 +356,7 @@ with colour vision deficiency.
 The dashboard works as a **reading view**: basic figures, delta and status.
 Each card shows target percentage before actual percentage. Its compact delta
 bar sits beside the deviation value instead of spanning the card.
+Positions appear as separate cards beneath their asset-class heading.
 Tap a position card or its caret for **Valuation**, **Price history**, **Information** and
 **Additional information**. The four buttons form two rows on a narrow screen.
 The card does not offer editing.

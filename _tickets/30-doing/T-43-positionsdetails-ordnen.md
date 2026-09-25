@@ -348,6 +348,21 @@ gemeinsame Rahmenfläche der mobilen Liste zurück und gestaltet jede Position
 als eigene dezente Karte mit Abstand. Die Gruppenköpfe bleiben als
 Orientierung erhalten. Desktop-Tabelle und Datenverhalten ändern sich dabei
 nicht. Die neue Fassung wird für Runde 3 geprüft.
+
+**Codex-Probe:** Die gemeinsame Rahmenfläche der mobilen Positionsliste ist
+entfallen. Jede Positionskarte hat einen feinen Rand, eine eigene Fläche und
+8 px Abstand zur nächsten; auch zwischen Gruppen bleibt Raum. Im Browser bei
+390 px blieben geschlossene und geöffnete Positionen ohne waagrechtes
+Scrollen (`scrollWidth = 390 px`). Eine geöffnete Karte hielt die vier Reiter
+innerhalb ihrer Fläche (`tabScrollWidth = 320 px`). Die Desktop-Tabelle blieb
+optisch unverändert. `make test` bestand mit 54 Dateien und 729 Tests;
+`make lint`, `make typecheck`, `make build` und `git diff --check` bestanden
+ebenfalls.
+
+**Doku-Abgleich:** `README.md` → „Mobile“ beschreibt die getrennten
+Positionskarten. Der bestehende Abschnitt „Position information“ bleibt
+richtig; `docs/` und `unraid/` enthalten keine betroffene aktuelle
+Bedienanleitung.
 Die Beobachtung zu „Lower Band“/„Upper Band“ aus Runde 1 bleibt unverändert
 außerhalb des Umfangs.
 

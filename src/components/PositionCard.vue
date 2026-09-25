@@ -123,7 +123,9 @@ function toggleDetails(): void {
 .poscard {
   @include stack(var(--space-2));
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid token(--border-subtle);
+  border: 1px solid token(--border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: token(--surface-card);
 
   &--inactive { opacity: 0.55; }
 
