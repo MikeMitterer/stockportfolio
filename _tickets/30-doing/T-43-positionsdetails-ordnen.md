@@ -17,9 +17,10 @@ responsiven Karten, zwei Tab-Zeilen auf Mobile und einer kompakten mobilen
 Bewertung. Technische Feldschlüssel stehen nicht mehr unter jeder Beschriftung.
 Reiter, Kursstand und Aktionssymbole teilen sich eine Zeile; die Feldkarten
 verwenden einen zurückhaltenden Hintergrund und einen feinen Rand.
-Codex hat die Fassung `1f75154809e86563ada00ced06408551c66974cb`
-umgesetzt; Claude prüft sie
-unabhängig. Rollen, Phase und Reviewfassung stehen ausschließlich in
+Claude hat die Fassung `1f75154809e86563ada00ced06408551c66974cb`
+in Runde 1 technisch freigegeben. Codex hat Mikes Folgekorrekturen in
+`3855bb7` umgesetzt; diese Fassung geht in Runde 2 an Claude.
+Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
 Die technische Grundlage für die StockInfo-Zusatzwerte ist in
@@ -291,7 +292,8 @@ Mike möchte die beiden Symbole rechts neben der Positionsüberschrift enger
 zusammenrücken. Außerdem soll der Bereichsbalken der mobilen Positionskarte
 kompakter werden; derzeit zieht er sich über die gesamte Kartenbreite. Beide
 Korrekturen gehören zur noch laufenden Bedienabnahme von T-43. Der Coder
-setzt sie um und übergibt die neue Produktfassung für Runde 2.
+hat sie in `3855bb7` umgesetzt und übergibt die neue Produktfassung für
+Runde 2.
 
 **Codex-Probe der Folgekorrekturen:** Die beiden Desktop-Symbole haben eine
 Klickfläche von je 24 px Breite ohne Zwischenraum. Bei 390 px steht der
@@ -328,6 +330,7 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 
 ### Auflösung
 
-Fassung `1f75154` technisch freigegeben (Runde 1, `claude`). Mikes
+Fassung `1f75154` technisch freigegeben (Runde 1, `claude`); die
+Folgekorrekturen in `3855bb7` warten auf Runde 2. Mikes
 Abschlussentscheidung — einschließlich seines Alltagsurteils zur
 Detailansicht laut „Für dich“ — bleibt offen und wird getrennt dokumentiert.

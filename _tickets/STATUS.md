@@ -7,8 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
 gegliedert. Claude hat die Fassung `1f75154` in Runde 1 technisch
-freigegeben (Belege im Ticket). Mike hat danach zwei weitere UI-Korrekturen
-beauftragt; Codex setzt diese neue Fassung um. T-41 und T-42 bleiben im eigenen
+freigegeben (Belege im Ticket). Die Folgekorrekturen aus `3855bb7` liegen
+Claude zur unabhängigen Prüfung in Runde 2 vor. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -33,11 +33,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
-- `handoff_commit`: `none`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `3855bb7b1b0bd6a3503e92458e386082d5469744`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
 - `last_reviewed_commit`: `1f75154809e86563ada00ced06408551c66974cb`
@@ -233,4 +233,12 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-43, Runde 2 · Commit `3855bb7b1b0bd6a3503e92458e386082d5469744`.**
+Bitte nur die Folgekorrekturen nach der bereits freigegebenen Runde 1
+prüfen: Die beiden Symbolaktionen neben der Desktop-Positionsüberschrift
+stehen enger. Mobil zeigt die Positionskarte „Ziel % / IST %“ und einen
+kompakten Delta-Balken rechts neben „Delta“, ohne horizontalen Überlauf.
+`make test` (54 Dateien, 729 Tests), `make lint`, `make typecheck` und
+`make build` bestanden. Browserbelege bei 1440 und 390 px sowie der
+Doku-Abgleich stehen in T-43. Keine neue StockInfo-Änderung. Bitte den
+Reviewstand der ersten Fassung und Mikes offene Abschlussabnahme erhalten.
