@@ -16,10 +16,12 @@ versetzt. Die Gruppenköpfe sollen ihre Werte in bündigen Spalten zeigen.
 In der mobilen Navigation soll das Rebalancing-Symbol entfallen; der
 Menüpunkt bleibt erreichbar und verständlich beschriftet.
 
-**Stand:** Mike hat beide Änderungen am 2026-09-25 beauftragt und dieses
-Ticket ausdrücklich direkt für `30-doing/` verlangt. Nach Mikes Abnahme von
-T-43 ist T-44 laut [`STATUS.md`](../STATUS.md) der aktive Auftrag. Codex setzt
-ihn um; die technische Prüfung und Mikes Abschlussentscheidung stehen aus.
+**Stand:** Mike hat die Änderungen am 2026-09-25 beauftragt und dieses Ticket
+ausdrücklich direkt für `30-doing/` verlangt. Nach Mikes Abnahme von T-43 ist
+T-44 laut [`STATUS.md`](../STATUS.md) der aktive Auftrag. Codex hat die
+Gruppentrennung, Verweisfilter und den mobilen Menüwunsch in `d38a8f5`
+umgesetzt und selbst geprüft. Die Fassung liegt Claude zum unabhängigen Review
+vor; Mikes Abschlussentscheidung steht danach aus.
 
 Für Mike ist vor der Umsetzung keine weitere Entscheidung nötig. Nach einer
 technischen Prüfung bleibt die Bedien- und Abschlussabnahme offen.
@@ -30,9 +32,10 @@ Nach der technischen Freigabe im Dashboard ein Depot mit Aktie, Aktien-ETF
 und Anleihe-ETF öffnen. Prüfen, ob Aktien und ETFs getrennt erscheinen und
 ein Anleihe-ETF weiterhin sinnvoll unter „Anleihen“ stehen kann. In
 „Einstellungen → Verweise“ einen Link auf eine Gruppe begrenzen und prüfen,
-ob er nur bei passenden Positionen angeboten wird. Testadresse und geprüfte
-Fassung werden vor dieser Aufgabe ergänzt; ein Testserver wird hier noch
-nicht behauptet.
+ob er nur bei passenden Positionen angeboten wird. Für eine wiederholbare
+Probe das [Browser-Testdepot](../../tests/fixtures/browser/README.md) gegen
+`http://127.0.0.1:8899` laden; die Anleitung nennt die Startbefehle. Die
+Übergabefassung: `d38a8f523899f506fc66428f626a042039a50528`.
 
 Dein Urteil: Sind die Gruppen und die Link-Auswahl für dein Depot verständlich?
 Die Antwort bleibt offen und wird nicht aus technischen Tests abgeleitet.
@@ -94,14 +97,72 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Aktie, Aktien-ETF und Anleihe-ETF hinzufügen oder ihre Gruppe ändern | Aktien und ETFs sind getrennt wählbar; der Vorschlag nutzt Typ und Namenshinweise, eine manuelle Wahl bleibt möglich | ➖ |
-| 2 | Dashboard und Rebalancing mit beiden Gruppen öffnen | Gruppenwerte und Ziele sind getrennt, Gesamtsumme und Liquiditätsregeln bleiben korrekt | ➖ |
-| 3 | Bestehenden Bestand und Backup mit ETF in `stocks` laden | ETF-Zuordnung ist nachvollziehbar; andere bewusst gewählte Gruppen und Positionswerte bleiben erhalten oder ein nötiger Reset ist offen benannt | ➖ |
-| 4 | Verweis auf eine Depotgruppe begrenzen, danach mit Instrumenttyp kombinieren | Link erscheint nur bei passenden Positionen; leere Auswahl gilt für alle und Cash funktioniert ohne Instrumenttyp | ➖ |
-| 5 | Gruppenoptionen in Dashboard, Positionsformular und Verweis-Einstellungen vergleichen | Dieselben zentralen Schlüssel, Reihenfolge und Übersetzungen werden verwendet; begründete Kontextfilter sind sichtbar | ➖ |
-| 6 | Gruppenköpfe mit kurzen und langen Werten bei Desktopbreite vergleichen | Marktwert, Anteile, Abweichung und Status stehen bei Cash und den übrigen Gruppen bündig untereinander | ➖ |
-| 7 | `make test`, `make lint`, `make typecheck` ausführen und Doku-Abgleich durchführen | Prüfungen bestehen; `README.md` und weitere aktuelle Anleitungen beschreiben sechs Gruppen und die Verweisfilter korrekt | ➖ |
-| 8 | Mobiles Menü öffnen und Rebalancing anwählen | Kein Rebalancing-Symbol; Menütext und Navigation bleiben nutzbar | ➖ |
+| 1 | Aktie, Aktien-ETF und Anleihe-ETF hinzufügen oder ihre Gruppe ändern | Aktien und ETFs sind getrennt wählbar; der Vorschlag nutzt Typ und Namenshinweise, eine manuelle Wahl bleibt möglich | ✅ |
+| 2 | Dashboard und Rebalancing mit beiden Gruppen öffnen | Gruppenwerte und Ziele sind getrennt, Gesamtsumme und Liquiditätsregeln bleiben korrekt | ✅ |
+| 3 | Bestehenden Bestand und Backup mit ETF in `stocks` laden | ETF-Zuordnung ist nachvollziehbar; andere bewusst gewählte Gruppen und Positionswerte bleiben erhalten oder ein nötiger Reset ist offen benannt | ✅ |
+| 4 | Verweis auf eine Depotgruppe begrenzen, danach mit Instrumenttyp kombinieren | Link erscheint nur bei passenden Positionen; leere Auswahl gilt für alle und Cash funktioniert ohne Instrumenttyp | ✅ |
+| 5 | Gruppenoptionen in Dashboard, Positionsformular und Verweis-Einstellungen vergleichen | Dieselben zentralen Schlüssel, Reihenfolge und Übersetzungen werden verwendet; begründete Kontextfilter sind sichtbar | ✅ |
+| 6 | Gruppenköpfe mit kurzen und langen Werten bei Desktopbreite vergleichen | Marktwert, Anteile, Abweichung und Status stehen bei Cash und den übrigen Gruppen bündig untereinander | ✅ |
+| 7 | `make test`, `make lint`, `make typecheck` ausführen und Doku-Abgleich durchführen | Prüfungen bestehen; `README.md` und weitere aktuelle Anleitungen beschreiben sechs Gruppen und die Verweisfilter korrekt | ✅ |
+| 8 | Mobiles Menü öffnen und Rebalancing anwählen | Kein Rebalancing-Symbol; Menütext und Navigation bleiben nutzbar | ✅ |
+
+### Implementer-Belege · 2026-09-25
+
+- **1, 5:** `ASSET_GROUPS` in `src/types/portfolio.ts` liefert Schlüssel und
+  Reihenfolge für Berechnung, Backup-Prüfung und alle drei Auswahllisten.
+  Browser: Aktien und ETFs im Dashboard getrennt; Hinzufügen und Bearbeiten
+  bieten fünf Wertpapiergruppen ohne Cash. `suggestAssetGroup` setzt `etf` auf
+  ETFs, `stock` auf Aktien; Namenshinweise für Geldmarkt, Anleihen und Metalle
+  haben Vorrang. Im Browser wurde ein ETF manuell nach Anleihen verschoben.
+- **2:** Browser-Testdepot mit fünf Positionen und vollständigen Kursen:
+  Aktien € 720, ETFs € 2.710, Anleihen € 995, Cash € 500, Gesamtwert € 5.000.
+  Nach manueller Umgruppierung blieb der Gesamtwert € 5.000; Dashboard und
+  Rebalancing führten den ETF unter Anleihen. Geldmarkt + Cash blieben
+  Investitionsreserve; der bestehende Rechenregeltest lief mit.
+- **3:** `upgradeAssetGroups` verschiebt nur alte `stocks`-Positionen mit
+  bekanntem `kind: etf` einmalig nach `etfs`. Die gespeicherte
+  `assetGroupVersion: 2` erhält danach bewusste Gruppenwahlen auch über Neustart
+  und Backup. Andere Gruppen, Stückzahlen und Ziele bleiben erhalten.
+  `tests/stores/portfolio.spec.ts` prüft IndexedDB-Neustart; Backup-Roundtrip
+  und reine Migrationsprobe prüfen die weiteren Wege. Kein Reset nötig.
+- **4:** Browser: Der `extraETF`-Link mit Typ ETF und Gruppe Anleihen
+  verschwand bei ETFs und erschien nach manueller Umgruppierung unter
+  Anleihen. `tests/domain/links.spec.ts` prüft zusätzlich die Schnittmenge,
+  leere Auswahl, deaktivierte Links, fehlende ISIN und Cash ohne Typ mit
+  einer URL ohne ISIN-Platzhalter.
+- **6:** Chrome bei 1440 px: Die vier Zahlenzellen der Kopfzeilen Aktien,
+  ETFs, Anleihen und Cash begannen jeweils bei x = 955, 1091, 1203 und 1307 px.
+  Das CSS verwendet dafür gemeinsame Grid-Spalten. Keine Cash-Sonderregel.
+- **8:** Chrome bei emulierten 390 × 844 px: Rebalancing-Symbol `display: none`,
+  Beschriftung sichtbar; Klick öffnete `/#/rebalancing`. Kein horizontaler
+  Dokumentüberlauf (`scrollWidth = innerWidth = 390`).
+- **7:** `make test`: 734 Tests in 55 Dateien; `make lint`, `make typecheck`
+  und `make build` erfolgreich. Der Build meldet nur den bestehenden Hinweis
+  zur Größe des UI-Vendor-Chunks. Die Browserprobe nutzte den lokalen
+  StockInfo-Testserver auf Port 8899 und die isolierte Browser-Sitzung
+  `stockportfolio-t44-check`. Der Testserver wurde um eine gültige AAPL-Antwort
+  erweitert; die dauerhaft abgelegte Sicherung enthält damit einen
+  Aktienbestand und bleibt für spätere Sitzungen nutzbar.
+
+**Lessons-Abgleich:** SP-CX-02 (aktuelle Aussagen nach Entscheidungen
+nachziehen) wurde beim Abschluss von T-43 nach einem Observer-Hinweis erneut
+angewandt; Einstieg und Abschlussentscheidung wurden angeglichen. SP-CX-04
+bestätigt die dauerhafte Ablage des Browser-Testdepots unter `tests/fixtures/`
+und des gemeinsam genutzten Testservers unter `scripts/`. Der Hinweis ist ein
+Fall der vorhandenen Regeln; keine neue lokale Lesson nötig. Die allgemeine
+Board-Übernahme von `2026-09-11-activity-feed` auf den Skillstand
+`2026-09-11-lessons-follow-through` bleibt für Mike oder eine eigens
+beauftragte Board-Instanz offen; T-44 ändert die Board-Konvention nicht.
+
+**Doku-Abgleich:** `README.md` (Gruppen und Verweisfilter) beschreibt sechs
+Gruppen, die einmalige ETF-Übernahme und die beiden unabhängigen Filter.
+`tests/fixtures/browser/README.md` und die wiederverwendbare Sicherung wurden
+auf fünf valide Positionen erweitert. Die Hilfe in `src/i18n/de.ts` und
+`src/i18n/en.ts` nennt sechs Depotgruppen und die Filterlogik. Die Unraid-
+Anleitung enthält keine Gruppenaussage; die historische Superpowers-Spec
+bleibt als Entstehungsnachweis unverändert. Datei- und Überschrifteninventar
+der aktuellen Anleitungen sowie gezielte Suche nach der alten Fünfer-Aussage
+ergaben keine weitere aktuelle Stelle.
 
 Der Implementer ergänzt konkrete Testumgebung, Belege, einschlägige Lessons
 und den Doku-Abgleich vor einer Übergabe. Ein unabhängiger Review beginnt

@@ -5,8 +5,8 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-44 ist der aktive Auftrag:** Aktien und ETFs werden als eigene Gruppen
-geführt; die Verweisfilter erhalten Depotgruppen. T-43 wurde von Claude in
+**T-44 liegt Claude zur unabhängigen Prüfung vor:** Aktien und ETFs werden als
+eigene Gruppen geführt; die Verweisfilter erhalten Depotgruppen. T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
 Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
 eigenen AgentLessons-Repository; Einzelheiten stehen unter
@@ -33,11 +33,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `d38a8f523899f506fc66428f626a042039a50528`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
 - `last_reviewed_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
@@ -140,8 +140,8 @@ Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
-**Aktueller Schritt:** T-44 ist für Codex zur Umsetzung aktiviert. Nach der
-Übergabe prüft Claude die Fassung. T-43 wurde nach drei freigegebenen
+**Aktueller Schritt:** T-44 ist aus `d38a8f5` an Claude zur Prüfung übergeben.
+T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
 T-38, T-39 und T-40 warten weiter auf Mikes Abschlussabnahme.
@@ -232,4 +232,4 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+- Von `codex` an `claude` · T-44 · Runde 1 · Produktfassung `d38a8f523899f506fc66428f626a042039a50528`: Bitte Gruppenmodell und Reihenfolge, einmalige ETF-Übernahme samt Backup/Neustart, kombinierte Verweisfilter einschließlich Cash, Gruppenkopf-Ausrichtung und mobile Rebalancing-Navigation unabhängig prüfen. Alle acht Verify-Punkte mit Belegen und Doku-Abgleich stehen im Ticket. `make test` (734/734), `make lint`, `make typecheck`, `make build` und Browsercheck (1440 px, emulierte 390 px) waren erfolgreich. Lokaler StockInfo-Testserver läuft auf `127.0.0.1:8899`; wiederverwendbare Sicherung unter `tests/fixtures/browser/`. Beachte SP-CX-02 und SP-CX-04; der allgemeine Board-Konventionsnachtrag bleibt offen und ist nicht Teil der Produktfreigabe. Ergebnis bitte mit Prüferkennung und Übergabecommit ins Ticket und als kurze Rückgabe in die INBOX.
