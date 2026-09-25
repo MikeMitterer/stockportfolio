@@ -92,25 +92,28 @@ function toggleDetails(): void {
         <span class="poscard__value tabular-nums">{{ row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : row.quote ? money(row.originalMarketValue, row.quote.currency) : isCash ? formatMoney(row.marketValue) : '—' }}</span>
       </div>
 
-      <!-- IST gegen Ziel -->
+      <!-- Ziel gegen IST -->
       <div v-if="row.isActive" class="poscard__line">
         <span class="poscard__muted">
-          {{ t('table.actualPercent') }} / {{ t('table.targetPercent') }}
+          {{ t('table.targetPercent') }} / {{ t('table.actualPercent') }}
         </span>
         <span class="tabular-nums">
-          {{ percent(row.actualPercent) }}
-          <span class="poscard__muted">/ {{ percent(row.position.targetPercent) }}</span>
+          {{ percent(row.position.targetPercent) }}
+          <span class="poscard__muted">/ {{ percent(row.actualPercent) }}</span>
         </span>
       </div>
 
-      <!-- Delta über die volle Breite -->
-      <DeltaBar
-        v-if="row.isActive"
-        :relative-percent="row.relativeDeltaPercent"
-        :suggestion="row.suggestion"
-        :near="row.isNearBand"
-        compact
-      />
+      <!-- Abweichung als kompakte Zahlenzeile -->
+      <div v-if="row.isActive" class="poscard__line">
+        <span class="poscard__muted">{{ t('table.delta') }}</span>
+        <DeltaBar
+          :relative-percent="row.relativeDeltaPercent"
+          :suggestion="row.suggestion"
+          :near="row.isNearBand"
+          compact
+          narrow
+        />
+      </div>
     </div>
     <PositionReadDetails v-if="detailsOpen" :row="row" :links="links" />
   </article>

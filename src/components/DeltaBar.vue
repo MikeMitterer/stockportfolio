@@ -26,6 +26,8 @@ const props = defineProps<{
   /** Knapp vor der Bandgrenze — gedämpfte Warnfarbe statt Grün. */
   near?: boolean
   compact?: boolean
+  /** Begrenzte Breite für die mobile Positionskarte. */
+  narrow?: boolean
   /** Ersetzt die Delta-Zahl rechts, etwa durch den Anteil am Gesamtvermögen. */
   label?: string
 }>()
@@ -59,7 +61,7 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
     Ringe kaschierten das nur und wirkten schmutzig. Nebeneinander ist beides
     ungestört: der Balken zeigt Richtung und Ausmaß, die Zahl den Wert.
   -->
-  <div class="delta" role="img" :aria-label="`Delta ${text}`">
+  <div class="delta" :class="{ 'delta--narrow': narrow }" role="img" :aria-label="`Delta ${text}`">
     <div class="delta__track" :class="{ 'delta__track--compact': compact }">
       <!--
         Nur **eine** Linie: das Ziel.
@@ -86,6 +88,11 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
 <style scoped lang="scss">
 .delta {
   @include row(var(--space-2));
+
+  &--narrow {
+    flex: 0 1 10rem;
+    max-width: 100%;
+  }
 
   &__track {
     position: relative;

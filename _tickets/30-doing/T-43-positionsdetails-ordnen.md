@@ -293,6 +293,22 @@ kompakter werden; derzeit zieht er sich über die gesamte Kartenbreite. Beide
 Korrekturen gehören zur noch laufenden Bedienabnahme von T-43. Der Coder
 setzt sie um und übergibt die neue Produktfassung für Runde 2.
 
+**Codex-Probe der Folgekorrekturen:** Die beiden Desktop-Symbole haben eine
+Klickfläche von je 24 px Breite ohne Zwischenraum. Bei 390 px steht der
+Delta-Balken rechts neben „Delta“ und misst einschließlich Wert 160 px; die
+eigentliche Spur ist 96 px breit. Ziel und Ist stehen auch in der mobilen
+Positionskarte in dieser Reihenfolge. Der Browser blieb bei 390 px ohne
+waagrechtes Scrollen. Desktop und Mobile wurden nach der Änderung visuell
+geprüft. `make test` bestand erneut mit 54 Dateien und 729 Tests;
+`make lint`, `make typecheck`, `make build` und `git diff --check` blieben
+ohne Fehler.
+
+**Doku-Abgleich der Folgekorrekturen:** `README.md` → „Mobile“ beschreibt
+die Reihenfolge und die kompakte Delta-Anzeige. Der Abschnitt zur
+Desktop-Positionsüberschrift bleibt sachlich richtig; er nennt die beiden
+Symbolaktionen, aber keinen Abstand. `docs/` und `unraid/` enthalten keine
+betroffene aktuelle Bedienanleitung.
+
 ### Side-Effects
 
 Der große Kurschart und sein Zeitraumabruf werden erst beim Öffnen des

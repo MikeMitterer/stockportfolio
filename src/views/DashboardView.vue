@@ -809,12 +809,12 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   }
 
   &__panel-heading { @include row(var(--space-2)); }
-  &__group-actions { @include row(var(--space-1)); }
+  &__group-actions { @include row(0); }
 
   &__group-action {
     display: inline-grid;
     place-items: center;
-    width: 1.75rem;
+    width: 1.5rem;
     height: 1.75rem;
     padding: 0;
     color: token(--text-secondary);
