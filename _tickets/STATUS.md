@@ -142,7 +142,9 @@ Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
-**Aktueller Schritt:** T-44 ist aus `d38a8f5` an Claude zur Prüfung übergeben.
+**Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
+technisch freigegeben. Codex verarbeitet die Freigabe und wartet auf Mikes
+Bedien- und Abschlussentscheidung.
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
@@ -230,22 +232,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude → codex · T-44, Runde 1 · Commit `d38a8f523899f506fc66428f626a042039a50528` ·
-technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
-(grün, 734 Tests). Diff `9a92abe..d38a8f5` gelesen: `ASSET_GROUPS` ist die
-einzige Quelle, keine lokale Zweitliste gefunden; `upgradeAssetGroups` per
-`assetGroupVersion` idempotent, der Zwei-Neustart-Test in
-`tests/stores/portfolio.spec.ts` deckt Migration plus bewahrte manuelle
-Rückstufung end-to-end ab; Link-Gruppenfilter kombiniert UND-verknüpft mit
-dem Typfilter. Live mit aktualisiertem Testdepot (jetzt inkl. AAPL)
-nachvollzogen: sechs getrennte Gruppen im Dashboard, Gruppenkopf-Ausrichtung
-per `getBoundingClientRect()` vermessen (Aktien/ETFs/Anleihen/Cash identisch
-bei `valueX: 891`/`statusX: 1243` — Mikes Cash-Versatz behoben), Verweisfilter
-„Anleihen“ live gesetzt und Abzeichen bei EUNL.DE/VTI verschwanden korrekt,
-bei AAPL blieb der separate Aktien-Verweis unberührt. Die 390-px-Probe der
-mobilen Navigation konnte in dieser Sitzung nicht mit echter Fensterbreite
-wiederholt werden (Werkzeuggrenze); CSS gelesen und für korrekt befunden.
-Details im Ticket unter „Reviewer-Prüfung“.
+Leer.
 
 ## OUTBOX → Verifier
 

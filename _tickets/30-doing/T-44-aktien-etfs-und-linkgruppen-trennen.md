@@ -20,11 +20,11 @@ Menüpunkt bleibt erreichbar und verständlich beschriftet.
 ausdrücklich direkt für `30-doing/` verlangt. Nach Mikes Abnahme von T-43 ist
 T-44 laut [`STATUS.md`](../STATUS.md) der aktive Auftrag. Codex hat die
 Gruppentrennung, Verweisfilter und den mobilen Menüwunsch in `d38a8f5`
-umgesetzt und selbst geprüft. Die Fassung liegt Claude zum unabhängigen Review
-vor; Mikes Abschlussentscheidung steht danach aus.
+umgesetzt und selbst geprüft. Claude hat die Fassung in Runde 1 technisch
+freigegeben; Mikes Bedien- und Abschlussentscheidung steht aus.
 
-Für Mike ist vor der Umsetzung keine weitere Entscheidung nötig. Nach einer
-technischen Prüfung bleibt die Bedien- und Abschlussabnahme offen.
+Für Mike ist die Bedien- und Abschlussabnahme jetzt offen. Eine weitere
+Entwurfsentscheidung vor der Umsetzung ist nicht mehr nötig.
 
 ## Für dich
 
