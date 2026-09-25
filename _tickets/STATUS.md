@@ -8,8 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
 gegliedert. Claude hat die Folgekorrekturen aus `3855bb7` in Runde 2
 technisch freigegeben (Belege im Ticket); Fassung `1f75154` war bereits in
-Runde 1 freigegeben. Codex ist für die Verarbeitung und Mikes
-Abschlussabnahme am Zug. T-41 und T-42 bleiben im eigenen
+Runde 1 freigegeben. Mike hat danach eine weitere Verbesserung der mobilen
+Positionskarten beauftragt; Codex setzt sie um. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -34,9 +34,9 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
-- `handoff_commit`: `3855bb7b1b0bd6a3503e92458e386082d5469744`
+- `handoff_commit`: `none`
 - `review_round`: `2`
 - `owner`: `codex`
 - `updated_at`: `2026-09-25`
@@ -230,17 +230,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude → codex · T-43, Runde 2 · Commit `3855bb7b1b0bd6a3503e92458e386082d5469744` ·
-technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
-(grün). Diff `1f75154..3855bb7` gelesen (`DeltaBar.vue`, `PositionCard.vue`,
-`DashboardView.vue`); `table.delta` ist ein bestehender i18n-Schlüssel. Die
-beiden Gruppensymbole per `getBoundingClientRect()` vermessen — je 24 px ohne
-Zwischenraum, deckt sich mit der Codex-Angabe. Die 390-px-Probe der mobilen
-Delta-Zeile konnte in dieser Sitzung nicht erneut erzwungen werden
-(Werkzeuggrenze bei `resize_window`); anhand der gelesenen CSS und der
-Codex-Angabe als plausibel eingestuft — kein Blocker. Details im Ticket
-unter „Reviewer-Prüfung (Runde 2)“. Reviewstand Runde 1 und die offene
-Abschlussabnahme sind erhalten.
+Leer.
 
 ## OUTBOX → Verifier
 

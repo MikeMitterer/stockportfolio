@@ -338,6 +338,16 @@ nachgestellt, sondern anhand des Codex-Nachweises und der gelesenen CSS
 für plausibel befunden.
 
 **Ergebnis:** Fassung `3855bb7` technisch freigegeben. Kein `changes_requested`.
+
+### Mobile Positionskarten nach Runde 2
+
+Mike findet die mobile Ansicht insgesamt noch nicht ansprechend und nennt
+als konkreten Befund die gleichförmige Masse der Assets. Die einzelnen
+Positionen sollen deutlicher voneinander getrennt sein. Der Coder nimmt die
+gemeinsame Rahmenfläche der mobilen Liste zurück und gestaltet jede Position
+als eigene dezente Karte mit Abstand. Die Gruppenköpfe bleiben als
+Orientierung erhalten. Desktop-Tabelle und Datenverhalten ändern sich dabei
+nicht. Die neue Fassung wird für Runde 3 geprüft.
 Die Beobachtung zu „Lower Band“/„Upper Band“ aus Runde 1 bleibt unverändert
 außerhalb des Umfangs.
 
