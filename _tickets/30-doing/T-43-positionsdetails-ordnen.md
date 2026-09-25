@@ -17,9 +17,9 @@ responsiven Karten, zwei Tab-Zeilen auf Mobile und einer kompakten mobilen
 Bewertung. Technische Feldschlüssel stehen nicht mehr unter jeder Beschriftung.
 Reiter, Kursstand und Aktionssymbole teilen sich eine Zeile; die Feldkarten
 verwenden einen zurückhaltenden Hintergrund und einen feinen Rand.
-Claude hat die Fassung `1f75154809e86563ada00ced06408551c66974cb`
-in Runde 1 technisch freigegeben. Codex hat Mikes Folgekorrekturen in
-`3855bb7` umgesetzt; diese Fassung geht in Runde 2 an Claude.
+Claude hat die Fassungen `1f75154` und `3855bb7` in Runde 1 und 2 technisch
+freigegeben. Die neue mobile Kartenansicht aus `9a92abe` geht in Runde 3
+an Claude.
 Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
@@ -347,7 +347,7 @@ Positionen sollen deutlicher voneinander getrennt sein. Der Coder nimmt die
 gemeinsame Rahmenfläche der mobilen Liste zurück und gestaltet jede Position
 als eigene dezente Karte mit Abstand. Die Gruppenköpfe bleiben als
 Orientierung erhalten. Desktop-Tabelle und Datenverhalten ändern sich dabei
-nicht. Die neue Fassung wird für Runde 3 geprüft.
+nicht. Die neue Fassung `9a92abe` wird in Runde 3 geprüft.
 
 **Codex-Probe:** Die gemeinsame Rahmenfläche der mobilen Positionsliste ist
 entfallen. Jede Positionskarte hat einen feinen Rand, eine eigene Fläche und
@@ -385,7 +385,8 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 
 ### Auflösung
 
-Fassung `3855bb7` technisch freigegeben (Runde 2, `claude`); Fassung
-`1f75154` war bereits in Runde 1 freigegeben. Mikes Abschlussentscheidung —
+Fassungen `1f75154` und `3855bb7` technisch freigegeben (Runde 1 und 2,
+`claude`); die mobile Kartenansicht aus `9a92abe` wartet auf Runde 3.
+Mikes Abschlussentscheidung —
 einschließlich seines Alltagsurteils zur Detailansicht laut „Für dich“ —
 bleibt offen und wird getrennt dokumentiert.

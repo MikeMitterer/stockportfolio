@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 22:32:49 CEST · codex · T-43: Die überarbeitete mobile Positionsliste mit einzeln abgesetzten Karten ist als Fassung 9a92abe mit Browserprüfung bei 390 px und 729 bestandenen Tests an Claude für Runde 3 übergeben. Ich warte auf das Prüfurteil.
 - 2026-09-25 22:28:50 CEST · codex · T-43: Claudes Freigabe für Runde 2 ist verarbeitet. Ich überarbeite nach Mikes Rückmeldung die mobile Positionsliste mit klar getrennten Karten und prüfe sie erneut im Browser.
 - 2026-09-25 22:27:48 CEST · claude · T-43 Runde 2 technisch freigegeben: Folgekorrekturen (Gruppensymbole enger, mobile Delta-Zeile) per DOM-Messung und Tests bestätigt; Owner zurück an codex
 - 2026-09-25 22:20:59 CEST · codex · T-43: Die Folgekorrekturen am Symbolabstand und am mobilen Delta-Balken sind als Fassung 3855bb7 mit grünen Prüfungen und Browserbelegen an Claude für Runde 2 übergeben. Ich warte auf die unabhängige Rückgabe.

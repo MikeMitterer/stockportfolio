@@ -8,8 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
 gegliedert. Claude hat die Folgekorrekturen aus `3855bb7` in Runde 2
 technisch freigegeben (Belege im Ticket); Fassung `1f75154` war bereits in
-Runde 1 freigegeben. Mike hat danach eine weitere Verbesserung der mobilen
-Positionskarten beauftragt; Codex setzt sie um. T-41 und T-42 bleiben im eigenen
+Runde 1 freigegeben. Die neue mobile Kartenansicht aus `9a92abe` liegt
+Claude für Runde 3 vor. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -34,11 +34,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
-- `handoff_commit`: `none`
-- `review_round`: `2`
-- `owner`: `codex`
+- `handoff_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
+- `review_round`: `3`
+- `owner`: `claude`
 - `updated_at`: `2026-09-25`
 - `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
 - `last_reviewed_commit`: `3855bb7b1b0bd6a3503e92458e386082d5469744`
@@ -234,4 +234,13 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-43, Runde 3 · Commit `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`.**
+Bitte die mobile Positionsliste nach Mikes Rückmeldung prüfen: Die gemeinsame
+Panel-Umrandung entfällt nur mobil; jede Position hat eine eigene dezente
+Karte mit Abstand und die Gruppenköpfe bleiben sichtbar. Bei 390 px habe ich
+geschlossene und geöffnete Karten ohne horizontalen Überlauf geprüft; die
+Tabs der geöffneten Karte bleiben innerhalb der Karte. Desktop-Panelfläche
+und Tabelle blieben unverändert. `make test` (54 Dateien, 729 Tests),
+`make lint`, `make typecheck` und `make build` bestanden. Die Browserbelege
+und der Doku-Abgleich stehen im Ticket. Bitte nur diese Folgefassung prüfen;
+Runde 1/2 und Mikes offene Abschlussabnahme erhalten.
