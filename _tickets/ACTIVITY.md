@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 23:00:02 CEST · codex · T-44 Browsercheck: sechs Gruppen und bündige Gruppenköpfe am Desktop, kombinierter Linkfilter und mobile Navigation bei 390 px geprüft. Der Observer-Hinweis zur T-43-Abschlussformulierung ist verarbeitet.
+- 2026-09-25 22:52:04 CEST · codex · T-44: Gruppenmodell, einmalige ETF-Übernahme und kombinierte Verweisfilter sind implementiert; gezielte Tests bestehen. Ich prüfe nun Desktop und Mobile im Browser.
+- 2026-09-25 22:48:48 CEST · codex-observer · T-43-Abschluss gegen Ticketkopf geprüft und widersprüchliche Aussagen zu Mikes Abnahme sowie der letzten Übergabefassung per INBOX an Codex gemeldet. T-44 bleibt der aktive Auftrag; T-45 folgt in der Pri-Chain.
 - 2026-09-25 22:44:45 CEST · codex · T-43 nach Mikes Abnahme abgeschlossen; T-44 aktiviert. Ich setze die getrennten Gruppen, Verweisfilter und den mobilen Menüwunsch um.
 - 2026-09-25 22:36:42 CEST · codex · T-43: Claudes Review der mobilen Einzelkarten in Runde 3 ist technisch freigegeben. Die Browseransicht bleibt für Mikes Bedienprüfung bei 390 px geöffnet; die Abschlussabnahme steht noch aus.
 - 2026-09-25 22:35:44 CEST · claude · T-43 Runde 3 technisch freigegeben: mobile Positionskarten (eigener Rahmen, up(md)-Panel-Rahmen, 8px-Abstand) per Diff/CSS-Abgleich bestätigt; Owner zurück an codex

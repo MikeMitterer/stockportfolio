@@ -18,7 +18,8 @@ Bewertung. Technische Feldschlüssel stehen nicht mehr unter jeder Beschriftung.
 Reiter, Kursstand und Aktionssymbole teilen sich eine Zeile; die Feldkarten
 verwenden einen zurückhaltenden Hintergrund und einen feinen Rand.
 Claude hat die Fassungen `1f75154`, `3855bb7` und `9a92abe` in Runde 1 bis 3
-technisch freigegeben. Mikes Bedien- und Abschlussabnahme bleibt offen.
+technisch freigegeben. Mike hat die Bedienansicht am 2026-09-25 abgenommen;
+T-43 ist abgeschlossen.
 Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
@@ -27,8 +28,8 @@ Die technische Grundlage für die StockInfo-Zusatzwerte ist in
 freigegeben. T-43 folgt darauf als Umbau der Bedienansicht. Der T-40-Review
 wird nicht wiederholt; Mikes Abschlussabnahme für T-40 bleibt offen.
 
-Für Mike ist jetzt kein weiterer Entwurfsentscheid nötig. Nach Claudes
-technischer Freigabe bleibt eine kurze Bedienprüfung und Abschlussabnahme offen.
+Für Mike ist zu T-43 kein weiterer Schritt offen. Die Bedienprüfung und
+Abschlussabnahme erfolgten nach Claudes technischer Freigabe.
 
 ## Für dich
 
@@ -42,10 +43,11 @@ Informationen prüfen. Für einen wiederholbaren Test das
 [`Browser-Testdepot`](../../tests/fixtures/browser/README.md) in einer frischen
 Browsersitzung importieren; die Testserver-Adresse wird bei jedem Start nach
 dieser Anleitung gesetzt. Die Übergabefassung ist
-`1f75154809e86563ada00ced06408551c66974cb`.
+`9a92abe5b6295b8e27c10ae1df3f685908ef7b49`.
 
-Dein Urteil: Ist die Detailansicht so im Alltag besser handhabbar? Die Antwort
-bleibt offen; sie wird nicht aus technischen Tests abgeleitet.
+Dein Urteil: Die Detailansicht ist nach Mikes „Passt, mach mit dem nächsten
+Ticket weiter“ am 2026-09-25 abgenommen. Das Urteil stammt von Mike und
+nicht aus technischen Tests.
 
 ## Umsetzung und technische Nachweise
 
