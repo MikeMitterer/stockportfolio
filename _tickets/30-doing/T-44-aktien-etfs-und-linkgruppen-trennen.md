@@ -185,7 +185,55 @@ keine neue API-Route. Neue Gruppenkategorien außer der Trennung von Aktien
 und ETFs, eine Neugestaltung der gesamten Settings und eine aufwendige
 Migration früherer Entwicklungsstände gehören nicht zum Auftrag.
 
+### Reviewer-Prüfung (Claude, Runde 1, Fassung `d38a8f5`)
+
+**Technische Freigabe.** `make test` (55 Dateien, 734 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund, deckt sich mit der Codex-Angabe. Seit dem Handoff-Commit betraf der
+Folgecommit ausschließlich Ticket-Dateien; der Produktstand war während der
+Prüfung stabil.
+
+Diff `9a92abe..d38a8f5` gelesen. `ASSET_GROUPS`/`AssetGroup` in
+`types/portfolio.ts` ist die einzige Quelle für Schlüssel und Reihenfolge;
+Dashboard, `AddPositionDialog.vue`, `ExternalLinkEditor.vue` und
+`backup.ts` leiten ihre Optionen bzw. Validierung daraus ab — keine
+lokale Zweitliste gefunden. `upgradeAssetGroups` in `domain/assetGroup.ts`
+verschiebt ausschließlich `group: 'stocks'` mit `kind: 'etf'` nach `etfs`,
+ist über `assetGroupVersion: 2` idempotent und wird in `load()`,
+`replacePortfolio()` und beim asynchronen Kind-Update in
+`stores/portfolio.ts` konsistent angewendet; `tests/stores/portfolio.spec.ts`
+prüft den Zwei-Neustart-Fall (Migration, danach bewusste manuelle Rückstufung
+bleibt über einen echten IndexedDB-Neustart erhalten) end-to-end. Der
+Link-Gruppenfilter in `domain/links.ts` kombiniert Typ- und Gruppenfilter
+als UND-Verknüpfung; `tests/domain/links.spec.ts` deckt leere Auswahl, Cash
+ohne Typ und die Kombination beider Filter ab.
+
+Live im Browser mit einer aktualisierten Fassung des Testdepots (jetzt mit
+AAPL-Aktie) nachvollzogen: Dashboard zeigt sechs Depotgruppen inklusive
+„Aktien“ und „ETFs“ getrennt; AAPL erscheint unter Aktien, EUNL.DE/VTI unter
+ETFs. Die Ausrichtung der Gruppenkopfzeilen per
+`getBoundingClientRect()` vermessen — Aktien, ETFs, Anleihen und Cash haben
+identisches `valueX: 891` und `statusX: 1243`; Mikes gemeldeter Versatz bei
+Cash ist behoben. In „Einstellungen → Verweise“ den ETF-Verweis „extraETF“
+auf die Gruppe „Anleihen“ begrenzt: Das Abzeichen verschwand danach bei
+EUNL.DE und VTI (ETFs-Gruppe), der separate aktien-typisierte „extraETF“-
+Verweis blieb bei AAPL unverändert sichtbar — die UND-Verknüpfung wirkt wie
+beschrieben.
+
+Die mobile 390-px-Probe für das ausgeblendete Rebalancing-Symbol konnte in
+dieser Sitzung nicht erneut mit echter Fensterbreite nachgestellt werden
+(dieselbe `resize_window`-Werkzeuggrenze wie in T-43); die CSS-Regel
+(`@include below(md) { :deep(svg) { display: none } }`, `topbar__rebalancing`
+nur auf den Rebalancing-Eintrag angewendet) wurde gelesen und ist korrekt
+auf den bestehenden `below(md)`-Bruchpunkt begrenzt, Desktop bleibt
+unberührt.
+
+**Ergebnis:** Fassung `d38a8f5` technisch freigegeben. Kein `changes_requested`.
+Die Beobachtung zu „Lower Band“/„Upper Band“ aus T-43 Runde 1 bleibt
+unverändert außerhalb des Umfangs dieses Tickets.
+
 ### Auflösung
 
-Offen. Technische Freigabe und Mikes Abschlussentscheidung werden getrennt
+Fassung `d38a8f5` technisch freigegeben (Runde 1, `claude`). Mikes
+Bedien- und Abschlussentscheidung bleibt offen und wird getrennt
 dokumentiert.

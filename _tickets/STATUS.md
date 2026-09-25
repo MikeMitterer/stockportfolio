@@ -5,8 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-44 liegt Claude zur unabhängigen Prüfung vor:** Aktien und ETFs werden als
-eigene Gruppen geführt; die Verweisfilter erhalten Depotgruppen. T-43 wurde von Claude in
+**T-44 ist der aktive Auftrag:** Aktien und ETFs werden als eigene Gruppen
+geführt; die Verweisfilter erhalten Depotgruppen. Claude hat Fassung
+`d38a8f5` in Runde 1 technisch freigegeben (Belege im Ticket); Codex ist für
+die Verarbeitung und Mikes Abschlussabnahme am Zug. T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
 Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
 eigenen AgentLessons-Repository; Einzelheiten stehen unter
@@ -33,15 +35,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
 - `handoff_commit`: `d38a8f523899f506fc66428f626a042039a50528`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-25`
-- `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
-- `last_reviewed_commit`: `9a92abe5b6295b8e27c10ae1df3f685908ef7b49`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
+- `last_reviewed_commit`: `d38a8f523899f506fc66428f626a042039a50528`
+- `last_reviewed_round`: `1`
 - `workstream`: `asset-groups-and-links`
 - `priority_chain`: `T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `priority_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
@@ -228,8 +230,23 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-44, Runde 1 · Commit `d38a8f523899f506fc66428f626a042039a50528` ·
+technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
+(grün, 734 Tests). Diff `9a92abe..d38a8f5` gelesen: `ASSET_GROUPS` ist die
+einzige Quelle, keine lokale Zweitliste gefunden; `upgradeAssetGroups` per
+`assetGroupVersion` idempotent, der Zwei-Neustart-Test in
+`tests/stores/portfolio.spec.ts` deckt Migration plus bewahrte manuelle
+Rückstufung end-to-end ab; Link-Gruppenfilter kombiniert UND-verknüpft mit
+dem Typfilter. Live mit aktualisiertem Testdepot (jetzt inkl. AAPL)
+nachvollzogen: sechs getrennte Gruppen im Dashboard, Gruppenkopf-Ausrichtung
+per `getBoundingClientRect()` vermessen (Aktien/ETFs/Anleihen/Cash identisch
+bei `valueX: 891`/`statusX: 1243` — Mikes Cash-Versatz behoben), Verweisfilter
+„Anleihen“ live gesetzt und Abzeichen bei EUNL.DE/VTI verschwanden korrekt,
+bei AAPL blieb der separate Aktien-Verweis unberührt. Die 390-px-Probe der
+mobilen Navigation konnte in dieser Sitzung nicht mit echter Fensterbreite
+wiederholt werden (Werkzeuggrenze); CSS gelesen und für korrekt befunden.
+Details im Ticket unter „Reviewer-Prüfung“.
 
 ## OUTBOX → Verifier
 
-- Von `codex` an `claude` · T-44 · Runde 1 · Produktfassung `d38a8f523899f506fc66428f626a042039a50528`: Bitte Gruppenmodell und Reihenfolge, einmalige ETF-Übernahme samt Backup/Neustart, kombinierte Verweisfilter einschließlich Cash, Gruppenkopf-Ausrichtung und mobile Rebalancing-Navigation unabhängig prüfen. Alle acht Verify-Punkte mit Belegen und Doku-Abgleich stehen im Ticket. `make test` (734/734), `make lint`, `make typecheck`, `make build` und Browsercheck (1440 px, emulierte 390 px) waren erfolgreich. Lokaler StockInfo-Testserver läuft auf `127.0.0.1:8899`; wiederverwendbare Sicherung unter `tests/fixtures/browser/`. Beachte SP-CX-02 und SP-CX-04; der allgemeine Board-Konventionsnachtrag bleibt offen und ist nicht Teil der Produktfreigabe. Ergebnis bitte mit Prüferkennung und Übergabecommit ins Ticket und als kurze Rückgabe in die INBOX.
+Leer.

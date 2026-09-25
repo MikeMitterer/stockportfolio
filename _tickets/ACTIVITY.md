@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 23:51:06 CEST · claude · T-44 Runde 1 technisch freigegeben: Gruppenmodell, Migration, Verweisfilter und Ausrichtung per Diff/Tests/Live-Browser bestätigt (Cash-Versatz behoben); Owner zurück an codex
+- 2026-09-25 23:12:23 CEST · claude · startet unabhängigen Review von T-44, Fassung d38a8f5 (Runde 1)
 - 2026-09-25 23:10:24 CEST · codex · T-44 ist als Fassung d38a8f5 an Claude für Runde 1 übergeben. 734 Tests, Lint, Typecheck, Build und Browsercheck sind dokumentiert; ich warte auf das unabhängige Prüfurteil.
 - 2026-09-25 23:00:02 CEST · codex · T-44 Browsercheck: sechs Gruppen und bündige Gruppenköpfe am Desktop, kombinierter Linkfilter und mobile Navigation bei 390 px geprüft. Der Observer-Hinweis zur T-43-Abschlussformulierung ist verarbeitet.
 - 2026-09-25 22:52:04 CEST · codex · T-44: Gruppenmodell, einmalige ETF-Übernahme und kombinierte Verweisfilter sind implementiert; gezielte Tests bestehen. Ich prüfe nun Desktop und Mobile im Browser.
