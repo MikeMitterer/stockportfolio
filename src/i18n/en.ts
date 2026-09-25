@@ -58,7 +58,8 @@ export const en: MessageSchema = {
     importJson: 'Import JSON',
   },
   groups: {
-    stocks: 'Stocks / ETFs',
+    stocks: 'Stocks',
+    etfs: 'ETFs',
     bonds: 'Bonds',
     metals: 'Precious metals',
     moneymarket: 'Money market',
@@ -440,7 +441,7 @@ export const en: MessageSchema = {
     empty: 'No securities in this portfolio yet',
     positionsHeading: 'Positions — holdings and targets are editable in place',
     positionsShort: 'Positions',
-    assetClasses: 'Asset classes',
+    assetClasses: 'Portfolio groups',
     targetDistribution: 'Target allocation',
     bands: 'Bands: −{lower} / +{upper}',
     scheduleDue: 'Review due',
@@ -491,10 +492,16 @@ export const en: MessageSchema = {
   },
 
   links: {
-    hint: 'In the address, {isin} and {symbol} are substituted. Leaving “Applies to” empty means: all kinds. A link using {isin} does not appear for positions without one.',
+    hint: "In the address, {'{isin}'} and {'{symbol}'} are substituted. An empty kind or group selection includes all of that type. When both are set, a position must match both. A link using {'{isin}'} does not appear for positions without one.",
     labelPlaceholder: 'Label',
-    urlPlaceholder: 'https://…/{isin}',
+    url: 'Address',
+    urlPlaceholder: "https://…/{'{isin}'}",
     appliesTo: 'Applies to',
+    appliesToKind: 'Asset kind',
+    appliesToGroup: 'Portfolio group',
+    allKinds: 'All kinds',
+    allGroups: 'All groups',
+    enabled: 'Link enabled',
     add: 'Add link',
     reset: 'Reset to defaults',
     confirmReset: 'Reset all links to the defaults?',
@@ -552,9 +559,9 @@ export const en: MessageSchema = {
     triggerBody4:
       'The date belongs to the portfolio, not to the settings: every portfolio has its own date of last rebalancing. It is set by hand — only whoever placed an order knows whether it was actually filled.',
 
-    classesHeading: 'Five asset classes',
+    classesHeading: 'Six portfolio groups',
     classesBody:
-      'Stocks/ETFs, bonds, precious metals, money market and cash. Separating bonds from money market is not a detail: bonds with a maturity fluctuate and make a poor reserve, money-market instruments barely move. Only money market and cash therefore count as available liquidity.',
+      'Stocks, ETFs, bonds, precious metals, money market and cash. You can choose a security’s group when adding or editing it; a bond ETF can stay under bonds. Only money market and cash count as available liquidity.',
 
     reserveHeading: 'Safety buffer and investable reserve',
     reserveBody:

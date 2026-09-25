@@ -12,6 +12,7 @@
 import { isCurrency } from '@/domain/fx'
 import type { ValueSnapshot } from '@/domain/portfolioHistory'
 import type { AmountSetting, AssetGroup, InstrumentKind, Portfolio, Position, Settings } from '@/types/portfolio'
+import { ASSET_GROUPS } from '@/types/portfolio'
 
 /** Erkennungsmerkmal der Datei — verhindert das Einlesen fremder JSON-Dateien. */
 export const BACKUP_KIND = 'stockportfolio-backup'
@@ -129,7 +130,6 @@ export function backupFileName(portfolioName: string, exportedAt: string): strin
   return `stockportfolio-${slug}-${day}.json`
 }
 
-const GROUPS: readonly AssetGroup[] = ['stocks', 'bonds', 'metals', 'moneymarket', 'cash']
 const KINDS: readonly InstrumentKind[] = ['etf', 'stock']
 
 /**
@@ -271,6 +271,7 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
   return {
     id: value.id,
     name: value.name,
+    ...(value.assetGroupVersion === 2 ? { assetGroupVersion: 2 as const } : {}),
     baseCurrency: value.baseCurrency as string | undefined ?? 'EUR',
     ...(amountSettings ? { amountSettings } : {}),
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
@@ -315,7 +316,7 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
     return { key: 'positionNoSymbol', params: { at } }
   }
 
-  if (!GROUPS.includes(value.group as AssetGroup)) {
+  if (!ASSET_GROUPS.includes(value.group as AssetGroup)) {
     return { key: 'positionGroup', params: { at, group: String(value.group) } }
   }
 

@@ -6,6 +6,7 @@
   "portfolio": {
     "id": "1abaa79e-e206-42ad-b7f7-d05604278496",
     "name": "Browser-Testdepot",
+    "assetGroupVersion": 2,
     "baseCurrency": "EUR",
     "amountSettings": {
       "securityBuffer": {
@@ -37,9 +38,9 @@
         "symbol": "EUNL.DE",
         "kind": "etf",
         "displayName": "MSCI World ETF",
-        "group": "stocks",
+        "group": "etfs",
         "units": 12,
-        "targetPercent": 40,
+        "targetPercent": 30,
         "enabled": true
       },
       {
@@ -48,9 +49,20 @@
         "symbol": "VTI",
         "kind": "etf",
         "displayName": "US Total Market ETF",
-        "group": "stocks",
+        "group": "etfs",
         "units": 5,
-        "targetPercent": 30,
+        "targetPercent": 25,
+        "enabled": true
+      },
+      {
+        "id": "3e1ee462-145d-4ff1-9f96-39a328df5d30",
+        "isin": "US0378331005",
+        "symbol": "AAPL",
+        "kind": "stock",
+        "displayName": "Apple Inc.",
+        "group": "stocks",
+        "units": 4,
+        "targetPercent": 15,
         "enabled": true
       },
       {

@@ -117,6 +117,8 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   }
 
   &__label {
+    min-width: 0;
+    flex: 1;
     font-size: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -126,26 +128,33 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   &__count { opacity: 0.5; }
 
   &__figures {
-    @include row(1.25rem);
+    display: grid;
+    grid-template-columns: 6.5rem 7rem;
+    gap: var(--space-2);
+    align-items: center;
     margin-left: auto;
     font-size: 0.6875rem;
     opacity: 0.8;
+
+    @include up(sm) { grid-template-columns: 6.5rem 6rem 7rem; }
+    @include up(md) { grid-template-columns: 8rem 6.5rem 6rem 7rem; }
+
+    > span { text-align: right; }
   }
 
   &__value {
     display: none;
 
-    @include up(md) { display: inline; }
+    @include up(md) { display: block; }
   }
 
   &__actual { opacity: 0.6; }
 
   &__delta {
     display: none;
-    width: 6rem;
     text-align: right;
 
-    @include up(sm) { display: inline; }
+    @include up(sm) { display: block; }
 
     &--up { color: token(--status-ok, 0.7); }
     &--down { color: token(--status-out, 0.7); }
@@ -154,7 +163,6 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   &__status {
     display: flex;
     justify-content: center;
-    width: 7rem;
   }
 }
 </style>

@@ -12,7 +12,9 @@ import type { DetailValue } from './details'
  * Sie zählen zusammen mit Cash zur verfügbaren Liquidität und damit zur
  * Investitionsreserve — Laufzeit-Anleihen (`bonds`) tun das nicht.
  */
-export type AssetGroup = 'stocks' | 'bonds' | 'metals' | 'moneymarket' | 'cash'
+/** Gemeinsame Reihenfolge für Berechnung, Anzeige, Formulare und Sicherungen. */
+export const ASSET_GROUPS = ['stocks', 'etfs', 'bonds', 'metals', 'moneymarket', 'cash'] as const
+export type AssetGroup = typeof ASSET_GROUPS[number]
 
 export type Suggestion = 'buy' | 'sell' | 'ok'
 
@@ -42,6 +44,8 @@ export interface Position {
 export interface Portfolio {
   id: string
   name: string
+  /** Kennzeichnet die einmalige Trennung früherer Aktien-/ETF-Bestände. */
+  assetGroupVersion?: 2
   /** Neue Depots wählen ihre Währung; vorhandene Depots waren EUR. */
   baseCurrency?: string
   /** Geldschwellen gehören zum Depot und seiner Basiswährung. */
@@ -99,6 +103,8 @@ export interface ExternalLink {
   urlTemplate: string
   /** Für welche Gattungen der Verweis gilt — leer heißt „für alle". */
   appliesTo: InstrumentKind[]
+  /** Depotgruppen; leer oder fehlend heißt „für alle“. */
+  appliesToGroups?: AssetGroup[]
   enabled: boolean
 }
 

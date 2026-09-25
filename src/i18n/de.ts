@@ -57,7 +57,8 @@ export const de = {
     importJson: 'JSON importieren',
   },
   groups: {
-    stocks: 'Aktien / ETFs',
+    stocks: 'Aktien',
+    etfs: 'ETFs',
     bonds: 'Anleihen',
     metals: 'Edelmetalle',
     moneymarket: 'Geldmarkt',
@@ -453,7 +454,7 @@ export const de = {
     empty: 'Noch keine Wertpapiere im Depot',
     positionsHeading: 'Positionen — Bestand und Ziel sind direkt änderbar',
     positionsShort: 'Positionen',
-    assetClasses: 'Assetklassen',
+    assetClasses: 'Depotgruppen',
     targetDistribution: 'Ziel-Verteilung',
     bands: 'Bänder: −{lower} / +{upper}',
     scheduleDue: 'Termin fällig',
@@ -503,10 +504,16 @@ export const de = {
   },
 
   links: {
-    hint: 'In der Adresse werden {isin} und {symbol} ersetzt. „Gilt für" leer lassen heißt: für alle Gattungen. Ein Verweis mit {isin} erscheint nicht bei Positionen ohne ISIN.',
+    hint: "In der Adresse werden {'{isin}'} und {'{symbol}'} ersetzt. Leere Typ- oder Gruppenauswahl gilt jeweils für alle. Sind beide gesetzt, muss die Position beide erfüllen. Ein Verweis mit {'{isin}'} erscheint nicht bei Positionen ohne ISIN.",
     labelPlaceholder: 'Bezeichnung',
-    urlPlaceholder: 'https://…/{isin}',
+    url: 'Adresse',
+    urlPlaceholder: "https://…/{'{isin}'}",
     appliesTo: 'Gilt für',
+    appliesToKind: 'Asset-Typ',
+    appliesToGroup: 'Depotgruppe',
+    allKinds: 'Alle Typen',
+    allGroups: 'Alle Gruppen',
+    enabled: 'Verweis aktiv',
     add: 'Verweis hinzufügen',
     reset: 'Auf Vorgaben zurücksetzen',
     confirmReset: 'Alle Verweise auf die Vorgaben zurücksetzen?',
@@ -564,9 +571,9 @@ export const de = {
     triggerBody4:
       'Der Termin hängt am Depot, nicht an den Einstellungen: Jedes Depot hat sein eigenes Datum des letzten Ausgleichs. Gesetzt wird es von Hand — ob eine Order tatsächlich ausgeführt wurde, weiß nur, wer sie aufgegeben hat.',
 
-    classesHeading: 'Fünf Assetklassen',
+    classesHeading: 'Sechs Depotgruppen',
     classesBody:
-      'Aktien/ETFs, Anleihen, Edelmetalle, Geldmarkt und Cash. Die Trennung von Anleihen und Geldmarkt ist kein Detail: Laufzeit-Anleihen schwanken und taugen nicht als Reserve, geldmarktnahe Papiere tun das kaum. Nur Geldmarkt und Cash zählen deshalb zur verfügbaren Liquidität.',
+      'Aktien, ETFs, Anleihen, Edelmetalle, Geldmarkt und Cash. Die Gruppe eines Papiers kannst du beim Hinzufügen oder Bearbeiten wählen; auch ein Anleihe-ETF kann unter Anleihen stehen. Nur Geldmarkt und Cash zählen zur verfügbaren Liquidität.',
 
     reserveHeading: 'Sicherheitspuffer und Investitionsreserve',
     reserveBody:

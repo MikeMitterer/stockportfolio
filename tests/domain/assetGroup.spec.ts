@@ -36,7 +36,7 @@ describe('suggestAssetGroup — Anleihen', () => {
 
 describe('suggestAssetGroup — Rückfall', () => {
   it('schlägt bei Aktien-ETFs „stocks" vor', () => {
-    expect(suggestAssetGroup('Vanguard FTSE All-World UCITS ETF', 'etf')).toBe('stocks')
+    expect(suggestAssetGroup('Vanguard FTSE All-World UCITS ETF', 'etf')).toBe('etfs')
   })
 
   it('schlägt bei Einzelaktien „stocks" vor', () => {
@@ -44,7 +44,7 @@ describe('suggestAssetGroup — Rückfall', () => {
   })
 
   it('kommt mit fehlendem Namen zurecht', () => {
-    expect(suggestAssetGroup(null, 'etf')).toBe('stocks')
+    expect(suggestAssetGroup(null, 'etf')).toBe('etfs')
   })
 
   it('kommt mit fehlendem Typ zurecht', () => {

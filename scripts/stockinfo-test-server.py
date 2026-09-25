@@ -131,6 +131,7 @@ SEEDS = [
     {**BASE, "identity": {"kind": "pair", "base": "BTC", "quote_currency": "EUR"}, "symbol": "BTC-EUR", "name": "T39 Kryptopaar", "type": "crypto", "price": 50000},
     {**BASE, "identity": {"kind": "isin_only", "isin": "DE0001135275"}, "symbol": "DE0001135275", "name": "T39 OTC Anleihe", "type": "bond", "price": 99.5},
     {**BASE, "identity": {"kind": "listed", "ticker": "VTI", "mic": "ARCX", "isin": "US9229087690"}, "symbol": "VTI", "name": "T39 USD Listing", "currency": "USD", "price": 291.4},
+    {**BASE, "identity": {"kind": "listed", "ticker": "AAPL", "mic": "XNAS", "isin": "US0378331005"}, "symbol": "AAPL", "name": "Apple Inc.", "type": "stock", "currency": "USD", "price": 225.0, "ter": None, "accumulating": None},
     {**BASE, "identity": {"kind": "listed", "ticker": "PEN", "mic": "XLON"}, "symbol": "PEN.L", "name": "T39 Pence Listing", "currency": "GBp", "price": 1234.5},
     *[{**BASE, "identity": {"kind": "listed", "ticker": "DUAL", "mic": mic}, "symbol": "DUAL", "name": f"T39 Mehrdeutig {mic}", "type": "stock", "currency": "USD"} for mic in ["XNAS", "XNYS"]],
 ]

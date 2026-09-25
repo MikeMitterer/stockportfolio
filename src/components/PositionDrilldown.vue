@@ -7,6 +7,7 @@ import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import PositionReadDetails from '@/components/PositionReadDetails.vue'
 import type { PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
+import { ASSET_GROUPS } from '@/types/portfolio'
 
 const props = defineProps<{
   row: PositionResult
@@ -30,13 +31,9 @@ type EditDraft = Pick<Position, 'units' | 'targetPercent' | 'displayName' | 'gro
 const draft = ref<EditDraft | null>(null)
 const isCash = computed(() => props.row.position.group === 'cash')
 const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
-const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
-  { label: t('groups.stocks'), value: 'stocks' },
-  { label: t('groups.bonds'), value: 'bonds' },
-  { label: t('groups.metals'), value: 'metals' },
-  { label: t('groups.moneymarket'), value: 'moneymarket' },
-  { label: t('groups.cash'), value: 'cash' },
-])
+const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
+  ASSET_GROUPS.filter(value => value !== 'cash').map(value => ({ label: t(`groups.${value}`), value })),
+)
 
 function openEditor(): void {
   const position = props.row.position
@@ -139,12 +136,12 @@ function updateTargetPercent(value: number | null): void {
               <NInputNumber :value="draft.targetPercent" :precision="2" :min="0" :max="100" :step="0.5" size="small" @update:value="updateTargetPercent" />
             </label>
           </div>
-          <div class="drill__pair">
+          <div class="drill__pair" :class="{ 'drill__pair--single': isCash }">
             <label class="drill__field">
               <span>{{ t('drilldown.displayName') }}</span>
               <NInput v-model:value="draft.displayName" size="small" />
             </label>
-            <label class="drill__field">
+            <label v-if="!isCash" class="drill__field">
               <span>{{ t('drilldown.group') }}</span>
               <NSelect v-model:value="draft.group" :options="groupOptions" size="small" />
             </label>
@@ -203,6 +200,8 @@ function updateTargetPercent(value: number | null): void {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
+
+    &--single { grid-template-columns: minmax(0, 1fr); }
   }
   &__footer {
     display: flex;

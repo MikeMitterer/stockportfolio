@@ -9,6 +9,7 @@ import { resolveAmount } from './amount'
 import { baseCurrencyOf, convertedPrice } from './fx'
 import type { FxMap, FxRate } from '@/types/fx'
 import { daysUntilDue, isDue, usesBands, usesCalendar } from './schedule'
+import { ASSET_GROUPS } from '@/types/portfolio'
 import type {
   AssetGroup,
   RebalancingTrigger,
@@ -349,13 +350,6 @@ export function targetPercentSum(portfolio: Portfolio): number {
 }
 
 // Geldmarkt steht neben Cash: beide zusammen bilden die Investitionsreserve.
-const GROUPS: readonly AssetGroup[] = [
-  'stocks',
-  'bonds',
-  'metals',
-  'moneymarket',
-  'cash',
-] as const
 
 /** Ziel-% der Gruppe = Summe der Ziel-% der Sub-Positionen. */
 function groupTargetPercent(group: AssetGroup, portfolio: Portfolio): number {
@@ -451,7 +445,7 @@ export function computeRebalancing(
     }
   })
 
-  const groups: GroupResult[] = GROUPS.map((group) => {
+  const groups: GroupResult[] = ASSET_GROUPS.map((group) => {
     const actualValue = groupMarketValue(group, portfolio, quotes, baseCurrency, rates)
     const targetPercent = groupTargetPercent(group, portfolio)
     const target = (total * targetPercent) / 100

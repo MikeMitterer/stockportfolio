@@ -80,6 +80,7 @@ export function resolveLinks(
   return links
     .filter((link) => link.enabled)
     .filter((link) => appliesToKind(link, kind))
+    .filter((link) => !link.appliesToGroups?.length || link.appliesToGroups.includes(position.group))
     .map((link) => {
       const url = fillTemplate(link.urlTemplate, {
         isin: position.isin,

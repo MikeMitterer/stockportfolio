@@ -126,6 +126,26 @@ describe('usePortfolioStore — load', () => {
 
     expect(store.portfolio?.id).toBe('b')
   })
+
+  it('übernimmt alte ETF-Gruppen einmalig und bewahrt spätere manuelle Wahl', async () => {
+    const repository = new PortfolioRepository()
+    const now = '2026-01-01T00:00:00.000Z'
+    await repository.save({
+      id: 'legacy', name: 'Alt', createdAt: now, updatedAt: now,
+      positions: [makePosition({ id: 'etf' }), makePosition({ id: 'bond', group: 'bonds' })],
+    })
+
+    const first = usePortfolioStore()
+    await first.load('legacy')
+    expect(first.positions.map(position => position.group)).toEqual(['etfs', 'bonds'])
+    expect((await repository.findById('legacy'))?.assetGroupVersion).toBe(2)
+
+    await first.updatePosition('etf', { group: 'stocks' })
+    setActivePinia(createPinia())
+    const second = usePortfolioStore()
+    await second.load('legacy')
+    expect(second.positions.find(position => position.id === 'etf')?.group).toBe('stocks')
+  })
 })
 
 describe('usePortfolioStore — updatePosition', () => {

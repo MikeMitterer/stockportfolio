@@ -92,6 +92,7 @@ const isActive = (name: string): boolean => route.name === name
       <UxNavItem
         v-for="item in navItems"
         :key="item.name"
+        :class="{ 'topbar__rebalancing': item.name === 'rebalancing' }"
         :icon="item.icon"
         :label="item.label"
         :active="isActive(item.name)"
@@ -175,5 +176,13 @@ const isActive = (name: string): boolean => route.name === name
   display: none;
 
   @include up(lg) { display: inline; }
+}
+
+// Mobil bleibt der Rebalancing-Einstieg als Wort erreichbar; das Symbol entfällt.
+.topbar__rebalancing {
+  @include below(md) {
+    :deep(svg) { display: none; }
+    :deep(.ux-navitem__label) { display: inline; }
+  }
 }
 </style>

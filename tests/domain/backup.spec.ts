@@ -139,6 +139,19 @@ describe('parseBackup — der gute Fall', () => {
     expect(result.backup.portfolio.positions).toEqual(portfolio.positions)
   })
 
+  it('bewahrt die Gruppenfassung und Verweisfilter für eine spätere Wiederherstellung', () => {
+    const portfolio = { ...makePortfolio([makePosition({ group: 'stocks', kind: 'etf' })]), assetGroupVersion: 2 as const }
+    const settings = defaultSettings('depot-1')
+    settings.links[0]!.appliesToGroups = ['bonds']
+    const raw = JSON.stringify(buildBackup(portfolio, settings, makeAllowlist(), '0.2.0', '2026-09-25T00:00:00.000Z'))
+    const result = parseBackup(raw)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.portfolio.assetGroupVersion).toBe(2)
+    expect(result.backup.portfolio.positions[0]?.group).toBe('stocks')
+    expect(result.backup.settings.links[0]?.appliesToGroups).toEqual(['bonds'])
+  })
+
   it('rettet den letzten Ausgleich mit hinüber', () => {
     // Ohne ihn stünde ein wiederhergestelltes Depot beim Kalender-Rebalancing
     // sofort auf „fällig" — und man hielte das für einen Rechenfehler.

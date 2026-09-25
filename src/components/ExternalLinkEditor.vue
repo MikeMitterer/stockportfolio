@@ -2,7 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NInput, NSelect, NSwitch, NButton, NPopconfirm } from 'naive-ui'
-import type { ExternalLink, InstrumentKind } from '@/types/portfolio'
+import type { AssetGroup, ExternalLink, InstrumentKind } from '@/types/portfolio'
+import { ASSET_GROUPS } from '@/types/portfolio'
 
 const { t } = useI18n()
 
@@ -22,10 +23,13 @@ const emit = defineEmits<{
   (event: 'reset'): void
 }>()
 
-const kindOptions: { label: string; value: InstrumentKind }[] = [
+const kindOptions = computed<{ label: string; value: InstrumentKind }[]>(() => [
   { label: t('links.etf'), value: 'etf' },
   { label: t('links.stock'), value: 'stock' },
-]
+])
+const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
+  ASSET_GROUPS.map(value => ({ label: t(`groups.${value}`), value })),
+)
 
 const hasLinks = computed(() => props.links.length > 0)
 
@@ -51,6 +55,7 @@ function add(): void {
       label: t('links.newLink'),
       urlTemplate: 'https://example.com/{isin}',
       appliesTo: [],
+      appliesToGroups: [],
       enabled: true,
     },
   ])
@@ -69,37 +74,29 @@ function add(): void {
         :key="link.id"
         class="linkeditor__row"
       >
-        <NInput
-          :value="link.label"
-          size="small"
-          placeholder="Bezeichnung"
-          @update:value="(value: string) => patch(link.id, { label: value })"
-        />
-        <NInput
-          :value="link.urlTemplate"
-          size="small"
-          placeholder="https://…/{isin}"
-          @update:value="(value: string) => patch(link.id, { urlTemplate: value })"
-        />
-        <NSelect
-          :value="link.appliesTo"
-          :options="kindOptions"
-          multiple
-          size="small"
-          placeholder="alle"
-          @update:value="(value: InstrumentKind[]) => patch(link.id, { appliesTo: value ?? [] })"
-        />
-        <NSwitch
-          :value="link.enabled"
-          size="small"
-          @update:value="(value: boolean) => patch(link.id, { enabled: value })"
-        />
-        <NPopconfirm @positive-click="remove(link.id)">
-          <template #trigger>
-            <NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton>
-          </template>
-          {{ t('links.confirmDeleteShort', { label: link.label }) }}
-        </NPopconfirm>
+        <div class="linkeditor__field linkeditor__field--label">
+          <span>{{ t('links.labelPlaceholder') }}</span>
+          <NInput :value="link.label" size="small" :placeholder="t('links.labelPlaceholder')" @update:value="(value: string) => patch(link.id, { label: value })" />
+        </div>
+        <div class="linkeditor__field linkeditor__field--url">
+          <span>{{ t('links.url') }}</span>
+          <NInput :value="link.urlTemplate" size="small" :placeholder="t('links.urlPlaceholder')" @update:value="(value: string) => patch(link.id, { urlTemplate: value })" />
+        </div>
+        <div class="linkeditor__field linkeditor__field--kind">
+          <span>{{ t('links.appliesToKind') }}</span>
+          <NSelect :value="link.appliesTo" :options="kindOptions" multiple size="small" :placeholder="t('links.allKinds')" @update:value="(value: InstrumentKind[]) => patch(link.id, { appliesTo: value ?? [] })" />
+        </div>
+        <div class="linkeditor__field linkeditor__field--group">
+          <span>{{ t('links.appliesToGroup') }}</span>
+          <NSelect :value="link.appliesToGroups ?? []" :options="groupOptions" multiple size="small" :placeholder="t('links.allGroups')" @update:value="(value: AssetGroup[]) => patch(link.id, { appliesToGroups: value ?? [] })" />
+        </div>
+        <div class="linkeditor__controls">
+          <NSwitch :value="link.enabled" size="small" :aria-label="t('links.enabled')" @update:value="(value: boolean) => patch(link.id, { enabled: value })" />
+          <NPopconfirm @positive-click="remove(link.id)">
+            <template #trigger><NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton></template>
+            {{ t('links.confirmDeleteShort', { label: link.label }) }}
+          </NPopconfirm>
+        </div>
       </div>
     </div>
 
@@ -134,18 +131,48 @@ function add(): void {
   }
 
   /*
-   * Unterhalb md untereinander: Fünf Felder nebeneinander sind auf dem Telefon
-   * je 60 Pixel breit und damit unbedienbar.
+   * Zwei Eingabezeilen halten auch bei schmaler Desktopbreite Platz für URL
+   * und die beiden unabhängigen Filter.
    */
   &__row {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'label' 'url' 'kind' 'group' 'controls';
     gap: var(--space-2);
     align-items: center;
 
     @include up(md) {
-      grid-template-columns: 10rem 1fr 9rem auto auto;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+      grid-template-areas:
+        'label url url'
+        'kind group controls';
     }
+  }
+
+  &__row + &__row {
+    border-top: 1px solid token(--border-subtle);
+    padding-top: var(--space-3);
+  }
+
+  &__field {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+    font-size: var(--font-xs);
+    @include muted(null);
+
+    &--label { grid-area: label; }
+    &--url { grid-area: url; }
+    &--kind { grid-area: kind; }
+    &--group { grid-area: group; }
+  }
+
+  &__controls {
+    display: flex;
+    align-items: end;
+    gap: var(--space-2);
+    grid-area: controls;
+    padding-bottom: var(--space-1);
   }
 
   &__actions {

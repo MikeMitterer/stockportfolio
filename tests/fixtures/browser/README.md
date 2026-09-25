@@ -1,9 +1,9 @@
 # Wiederverwendbares Browser-Testdepot
 
 [`valid-portfolio.backup.json`](valid-portfolio.backup.json) ist eine reguläre
-StockPortfolio-Sicherung. Sie enthält vier Positionen mit zusammen 100 % Ziel:
-MSCI World ETF (EUNL.DE), US Total Market ETF (VTI), eine Bundesanleihe
-(DE0001135275) und 500 EUR Cash. Alle drei Wertpapiere haben im lokalen
+StockPortfolio-Sicherung. Sie enthält fünf Positionen mit zusammen 100 % Ziel:
+MSCI World ETF (EUNL.DE), US Total Market ETF (VTI), Apple (AAPL), eine Bundesanleihe
+(DE0001135275) und 500 EUR Cash. Alle vier Wertpapiere haben im lokalen
 StockInfo-Testserver einen gültigen Kurs. Die Kurse selbst stehen nicht in der
 Sicherung und werden beim Öffnen frisch geladen.
 
@@ -27,7 +27,7 @@ Sicherung und werden beim Öffnen frisch geladen.
    und das Ersetzen bestätigen. Der Import ersetzt das aktive Depot und die
    Einstellungen dieses Browserkontexts.
 
-Nach dem Laden zeigt das Dashboard **Browser-Testdepot, 4 Positionen** und
+Nach dem Laden zeigt das Dashboard **Browser-Testdepot, 5 Positionen** und
 **Datenlage: Vollständig**. VTI prüft die USD/EUR-Umrechnung. Der Testdienst
 liefert keine historischen Devisenkurse; deshalb kann der Rückblick des
 Gesamtwert-Charts einen entsprechenden Hinweis zeigen. Das ist kein fehlender

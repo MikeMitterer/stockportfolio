@@ -7,6 +7,7 @@ import { describeFailure } from '@/api/errors'
 import { money, percent } from '@/domain/formatters'
 import type { InstrumentSummary } from '@/api/types'
 import type { AssetGroup } from '@/types/portfolio'
+import { ASSET_GROUPS } from '@/types/portfolio'
 
 const props = defineProps<{
   show: boolean
@@ -63,12 +64,9 @@ const selected = computed<InstrumentSummary | null>(
     ) ?? null,
 )
 
-const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() => [
-  { label: t('groups.stocks'), value: 'stocks' },
-  { label: t('groups.bonds'), value: 'bonds' },
-  { label: t('groups.metals'), value: 'metals' },
-  { label: t('groups.moneymarket'), value: 'moneymarket' },
-])
+const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
+  ASSET_GROUPS.filter(value => value !== 'cash').map(value => ({ label: t(`groups.${value}`), value })),
+)
 
 // Bei Auswahl eines Papiers die Gruppe vorschlagen — überschreibbar.
 watch(selected, (instrument) => {

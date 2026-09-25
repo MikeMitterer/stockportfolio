@@ -6,7 +6,7 @@
  * Hinzufügen-Dialog — die letzte Entscheidung trifft der Nutzer.
  */
 
-import type { AssetGroup } from '@/types/portfolio'
+import type { AssetGroup, Portfolio } from '@/types/portfolio'
 
 /**
  * Namensbestandteile, die auf geldmarktnahe Papiere hindeuten.
@@ -54,7 +54,7 @@ const METAL_HINTS = [
  *
  * @param name Anzeigename des Instruments (kann `null` sein).
  * @param type API-Typ (`etf` | `stock` | null).
- * @returns Vorgeschlagene Gruppe; `stocks`, wenn nichts Genaueres erkennbar ist.
+ * @returns Vorgeschlagene Gruppe; `stocks` bei unbekanntem Typ.
  */
 export function suggestAssetGroup(name: string | null, type: string | null): AssetGroup {
   const haystack = (name ?? '').toLowerCase()
@@ -63,7 +63,22 @@ export function suggestAssetGroup(name: string | null, type: string | null): Ass
   if (MONEY_MARKET_HINTS.some((hint) => haystack.includes(hint))) return 'moneymarket'
   if (BOND_HINTS.some((hint) => haystack.includes(hint))) return 'bonds'
 
-  // Ohne Namenshinweis bleibt nur der Typ — beides landet bei Aktien/ETFs.
-  void type
-  return 'stocks'
+  return type === 'etf' ? 'etfs' : 'stocks'
+}
+
+/**
+ * Trennt die alte Sammelgruppe genau einmal. Ein später manuell auf „Aktien“
+ * gesetzter ETF bleibt dank der Versionsmarke dort.
+ */
+export function upgradeAssetGroups(portfolio: Portfolio): Portfolio {
+  if (portfolio.assetGroupVersion === 2) return portfolio
+  return {
+    ...portfolio,
+    assetGroupVersion: 2,
+    positions: portfolio.positions.map(position =>
+      position.group === 'stocks' && position.kind === 'etf'
+        ? { ...position, group: 'etfs' }
+        : position,
+    ),
+  }
 }

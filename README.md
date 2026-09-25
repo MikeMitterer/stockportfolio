@@ -9,7 +9,7 @@ run yourself.
 
 ![Dashboard](docs/images/dashboard.png)
 
-_The dashboard: asset classes at the top, positions below. Holdings and targets
+_The dashboard: portfolio groups at the top, positions below. Holdings and targets
 are editable in place; the screenshots on this page use the sample portfolio the
 app can load on first start._
 
@@ -176,13 +176,25 @@ The two symbols beside the desktop position heading **collapse all groups**
 or **expand all groups**. Each has a text label for assistive technology. The
 choice is kept for the next visit.
 
-### Five asset classes
+### Six portfolio groups
 
-`Stocks / ETFs`, `Bonds`, `Precious metals`, `Money market`, `Cash`.
+`Stocks`, `ETFs`, `Bonds`, `Precious metals`, `Money market`, `Cash`.
+The group is suggested from the security type and name, and can be changed
+when adding or editing a position. A bond ETF can therefore remain under
+`Bonds`. Existing ETFs in the former `Stocks / ETFs` group move once to `ETFs`;
+later manual group choices are kept. This also applies when importing an older
+backup.
 
 Money market is deliberately separate from the other bonds. Bonds with a
 maturity fluctuate; money-market instruments barely do — which makes them,
 together with cash, the thing a purchase can be paid from.
+
+Under _Settings → Links_, a link can be limited to asset kinds (`Stock` or
+`ETF / fund`) and independently to portfolio groups, including `Cash`. An
+empty selection in either filter means all kinds or groups. When both filters
+are set, a position must match both. Cash has no asset kind, so leave the kind
+filter empty for a Cash link. Links needing an ISIN remain unavailable for
+positions without one.
 
 ### Safety buffer and investment reserve
 

@@ -11,6 +11,7 @@ import { consola } from 'consola'
 import { AllowlistRepository, PortfolioRepository, SettingsRepository } from '@/db/repository'
 import { demoPortfolio, emptyPortfolio } from '@/db/seed'
 import { baseCurrencyOf, isCurrency } from '@/domain/fx'
+import { upgradeAssetGroups } from '@/domain/assetGroup'
 import { translate } from '@/i18n'
 import type { FxRate } from '@/types/fx'
 import type { AmountSetting, InstrumentKind, Portfolio, Position } from '@/types/portfolio'
@@ -69,8 +70,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     const entries = await repository.findAll()
     // Vorhandene Depots waren EUR; ihre bisherigen Geldschwellen direkt übernehmen.
     const settings = await new SettingsRepository().load()
-    for (const entry of entries) {
-      if (entry.baseCurrency && entry.amountSettings) continue
+    for (const [index, previous] of entries.entries()) {
+      const entry = upgradeAssetGroups(previous)
+      entries[index] = entry
+      if (entry.baseCurrency && entry.amountSettings && entry === previous) continue
       entry.baseCurrency ??= 'EUR'
       entry.amountSettings ??= {
         securityBuffer: settings?.securityBuffer ?? { mode: 'percent', value: 0 },
@@ -330,7 +333,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       if (!kind) return position
 
       changed += 1
-      return { ...position, kind }
+      return { ...position, kind, group: position.group === 'stocks' && kind === 'etf' ? 'etfs' : position.group }
     })
 
     if (changed === 0) return 0
@@ -354,13 +357,14 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   async function replacePortfolio(next: Portfolio): Promise<void> {
     const current = portfolio.value
 
-    await repository.save(next)
+    const upgraded = upgradeAssetGroups(next)
+    await repository.save(upgraded)
     if (current && current.id !== next.id) {
       await repository.remove(current.id)
       await allowlistRepository.removeForPortfolio(current.id)
     }
 
-    portfolio.value = next
+    portfolio.value = upgraded
     await refreshList()
     consola.info('portfolio: Depot ersetzt', { id: next.id, positions: next.positions.length })
   }
