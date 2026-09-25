@@ -6,8 +6,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
-gegliedert. Codex hat die Umsetzung übergeben; Claude ist für den
-unabhängigen Review am Zug. T-41 und T-42 bleiben im eigenen
+gegliedert. Claude hat die Fassung `1f75154` in Runde 1 technisch
+freigegeben (Belege im Ticket); Codex ist für die Verarbeitung und Mikes
+Abschlussabnahme am Zug. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -32,15 +33,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
 - `handoff_commit`: `1f75154809e86563ada00ced06408551c66974cb`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-25`
-- `last_reviewed_ticket`: `none`
-- `last_reviewed_commit`: `none`
-- `last_reviewed_round`: `0`
+- `last_reviewed_ticket`: `T-43-positionsdetails-ordnen.md`
+- `last_reviewed_commit`: `1f75154809e86563ada00ced06408551c66974cb`
+- `last_reviewed_round`: `1`
 - `workstream`: `position-detail-ux`
 - `priority_chain`: `T-43-positionsdetails-ordnen.md → T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `priority_ticket`: `T-43-positionsdetails-ordnen.md`
@@ -228,19 +229,20 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-43, Runde 1 · Commit `1f75154809e86563ada00ced06408551c66974cb` ·
+technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen (grün).
+Quellcode der geänderten Komponenten gegen die Akzeptanzkriterien gelesen;
+live im Browser mit dem importierten Testdepot bestätigt: alle vier
+Lesebereiche, Editor mit verworfenem Entwurf, Spaltenreihenfolge „Ziel %“
+vor „IST %“, Ticker/ISIN-Trenner, reine ISIN bei der Anleihe, mobile
+Kartenansicht mit Tipp-zum-Öffnen ohne waagrechtes Scrollen (Fensterbreite
+559 px, die 390-px-Probe aus T-43 wurde nicht wiederholt). SP-CX-04- und
+SP-CX-02-Gegenproben bestanden — Belege im Ticket. Einzige Beobachtung
+außerhalb des Umfangs: „Lower Band“/„Upper Band“ in Einstellungen →
+Berechnung bleiben unübersetzt (vorbestehend, kein T-43-Regress, kein
+Rückgabegrund) — für `10-backlog/` vorgemerkt. Details und vollständige
+Nachweise stehen im Ticket unter „Reviewer-Prüfung“.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-43, Runde 1 · Commit `1f75154809e86563ada00ced06408551c66974cb`.**
-Bitte die vier Lesebereiche, den Bearbeitungsdialog und die gemeinsamen
-StockInfo-Kennungen auf Desktop und Mobile unabhängig prüfen. Dazu die
-Tabellen- und Gruppenköpfe in der Reihenfolge „Ziel %“ vor „IST %“, den
-Hover nur auf geschlossenen Zeilen sowie das wiederverwendbare Browserdepot
-prüfen. Produktcode und Nachweise stehen in diesem Commit; `make test`
-(54 Dateien, 729 Tests), `make lint`, `make typecheck` und `make build`
-bestanden. Browserbelege für 1440 und 390 px, Lessons und Doku-Abgleich
-stehen in T-43. Einschränkungen: Löschung nur bis zum Abbruch der Bestätigung
-geprüft; fehlender Kurs und nicht geladene Zusatzfelder per Komponententest.
-T-44 und T-45 sind eingeplant, aber nicht aktiv. Die allgemeine
-`task-verification-workflow`-Übernahme bleibt offen und ist im Ticket benannt.
+Leer.

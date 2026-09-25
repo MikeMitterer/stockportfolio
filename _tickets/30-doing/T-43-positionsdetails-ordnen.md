@@ -239,6 +239,51 @@ globale Übernahme wird hier nicht behauptet.
 `_tickets/.agents/AGENT-WORKFLOW.md` bleibt für Mike beziehungsweise eine
 eigens beauftragte Board-Instanz offen. T-43 ändert diese Konvention nicht.
 
+### Reviewer-Prüfung (Claude, Runde 1, Fassung `1f75154`)
+
+**Technische Freigabe.** `make test` (54 Dateien, 729 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund, deckt sich mit der Codex-Angabe. Seit dem Handoff-Commit betreffen
+alle Folgecommits ausschließlich Ticket-/Kommunikationsdateien; der
+Produktstand war während der Prüfung stabil.
+
+Quellcode gelesen und gegen die Akzeptanzkriterien geprüft:
+`PositionReadDetails.vue`, `PositionDetailFields.vue` (Dublettenlogik für
+gleiche Labels), `PositionCard.vue`, `PositionDrilldown.vue` (Editor,
+Lösch-Bestätigung, Lazy-Load des großen Charts), `PositionsTable.vue`
+(Gruppen-Auf/Zu, Hover-Färbung über `--surface-raised`), `DashboardView.vue`
+(Gruppensymbole mit `aria-label`) sowie `README.md`, `de.ts`/`en.ts`. Keine
+deutschen Bezeichner in neuem Code gefunden; de/en-Kataloge sind schlüsselgleich.
+
+Live im Browser nachvollzogen (Testdienst Port 8899, App auf `:5189`, frischer
+MCP-Browserkontext, `valid-portfolio.backup.json` importiert): alle vier
+Bereiche (Bewertung, Kursverlauf, Informationen, Zusatzinformationen),
+Editor-Dialog mit verworfenem Entwurf nach „Abbrechen“ (Bestand blieb bei 12
+statt der eingegebenen 99), Spaltenreihenfolge „Ziel %“ vor „IST %“,
+Ticker/ISIN-Trenner bei EUNL.DE und VTI, reine ISIN bei der Bundesanleihe,
+mobile Kartenansicht mit Tipp-zum-Öffnen und vier Tabs in zwei Zeilen ohne
+waagrechtes Scrollen (bei der vom Werkzeug erzwungenen Fensterbreite von
+559 px; die von Codex dokumentierte 390-px-Probe wurde nicht wiederholt).
+Zeile 4 und 5 der Verify-Tabelle bleiben wie von Codex eingeordnet (⚠️/◑) —
+die Begründungen im Probetext sind nachvollziehbar und ausreichend.
+
+**Lessons-Abgleich (Verifier-Prüfung):** `SP-CX-04`, Fassung 1 — Gegenprobe
+bestanden: Testserver bleibt unter `scripts/stockinfo-test-server.py`, die
+Sicherung unter `tests/fixtures/browser/`, keine Ablage im Ticketordner.
+`SP-CX-02`, Fassung 1 — der Board-Konventionshinweis in diesem Ticket deckt
+sich mit dem tatsächlichen `AGENT-WORKFLOW.md`-Stand; keine widersprüchliche
+Aussage gefunden.
+
+**Beobachtung außerhalb des Umfangs (kein Blocker):** In Einstellungen →
+Berechnung zeigen die Toleranzbänder weiterhin „Lower Band (%)“ / „Upper
+Band (%)“ (i18n-Schlüssel `bands.lower`/`bands.upper`, unverändert seit vor
+T-43). Die in diesem Ticket korrigierten deutschen Bandnamen
+(„Untergrenze“/„Obergrenze“) gelten nur im Lesebereich der Positionsdetails;
+T-43 hat die Einstellungen nicht berührt und musste es laut Abgrenzung auch
+nicht. Für eine spätere Aufnahme in `10-backlog/` vorgemerkt, kein Rückgabegrund.
+
+**Ergebnis:** Technisch freigegeben. Kein `changes_requested`.
+
 ### Side-Effects
 
 Der große Kurschart und sein Zeitraumabruf werden erst beim Öffnen des
@@ -258,5 +303,6 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 
 ### Auflösung
 
-Offen. Technische Freigabe und Mikes Abschlussentscheidung werden getrennt
-dokumentiert.
+Technisch freigegeben (Runde 1, `claude`, Fassung `1f75154`). Mikes
+Abschlussentscheidung — einschließlich seines Alltagsurteils zur
+Detailansicht laut „Für dich“ — bleibt offen und wird getrennt dokumentiert.
