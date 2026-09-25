@@ -14,6 +14,7 @@ import LinkIcons from '@/components/LinkIcons.vue'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields } from '@/domain/detailFields'
+import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
 import { integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
@@ -100,6 +101,12 @@ watch(
 )
 
 const expandedRowKeys = ref<RowKey[]>([])
+const hoveredRowKey = ref<RowKey | null>(null)
+const tableThemeOverrides = { tdColorHover: 'transparent' }
+
+function setHoveredRow(key: RowKey | null): void {
+  hoveredRowKey.value = key
+}
 
 const rowKey = (row: PositionResult): RowKey => row.position.id
 
@@ -162,6 +169,16 @@ watch(
 function isCollapsed(group: AssetGroup): boolean {
   return collapsedGroups.value.has(group)
 }
+
+function collapseAllGroups(): void {
+  collapsedGroups.value = new Set(renderedGroups.value.map(entry => entry.group.group))
+}
+
+function openAllGroups(): void {
+  collapsedGroups.value = new Set()
+}
+
+defineExpose({ collapseAllGroups, openAllGroups })
 
 /**
  * Die Gruppe, deren Tabelle die Spaltenkopfzeile trägt — die erste, die
@@ -239,10 +256,10 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
       }),
   },
   {
-    title: t('table.symbol'),
+    title: t('table.position'),
     key: 'symbol',
     stockInfoFields: row => row.position.group === 'cash' ? [] : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
-    width: 220,
+    width: 280,
     render: (row) =>
       h('div', { class: 'cell-stack' }, [
         // Kürzel und Verweis-Symbole in einer Zeile — die Links gehören zum
@@ -260,8 +277,14 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
                 toggleRow(row.position.id)
               },
             },
-            row.position.group === 'cash' ? row.position.displayName : row.position.symbol,
+            positionPrimaryLabel(row),
           ),
+          positionSymbol(row) && positionIsin(row)
+            ? h('span', { class: 'cell-isin' }, [
+                h('span', { 'aria-hidden': 'true' }, '|'),
+                positionIsin(row)!,
+              ])
+            : null,
           // Fremde Währung sieht aus wie „inaktiv", ist aber keine
           // Entscheidung des Nutzers — deshalb eigene Farbe und eigener Text.
           row.excludedReason === 'currency'
@@ -472,6 +495,16 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
   },
   ...dynamicColumns.value,
 ])
+const displayedColumns = computed<PositionColumn[]>(() => columns.value.map(column => ({
+  ...column,
+  cellProps: row => ({
+    style: {
+      backgroundColor: hoveredRowKey.value === row.position.id && !expandedRowKeys.value.includes(row.position.id)
+        ? 'rgb(var(--surface-raised))'
+        : 'transparent',
+    },
+  }),
+})))
 const { formatMoney } = usePortfolioCurrency()
 
 </script>
@@ -491,16 +524,22 @@ const { formatMoney } = usePortfolioCurrency()
         class="postable__table"
         :class="{ 'postable__table--headless': entry.group.group !== headedGroup }"
         v-model:expanded-row-keys="expandedRowKeys"
-        :columns="columns"
+        :columns="displayedColumns"
         :data="entry.rows"
         :row-key="rowKey"
         :bordered="false"
         :single-line="false"
         :render-expand-icon="renderExpandIcon"
+        :theme-overrides="tableThemeOverrides"
         size="small"
         :row-props="
           (row: PositionResult) => ({
-            style: row.isActive ? 'cursor: pointer;' : 'cursor: pointer; opacity: 0.55;',
+            style: {
+              cursor: 'pointer',
+              opacity: row.isActive ? 1 : 0.55,
+            },
+            onMouseenter: () => setHoveredRow(row.position.id),
+            onMouseleave: () => setHoveredRow(null),
           })
         "
       />

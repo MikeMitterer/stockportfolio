@@ -1,5 +1,26 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-25 21:56:39 CEST · codex · T-43: Ticker und ISIN stehen mit senkrechtem Trenner in der Positionszeile. Hover für offene Details und geschlossene Nachbarzeilen nutzt nun öffentliche Naive-Props; Desktop und 390-px-Ansicht wurden im Browser geprüft. Abschlussprüfungen laufen.
+- 2026-09-25 21:50:28 CEST · codex-observer · hat Mikes Prioritätsentscheidung eingetragen: T-43, danach T-44, danach T-45. T-45 liegt nun in ready; T-43 bleibt aktiv und Rollen sowie Owner bleiben unverändert.
+- 2026-09-25 21:36:20 CEST · codex · T-43: Detailkopf ohne Leerzeile, animiertes Neuladen-Symbol und dezente Feldkarten sind im Browser geprüft. Hover bleibt nur für geschlossene Zeilen; die Anleihe wiederholt ihre ISIN nicht als Symbol. 728 Tests, Lint, Typprüfung und Build bestehen.
+- 2026-09-25 21:33:37 CEST · codex-observer · hat T-43 erneut auf lokales Naive-Styling hingewiesen: Die Arbeitsfassung setzt nun eine interne Tabellen-CSS-Variable direkt am DOM. Die Ticketbeschreibung ist dazu ebenfalls noch nicht aktuell.
+- 2026-09-25 21:23:41 CEST · codex · T-43: Die Gruppensymbole stehen ohne Button-Fläche neben der Positionsüberschrift; Browserprobe bestätigt Ausrichtung und beide Aktionen. Vollständige Tests (727), Lint, Typprüfung und Build sind grün; Übergabebelege werden aktualisiert.
+- 2026-09-25 21:19:01 CEST · codex · prüft T-43 nach UX-Korrekturen: Speichern/Abbrechen im Dialog, Schließen-X, gruppenweite Symbolaktionen und Browseransicht
+- 2026-09-25 21:00:42 CEST · codex · setzt T-43 um: vier Detailbereiche, responsives Mobile-Layout und bereinigte Zusatzkarten; Browser- und Gesamtprüfung laufen
+- 2026-09-25 20:53:32 CEST · codex-observer · hat dem Coder einen T-43-Hinweis zu CSS auf einer internen Naive-Tabellenklasse gegeben; der vorhandene Wächter deckt diese Fundstelle nicht ab. Keine Produktdatei geändert.
+- 2026-09-25 20:42:40 CEST · codex · T-43: Wiederverwendbares Browser-Testdepot als Backup-Fixture abgelegt und in frischem Browserkontext erfolgreich importiert; vier Positionen, Datenlage vollständig. Tests, Lint und Typecheck sind grün.
+- 2026-09-25 20:25:56 CEST · codex · T-43: Bearbeitungsformular nach Nutzerfeedback zentriert und in klare Feldzeilen gegliedert; mobile Depot-, Kursverlauf- und Asset-Bereiche im Browser geprüft.
+- 2026-09-25 20:23:36 CEST · codex-observer · hat im T-43-Arbeitsstand zwei konkrete Hinweise an den Coder gegeben: Kursverlauf-Aussage auf den großen Chart eingrenzen und Cash-Test mit gültigem Instrumenttyp prüfen. Keine Reviewrunde gestartet.
+- 2026-09-25 20:07:33 CEST · codex-observer · hat Mikes Screenshot-Befund zur versetzten Cash-Gruppenzeile in T-44 ergänzt und einen bündigen Spaltenvergleich als Prüfpunkt aufgenommen. Produktcode und Rollen wurden nicht geändert.
+- 2026-09-25 20:06:00 CEST · codex · Die Prioritätskette steht jetzt auf T-43 vor T-44. T-43 bleibt aktiver Coder-Auftrag; T-44 ist eingeordnet und startet erst nach einer eigenen Aktivierung.
+- 2026-09-25 20:05:17 CEST · codex · Die Abgrenzung ist in T-40, T-43, STATUS und der Boardübersicht dokumentiert. T-43 bleibt aktiv; T-40 behält seine technische Freigabe und wartet getrennt auf Mikes Abschlussabnahme.
+- 2026-09-25 20:03:40 CEST · codex-observer · hat T-44 zu getrennten Aktien- und ETF-Gruppen samt Gruppenfilter für Verweise direkt in doing erfasst. T-43 bleibt der aktive Auftrag; Rollen und Priorität sind unverändert.
+- 2026-09-25 20:03:32 CEST · codex · Gleicht T-40 und den aktiven Auftrag T-43 ab: Die Feldprojektion aus T-40 bleibt technische Grundlage; T-43 ordnet ihre Darstellung neu. Ich dokumentiere die Abgrenzung und die getrennten Abnahmen im Board.
+- 2026-09-25 19:57:16 CEST · codex · T-43 für die neue Positionsdetailansicht angelegt und in STATUS zur Umsetzung aktiviert. Claude ist für den unabhängigen Review zugeordnet.
+- 2026-09-25 19:57:06 CEST · codex-observer · beobachtet T-43 und prüft den Board-Konventionsstand; Rollen und Owner sind eindeutig zugeordnet.
+- 2026-09-25 19:56:47 CEST · codex · Der erste Scheduler-Durchlauf fand T-43 als aktiven Auftrag, während Mike T-40 nannte. Ich habe den Scheduler gestoppt und warte auf die Klärung der Ticketzuordnung.
+- 2026-09-25 19:56:10 CEST · codex · Prüft die Coder-Zuordnung und T-40. STATUS steht auf idle; die menschliche Abschlussabnahme und der Konventionsabgleich sind offen.
+- 2026-09-25 19:53:12 CEST · claude · prüft reviewer-Zuordnung und Board-Zustand: kein aktives Ticket (idle, owner codex); Konventionsstand-Lücke Lessons-Einordnung gefunden
 - 2026-09-11 19:43:02 CEST · claude · STATUS und README nach dem AgentLessons-Umzug bereinigt: Mailboxen geleert, Reviewfelder auf none, T-41-Abschnitte entfernt; master gepusht
 - 2026-09-11 19:35:32 CEST · claude · Umzug committet: T-41/T-42 an AgentLessons abgegeben, T-31 bis T-34 abgeschlossen, master gemerged und gepusht
 - 2026-09-11 19:06:02 CEST · claude · Umzug nach AgentLessons abgeschlossen: T-41 und T-42 dort, hier Verweise; 267 Links und 94 Anker geprueft

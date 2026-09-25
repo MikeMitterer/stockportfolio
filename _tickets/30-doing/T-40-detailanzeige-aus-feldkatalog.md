@@ -83,9 +83,16 @@ aus Zusatzfeldern und jede Änderung an StockInfo.
 
 Die Anzeige steht und ist durch Claude technisch freigegeben.
 Deine Abschlussabnahme bleibt offen: Öffne eine Position
-und prüfe, ob Beschriftung, Werte und Herkunft verständlich sind. Mobil gibt
-es dafür den Knopf „Zusatzinformationen“. Die erste Sichtprüfung durch Codex
-ist unten dokumentiert.
+und prüfe, ob Beschriftung, Werte und Herkunft verständlich sind. Im aktuellen
+T-43-Umbau gibt es dafür den Bereich „Zusatzinformationen“, auch mobil. Die
+erste Sichtprüfung durch Codex steht unten und bezieht sich auf die damalige
+T-40-Fassung.
+
+[T-43](T-43-positionsdetails-ordnen.md) ordnet die Positionsansicht neu. Die
+Zusatzwerte stehen dort in einem eigenen Bereich. T-43 prüft, ob Feldprojektion,
+Herkunft und Originalwährung beim Umbau erhalten bleiben. Die technische
+Freigabe dieses Tickets wird dadurch nicht erneut geöffnet; deine
+Abschlussabnahme für T-40 bleibt eine eigene Entscheidung.
 
 **Voraussetzung der Testumgebung:** Bei der T-37-Bewertung stand StockInfos
 `details_version` auf `0`, und `/fields` bezieht die Definitionen aus seiner
@@ -359,6 +366,17 @@ Runde 1 zu `71a4ff8a5bba963134039a6840250800f13a4192` verarbeitet. Keine
 Nacharbeit gefordert; optionale Reviewhinweise erweitern den Auftrag nicht.
 T-38 wird wie eingeplant fortgesetzt. T-40 bleibt bis zu Mikes
 Abschlussabnahme unter `30-doing/`.
+
+### Abgrenzung zum aktiven T-43 · 2026-09-25
+
+T-40 liefert und prüft den Datenweg vom Feldkatalog bis zur Anzeige,
+einschließlich der zeilengenauen Ausschlüsse für sichtbare Hauptspalten.
+T-43 verwendet diese geprüfte Grundlage und ändert die Gliederung der
+Positionsansicht. Die neue Ansicht muss die T-40-Werte auch mobil lesbar
+halten; T-43 übernimmt dafür eigene Prüfpunkte. Eine Änderung an Mapper,
+Katalog, Cache oder Feldregeln gehört nicht allein wegen des neuen
+Ansichtsorts zu T-43. T-40 bleibt technisch freigegeben und wartet weiter
+auf Mikes Abschlussabnahme.
 
 
 **Gemeinsamer Helfer (2026-09-10):** Der StockInfo-Testserver liegt unter

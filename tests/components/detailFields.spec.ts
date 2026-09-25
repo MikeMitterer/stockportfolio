@@ -36,22 +36,58 @@ describe('Zusatzinformationen in der echten Detailansicht', () => {
     const { result } = await sample()
     const wrapper = mount(PositionCard, { props: { row: result.rows[0]! } })
     expect(wrapper.find('[data-detail-field="risk-a.score"]').exists()).toBe(false)
-    const button = wrapper.findAll('button').find(button => button.text() === translate('detailFields.title'))!
+    const button = wrapper.findAll('button').find(button => button.attributes('aria-label') === translate('drilldown.openDetails'))
     expect(button).toBeDefined()
-    await button.trigger('click')
+    await button?.trigger('click')
+    const detailsButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionDetails'))
+    expect(detailsButton).toBeDefined()
+    await detailsButton?.trigger('click')
+    await flushPromises()
     expect(wrapper.find('[data-detail-field="risk-a.score"]').exists()).toBe(true)
     wrapper.unmount()
   })
-  it('rendert Werte als Text, mit getrennten Feldnamen und Herkunft', async () => {
+  it('rendert Werte als Text, ohne technische Schlüssel unter den Feldnamen', async () => {
     const { quote } = await sample()
     const wrapper = mount(PositionDetailFields, { props: { quote } })
-    expect(wrapper.findAll('[data-detail-field]').length).toBe(7)
-    expect(wrapper.text()).toContain('risk-a.score')
-    expect(wrapper.text()).toContain('risk-b.score')
+    expect(wrapper.findAll('[data-detail-field]').length).toBe(6)
+    expect(wrapper.text()).not.toContain('risk-a.score')
+    expect(wrapper.text()).not.toContain('risk-b.score')
+    expect(wrapper.find('[data-detail-field="risk-b.score"]').exists()).toBe(false)
+    expect(wrapper.find('[data-detail-field="ter"]').text()).not.toContain('ter')
     expect(wrapper.text()).toContain(values['risk-a.note'].value)
     expect(wrapper.find('img').exists()).toBe(false)
-    expect(wrapper.find('[data-detail-field="risk-a.score"]').text()).toContain('risk-a')
     expect(wrapper.find('[data-detail-field="risk-a.score"]').text()).toContain('7')
+    expect(wrapper.find('[data-detail-field="risk-a.score"]').text()).toContain('7,0\u00a0%')
+    wrapper.unmount()
+  })
+
+  it('unterscheidet gleich beschriftete Felder, wenn beide Werte haben', async () => {
+    const { quote } = await sample()
+    const riskB = quote.details?.['risk-b.score']
+    if (!riskB) throw new Error('Testfeld fehlt')
+    const wrapper = mount(PositionDetailFields, { props: { quote: {
+      ...quote,
+      details: { ...quote.details, 'risk-b.score': { ...riskB, value: 2, origin: 'provider', source: 'Demo Source B' } },
+    } } })
+
+    expect(wrapper.find('[data-detail-field="risk-a.score"]').exists()).toBe(true)
+    expect(wrapper.find('[data-detail-field="risk-b.score"]').exists()).toBe(true)
+    expect(wrapper.find('[data-detail-field="risk-b.score"] dt').text()).toContain('Demo Source B')
+    wrapper.unmount()
+  })
+
+  it('zeigt für zwei leere Felder mit gleichem Namen nur einen Leerzustand', async () => {
+    const { quote } = await sample()
+    const riskA = quote.details?.['risk-a.score']
+    if (!riskA) throw new Error('Testfeld fehlt')
+    const wrapper = mount(PositionDetailFields, { props: { quote: {
+      ...quote,
+      details: { ...quote.details, 'risk-a.score': {
+        ...riskA, value: null, origin: null, source: null, asOf: null, shadowed: false, manualValue: null,
+      } },
+    } } })
+
+    expect(wrapper.findAll('[data-detail-field$=".score"]').length).toBe(1)
     wrapper.unmount()
   })
 
@@ -86,6 +122,10 @@ describe('Zusatzinformationen in der echten Detailansicht', () => {
       },
     })
     await wrapper.find('button.cell-symbol').trigger('click')
+    await flushPromises()
+    const detailsButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionDetails'))
+    expect(detailsButton).toBeDefined()
+    await detailsButton?.trigger('click')
     await flushPromises()
     expect(wrapper.find('[data-detail-field="risk-a.score"]').exists()).toBe(true)
     detailColumns.value = ['risk-a.score', 'ter']

@@ -35,6 +35,7 @@ parser.add_argument("--stockinfo-root", type=Path)
 parser.add_argument("--stop", action="store_true", help="Den eigenen Server auf --port sauber beenden")
 parser.add_argument("--port", type=int, default=8899)
 parser.add_argument("--detail-fixtures", type=Path)
+parser.add_argument("--demo-details", action="store_true", help="Lesbare Quellen und Notiz für wiederholbare Browserproben")
 args = parser.parse_args()
 if not 1 <= args.port <= 65535:
     parser.error("--port muss zwischen 1 und 65535 liegen")
@@ -142,12 +143,24 @@ def prepare_details(repository: QuoteRepository) -> tuple[list[DetailDefinition]
         return [], {}
     catalog = json.loads((detail_fixtures / "detail-catalog.json").read_text())
     values = json.loads((detail_fixtures / "detail-values.json").read_text())
+    if args.demo_details:
+        source_labels = {"risk-a": "Demo Source A", "risk-b": "Demo Source B"}
+        for definition in catalog["details"]:
+            definition["sources"] = [source_labels.get(source, source) for source in definition["sources"]]
+            for item in definition["scopes"]:
+                item["source"] = source_labels.get(item["source"], item["source"])
+        for detail in values.values():
+            if detail.get("source") in source_labels:
+                detail["source"] = source_labels[detail["source"]]
+        values["risk-a.note"]["value"] = "Beispielnotiz für die Detailansicht."
+        values["risk-a.note"]["manual_value"] = values["risk-a.note"]["value"]
     definitions = [DetailDefinition.model_validate(entry) for entry in catalog["details"]]
-    scope = {"source": "t40-core", "instrument_types": ["etf"], "identity_kinds": ["listed"]}
+    core_source = "StockInfo Demo" if args.demo_details else "t40-core"
+    scope = {"source": core_source, "instrument_types": ["etf"], "identity_kinds": ["listed"]}
     for name, label_en, label_de, value in [("ter", "TER", "TER", 0.2), ("volatility", "Volatility", "Volatilität", 11.4)]:
         definitions.append(DetailDefinition(name=name, kind="number", unit="percent", label_en=label_en, label_de=label_de,
-                                            sources=["t40-core"], scopes=[scope]))
-        values[name] = {"value": value, "origin": "provider", "source": "t40-core"}
+                                            sources=[core_source], scopes=[scope]))
+        values[name] = {"value": value, "origin": "provider", "source": core_source}
     repository.detail_catalog(definitions)
     return definitions, values
 

@@ -101,8 +101,12 @@ describe('Kursvertrag in der Oberfläche', () => {
   it.each(['USD', 'GBp'])('erhält Originalwährung %s im Detail und auf Mobilkarten', async (currency) => {
     const row = await rowFor(currency)
     const wrapper = mount(PositionDrilldown, { props: { row, total: 0, links: [] } })
+    const historyButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionHistory'))
+    await historyButton?.trigger('click')
     expect(wrapper.findComponent(PriceChart).props('currency')).toBe(currency)
-    const facts = wrapper.find('.drill__facts').text()
+    const assetButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionAsset'))
+    await assetButton?.trigger('click')
+    const facts = wrapper.find('.position-details__facts').text()
     expect(facts).toContain(currency === 'GBp' ? 'GBp' : '$')
     // Ohne Umrechnung gibt es weder Euro-Ziele noch einen Euro-Fehlbetrag.
     expect(facts).not.toContain('€')

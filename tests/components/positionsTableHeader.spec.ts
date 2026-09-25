@@ -178,4 +178,17 @@ describe('Spaltenkopfzeile der Positionstabelle', () => {
     expect(state[0]?.hasHeader).toBe(false)
     expect(state[1]?.hasHeader).toBe(true)
   })
+
+  it('schließt und öffnet alle sichtbaren Gruppen auf einen Aufruf', async () => {
+    const wrapper = table()
+
+    wrapper.vm.collapseAllGroups()
+    await wrapper.vm.$nextTick()
+    expect(tables(wrapper).every(entry => !entry.visible)).toBe(true)
+    expect(JSON.parse(localStorage.getItem(COLLAPSED_KEY) ?? '[]')).toEqual(GROUPS)
+
+    wrapper.vm.openAllGroups()
+    await wrapper.vm.$nextTick()
+    expect(tables(wrapper).every(entry => entry.visible)).toBe(true)
+  })
 })

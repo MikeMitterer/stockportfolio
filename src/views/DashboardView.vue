@@ -33,6 +33,8 @@ import type { InstrumentSummary } from '@/api/types'
 import type { AssetGroup, Position } from '@/types/portfolio'
 
 const { t } = useI18n()
+const COLLAPSE_GROUPS_SYMBOL = '⊟'
+const EXPAND_GROUPS_SYMBOL = '⊞'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
@@ -68,6 +70,16 @@ async function onLoadDemo(): Promise<void> {
 }
 
 const { result, fx, loadFx } = usePortfolioValuation()
+const positionsTable = ref<InstanceType<typeof PositionsTable> | null>(null)
+const positionGroupCount = computed(() => new Set(result.value?.rows.map(row => row.position.group) ?? []).size)
+
+function collapsePositionGroups(): void {
+  positionsTable.value?.collapseAllGroups()
+}
+
+function openPositionGroups(): void {
+  positionsTable.value?.openAllGroups()
+}
 
 const bandsActive = computed(() => usesBands(settingsStore.settings.rebalancing.trigger))
 
@@ -556,9 +568,19 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
         <!-- Positionen -->
         <section class="dashboard__panel">
           <div class="dashboard__panel-head">
-            <h2 class="dashboard__panel-title">
-              {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
-            </h2>
+            <div class="dashboard__panel-heading">
+              <h2 class="dashboard__panel-title">
+                {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
+              </h2>
+              <div v-if="!isCompact && positionGroupCount > 1" class="dashboard__group-actions">
+                <button type="button" class="dashboard__group-action" :aria-label="t('table.collapseAllGroups')" :title="t('table.collapseAllGroups')" @click="collapsePositionGroups">
+                  <span class="dashboard__group-symbol" aria-hidden="true" v-text="COLLAPSE_GROUPS_SYMBOL" />
+                </button>
+                <button type="button" class="dashboard__group-action" :aria-label="t('table.expandAllGroups')" :title="t('table.expandAllGroups')" @click="openPositionGroups">
+                  <span class="dashboard__group-symbol" aria-hidden="true" v-text="EXPAND_GROUPS_SYMBOL" />
+                </button>
+              </div>
+            </div>
             <div class="dashboard__panel-meta">
               <TargetAllocationBar
                 v-if="!isCompact"
@@ -603,10 +625,11 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
             </div>
           </div>
 
-          <PositionCardList v-if="isCompact" :rows="result.rows" :groups="result.groups" />
+          <PositionCardList v-if="isCompact" :rows="result.rows" :groups="result.groups" :links="settingsStore.settings.links" />
 
           <PositionsTable
             v-else
+            ref="positionsTable"
             :rows="result.rows"
             :groups="result.groups"
             :total="result.total"
@@ -784,6 +807,24 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     letter-spacing: 0.025em;
     color: token(--text-secondary);
   }
+
+  &__panel-heading { @include row(var(--space-2)); }
+  &__group-actions { @include row(var(--space-1)); }
+
+  &__group-action {
+    display: inline-grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    color: token(--text-secondary);
+    cursor: pointer;
+
+    &:hover { color: token(--text-primary); }
+    &:focus-visible { outline: 2px solid token(--text-primary); outline-offset: 2px; }
+  }
+
+  &__group-symbol { font-size: 1.25rem; line-height: 1; transform: translateY(-2px); }
 
   &__panel-meta { @include row(1.25rem); }
 

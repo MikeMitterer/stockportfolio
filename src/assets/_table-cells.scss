@@ -36,6 +36,16 @@
   font-weight: 500;
 }
 
+/** StockInfo-Symbol und ISIN bleiben bei gelisteten Assets beide sichtbar. */
+.cell-isin {
+  display: inline-flex;
+  gap: var(--space-1);
+  color: rgb(var(--text-muted));
+  font-size: var(--font-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 /**
  * Anklickbar: öffnet die Detailansicht der Zeile.
  *

@@ -108,16 +108,27 @@ The client validates StockInfo Core 4.3.0 quote and catalog responses at one
 boundary. It preserves listed, pair and ISIN-only identities. IndexedDB
 schema 5 rebuilds older quote caches; portfolio positions remain stored.
 
-### Additional instrument information
+### Position information
 
-Open a position on the dashboard to see additional fields supplied by StockInfo
-plugins. On mobile, use **Additional information** on the position card. Fields
-already displayed in a configured main column are omitted from the details.
-TER and volatility use the same display as plugin fields.
+Open a position on the dashboard. **Information** shows identifiers, the current
+price and external links. **Additional information** shows fields supplied by
+StockInfo plugins, plus TER and volatility. On mobile, tap the position card
+or its caret to reach the same sections. Fields already
+displayed in a configured main column are omitted from additional information.
+The dashboard's **Position** column shows both ticker and ISIN when StockInfo
+provides both, separated by a vertical bar. The mobile card and rebalancing
+view follow the same rule.
+For an ISIN-only asset, **Information** shows its ISIN without inventing a
+ticker. Identifiers come from StockInfo and cannot be edited here. On desktop,
+the refresh icon beside the quote age reloads that position's quote and rotates
+while the request runs.
 
 Labels, applicability and units come from StockInfo's field catalog. The app
 shows the effective value, its provider or manual origin, date and any overridden
-manual value. Zero and false remain values; missing values appear as a dash.
+manual value. Technical field keys are hidden unless two populated fields need
+distinguishing and no source name is available. Equal labels share one empty
+placeholder; a populated field takes precedence over it. Zero and false remain
+values; other missing values appear as a dash.
 Amounts keep the currency attached to that value and never change the portfolio
 calculations automatically.
 
@@ -147,14 +158,23 @@ the price coming from above or from below? The period is shown in the column
 header and is chosen under _Settings → Data_ — one month, one week or one day.
 "One day" shows no line but the change from the last trading day to today.
 
-The expanded row holds a proper chart: prices on the left axis, the same line as
-a percentage change on the right, time along the bottom, selectable from one
-month up to "max". Hovering shows date, price and change for that day.
+Open a position and choose **Price history** for the larger chart. It shows
+prices on the left axis, the same line as a percentage change on the right,
+and time along the bottom, selectable from one month up to "max". Hovering
+shows date, price and change for that day. The larger chart and its history
+request start when this area is opened; the small row sparkline loads on its
+own.
 
 Daily closing prices change once a day, so they are cached in IndexedDB and
 fetched at most once per day per security.
 
-![Expanded row with the price chart](docs/images/drilldown.png)
+The **Valuation** area shows the position's market value, target and bands.
+The pencil icon opens the edit dialog. **Save** applies the changes;
+**Cancel** and the close icon discard them. **Delete** stays separate on the
+left and asks for confirmation.
+The two symbols beside the desktop position heading **collapse all groups**
+or **expand all groups**. Each has a text label for assistive technology. The
+choice is kept for the next visit.
 
 ### Five asset classes
 
@@ -334,6 +354,9 @@ with colour vision deficiency.
 ## Mobile
 
 The dashboard works as a **reading view**: basic figures, delta and status.
+Tap a position card or its caret for **Valuation**, **Price history**, **Information** and
+**Additional information**. The four buttons form two rows on a narrow screen.
+The card does not offer editing.
 Rebalancing stays on the desktop — entering unit counts in a wide table is not a
 good idea on a phone.
 

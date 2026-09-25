@@ -66,7 +66,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     render: (row) =>
       h('div', { class: 'cell-stack' }, [
         h('div', { class: 'cell-row' }, [
-          h('span', { class: 'cell-symbol' }, row.symbol),
+          h('span', { class: 'cell-symbol' }, row.identity.kind === 'isin_only' ? '—' : row.symbol),
           heldKeys.value.has(instrumentsStore.keyOf(row))
             ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => t('instruments.inPortfolio'))
             : null,

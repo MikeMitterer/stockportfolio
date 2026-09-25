@@ -42,7 +42,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `last_reviewed_commit`: `none`
 - `last_reviewed_round`: `0`
 - `workstream`: `position-detail-ux`
-- `priority_chain`: `T-43-positionsdetails-ordnen.md`
+- `priority_chain`: `T-43-positionsdetails-ordnen.md → T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `priority_ticket`: `T-43-positionsdetails-ordnen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -143,6 +143,17 @@ vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 Übergabe prüft Claude die Fassung. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
 T-38, T-39 und T-40 warten weiter auf Mikes Abschlussabnahme.
+T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
+zeilengenauen Dublettenabgleich. T-43 ordnet diese vorhandene Darstellung
+neu und prüft ihren Erhalt am Desktop und mobil. T-40 wird dafür weder
+erneut implementiert noch neu reviewed; seine menschliche Abschlussabnahme
+bleibt getrennt. Der aktive Agentenauftrag bleibt T-43.
+Danach folgt [T-44](30-doing/T-44-aktien-etfs-und-linkgruppen-trennen.md)
+mit der Trennung von Aktien und ETFs sowie den Linkgruppen. Mike hat am
+2026-09-25 ausdrücklich „Nimm T-45 in die Pri-Chain auf“ beauftragt:
+[T-45](20-ready/T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md)
+folgt auf T-44. Die Reihenfolge aktiviert T-44 und T-45 noch nicht;
+`ticket` und `priority_ticket` bleiben T-43.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
 Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die

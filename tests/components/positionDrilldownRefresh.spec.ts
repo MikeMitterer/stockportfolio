@@ -60,14 +60,16 @@ describe('Drilldown — Kurs neu laden', () => {
   it('dreht und nimmt keinen Klick an, solange der Kurs geholt wird', () => {
     const button = refreshButton(drilldown(true))
 
-    expect(button.classes()).toContain('n-button--loading')
+    expect(button.classes()).toContain('drill__refresh--loading')
     expect(button.attributes('disabled')).toBeDefined()
+    expect(button.attributes('aria-busy')).toBe('true')
   })
 
   it('steht sonst normal da', () => {
     const button = refreshButton(drilldown(false))
 
-    expect(button.classes()).not.toContain('n-button--loading')
+    expect(button.classes()).not.toContain('drill__refresh--loading')
     expect(button.attributes('disabled')).toBeUndefined()
+    expect(button.attributes('aria-busy')).toBe('false')
   })
 })

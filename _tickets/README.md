@@ -179,10 +179,13 @@ T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
 | T-39 | Identität und gemeinsame Prüfung der Kurs-Pflichtfelder einschließlich Währung |
 | T-40 | Detailwerte mit Einheit und Originalwährung anzeigen; keine FX-Umrechnung |
 | T-38 | Depot-Basiswährung, Devisenkurse und daraus abgeleitete Depotbewertung |
+| T-43 | Positionsdetails nach Aufgabe gliedern; die freigegebene T-40-Feldanzeige dabei erhalten |
 
 Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
 Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
 Kursprüfung ist in T-39 umgesetzt.
+T-43 ist laut STATUS der aktive UI-Auftrag. Die menschlichen
+Abschlussabnahmen von T-40 und T-43 bleiben getrennt.
 
 [T-38 · Basiswährung außer EUR](30-doing/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

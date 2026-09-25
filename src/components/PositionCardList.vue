@@ -6,6 +6,7 @@ import PositionCard from '@/components/PositionCard.vue'
 import { assetColor } from '@/domain/assetColors'
 import { percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
+import type { ExternalLink } from '@/types/portfolio'
 
 /**
  * Die Positionen als Karten, nach Assetklasse gegliedert — Mobilansicht.
@@ -17,6 +18,7 @@ import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 const props = defineProps<{
   rows: PositionResult[]
   groups: GroupResult[]
+  links?: ExternalLink[]
 }>()
 
 const { t } = useI18n()
@@ -62,6 +64,7 @@ const { formatMoney } = usePortfolioCurrency()
         v-for="row in entry.rows"
         :key="row.position.id"
         :row="row"
+        :links="links"
       />
     </template>
   </div>

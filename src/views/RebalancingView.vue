@@ -11,6 +11,7 @@ import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
 import { integer, percent, percentSigned } from '@/domain/formatters'
+import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
 import type { GroupResult } from '@/domain/rebalancing'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import FxNotice from '@/components/FxNotice.vue'
@@ -134,10 +135,7 @@ const coverageOptions = computed<{ id: string; label: string; units: number }[]>
     .filter((row) => row.coverageUnits !== null)
     .map((row) => ({
       id: row.current.position.id,
-      label:
-        row.current.position.group === 'cash'
-          ? row.current.position.displayName
-          : row.current.position.symbol,
+      label: positionPrimaryLabel(row.current),
       units: row.coverageUnits as number,
     }))
 })
@@ -357,7 +355,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
           <table class="reb__table">
             <thead>
               <tr class="reb__head">
-                <th class="reb__th reb__th--left reb__th--wide">{{ t('table.symbol') }}</th>
+                <th class="reb__th reb__th--left reb__th--wide">{{ t('table.position') }}</th>
                 <th class="reb__th">{{ t('table.units') }}</th>
                 <th class="reb__th">{{ t('table.price') }}</th>
                 <th class="reb__th">{{ t('table.actualPercent') }}</th>
@@ -407,11 +405,8 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                 >
                   <td class="reb__td reb__td--wide">
                     <div class="reb__symbol">
-                      {{
-                        row.current.position.group === 'cash'
-                          ? row.current.position.displayName
-                          : row.current.position.symbol
-                      }}
+                      {{ positionPrimaryLabel(row.current) }}
+                      <span v-if="positionSymbol(row.current) && positionIsin(row.current)" class="reb__isin"><span aria-hidden="true">|</span> {{ positionIsin(row.current) }}</span>
                     </div>
                     <div
                       v-if="row.current.position.group !== 'cash'"
@@ -797,6 +792,8 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
     max-width: 14rem;
   }
+
+  &__isin { @include muted(var(--font-xs)); font-variant-numeric: tabular-nums; }
 
   &__target { @include row(var(--space-1)); }
 
