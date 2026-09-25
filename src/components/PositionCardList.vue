@@ -54,8 +54,8 @@ const { formatMoney } = usePortfolioCurrency()
           {{ t(`groups.${entry.group.group}`) }}
         </span>
         <span class="tabular-nums">
-          {{ percent(entry.group.actualPercent) }}
-          <span class="cardlist__target">/ {{ percent(entry.group.targetPercent) }}</span>
+          {{ percent(entry.group.targetPercent) }}
+          <span class="cardlist__actual">/ {{ percent(entry.group.actualPercent) }}</span>
           <span class="cardlist__value">{{ formatMoney(entry.group.actualValue) }}</span>
         </span>
       </div>
@@ -105,7 +105,7 @@ const { formatMoney } = usePortfolioCurrency()
     background-color: var(--group-color);
   }
 
-  &__target { opacity: 0.6; }
+  &__actual { opacity: 0.6; }
 
   &__value {
     margin-left: var(--space-2);

@@ -67,8 +67,8 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     <span class="groupheader__figures tabular-nums">
       <span class="groupheader__value">{{ formatMoney(group.actualValue) }}</span>
       <span>
-        {{ percent(group.actualPercent) }}
-        <span class="groupheader__target">/ {{ percent(group.targetPercent) }}</span>
+        {{ percent(group.targetPercent) }}
+        <span class="groupheader__actual">/ {{ percent(group.actualPercent) }}</span>
       </span>
       <span
         class="groupheader__delta"
@@ -138,7 +138,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     @include up(md) { display: inline; }
   }
 
-  &__target { opacity: 0.6; }
+  &__actual { opacity: 0.6; }
 
   &__delta {
     display: none;

@@ -85,7 +85,8 @@ oder ISIN als Kennung verwendet. Bei gelisteten Assets mit ISIN stehen beide
 Kennungen sichtbar nebeneinander, auch auf der Mobilkarte und im Rebalancing.
 Ein senkrechter Strich trennt Ticker und ISIN in der jeweiligen Positionszeile;
 die wiederholte Vorsilbe „ISIN“ entfällt dort.
-Im Desktop-Dashboard steht die Spalte „Ziel %“ vor „IST %“.
+Im Desktop-Dashboard steht die Spalte „Ziel %“ vor „IST %“. Die Desktop- und
+Mobil-Gruppenköpfe zeigen ihre Prozentwerte in derselben Reihenfolge.
 In „Informationen“ werden ISIN und Symbol als getrennte Felder gezeigt, soweit
 StockInfo sie ausweist. Für `identity.kind = isin_only` erscheint kein
 künstliches Symbol; die Anleihe `DE0001135275` zeigt nur ihre ISIN. Der
@@ -192,6 +193,9 @@ Die Mobilkarte zeigte beide Kennungen ebenfalls in einer Zeile bei 390 px;
 `scrollWidth` blieb 390 px.
 Der Desktop-Browser zeigte in der Tabellenkopfzeile „Marktwert“, „Ziel %“,
 „IST %“, „Delta“ in dieser Reihenfolge.
+Die Gruppenköpfe zeigten am Desktop und bei 390 px zuerst das Ziel und dann
+den Ist-Anteil, etwa „70,0 % / 68,2 %“. Die schmale Ansicht blieb ohne
+waagrechtes Scrollen.
 
 `make test`: 54 Dateien, 729 Tests bestanden. `make lint`, `make typecheck`
 und `make build` bestanden. Der Build meldet den vorhandenen Hinweis zum
