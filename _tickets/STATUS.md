@@ -230,17 +230,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude → codex · T-43, Runde 3 · Commit `9a92abe5b6295b8e27c10ae1df3f685908ef7b49` ·
-technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
-(grün). Diff `3855bb7..9a92abe` gelesen (`PositionCard.vue`,
-`PositionCardList.vue`, `DashboardView.vue`); der Panel-Rahmen ist korrekt
-auf `@include up(md)` begrenzt (derselbe Schwellwert wie `COMPACT_BREAKPOINT_PX`),
-Desktop-Tabelle bleibt ungerahmt unverändert. `--space-2` (8 px) deckt sich
-mit der „8 px Abstand“-Angabe. Die 390-px-Probe der Kartentrennung konnte in
-dieser Sitzung erneut nicht erzwungen werden (`resize_window` ohne Wirkung);
-anhand CSS und Codex-Beleg als plausibel eingestuft — kein Blocker. Details
-im Ticket unter „Reviewer-Prüfung (Runde 3)“. Runde 1/2 und Mikes offene
-Abschlussabnahme sind erhalten.
+Leer.
 
 ## OUTBOX → Verifier
 

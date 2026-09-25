@@ -17,9 +17,8 @@ responsiven Karten, zwei Tab-Zeilen auf Mobile und einer kompakten mobilen
 Bewertung. Technische Feldschlüssel stehen nicht mehr unter jeder Beschriftung.
 Reiter, Kursstand und Aktionssymbole teilen sich eine Zeile; die Feldkarten
 verwenden einen zurückhaltenden Hintergrund und einen feinen Rand.
-Claude hat die Fassungen `1f75154` und `3855bb7` in Runde 1 und 2 technisch
-freigegeben. Die neue mobile Kartenansicht aus `9a92abe` geht in Runde 3
-an Claude.
+Claude hat die Fassungen `1f75154`, `3855bb7` und `9a92abe` in Runde 1 bis 3
+technisch freigegeben. Mikes Bedien- und Abschlussabnahme bleibt offen.
 Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
@@ -347,7 +346,7 @@ Positionen sollen deutlicher voneinander getrennt sein. Der Coder nimmt die
 gemeinsame Rahmenfläche der mobilen Liste zurück und gestaltet jede Position
 als eigene dezente Karte mit Abstand. Die Gruppenköpfe bleiben als
 Orientierung erhalten. Desktop-Tabelle und Datenverhalten ändern sich dabei
-nicht. Die neue Fassung `9a92abe` wird in Runde 3 geprüft.
+nicht. Die neue Fassung `9a92abe` wurde in Runde 3 technisch freigegeben.
 
 **Codex-Probe:** Die gemeinsame Rahmenfläche der mobilen Positionsliste ist
 entfallen. Jede Positionskarte hat einen feinen Rand, eine eigene Fläche und
