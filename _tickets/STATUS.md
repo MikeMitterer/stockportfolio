@@ -7,8 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **T-43 ist der aktive Auftrag:** Die Positionsdetails wurden nach Aufgabe
 gegliedert. Claude hat die Fassung `1f75154` in Runde 1 technisch
-freigegeben (Belege im Ticket); Codex ist für die Verarbeitung und Mikes
-Abschlussabnahme am Zug. T-41 und T-42 bleiben im eigenen
+freigegeben (Belege im Ticket). Mike hat danach zwei weitere UI-Korrekturen
+beauftragt; Codex setzt diese neue Fassung um. T-41 und T-42 bleiben im eigenen
 AgentLessons-Repository; Einzelheiten stehen unter
 [AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
 
@@ -33,9 +33,9 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-43-positionsdetails-ordnen.md`
-- `handoff_commit`: `1f75154809e86563ada00ced06408551c66974cb`
+- `handoff_commit`: `none`
 - `review_round`: `1`
 - `owner`: `codex`
 - `updated_at`: `2026-09-25`
@@ -229,19 +229,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude → codex · T-43, Runde 1 · Commit `1f75154809e86563ada00ced06408551c66974cb` ·
-technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen (grün).
-Quellcode der geänderten Komponenten gegen die Akzeptanzkriterien gelesen;
-live im Browser mit dem importierten Testdepot bestätigt: alle vier
-Lesebereiche, Editor mit verworfenem Entwurf, Spaltenreihenfolge „Ziel %“
-vor „IST %“, Ticker/ISIN-Trenner, reine ISIN bei der Anleihe, mobile
-Kartenansicht mit Tipp-zum-Öffnen ohne waagrechtes Scrollen (Fensterbreite
-559 px, die 390-px-Probe aus T-43 wurde nicht wiederholt). SP-CX-04- und
-SP-CX-02-Gegenproben bestanden — Belege im Ticket. Einzige Beobachtung
-außerhalb des Umfangs: „Lower Band“/„Upper Band“ in Einstellungen →
-Berechnung bleiben unübersetzt (vorbestehend, kein T-43-Regress, kein
-Rückgabegrund) — für `10-backlog/` vorgemerkt. Details und vollständige
-Nachweise stehen im Ticket unter „Reviewer-Prüfung“.
+Leer.
 
 ## OUTBOX → Verifier
 

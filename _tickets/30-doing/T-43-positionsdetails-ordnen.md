@@ -282,7 +282,16 @@ T-43). Die in diesem Ticket korrigierten deutschen Bandnamen
 T-43 hat die Einstellungen nicht berührt und musste es laut Abgrenzung auch
 nicht. Für eine spätere Aufnahme in `10-backlog/` vorgemerkt, kein Rückgabegrund.
 
-**Ergebnis:** Technisch freigegeben. Kein `changes_requested`.
+**Ergebnis:** Fassung `1f75154` technisch freigegeben. Kein `changes_requested`.
+Die Freigabe bezieht sich nicht auf die danach beauftragten Korrekturen.
+
+### Folgekorrekturen nach Runde 1
+
+Mike möchte die beiden Symbole rechts neben der Positionsüberschrift enger
+zusammenrücken. Außerdem soll der Bereichsbalken der mobilen Positionskarte
+kompakter werden; derzeit zieht er sich über die gesamte Kartenbreite. Beide
+Korrekturen gehören zur noch laufenden Bedienabnahme von T-43. Der Coder
+setzt sie um und übergibt die neue Produktfassung für Runde 2.
 
 ### Side-Effects
 
@@ -303,6 +312,6 @@ Freigabe oder Mikes getrennte Abschlussabnahme für T-40 zu ersetzen.
 
 ### Auflösung
 
-Technisch freigegeben (Runde 1, `claude`, Fassung `1f75154`). Mikes
+Fassung `1f75154` technisch freigegeben (Runde 1, `claude`). Mikes
 Abschlussentscheidung — einschließlich seines Alltagsurteils zur
 Detailansicht laut „Für dich“ — bleibt offen und wird getrennt dokumentiert.
