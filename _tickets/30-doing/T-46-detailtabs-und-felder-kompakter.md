@@ -34,8 +34,11 @@ weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
 
 ## Auflösung
 
-Fassung `573d15b` technisch freigegeben (Runde 1, `claude`). Mikes
-Abschlussentscheidung bleibt offen und wird getrennt dokumentiert.
+Fassung `573d15b` in Runde 1 technisch freigegeben (`claude`). Fassung
+`fd52010` (Runde 2, Nachträge) hat Claude mit `changes_requested`
+zurückgegeben: `links.newLink` erscheint als roher Schlüssel statt Text beim
+Hinzufügen eines Verweises. Korrektur steht bei Codex aus; danach erneute
+Prüfung. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen.
 Mike hat Text-Tabs mit Unterstrich gewählt: ohne Rahmen/Buttonfläche, aktive Akzentlinie; mobil kompakte Bereichsauswahl statt der von Mike beanstandeten zweizeiligen Tabs.
 
 ## Umsetzungshinweis des Observers · 2026-09-26
@@ -261,3 +264,62 @@ horizontaler Überlauf. Desktop-Zeilen nach der ersten jeweils 28 px hoch.
 **Doku-Abgleich:** README-Abschnitt zu Links beschreibt weiterhin korrekt beide
 Filter; keine Verhaltensänderung an Speicherung, Filterung oder Sicherung.
 Nur die Darstellung geändert, daher dort keine Textanpassung erforderlich.
+
+## Observer-Einordnung zum Übersetzungsschlüssel · 2026-09-26
+
+Der neue Nutzerbefund ist am Quelltext bestätigt: `ExternalLinkEditor.vue`
+verwendet `links.newLink`, beide Sprachkataloge führen `newLink` jedoch unter
+`instruments`. Die Schlüsselgleichheit zwischen Deutsch und Englisch allein
+erkennt diese Abweichung zwischen Aufruf und Katalog nicht.
+
+**Lessons-Einordnung:** Einzelbefund; kein neues wiederholtes Fehlermuster
+belegt und kein passender lokaler Lessons-Eintrag vorhanden. Der Befund bleibt
+in T-46. Für die Korrektur prüfen Coder und Verifier den tatsächlichen
+Hinzufügen-Schritt in beiden Sprachen: Der neue Verweis erhält eine übersetzte
+Bezeichnung, keinen rohen Schlüssel. Der bereits gemeldete Rückgabeweg bleibt
+maßgeblich; dieser Hinweis erzeugt keine zusätzliche Reviewrunde.
+
+## Reviewer-Prüfung (Claude, Runde 2, Fassung `fd52010`)
+
+**Technische Prüfung mit Rückgabe.** `make test` (57 Dateien, 741 Tests),
+`make lint` und `make typecheck` selbst gegen die Übergabefassung
+ausgeführt — alle drei ohne Befund. Seit dem Handoff-Commit gab es keine
+weiteren Commits; der Produktstand war während der Prüfung stabil.
+
+**Bestätigter Rückgabegrund:** Live im Browser (`Einstellungen → Verweise →
+Verweis hinzufügen`) nachvollzogen — das neue Bezeichnungsfeld zeigt wörtlich
+„links.newLink“ statt eines übersetzten Textes. Quellcode bestätigt die vom
+Observer benannte Ursache: `ExternalLinkEditor.vue:55` ruft `t('links.newLink')`
+auf, `newLink` ist in `de.ts`/`en.ts` jedoch unter `instruments` einsortiert
+(`grep` bestätigt genau eine Verwendung, unter dem falschen Namensraum). Per
+`git log -S"newLink"` vorbestehend seit Commit `6cec925`, nicht durch T-46
+verursacht, aber ein reproduzierbarer, sichtbarer Fehler beim alltäglichen
+Hinzufügen eines Verweises. Testfall wieder entfernt, keine Restspur im Depot.
+
+**Ergebnis:** `changes_requested`. Fassung `fd52010` bleibt bis zur Korrektur
+unverändert stabil.
+
+**Übrige Runde-2-Änderungen — alle live bestätigt, kein weiterer Befund:**
+- Gemeinsamer „Informationen“-Tab: Symbol/ISIN/Rohkurs nicht wiederholt,
+  umgerechneter Stückpreis bleibt (`Bewertet mit € 180,80 je Stück · USD/EUR`
+  bei AAPL live gesehen). Quellcode: `showConvertedPrice`/`showQuoteAge`/
+  `showLinks` steuern die mobil zusätzlich sichtbaren Werte korrekt.
+- Sparkline als `<button>` mit `aria-label`/`aria-expanded`,
+  `event.stopPropagation()` verhindert doppeltes Umschalten durch den
+  Zeilen-Klick; `historyRequest`-Zähler erzwingt „Kursverlauf“ nur beim
+  Öffnen, nicht beim Schließen — live reproduziert (Zeile geschlossen →
+  Sparkline-Klick → öffnet mit Kursverlauf aktiv).
+- `ASSET_GROUPS` jetzt `['etfs', 'stocks', ...]` — ETFs stehen im Dashboard
+  vor Aktien, sowohl in der Bilanzübersicht als auch in der Positionstabelle.
+- Tabellenüberschriften `IST %`/`Ziel %` bzw. `Actual %`/`Target %` mit
+  ` ` (geschütztes Leerzeichen) in `de.ts`/`en.ts`, zusätzlich
+  `.cell-head-label { white-space: nowrap }`; Actual-Spalte jetzt 110 px.
+- Gruppensymbole auf 16 px verkleinert, Farbe auf `--text-muted` reduziert;
+  Gruppen-Caret nutzt jetzt dieselbe `color`-Variable wie der Gruppenpunkt
+  (`:style="{ color }"` in `PositionGroupHeader.vue`).
+- `ExternalLinkEditor.vue`: ab `lg` eine Zeile pro Verweis mit einmaligen
+  Spaltenbeschriftungen (visuell versteckt für Hilfstechnik via
+  Standard-„sr-only“-Clip-Path), kleinere Ansichten unverändert umbrechend.
+  Live bei 1456 px als einzeilige Verweise bestätigt.
+- README-Änderungen decken sich mit der Umsetzung (Informationen, Preisverlauf,
+  Sechs-Gruppen-Reihenfolge).

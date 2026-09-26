@@ -1,5 +1,14 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 09:56:53 CEST · claude · T-46 Runde 2: changes_requested — links.newLink erscheint als roher Schlüssel beim Verweis hinzufügen (live bestätigt); übrige Änderungen ohne Befund; Owner zurück an codex
+- 2026-09-26 09:56:22 CEST · codex · Dynamische Plugin-Typen geprüft: StockPortfolio begrenzt sie fälschlich auf stock/etf. Vollständiger REST-Typkatalog fehlt aktuell; Bedarf als StockInfo T-73 und konsumierende Übernahme als StockPortfolio T-48 erfasst.
+- 2026-09-26 09:46:34 CEST · claude · startet unabhängigen Review von T-46 Runde 2, Fassung fd52010
+- 2026-09-26 09:45:22 CEST · codex-observer · Den neuen links.newLink-Befund an Aufruf und beiden Sprachkatalogen bestätigt und als Einzelbefund in T-46 eingeordnet. Erwartete Gegenprobe für Coder und Verifier: Link in Deutsch und Englisch anlegen, ohne rohen Übersetzungsschlüssel.
+- 2026-09-26 09:43:15 CEST · codex · Fehler beim neuen Link lokalisiert: Übersetzung liegt unter instruments.newLink statt links.newLink. Claude um Rückgabe des Owners zur Korrektur gebeten; laufende Prüffassung bleibt stabil.
+- 2026-09-26 09:42:37 CEST · codex · Link-Einstellungen wieder kompakt; Desktop und Mobile geprüft, 741 Tests sowie Lint und Typecheck grün. T-46-Nachträge als fd52010 in Runde 2 an Claude übergeben.
+- 2026-09-26 09:40:43 CEST · codex · Link-Einstellungen geprüft: Der zusätzliche Gruppenfilter hat die Liste auf zwei breite Formularzeilen je Link aufgebläht. Desktop-Layout wieder auf eine Zeile verdichtet; Browserprüfung läuft.
+- 2026-09-26 09:39:41 CEST · codex · ETFs stehen vor Stocks; 741 Tests sind grün. Aufwand einer konfigurierbaren Gruppenreihenfolge geprüft: Depot-Einstellung einschließlich Sicherung und Wiederherstellung.
+- 2026-09-26 09:28:04 CEST · codex · setzt Mikes Nachträge nach T-46-Freigabe um: Informationen zusammenführen, Sparkline-Klick zum Kursverlauf und Gruppensymbole abstimmen.
 - 2026-09-26 09:26:42 CEST · claude · T-46 Runde 1 technisch freigegeben: Bereichsliste, Notiz-Sicherheit (kein v-html), Padding-Maße und Symbolfarbe per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
 - 2026-09-26 09:19:09 CEST · claude · startet unabhängigen Review von T-46, Fassung 573d15b (Runde 1)
 - 2026-09-26 09:18:05 CEST · codex · übergibt T-46 an Claude: dezente Detailnavigation, Mobile-Auswahl, sichtbare Notizen und Gruppensymbole. Browsercheck und 741 Tests, Lint sowie Typecheck erfolgreich.
@@ -41,14 +50,5 @@
 - 2026-09-25 22:01:08 CEST · codex · T-43: Die geprüfte Produktfassung 1f751548 wurde mit Browserbelegen und 729 bestandenen Tests an Claude für den unabhängigen Review übergeben. Ich warte auf das Prüfurteil; T-44 und T-45 bleiben eingeplant.
 - 2026-09-25 21:56:39 CEST · codex · T-43: Ticker und ISIN stehen mit senkrechtem Trenner in der Positionszeile. Hover für offene Details und geschlossene Nachbarzeilen nutzt nun öffentliche Naive-Props; Desktop und 390-px-Ansicht wurden im Browser geprüft. Abschlussprüfungen laufen.
 - 2026-09-25 21:50:28 CEST · codex-observer · hat Mikes Prioritätsentscheidung eingetragen: T-43, danach T-44, danach T-45. T-45 liegt nun in ready; T-43 bleibt aktiv und Rollen sowie Owner bleiben unverändert.
-- 2026-09-25 21:36:20 CEST · codex · T-43: Detailkopf ohne Leerzeile, animiertes Neuladen-Symbol und dezente Feldkarten sind im Browser geprüft. Hover bleibt nur für geschlossene Zeilen; die Anleihe wiederholt ihre ISIN nicht als Symbol. 728 Tests, Lint, Typprüfung und Build bestehen.
-- 2026-09-25 21:33:37 CEST · codex-observer · hat T-43 erneut auf lokales Naive-Styling hingewiesen: Die Arbeitsfassung setzt nun eine interne Tabellen-CSS-Variable direkt am DOM. Die Ticketbeschreibung ist dazu ebenfalls noch nicht aktuell.
-- 2026-09-25 21:23:41 CEST · codex · T-43: Die Gruppensymbole stehen ohne Button-Fläche neben der Positionsüberschrift; Browserprobe bestätigt Ausrichtung und beide Aktionen. Vollständige Tests (727), Lint, Typprüfung und Build sind grün; Übergabebelege werden aktualisiert.
-- 2026-09-25 21:19:01 CEST · codex · prüft T-43 nach UX-Korrekturen: Speichern/Abbrechen im Dialog, Schließen-X, gruppenweite Symbolaktionen und Browseransicht
-- 2026-09-25 21:00:42 CEST · codex · setzt T-43 um: vier Detailbereiche, responsives Mobile-Layout und bereinigte Zusatzkarten; Browser- und Gesamtprüfung laufen
-- 2026-09-25 20:53:32 CEST · codex-observer · hat dem Coder einen T-43-Hinweis zu CSS auf einer internen Naive-Tabellenklasse gegeben; der vorhandene Wächter deckt diese Fundstelle nicht ab. Keine Produktdatei geändert.
-- 2026-09-25 20:42:40 CEST · codex · T-43: Wiederverwendbares Browser-Testdepot als Backup-Fixture abgelegt und in frischem Browserkontext erfolgreich importiert; vier Positionen, Datenlage vollständig. Tests, Lint und Typecheck sind grün.
-- 2026-09-25 20:25:56 CEST · codex · T-43: Bearbeitungsformular nach Nutzerfeedback zentriert und in klare Feldzeilen gegliedert; mobile Depot-, Kursverlauf- und Asset-Bereiche im Browser geprüft.
-- 2026-09-25 20:23:36 CEST · codex-observer · hat im T-43-Arbeitsstand zwei konkrete Hinweise an den Coder gegeben: Kursverlauf-Aussage auf den großen Chart eingrenzen und Cash-Test mit gültigem Instrumenttyp prüfen. Keine Reviewrunde gestartet.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

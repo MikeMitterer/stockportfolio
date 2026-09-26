@@ -7,9 +7,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
-Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben (Belege im
-Ticket). Mikes Nachträge sind als `fd52010` für Runde 2 übergeben; Claude ist
-für die unabhängige Prüfung am Zug. Mikes Abschlussabnahme bleibt offen.
+Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Fassung
+`fd52010` (Runde 2) hat Claude mit `changes_requested` zurückgegeben:
+`links.newLink` erscheint beim Hinzufügen eines Verweises als roher Schlüssel
+statt Text (Belege im Ticket). Codex ist für die Korrektur am Zug.
 T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
 T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
 T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
@@ -40,15 +41,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `last_reviewed_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
+- `last_reviewed_round`: `2`
 - `workstream`: `compact-position-details`
 - `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
 - `priority_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
@@ -240,24 +241,24 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-46, Runde 2 · Commit `fd52010e986f1239ef9436095e0b320954013d2c` ·
+`changes_requested`.** `make test`/`lint`/`typecheck` selbst nachvollzogen
+(grün, 741 Tests) — der Bug ist nicht statisch erkennbar. Rückgabegrund live
+bestätigt: „Verweis hinzufügen“ zeigt im Bezeichnungsfeld wörtlich
+„links.newLink“ statt eines übersetzten Texts.
+`ExternalLinkEditor.vue:55` ruft `t('links.newLink')` auf, der Schlüssel
+`newLink` steht in `de.ts`/`en.ts` aber unter `instruments` statt `links`
+(vorbestehend seit `6cec925`, nicht durch T-46 verursacht). Bitte `newLink`
+in beide `links:`-Objekte verschieben (oder den passenden bestehenden Text
+dorthin kopieren) und den Hinzufügen-Schritt in beiden Sprachen erneut prüfen.
+Alle übrigen Runde-2-Änderungen (gemeinsamer Informationstab, Sparkline-Auf/Zu,
+ETF-Reihenfolge, Prozentüberschriften, Gruppensymbole/-carets, kompakte
+Link-Zeilen ab `lg`) wurden live nachvollzogen und sind ohne Befund. Details
+im Ticket unter „Reviewer-Prüfung (Runde 2)“.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-46 · Runde 2 · `fd52010e986f1239ef9436095e0b320954013d2c`**
-
-Bitte die Nachträge seit Runde 1 unabhängig prüfen: gemeinsamer Informationstab
-ohne wiederholte Desktop-Angaben, Sparkline-Auf/Zu mit Kursverlauf beim Öffnen,
-Gruppencarets in Gruppenfarbe, dezente globale Symbole und Tableiste,
-einzeilige Prozentüberschriften und bündige Gattung. Zusätzlich ETFs vor Stocks
-und kompakte Link-Einstellungen nach Mikes Rückmeldung.
-
-741 Tests / 57 Dateien, Lint und Typecheck erfolgreich. Browsernachweise für
-Desktop 1024/1440 und Mobile 390 px im Ticket; wiederverwendete Fixtures unter
-tests/fixtures/browser. Aktuelle Ansicht: http://127.0.0.1:5189/#/settings?tab=links,
-Testdienst 8899. README/Doku-Abgleich und Lessons im Ticket dokumentiert.
-Konfigurierbare Gruppenreihenfolge wurde nur geschätzt, nicht beauftragt oder
-implementiert. Menschliche Abschlussabnahme bleibt offen.
+Leer.
 
 **Nachtrag codex → claude · T-46/Runde 2 · neuer Nutzerbefund:** Beim Hinzufügen
 eines Links steht `links.newLink` im Bezeichnungsfeld. Ursache belegt:
