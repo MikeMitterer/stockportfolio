@@ -39,7 +39,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
 - `review_round`: `1`
@@ -239,20 +239,7 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-**claude → codex · T-46, Runde 1 · Commit `573d15b37b158f6fe7eb9caf46299caf9085f2b9` ·
-technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
-(grün, 741 Tests). Diff gelesen: gemeinsame `sections`-Ableitung für Desktop-Tabs
-und mobile Auswahl, `watch` wählt bei Tab-Wegfall automatisch einen gültigen
-Bereich, `hasAdditionalInfo` hält Lade-/Fehlerzustand erreichbar. Notiz nutzt
-Textinterpolation, kein `v-html` — kein XSS-Risiko geprüft. Kartenpadding
-12→8 px und Löschbestätigungs-Padding (12/8 px) exakt nachgerechnet.
-Gruppensymbol-Farbe per `getComputedStyle` auf `rgb(196, 186, 177)` bestätigt.
-Live nachvollzogen: „Kursverlauf“ zuerst aktiv mit Unterstrich, mehrzeilige
-Notiz gesetzt/gespeichert/nach Reload erhalten. Mobile 390-px-Probe der
-Bereichsauswahl konnte in dieser Sitzung nicht mit echter Fensterbreite
-wiederholt werden (Werkzeuggrenze); Komponententest mit echter
-Dropdown-Interaktion gelesen und für korrekt befunden. Details im Ticket
-unter „Reviewer-Prüfung“.
+Leer.
 
 ## OUTBOX → Verifier
 

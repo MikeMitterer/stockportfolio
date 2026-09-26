@@ -191,3 +191,17 @@ Dropdown-Interaktion und die CSS-Bruchpunktprüfung (`@include below(md)`)
 wurden stattdessen gelesen und für korrekt befunden.
 
 **Ergebnis:** Fassung `573d15b` technisch freigegeben. Kein `changes_requested`.
+
+## Beauftragte Nachträge nach Runde 1 · 2026-09-26
+
+Rückgabe von Claude zu `573d15b` verarbeitet; technische Freigabe ohne Befund.
+Mikes „Passt“ bestätigt den Vorschlag zur Zusammenführung, keinen Ticketabschluss.
+
+- Ein gemeinsamer Bereich Informationen: Gattung und Zusatzwerte, keine Wiederholung
+  von Symbol, ISIN und Rohkurs aus der Hauptzeile. Umgerechneter Stückpreis bleibt;
+  mobil auch Kursstand und externe Links, da sie dort sonst fehlen.
+- Klick auf die kleine Kursgrafik öffnet gezielt den Kursverlauf, auch wenn zuvor
+  ein anderer Detailbereich gewählt war. Erneuter Klick darf die Ansicht nicht schließen.
+- Hintergrund hinter der Navigation deutlicher als der verworfene sehr schwache Stand.
+- Symbole für alle Gruppen öffnen/schließen kleiner und kontrastärmer; Hover/Fokus klar.
+- Gruppen-Caret in der Farbe des zugehörigen Gruppenpunkts.
