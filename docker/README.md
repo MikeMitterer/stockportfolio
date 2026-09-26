@@ -32,6 +32,11 @@ docker run -d --name stockportfolio \
 
 Open `http://localhost:8080`, or use your Docker host's address.
 
+The port mapping above accepts connections on the Docker host's network
+interfaces. The web interface has no built-in login; access control belongs
+in your network or reverse proxy. To allow access only from the Docker host,
+use `-p 127.0.0.1:8080:8080` instead.
+
 **The browser connects directly to StockInfo.** The API address must be
 reachable from the browser; a Docker-internal hostname usually is not.
 StockInfo must allow the web app's origin through CORS. For example, when
@@ -70,6 +75,16 @@ Restart the container after changing its environment variables.
 The image runs as user `node` (UID/GID 1000), without privileged mode.
 Its healthcheck verifies that the web page is served; it does not test StockInfo.
 The default build targets `linux/amd64`, including x86 Unraid servers.
+
+## Status and logs
+
+```bash
+docker ps --filter name=stockportfolio
+docker logs --tail 100 stockportfolio
+```
+
+The container should become `healthy` after startup. For missing quotes or API
+connection errors, also check **Settings → Status** in the web interface.
 
 ## Data and backups
 

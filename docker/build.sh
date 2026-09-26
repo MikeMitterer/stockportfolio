@@ -32,6 +32,12 @@ readonly NAME="stockportfolio"
 readonly TAGFILE="${SCRIPTPATH}/.last-build-tag"
 readonly WARN_DAYS=7
 
+# Jeder neue Buildversuch entwertet den vorherigen Push-Nachweis, auch wenn
+# Bibliothek, Plattformwahl oder Git-Prüfung bereits vor dem Docker-Build scheitern.
+if [[ "${1:-}" == --build || "${1:-}" == -b ]]; then
+    if [[ -f "${TAGFILE}" ]]; then unlink "${TAGFILE}"; fi
+fi
+
 #------------------------------------------------------------------------------
 # Einbinden der globalen Build-Lib
 #   Hier sind z.B. Farben, generell globale VARs und Funktionen definiert

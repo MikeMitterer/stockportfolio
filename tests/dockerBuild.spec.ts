@@ -27,7 +27,7 @@ RED='' NC='' YELLOW='' GREEN='' BLUE='' MACHINE=Darwin ARCHITECTURE=arm64
 usageLine() { :; }
 showSamples() { :; }
 `)
-  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; }\n')
+  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\n')
   writeFileSync(join(libraries, 'docker.lib.sh'), `
 buildSingleArchImage() { echo "local:$1" >> "$TRACE"; return "\${BUILD_RC:-0}"; }
 showImages() { :; }
@@ -109,6 +109,17 @@ describe('Docker-Build und README-Übertragung', () => {
     const fixture = createBuildFixture()
     expect(fixture.run(['--build']).status).toBe(0)
     expect(fixture.run(['--build'], { BUILD_RC: '1' }).status).not.toBe(0)
+    expect(fixture.run(['--push']).status).not.toBe(0)
+    expect(fixture.calls()).not.toContain('image-push')
+  })
+
+  it.each([
+    { name: 'ungültiger Plattform', args: ['--build', 'invalid'], environment: { TAG_RC: '0' } },
+    { name: 'unsauberem Git-Stand', args: ['--build'], environment: { TAG_RC: '3' } },
+  ])('sperrt den alten Push-Marker bereits bei $name', ({ args, environment }) => {
+    const fixture = createBuildFixture()
+    expect(fixture.run(['--build']).status).toBe(0)
+    expect(fixture.run(args, environment).status).not.toBe(0)
     expect(fixture.run(['--push']).status).not.toBe(0)
     expect(fixture.calls()).not.toContain('image-push')
   })

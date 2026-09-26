@@ -14,7 +14,8 @@ Browser geprüft. Claude hat Runde 1 technisch freigegeben (eigener
 arm64-Testbuild plus echter Container). Mikes Nachtrag (eigenes
 `docker/README.md`, früher GitHub-Link, gegenseitige Links, sowie die
 nachgereichte README-Pflegeregel) ist in Runde 2 (`c059f4d`) technisch
-freigegeben. Veröffentlichung durch Codex steht aus.
+freigegeben. Der anschließende Abgleich mit den neuen Docker-Skills hat weitere
+Korrekturen ergeben; diese gehen in Runde 3. Veröffentlichung durch Codex steht aus.
 StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
 keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
 
@@ -40,11 +41,11 @@ getrennt dokumentiert. Kein Versionssprung oder Master-Merge impliziert.
 | # | Prüfung | AI |
 |---|---|:--:|
 | 1 | Dockerfile, Laufzeit-API und Healthcheck am amd64-Release-Build f70516e geprüft | ✅ |
-| 2 | Help, Make-Dry-Runs und 17 Prozessgrenzen-Tests zu Plattform-/Push-Fehlern erfolgreich | ✅ |
+| 2 | Help, Make-Dry-Runs und 19 Prozessgrenzen-Tests zu Plattform-/Push-Fehlern erfolgreich | ✅ |
 | 3 | Zentraler README-Helfer; Vorschau/Upload wählen docker/README.md; Reihenfolge/Fehlercodes geprüft, Live-Aufruf offen | ✅ |
-| 4 | Eigene Docker-Anleitung: echte Vorschau 4.078 UTF-8-Bytes, früher GitHub-Link und korrekte Dokumentlinks; AGENTS-Regel angepasst | ✅ |
+| 4 | Eigene Docker-Anleitung: echte Vorschau 4.609 UTF-8-Bytes, früher GitHub-Link und korrekte Dokumentlinks; AGENTS-Regel angepasst | ✅ |
 | 5 | Echter amd64-Container: Desktop 1440 und Mobile 390, Testdepot/Neuladen/Kursverlauf erfolgreich | ✅ |
-| 6 | 781 Tests, Lint, Typecheck, ShellCheck/XML; Doku und Lessons abgeglichen | ✅ |
+| 6 | 783 Tests, Lint, Typecheck, ShellCheck/XML; Doku und Lessons abgeglichen | ✅ |
 | 7 | Image auf Docker Hub, Architektur/Tag und README-Rücklesen belegt | ➖ |
 
 ## Konventionsstand und Abhängigkeit
@@ -379,3 +380,73 @@ Laufzeit-/Containerverifikation aus Runde 1 (`f70516e`) bleibt unverändert
 gültig, da dieser Nachtrag ausschließlich Dokumentation/Konfiguration betrifft.
 Codex führt die bereits beauftragte Veröffentlichung inklusive Registry-/
 README-Nachweis aus.
+
+
+## Abgleich mit neuen Docker-Skills · 2026-09-26 · Runde 3
+
+**Auftrag:** Mike verlangt den Projektabgleich mit den neuen Docker-Skills.
+Gelesen: `docker-conventions`, `docker-build-script`, `unraid-ca-template`.
+Die bewussten Projektentscheidungen bleiben gültig: Node/serve ohne nginx,
+`make build` lokal mit x86-Vorgabe, getrenntes `make push`, keine Option
+`--build-and-push`, gemeinsame BashLib und gemeinsamer README-Helfer.
+Dockerfile, Benutzer/Port/TZ, Healthcheck, API aus Browsersicht, Persistenz,
+Make-Vorgaben und lokales Unraid-Template stimmen damit überein.
+
+**Gefunden und behoben:**
+
+- Ein neuer Buildversuch mit ungültiger Plattform oder unsauberem Git-Stand
+  ließ den vorherigen Push-Marker stehen. Zwei neue Prozessgrenzen-Gegenproben
+  reproduzierten den Fehler vor der Korrektur; danach sind beide grün.
+  Der Marker wird jetzt vor Bibliotheksladen, Plattformwahl und Git-Prüfung
+  entfernt. Kein Registry-Push wurde für diese Tests ausgeführt.
+- `docker/preview/` fehlte in Git- und Docker-Ausschlüssen. Beide ergänzt;
+  `git check-ignore` bestätigt den Git-Ausschluss.
+- Docker-Anleitung ergänzt um Netzwerkbindung/fehlenden Login und konkrete
+  Status-/Log-Befehle. Projekt-README erklärt dieselbe Zugriffskontrolle und
+  die vom Shared-Helfer benötigten PAT-Rechte Read/Write/Delete.
+- Die bisherige README-Behauptung einer bereits verfügbaren Veröffentlichung
+  ist korrigiert. Mike bestätigt: Es wurde noch nichts auf Docker Hub gepusht;
+  das kommt erst. Der HTTP 404 von öffentlicher Hub-Seite und Repository-API
+  ist damit erwartbar, kein Setup-Fehler. Veröffentlichung und anschließend
+  Registry-/README-Rücklesen bleiben offen.
+
+**Prüfnachweise:**
+
+- Vollsuite: 61 Dateien / 783 Tests; Lint erfolgreich. Typecheck fand zunächst
+  einen optionalen undefined-Wert im neuen Testparameter; beide Testfälle
+  setzen nun TAG_RC ausdrücklich. Abschließender Typecheck und alle 19
+  Docker-Prozesstests erfolgreich. Logs: `/tmp/t49-audit-tests.log`,
+  `/tmp/t49-audit-lint.log`, `/tmp/t49-audit-marker-final.log`.
+- `bash -n`, ShellCheck, XML und `git diff --check` erfolgreich. Make-Default
+  und Help identisch; Dry-Run bestätigt build x86 / push / build-frontend.
+- Shared-Helfer mit Standardquelle und Standardausgabe wirklich ausgeführt:
+  `docker/preview/README.md`, 4.609 UTF-8-Bytes. Kein Upload.
+- Bestehenden amd64-Testcontainer gestoppt: Exit 0 innerhalb des Zeitlimits.
+  Wieder gestartet: running/healthy. Browser-Reload am Desktop (1440 px)
+  erhält das Browser-Testdepot mit allen fünf Positionen und Bewertung.
+  Keine neue Mobile-Probe behauptet; Laufzeit unverändert gegenüber Runde 1.
+- Observer-Hinweis verarbeitet: Root- und Worktree-Marker zeigen auf
+  `0.2.0-260926.1126.f7051.ahead146`; Versionstag und latest stimmen mit
+  `sha256:c323ca708648d4030fb0c7546a92b13aeda8e86f65ca83441f1b18aa038e55f9`
+  überein, Architektur linux/amd64, Laufzeitproduktcommit f70516e. Echter
+  Node/serve-Prozess läuft mit UID/GID 1000. Vor dem tatsächlichen Push diesen
+  veränderlichen lokalen Zustand erneut prüfen.
+- Zentrales Templates-Repo sauber bei `87b89cd`, weiterhin nur StockInfo;
+  StockPortfolio dort nicht vorhanden. Lokales XML wohlgeformt, Icon 256×256.
+  GitHub-Projekt, Issues und raw-Icon jeweils HTTP 200. Keine zentrale Vorlage
+  geschrieben und kein echter Unraid-Betrieb behauptet.
+
+**Doku-Abgleich:** Beide READMEs gemeinsam geprüft und angepasst (Docker,
+Publishing, Quick Start, Status/Logs). AGENTS enthält bereits die gemeinsame
+Pflegeregel und 25.000-Byte-Grenze; keine weitere Änderung nötig.
+Unraid-Anleitung/XML bleiben für Port, API, Nutzer und browserseitige Daten
+zutreffend. Skill-Verfahren unverändert; keine zentrale Skill-Kopie geändert.
+Board-Übernahme bleibt sichtbar offen (`activity-feed` → `lessons-follow-through`).
+SP-CX-01/02/04 und SP-R-01 nochmals gelesen: vorhandene Helfer verwendet,
+aktuelle Veröffentlichungsbehauptung korrigiert, echtes Depot nach Reload geprüft.
+
+**Review-Auftrag Runde 3:** Nur den Nachtrag seit c059f4d prüfen: frühe
+Marker-Entwertung samt zwei Gegenproben, Vorschau-Ausschlüsse und ergänzte
+Anleitungen. Bestehende Containerlaufzeit ist unverändert. Kein Push durch den
+Verifier. Nach technischer Freigabe bleibt Codex für die bereits beauftragte
+Veröffentlichung zuständig.

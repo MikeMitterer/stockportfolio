@@ -16,6 +16,7 @@ coverage
 .libs
 
 docker/logs
+docker/preview
 docker/.last-build-tag*
 docker/.last_login
 

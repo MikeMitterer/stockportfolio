@@ -335,8 +335,9 @@ good idea on a phone.
 
 ## Docker
 
-The image is on Docker Hub as
+The Docker Hub image name is
 [`mangolila/stockportfolio`](https://hub.docker.com/r/mangolila/stockportfolio).
+Publication is planned; the image has not been pushed to Docker Hub yet.
 It contains the finished bundle and a static Node server (`serve`) — no nginx,
 no application API, database or volumes.
 
@@ -359,6 +360,10 @@ that browser, such as the server's LAN hostname. `localhost` refers to the
 browser's computer; Docker's internal service names are usually unsuitable.
 StockInfo must allow the web app's origin through CORS. An HTTPS page needs
 an HTTPS API to avoid mixed-content blocking.
+
+The web interface has no built-in login. Control access through your network
+or reverse proxy; [the container guide](docker/README.md#quick-start) also shows
+how to bind the published port to localhost only.
 
 The container listens on **8080** and the static server runs without root. Older images
 used port 80: update an existing port mapping when switching to this version.
@@ -450,8 +455,9 @@ to `docker/README.md`. Raw HTML must use absolute links.
 
 The helper reads the Docker Hub token from `DOCKER_PW_FILE`, otherwise
 `${DOCKER_CONFIG:-$HOME/.docker}/dockerhub.sec`. Keep it outside the repository;
-pass the file path, never the token itself. Use a token with the repository
-permissions required by the helper, as described in ProjectTools.
+pass the file path, never the token itself. Updating the description requires a
+Personal Access Token with **Read, Write, Delete** permissions; image push
+permissions alone are insufficient.
 A failed README upload returns failure even though the image is already online.
 Retry the metadata upload without rebuilding or repushing the image:
 
