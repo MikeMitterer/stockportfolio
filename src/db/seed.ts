@@ -80,10 +80,13 @@ const DEMO_POSITIONS: readonly (Omit<Position, 'id' | 'displayName'> & {
   },
 ] as const
 
-/**
- * Leeres Depot mit einer Cash-Position — die gibt es genau einmal je
- * Portfolio und sie lässt sich nicht über den Instrumenten-Dialog anlegen.
- */
+/** Neues Verrechnungskonto für den Depotstart und das spätere Wiederanlegen. */
+export function cashPosition(units = 0, targetPercent = 0): Position {
+  return { id: newId(), isin: null, symbol: 'CASH', kind: null,
+    displayName: translate('seed.cashAccount'), group: 'cash', units, targetPercent, enabled: true }
+}
+
+/** Leeres Depot mit genau einem Verrechnungskonto. */
 export function emptyPortfolio(name = translate('seed.portfolioName'), baseCurrency = 'EUR'): Portfolio {
   const now = new Date().toISOString()
   return {
@@ -94,19 +97,7 @@ export function emptyPortfolio(name = translate('seed.portfolioName'), baseCurre
     amountSettings: { securityBuffer: { mode: 'percent', value: 0 }, minTradeSize: { mode: 'absolute', value: 0 } },
     createdAt: now,
     updatedAt: now,
-    positions: [
-      {
-        id: newId(),
-        isin: null,
-        symbol: 'CASH',
-        kind: null,
-        displayName: translate('seed.cashAccount'),
-        group: 'cash',
-        units: 0,
-        targetPercent: 0,
-        enabled: true,
-      },
-    ],
+    positions: [cashPosition()],
   }
 }
 

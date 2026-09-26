@@ -220,8 +220,8 @@ const remainingTargetPercent = computed(() => {
 })
 
 async function openAddDialog(): Promise<void> {
-  if (!instrumentsStore.loaded && client) await instrumentsStore.load(client)
   showAddDialog.value = true
+  if (!instrumentsStore.loaded && client) await instrumentsStore.load(client)
 }
 
 async function validateNewInstrument(instrument: InstrumentSummary): Promise<void> {
@@ -619,7 +619,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
                 </span>
                 <span v-if="loading" class="dashboard__schedule">{{ t('common.loading') }}</span>
               </div>
-              <NButton v-if="!isCompact" size="tiny" secondary @click="openAddDialog">
+              <NButton size="tiny" secondary @click="openAddDialog">
                 {{ t('actions.addPosition') }}
               </NButton>
             </div>
@@ -648,9 +648,11 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
       v-model:show="showAddDialog"
       :available="instrumentsStore.allowedInstruments"
       :existing-keys="existingKeys"
+      :allow-cash="!portfolioStore.positions.some(position => position.group === 'cash')"
       :remaining-target-percent="remainingTargetPercent"
       :validate-instrument="validateNewInstrument"
       @add="onAddPosition"
+      @add-cash="({ units, targetPercent }) => portfolioStore.addCashPosition(units, targetPercent)"
     />
   </div>
 </template>

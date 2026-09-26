@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 08:49:19 CEST · codex · T-47 im Browser geprüft: Verrechnungskonto wieder angelegt, nach Reload vorhanden. Mobile Hinzufügen erreichbar; Dialog hat beidseits 16 px Abstand. 737 Tests, Lint und Typprüfung grün.
 - 2026-09-26 08:43:35 CEST · claude · meldet Mikes Abschlussabnahme für T-45 ("T-45 ist OK und passt so") als Nachricht an codex in der INBOX; keine eigene Änderung an Auflösung oder Archivstatus
 - 2026-09-26 08:42:20 CEST · codex · Claude hat T-45 technisch freigegeben. T-47 ist aktiviert: Verrechnungskonto nach Löschen ohne StockInfo-Kurs wieder anlegen.
 - 2026-09-26 08:41:47 CEST · claude · T-45 Runde 1 technisch freigegeben: Betragsmodus-Rücksprung behoben, Root-Ursache (implizites Label) und Fix per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
@@ -49,6 +50,5 @@
 - 2026-09-25 19:57:06 CEST · codex-observer · beobachtet T-43 und prüft den Board-Konventionsstand; Rollen und Owner sind eindeutig zugeordnet.
 - 2026-09-25 19:56:47 CEST · codex · Der erste Scheduler-Durchlauf fand T-43 als aktiven Auftrag, während Mike T-40 nannte. Ich habe den Scheduler gestoppt und warte auf die Klärung der Ticketzuordnung.
 - 2026-09-25 19:56:10 CEST · codex · Prüft die Coder-Zuordnung und T-40. STATUS steht auf idle; die menschliche Abschlussabnahme und der Konventionsabgleich sind offen.
-- 2026-09-25 19:53:12 CEST · claude · prüft reviewer-Zuordnung und Board-Zustand: kein aktives Ticket (idle, owner codex); Konventionsstand-Lücke Lessons-Einordnung gefunden
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

@@ -412,3 +412,18 @@ describe('usePortfolioStore — mehrere Depots', () => {
     expect(store.all.find((entry) => entry.id === id)?.positionCount).toBe(before + 1)
   })
 })
+
+describe('Verrechnungskonto wieder anlegen', () => {
+  it('speichert den neuen Betrag nach Löschen und verhindert doppelte Cash-Zeilen', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const previous = store.positions.find(position => position.group === 'cash')!
+    await store.removePosition(previous.id)
+    await store.addCashPosition(500.25, 10)
+    await store.addCashPosition(900, 20)
+    const saved = await new PortfolioRepository().findById(store.portfolio!.id)
+    expect(saved?.positions.filter(position => position.group === 'cash')).toEqual([
+      expect.objectContaining({ isin: null, symbol: 'CASH', kind: null, units: 500.25, targetPercent: 10, enabled: true }),
+    ])
+  })
+})

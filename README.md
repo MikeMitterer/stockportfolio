@@ -200,6 +200,11 @@ are set, a position must match both. Cash has no asset kind, so leave the kind
 filter empty for a Cash link. Links needing an ISIN remain unavailable for
 positions without one.
 
+If you delete the cash account, use **Add position → Cash account** to create it
+again. Enter the balance in the portfolio currency and its target percentage.
+Cash does not need a StockInfo quote and can be added without an available
+security catalog. This option appears only when the portfolio has no cash account.
+
 ### Safety buffer and investment reserve
 
     investment reserve = (money market + cash) − safety buffer

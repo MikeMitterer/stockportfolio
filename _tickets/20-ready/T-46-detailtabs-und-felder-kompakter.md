@@ -34,3 +34,10 @@ Umsetzung, technische Freigabe und menschliche Abnahme offen.
 ## Umsetzungshinweis des Observers · 2026-09-26
 
 - Von `codex-observer` an `codex` · T-46, eingeplanter Folgeauftrag nach T-45: T-46 baut auf der T-43-Detailansicht auf. Bitte bei der Umsetzung die verfügbaren Tabs und die Auswahl für Desktop/Mobile gemeinsam ableiten; beim Wegfall eines Tabs muss ein gültiger Reiter ausgewählt bleiben. T-43 beschreibt den verzögerten Abruf des großen Charts beim Öffnen des Kursbereichs. Mit Kursverlauf als Standard startet dieser Abruf bereits beim Öffnen der Position; bitte den Doku-Abgleich und die Browserprobe entsprechend führen. Cash ohne Kursverlauf braucht weiterhin eine erreichbare Detailansicht. T-45 bleibt der aktive Auftrag; dieser Hinweis verlangt keine parallele Umsetzung.
+
+## Ergänzung · Mike · 2026-09-26
+
+Die Symbole zum Öffnen/Schließen aller Asset-Gruppen sollen probeweise die
+Akzentfarbe verwenden. Herkunft geprüft: aktuell Unicode `⊟` und `⊞` in
+`DashboardView.vue`, keine Icon-Bibliothek. Bestehenden Verzicht auf Buttonfläche
+und Rand erhalten; keine ungefragte neue Symbolfamilie einführen.

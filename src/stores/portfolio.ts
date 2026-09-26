@@ -9,7 +9,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
 import { AllowlistRepository, PortfolioRepository, SettingsRepository } from '@/db/repository'
-import { demoPortfolio, emptyPortfolio } from '@/db/seed'
+import { cashPosition, demoPortfolio, emptyPortfolio } from '@/db/seed'
 import { baseCurrencyOf, isCurrency } from '@/domain/fx'
 import { upgradeAssetGroups } from '@/domain/assetGroup'
 import { translate } from '@/i18n'
@@ -310,6 +310,14 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     await persist()
   }
 
+  /** Cash ist ein Depotbetrag und braucht weder Identität noch Kursabruf. */
+  async function addCashPosition(units: number, targetPercent: number): Promise<void> {
+    if (positions.value.some(position => position.group === 'cash')) return
+    if (!Number.isFinite(units) || units < 0 || !Number.isFinite(targetPercent)
+      || targetPercent < 0 || targetPercent > 100) return
+    await addPosition(cashPosition(units, targetPercent))
+  }
+
   /**
    * Trägt fehlende Gattungen aus den Kursen nach.
    *
@@ -396,6 +404,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     loadDemo,
     updatePosition,
     addPosition,
+    addCashPosition,
     removePosition,
     replacePortfolio,
     backfillKinds,

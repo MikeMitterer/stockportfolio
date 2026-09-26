@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NModal, NCard, NSelect, NInputNumber, NButton, NAlert, NTag } from 'naive-ui'
+import { NModal, NCard, NSelect, NInputNumber, NButton, NAlert, NTag, NRadioGroup, NRadioButton } from 'naive-ui'
+import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { suggestAssetGroup } from '@/domain/assetGroup'
 import { describeFailure } from '@/api/errors'
 import { money, percent } from '@/domain/formatters'
@@ -11,6 +12,8 @@ import { ASSET_GROUPS } from '@/types/portfolio'
 
 const props = defineProps<{
   show: boolean
+  /** Cash nur anbieten, wenn das Depot noch kein Verrechnungskonto enthält. */
+  allowCash?: boolean
   /** Bereits freigegebene Instrumente (Whitelist angewandt). */
   available: InstrumentSummary[]
   /** Schlüssel der Papiere, die schon im Depot liegen. */
@@ -23,6 +26,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:show', value: boolean): void
+  (event: 'add-cash', payload: { units: number; targetPercent: number }): void
   (
     event: 'add',
     payload: {
@@ -35,6 +39,9 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { baseCurrency } = usePortfolioCurrency()
+const category = ref<'security' | 'cash'>('security')
+const isCash = computed(() => props.allowCash && category.value === 'cash')
 
 const selectedKey = ref<string | null>(null)
 const units = ref<number>(0)
@@ -75,7 +82,9 @@ watch(selected, (instrument) => {
   group.value = suggestAssetGroup(instrument.name, instrument.type)
 })
 
-const canSubmit = computed(() => selected.value !== null && units.value > 0)
+const canSubmit = computed(() => Number.isFinite(units.value) && Number.isFinite(targetPercent.value)
+  && targetPercent.value >= 0 && targetPercent.value <= 100
+  && (isCash.value ? units.value >= 0 : selected.value !== null && units.value > 0))
 
 /** Warnt, wenn die Summe der Ziel-Anteile über 100 % laufen würde. */
 const exceedsTarget = computed(() => targetPercent.value > props.remainingTargetPercent)
@@ -85,6 +94,7 @@ function close(): void {
 }
 
 function reset(): void {
+  category.value = 'security'
   selectedKey.value = null
   units.value = 0
   targetPercent.value = 0
@@ -93,8 +103,15 @@ function reset(): void {
 }
 
 async function submit(): Promise<void> {
+  if (!canSubmit.value || submitting.value) return
+  if (isCash.value) {
+    emit('add-cash', { units: units.value, targetPercent: targetPercent.value })
+    reset()
+    close()
+    return
+  }
   const instrument = selected.value
-  if (!instrument || !canSubmit.value || submitting.value) return
+  if (!instrument) return
 
   const payload = {
     instrument,
@@ -136,25 +153,29 @@ watch(
     >
       <div class="addpos">
         <NAlert v-if="admissionError" type="error" :bordered="false">{{ admissionError }}</NAlert>
-        <NAlert v-if="selectable.length === 0" type="info" :bordered="false">
+        <NRadioGroup v-if="allowCash" v-model:value="category" :disabled="submitting" :aria-label="t('addPosition.heading')" size="small">
+          <NRadioButton value="security">{{ t('addPosition.instrument') }}</NRadioButton>
+          <NRadioButton value="cash">{{ t('seed.cashAccount') }}</NRadioButton>
+        </NRadioGroup>
+        <NAlert v-if="!isCash && selectable.length === 0" type="info" :bordered="false">
           {{ t('addPosition.allInPortfolio') }}
         </NAlert>
 
         <template v-else>
-          <label class="addpos__field">
+          <label v-if="!isCash" class="addpos__field">
             <span class="addpos__label">{{ t('addPosition.instrument') }}</span>
             <NSelect
               v-model:value="selectedKey"
               :disabled="submitting"
               :options="options"
               filterable
-              placeholder="Symbol, ISIN oder Name suchen"
+              :placeholder="t('addPosition.searchPlaceholder')"
             />
           </label>
 
           <!-- Kontext zum gewählten Papier, damit die Eingabe nicht blind erfolgt -->
           <div
-            v-if="selected"
+            v-if="selected && !isCash"
             class="addpos__facts"
           >
             <div>
@@ -185,8 +206,8 @@ watch(
 
           <div class="addpos__pair">
             <label class="addpos__field">
-              <span class="addpos__label">{{ t('table.units') }}</span>
-              <NInputNumber v-model:value="units" :disabled="submitting" :min="0" :precision="0" :step="1" />
+              <span class="addpos__label">{{ isCash ? t('dashboard.amountEuro', { currency: baseCurrency }) : t('table.units') }}</span>
+              <NInputNumber v-model:value="units" :disabled="submitting" :min="0" :precision="isCash ? 2 : 0" :step="isCash ? 100 : 1" />
             </label>
 
             <label class="addpos__field">
@@ -205,7 +226,7 @@ watch(
             </label>
           </div>
 
-          <label class="addpos__field">
+          <label v-if="!isCash" class="addpos__field">
             <span class="addpos__label">{{ t('drilldown.group') }}</span>
             <NSelect v-model:value="group" :disabled="submitting" :options="groupOptions" />
             <span class="addpos__hint">
@@ -223,7 +244,7 @@ watch(
         <div class="addpos__footer">
           <NButton size="small" quaternary :disabled="submitting" @click="close">{{ t('actions.cancel') }}</NButton>
           <NButton
-            v-if="selectable.length > 0"
+            v-if="isCash || selectable.length > 0"
             size="small"
             type="primary"
             :disabled="!canSubmit"
@@ -242,7 +263,7 @@ watch(
 .addpos {
   @include stack(var(--space-4));
 
-  &__card { max-width: 32rem; }
+  &__card { max-width: min(32rem, calc(100vw - 2 * var(--space-4))); }
 
   &__field {
     @include stack(var(--space-1));
