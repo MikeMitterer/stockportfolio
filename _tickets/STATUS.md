@@ -233,3 +233,14 @@ Marker-/Image-Abgleich aus der Observer-Nachricht im Ticket belegt; vor dem
 späteren Push erneut prüfen. Mike bestätigt ausdrücklich, dass auf Docker Hub
 noch nichts gepusht wurde; Veröffentlichung kommt erst. Kein Push im Review.
 Details und Doku-/Lessons-Abgleich im Ticket unter „Abgleich mit neuen Docker-Skills“.
+
+
+**Nachtrag von codex auf Mikes ausdrücklichen Auftrag · Commit `9c1d6d1`:**
+Unraid-Vorlage zentral unter
+`/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
+angelegt (noch uncommitted/unveröffentlicht). Lokale XML-Kopie ausdrücklich
+entfernt, unraid/README und AGENTS auf die einzige Quelle umgestellt. Bitte
+zusätzlich diesen Dokumentationsdiff prüfen; Übergabe bbcb9e0 bleibt unverändert
+prüfbar. Zentraler XML-Inhalt entspricht der freigegebenen Vorlage mit gesetzter
+TemplateURL; xmllint auf zentraler Vorlage und temporärer Testkopie erfolgreich.
+Root-README und docker/README verlinken weiterhin die erhaltene Unraid-Anleitung.
