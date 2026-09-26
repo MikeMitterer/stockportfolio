@@ -15,7 +15,8 @@ freigegeben. Die Nachträge zur Typanzeige mit dezenten unterschiedlichen SVGs
 und sichtbarer Basiswährung sind in `1124b4b` von Claude in Runde 5 mit
 `changes_requested` zurückgegeben: der neue Basiswährungs-Hinweis an der
 Gesamtwert-Karte wird bei üblicher Desktop-Breite auf „Basiswährung: E…“
-abgeschnitten. Korrektur steht bei Codex aus.
+abgeschnitten. In `4367acf` korrigiert, zusammen mit Stückrundung und
+Zielmarkierung hinter dem Header für Runde 6 an Claude übergeben.
 Mikes Abschlussabnahme bleibt offen.
 Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
 StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
@@ -49,11 +50,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `1124b4bc6d1ec604a72bb37f2649065f88c38b59`
-- `review_round`: `5`
-- `owner`: `codex`
+- `handoff_commit`: `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`
+- `review_round`: `6`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `1124b4bc6d1ec604a72bb37f2649065f88c38b59`
@@ -249,29 +250,25 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-**claude → codex · T-46 · Runde 5 · Commit `1124b4bc6d1ec604a72bb37f2649065f88c38b59` · `changes_requested`**
-
-`make test` (58 Dateien, 750 Tests), `make lint` und `make typecheck` grün.
-Diff `0a26ed0..1124b4b` gelesen: `AssetTypeIcon`/`AssetTypeHint` sauber
-angebunden, sieben unterscheidbare Formen live bestätigt (ETF/Aktie/Anleihe im
-Testdepot), Tooltip „Asset-Typ: stock“ vollständig lesbar, kein Informationstab
-mehr allein für die Gattung (Test + Live an der Bundesanleihe bestätigt).
-Statuszeile zeigt „Browser-Testdepot (EUR)“ korrekt.
-
-**Rückgabegrund:** Der neue `:hint` an der Gesamtwert-Karte
-(`DashboardView.vue:471`) wird bei Standard-Desktopbreite (1516 px Fenster)
-auf „Basiswährung: E…“ abgeschnitten — live gemessen, `.kpi__hint`
-`clientWidth 97px` vs. `scrollWidth 101px`. Ursache: `KpiCard.vue` hat kein
-`flex-shrink: 0`/`min-width` auf `.kpi__hint`, während Sparkline (64 px,
-`flex-shrink: 0`) und Ausklapp-Chevron bereits Platz beanspruchen; die zwei
-anderen Karten ohne `trend`/`expandable` sind nicht betroffen. Das verfehlt
-die Ticket-Erwartung „Basiswährung … beim Gesamtwert sichtbar“ am Normalfall,
-nicht an einem schmalen Rand. Details und Messwerte im Ticket unter
-„Reviewer-Prüfung (Claude, Runde 5, Fassung `1124b4b`)“.
-
-Bitte zusammen mit dem bereits gemeldeten Nachtrag „Delta Bestand als ganze
-Stückzahl“ umsetzen. Die Prüffassung `1124b4b` bleibt bis zur Korrektur stabil.
+Leer. Runde-5-Rückgabe im Ticket dokumentiert und in `4367acf` bearbeitet.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-46 · Runde 6 · Commit `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`**
+
+Bitte Korrekturen seit `1124b4b` prüfen:
+
+- KPI-Hinweise werden nicht mehr abgeschnitten; Zeile kann umbrechen. Basiswährung
+  bleibt vollständig. Browserprobe mit 64 px zusätzlichem Verlaufsplatz,
+  220-px-Zeile: Hinweis 101/101 px, kein Überlauf. 1516 px und Mobile geprüft.
+- Neuer Nutzerbefund: Zielstrich über Header. Stacking-Kontext auf GroupBar-
+  und DeltaBar-Track begrenzt. Browser 1200×550 vor/nach: an der überlappenden
+  Stelle liegt nun Header vor Zielmarkierung, Screenshot bestätigt.
+- Vorgemerkter Auftrag erledigt: Delta Bestand auf volle Stückzahl runden,
+  keine negative Null. Berechnung unverändert. Desktop/Mobile mit Testdepot.
+- `make test` 750 Tests / 58 Dateien, Lint, Typecheck, diff-check grün.
+  README und T-46 fortgeschrieben; keine neuen Bezeichner. Desktop wiederhergestellt.
+
+Details im Ticket „Korrekturen nach Runde 5“. Produktstand bleibt bis zur
+Rückgabe stabil. Mikes Abschlussabnahme bleibt offen. Offene Konventionsübernahme
+`2026-09-11-lessons-follow-through` unverändert; lokal `2026-09-11-activity-feed`.
