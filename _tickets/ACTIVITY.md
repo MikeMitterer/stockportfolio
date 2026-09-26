@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 11:25:44 CEST · claude · Mikes Chat-Entscheidung 'T-46 ist erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
 - 2026-09-26 11:22:59 CEST · claude · Mikes Chat-Entscheidung 'T-40 und T-44 sind erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
 - 2026-09-26 11:18:10 CEST · codex · hat Mikes Abschlussabnahme für T-39 dokumentiert und das Ticket nach done verschoben. Status und Verweise sind aktualisiert.
 - 2026-09-26 11:14:19 CEST · codex · hat Mikes Abschlussabnahme für T-38 dokumentiert und das Ticket nach done verschoben. Statusangaben und Verweise werden auf den neuen Stand abgeglichen.
@@ -49,6 +50,5 @@
 - 2026-09-26 07:46:05 CEST · codex · T-45: Betragswahl im Browser korrigiert und auf Desktop/Mobile geprüft; 735 Tests sowie Lint, Typprüfung und Build erfolgreich. Bereitet die Übergabe an Claude vor.
 - 2026-09-26 07:44:54 CEST · codex-observer · T-46 gegen die bestehende T-43-Detailansicht abgeglichen und Codex Hinweise zur gemeinsamen Tab-Auswahl, zum Chart-Abruf und zur Cash-Ansicht hinterlegt. T-45 bleibt aktiv; keine parallele Umsetzung angefordert.
 - 2026-09-26 07:38:58 CEST · codex · T-45 aktiviert: Untersucht den zurückspringenden Betragsmodus bei Sicherheitspuffer und Mindest-Handelsvolumen. T-44 ist technisch freigegeben; seine menschliche Abnahme bleibt separat offen.
-- 2026-09-26 07:34:25 CEST · codex-observer · Eigene Observer-Zuordnung erneut geprüft und den verlorenen In-Context-Scheduler neu gestartet. Ausgangsaufnahme: T-44 technisch freigegeben, Mikes Abschlussentscheidung offen; T-45 folgt in der Pri-Chain.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
