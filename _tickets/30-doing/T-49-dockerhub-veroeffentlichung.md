@@ -11,9 +11,10 @@ README-Helfer nutzen und das Größenlimit in AGENTS.md verankern.
 
 **Stand:** Implementiert und als Commit `f70516e` mit echtem Container und
 Browser geprüft. Claude hat Runde 1 technisch freigegeben (eigener
-arm64-Testbuild plus echter Container). Mikes Nachtrag ist umgesetzt:
-eigenes `docker/README.md` und gegenseitige Links. Dieser Nachtrag wird separat
-übergeben; Veröffentlichung durch Codex steht aus.
+arm64-Testbuild plus echter Container). Mikes Nachtrag (eigenes
+`docker/README.md`, früher GitHub-Link, gegenseitige Links, sowie die
+nachgereichte README-Pflegeregel) ist in Runde 2 (`c059f4d`) technisch
+freigegeben. Veröffentlichung durch Codex steht aus.
 StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
 keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
 
@@ -321,3 +322,60 @@ für genau deren Fassung; kein neuer Lauf behauptet. SP-CX-01/02, lokale
 Formatfassung 1: Shared-Helfer direkt verwendet und alle aktuellen Quellangaben
 nachgezogen. Frühere 23.613-Byte-Belege oben gehören zur historischen Root-README-
 Prüffassung. Veröffentlichung weiterhin offen; neue Anleitung noch nicht hochgeladen.
+
+## Reviewer-Prüfung (Claude, Runde 2, Fassung `8a8e77a`) — begrenzter Umfang
+
+**Technische Freigabe.** `make test` (61 Dateien, 781 Tests — unverändert
+gegenüber Runde 1), `make lint` und `make typecheck` selbst gegen die
+Übergabefassung ausgeführt — alle drei ohne Befund. Diff seit `f70516e`
+gelesen (6 Dateien, nur Doku/Konfiguration, keine Laufzeit-/Containeränderung
+— Runde 1s Live-Belege bleiben deshalb unberührt gültig).
+
+- `docker/build.sh`: `--readme docker/README.md` an beiden Aufrufstellen
+  (`--preview` und `--publish`) ergänzt, sonst unverändert.
+- `tests/dockerBuild.spec.ts`: Die Fake-Nachbildung des Helfers verfolgt jetzt
+  den übergebenen Quellpfad und prüft ihn in allen bestehenden Fällen
+  (Erfolg, gescheiterter Rebuild, Vorschau-/Push-Fehler, ghcr/ecr ohne
+  Hub-README) mit — echte Testabdeckung, keine reine Kosmetik.
+- `docker/README.md` (neu, 111 Zeilen): GitHub-Link unmittelbar nach der
+  Kurzbeschreibung, danach Quick Start, Compose, Konfigurationstabelle,
+  Daten/Backup, Update-Hinweis (inklusive Port-80→8080-Migration) und
+  Unraid/Support mit Links zu `../unraid/README.md`, `../README.md` und den
+  GitHub-Issues. Inhaltlich deckt sich das mit allem, was ich in Runde 1 am
+  echten Container bestätigt habe (Port 8080, UID 1000, kein Volume,
+  Healthcheck prüft nur die Seite, Default `linux/amd64`).
+- `README.md`/`AGENTS.md`: Einleitung verlinkt Anleitung und Docker-Hub-Repo,
+  Publishing-Abschnitt und die 25.000-Byte-Regel beziehen sich jetzt
+  ausdrücklich auf `docker/README.md`, nicht mehr aufs Projekt-README.
+
+**Unabhängig nachvollzogen, nicht nur den Angaben vertraut:**
+
+- `--readme` gegen den tatsächlich installierten Shared-Helfer geprüft
+  (`.libs/ProjectTools/src/python/dockerhub-readme.py`): eine echte,
+  aktuell unterstützte Option (`-s/--readme`, `type=Path`), deren
+  **Default bereits `docker/README.md` ist** — genau wie im Ticket
+  behauptet (Commit `a1908f7`). Das ausdrückliche Setzen im Buildscript ist
+  eine bewusste Absicherung gegen einen künftig geänderten Default, keine
+  Notwendigkeit für die aktuelle Fassung.
+- Vorschau selbst erzeugt: `./.libs/ProjectTools/src/bash/dockerhub-readme.sh
+  --readme docker/README.md --preview --ref master --output ...` →
+  **4.078 UTF-8-Bytes**, exakt wie behauptet, weit unter dem Limit.
+- Im erzeugten Vorschautext geprüft: GitHub-Link steht tatsächlich als erste
+  Zeile nach der Kurzbeschreibung; die relativen Links am Ende lösen korrekt
+  zu `https://github.com/MikeMitterer/stockportfolio/blob/master/unraid/README.md`
+  bzw. `.../README.md` auf — keine falsche zusätzliche `docker/`-Ebene.
+
+**Nachtrag zu `c059f4d` (README-Pflegeregel, während dieser Runde
+nachgereicht):** Neue `AGENTS.md`-Regel verlangt, `README.md` und
+`docker/README.md` bei jeder betreffenden Änderung inhaltlich abzugleichen.
+Selbst gegengeprüft: beide Dateien stimmen bei Container-Port 8080,
+TZ-Default UTC und dem Port-80→8080-Migrationshinweis überein
+(`grep` auf beide Dateien, keine Abweichung gefunden). Keine Inhaltsänderung
+für diese Runde nötig; der neue Regeltext selbst ist klar und widerspruchsfrei.
+
+**Ergebnis:** Fassung `c059f4d` technisch freigegeben. Kein `changes_requested`.
+Kein Push durch mich — wie in Runde 1 nur lesende Vorschau. Die
+Laufzeit-/Containerverifikation aus Runde 1 (`f70516e`) bleibt unverändert
+gültig, da dieser Nachtrag ausschließlich Dokumentation/Konfiguration betrifft.
+Codex führt die bereits beauftragte Veröffentlichung inklusive Registry-/
+README-Nachweis aus.

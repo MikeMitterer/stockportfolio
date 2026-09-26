@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 13:51:25 CEST · claude · T-49 Runde 2 technisch freigegeben: eigenes docker/README.md live per echtem ProjectTools-Helfer geprüft (4.078 Bytes exakt bestätigt, GitHub-Link/absolute Links korrekt), neue README-Pflegeregel gegengeprüft (keine Abweichung); Owner zurück an Codex für die Veröffentlichung
+- 2026-09-26 13:49:10 CEST · codex · übernimmt auf Mikes Auftrag die README-Pflegeregel aus StockInfo AGENTS.md/T-77: beide Anleitungen inhaltlich abgleichen und unveränderte Gegenstücke begründen.
+- 2026-09-26 13:46:02 CEST · codex · hat docker/README.md und die beidseitigen Links fertiggestellt; echte Hub-Vorschau 4.078 Bytes. Übergibt den begrenzten README-Nachtrag 8a8e77a an Claude.
+- 2026-09-26 13:45:31 CEST · codex-observer · T-49: belegte Änderung von Push-Marker/latest durch den Review-Testbuild eingeordnet. Coder vor Veröffentlichung zum gemeinsamen Abgleich von Produktcommit, Marker, Image-ID und amd64 aufgefordert; Freigabe und Rollen unverändert.
+- 2026-09-26 13:42:02 CEST · codex · übernimmt Mikes Nachtrag zu T-49: eigenes docker/README.md für Docker Hub mit frühem GitHub-Link; passt Quelle und Größenregel an.
 - 2026-09-26 13:41:00 CEST · claude · T-49 Runde 1 technisch freigegeben: Docker-Build/Push-Trennung, nginx-freie Laufzeit und Shared-README-Anbindung per eigenem arm64-Testbuild und echtem Container live bestätigt (61 Dateien/781 Tests grün, README-Vorschau 23.613 Bytes exakt bestätigt); Owner zurück an Codex für den Push
 - 2026-09-26 13:35:01 CEST · codex-observer · T-49-Übergabe an Claude abgeglichen: eindeutige Prüffassung, echte Containerbelege und noch ausstehender Registry-/README-Push sind getrennt dokumentiert. Externer ProjectTools-Review und Unraid-Grenzen bleiben sichtbar; kein Eingriff nötig.
 - 2026-09-26 13:31:07 CEST · codex · übergibt T-49, Fassung f70516e, an Claude: 781 Tests und echter Container-/Browsercheck bestanden. Docker-Hub-Push folgt nach technischer Freigabe.
@@ -45,10 +50,5 @@
 - 2026-09-26 09:45:22 CEST · codex-observer · Den neuen links.newLink-Befund an Aufruf und beiden Sprachkatalogen bestätigt und als Einzelbefund in T-46 eingeordnet. Erwartete Gegenprobe für Coder und Verifier: Link in Deutsch und Englisch anlegen, ohne rohen Übersetzungsschlüssel.
 - 2026-09-26 09:43:15 CEST · codex · Fehler beim neuen Link lokalisiert: Übersetzung liegt unter instruments.newLink statt links.newLink. Claude um Rückgabe des Owners zur Korrektur gebeten; laufende Prüffassung bleibt stabil.
 - 2026-09-26 09:42:37 CEST · codex · Link-Einstellungen wieder kompakt; Desktop und Mobile geprüft, 741 Tests sowie Lint und Typecheck grün. T-46-Nachträge als fd52010 in Runde 2 an Claude übergeben.
-- 2026-09-26 09:40:43 CEST · codex · Link-Einstellungen geprüft: Der zusätzliche Gruppenfilter hat die Liste auf zwei breite Formularzeilen je Link aufgebläht. Desktop-Layout wieder auf eine Zeile verdichtet; Browserprüfung läuft.
-- 2026-09-26 09:39:41 CEST · codex · ETFs stehen vor Stocks; 741 Tests sind grün. Aufwand einer konfigurierbaren Gruppenreihenfolge geprüft: Depot-Einstellung einschließlich Sicherung und Wiederherstellung.
-- 2026-09-26 09:28:04 CEST · codex · setzt Mikes Nachträge nach T-46-Freigabe um: Informationen zusammenführen, Sparkline-Klick zum Kursverlauf und Gruppensymbole abstimmen.
-- 2026-09-26 09:26:42 CEST · claude · T-46 Runde 1 technisch freigegeben: Bereichsliste, Notiz-Sicherheit (kein v-html), Padding-Maße und Symbolfarbe per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
-- 2026-09-26 09:19:09 CEST · claude · startet unabhängigen Review von T-46, Fassung 573d15b (Runde 1)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

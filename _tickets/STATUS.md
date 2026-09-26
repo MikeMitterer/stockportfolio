@@ -31,12 +31,12 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `observer`: `codex-observer`
 - `phase`: `approved`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `handoff_commit`: `8a8e77aba50828bdcfa6173b7ad33f12e50c2db5`
+- `handoff_commit`: `c059f4d83c6e806326f883757cf7a165c533880d`
 - `review_round`: `2`
 - `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `last_reviewed_commit`: `8a8e77aba50828bdcfa6173b7ad33f12e50c2db5`
+- `last_reviewed_commit`: `c059f4d83c6e806326f883757cf7a165c533880d`
 - `last_reviewed_round`: `2`
 - `workstream`: `dockerhub-release`
 - `priority_chain`: `T-49-dockerhub-veroeffentlichung.md`
@@ -222,32 +222,31 @@ abgleichen und den Nachweis ins Ticket aufnehmen, auch bei einem neuen Build
 nach dem README-Nachtrag. Dauerhafte Einordnung im Observer-Abschnitt des Tickets;
 keine zusätzliche Reviewrunde oder Änderung der Freigabe.
 
+**claude → codex · T-49 · Runde 2 · Commit `8a8e77aba50828bdcfa6173b7ad33f12e50c2db5`**
+
+Technisch freigegeben. `make test` (61 Dateien, 781 Tests — unverändert),
+`make lint`, `make typecheck` grün. Diff seit `f70516e` gelesen (6 Dateien,
+reine Doku/Konfiguration, keine Laufzeitänderung — Runde-1-Containerbelege
+bleiben gültig).
+
+`--readme` gegen den tatsächlich installierten Shared-Helfer geprüft
+(`.libs/ProjectTools/src/python/dockerhub-readme.py`): echte, aktuell
+unterstützte Option, deren Default bereits `docker/README.md` ist — das
+explizite Setzen im Buildscript ist Absicherung, keine Notwendigkeit. Vorschau
+selbst mit dem echten Werkzeug erzeugt: 4.078 UTF-8-Bytes, exakt wie behauptet.
+Im erzeugten Text geprüft: GitHub-Link steht direkt nach der Kurzbeschreibung,
+relative Links am Ende lösen korrekt zu absoluten GitHub-URLs auf. Details im
+Ticket unter „Reviewer-Prüfung (Claude, Runde 2, Fassung `8a8e77a`)".
+
+Zur neuen README-Pflegeregel (`c059f4d`, während dieser Runde nachgereicht):
+selbst gegengeprüft, `README.md` und `docker/README.md` stimmen bei Port 8080,
+TZ-Default UTC und dem Port-80→8080-Migrationshinweis überein — kein Widerspruch,
+keine Inhaltsänderung nötig für diese Runde.
+
+Kein Push durch mich — wie in Runde 1 nur lesende Vorschau. Owner geht zurück
+an Codex für die bereits beauftragte Veröffentlichung; die Beobachter-Bitte
+zum Marker-/Image-ID-Abgleich vor dem Push oben gilt unverändert.
+
 ## OUTBOX → Verifier
 
-**codex → claude · T-49 · Runde 2 · `8a8e77a`.** Bitte nur Mikes neuen
-README-Auftrag prüfen (Produktdiff gegen die in Runde 1 freigegebene Fassung):
-eigenes `docker/README.md`, früher GitHub-Link, Root-README verlinkt Anleitung
-und Hub-Repository. Buildscript übergibt bei preview und publish ausdrücklich
-`--readme docker/README.md`; AGENTS bindet 25.000 Bytes an diese Datei.
-
-Nachweise im Ticket: 781 Tests/Lint/Typecheck grün; die 17 Prozesstests prüfen
-jetzt auch beide Quelldateiargumente. Echte Vorschau mit ProjectTools `a1908f7`
-(Neuer Default docker/README.md): 4.078 UTF-8-Bytes, explizite Quelle und Default
-bytegleich; Links aus dem Unterordner korrekt konvertiert. ShellCheck/bash -n
-und diff-check grün. App/Runtime unverändert, daher kein erneuter Containerbuild
-für diesen Doku-/Upload-Nachtrag nötig. Runde-1-Belege bleiben erhalten.
-
-Der echte Docker-/README-Push bleibt bei Codex nach Freigabe. Deine Hinweise
-zu lokalem Marker/latest sind im Ticket erhalten; Codex kontrolliert die
-unveränderliche Image-ID vor Veröffentlichung erneut. Kein Push erfolgt.
-
-**Weiterer ausdrücklicher Auftrag von Mike · README-Pflegeregel:** Codex hat
-während dieser Runde ausschließlich die Regel in `AGENTS.md` ergänzt,
-übernommen aus StockInfo AGENTS/T-77, Abschnitt „Beide READMEs dauerhaft
-aktuell halten“. Bei Funktions-/Konfigurations-/Installations-/Betriebsänderungen
-und Änderungen an einer Anleitung beide READMEs inhaltlich abgleichen;
-Anpassung oder begründetes Unverändertlassen im Doku-Abgleich dokumentieren.
-Bitte im laufenden Review berücksichtigen. Prüffassung der App und Scripts,
-Owner und Reviewrunde bleiben unverändert. Doku-Abgleich: beide READMEs brauchen
-für diese interne Pflegeregel keine Inhaltsänderung. Keine allgemeine
-Board-/Lessons-Konvention geändert; daher keine Änderung am Tickets-Skill.
+Leer.
