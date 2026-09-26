@@ -9,7 +9,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-09-26 Dockerfile-Prüfung, Make-Anbindung, Veröffentlichung und die
 README-Übernahme nach StockInfo T-77 beauftragt. Claude hat Runde 1
 (`f70516e`) technisch freigegeben — mit eigenem arm64-Testbuild und echtem
-Container, nicht nur den Coder-Angaben. Codex veröffentlicht danach.
+Container, nicht nur den Coder-Angaben. Mikes Nachtrag ist als `8a8e77a` umgesetzt:
+eigenes `docker/README.md`, früher GitHub-Link und Links aus dem Projekt-README.
+Claude ist für die begrenzte Runde 2 am Zug; Veröffentlichung danach.
 T-48 ist durch Mike abgeschlossen. T-35/T-36 bleiben im Backlog.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
@@ -25,11 +27,11 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `ready_for_review`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `handoff_commit`: `f70516e83068a3d91257449776f8c49671b33561`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `8a8e77a`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
 - `last_reviewed_commit`: `f70516e83068a3d91257449776f8c49671b33561`
@@ -210,36 +212,29 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · T-49 · Runde 1 · Commit `f70516e83068a3d91257449776f8c49671b33561`**
+**Von codex-observer an codex · T-49 · vor Veröffentlichung.**
+Der Runde-1-Review dokumentiert die vorübergehende Änderung von Push-Marker
+und `latest` durch den arm64-Testbuild samt Wiederherstellung. Bitte vor dem
+Push Produktcommit, Marker, tatsächliche Image-ID und `linux/amd64` gemeinsam
+abgleichen und den Nachweis ins Ticket aufnehmen, auch bei einem neuen Build
+nach dem README-Nachtrag. Dauerhafte Einordnung im Observer-Abschnitt des Tickets;
+keine zusätzliche Reviewrunde oder Änderung der Freigabe.
 
-Technisch freigegeben. `make test` (61 Dateien, 781 Tests), `make lint`,
-`make typecheck`, `bash -n`/`shellcheck` auf beiden Scripts und
-`git diff --check` selbst ausgeführt — alle grün. Makefile gegen den Skill
-`makefile-conventions` geprüft: Grundgerüst vollständig, `build`/`push`/
-`build-frontend`-Namen korrekt. `build.sh` gelesen:
-`saveBuild`/`loadBuild` binden Version+`latest` an eine validierte Image-ID,
-fehlgeschlagener Rebuild sperrt `--push`, README-Helfer läuft ausschließlich
-über `$PROJECT_TOOLS` (keine lokale Kopie), `--publish` nur nach erfolgreichem
-Image-Push und nur für `dockerhub`.
+## OUTBOX → Verifier
 
-Nicht nur gelesen, sondern selbst nachgebaut: eigener `make build PLATFORM=arm`
-plus echter Container. Live bestätigt: kein nginx, `/` und `/config.js` no-cache,
-gehashte Assets immutable/1 Jahr, `/assets/` 404 (kein Directory-Listing),
-`uid=1000(node)`, Healthcheck `healthy`, `config.js` serialisiert Anführungszeichen/
-Backslashes in der API-Adresse korrekt (mit Node nachgerechnet). README-Vorschau
-selbst mit dem echten `dockerhub-readme.sh --preview` erzeugt: 23.613 UTF-8-Bytes,
-exakt wie behauptet. Details im Ticket unter
-„Reviewer-Prüfung (Claude, Runde 1, Fassung `f70516e`)".
+**codex → claude · T-49 · Runde 2 · `8a8e77a`.** Bitte nur Mikes neuen
+README-Auftrag prüfen (Produktdiff gegen die in Runde 1 freigegebene Fassung):
+eigenes `docker/README.md`, früher GitHub-Link, Root-README verlinkt Anleitung
+und Hub-Repository. Buildscript übergibt bei preview und publish ausdrücklich
+`--readme docker/README.md`; AGENTS bindet 25.000 Bytes an diese Datei.
 
-**Nebenwirkung, bitte vor `make push` gegenprüfen:** Mein eigener Testbuild hat
-`docker/.last-build-tag` und den `latest`-Tag kurzzeitig auf mein Testimage
-umgeschrieben. Ich habe beides zurückgesetzt (`latest` wieder auf
-`sha256:c323ca708648...`, Marker-Datei mit Tag `0.2.0-260926.1126.f7051.ahead146`
-neu geschrieben, gegen `docker image inspect` verifiziert) — da dies lokaler,
-nicht versionierter Maschinenzustand ist, bitte trotzdem `docker/.last-build-tag`
-und `docker images` einmal selbst gegenkontrollieren, bevor veröffentlicht wird.
-Für den eigenen Testbuild war außerdem ein Commit nötig (`0c50b9a`, nur
-`_tickets/ACTIVITY.md` — `build.sh` bricht bei unclean working tree ab).
+Nachweise im Ticket: 781 Tests/Lint/Typecheck grün; die 17 Prozesstests prüfen
+jetzt auch beide Quelldateiargumente. Echte Vorschau mit ProjectTools `a1908f7`
+(Neuer Default docker/README.md): 4.078 UTF-8-Bytes, explizite Quelle und Default
+bytegleich; Links aus dem Unterordner korrekt konvertiert. ShellCheck/bash -n
+und diff-check grün. App/Runtime unverändert, daher kein erneuter Containerbuild
+für diesen Doku-/Upload-Nachtrag nötig. Runde-1-Belege bleiben erhalten.
 
-Owner geht zurück an Codex für den bereits beauftragten Image-/README-Push
-mit Registry-Nachweis (Punkt 7 der Verify-Tabelle). Kein Push durch mich.
+Der echte Docker-/README-Push bleibt bei Codex nach Freigabe. Deine Hinweise
+zu lokalem Marker/latest sind im Ticket erhalten; Codex kontrolliert die
+unveränderliche Image-ID vor Veröffentlichung erneut. Kein Push erfolgt.
