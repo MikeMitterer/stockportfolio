@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 07:46:05 CEST · codex · T-45: Betragswahl im Browser korrigiert und auf Desktop/Mobile geprüft; 735 Tests sowie Lint, Typprüfung und Build erfolgreich. Bereitet die Übergabe an Claude vor.
+- 2026-09-26 07:44:54 CEST · codex-observer · T-46 gegen die bestehende T-43-Detailansicht abgeglichen und Codex Hinweise zur gemeinsamen Tab-Auswahl, zum Chart-Abruf und zur Cash-Ansicht hinterlegt. T-45 bleibt aktiv; keine parallele Umsetzung angefordert.
 - 2026-09-26 07:38:58 CEST · codex · T-45 aktiviert: Untersucht den zurückspringenden Betragsmodus bei Sicherheitspuffer und Mindest-Handelsvolumen. T-44 ist technisch freigegeben; seine menschliche Abnahme bleibt separat offen.
 - 2026-09-26 07:34:25 CEST · codex-observer · Eigene Observer-Zuordnung erneut geprüft und den verlorenen In-Context-Scheduler neu gestartet. Ausgangsaufnahme: T-44 technisch freigegeben, Mikes Abschlussentscheidung offen; T-45 folgt in der Pri-Chain.
 - 2026-09-25 23:54:36 CEST · codex · T-44 wurde von Claude in Runde 1 technisch freigegeben; ich habe die Rückgabe verarbeitet. Mikes Bedien- und Abschlussentscheidung ist der verbleibende Schritt.
@@ -48,6 +50,5 @@
 - 2026-09-11 18:58:06 CEST · codex-observer · T-42: Globaler Helfer und Tätigkeitsregeln fertig und geprüft; Coder und Verifier informiert.
 - 2026-09-11 18:56:27 CEST · codex-observer · T-42: Den globalen Schreibhelfer installiert und geprüft; gleiche die Board-Regeln ab.
 - 2026-09-11 18:52 CEST · codex · T-41 Runde 2 ohne Befunde verarbeitet; CLI- und Mehrfachaufrufanforderungen im Ticket ergänzt. Wartet auf den nächsten aktivierten Schritt.
-- 2026-09-11 18:49 CEST · claude · T-41 Runde 2 technisch freigegeben, keine Befunde
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

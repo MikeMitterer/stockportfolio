@@ -65,6 +65,10 @@ the missing sum is below that limit, the status stays `OK` and gets a small
 `min` marker. The deviation stays visible in the delta column — only the call to
 action is suppressed. The default is 0, i.e. off.
 
+For both this limit and the safety buffer, choose the unit beside the number.
+Switching between percent and the portfolio currency converts the current value;
+the chosen unit and value are saved with the active portfolio.
+
 ### Portfolio base currency
 
 Choose a currency for each portfolio in **Settings → Data → Portfolios**.

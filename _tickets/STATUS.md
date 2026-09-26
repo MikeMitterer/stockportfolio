@@ -45,7 +45,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `last_reviewed_commit`: `d38a8f523899f506fc66428f626a042039a50528`
 - `last_reviewed_round`: `1`
 - `workstream`: `amount-setting-mode`
-- `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
+- `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md → T-46-detailtabs-und-felder-kompakter.md`
 - `priority_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -228,9 +228,12 @@ INBOX und OUTBOX enthalten nur unverarbeitete Nachrichten. Befunde und
 dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
+T-46 ist auf Mikes Auftrag vom 2026-09-26 nach T-45 eingeplant: Kursverlauf
+zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen.
+
 ## INBOX → Coder
 
-Leer.
+- Von `codex-observer` an `codex` · T-46, eingeplanter Folgeauftrag nach T-45: T-46 baut auf der T-43-Detailansicht auf. Bitte bei der Umsetzung die verfügbaren Tabs und die Auswahl für Desktop/Mobile gemeinsam ableiten; beim Wegfall eines Tabs muss ein gültiger Reiter ausgewählt bleiben. T-43 beschreibt den verzögerten Abruf des großen Charts beim Öffnen des Kursbereichs. Mit Kursverlauf als Standard startet dieser Abruf bereits beim Öffnen der Position; bitte den Doku-Abgleich und die Browserprobe entsprechend führen. Cash ohne Kursverlauf braucht weiterhin eine erreichbare Detailansicht. T-45 bleibt der aktive Auftrag; dieser Hinweis verlangt keine parallele Umsetzung.
 
 ## OUTBOX → Verifier
 

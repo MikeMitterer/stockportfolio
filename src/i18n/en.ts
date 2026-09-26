@@ -287,6 +287,7 @@ export const en: MessageSchema = {
     securityBuffer: 'Safety buffer',
     minTradeSize: 'Minimum trade size',
     minTradeUnset: 'Off — every deviation outside the band is reported.',
+    amountMode: 'Unit for {label}',
     bufferPercent: '% of total value',
     bufferAbsolute: 'Fixed amount (€)',
     bufferUnset: 'Not set — all liquidity counts as reserve.',

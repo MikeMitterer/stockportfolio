@@ -296,6 +296,7 @@ export const de = {
     securityBuffer: 'Sicherheitspuffer',
     minTradeSize: 'Mindest-Handelsvolumen',
     minTradeUnset: 'Aus — jede Abweichung außerhalb des Bandes wird gemeldet.',
+    amountMode: 'Einheit für {label}',
     bufferPercent: '% vom Gesamtwert',
     bufferAbsolute: 'Fester Betrag (€)',
     bufferUnset: 'Nicht festgelegt — die ganze Liquidität gilt als Reserve.',

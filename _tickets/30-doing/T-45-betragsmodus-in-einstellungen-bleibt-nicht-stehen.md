@@ -9,21 +9,19 @@ bleibt stehen. So lässt sich ein fester Geldbetrag nicht zuverlässig setzen.
 Depotwert gelten. Nach Auswahl von „Betrag in EUR“ muss das Zahlenfeld diesen
 Betrag als Geldwert bearbeiten und die Auswahl nach einem Neuladen erhalten.
 
-**Stand:** Von Mike am 2026-09-25 gemeldet und anschließend ausdrücklich
-hinter T-44 in die Prioritätskette aufgenommen. Die Ursache ist noch nicht im
-Browser nachgewiesen. `AmountSettingField.vue` umschließt derzeit
-`NInputNumber` und `NSelect` gemeinsam mit einem HTML-`label`; dieser Aufbau
-ist als möglicher Auslöser zu prüfen. Dieselbe Komponente bedient auch das
-Mindest-Handelsvolumen. Seit 2026-09-26 ist T-45 nach Claudes technischer
-Freigabe von T-44 der aktive Auftrag unter `30-doing/`; Codex implementiert.
-Mikes Abschlussabnahme von T-44 bleibt separat offen.
+**Stand:** Seit 2026-09-26 aktiv, durch Codex umgesetzt und selbst geprüft.
+Der Browsernachweis bestätigt die gemeinsame HTML-Beschriftung als Ursache:
+Klick auf die Modusauswahl fokussierte das Zahlenfeld, das Menü schloss sofort.
+Getrennte Beschriftung und neutraler Container beheben den Rücksprung.
+Unabhängige Freigabe und menschliche Abschlussabnahme stehen noch aus.
 
 ## Für dich
 
 Keine weitere Entscheidung nötig. Nach der Umsetzung beide Modi beim
 Sicherheitspuffer ausprobieren und prüfen, ob der gewählte Modus samt Betrag
-nach einem Seitenneuladen erhalten bleibt. Die technische Prüfung und eine
-konkrete Testadresse werden vor der Abnahme ergänzt.
+nach einem Seitenneuladen erhalten bleibt. Technische Prüfung siehe unten.
+Testadresse: `http://127.0.0.1:5189/#/settings?tab=calc`, lokaler
+Testdienst `http://127.0.0.1:8899`.
 
 ## Umsetzung und technische Nachweise
 
@@ -47,12 +45,12 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | In Liquidität „Betrag in EUR“ wählen und einen Wert setzen | Auswahl bleibt offen bedienbar und der absolute Wert wird angezeigt | ➖ |
-| 2 | Zwischen Prozent und Betrag wechseln | Die bestehende Umrechnung bleibt stimmig; kein Rücksprung durch einen zweiten Eingabeaufruf | ➖ |
-| 3 | Seite neu laden und Depot wechseln | Modus und Wert bleiben beim richtigen Depot erhalten | ➖ |
-| 4 | Mindest-Handelsvolumen ebenso umschalten | Der gemeinsame Baustein verhält sich bei beiden Einstellungen gleich | ➖ |
-| 5 | Auswahl per Tastatur und in schmaler Ansicht bedienen | Beschriftung, Fokus und Bedienung bleiben verständlich | ➖ |
-| 6 | `make test`, `make lint`, `make typecheck` | Prüfungen bestehen; Browserbefund und Einschränkungen sind dokumentiert | ➖ |
+| 1 | In Liquidität „Betrag in EUR“ wählen und einen Wert setzen | Auswahl bleibt offen bedienbar und der absolute Wert wird angezeigt | ✅ |
+| 2 | Zwischen Prozent und Betrag wechseln | Die bestehende Umrechnung bleibt stimmig; kein Rücksprung durch einen zweiten Eingabeaufruf | ✅ |
+| 3 | Seite neu laden und Depot wechseln | Modus und Wert bleiben beim richtigen Depot erhalten | ✅ |
+| 4 | Mindest-Handelsvolumen ebenso umschalten | Der gemeinsame Baustein verhält sich bei beiden Einstellungen gleich | ✅ |
+| 5 | Auswahl per Tastatur und in schmaler Ansicht bedienen | Beschriftung, Fokus und Bedienung bleiben verständlich | ✅ |
+| 6 | `make test`, `make lint`, `make typecheck` | Prüfungen bestehen; Browserbefund und Einschränkungen sind dokumentiert | ✅ |
 
 ### Abgrenzung
 
@@ -63,3 +61,37 @@ unbeauftragte Umstellung gespeicherter Entwicklungsdaten.
 
 Offen. Technische Freigabe und Mikes Abschlussentscheidung werden getrennt
 dokumentiert.
+
+### Selbstprüfung · Codex · 2026-09-26
+
+- Browser mit wiederverwendbarer Sicherung `tests/fixtures/browser/valid-portfolio.backup.json`:
+  20 % Sicherheitspuffer bei 5.000 EUR Gesamtwert → 1.000 EUR; nach Reload erhalten.
+  Mindest-Handelsvolumen 250 EUR → 5 % → per Pfeiltasten/Enter zurück auf 250 EUR.
+  Zahlenfeld und Moduswahl erhalten getrennte Beschriftungen; Kontrolltext am Zahlenfeld
+  über `aria-describedby`. Auswahl hat eine benannte Gruppe.
+- Mobile 390 × 844: bedienbar, sichtbarer Fokus, beide Felder in einer Zeile,
+  Dokumentbreite 390 px ohne horizontalen Überlauf. Screenshot selbst geprüft.
+- Zweites USD-Depot über Oberfläche angelegt: eigene Nullwerte und „Betrag in USD“;
+  Rückwechsel zum EUR-Testdepot geprüft. Keine Schreibänderung am Speicherpfad nötig.
+- Regressionstest mit echter Naive-Komponente: vorher fehlerhafte gemeinsame
+  Beschriftung nachgewiesen; danach eigene Zahlenbeschriftung, kein weitergereichter
+  Zahlenklick und Umrechnung per Tastatur geprüft. jsdom braucht nur Browser-API-Ersatz
+  für `matchMedia` und `scrollTo`; Live-Prüfung bestätigt den echten Fokusablauf.
+- `make test`: 735 Tests in 56 Dateien bestanden. `make lint`, `make typecheck`
+  und `make build`: erfolgreich. Vorhandener Hinweis auf großen vendor-ui-Chunk.
+  `git diff --check` sauber; TS-Compiler-API-Inventar der angefassten TS/Vue-Bezeichner englisch.
+
+**Doku-Abgleich:** Datei-/Überschrifteninventar von README, docs und unraid geprüft.
+README „Minimum trade size“ erklärt gemeinsame Einheitenwahl und depotspezifische
+Speicherung. „Safety buffer“ und „Portfolio base currency“ bleiben inhaltlich korrekt.
+Historische docs und Container-/Unraid-Anleitungen brauchen für diese Bedienkorrektur
+keine Anpassung.
+
+**Lessons:** Lokales Inventar und SP-CX-01 bis SP-CX-04, Fassung 2026-09-11,
+vor Umsetzung/Übergabe gelesen. SP-CX-02: aktuellen Ticket-/STATUS-Stand gemeinsam
+fortgeschrieben. SP-CX-04: bestehendes Browserfixture und Testserver wiederverwendet.
+Kein neues wiederholtes Fehlermuster behauptet.
+**Konventionsabgleich:** Lokal `2026-09-11-activity-feed`, Skill
+`2026-09-11-lessons-follow-through`. Allgemeine Übernahme der Lessons-Folgepflicht in
+Workflow/Vorlagen bleibt für Mike bzw. ausdrücklich beauftragte Board-Pflege offen.
+Rollen, Nutzerentscheidungen und Schreibgrenzen bleiben maßgeblich.

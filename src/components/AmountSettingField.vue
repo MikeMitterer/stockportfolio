@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
-import { computed } from 'vue'
+import { computed, useId } from 'vue'
 import { NInputNumber, NSelect } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import InfoHint from '@/components/InfoHint.vue'
@@ -41,6 +41,8 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const inputId = useId()
+const hintId = useId()
 
 const modeOptions = computed(() => [
   { label: t('settings.bufferPercent'), value: 'percent' as const },
@@ -63,9 +65,9 @@ const { formatMoney, baseCurrency } = usePortfolioCurrency()
 </script>
 
 <template>
-  <label class="amount">
+  <div class="amount">
     <span class="amount__label">
-      {{ label }}
+      <label :for="inputId">{{ label }}</label>
       <InfoHint v-if="hint" :text="hint" :anchor="anchor" />
     </span>
 
@@ -73,6 +75,7 @@ const { formatMoney, baseCurrency } = usePortfolioCurrency()
       <NInputNumber
         class="amount__value"
         :value="setting.value"
+        :input-props="{ id: inputId, 'aria-describedby': hintId }"
         :min="0"
         :step="setting.mode === 'percent' ? 1 : (absoluteStep ?? 1000)"
         @update:value="setValue"
@@ -80,6 +83,8 @@ const { formatMoney, baseCurrency } = usePortfolioCurrency()
       <NSelect
         class="amount__mode"
         :value="setting.mode"
+        role="group"
+        :aria-label="t('settings.amountMode', { label })"
         :options="modeOptions"
         @update:value="setMode"
       />
@@ -89,11 +94,11 @@ const { formatMoney, baseCurrency } = usePortfolioCurrency()
       Der Basiswährung-Betrag als Kontrolle: Im Prozent-Modus sieht man sonst nicht,
       worüber man gerade entscheidet.
     -->
-    <span class="amount__hint">
+    <span :id="hintId" class="amount__hint">
       <template v-if="setting.value === 0">{{ zeroHint }}</template>
       <template v-else>{{ t('settings.bufferEquals', { amount: formatMoney(resolvedValue) }) }}</template>
     </span>
-  </label>
+  </div>
 </template>
 
 <style scoped lang="scss">
