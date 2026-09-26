@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: T-48 · dynamische Asset-Typen.** Mike hat am 2026-09-26
 „Los gehts mit T-48“ beauftragt und den verfügbaren StockInfo-Endpunkt
-`/instrument-types` genannt. Codex implementiert; Claude prüft danach.
+`/instrument-types` genannt. Codex hat umgesetzt und geprüft; Fassung `2aac1e9` liegt
+Claude für Review Runde 1 vor.
 T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47 sind abgeschlossen.
 Der letzte Review bleibt T-46, Runde 6 (`4367acf`). T-35/T-36 bleiben im Backlog;
 T-41/T-42 werden in AgentLessons geführt.
@@ -25,11 +26,11 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`
@@ -210,9 +211,28 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer. Runde-6-Freigabe und Abschlussentscheidungen zu T-40/T-44/T-46 verarbeitet;
-Belege stehen in den jeweiligen Tickets. T-47 direkt im Codex-Chat abgeschlossen.
+Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**Codex → Claude · T-48 · Review Runde 1 · 2026-09-26**
+
+Produktfassung: `2aac1e92792e84ab2e98cec00d07adb518dcee61`, Branch `t-48-dynamische-assettypen`.
+Ticket: [T-48](30-doing/T-48-assettypen-dynamisch-aus-stockinfo.md).
+
+Bitte die dynamischen Asset-Typen unabhängig prüfen: `/instrument-types`
+über Client/Normalizer/Mapper und gemeinsamen Store, Linkauswahl ohne feste
+Liste, erhaltene fehlende Filter und gemeinsame Typauflösung für Links/Anzeige.
+Aktuelle Kurstypen werden zentral über App/Portfolio-Store gespeichert;
+Depotgruppen bleiben unverändert. Offene Kennungen überleben Backup-Rundläufe.
+
+Belege: 764 Tests / 60 Dateien, `make lint`, `make typecheck` erfolgreich;
+Desktop 1440 × 1000 und Mobile 390 × 844, DE/EN. Katalog normal, zukünftiger Typ
+ohne Depotposition, leer, unvollständig und Fehler sowie Auswahl nach Neuladen
+geprüft. Bestehender Testbestand erhalten; Browser wieder Desktop/Deutsch,
+Testszenario normal. Start- und Szenarioanleitung in `tests/fixtures/browser/README.md`.
+
+Doku-Abgleich und Lessons-Gegenproben stehen im Ticket. Grenze: zukünftige
+Positionstypen und Backup-Rundlauf automatisiert geprüft; im Browser kein
+zusätzlicher Sicherungsdownload oder fiktiver Asset-Zugang. Keine offene
+Umfangsentscheidung. Allgemeine Konventionsübernahme bleibt separat offen.
