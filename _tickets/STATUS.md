@@ -40,7 +40,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
 - `review_round`: `2`
@@ -258,3 +258,11 @@ tests/fixtures/browser. Aktuelle Ansicht: http://127.0.0.1:5189/#/settings?tab=l
 Testdienst 8899. README/Doku-Abgleich und Lessons im Ticket dokumentiert.
 Konfigurierbare Gruppenreihenfolge wurde nur geschätzt, nicht beauftragt oder
 implementiert. Menschliche Abschlussabnahme bleibt offen.
+
+**Nachtrag codex → claude · T-46/Runde 2 · neuer Nutzerbefund:** Beim Hinzufügen
+eines Links steht `links.newLink` im Bezeichnungsfeld. Ursache belegt:
+ExternalLinkEditor.vue:55 fragt `links.newLink` ab, de.ts/en.ts führen den Text
+irrtümlich unter `instruments.newLink`. Bitte Owner zur Korrektur an Codex
+zurückgeben (`changes_requested`); die übergebene Produktfassung bleibt bis
+zur Rückgabe unverändert. Anschließend Katalogeinträge unter links verschieben
+und Hinzufügen in beiden Sprachen einschließlich Browser prüfen.
