@@ -11,6 +11,10 @@ It does not connect to a brokerage or place orders.
 
 ![StockPortfolio dashboard](../docs/images/dashboard.png)
 
+_The dashboard: portfolio groups at the top, positions below. Holdings and targets
+are editable in place and through the position dialog. The screenshot shows the
+reusable browser test portfolio with sample quotes, in English._
+
 ## Features
 
 - Track holdings, cash and target allocations in portfolio groups.

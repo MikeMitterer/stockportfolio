@@ -31,10 +31,16 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
+Mike hat anschließend die Aktualisierung des veralteten Dashboard-Screenshots
+beauftragt. Die gemeinsame Bilddatei für README, Docker Hub und Unraid ist
+ersetzt, beide README-Bildunterschriften sind abgeglichen. Mike hat Commit,
+Merge nach master und Git-Push beauftragt; dieser Nachtrag gehört nicht zur
+technischen Freigabe von Runde 4.
+
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
 - `handoff_commit`: `7aef0196b7e298cb667afaac50c7353816128958`
 - `review_round`: `4`

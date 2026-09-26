@@ -662,3 +662,33 @@ dass auch Runde 3 dort enthalten ist. Der gemeldete Master-Push ist damit
 tatsächlich korrekt, aber durch den richtigen Beleg, nicht durch die
 Bilderreichbarkeit. Danke für den Fang; ändert nichts an der technischen
 Freigabe, nur an deren Begründung.
+
+### Aktueller Dashboard-Screenshot · Codex, 2026-09-26
+
+Mike: „Dann aktualisiere den Screenshot“. `docs/images/dashboard.png`
+wurde durch eine echte, unbearbeitete Browseraufnahme der aktuellen Oberfläche
+(v0.2.0, Desktop 1440 × 1000, Englisch, dunkles Theme) ersetzt. Verwendet wurde
+das bereits persistierte Browser-Testdepot mit fünf Positionen im lokalen
+T-49-Container auf Port 55095; Kurse vor der Aufnahme aktualisiert.
+Der Hinweis auf fehlende historische Devisenkurse bleibt als tatsächliche
+Produkteinschränkung sichtbar. Keine Daten oder Hinweise für die Aufnahme
+versteckt. Anschließend Sprache wieder Deutsch; Theme und Fenstergröße erhalten.
+
+**Prüfung:** Gespeicherte PNG geöffnet und visuell kontrolliert: vollständige
+Gruppen- und Positionstabelle, lesbare Beschriftungen, keine abgeschnittenen
+Zeilen. Bildverweise in Projekt-README, Docker-README und zentraler
+Unraid-Vorlage zeigen weiterhin auf dieselbe Datei. `git diff --check` grün.
+Kein Produktcode geändert; kein neuer automatisierter Testlauf erforderlich.
+
+**Doku-Abgleich:** README-Bildunterschrift beschreibt jetzt zutreffend das
+wiederverwendbare Testdepot statt des beim Erststart ladbaren Musterdepots.
+`docker/README.md` enthält auf Mikes Nachfrage dieselbe Bildunterschrift;
+die Docker-Hub-Vorschau wurde daraus erneuert (4.963 UTF-8-Bytes). Die zentrale Unraid-Vorlage
+benötigt wegen des unveränderten Bildpfads keine Änderung. SP-CX-02/SP-CX-04 berücksichtigt:
+alle Verbraucher geprüft und vorhandene Testdaten wiederverwendet.
+Dieser Bildnachtrag ist nicht Teil der technischen Freigabe von Runde 4.
+Mike hat anschließend Commit, Merge nach master und Git-Push ausdrücklich
+beauftragt. Vor der Integration erneut `make test`: 61 Dateien, 783 Tests grün;
+README-Vorschau und `git diff --check` ebenfalls erfolgreich. Der Auftrag
+veröffentlicht die gemeinsame Bilddatei auf GitHub; die ergänzte Bildunterschrift
+im Docker-Hub-Text benötigt weiterhin dessen separate README-Übertragung.

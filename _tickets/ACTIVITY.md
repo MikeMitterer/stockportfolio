@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 17:55:23 CEST · codex · Prüft und integriert den aktualisierten Dashboard-Screenshot samt beiden README-Beschreibungen nach master; Git-Push durch Mike beauftragt.
+- 2026-09-26 17:53:34 CEST · codex · Gleicht die Screenshot-Beschreibung im Docker-README mit dem Projekt-README ab und erneuert die Docker-Hub-Vorschau.
+- 2026-09-26 17:51:11 CEST · codex · Dashboard-Screenshot in Englisch mit fünf Testpositionen erneuert und visuell geprüft. Gemeinsame Bildverweise für README, Docker Hub und Unraid bleiben gültig; noch nicht gepusht.
+- 2026-09-26 17:49:37 CEST · codex · Ersetzt den veralteten Dashboard-Screenshot durch eine aktuelle Browseraufnahme des wiederverwendbaren Testdepots.
 - 2026-09-26 16:59:45 CEST · claude · Beobachterkorrektur akzeptiert: HTTP-200-Bildtest belegte nicht den Master-Push, wie behauptet. Korrekt nachgeprüft via git ls-tree/merge-base gegen origin/master — Push ist tatsächlich verifiziert, technische Freigabe unverändert
 - 2026-09-26 16:41:26 CEST · codex-observer · T-49: nachgetragene Runde-3-Rückgabe und Runde-4-Freigabe abgeglichen, offene Nachweisanfrage erledigt. Im Ticket präzisiert: erreichbares altes Screenshot-Bild belegt dessen URL, keinen aktuellen Git-Push.
 - 2026-09-26 16:40:43 CEST · claude · T-49 Runden 3+4 technisch freigegeben (nachtragend dokumentiert nach Sitzungsunterbrechung): Marker-Entwertung live selbst getestet (Backup/Restore), zentrale Unraid-Vorlage und README-Vorschaupfad-Vereinheitlichung geprüft, Dashboard-Bild-URL selbst mit HTTP 200 bestätigt; Owner zurück an Codex für die Docker-Hub-Veröffentlichung
@@ -46,9 +50,5 @@
 - 2026-09-26 10:54:41 CEST · codex-observer · T-46/Runde 5 blieb mindestens 15 Minuten ohne erkennbaren Prüfstart. Claude über die OUTBOX um Übernahme oder konkreten Verzögerungsgrund gebeten; Rollen und Prüffassung unverändert gelassen.
 - 2026-09-26 10:42:05 CEST · codex · hat die gewünschte Ganzzahl-Anzeige für Delta Bestand als T-46-Nachtrag erfasst. Wartet auf Claudes Rückgabe von Runde 5; die Prüffassung bleibt unverändert.
 - 2026-09-26 10:38:35 CEST · codex · hat sechs dezente Typ-SVGs und die sichtbare Basiswährung geprüft (750 Tests, Desktop/Mobile). T-46 Runde 5 ist an Claude übergeben; Produktstand bleibt bis zum Review stabil.
-- 2026-09-26 10:35:43 CEST · codex · setzt unterschiedliche SVG-Symbole für sechs Asset-Typen um; unbekannte StockInfo-Typen behalten ein neutrales Symbol und ihre originale Kennung.
-- 2026-09-26 10:20:12 CEST · claude · T-46 Runde 4 technisch freigegeben: Link-Löschbestätigungs-Abstand und leere Depotgruppen ausblenden live bestätigt (58 Dateien/743 Tests, Lint/Typecheck grün); Owner zurück an Codex für Asset-Typ-Anzeige in der Basiszeile
-- 2026-09-26 10:14:53 CEST · codex-observer · Überschneidung der neuen T-46-Typanzeige mit T-48 geprüft und Codex einen Abgleich zur gemeinsamen Typauflösung sowie zur Abgrenzung des späteren REST-Katalogs hinterlegt. Die laufende Prüffassung bleibt unverändert.
-- 2026-09-26 10:13:44 CEST · codex · Typanzeige in der Asset-Basiszeile vorbereitet: aktueller StockInfo-Typ liegt bereits im Kurs vor, auch unbekannte Kennungen müssen sichtbar bleiben. Darstellungspräferenz angefragt; laufende Claude-Prüfung bleibt stabil.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

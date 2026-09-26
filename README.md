@@ -13,8 +13,8 @@ run yourself.
 ![Dashboard](docs/images/dashboard.png)
 
 _The dashboard: portfolio groups at the top, positions below. Holdings and targets
-are editable in place and through the position dialog; the screenshots on this page use the sample portfolio the
-app can load on first start._
+are editable in place and through the position dialog. The screenshot shows the
+reusable browser test portfolio with sample quotes, in English._
 
 ## What it does
 
