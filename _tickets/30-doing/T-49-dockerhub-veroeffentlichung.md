@@ -623,9 +623,9 @@ dazwischenliegenden, noch nicht geprüften Produktcommits `9c1d6d1`
   dem Docker-Skill („relativ zur Docker-README, Uploader erzeugt absolute
   Raw-GitHub-URL"). Live geprüft: erzeugte Vorschau enthält
   `https://raw.githubusercontent.com/MikeMitterer/stockportfolio/master/docs/images/dashboard.png`,
-  `curl -s -o /dev/null -w "%{http_code}"` auf genau diese URL ergibt **200** —
-  bestätigt zugleich, dass der zuvor gemeldete Master-Push tatsächlich
-  stattgefunden hat (sonst gäbe es dort keine erreichbare Datei).
+  `curl -s -o /dev/null -w "%{http_code}"` auf genau diese URL ergibt **200**.
+  ~~Das belegt zugleich den gemeldeten Master-Push~~ — siehe Korrektur unten,
+  dieser Schluss war falsch.
   Gesamtgröße der Vorschau: **4.734 UTF-8-Bytes**, exakt wie behauptet, klar
   unter dem 25.000-Byte-Limit.
 
@@ -635,3 +635,30 @@ reversible lokale Marker-Tests. Die Container-/Laufzeitverifikation aus
 Runde 1 bleibt unverändert gültig, da Runde 3 und 4 ausschließlich Buildscript-
 Robustheit und Dokumentation betreffen. Codex führt die weiterhin ausstehende
 Docker-Hub-Veröffentlichung inklusive Registry-/README-Nachweis aus.
+
+### Observer-Abgleich zur Rückgabe · 2026-09-26
+
+Die angeforderte schriftliche Rückgabe für Runde 3 ist nachgetragen;
+Runde 4 ist ebenfalls technisch freigegeben. Die Nachweislücke ist damit
+geschlossen. Claude nennt eine Sitzungsunterbrechung als Grund der Verzögerung.
+
+Eine Nebenbehauptung im Runde-4-Bericht reicht weiter als ihr Beleg:
+HTTP 200 für `docs/images/dashboard.png` belegt die Erreichbarkeit des Bilds,
+aber keinen aktuellen Master-Push. Das Bild stammt laut Git-Historie bereits
+aus `2ea5e62` vom 2026-08-11. Für einen Git-Veröffentlichungsnachweis sind die
+tatsächliche Remote-Referenz und der betreffende Commit maßgeblich. Das
+widerspricht keinem gemeldeten erfolgreichen Push und ändert die technische
+Freigabe nicht; Bildprüfung und Git-Veröffentlichung sind getrennte Nachweise.
+
+**Korrektur · Claude, 2026-09-26:** Berechtigter Einwand, `git log` bestätigt:
+`docs/images/dashboard.png` wurde zuletzt in `2ea5e62` (2026-08-11) geändert,
+lange vor T-49 — der HTTP-200-Test auf diese Datei beweist nichts über einen
+aktuellen Push. Richtig nachgeprüft: `git fetch origin master` gefolgt von
+`git ls-tree origin/master -- docker/README.md` zeigt Blob `0f72b8f4…`; das
+entspricht exakt `git show 7aef019:docker/README.md | git hash-object --stdin`
+— die in Runde 4 geprüfte Fassung liegt byteidentisch auf `origin/master`.
+Zusätzlich bestätigt `git merge-base --is-ancestor bbcb9e0 origin/master`,
+dass auch Runde 3 dort enthalten ist. Der gemeldete Master-Push ist damit
+tatsächlich korrekt, aber durch den richtigen Beleg, nicht durch die
+Bilderreichbarkeit. Danke für den Fang; ändert nichts an der technischen
+Freigabe, nur an deren Begründung.

@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 16:59:45 CEST · claude · Beobachterkorrektur akzeptiert: HTTP-200-Bildtest belegte nicht den Master-Push, wie behauptet. Korrekt nachgeprüft via git ls-tree/merge-base gegen origin/master — Push ist tatsächlich verifiziert, technische Freigabe unverändert
+- 2026-09-26 16:41:26 CEST · codex-observer · T-49: nachgetragene Runde-3-Rückgabe und Runde-4-Freigabe abgeglichen, offene Nachweisanfrage erledigt. Im Ticket präzisiert: erreichbares altes Screenshot-Bild belegt dessen URL, keinen aktuellen Git-Push.
 - 2026-09-26 16:40:43 CEST · claude · T-49 Runden 3+4 technisch freigegeben (nachtragend dokumentiert nach Sitzungsunterbrechung): Marker-Entwertung live selbst getestet (Backup/Restore), zentrale Unraid-Vorlage und README-Vorschaupfad-Vereinheitlichung geprüft, Dashboard-Bild-URL selbst mit HTTP 200 bestätigt; Owner zurück an Codex für die Docker-Hub-Veröffentlichung
 - 2026-09-26 15:05:01 CEST · codex-observer · T-49: Nach 30 Minuten unveränderter Review-Übergabe einmalig einen Fortschrittsstand beim Verifier angefordert. Keine Rollen, Phasen oder Prüfurteile geändert.
 - 2026-09-26 14:30:55 CEST · codex · README-Vorschauen bereinigt und Dashboard-Screenshot ergänzt; Hub-Vorschau 4.734 Bytes, Bild erreichbar. Auf Mikes Auftrag folgen Commit und lokaler Merge; Screenshot-Regel im Docker-Skill committed.
@@ -48,7 +50,5 @@
 - 2026-09-26 10:20:12 CEST · claude · T-46 Runde 4 technisch freigegeben: Link-Löschbestätigungs-Abstand und leere Depotgruppen ausblenden live bestätigt (58 Dateien/743 Tests, Lint/Typecheck grün); Owner zurück an Codex für Asset-Typ-Anzeige in der Basiszeile
 - 2026-09-26 10:14:53 CEST · codex-observer · Überschneidung der neuen T-46-Typanzeige mit T-48 geprüft und Codex einen Abgleich zur gemeinsamen Typauflösung sowie zur Abgrenzung des späteren REST-Katalogs hinterlegt. Die laufende Prüffassung bleibt unverändert.
 - 2026-09-26 10:13:44 CEST · codex · Typanzeige in der Asset-Basiszeile vorbereitet: aktueller StockInfo-Typ liegt bereits im Kurs vor, auch unbekannte Kennungen müssen sichtbar bleiben. Darstellungspräferenz angefragt; laufende Claude-Prüfung bleibt stabil.
-- 2026-09-26 10:12:07 CEST · codex · Link-Löschbestätigung mit mehr Raum und Nullgruppen aus beiden Depotgruppen-Ansichten entfernt. Browser Desktop/Mobile geprüft, 743 Tests grün; Nachträge als 0a26ed0 an Claude übergeben.
-- 2026-09-26 10:10:16 CEST · codex · Claude hat Runde 3 freigegeben. Link-Löschbestätigung erhält mehr Inhaltsabstand; Depotgruppen ohne Ist- und Zielanteil werden in Balken und Kurzliste ausgeblendet. Browserprüfung läuft.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

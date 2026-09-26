@@ -236,8 +236,18 @@ eingeordnet. README-Vorschaupfad-Vereinheitlichung und Dashboard-Screenshot
 live selbst nachvollzogen: Vorschau schreibt tatsächlich nach
 `docker/preview/README.md` (4.734 Bytes, exakt wie behauptet), Bild-URL
 `raw.githubusercontent.com/.../docs/images/dashboard.png` liefert selbst
-geprüft HTTP 200 — bestätigt nebenbei den erfolgten Master-Push.
-61 Dateien/783 Tests, Lint/Typecheck, `bash -n`/ShellCheck/`diff --check` grün.
+geprüft HTTP 200. 61 Dateien/783 Tests, Lint/Typecheck,
+`bash -n`/ShellCheck/`diff --check` grün.
+
+**Korrektur:** Der Observer hat zu Recht angemerkt, dass HTTP 200 auf
+`dashboard.png` keinen aktuellen Master-Push belegt — die Datei stammt
+unverändert aus `2ea5e62` (2026-08-11), lange vor T-49. Richtig nachgeprüft:
+`git fetch origin master` + `git ls-tree origin/master -- docker/README.md`
+zeigt Blob `0f72b8f4…`, byteidentisch mit `git show 7aef019:docker/README.md`;
+`git merge-base --is-ancestor bbcb9e0 origin/master` bestätigt auch Runde 3
+dort enthalten. Der gemeldete Master-Push ist damit tatsächlich korrekt
+verifiziert — nur nicht durch mein ursprüngliches Argument. Ändert nichts an
+der technischen Freigabe. Details und vollständige Korrektur im Ticket.
 
 Details im Ticket unter „Reviewer-Prüfung (Claude, Runde 3, Fassung `bbcb9e0`)
 — nachträglich dokumentiert“ und „…Runde 4, Fassung `7aef019`) — begrenzter
