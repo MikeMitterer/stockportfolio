@@ -5,13 +5,11 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Auftrag.** Mike hat T-48 am 2026-09-26 abgeschlossen:
-„OK, damit ist T-48 erledigt“. Umsetzung in Runde 1 (`2aac1e9`) technisch
-freigegeben; der Abschluss umfasst den geprüften Beschriftungsnachtrag
-(`3b63788`) und beendet dessen noch offenen Kurzreview. Letzter abgeschlossener
-Review bleibt Runde 1; keine Runde-2-Freigabe behauptet.
-T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47/T-48 sind abgeschlossen.
-T-35/T-36 bleiben im Backlog; T-41/T-42 werden in AgentLessons geführt.
+**Aktiver Auftrag: T-49 · Docker-Hub-Veröffentlichung.** Mike hat am
+2026-09-26 Dockerfile-Prüfung, Make-Anbindung, Veröffentlichung und die
+README-Übernahme nach StockInfo T-77 beauftragt. Codex ist am Zug.
+T-48 ist durch Mike abgeschlossen; letzter unabhängiger Review bleibt
+T-48 Runde 1 (`2aac1e9`). T-35/T-36 bleiben im Backlog.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 `codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
@@ -26,18 +24,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-49-dockerhub-veroeffentlichung.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `last_reviewed_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
 - `last_reviewed_round`: `1`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `dockerhub-release`
+- `priority_chain`: `T-49-dockerhub-veroeffentlichung.md`
+- `priority_ticket`: `T-49-dockerhub-veroeffentlichung.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -132,7 +130,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-48 sind abgeschlossen.
-Kein weiterer Auftrag ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-49 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.

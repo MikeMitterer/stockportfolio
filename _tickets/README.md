@@ -187,8 +187,8 @@ Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
 Kursprüfung ist in T-39 umgesetzt.
 T-40 sowie T-43 bis T-47 sind nach technischer Freigabe durch Mike
 abgeschlossen. Auch [T-48](40-done/T-48-assettypen-dynamisch-aus-stockinfo.md)
-ist durch Mike abgeschlossen. Kein weiterer Auftrag ist aktiviert; maßgeblich
-ist STATUS.
+ist durch Mike abgeschlossen. [T-49](30-doing/T-49-dockerhub-veroeffentlichung.md) ist für die
+Docker-Hub-Veröffentlichung aktiviert; maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.
