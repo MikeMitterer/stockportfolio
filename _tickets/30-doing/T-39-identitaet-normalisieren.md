@@ -66,7 +66,7 @@ Ein nötiger Reset wird als solcher beschrieben.
 
 **Nicht in diesem Ticket:** die Detailanzeige aus
 [T-40](T-40-detailanzeige-aus-feldkatalog.md), Depot-Basiswährung und
-Devisenumrechnung aus [T-38](T-38-basiswaehrung-und-devisenkurse.md) sowie
+Devisenumrechnung aus [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md) sowie
 Generationswechsel aus T-35.
 
 ## Für dich

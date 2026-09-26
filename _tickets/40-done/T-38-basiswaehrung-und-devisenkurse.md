@@ -5,7 +5,7 @@ richtig berechnen**. Jedes Depot hat eine eigene, vom Nutzer wählbare
 Basiswährung (Mike, 2026-09-10).
 
 **Umgesetzt durch Codex und am 2026-09-10 in Runde 2 durch Claude technisch
-freigegeben. Mikes Abschlussabnahme steht noch aus.** Nach Mikes Korrektur im Review bietet die UI
+freigegeben. Von Mike am 2026-09-26 abgeschlossen: „T-38 ist erledigt“.** Nach Mikes Korrektur im Review bietet die UI
 den bestätigten Währungswechsel auch bei bestehenden Depots an. Cash und
 absolute Geldschwellen werden umgerechnet; Wertpapierstückzahlen bleiben gleich.
 Fremd notierte Positionen werden über StockInfo-FX umgerechnet. Ein brauchbarer
@@ -20,8 +20,8 @@ für alle Depotbeträge denselben umgerechneten Stückpreis.
 ## Was sich geändert hat
 
 **UI-Nachtrag vom 2026-09-26:** Mike beanstandet, dass die Basiswährung nur
-in den Einstellungen ausdrücklich erkennbar ist. Umsetzung und Prüfung
-laufen im aktiven T-46-Nachtrag: Basiswährung beim Gesamtwert im Dashboard
+in den Einstellungen ausdrücklich erkennbar ist. In T-46 umgesetzt und in
+Runde 6 durch Claude technisch freigegeben (`4367acf`): Basiswährung beim Gesamtwert im Dashboard
 und Währungscode beim aktiven Depot in der Statuszeile. Die bestehende
 T-38-Rechenfreigabe wird dadurch nicht nachträglich erweitert.
 
@@ -103,12 +103,12 @@ StockInfo. Der aktive Owner und die Reviewfassung stehen ausschließlich in STAT
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
 Basiswährung je Depot und Umgang mit veralteten Kursen sind geklärt.
 
-**Voraussetzung ist [T-39](T-39-identitaet-normalisieren.md).** Dort werden
+**Voraussetzung ist [T-39](../30-doing/T-39-identitaet-normalisieren.md).** Dort werden
 Identität und Core-Pflichtfelder einschließlich Kurswährung geprüft und die
 geratenen Ersatzwährungen entfernt. T-38 verwendet diese Prüfung weiter.
 Der Generationsauftrag aus T-35 bleibt separat im Backlog.
 
-**[T-40](T-40-detailanzeige-aus-feldkatalog.md) liefert zuvor die
+**[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md) liefert zuvor die
 Detailanzeige.** T-38 ergänzt die Bewertung je Depot und den FX-Abruf.
 Originalkurse und Plugin-Detailbeträge behalten im gemeinsamen Cache ihre
 Währung; daraus abgeleitete Depotwerte gehören zur gewählten Basiswährung.
@@ -716,3 +716,18 @@ Die beauftragte Priorität Depotwährung aus T-38 ist technisch bearbeitet.
 T-38, T-39 und T-40 verbleiben bis zu Mikes Abschlussabnahme unter `30-doing/`.
 Es wird kein neuer Produktauftrag aus den übrigen offenen Tickets abgeleitet.
 Der Scheduler wartet bei `idle` weiter auf einen ausdrücklich eingeplanten Auftrag.
+
+
+## Abschluss · 2026-09-26
+
+**Mikes Abschlussentscheidung im Chat:** „T-38 ist erledigt“.
+
+Technische Freigabe aus Runde 2 liegt vor; keine erforderliche Nacharbeit
+ist offen. Der zusätzliche Sichtbarkeitshinweis zur Basiswährung ist in T-46
+umgesetzt und in Runde 6 technisch freigegeben. T-38 liegt unter `40-done/`.
+Die früheren Prüfberichte und damaligen Abnahmestände bleiben als Historie erhalten.
+
+**Doku-Abgleich:** STATUS, Board-README und Ticket-Verweise einschließlich
+Integrationsvorschlag und Lessons-Link auf den neuen Ablageort aktualisiert.
+Produktanleitung und Verhalten bleiben unverändert; keine erneuten Produkt-
+oder Browserprüfungen für die reine Abschlussdokumentation nötig.

@@ -10,7 +10,7 @@ im jeweiligen Ticket:**
 
 - [T-39 · Identität und Kursprüfung](../_tickets/30-doing/T-39-identitaet-normalisieren.md)
 - [T-40 · Zusätzliche Kennzahlen](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md)
-- [T-38 · Depotwährung und FX](../_tickets/30-doing/T-38-basiswaehrung-und-devisenkurse.md)
+- [T-38 · Depotwährung und FX](../_tickets/40-done/T-38-basiswaehrung-und-devisenkurse.md)
 
 Die folgenden Aussagen zu Ausgangslage, Anpassungsbedarf und geplanter Umsetzung
 gehören zur damaligen Bewertung aus
@@ -231,7 +231,7 @@ Generationsauftrag bleibt bei T-35. Es entsteht kein zweiter Kursdecoder.
 
 [T-40](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md) setzt
 Schritt 2 um und zeigt Plugin-Beträge in ihrer Originalwährung.
-[T-38](../_tickets/30-doing/T-38-basiswaehrung-und-devisenkurse.md) ergänzt
+[T-38](../_tickets/40-done/T-38-basiswaehrung-und-devisenkurse.md) ergänzt
 anschließend FX und die Bewertung je Depot. Ein Plugin-Detailbetrag von
 100 USD bleibt auch in einem EUR-Depot als 100 USD sichtbar. Die gemeinsame
 Formatierung und die erweiterten Typen und Mapper werden weiterverwendet;

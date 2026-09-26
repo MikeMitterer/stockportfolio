@@ -66,7 +66,7 @@ Die Detailwerte samt Metadaten müssen den Weg durch Cache und Neuladen
 überstehen. Ein Eintrag ohne Details heißt „noch nicht geladen", nicht
 „StockInfo liefert nichts".
 
-**Abgrenzung zu [T-38](T-38-basiswaehrung-und-devisenkurse.md):** Ein
+**Abgrenzung zu [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md):** Ein
 Plugin-Betrag von 100 USD wird hier mit seiner Originalwährung angezeigt.
 T-40 lädt keine Devisenkurse und rechnet ihn nicht in die Depotwährung um.
 Die spätere Depotbewertung verändert weder diesen Detailwert noch den

@@ -32,7 +32,7 @@ provenance:
 **Verifier-Prüfung:** Vor und nach einem Wechsel den persistierten Bestand prüfen; Rückwechsel und gleiche Zeitkennung einbeziehen.
 
 **Zusätzlicher lokaler Beleg · StockPortfolio, 2026-09-10:** Claude erklärt in
-[T-38, Review Runde 1](../../30-doing/T-38-basiswaehrung-und-devisenkurse.md#review-runde-1--verifier-claude--2026-09-10)
+[T-38, Review Runde 1](../../40-done/T-38-basiswaehrung-und-devisenkurse.md#review-runde-1--verifier-claude--2026-09-10)
 zur Produktfassung `674b3705c07220c19613c5a88b1a02d3512d0699`, die Tageswerte
 blieben beim nun gewünschten Währungswechsel automatisch erhalten und der
 Verlauf brauche keine Anpassung. Als Begründung dient der Währungsfilter in
