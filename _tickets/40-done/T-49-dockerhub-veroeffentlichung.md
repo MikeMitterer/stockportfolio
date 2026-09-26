@@ -1,32 +1,30 @@
 # T-49 · Docker-Hub-Veröffentlichung prüfen und vervollständigen
 
-Der aktuelle App-Stand soll als Docker-Image mit passender Docker-Hub-Übersicht
-veröffentlicht werden. Bisher fehlen die automatische README-Übertragung und
-eine klare Trennung zwischen lokalem Build und Veröffentlichung. Das Projekt-README war für Docker Hub zu lang und enthielt zu viele
-Entwicklungsdetails. Docker Hub erhält deshalb eine eigene Container-Anleitung.
+Der Auftrag war die Veröffentlichung des App-Stands als Docker-Image mit
+passender Docker-Hub-Übersicht. Anfangs fehlten die automatische README-Übertragung
+und eine klare Trennung zwischen lokalem Build und Veröffentlichung. Das
+Projekt-README war für Docker Hub zu lang und enthielt zu viele Entwicklungsdetails.
+Docker Hub erhielt deshalb eine eigene Container-Anleitung.
 
 **Auftrag · Mike, 2026-09-26:** Dockerfile prüfen, passende Make-Ziele und
 Docker-Hub-Push erledigen; StockInfo T-77 als Vorlage für den zentralen
 README-Helfer nutzen und das Größenlimit in AGENTS.md verankern.
 
-**Stand:** Implementiert und als Commit `f70516e` mit echtem Container und
-Browser geprüft. Claude hat Runde 1 technisch freigegeben (eigener
-arm64-Testbuild plus echter Container). Mikes Nachtrag (eigenes
-`docker/README.md`, früher GitHub-Link, gegenseitige Links, sowie die
-nachgereichte README-Pflegeregel) ist in Runde 2 (`c059f4d`) technisch
-freigegeben. Der anschließende Abgleich mit den neuen Docker-Skills (Marker-
-Entwertung, zentrale Unraid-Vorlage, vereinheitlichter README-Vorschaupfad,
-Dashboard-Screenshot) ist in Runde 3 (`bbcb9e0`) und Runde 4 (`7aef019`)
-technisch freigegeben. Veröffentlichung durch Codex steht aus.
-StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
-keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
+**Stand: abgeschlossen · 2026-09-26.** Mike: „T-49 ist erledigt“.
+Die Implementierung ist in vier Runden technisch freigegeben. Screenshot und
+Unraid-Anleitungen sind anschließend auf Mikes Auftrag ergänzt und in `master`
+veröffentlicht. Die letzte unabhängige Freigabe bleibt Runde 4 (`7aef019`).
 
-**Für Mike:** Die Unraid-Vorlage liegt auf Mikes Anweisung ausschließlich im
-zentralen Templates-Repository; die lokale XML-Kopie ist entfernt. Veröffentlichung, lokale
-Prüfung und unabhängiger Review werden mit ihren tatsächlichen Ergebnissen
-getrennt dokumentiert. Kein Versionssprung oder Master-Merge impliziert.
+**Veröffentlichung:** Mike bestätigt: „Docker-Hub-Push habe ich erledigt“.
+Der Image-Push ist damit durch Mike als ausgeführt gemeldet. Ein unabhängiges
+Registry-/README-Rücklesen durch die KI wurde nicht nachgetragen (Verify #7).
+Die nachstehenden Zwischenstände dokumentieren die frühere Bearbeitung und
+erzeugen keinen neuen Auftrag.
 
-## Umfang und Umsetzung
+**Für Mike:** Kein offener Abnahmeschritt in diesem Ticket. Die Unraid-Vorlage
+liegt ausschließlich im zentralen Templates-Repository.
+
+## Ursprünglicher Umfang und Umsetzung
 
 1. Dockerfile, Laufzeitkonfiguration, Build-Kontext und bestehende Targets prüfen.
 2. Aktuellen BashLib-Buildablauf übernehmen: lokaler Testbuild, expliziter
@@ -44,11 +42,17 @@ getrennt dokumentiert. Kein Versionssprung oder Master-Merge impliziert.
 |---|---|:--:|
 | 1 | Dockerfile, Laufzeit-API und Healthcheck am amd64-Release-Build f70516e geprüft | ✅ |
 | 2 | Help, Make-Dry-Runs und 19 Prozessgrenzen-Tests zu Plattform-/Push-Fehlern erfolgreich | ✅ |
-| 3 | Zentraler README-Helfer; Vorschau/Upload wählen docker/README.md; Reihenfolge/Fehlercodes geprüft, Live-Aufruf offen | ✅ |
-| 4 | Eigene Docker-Anleitung: echte Vorschau 4.734 UTF-8-Bytes, früher GitHub-Link und korrekte Dokumentlinks; AGENTS-Regel angepasst | ✅ |
+| 3 | Zentraler README-Helfer; Vorschau/Upload wählen docker/README.md; Reihenfolge/Fehlercodes geprüft, Live-Übertragung nicht unabhängig geprüft | ✅ |
+| 4 | Eigene Docker-Anleitung: letzte Vorschau 4.772 UTF-8-Bytes, früher GitHub-Link und korrekte Dokumentlinks; AGENTS-Regel angepasst | ✅ |
 | 5 | Echter amd64-Container: Desktop 1440 und Mobile 390, Testdepot/Neuladen/Kursverlauf erfolgreich | ✅ |
 | 6 | 783 Tests, Lint, Typecheck, ShellCheck/XML; Doku und Lessons abgeglichen | ✅ |
-| 7 | Image auf Docker Hub, Architektur/Tag und README-Rücklesen belegt | ➖ |
+| 7 | Image-Push durch Mike als erledigt bestätigt; unabhängiger Architektur-/Tag- und README-Rücklesen-Nachweis fehlt | ➖ |
+
+## Historische Bearbeitung
+
+Die folgenden Abschnitte geben die jeweiligen Zwischenstände wieder. Frühere
+Aussagen zu offenen Veröffentlichungen und Übergaben sind keine aktuellen
+Arbeitsaufträge; maßgeblich sind der Abschluss oben und Verify #7.
 
 ## Konventionsstand und Abhängigkeit
 
@@ -692,3 +696,38 @@ beauftragt. Vor der Integration erneut `make test`: 61 Dateien, 783 Tests grün;
 README-Vorschau und `git diff --check` ebenfalls erfolgreich. Der Auftrag
 veröffentlicht die gemeinsame Bilddatei auf GitHub; die ergänzte Bildunterschrift
 im Docker-Hub-Text benötigt weiterhin dessen separate README-Übertragung.
+
+
+## Abschluss auf Mikes Entscheidung · 2026-09-26
+
+Mike bestätigt: „T-49 ist erledigt“ und anschließend:
+„Docker-Hub-Push habe ich erledigt“. Die bereits vorgemerkte Verschiebung nach
+`40-done/` wird damit als Abschluss übernommen. Der Observer-Hinweis auf den
+Widerspruch zwischen Ablage und STATUS ist verarbeitet; beide Mailboxen sind
+geleert. Die Rückgaben der Runden 3 und 4 stehen bereits vollständig in den
+Reviewer-Abschnitten dieses Tickets. Rollen und letzte Reviewreferenz bleiben
+erhalten, aktive Ticket-/Prioritätsfelder sind inaktiv und die Phase ist `idle`.
+
+**Nachträge auf GitHub:** Screenshot `6ea0305`; englische Unraid-Anleitung mit
+wget-Beispiel `2d0ce6a`; zentrale Anleitung `9a1e122`; Apps als Standard und
+wget als Testinstallation `7e3c5af`. Alle vier Commits liegen auf `origin/master`.
+Die parallelen Korrekturen in StockInfo (`a26fbbf`) und PersonalSkills (`a7ef9c5`)
+bleiben in ihren eigenen Repositories.
+
+**Prüfung:** Für den letzten README-Stand liefen 61 Testdateien/783 Tests,
+`make lint` und `make typecheck` erfolgreich. Die Docker-Hub-Vorschau umfasst
+4.772 UTF-8-Bytes; lokale Links, Sprungziele und Shell-Beispiele wurden geprüft.
+Für diesen reinen Board-Abschluss werden Ablage, Verweise, inaktive Felder,
+beibehaltene Reviewreferenz und `git diff --check` geprüft. Kein neuer Produktlauf,
+Image-Push oder Unraid-Live-Test wird daraus abgeleitet.
+
+**Doku-Abgleich:** Ticketkopf und historische Zwischenstände eingeordnet;
+`_tickets/STATUS.md` auf Abschluss/idle gesetzt; `_tickets/README.md` auf das
+archivierte Ticket verlinkt; vorhandene Aktivitätsmeldungen werden mit versioniert.
+Projekt-README (Docker) und Unraid-README (Einleitung/Installation) nennen
+das Image nach Mikes Bestätigung als veröffentlicht. Die Docker-README beschreibt
+bereits das veröffentlichte Image und bleibt inhaltlich passend; dort ist keine
+Änderung nötig. Die CA-Listung wird weiterhin nicht als verifiziert behauptet.
+Board-/Lessons-Konventionen bleiben unverändert; im Skill
+`task-verification-workflow` samt Referenzen und Vorlagen ist keine Anpassung nötig.
+SP-CX-02 ist durch den Abgleich aller aktuellen Statusaussagen berücksichtigt.

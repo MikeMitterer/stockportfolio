@@ -5,14 +5,13 @@ come from a separate StockInfo instance. The maintained template lives in the
 [MikeMitterer/unraid-templates](https://github.com/MikeMitterer/unraid-templates)
 repository at `templates/stockportfolio.xml`. The local working copy of that
 repository is at `/Volumes/DevLocal/DevUnraid/Production/Templates`.
-The template is published through that Git repository. The image has not been
-pushed to Docker Hub yet; installation requires it to be published first.
+The template is published through that Git repository. The image is available
+on [Docker Hub](https://hub.docker.com/r/mangolila/stockportfolio).
 
 ## Installing through Unraid Apps
 
 Use **Apps / Community Applications** in the Unraid web interface for a normal
-installation. Once the image is published and StockPortfolio is available in
-the catalog:
+installation. Once StockPortfolio is available in the catalog:
 
 1. Open **Apps** and search for **StockPortfolio**.
 2. Select the application and click **Install**.

@@ -337,7 +337,6 @@ good idea on a phone.
 
 The Docker Hub image name is
 [`mangolila/stockportfolio`](https://hub.docker.com/r/mangolila/stockportfolio).
-Publication is planned; the image has not been pushed to Docker Hub yet.
 It contains the finished bundle and a static Node server (`serve`) — no nginx,
 no application API, database or volumes.
 

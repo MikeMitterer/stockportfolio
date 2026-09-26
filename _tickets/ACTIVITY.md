@@ -1,5 +1,16 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 18:39:59 CEST · codex-observer · T-49-Abschluss abgeglichen: Mikes Abschlussentscheidung und selbst erledigter Hub-Push sind dokumentiert; Ablage und STATUS stehen konsistent auf done/idle. Alle eigenen offenen Koordinationshinweise sind verarbeitet, Beobachtung läuft weiter.
+- 2026-09-26 18:39:36 CEST · codex · T-49 ist auf Mikes Entscheidung erledigt; Mike hat auch den Docker-Hub-Push bestätigt. Board und veraltete Veröffentlichungshinweise in den READMEs sind abgeglichen.
+- 2026-09-26 18:38:51 CEST · codex · Schließt T-49 auf Mikes Bestätigung ab, gleicht Ticket und Board ab und nimmt die bisher offenen Board-Dateien in Commit und Push auf. Der Docker-Hub-Push bleibt technisch unbelegt.
+- 2026-09-26 18:32:54 CEST · codex · Stellt die normale Unraid-Installation über Apps voran und kennzeichnet wget als Testinstallation. README und zentraler Skill werden anschließend getrennt committet, gemergt und gepusht.
+- 2026-09-26 18:26:14 CEST · codex · README-Abgleich mit unraid-conventions abgeschlossen: zentrale Unraid-Anleitung samt Updates, beide READMEs verlinken sie. Links, Shell-Syntax und Docker-Hub-Vorschau (4.772 Bytes) geprüft.
+- 2026-09-26 18:25:44 CEST · codex · Gleicht die READMEs mit unraid-conventions ab: Unraid-Details zentral in unraid/README.md, kurze Verweise in Projekt- und Docker-README.
+- 2026-09-26 18:10:12 CEST · codex-observer · T-49: Widerspruch zwischen archivierter Ticketdatei und weiter aktivem STATUS gemeldet. Coder um konsistenten Abschluss oder Wiederherstellung der aktiven Ablage samt Einordnung des offenen Hub-Pushs gebeten.
+- 2026-09-26 18:07:25 CEST · codex · wget-Installation in README.md und unraid/README.md ergänzt. Download-URL erreichbar, Befehle syntaktisch geprüft; docker/README.md verweist bereits auf die passende Anleitung.
+- 2026-09-26 18:06:50 CEST · codex · Ergänzt die wget-Installation der Unraid-Vorlage nach dem Vorbild der StockInfo-README.
+- 2026-09-26 18:05:56 CEST · codex · unraid/README.md ist vollständig englisch. Befehle und Links unverändert geprüft; Docker-, API- und Backup-Angaben stimmen mit beiden READMEs überein.
+- 2026-09-26 18:05:51 CEST · codex · Übersetzt unraid/README.md auf Mikes Auftrag ins Englische und gleicht die Angaben mit Projekt- und Docker-README ab.
 - 2026-09-26 17:55:23 CEST · codex · Prüft und integriert den aktualisierten Dashboard-Screenshot samt beiden README-Beschreibungen nach master; Git-Push durch Mike beauftragt.
 - 2026-09-26 17:53:34 CEST · codex · Gleicht die Screenshot-Beschreibung im Docker-README mit dem Projekt-README ab und erneuert die Docker-Hub-Vorschau.
 - 2026-09-26 17:51:11 CEST · codex · Dashboard-Screenshot in Englisch mit fünf Testpositionen erneuert und visuell geprüft. Gemeinsame Bildverweise für README, Docker Hub und Unraid bleiben gültig; noch nicht gepusht.
@@ -39,16 +50,5 @@
 - 2026-09-26 11:40:13 CEST · codex · beginnt T-48: REST-Typkatalog anbinden, offene Typkennungen speichern und dynamische Linkfilter ohne Datenverlust umsetzen.
 - 2026-09-26 11:27:55 CEST · codex · verarbeitet die über Claude weitergeleiteten Abnahmen für T-40, T-44 und T-46 sowie Mikes direkte Abnahme für T-47. Danach ist doing leer und das Board ohne aktiven Auftrag.
 - 2026-09-26 11:25:44 CEST · claude · Mikes Chat-Entscheidung 'T-46 ist erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
-- 2026-09-26 11:22:59 CEST · claude · Mikes Chat-Entscheidung 'T-40 und T-44 sind erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
-- 2026-09-26 11:18:10 CEST · codex · hat Mikes Abschlussabnahme für T-39 dokumentiert und das Ticket nach done verschoben. Status und Verweise sind aktualisiert.
-- 2026-09-26 11:14:19 CEST · codex · hat Mikes Abschlussabnahme für T-38 dokumentiert und das Ticket nach done verschoben. Statusangaben und Verweise werden auf den neuen Stand abgeglichen.
-- 2026-09-26 11:12:12 CEST · claude · T-46 Runde 6 technisch freigegeben: KPI-Basiswährung nicht mehr abgeschnitten, Zielmarkierung hinter Header (isolation:isolate, gegen UxTopbar-Quellcode geprüft), Delta Bestand zeigt '0' statt '-0' (live bestätigt, 58 Dateien/750 Tests grün); Owner zurück an Codex
-- 2026-09-26 11:04:46 CEST · codex-observer · Runde-6-Übergabe von T-46 geprüft und KPI-Kürzung sowie Zielmarkierung vor dem Header als getrennte Layout-Einzelfälle eingeordnet. Konkrete Gegenproben im Ticket festgehalten; keine neue Lesson ohne belegte Musterwiederholung.
-- 2026-09-26 11:04:14 CEST · codex · hat Zielmarkierung, Ganzzahl-Delta und Basiswährungsanzeige korrigiert und im Browser geprüft. 750 Tests, Lint und Typecheck grün; T-46 Runde 6 liegt bei Claude.
-- 2026-09-26 11:00:38 CEST · codex · korrigiert die über dem Header sichtbare Zielmarkierung, rundet Delta Bestand und behebt Claudes Befund zur abgeschnittenen Basiswährung.
-- 2026-09-26 10:57:22 CEST · claude · T-46 Runde 5 mit changes_requested zurückgegeben: neuer Basiswährungs-Hinweis an der Gesamtwert-Karte wird bei üblicher Desktop-Breite zu 'Basiswährung: E…' abgeschnitten (live gemessen); Icons/Tooltip/Statuszeile sonst bestätigt (58 Dateien/750 Tests grün)
-- 2026-09-26 10:54:41 CEST · codex-observer · T-46/Runde 5 blieb mindestens 15 Minuten ohne erkennbaren Prüfstart. Claude über die OUTBOX um Übernahme oder konkreten Verzögerungsgrund gebeten; Rollen und Prüffassung unverändert gelassen.
-- 2026-09-26 10:42:05 CEST · codex · hat die gewünschte Ganzzahl-Anzeige für Delta Bestand als T-46-Nachtrag erfasst. Wartet auf Claudes Rückgabe von Runde 5; die Prüffassung bleibt unverändert.
-- 2026-09-26 10:38:35 CEST · codex · hat sechs dezente Typ-SVGs und die sichtbare Basiswährung geprüft (750 Tests, Desktop/Mobile). T-46 Runde 5 ist an Claude übergeben; Produktstand bleibt bis zum Review stabil.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
