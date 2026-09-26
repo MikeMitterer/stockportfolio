@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 14:21:02 CEST · codex · Mike hat Commit, Merge und Git-Push beauftragt; Docker Hub folgt separat. 783 Tests, Lint und Typecheck erfolgreich; zentrale Unraid-Vorlage separat committed.
+- 2026-09-26 14:16:44 CEST · codex · Unraid-Vorlage im zentralen Templates-Repository abgelegt und auf Mikes Auftrag die lokale XML-Kopie gelöscht. Anleitung und AGENTS zeigen auf die einzige Quelle; XML geprüft, nichts veröffentlicht.
+- 2026-09-26 14:13:31 CEST · codex · Docker-Skill-Abgleich abgeschlossen und als Runde 3 an Claude übergeben: Push-Marker korrigiert, Vorschauen ausgeschlossen, Anleitungen ergänzt. 783 Tests grün; Docker-Hub-Push steht wie geplant noch aus.
+- 2026-09-26 14:03:56 CEST · codex · gleicht T-49 mit docker-conventions, docker-build-script und unraid-ca-template ab; prüft Build-Marker bei frühem Fehler und ergänzt konkrete Doku-/Ignore-Lücken.
 - 2026-09-26 13:51:25 CEST · claude · T-49 Runde 2 technisch freigegeben: eigenes docker/README.md live per echtem ProjectTools-Helfer geprüft (4.078 Bytes exakt bestätigt, GitHub-Link/absolute Links korrekt), neue README-Pflegeregel gegengeprüft (keine Abweichung); Owner zurück an Codex für die Veröffentlichung
 - 2026-09-26 13:49:10 CEST · codex · übernimmt auf Mikes Auftrag die README-Pflegeregel aus StockInfo AGENTS.md/T-77: beide Anleitungen inhaltlich abgleichen und unveränderte Gegenstücke begründen.
 - 2026-09-26 13:46:02 CEST · codex · hat docker/README.md und die beidseitigen Links fertiggestellt; echte Hub-Vorschau 4.078 Bytes. Übergibt den begrenzten README-Nachtrag 8a8e77a an Claude.
@@ -46,9 +50,5 @@
 - 2026-09-26 09:58:58 CEST · codex · StockInfo T-73 liegt im Backlog, StockPortfolio T-48 erfasst die dynamische Übernahme. Übersetzungsfehler bei neuen Links korrigiert, DE/EN im Browser geprüft; 743 Tests grün, T-46 Runde 3 an Claude übergeben.
 - 2026-09-26 09:56:53 CEST · claude · T-46 Runde 2: changes_requested — links.newLink erscheint als roher Schlüssel beim Verweis hinzufügen (live bestätigt); übrige Änderungen ohne Befund; Owner zurück an codex
 - 2026-09-26 09:56:22 CEST · codex · Dynamische Plugin-Typen geprüft: StockPortfolio begrenzt sie fälschlich auf stock/etf. Vollständiger REST-Typkatalog fehlt aktuell; Bedarf als StockInfo T-73 und konsumierende Übernahme als StockPortfolio T-48 erfasst.
-- 2026-09-26 09:46:34 CEST · claude · startet unabhängigen Review von T-46 Runde 2, Fassung fd52010
-- 2026-09-26 09:45:22 CEST · codex-observer · Den neuen links.newLink-Befund an Aufruf und beiden Sprachkatalogen bestätigt und als Einzelbefund in T-46 eingeordnet. Erwartete Gegenprobe für Coder und Verifier: Link in Deutsch und Englisch anlegen, ohne rohen Übersetzungsschlüssel.
-- 2026-09-26 09:43:15 CEST · codex · Fehler beim neuen Link lokalisiert: Übersetzung liegt unter instruments.newLink statt links.newLink. Claude um Rückgabe des Owners zur Korrektur gebeten; laufende Prüffassung bleibt stabil.
-- 2026-09-26 09:42:37 CEST · codex · Link-Einstellungen wieder kompakt; Desktop und Mobile geprüft, 741 Tests sowie Lint und Typecheck grün. T-46-Nachträge als fd52010 in Runde 2 an Claude übergeben.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

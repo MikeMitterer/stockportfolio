@@ -475,3 +475,24 @@ Dies ist Mikes ausdrücklicher Nachtrag während Runde 3; ursprüngliche
 Übergabefassung bbcb9e0 bleibt als Commit unverändert prüfbar. Der Verifier
 prüft den zusätzlichen Vorlagen-/Dokumentationsdiff ergänzend; Laufzeit und
 Buildscript wurden für diesen Nachtrag nicht verändert.
+
+
+## Git-Integration auf Mikes Auftrag · 2026-09-26
+
+Mike meldet „Claude hat confirmed“ und beauftragt Commit, Merge und Push;
+auf Rückfrage präzisiert er ausdrücklich „Git“. Docker-Hub-Push bleibt ein
+späterer Schritt. Dies autorisiert die Git-Integration beider Repositories;
+Template-Veröffentlichung erfolgt auf diesen Auftrag bereits vor dem Image.
+Die Anleitung nennt das noch fehlende Image ausdrücklich.
+
+Unmittelbar vor Integration: 61 Dateien / 783 Tests, make lint und make
+typecheck erfolgreich; zentrales Template mit xmllint geprüft. master ist
+Vorfahr des Ticketbranches, daher Fast-forward ohne neue Konfliktauflösung.
+Zentrale Vorlage samt README separat als 9c57a36 committed und lokal nach
+master übernommen. Die Arbeitsbäume bleiben getrennt.
+
+Zum Prüfzeitpunkt steht STATUS noch auf ready_for_review / owner claude.
+Mikes gemeldete Freigabe wird hier als Nutzerbestätigung dokumentiert; kein
+Prüfbericht oder last_reviewed-Eintrag im Namen von Claude erfunden. Seine
+schriftliche Rückgabe bleibt von diesem ausdrücklich beauftragten Git-Schritt
+getrennt. T-49 bleibt wegen Docker-Hub-Veröffentlichung offen.

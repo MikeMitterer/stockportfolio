@@ -6,8 +6,8 @@ liegt im Repository
 [MikeMitterer/unraid-templates](https://github.com/MikeMitterer/unraid-templates)
 unter `templates/stockportfolio.xml`. Die lokale Arbeitskopie dieses Repositories
 liegt unter `/Volumes/DevLocal/DevUnraid/Production/Templates`.
-Vorlage und Docker-Image sind für die Veröffentlichung vorbereitet; der Push
-steht noch aus.
+Die Vorlage wird über dieses Git-Repository veröffentlicht. Der Docker-Hub-Push
+des Images steht noch aus; die Installation setzt dessen Veröffentlichung voraus.
 
 ## Lokale Vorlage testen
 
