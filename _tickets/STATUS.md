@@ -9,10 +9,12 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-09-26 Dockerfile-Prüfung, Make-Anbindung, Veröffentlichung und die
 README-Übernahme nach StockInfo T-77 beauftragt. Claude hat Runde 1
 (`f70516e`) technisch freigegeben — mit eigenem arm64-Testbuild und echtem
-Container, nicht nur den Coder-Angaben. Mikes Nachtrag ist als `8a8e77a` umgesetzt:
-eigenes `docker/README.md`, früher GitHub-Link und Links aus dem Projekt-README.
-Claude ist für die begrenzte Runde 2 am Zug; Veröffentlichung danach.
-T-48 ist durch Mike abgeschlossen. T-35/T-36 bleiben im Backlog.
+Container, nicht nur den Coder-Angaben. Mikes Nachtrag (eigenes
+`docker/README.md`, früher GitHub-Link, gegenseitige Links) ist in der
+begrenzten Runde 2 (`8a8e77a`) ebenfalls technisch freigegeben — Vorschau
+selbst mit dem echten Shared-Helfer erzeugt, 4.078 Bytes bestätigt.
+Veröffentlichung durch Codex steht aus. T-48 ist durch Mike abgeschlossen.
+T-35/T-36 bleiben im Backlog.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 `codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
@@ -27,15 +29,15 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `handoff_commit`: `8a8e77a`
+- `handoff_commit`: `8a8e77aba50828bdcfa6173b7ad33f12e50c2db5`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `last_reviewed_commit`: `f70516e83068a3d91257449776f8c49671b33561`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `8a8e77aba50828bdcfa6173b7ad33f12e50c2db5`
+- `last_reviewed_round`: `2`
 - `workstream`: `dockerhub-release`
 - `priority_chain`: `T-49-dockerhub-veroeffentlichung.md`
 - `priority_ticket`: `T-49-dockerhub-veroeffentlichung.md`
@@ -238,3 +240,14 @@ für diesen Doku-/Upload-Nachtrag nötig. Runde-1-Belege bleiben erhalten.
 Der echte Docker-/README-Push bleibt bei Codex nach Freigabe. Deine Hinweise
 zu lokalem Marker/latest sind im Ticket erhalten; Codex kontrolliert die
 unveränderliche Image-ID vor Veröffentlichung erneut. Kein Push erfolgt.
+
+**Weiterer ausdrücklicher Auftrag von Mike · README-Pflegeregel:** Codex hat
+während dieser Runde ausschließlich die Regel in `AGENTS.md` ergänzt,
+übernommen aus StockInfo AGENTS/T-77, Abschnitt „Beide READMEs dauerhaft
+aktuell halten“. Bei Funktions-/Konfigurations-/Installations-/Betriebsänderungen
+und Änderungen an einer Anleitung beide READMEs inhaltlich abgleichen;
+Anpassung oder begründetes Unverändertlassen im Doku-Abgleich dokumentieren.
+Bitte im laufenden Review berücksichtigen. Prüffassung der App und Scripts,
+Owner und Reviewrunde bleiben unverändert. Doku-Abgleich: beide READMEs brauchen
+für diese interne Pflegeregel keine Inhaltsänderung. Keine allgemeine
+Board-/Lessons-Konvention geändert; daher keine Änderung am Tickets-Skill.

@@ -266,8 +266,19 @@ Der Skill beschreibt Verfahren und Format; er erhält keine zweite Wissenskopie.
 Bei Änderungen an Verhalten, Verträgen, Konfiguration, Installation oder
 beschlossenem Umfang gehört der **Doku-Abgleich zum selben Auftrag**. Mike muss
 betroffene Anleitungen nicht eigens nennen. Betroffen sind hier vor allem
-`README.md` als Benutzersicht, die Dateien unter `docs/` und die Unraid-Vorlage
-unter `unraid/`.
+`README.md` als Projektanleitung, `docker/README.md` als Container-Anleitung,
+die Dateien unter `docs/` und die Unraid-Vorlage unter `unraid/`.
+
+**Beide READMEs gemeinsam prüfen:** Bei Änderungen an Funktionen,
+Konfiguration, Installation oder Betrieb immer `README.md` und
+`docker/README.md` abgleichen. Das gilt sowohl für Codeänderungen als auch
+für Änderungen an einer der beiden Anleitungen. Gemeinsame Aussagen müssen
+übereinstimmen; Entwickleranleitungen gehören ins Projekt-README,
+Containeranleitungen in `docker/README.md`.
+Der Doku-Abgleich im Ticket beziehungsweise Abschlussbericht nennt die
+nötigen Anpassungen oder begründet, weshalb die andere Datei unverändert
+bleibt. Der Verifier prüft die inhaltliche Übereinstimmung; Änderungen an
+beiden Dateien allein sind kein Nachweis.
 
 Der Bearbeiter ermittelt die betroffenen Dokumente über ein Datei- und
 Überschrifteninventar und verfolgt die geänderten Zusagen gezielt durch sie
