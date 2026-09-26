@@ -126,6 +126,7 @@ const emit = defineEmits<{
 
   &__row {
     @include row(var(--space-2), baseline);
+    flex-wrap: wrap;
     min-width: 0;
   }
 
@@ -182,12 +183,12 @@ const emit = defineEmits<{
   }
 
   &__hint {
-    overflow: hidden;
+    flex-shrink: 0;
+    max-width: 100%;
     font-size: 0.6875rem;
     line-height: 1.25;
     @include muted(null);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
 }
 </style>

@@ -96,6 +96,7 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
 
   &__track {
     position: relative;
+    isolation: isolate;
     flex: 1;
     height: 1.25rem;
     overflow: hidden;

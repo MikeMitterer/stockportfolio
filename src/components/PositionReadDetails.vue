@@ -8,7 +8,7 @@ import { formatAge } from '@/composables/useRelativeTime'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields, hasDetailContent } from '@/domain/detailFields'
 import { resolveLinks } from '@/domain/links'
-import { integer, money, number, percent } from '@/domain/formatters'
+import { integer, money, percent } from '@/domain/formatters'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import PositionDetailFields from '@/components/PositionDetailFields.vue'
 import PriceChart from '@/components/PriceChart.vue'
@@ -120,7 +120,7 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
           <div><dt>{{ t('drilldown.lowerBand') }}</dt><dd>{{ formatMoney(row.lowerBand) }}</dd></div>
           <div><dt>{{ t('drilldown.upperBand') }}</dt><dd>{{ formatMoney(row.upperBand) }}</dd></div>
           <div v-if="optimalUnits !== null"><dt>{{ t('drilldown.optimalUnits') }}</dt><dd>{{ integer(optimalUnits) }}</dd></div>
-          <div><dt>{{ t('dashboard.unitsDelta') }}</dt><dd>{{ number(row.unitsDelta) }}</dd></div>
+          <div><dt>{{ t('dashboard.unitsDelta') }}</dt><dd>{{ integer(Math.round(row.unitsDelta) || 0) }}</dd></div>
         </template>
       </dl>
     </section>

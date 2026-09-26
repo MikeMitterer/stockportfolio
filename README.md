@@ -184,6 +184,7 @@ Daily closing prices change once a day, so they are cached in IndexedDB and
 fetched at most once per day per security.
 
 The **Valuation** area shows the position's market value, target and bands.
+Its unit delta is displayed as a whole number; calculations retain their precision.
 The pencil icon opens the edit dialog. **Save** applies the changes;
 **Cancel** and the close icon discard them. **Delete** stays separate on the
 left and asks for confirmation.

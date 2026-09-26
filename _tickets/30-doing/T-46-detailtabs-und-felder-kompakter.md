@@ -520,15 +520,15 @@ SP-CX-04: vorhandenes Browser-Testdepot weiterverwendet. Keine StockInfo-
 Produktänderung, keine vorweggenommene vollständige Typkatalog-Integration.
 
 
-## Offener Nutzer-Nachtrag · Delta Bestand als ganze Stückzahl
+## Nutzer-Nachtrag · Delta Bestand als ganze Stückzahl
 
 Mike, 2026-09-26: „Bei der Bewertung in den Detail-Ansicht - Delta Bestand
 Stück - runde auf die volle Stückzahl“.
 
-Nach Rückgabe der Runde 5 umsetzen: Stückanzeige bei Delta Bestand auf eine
-volle Stückzahl runden, positive und negative Werte berücksichtigen. Die
-Berechnung selbst bleibt präzise. Desktop/Mobile im Browser prüfen.
-Dieser Nachtrag ist noch nicht Teil der Prüffassung `1124b4b`.
+Nach Rückgabe der Runde 5 umgesetzt: Stückanzeige bei Delta Bestand auf eine
+volle Stückzahl runden; gerundete Null ohne Minuszeichen. Die Berechnung selbst
+bleibt präzise. Browser Desktop/Mobile geprüft. Dieser Nachtrag war nicht Teil
+der Prüffassung `1124b4b`.
 
 ## Reviewer-Prüfung (Claude, Runde 5, Fassung `1124b4b`) — `changes_requested`
 
@@ -595,3 +595,28 @@ Layout der Gesamtwert-Karte (z. B. eigene Zeile für den Hinweis oder
 unverändert stabil. Der offene Nutzer-Nachtrag „Delta Bestand als ganze
 Stückzahl“ ist unabhängig davon und kann mit der Korrektur zusammen umgesetzt
 werden.
+
+
+## Korrekturen nach Runde 5 · Codex
+
+- Claudes Hinweis auf die abgeschnittene Basiswährung behoben: KPI-Zeilen
+  können umbrechen, Hinweise schrumpfen nicht und dürfen bei Bedarf selbst
+  umbrechen. Kein Abschneiden per Ellipse mehr. Browser mit zusätzlichem
+  64-px-Verlaufsplatz und auf 220 px begrenzter Zeile: Hinweisbreite 101/101 px,
+  kein innerer Überlauf; Mobile 390 px ebenfalls vollständig.
+- Mikes Screenshotbefund: Gruppen-Zielmarkierung und Header hatten beide
+  z-index 10. Vorher lag die Markierung bei Überlappung vor der Navigation
+  (elementsFromPoint), nach Isolation des Balkens hinter dem Header.
+  Dieselbe Isolation für die Zielmarkierung des Delta-Balkens übernommen.
+  Header, Transparenz und Theme unverändert. Scrollprobe bei 1200×550 px
+  im echten Dashboard vor/nach Änderung, Screenshot ohne durchscheinenden Strich.
+- Delta Bestand in der Bewertung als ganze Stückzahl, keine negative Null.
+  Desktop und Mobile mit bestehendem Testdepot geprüft, keine Speicheränderung.
+- `make test`: 750 Tests / 58 Dateien; `make lint`, `make typecheck`,
+  `git diff --check` grün. Keine neuen Bezeichner; vorhandene englische
+  Namen beibehalten. Desktopansicht wiederhergestellt.
+
+**Doku-Abgleich:** README „Position information“ nennt die gerundete
+Stückanzeige bei unveränderter Rechengenauigkeit. Layoutkorrekturen verändern
+keine weiteren dokumentierten Verträge. Keine Änderung an Board-Konventionen;
+deren offene Übernahme bleibt unverändert sichtbar.

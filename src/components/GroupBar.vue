@@ -90,6 +90,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
   &__track {
     position: relative;
+    isolation: isolate;
     flex: 1;
     height: 1.5rem;
     overflow: hidden;
