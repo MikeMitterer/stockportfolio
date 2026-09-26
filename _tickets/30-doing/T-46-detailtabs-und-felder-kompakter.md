@@ -1,7 +1,7 @@
 # T-46 · Detailtabs und Felder kompakter
 
 **Stand:** Mike hat die Anpassungen am 2026-09-26 während T-45 beauftragt.
-T-46 folgt nach T-45 und der vorgezogenen Cash-Korrektur T-47; noch keine Produktumsetzung.
+T-46 ist nach der technischen Freigabe von T-47 jetzt aktiv; Umsetzung durch Codex.
 
 ## Für dich
 
@@ -40,4 +40,19 @@ Umsetzung, technische Freigabe und menschliche Abnahme offen.
 Die Symbole zum Öffnen/Schließen aller Asset-Gruppen sollen probeweise die
 Akzentfarbe verwenden. Herkunft geprüft: aktuell Unicode `⊟` und `⊞` in
 `DashboardView.vue`, keine Icon-Bibliothek. Bestehenden Verzicht auf Buttonfläche
-und Rand erhalten; keine ungefragte neue Symbolfamilie einführen.
+und Rand erhalten.
+
+**Mikes Auswahl:** „SVG-Vorschlag passt“. Genehmigt ist das gezeigte Paar
+Microsoft Codicons `collapse-all` / `expand-all` (gestapelte Flächen, Minus/Plus),
+in Akzentfarbe und bündig zur Überschrift. Die bisherigen Unicode-Zeichen
+werden dadurch ersetzt. Quelle: https://github.com/microsoft/vscode-codicons.
+
+## Weitere Nutzerwünsche · 2026-09-26
+
+- Löschbestätigung: mehr Platz um Text und zwischen Text und Schaltflächen.
+- Gespeicherte Positionsnotizen unterhalb der Button-Leiste in den Detailinfos
+  anzeigen. Ohne Notiz kein Leerraum; mehrzeiliger Text muss mobil umbrechen.
+
+**Offene Übernahme:** Lokaler Board-Stand `2026-09-11-activity-feed` gegenüber
+Skill `2026-09-11-lessons-follow-through`: allgemeine Übernahme bleibt für Mike
+bzw. ausdrücklich beauftragte Board-Pflege offen. Keine Konventionsänderung hier.

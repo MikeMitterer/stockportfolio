@@ -5,10 +5,11 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-47 ist der aktive Auftrag:** Codex hat das Wiederanlegen des Verrechnungskontos umgesetzt;
-Fassung `4c51480` liegt bei Claude zur Prüfung. T-45 wurde von Claude in Runde 1 technisch freigegeben
-(`8ae20a6`); Mikes Abschlussabnahme bleibt offen. T-44 ist ebenfalls technisch
-freigegeben (`d38a8f5`) und wartet auf menschliche Abnahme.
+**T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
+mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
+T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
+T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
+T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
 T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
 Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
@@ -36,18 +37,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
-- `handoff_commit`: `4c514804c24cb289428cfd34308ebe3da085edc5`
-- `review_round`: `1`
-- `owner`: `claude`
+- `phase`: `implementing`
+- `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
-- `last_reviewed_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
-- `last_reviewed_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
+- `last_reviewed_ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
+- `last_reviewed_commit`: `4c514804c24cb289428cfd34308ebe3da085edc5`
 - `last_reviewed_round`: `1`
-- `workstream`: `restore-cash-position`
-- `priority_chain`: `T-47-verrechnungskonto-wieder-hinzufuegen.md → T-46-detailtabs-und-felder-kompakter.md`
-- `priority_ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
+- `workstream`: `compact-position-details`
+- `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
+- `priority_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -144,7 +145,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
-technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 ist technisch freigegeben; T-47 liegt bei Claude zur Prüfung.
+technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 ist abgeschlossen; T-47 ist technisch freigegeben. T-46 ist aktiv.
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
@@ -153,7 +154,7 @@ T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
 zeilengenauen Dublettenabgleich. T-43 hat diese Darstellung neu geordnet
 und ist abgeschlossen. T-40 wird dafür weder erneut implementiert noch neu
 reviewed; seine menschliche Abschlussabnahme bleibt getrennt.
-Der aktive Auftrag ist [T-47](30-doing/T-47-verrechnungskonto-wieder-hinzufuegen.md).
+Der aktive Auftrag ist [T-46](30-doing/T-46-detailtabs-und-felder-kompakter.md).
 Mike hat T-45 am 2026-09-25 hinter T-44 eingeplant und am 2026-09-26 zur
 Fortsetzung aufgefordert. Die technische Freigabe von T-44 ist verarbeitet;
 dessen offene menschliche Abnahme hält die weitere Prioritätskette nicht auf.
@@ -230,32 +231,14 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 T-47 behebt Mikes neuen Befund vom 2026-09-26: gelöschtes Verrechnungskonto
-kann nicht wieder hinzugefügt werden. Die Funktionskorrektur ist nach T-45 jetzt aktiv.
-T-46 ist auf Mikes Auftrag vom 2026-09-26 danach eingeplant: Kursverlauf
+kann nicht wieder hinzugefügt werden. Die Funktionskorrektur ist technisch freigegeben; Mikes Abschlussabnahme ist offen.
+T-46 ist auf Mikes Auftrag vom 2026-09-26 jetzt aktiv: Kursverlauf
 zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen.
 
 ## INBOX → Coder
 
-**Mike → codex (über claude weitergegeben) · T-45 · Abschlussabnahme.**
-Mike im Chat mit `claude`, 2026-09-26: „T-45 ist OK und passt so“. Das ist
-Mikes menschliche Abschlussentscheidung zu T-45 (Fassung `8ae20a6`, in Runde 1
-technisch freigegeben). Bitte Auflösung entsprechend ergänzen und Ticket samt
-Begleitdateien nach `40-done/` verschieben; der laufende T-47-Auftrag bleibt
-davon unberührt.
+Leer.
 
 ## OUTBOX → Verifier
 
-- An `claude`: T-47 Runde 1, Fassung `4c514804c24cb289428cfd34308ebe3da085edc5`.
-  Cash bei fehlendem Konto im Hinzufügen-Dialog wieder anlegbar, ohne Kursprüfung
-  und ohne Katalog. Store schützt vor doppeltem Konto; gemeinsamer Erzeuger mit
-  Depotstart. Dialog öffnet vor Katalogabruf; Hinzufügen jetzt auch mobil erreichbar.
-  Mikes neuer Wunsch: mobil 16 px Außenabstand, live bei 390 px geprüft.
-  737 Tests/57 Dateien, Lint und Typecheck grün; gezielte Stil-/Komponentenprobe
-  nach Abstandskorrektur ebenfalls grün. Desktop/Mobile löschen → 500,25 EUR und
-  10 % anlegen → Reload bestätigt; bei vorhandenem Cash keine erneute Auswahl.
-  Werkzeuggrenze von fill_form im Ticket dokumentiert, per Zifferntasten geprüft.
-  Testadresse :5189, Testdienst :8899. Doku-/Lessons-Abgleich im Ticket.
-  Danach T-46: kompakte Details, Kursverlauf zuerst, leere Tabs ausblenden,
-  Gruppensymbole probeweise in Akzentfarbe. Produkt bis Rückgabe stabil.
-
-
+Leer.

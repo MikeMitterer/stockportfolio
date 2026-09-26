@@ -35,7 +35,8 @@ ihre bestehende Kursprüfung. Funktioniert auch ohne StockInfo-Katalog.
 
 ## Auflösung
 
-Umgesetzt; unabhängige Freigabe und menschliche Abnahme offen.
+Fassung `4c51480` technisch freigegeben (Runde 1, `claude`). Mikes
+Abschlussentscheidung bleibt offen und wird getrennt dokumentiert.
 
 ## Umsetzung und Selbstprüfung · Codex · 2026-09-26
 
@@ -80,3 +81,46 @@ beauftragte Board-Pflege offen. Keine Änderung allgemeiner Konventionen.
 **Mikes Sichtprüfung · 2026-09-26:** „Breite des Dialogs passt jetzt“.
 Der mobile Außenabstand ist bestätigt; daraus wird keine Abnahme des gesamten
 Cash-Ablaufs oder des Tickets abgeleitet.
+
+## Reviewer-Prüfung (Claude, Runde 1, Fassung `4c51480`)
+
+**Technische Freigabe.** `make test` (57 Dateien, 737 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Seit dem Handoff-Commit betrafen die Folgecommits ausschließlich
+Ticket-Dateien; der Produktstand war während der Prüfung stabil.
+
+Diff `8ae20a6..4c51480` gelesen: `cashPosition()` in `db/seed.ts` ist jetzt der
+gemeinsame Erzeuger für Depotstart und Wiederanlegen. `addCashPosition` im
+Store verhindert eine zweite Cash-Zeile (`positions.some(group === 'cash')`)
+und verwirft nicht-endliche oder außerhalb `[0, 100]` liegende Werte, bevor
+gespeichert wird. `AddPositionDialog.vue` blendet Instrument-Auswahl, Fakten
+und Gruppenfeld bei `isCash` aus, `canSubmit` erlaubt für Cash `units >= 0`
+statt `> 0`. `openAddDialog()` öffnet den Dialog jetzt vor dem Laden des
+Katalogs (nicht mehr blockierend) — deckt „funktioniert auch ohne
+StockInfo-Katalog" ab. Das Dialogfeld nutzt
+`max-width: min(32rem, calc(100vw - 2 * var(--space-4)))`; `--space-4` ist im
+Fundament `1rem` (16 px), also 390 px − 32 px = 358 px bei 390 px Breite —
+deckt sich exakt mit Mikes bestätigter Angabe. `tests/stores/portfolio.spec.ts`
+prüft den Dublettenschutz direkt gegen das Repository (echtes
+fake-indexeddb): zwei aufeinanderfolgende `addCashPosition`-Aufrufe erzeugen
+nur eine gespeicherte Cash-Zeile mit den ersten Werten.
+`tests/components/addCashPosition.spec.ts` bestätigt zusätzlich, dass die
+Kursprüfung (`validateInstrument`) beim Cash-Pfad nicht aufgerufen wird.
+
+Live im Browser (Testdienst Port 8899, App auf `:5189`) nachvollzogen:
+Verrechnungskonto im Testdepot gelöscht (Gesamtwert € 4.000 → Cash-Zeile
+verschwindet), über „Position hinzufügen → Verrechnungskonto“ mit 500,25 EUR
+und 10 % neu angelegt, Gesamtwert wieder € 5.000. Per direktem IndexedDB-Zugriff
+bestätigt: genau eine Cash-Position mit den eingegebenen Werten, keine
+Dublette. Nach Reload blieb der Zustand erhalten (5 Positionen, Verrechnungskonto
+€ 500 / 10,0 %). Eine Beobachtung ohne Befund: Bei einem Testdurchlauf blieb
+der Dialog nach dem Absenden kurz mit dem (jetzt cash-losen) Wertpapier-Formular
+sichtbar, bevor ein Reload den korrekten Endzustand zeigte; die zugrunde
+liegenden Daten waren zu diesem Zeitpunkt bereits korrekt und ohne Dublette,
+ein zweiter sauberer Durchlauf zeigte dieses Verhalten nicht reproduzierbar.
+Vermutlich eine Eigenheit der automatisierten Eingabesequenz (Tab-Navigation),
+kein bestätigter Produktfehler — kein Rückgabegrund. Mobile 390 px und
+Tastaturbedienung wurden nicht erneut live nachgestellt, sondern anhand der
+Codex-Angabe und der Maßeinheiten-Rechnung als plausibel eingestuft.
+
+**Ergebnis:** Fassung `4c51480` technisch freigegeben. Kein `changes_requested`.

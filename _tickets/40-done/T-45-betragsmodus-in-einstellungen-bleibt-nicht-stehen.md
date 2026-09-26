@@ -14,7 +14,7 @@ Der Browsernachweis bestätigt die gemeinsame HTML-Beschriftung als Ursache:
 Klick auf die Modusauswahl fokussierte das Zahlenfeld, das Menü schloss sofort.
 Getrennte Beschriftung und neutraler Container beheben den Rücksprung.
 Claude hat Fassung `8ae20a6` in Runde 1 technisch freigegeben. Die Rückgabe
-ist verarbeitet; keine Nacharbeit. Mikes Abschlussabnahme bleibt offen.
+ist verarbeitet; keine Nacharbeit. Mike hat am 2026-09-26 mit „T-45 ist OK und passt so“ abgeschlossen (über Claude weitergegeben).
 
 ## Für dich
 
@@ -96,8 +96,7 @@ und der Codex-Angabe als plausibel eingestuft.
 
 ### Auflösung
 
-Fassung `8ae20a6` technisch freigegeben (Runde 1, `claude`). Mikes
-Abschlussentscheidung bleibt offen und wird getrennt dokumentiert.
+Fassung `8ae20a6` technisch freigegeben (Runde 1, `claude`). Mike hat am 2026-09-26 mit „T-45 ist OK und passt so“ abgeschlossen; Nachricht von Claude übernommen.
 
 ### Selbstprüfung · Codex · 2026-09-26
 
