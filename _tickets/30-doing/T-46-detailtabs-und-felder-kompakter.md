@@ -30,7 +30,8 @@ weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
 
 ## Auflösung
 
-Umsetzung und Selbstprüfung vorhanden; technische Freigabe und menschliche Abnahme offen.
+Fassung `573d15b` technisch freigegeben (Runde 1, `claude`). Mikes
+Abschlussentscheidung bleibt offen und wird getrennt dokumentiert.
 Mike hat Text-Tabs mit Unterstrich gewählt: ohne Rahmen/Buttonfläche, aktive Akzentlinie; mobil kompakte Bereichsauswahl statt der von Mike beanstandeten zweizeiligen Tabs.
 
 ## Umsetzungshinweis des Observers · 2026-09-26
@@ -136,3 +137,57 @@ keine neuen Theme-Werte und keine Fundamentänderung.
 `make test`: 741 Tests / 57 Dateien, `make lint` und `make typecheck` erfolgreich.
 Browser Mobile 390 px: Bewertung per Auswahl geöffnet, Label aktualisiert und
 Menü geschlossen, Dokumentbreite 390 px. Desktop Textkante bleibt bei x = 65 px.
+
+## Reviewer-Prüfung (Claude, Runde 1, Fassung `573d15b`)
+
+**Technische Freigabe.** `make test` (57 Dateien, 741 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Seit dem Handoff-Commit betraf der Folgecommit ausschließlich
+Board-Dateien; der Produktstand war während der Prüfung stabil.
+
+Diff `4c51480..573d15b` gelesen. `PositionReadDetails.vue`: `section` startet
+bei `history` für Wertpapiere, bei `portfolio` für Cash; `sections` leitet die
+verfügbaren Bereiche zentral ab (Desktop-Tabs und mobile Auswahl teilen sich
+dieselbe Liste), ein `watch` auf `sections` wählt beim Wegfall des aktiven
+Tabs automatisch einen gültigen Bereich. `hasAdditionalInfo` berücksichtigt
+`fields.loading`/`fields.error`/`details == null` zusätzlich zu
+`hasDetailContent`, damit Lade- und Fehlerzustände nicht unerreichbar werden.
+`hasDetailContent` in `domain/detailFields.ts` behandelt 0/„Nein“ als Inhalt
+(Wert ungleich Platzhalter) und Felder mit Metadaten auch ohne Wert als
+Inhalt — konsistent mit der bereits geprüften Logik aus T-43/T-45. Der
+Katalogabruf wurde von `PositionDetailFields.vue` nach `PositionReadDetails.vue`
+verschoben (kein doppelter Request, kein Laden erst nach Tab-Klick).
+Positionsnotiz nutzt Vue-Textinterpolation (`{{ row.position.notes }}`), keine
+`v-html` — kein XSS-Risiko durch Freitext.
+
+Karteninnenabstand (`--space-3` → `--space-2`) ergibt 12 → 8 px, deckt sich
+mit der Angabe. Löschbestätigungs-Padding `var(--space-3) var(--space-2)` =
+12 px vertikal / 8 px horizontal, exakt wie angegeben. `GroupActionIcon.vue`
+mit sauberer CC-BY-4.0-Zuordnung in `THIRD_PARTY_NOTICES.md`; `fill="currentColor"`
+und `aria-hidden="true"` korrekt (Button trägt das eigentliche `aria-label`).
+Gruppen-Caret jetzt `size="md"` und `opacity: 1` (vorher `sm`/0.5) — deckt sich
+mit „mindestens so deutlich wie Positions-Carets“.
+
+`tests/components/positionReadDetails.spec.ts` ist ungewöhnlich gründlich:
+eigener Test bestätigt, dass die Notiz als Text (nicht als HTML) gerendert
+wird (`note.find('img').exists()` ist `false` bei einem eingeschleusten
+`<img onerror>`); weitere Tests decken Tab-Wegfall bei Nullwerten, den
+Fehlerzustand des Katalogs, den Katalogabruf vor Tab-Klick, „Nein“ als
+einzigen Zusatzwert, die Cash-Sonderrolle (nur „Bewertung“) und die
+Naive-Dropdown-Interaktion der mobilen Auswahl (`.n-dropdown-option-body`,
+echte Klicks) ab.
+
+Live im Browser (Testdienst Port 8899, App auf `:5189`) nachvollzogen: AAPL
+geöffnet — „Kursverlauf“ zuerst aktiv, dünne Unterstreichung in Akzentfarbe,
+keine Button-Flächen. Gruppensymbole (Collapse/Expand-all) per
+`getComputedStyle` auf `rgb(196, 186, 177)` bestätigt — exakt die im Ticket
+genannte Farbe, kein Akzent. Mehrzeilige Notiz gesetzt und gespeichert:
+erscheint sofort unterhalb der Tab-/Aktionsleiste mit erhaltenem Zeilenumbruch;
+nach Reload weiterhin vorhanden, Standardbereich weiterhin „Kursverlauf“.
+Die mobile mit 390 px erzwungene mobile Bereichsauswahl (`resize_window`)
+konnte in dieser Sitzung erneut nicht mit echter Fensterbreite nachgestellt
+werden (bekannte Werkzeuggrenze); die zugehörige Komponentenprobe mit echter
+Dropdown-Interaktion und die CSS-Bruchpunktprüfung (`@include below(md)`)
+wurden stattdessen gelesen und für korrekt befunden.
+
+**Ergebnis:** Fassung `573d15b` technisch freigegeben. Kein `changes_requested`.

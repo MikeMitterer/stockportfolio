@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
-Fassung `573d15b` liegt bei Claude zur unabhängigen Prüfung.
+Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben (Belege im
+Ticket); Codex ist für die Verarbeitung und Mikes Abschlussabnahme am Zug.
 T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
 T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
 T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
@@ -38,14 +39,14 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
-- `last_reviewed_ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
-- `last_reviewed_commit`: `4c514804c24cb289428cfd34308ebe3da085edc5`
+- `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
+- `last_reviewed_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
 - `last_reviewed_round`: `1`
 - `workstream`: `compact-position-details`
 - `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
@@ -238,23 +239,22 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-46, Runde 1 · Commit `573d15b37b158f6fe7eb9caf46299caf9085f2b9` ·
+technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
+(grün, 741 Tests). Diff gelesen: gemeinsame `sections`-Ableitung für Desktop-Tabs
+und mobile Auswahl, `watch` wählt bei Tab-Wegfall automatisch einen gültigen
+Bereich, `hasAdditionalInfo` hält Lade-/Fehlerzustand erreichbar. Notiz nutzt
+Textinterpolation, kein `v-html` — kein XSS-Risiko geprüft. Kartenpadding
+12→8 px und Löschbestätigungs-Padding (12/8 px) exakt nachgerechnet.
+Gruppensymbol-Farbe per `getComputedStyle` auf `rgb(196, 186, 177)` bestätigt.
+Live nachvollzogen: „Kursverlauf“ zuerst aktiv mit Unterstrich, mehrzeilige
+Notiz gesetzt/gespeichert/nach Reload erhalten. Mobile 390-px-Probe der
+Bereichsauswahl konnte in dieser Sitzung nicht mit echter Fensterbreite
+wiederholt werden (Werkzeuggrenze); Komponententest mit echter
+Dropdown-Interaktion gelesen und für korrekt befunden. Details im Ticket
+unter „Reviewer-Prüfung“.
 
 ## OUTBOX → Verifier
 
-- `codex` → `claude`: T-46 Runde 1, Fassung `573d15b37b158f6fe7eb9caf46299caf9085f2b9`.
-  Gesamtdiff ab T-47 `4c51480`. Kursverlauf zuerst; gemeinsame Bereichsliste,
-  leere Informations-Tabs entfallen, 0/Nein/Lade-/Fehlerzustand bleiben erreichbar.
-  Feldkatalog wird vor Tab-Auswahl geladen; gültiger Fallback bei Tab-Wegfall.
-  Positionsnotiz unterhalb der Navigation; Browserfixture enthält wiederverwendbare Notiz.
-  Kartenpadding 8 px, geräumigere Löschbestätigung. Codicons-SVGs in normaler
-  Textfarbe (Mike hat Akzentfarbe zurückgenommen), Gruppen-Carets größer/deutlicher.
-  Letzte Nutzerentscheidungen: Desktop bündige Text-Tabs mit dünnem Unterstrich;
-  Mobile einzeilige Bereichsauswahl statt zweizeiliger Tabs; sehr dezenter
-  Hintergrund hinter Navigation, Textkante bleibt bündig.
-  741 Tests/57 Dateien, Lint und Typecheck grün. Desktop 1440/Mobile 390 visuell
-  geprüft; Notiz nach Reload, Menüwechsel, 0/Nein, Cash nur Bewertung, kein Überlauf.
-  Keine StockInfo-Änderung. Testadresse :5189 / Testdienst :8899, Browserfixture im Repo.
-  Doku-/Lessons-Abgleich und offene allgemeine Konventionsübernahme im Ticket.
-  Produktstand bleibt bis Rückgabe stabil. Menschliche Abschlussabnahme offen.
+Leer.
 

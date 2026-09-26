@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 09:26:42 CEST · claude · T-46 Runde 1 technisch freigegeben: Bereichsliste, Notiz-Sicherheit (kein v-html), Padding-Maße und Symbolfarbe per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
+- 2026-09-26 09:19:09 CEST · claude · startet unabhängigen Review von T-46, Fassung 573d15b (Runde 1)
+- 2026-09-26 09:18:05 CEST · codex · übergibt T-46 an Claude: dezente Detailnavigation, Mobile-Auswahl, sichtbare Notizen und Gruppensymbole. Browsercheck und 741 Tests, Lint sowie Typecheck erfolgreich.
+- 2026-09-26 09:11:00 CEST · codex · hat Notizanzeige, kompaktere Felder und Gruppensymbole umgesetzt und auf Desktop/Mobile geprüft. Klärt mit Mike noch die Darstellung der Detailnavigation.
+- 2026-09-26 09:05:10 CEST · codex-observer · T-45-Archivierung und Übergang nach T-47-Freigabe zu T-46 geprüft. Den eigenen T-46-Hinweis auf dauerhafte Prüfpunkte gekürzt und die inzwischen überholte T-45-Aktivitätsangabe entfernt.
 - 2026-09-26 09:03:03 CEST · codex · setzt T-46 um: kompaktere Details, SVG-Gruppensymbole, sichtbare Notizen und mehr Platz in der Löschbestätigung. T-47 ist technisch freigegeben.
 - 2026-09-26 09:02:18 CEST · claude · T-47 Runde 1 technisch freigegeben: Cash-Wiederanlegen (Dublettenschutz, katalogunabhängig, Dialogbreite) per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
 - 2026-09-26 08:51:59 CEST · claude · startet unabhängigen Review von T-47, Fassung 4c51480 (Runde 1)
@@ -45,10 +50,5 @@
 - 2026-09-25 20:42:40 CEST · codex · T-43: Wiederverwendbares Browser-Testdepot als Backup-Fixture abgelegt und in frischem Browserkontext erfolgreich importiert; vier Positionen, Datenlage vollständig. Tests, Lint und Typecheck sind grün.
 - 2026-09-25 20:25:56 CEST · codex · T-43: Bearbeitungsformular nach Nutzerfeedback zentriert und in klare Feldzeilen gegliedert; mobile Depot-, Kursverlauf- und Asset-Bereiche im Browser geprüft.
 - 2026-09-25 20:23:36 CEST · codex-observer · hat im T-43-Arbeitsstand zwei konkrete Hinweise an den Coder gegeben: Kursverlauf-Aussage auf den großen Chart eingrenzen und Cash-Test mit gültigem Instrumenttyp prüfen. Keine Reviewrunde gestartet.
-- 2026-09-25 20:07:33 CEST · codex-observer · hat Mikes Screenshot-Befund zur versetzten Cash-Gruppenzeile in T-44 ergänzt und einen bündigen Spaltenvergleich als Prüfpunkt aufgenommen. Produktcode und Rollen wurden nicht geändert.
-- 2026-09-25 20:06:00 CEST · codex · Die Prioritätskette steht jetzt auf T-43 vor T-44. T-43 bleibt aktiver Coder-Auftrag; T-44 ist eingeordnet und startet erst nach einer eigenen Aktivierung.
-- 2026-09-25 20:05:17 CEST · codex · Die Abgrenzung ist in T-40, T-43, STATUS und der Boardübersicht dokumentiert. T-43 bleibt aktiv; T-40 behält seine technische Freigabe und wartet getrennt auf Mikes Abschlussabnahme.
-- 2026-09-25 20:03:40 CEST · codex-observer · hat T-44 zu getrennten Aktien- und ETF-Gruppen samt Gruppenfilter für Verweise direkt in doing erfasst. T-43 bleibt der aktive Auftrag; Rollen und Priorität sind unverändert.
-- 2026-09-25 20:03:32 CEST · codex · Gleicht T-40 und den aktiven Auftrag T-43 ab: Die Feldprojektion aus T-40 bleibt technische Grundlage; T-43 ordnet ihre Darstellung neu. Ich dokumentiere die Abgrenzung und die getrennten Abnahmen im Board.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
