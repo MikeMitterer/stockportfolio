@@ -8,25 +8,50 @@ repository is at `/Volumes/DevLocal/DevUnraid/Production/Templates`.
 The template is published through that Git repository. The image has not been
 pushed to Docker Hub yet; installation requires it to be published first.
 
-## Installing the template
+## Installing through Unraid Apps
 
-The download command overwrites the target file. If `my-stockportfolio.xml`
-already contains your saved settings, keep it and use the existing template
-instead. To update a running container, see [Updating](#updating).
+Use **Apps / Community Applications** in the Unraid web interface for a normal
+installation. Once the image is published and StockPortfolio is available in
+the catalog:
 
-For a new installation, run this command in the terminal on your Unraid server:
+1. Open **Apps** and search for **StockPortfolio**.
+2. Select the application and click **Install**.
+3. Set **StockInfo API** to an address reachable from your browser and check
+   the host port and other [configuration](#configuration).
+4. Apply the settings to install and start the container, then open its **WebUI**
+   from the **Docker** tab.
+
+If Community Applications is not installed, follow the
+[Unraid setup instructions](https://docs.unraid.net/community-applications/#installing-the-plugin).
+For an existing container, see [Updating](#updating).
+
+The image includes WebUI and icon labels for Unraid. Its healthcheck reports
+the container's health in the Docker tab.
+
+## Test installation with wget
+
+To test the published template manually, download it as a **User template**.
+This is an optional test installation; normal installations use **Apps**.
+The image must already be available to start the test container.
+
+Run this command in the terminal on your Unraid server. Use a separate test
+filename and never overwrite `my-stockportfolio.xml` with saved settings.
+The command replaces any existing `stockportfolio-test.xml`:
 
 ```bash
-wget -O /boot/config/plugins/dockerMan/templates-user/my-stockportfolio.xml \
+wget -O /boot/config/plugins/dockerMan/templates-user/stockportfolio-test.xml \
   https://raw.githubusercontent.com/MikeMitterer/unraid-templates/master/templates/stockportfolio.xml
 ```
 
 Then choose **Docker → Add Container** and select **stockportfolio** under
 **User templates**. Set **StockInfo API** to your API address and check the
-[configuration](#configuration) before starting the container.
+[configuration](#configuration). Use a different container name, such as
+`stockportfolio-test`, and an available host port before starting it alongside
+an existing installation.
 
-The image includes WebUI and icon labels for Unraid. Its healthcheck reports
-the container's health in the Docker tab.
+This downloads the published template with its `TemplateURL` intact. To test
+local XML changes, use the separate procedure below. Remove the test container
+and test template when finished.
 
 ## Testing the local template
 
