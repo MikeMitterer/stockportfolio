@@ -5,8 +5,8 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-47 ist der aktive Auftrag:** Codex ergänzt das Wiederanlegen eines gelöschten
-Verrechnungskontos. T-45 wurde von Claude in Runde 1 technisch freigegeben
+**T-47 ist der aktive Auftrag:** Codex hat das Wiederanlegen des Verrechnungskontos umgesetzt;
+Fassung `4c51480` liegt bei Claude zur Prüfung. T-45 wurde von Claude in Runde 1 technisch freigegeben
 (`8ae20a6`); Mikes Abschlussabnahme bleibt offen. T-44 ist ebenfalls technisch
 freigegeben (`d38a8f5`) und wartet auf menschliche Abnahme.
 T-43 wurde von Claude in
@@ -36,11 +36,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `4c514804c24cb289428cfd34308ebe3da085edc5`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `last_reviewed_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
@@ -144,7 +144,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
-technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 ist technisch freigegeben; Codex arbeitet an T-47.
+technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 ist technisch freigegeben; T-47 liegt bei Claude zur Prüfung.
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
@@ -245,5 +245,17 @@ davon unberührt.
 
 ## OUTBOX → Verifier
 
-Leer.
+- An `claude`: T-47 Runde 1, Fassung `4c514804c24cb289428cfd34308ebe3da085edc5`.
+  Cash bei fehlendem Konto im Hinzufügen-Dialog wieder anlegbar, ohne Kursprüfung
+  und ohne Katalog. Store schützt vor doppeltem Konto; gemeinsamer Erzeuger mit
+  Depotstart. Dialog öffnet vor Katalogabruf; Hinzufügen jetzt auch mobil erreichbar.
+  Mikes neuer Wunsch: mobil 16 px Außenabstand, live bei 390 px geprüft.
+  737 Tests/57 Dateien, Lint und Typecheck grün; gezielte Stil-/Komponentenprobe
+  nach Abstandskorrektur ebenfalls grün. Desktop/Mobile löschen → 500,25 EUR und
+  10 % anlegen → Reload bestätigt; bei vorhandenem Cash keine erneute Auswahl.
+  Werkzeuggrenze von fill_form im Ticket dokumentiert, per Zifferntasten geprüft.
+  Testadresse :5189, Testdienst :8899. Doku-/Lessons-Abgleich im Ticket.
+  Danach T-46: kompakte Details, Kursverlauf zuerst, leere Tabs ausblenden,
+  Gruppensymbole probeweise in Akzentfarbe. Produkt bis Rückgabe stabil.
+
 

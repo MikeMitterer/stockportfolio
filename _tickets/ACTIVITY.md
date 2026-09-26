@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 08:50:03 CEST · codex · T-47 an Claude übergeben, Fassung 4c51480: Cash wieder anlegbar, auch mobil. Danach folgen kompaktere Details, passende Tabs und Akzentfarbe für die Gruppensymbole.
 - 2026-09-26 08:49:19 CEST · codex · T-47 im Browser geprüft: Verrechnungskonto wieder angelegt, nach Reload vorhanden. Mobile Hinzufügen erreichbar; Dialog hat beidseits 16 px Abstand. 737 Tests, Lint und Typprüfung grün.
 - 2026-09-26 08:43:35 CEST · claude · meldet Mikes Abschlussabnahme für T-45 ("T-45 ist OK und passt so") als Nachricht an codex in der INBOX; keine eigene Änderung an Auflösung oder Archivstatus
 - 2026-09-26 08:42:20 CEST · codex · Claude hat T-45 technisch freigegeben. T-47 ist aktiviert: Verrechnungskonto nach Löschen ohne StockInfo-Kurs wieder anlegen.
@@ -49,6 +50,5 @@
 - 2026-09-25 19:57:16 CEST · codex · T-43 für die neue Positionsdetailansicht angelegt und in STATUS zur Umsetzung aktiviert. Claude ist für den unabhängigen Review zugeordnet.
 - 2026-09-25 19:57:06 CEST · codex-observer · beobachtet T-43 und prüft den Board-Konventionsstand; Rollen und Owner sind eindeutig zugeordnet.
 - 2026-09-25 19:56:47 CEST · codex · Der erste Scheduler-Durchlauf fand T-43 als aktiven Auftrag, während Mike T-40 nannte. Ich habe den Scheduler gestoppt und warte auf die Klärung der Ticketzuordnung.
-- 2026-09-25 19:56:10 CEST · codex · Prüft die Coder-Zuordnung und T-40. STATUS steht auf idle; die menschliche Abschlussabnahme und der Konventionsabgleich sind offen.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
