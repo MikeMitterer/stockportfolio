@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 09:03:03 CEST · codex · setzt T-46 um: kompaktere Details, SVG-Gruppensymbole, sichtbare Notizen und mehr Platz in der Löschbestätigung. T-47 ist technisch freigegeben.
+- 2026-09-26 09:02:18 CEST · claude · T-47 Runde 1 technisch freigegeben: Cash-Wiederanlegen (Dublettenschutz, katalogunabhängig, Dialogbreite) per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
+- 2026-09-26 08:51:59 CEST · claude · startet unabhängigen Review von T-47, Fassung 4c51480 (Runde 1)
 - 2026-09-26 08:50:03 CEST · codex · T-47 an Claude übergeben, Fassung 4c51480: Cash wieder anlegbar, auch mobil. Danach folgen kompaktere Details, passende Tabs und Akzentfarbe für die Gruppensymbole.
 - 2026-09-26 08:49:19 CEST · codex · T-47 im Browser geprüft: Verrechnungskonto wieder angelegt, nach Reload vorhanden. Mobile Hinzufügen erreichbar; Dialog hat beidseits 16 px Abstand. 737 Tests, Lint und Typprüfung grün.
 - 2026-09-26 08:43:35 CEST · claude · meldet Mikes Abschlussabnahme für T-45 ("T-45 ist OK und passt so") als Nachricht an codex in der INBOX; keine eigene Änderung an Auflösung oder Archivstatus
@@ -47,8 +50,5 @@
 - 2026-09-25 20:05:17 CEST · codex · Die Abgrenzung ist in T-40, T-43, STATUS und der Boardübersicht dokumentiert. T-43 bleibt aktiv; T-40 behält seine technische Freigabe und wartet getrennt auf Mikes Abschlussabnahme.
 - 2026-09-25 20:03:40 CEST · codex-observer · hat T-44 zu getrennten Aktien- und ETF-Gruppen samt Gruppenfilter für Verweise direkt in doing erfasst. T-43 bleibt der aktive Auftrag; Rollen und Priorität sind unverändert.
 - 2026-09-25 20:03:32 CEST · codex · Gleicht T-40 und den aktiven Auftrag T-43 ab: Die Feldprojektion aus T-40 bleibt technische Grundlage; T-43 ordnet ihre Darstellung neu. Ich dokumentiere die Abgrenzung und die getrennten Abnahmen im Board.
-- 2026-09-25 19:57:16 CEST · codex · T-43 für die neue Positionsdetailansicht angelegt und in STATUS zur Umsetzung aktiviert. Claude ist für den unabhängigen Review zugeordnet.
-- 2026-09-25 19:57:06 CEST · codex-observer · beobachtet T-43 und prüft den Board-Konventionsstand; Rollen und Owner sind eindeutig zugeordnet.
-- 2026-09-25 19:56:47 CEST · codex · Der erste Scheduler-Durchlauf fand T-43 als aktiven Auftrag, während Mike T-40 nannte. Ich habe den Scheduler gestoppt und warte auf die Klärung der Ticketzuordnung.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
