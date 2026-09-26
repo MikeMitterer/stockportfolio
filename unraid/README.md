@@ -1,19 +1,34 @@
 # Unraid
 
-StockPortfolio liefert eine statische Browser-App aus. Kurse und Stammdaten
-kommen aus einer getrennten StockInfo-Instanz. Die einzige gepflegte Vorlage
-liegt im Repository
+StockPortfolio serves a static browser app. Prices and reference data
+come from a separate StockInfo instance. The maintained template lives in the
 [MikeMitterer/unraid-templates](https://github.com/MikeMitterer/unraid-templates)
-unter `templates/stockportfolio.xml`. Die lokale Arbeitskopie dieses Repositories
-liegt unter `/Volumes/DevLocal/DevUnraid/Production/Templates`.
-Die Vorlage wird über dieses Git-Repository veröffentlicht. Der Docker-Hub-Push
-des Images steht noch aus; die Installation setzt dessen Veröffentlichung voraus.
+repository at `templates/stockportfolio.xml`. The local working copy of that
+repository is at `/Volumes/DevLocal/DevUnraid/Production/Templates`.
+The template is published through that Git repository. The image has not been
+pushed to Docker Hub yet; installation requires it to be published first.
 
-## Lokale Vorlage testen
+## Installing the template
 
-Für eine Testkopie `TemplateURL` entfernen: Unraid soll beim Test keine
-andere Fassung nachladen. Unter einem eigenen Namen ablegen, niemals eine
-bestehende `my-stockportfolio.xml` mit gespeicherten Nutzereinstellungen ersetzen:
+For a new installation, run this command in the terminal on your Unraid server:
+
+```bash
+wget -O /boot/config/plugins/dockerMan/templates-user/my-stockportfolio.xml \
+  https://raw.githubusercontent.com/MikeMitterer/unraid-templates/master/templates/stockportfolio.xml
+```
+
+The command overwrites the target file. If `my-stockportfolio.xml` already
+contains your saved settings, keep it and use the existing template instead.
+
+Then choose **Docker → Add Container** and select **stockportfolio** under
+**User templates**. Set **StockInfo API** to your API address and check the
+[configuration](#configuration) before starting the container.
+
+## Testing the local template
+
+Remove `TemplateURL` from the test copy so Unraid does not download a different
+version during testing. Save it under a separate name; never replace an existing
+`my-stockportfolio.xml` containing saved user settings:
 
 ```bash
 sed '/<TemplateURL>/d' \
@@ -22,21 +37,24 @@ sed '/<TemplateURL>/d' \
 scp /tmp/stockportfolio-test.xml root@unraid:/boot/config/plugins/dockerMan/templates-user/stockportfolio-test.xml
 ```
 
-Im Docker-Reiter „Add Container“ wählen, Vorlage `stockportfolio`. Für einen
-Paralleltest einen anderen Containernamen und freien Host-Port verwenden.
+In the Docker tab, choose **Add Container** and select the `stockportfolio`
+template. To test alongside an existing container, use a different container
+name and an available host port.
 
-| Feld | Bedeutung |
+## Configuration
+
+| Field | Meaning |
 |---|---|
-| WebUI Port | Standard Host-Port 8088, Containerport **8080** |
-| StockInfo API | Pflicht: vom **Browser** erreichbare URL deiner StockInfo-Instanz |
-| Timezone | Zeitzone des Containerprotokolls, Standard UTC |
+| WebUI Port | Default host port 8088, container port **8080** |
+| StockInfo API | Required: your StockInfo instance's URL, reachable from the **browser** |
+| Timezone | Container log timezone; defaults to UTC |
 
-**Ältere Images lauschten auf Port 80.** Bei einem bestehenden Container die
-Zuordnung auf Containerport 8080 ändern. Host-Adresse und Host-Port beibehalten:
-Der Browser ordnet seine Daten dieser Herkunft zu. Ein anderer Host-Port zeigt
-einen anderen, zunächst leeren Browserbestand.
+**Older images listened on port 80.** For an existing container, change the
+mapping to container port 8080. Keep the same host address and host port:
+the browser associates its data with that web address. A different host port
+uses separate browser storage, which is initially empty.
 
-## Ohne Vorlage
+## Running without a template
 
 ```bash
 docker run -d --name stockportfolio \
@@ -47,21 +65,23 @@ docker run -d --name stockportfolio \
     mangolila/stockportfolio:latest
 ```
 
-## Daten, API und Prüfung
+## Data, API and verification
 
-**Kein Volume:** Depots und Einstellungen liegen im Browser (IndexedDB).
-Container-Updates verändern sie nicht; gelöschte Browserdaten oder ein anderes
-Gerät dagegen schon. Sicherungen über **Einstellungen → Sicherung** exportieren;
-der Download landet im Downloadordner. Ein Serverbackup sichert diese Daten nicht.
+**No volume required:** portfolios and settings are stored in the browser
+(IndexedDB). Container updates leave them intact. Clearing browser data removes
+them, and a different device has separate storage. Export backups under
+**Settings → Backup**; the file is saved to your Downloads folder. A server
+backup does not include this data.
 
-Die API-Adresse wird beim Start aus `STOCKINFO_API_URL` in `config.js`
-geschrieben. Sie muss vom Browser aus erreichbar sein; `localhost` ist dessen
-Rechner, kein Docker-Dienstname. Unter **Einstellungen → Status** steht die
-wirksame URL. Nach Änderungen den Container neu starten.
+At startup, the API address from `STOCKINFO_API_URL` is written to `config.js`.
+It must be reachable from the browser; `localhost` refers to the browser's
+computer, not a Docker service. The active URL is shown under
+**Settings → Status**. Restart the container after changing the address.
 
-StockInfo muss die Web-Herkunft, etwa `http://unraid:8088`, durch CORS erlauben.
-Bei HTTPS für die Oberfläche muss auch die API HTTPS anbieten.
+StockInfo must allow the web app's origin, such as `http://unraid:8088`, through
+CORS. An HTTPS web interface requires an HTTPS API.
 
-Der statische Node-Server läuft ohne Root-Rechte. Der Healthcheck prüft die lokale Web-Auslieferung,
-nicht die getrennte API. API-Fehler werden in der App angezeigt. Ein realer
-Unraid-Test bleibt von einem lokalen Docker-Test zu unterscheiden.
+The static Node server runs without root privileges. The healthcheck verifies
+that the local web page is served; it does not test the separate API. API errors
+are shown in the app. A local Docker test does not replace testing on an actual
+Unraid instance.

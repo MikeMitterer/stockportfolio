@@ -484,7 +484,19 @@ empty price table.
 
 ### Unraid
 
-In the Docker tab choose "Add Container", then:
+For a new installation, download the user template from a terminal on your
+Unraid server:
+
+```bash
+wget -O /boot/config/plugins/dockerMan/templates-user/my-stockportfolio.xml \
+  https://raw.githubusercontent.com/MikeMitterer/unraid-templates/master/templates/stockportfolio.xml
+```
+
+This overwrites the target file. Keep an existing `my-stockportfolio.xml` if it
+contains your saved settings, and use that template instead.
+
+Then choose **Docker → Add Container** → **User templates → stockportfolio**
+and check these settings:
 
 | Field      | Value                                                   |
 | ---------- | ------------------------------------------------------- |
@@ -496,6 +508,9 @@ There are no volumes — the app stores everything in the browser, not in the
 container. An update is a plain "pull & restart" and loses no data. The image
 carries the WebUI link and icon as labels, and the healthcheck colours the state
 in the Docker tab.
+
+See the [Unraid guide](unraid/README.md) for template configuration and local
+testing instructions.
 
 ## Not there yet
 
