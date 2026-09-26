@@ -54,7 +54,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
       darunter". Nicht `flip`: Die Gruppe verschwindet nicht, sie ist nur
       zusammengeschoben.
     -->
-    <UxCaret class="groupheader__chevron" :open="!collapsed" motion="turn" size="sm" />
+    <UxCaret class="groupheader__chevron" :open="!collapsed" motion="turn" size="md" />
 
     <!-- Farbpunkt wie im Assetklassen-Balken oben — gleiche Klasse, gleiche Farbe -->
     <span class="groupheader__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>
@@ -97,9 +97,9 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   }
 
   // Form, Größe und Drehung stehen in `UxCaret` (Fundament) — hier bleibt die
-  // Dämpfung, die beim Überfahren des Kopfes aufhellt.
+  // Farbe aus dem Gruppenkopf. Gruppen bleiben mindestens so deutlich wie Zeilen.
   &__chevron {
-    opacity: 0.5;
+    opacity: 1;
     // `transform` muss mitgeführt werden: Das Kurzschreiben setzt
     // `transition-property` neu und hätte sonst die Drehung aus `UxCaret`
     // gestrichen — der Pfeil sprang um.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, inject, onMounted, ref, watch } from 'vue'
+import GroupActionIcon from '@/components/GroupActionIcon.vue'
 import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
 import { NSpin, NEmpty, NButton } from 'naive-ui'
@@ -33,8 +34,7 @@ import type { InstrumentSummary } from '@/api/types'
 import type { AssetGroup, Position } from '@/types/portfolio'
 
 const { t } = useI18n()
-const COLLAPSE_GROUPS_SYMBOL = '⊟'
-const EXPAND_GROUPS_SYMBOL = '⊞'
+
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
@@ -574,10 +574,10 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
               </h2>
               <div v-if="!isCompact && positionGroupCount > 1" class="dashboard__group-actions">
                 <button type="button" class="dashboard__group-action" :aria-label="t('table.collapseAllGroups')" :title="t('table.collapseAllGroups')" @click="collapsePositionGroups">
-                  <span class="dashboard__group-symbol" aria-hidden="true" v-text="COLLAPSE_GROUPS_SYMBOL" />
+                  <GroupActionIcon class="dashboard__group-symbol" action="collapse" />
                 </button>
                 <button type="button" class="dashboard__group-action" :aria-label="t('table.expandAllGroups')" :title="t('table.expandAllGroups')" @click="openPositionGroups">
-                  <span class="dashboard__group-symbol" aria-hidden="true" v-text="EXPAND_GROUPS_SYMBOL" />
+                  <GroupActionIcon class="dashboard__group-symbol" action="expand" />
                 </button>
               </div>
             </div>
@@ -830,7 +830,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     &:focus-visible { outline: 2px solid token(--text-primary); outline-offset: 2px; }
   }
 
-  &__group-symbol { font-size: 1.25rem; line-height: 1; transform: translateY(-2px); }
+  &__group-symbol { display: block; width: 1.25rem; height: 1.25rem; }
 
   &__panel-meta { @include row(1.25rem); }
 

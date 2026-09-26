@@ -41,7 +41,8 @@
         "group": "etfs",
         "units": 12,
         "targetPercent": 30,
-        "enabled": true
+        "enabled": true,
+        "notes": "Langfristig halten.\nNotiz aus dem wiederverwendbaren Browser-Testdepot."
       },
       {
         "id": "9bc94e25-c1f5-427b-802a-9a4fa099aa5f",

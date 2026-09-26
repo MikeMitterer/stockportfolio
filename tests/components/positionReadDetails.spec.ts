@@ -2,14 +2,17 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
+import { useFieldsStore } from '@/stores/fields'
 import PositionCard from '@/components/PositionCard.vue'
 import PriceChart from '@/components/PriceChart.vue'
+import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
 import { toQuoteCacheEntry } from '@/api/mappers'
 import { normalizeQuote } from '@/api/normalizers'
 import { computeRebalancing, type PositionResult } from '@/domain/rebalancing'
 import { defaultSettings } from '@/stores/settings'
 import { translate } from '@/i18n'
 import type { AssetGroup, Portfolio } from '@/types/portfolio'
+import catalogFixture from '../fixtures/stockinfo/detail-catalog.json'
 import quoteFixture from '../fixtures/stockinfo/quote-200.json'
 
 beforeEach(() => setActivePinia(createPinia()))
@@ -41,16 +44,70 @@ function buttonWithText(wrapper: ReturnType<typeof mount>, label: string) {
 }
 
 describe('Positionsdetails nach Aufgabe', () => {
-  it('zeigt zunächst die Bewertung und lädt den großen Kurschart erst nach Bereichswechsel', async () => {
+  it('zeigt Notizen unter der Button-Leiste als Text und entfernt leere Notizen', async () => {
+    const row = makeRow()
+    row.position.notes = 'Langfristig halten\n<img src=x onerror=alert(1)>'
+    const wrapper = mount(PositionDrilldown, { props: { row, total: 1000, links: [] } })
+    const note = wrapper.get('[data-position-note]')
+    expect(note.text()).toBe(row.position.notes)
+    expect(note.find('img').exists()).toBe(false)
+    expect(wrapper.get('.position-details__top').element.nextElementSibling).toBe(note.element)
+    await wrapper.setProps({ row: { ...row, position: { ...row.position, notes: '  ' } } })
+    expect(wrapper.find('[data-position-note]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('versteckt leere Zusatzinfos und wählt beim Wegfall eines Tabs den Kursverlauf', async () => {
+    const row = makeRow()
+    if (!row.quote) throw new Error('Kurs fehlt')
+    row.quote = { ...row.quote, details: {}, ter: 0, volatility: null }
+    const wrapper = mount(PositionDrilldown, { props: { row, total: 1000, links: [] } })
+    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
+    expect(wrapper.text()).toContain('0,0 %')
+    await wrapper.setProps({ row: { ...row, quote: { ...row.quote, ter: null } } })
+    expect(wrapper.findAll('button').some(button => button.text() === translate('drilldown.sectionDetails'))).toBe(false)
+    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
+    useFieldsStore().error = 'Katalog nicht erreichbar'
+    await flushPromises()
+    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
+    expect(wrapper.text()).toContain('Katalog nicht erreichbar')
+    wrapper.unmount()
+  })
+
+  it('lädt den Katalog ohne Tab-Klick und erhält Nein als einzigen Zusatzwert', async () => {
+    const row = makeRow()
+    if (!row.quote) throw new Error('Kurs fehlt')
+    row.quote = { ...row.quote, ter: null, volatility: null, details: {
+      'risk-a.flag': { value: false, unit: null, currency: null, origin: null, source: null,
+        asOf: null, shadowed: false, manualValue: null, manualCurrency: null },
+    } }
+    let finishCatalog: ((response: Response) => void) | undefined
+    const client = new StockInfoClient('https://details.test', async input => {
+      if (String(input).endsWith('/fields')) return new Promise<Response>(resolve => { finishCatalog = resolve })
+      return new Response('[]')
+    })
+    const wrapper = mount(PositionDrilldown, {
+      props: { row, total: 1000, links: [] }, global: { provide: { [STOCK_INFO_CLIENT]: client } },
+    })
+    expect(finishCatalog).toBeDefined()
+    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
+    expect(useFieldsStore().loading).toBe(true)
+    finishCatalog?.(new Response(JSON.stringify(catalogFixture)))
+    await flushPromises()
+    expect(wrapper.get('[data-detail-field="risk-a.flag"]').text()).toContain(translate('detailFields.no'))
+    await wrapper.setProps({ visibleStockInfoFields: ['risk-a.flag'] })
+    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
+    expect(wrapper.findAll('.position-details__tabs button').some(button => button.text() === translate('drilldown.sectionDetails'))).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('zeigt zuerst den Kursverlauf und wechselt gemeinsam zwischen gültigen Bereichen', async () => {
     const wrapper = mount(PositionDrilldown, { props: { row: makeRow(), total: 1000, links: [] } })
 
-    expect(wrapper.find('[data-position-section="portfolio"]').exists()).toBe(true)
-    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(false)
-    expect(wrapper.findComponent(PriceChart).exists()).toBe(false)
-
-    await buttonWithText(wrapper, translate('drilldown.sectionHistory')).trigger('click')
-    expect(wrapper.find('[data-position-section="portfolio"]').exists()).toBe(false)
+    expect(wrapper.find('.position-details__tabs button').text()).toBe(translate('drilldown.sectionHistory'))
     expect(wrapper.findComponent(PriceChart).exists()).toBe(true)
+    await buttonWithText(wrapper, translate('drilldown.sectionPortfolio')).trigger('click')
+    expect(wrapper.find('[data-position-section="portfolio"]').exists()).toBe(true)
 
     await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     expect(wrapper.findComponent(PriceChart).exists()).toBe(false)
@@ -97,7 +154,7 @@ describe('Positionsdetails nach Aufgabe', () => {
     await flushPromises()
     expect(wrapper.emitted('update')?.length).toBe(1)
     expect(wrapper.emitted('update')?.[0]?.[1]).toMatchObject({ displayName: 'Neuer Name' })
-    expect(wrapper.find('[data-position-section="portfolio"]').exists()).toBe(true)
+    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
     wrapper.unmount()
   })
 
@@ -130,6 +187,7 @@ describe('Positionsdetails nach Aufgabe', () => {
   it('blendet für Cash den leeren Kursverlauf aus und hält Kursprobleme sichtbar', async () => {
     const cash = mount(PositionDrilldown, { props: { row: makeRow('cash'), total: 1000, links: [] } })
     expect(cash.findAll('button').some(button => button.text().includes(translate('drilldown.sectionHistory')))).toBe(false)
+    expect(cash.findAll('.position-details__tabs button').map(button => button.text())).toEqual([translate('drilldown.sectionPortfolio')])
     cash.unmount()
 
     const missing = mount(PositionDrilldown, { props: { row: makeRow('stocks', false), total: 1000, links: [] } })
@@ -141,12 +199,14 @@ describe('Positionsdetails nach Aufgabe', () => {
 
   it('macht alle vier Lesebereiche auch auf der Mobilkarte erreichbar', async () => {
     const row = makeRow()
+    row.position.notes = 'Mobile Notiz'
     const wrapper = mount(PositionCard, { props: { row } })
 
     expect(wrapper.get('.poscard__title').text()).toBe(row.quote?.symbol)
     expect(wrapper.get('.poscard__title-row').text()).toContain(`| ${row.position.isin}`)
     await wrapper.get('.poscard__summary').trigger('click')
-    expect(wrapper.find('[data-position-section="portfolio"]').exists()).toBe(true)
+    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
+    expect(wrapper.get('[data-position-note]').text()).toBe('Mobile Notiz')
     expect(wrapper.get(`button[aria-label="${translate('drilldown.closeDetails')}"]`).attributes('aria-expanded')).toBe('true')
     await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     await flushPromises()

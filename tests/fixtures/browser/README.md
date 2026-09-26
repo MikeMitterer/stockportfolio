@@ -33,4 +33,7 @@ liefert keine historischen Devisenkurse; deshalb kann der Rückblick des
 Gesamtwert-Charts einen entsprechenden Hinweis zeigen. Das ist kein fehlender
 Positionskurs.
 
+EUNL.DE enthält eine mehrzeilige Positionsnotiz zum Prüfen der Anzeige direkt
+unter der Detail-Button-Leiste; die anderen Positionen bleiben ohne Notiz.
+
 Den eigenen Testdienst mit demselben Skript und `--stop --port 8899` beenden.

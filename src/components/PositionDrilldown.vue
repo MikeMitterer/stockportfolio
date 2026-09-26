@@ -159,7 +159,7 @@ function updateTargetPercent(value: number | null): void {
               <template #trigger>
                 <NButton size="small" quaternary type="error">{{ t('actions.delete') }}</NButton>
               </template>
-              {{ t('dashboard.confirmRemove', { name: row.position.displayName }) }}
+              <p class="drill__delete-confirmation">{{ t('dashboard.confirmRemove', { name: row.position.displayName }) }}</p>
             </NPopconfirm>
             <div class="drill__footer-actions">
               <NButton size="small" @click="cancelEditor">{{ t('actions.cancel') }}</NButton>
@@ -211,6 +211,12 @@ function updateTargetPercent(value: number | null): void {
     margin-top: var(--space-2);
     padding-top: var(--space-3);
     border-top: 1px solid token(--border-subtle);
+  }
+  &__delete-confirmation {
+    margin: 0;
+    padding: var(--space-3) var(--space-2);
+    max-width: min(22rem, calc(100vw - 6rem));
+    overflow-wrap: anywhere;
   }
   &__footer-actions { display: flex; gap: var(--space-2); }
   &__enabled { @include row(var(--space-2)); align-items: center; font-size: var(--font-xs); }

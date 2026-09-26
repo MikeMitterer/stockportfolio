@@ -162,11 +162,11 @@ the price coming from above or from below? The period is shown in the column
 header and is chosen under _Settings → Data_ — one month, one week or one day.
 "One day" shows no line but the change from the last trading day to today.
 
-Open a position and choose **Price history** for the larger chart. It shows
+Opening a security selects **Price history**, the first tab, and loads the larger chart. It shows
 prices on the left axis, the same line as a percentage change on the right,
 and time along the bottom, selectable from one month up to "max". Hovering
 shows date, price and change for that day. The larger chart and its history
-request start when this area is opened; the small row sparkline loads on its
+request start when the position is opened; the small row sparkline loads on its
 own.
 
 Daily closing prices change once a day, so they are cached in IndexedDB and
@@ -179,6 +179,19 @@ left and asks for confirmation.
 The two symbols beside the desktop position heading **collapse all groups**
 or **expand all groups**. Each has a text label for assistive technology. The
 choice is kept for the next visit.
+
+### Detail notes and information
+
+The detail navigation uses text tabs with a thin underline for the active area,
+without button backgrounds. On mobile the tabs wrap into two rows.
+Saved position notes appear below the detail toolbar on desktop and mobile.
+Empty notes leave no gap. Cash opens with **Valuation**. Information tabs without
+content are hidden; loading states, missing cached details and errors remain
+accessible. Additional values of zero or false count as content.
+
+The icons for expanding and collapsing all groups use Microsoft Codicons;
+see [third-party notices](THIRD_PARTY_NOTICES.md).
+
 
 ### Six portfolio groups
 

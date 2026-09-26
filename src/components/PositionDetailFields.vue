@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, watch } from 'vue'
+import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NAlert, NButton, NSpin } from 'naive-ui'
 import { STOCK_INFO_CLIENT } from '@/api/client'
@@ -35,10 +35,6 @@ const duplicateLabels = computed(() => {
   for (const field of displayRows.value) counts.set(field.label, (counts.get(field.label) ?? 0) + 1)
   return new Set([...counts].filter(([, count]) => count > 1).map(([label]) => label))
 })
-
-watch(() => [props.quote?.symbol, props.quote?.fetchedAt], () => {
-  if (client && props.quote) void fields.load(client)
-}, { immediate: true })
 
 function formatDate(value: string): string {
   const date = new Date(value)
@@ -101,7 +97,7 @@ function keepPercentTogether(value: string): string {
   &__item {
     min-width: 0;
     overflow-wrap: anywhere;
-    padding: var(--space-3);
+    padding: var(--space-2);
     border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
     border-radius: var(--radius-sm);
     background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));

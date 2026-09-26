@@ -77,3 +77,10 @@ export function projectDetailFields(
   }
   return fields
 }
+
+/** Null ohne Herkunft ist leer; Nullwerte mit Quellenhinweis bleiben erklärbar. */
+export function hasDetailContent(field: ProjectedDetailField): boolean {
+  return (field.value !== '—' && field.value.trim() !== '') ||
+    field.metadata.origin !== null || field.metadata.source !== null ||
+    field.metadata.asOf !== null || field.metadata.shadowed
+}

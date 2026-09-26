@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { NButton } from 'naive-ui'
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { formatAge } from '@/composables/useRelativeTime'
+import { useFieldsStore } from '@/stores/fields'
+import { projectDetailFields, hasDetailContent } from '@/domain/detailFields'
 import { resolveKind, resolveLinks } from '@/domain/links'
 import { positionIsin, positionSymbol } from '@/domain/positionIdentity'
 import { integer, money, number, percent } from '@/domain/formatters'
@@ -21,10 +23,11 @@ const props = defineProps<{
   visibleStockInfoFields?: readonly string[]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const fields = useFieldsStore()
 const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
 const client = inject<StockInfoClient | null>(STOCK_INFO_CLIENT, null)
-const section = ref<DetailSection>('portfolio')
+const section = ref<DetailSection>(props.row.position.group === 'cash' ? 'portfolio' : 'history')
 
 const isCash = computed(() => props.row.position.group === 'cash')
 const stockInfoSymbol = computed(() => positionSymbol(props.row))
@@ -44,9 +47,31 @@ const optimalUnits = computed(() =>
 const deltaAmount = computed(() => props.row.targetValue - props.row.marketValue)
 const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
 
-watch(() => [props.row.position.id, props.row.position.group], () => {
-  section.value = 'portfolio'
+const hasAdditionalInfo = computed(() => props.row.quote && (
+  fields.loading || fields.error || props.row.quote.details == null ||
+  projectDetailFields(props.row.quote, fields.catalog?.definitions ?? [], props.visibleStockInfoFields ?? [], locale.value).some(hasDetailContent)
+))
+const sections = computed<DetailSection[]>(() => {
+  const available: DetailSection[] = isCash.value ? ['portfolio'] : ['history', 'portfolio']
+  if (stockInfoSymbol.value || stockInfoIsin.value || kindLabel.value || props.row.quote || resolvedLinks.value.length) available.push('asset')
+  if (hasAdditionalInfo.value) available.push('details')
+  return available
 })
+const sectionLabels: Record<DetailSection, string> = {
+  history: 'drilldown.sectionHistory', portfolio: 'drilldown.sectionPortfolio',
+  asset: 'drilldown.sectionAsset', details: 'drilldown.sectionDetails',
+}
+
+watch(() => [props.row.position.id, props.row.position.group], () => {
+  section.value = isCash.value ? 'portfolio' : 'history'
+})
+watch(sections, available => {
+  if (!available.includes(section.value)) section.value = available[0] ?? 'portfolio'
+})
+// Der Katalog muss verfügbar sein, bevor über den Zusatzinfos-Tab entschieden wird.
+watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
+  if (client && props.row.quote) void fields.load(client)
+}, { immediate: true })
 </script>
 
 <template>
@@ -54,22 +79,17 @@ watch(() => [props.row.position.id, props.row.position.group], () => {
     <div class="position-details__top">
       <nav class="position-details__nav" :aria-label="t('drilldown.sections')">
         <div class="position-details__tabs">
-          <NButton size="small" block :type="section === 'portfolio' ? 'primary' : 'default'" :aria-pressed="section === 'portfolio'" @click="section = 'portfolio'">
-            {{ t('drilldown.sectionPortfolio') }}
-          </NButton>
-          <NButton v-if="!isCash" size="small" block :type="section === 'history' ? 'primary' : 'default'" :aria-pressed="section === 'history'" @click="section = 'history'">
-            {{ t('drilldown.sectionHistory') }}
-          </NButton>
-          <NButton size="small" block :type="section === 'asset' ? 'primary' : 'default'" :aria-pressed="section === 'asset'" @click="section = 'asset'">
-            {{ t('drilldown.sectionAsset') }}
-          </NButton>
-          <NButton v-if="row.quote" size="small" block :type="section === 'details' ? 'primary' : 'default'" :aria-pressed="section === 'details'" @click="section = 'details'">
-            {{ t('drilldown.sectionDetails') }}
-          </NButton>
+          <div v-for="available in sections" :key="available" class="position-details__tab" :class="{ 'position-details__tab--active': section === available }">
+            <NButton text size="small" type="default" :aria-pressed="section === available" @click="section = available">
+              {{ t(sectionLabels[available]) }}
+            </NButton>
+          </div>
         </div>
       </nav>
       <slot name="toolbar" />
     </div>
+
+    <p v-if="row.position.notes?.trim()" class="position-details__note" data-position-note>{{ row.position.notes }}</p>
 
     <section v-if="section === 'portfolio'" class="position-details__panel" data-position-section="portfolio" :aria-label="t('drilldown.sectionPortfolio')">
       <dl class="position-details__facts position-details__facts--valuation">
@@ -128,7 +148,13 @@ watch(() => [props.row.position.id, props.row.position.group], () => {
   min-width: 0;
 
   &__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
-  &__tabs { display: grid; grid-template-columns: repeat(4, max-content); gap: var(--space-2); }
+  &__tabs { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: var(--space-4); }
+  &__tab {
+    padding: var(--space-1) 0;
+    border-bottom: 1px solid transparent;
+    &--active { border-bottom-color: token(--accent); }
+  }
+  &__note { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--font-sm); color: token(--text-secondary); }
   &__panel { min-width: 0; }
   &__facts {
     display: grid;
@@ -139,7 +165,7 @@ watch(() => [props.row.position.id, props.row.position.group], () => {
   }
   &__facts > div { min-width: 0; overflow-wrap: anywhere; }
   &__facts--valuation > div {
-    padding: var(--space-3);
+    padding: var(--space-2);
     border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
     border-radius: var(--radius-sm);
     background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
@@ -149,7 +175,7 @@ watch(() => [props.row.position.id, props.row.position.group], () => {
     gap: var(--space-2);
   }
   &__facts--asset > div {
-    padding: var(--space-3);
+    padding: var(--space-2);
     border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
     border-radius: var(--radius-sm);
     background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
@@ -162,7 +188,7 @@ watch(() => [props.row.position.id, props.row.position.group], () => {
   &__links a { color: token(--accent); text-decoration: underline; }
   &__links span { @include muted(var(--font-xs)); }
   @media (max-width: 600px) {
-    &__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    &__tabs { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     &__facts--valuation { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
     &__facts--valuation > div:first-child { grid-column: 1 / -1; }
   }
