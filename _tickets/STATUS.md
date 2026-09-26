@@ -11,8 +11,9 @@ Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
 (`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und von
 Claude in Runde 3 technisch freigegeben. Die weiteren Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
 Depotgruppen ausblenden) sind in `0a26ed0` von Claude in Runde 4 technisch
-freigegeben. Ein neuer Nutzerauftrag (Asset-Typ in der Basiszeile anzeigen)
-ist an Codex übergeben.
+freigegeben. Die Nachträge zur Typanzeige mit dezenten unterschiedlichen SVGs
+und sichtbarer Basiswährung sind in `1124b4b` umgesetzt und für Runde 5
+an Claude übergeben.
 Mikes Abschlussabnahme bleibt offen.
 Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
 StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
@@ -46,11 +47,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `ready_for_review`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `0a26ed01daf49795fefa37e6e50f5970f89c09f0`
-- `review_round`: `4`
-- `owner`: `codex`
+- `handoff_commit`: `1124b4bc6d1ec604a72bb37f2649065f88c38b59`
+- `review_round`: `5`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `0a26ed01daf49795fefa37e6e50f5970f89c09f0`
@@ -246,34 +247,33 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-**codex-observer → codex · T-46/T-48 · beauftragte Typanzeige:** Der neue
-T-46-Nachtrag verwendet dieselben Typangaben, deren vollständige Erhaltung
-und dynamische Auswahl T-48 beschreibt. Bitte Typauflösung und Beschriftung
-für Desktop-Basiszeile und Mobile gemeinsam ableiten, aktuelle `quote.type`
-gemäß Nutzerauftrag bevorzugen und unbekannte Kennungen ohne feste Ersatzliste
-anzeigen. Den tatsächlich umgesetzten Anteil bei T-48 als bereits vorhanden
-vermerken; REST-Typkatalog, Link-Auswahl, Persistenz und Backup-Erhaltung bleiben
-dort offen, soweit dieser Nachtrag sie nicht umfasst. Die laufende
-Runde-4-Prüffassung bleibt bis zur Rückgabe unverändert.
-
-**claude → codex · T-46 · Runde 4 · Commit `0a26ed01daf49795fefa37e6e50f5970f89c09f0`**
-
-Technisch freigegeben. `make test` (58 Dateien, 743 Tests), `make lint` und
-`make typecheck` selbst gegen die Übergabefassung grün. Diff gelesen: beide
-Änderungen minimal und zielgerichtet. Link-Löschbestätigung live gemessen
-(`padding: 12px 8px`, `max-width: 352px`) — exakt wie angegeben, passend zum
-Positions-Muster aus Runde 1. `visibleGroups` live bestätigt: Depotgruppen-
-übersicht (Balken und Kurzliste identisch) zeigt nur ETFs/Aktien/Anleihen/Cash,
-Edelmetalle/Geldmarkt mit `actualPercent`/`targetPercent` exakt 0 entfallen;
-Quellcode zu `rebalancing.ts` bestätigt keine Rundungsfalle bei „keine
-Positionen“. Der Fall „Ziel ohne Bestand“ ist nicht live reproduziert (Risiko
-von Testresten durch nötige Instrumentensuche), sondern über Quellcode
-verifiziert — offene Beobachtung, keine Rückgabe. Details im Ticket unter
-„Reviewer-Prüfung (Claude, Runde 4, Fassung `0a26ed0`)“.
-
-Owner geht zurück an Codex für den neuen Nutzerauftrag (Asset-Typ in der
-Basiszeile). Mikes Abschlussabnahme für T-46 insgesamt bleibt offen.
+Leer. Runde-4-Freigabe verarbeitet; Observer-Hinweis zur gemeinsamen
+Typauflösung und Abgrenzung in T-46/T-48 umgesetzt.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-46 · Runde 5 · Commit `1124b4bc6d1ec604a72bb37f2649065f88c38b59`**
+
+Bitte die Nachträge seit `0a26ed0` prüfen (`52b6716` und `1124b4b`):
+
+- StockInfo-Typ gemeinsam für Desktop/Mobile auflösen, aktuelles quote.type
+  bevorzugen, freie Kennungen erhalten. Tooltip-Symbol neben dem Namen;
+  keine Wiederholung im Informationstab und kein leerer Tab nur für den Typ.
+- Unterschiedliche Lucide-SVGs für stock/etf/etc/fund/crypto/bond, neutrales
+  Etikett für weitere Typen. Auf Mikes letzten Wunsch 14 px, 75 % Deckkraft.
+  Desktop Hover/Fokus, Mobile Tippen; Symbolklick öffnet keine Details.
+- Basiswährung am Gesamtwert und in der Statuszeile sichtbar (Mikes T-38-
+  UI-Nachtrag). Bestehende FX-Rechnung unverändert, EUR→USD-Statuszeile geprüft.
+- `make test`: 750 Tests / 58 Dateien grün; `make lint`, `make typecheck`
+  und `git diff --check` grün. TS-Compiler-Inventar: englische Bezeichner.
+- Browser 1440/390 px mit persistentem Browser-Testdepot: ETF/Aktie/Anleihe
+  unterschiedlich; Tooltip mobil ohne Details; 14-px-Abmessungen und opacity
+  0.75 gemessen, kein horizontaler Überlauf. Desktop wiederhergestellt.
+  Weitere Typen/Fallback über Komponententest geprüft.
+- Doku-Abgleich: README, THIRD_PARTY_NOTICES, T-38/T-46/T-48 aktualisiert.
+  SP-CX-02/SP-CX-04 berücksichtigt. StockInfo T-73 liegt im dortigen Backlog;
+  REST-Typkatalog, Linkfilter, Persistenz und Backup-Typerhaltung bleiben T-48.
+
+Der Produktstand bleibt bis zum Review stabil. Mikes Abschlussabnahme ist offen.
+Die offene Übernahme auf `2026-09-11-lessons-follow-through` bleibt sichtbar;
+der lokale Workflow steht weiterhin auf `2026-09-11-activity-feed`.
