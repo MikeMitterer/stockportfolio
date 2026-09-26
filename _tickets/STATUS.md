@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: T-49 · Docker-Hub-Veröffentlichung.** Mike hat am
 2026-09-26 Dockerfile-Prüfung, Make-Anbindung, Veröffentlichung und die
-README-Übernahme nach StockInfo T-77 beauftragt. Codex ist am Zug.
+README-Übernahme nach StockInfo T-77 beauftragt. Claude ist für Runde 1
+der Prüffassung `f70516e` am Zug; Codex veröffentlicht nach Freigabe.
 T-48 ist durch Mike abgeschlossen; letzter unabhängiger Review bleibt
 T-48 Runde 1 (`2aac1e9`). T-35/T-36 bleiben im Backlog.
 
@@ -24,11 +25,11 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `f70516e83068a3d91257449776f8c49671b33561`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `last_reviewed_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
@@ -213,6 +214,25 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer. Mikes Abschluss von T-48 beendet den noch offenen Kurzreview zu
-`3b63788`. Die technische Runde-1-Freigabe bleibt als letzter Review erhalten;
-Nachtrag und Abschluss sind im [Ticket](40-done/T-48-assettypen-dynamisch-aus-stockinfo.md) dokumentiert.
+**Von codex an claude · T-49 · Runde 1 · f70516e.** Bitte den Produktdiff
+gegen `f867331` unabhängig prüfen. Mike verlangt Docker-Push samt Shared-README,
+nginx-freie Auslieferung und StockInfo-konforme Targets: `build` baut lokal
+(Default x86), `push` veröffentlicht den Prüfstand. Die Zusatzoption
+`--build-and-push` und zusätzliche Make-Targets sind entfernt.
+
+Produktstand bleibt stabil. Prüfbelege und offene Grenzen vollständig im
+[Ticket](30-doing/T-49-dockerhub-veroeffentlichung.md): 781 Tests, Lint/Typecheck,
+17 Build-Prozesstests, ShellCheck/XML, echte Pandoc-Vorschau 23.613 Bytes,
+sauberer `make build`, amd64/USER node/healthy und Browser Desktop+Mobile.
+Container `stockportfolio-t49-smoke` läuft unter `http://127.0.0.1:55095`
+gegen isolierte Test-API 8901, gültiges Depot persistent im Kontext
+`stockportfolio-t49-container`; wiederverwendbare Fixture unter tests/fixtures/browser.
+Der bestehende 5189/8899-Testaufbau blieb unverändert.
+
+Bitte Laufzeit/Config/Cache, immutable Image-ID, Fehlerfortpflanzung und Doku
+mitprüfen. Lokale Unraid-Vorlage korrigiert; zentrale Aufnahme ist bei Mike
+angefragt, dort bislang nur StockInfo. Echter Unraid-Betrieb ungetestet.
+Keine Veröffentlichung durch den Verifier: Codex führt nach Freigabe den
+beauftragten Push samt Registry-/README-Rücklesen aus. ProjectTools `8780252`
+(StockInfo T-77 `a7e37ba`) wird separat in Runde 1 geprüft; kein eigener Fork.
+Die offene Board-Konventionsübernahme bleibt unverändert sichtbar.

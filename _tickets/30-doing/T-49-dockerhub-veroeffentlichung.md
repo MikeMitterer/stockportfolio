@@ -9,8 +9,8 @@ ist bereits vor der Konvertierung größer als 25.000 Bytes.
 Docker-Hub-Push erledigen; StockInfo T-77 als Vorlage für den zentralen
 README-Helfer nutzen und das Größenlimit in AGENTS.md verankern.
 
-**Stand:** Implementiert und lokal geprüft; abschließender Build aus sauberer
-Commit-Fassung, unabhängiger Review und Veröffentlichung stehen noch aus.
+**Stand:** Implementiert und als Commit `f70516e` mit echtem Container und
+Browser geprüft. Runde 1 geht an Claude; Veröffentlichung steht danach aus.
 StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
 keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
 
@@ -34,7 +34,7 @@ getrennt dokumentiert. Kein Versionssprung oder Master-Merge impliziert.
 
 | # | Prüfung | AI |
 |---|---|:--:|
-| 1 | Dockerfile, Laufzeit-API und Healthcheck am lokalen amd64-Image geprüft; sauberer Release-Build folgt | ✅ |
+| 1 | Dockerfile, Laufzeit-API und Healthcheck am amd64-Release-Build f70516e geprüft | ✅ |
 | 2 | Help, Make-Dry-Runs und 17 Prozessgrenzen-Tests zu Plattform-/Push-Fehlern erfolgreich | ✅ |
 | 3 | Zentraler README-Helfer; Reihenfolge/Fehlercodes mit simuliertem Push geprüft, Live-Aufruf noch offen | ✅ |
 | 4 | Reale Pandoc-Vorschau: 23.613 UTF-8-Bytes bei Ref master; AGENTS-Regel vorhanden | ✅ |
@@ -125,8 +125,46 @@ SP-CX-03: Scheduler-Zelle 473 meldete um 11:12 UTC einen Folgetakt; danach
 fehlten bis 11:26 UTC sichtbare Heartbeats. Keine durchgehende Beobachtung
 behauptet; STATUS wird während der Arbeit unmittelbar geprüft. Der Root-404 ist ein behobener Einzelfall, keine erfundene Wiederholung.
 
-**Noch offen:** sauberer Build und unabhängiger Review, tatsächlicher Push mit
+**Noch offen:** unabhängiger Review und tatsächlicher Push mit
 Registry-/README-Rücklesen. Keine Veröffentlichung aus Mock-Tests abgeleitet.
 Echter Unraid-Betrieb und produktive StockInfo-CORS-Konfiguration sind ungetestet.
 Zentrales Template-Repository enthält weiterhin nur StockInfo; Veröffentlichung
 von StockPortfolio dort benötigt die angefragte Umfangsentscheidung.
+
+## Finaler Build · Prüffassung f70516e
+
+`make build` im isolierten Worktree `/private/tmp/stockportfolio-t49-release`
+erfolgreich (Exit 0). Standard `PLATFORM=x86`, Image
+`mangolila/stockportfolio:0.2.0-260926.1126.f7051.ahead146`.
+Gespeicherte Image-ID:
+`sha256:c323ca708648d4030fb0c7546a92b13aeda8e86f65ca83441f1b18aa038e55f9`.
+Produktdateien entsprechen dem Commit; Build-Eingaben ohne lokale Konfiguration.
+Die separat verlinkten Bibliotheken gehören nicht in den Docker-Kontext.
+Worktree ist jetzt laut `git status --short` sauber; der anfangs unversionierte
+`.libs`-Symlink wurde durch das regulär ignorierte Verzeichnis mit drei Links ersetzt.
+
+Container am selben Testport durch genau dieses Image ersetzt: healthy,
+linux/amd64, USER node. OCI-Beschreibung englisch und umfasst Portfoliomanagement,
+Kurse, Bewertung, Charts und Rebalancing. Root/config HTTP 200 mit no-cache.
+Zusätzlicher kurzlebiger Container bestätigt JSON-Roundtrip einer API-Adresse
+mit Quotes und Backslash. Browser nach Reload: weiter fünf Positionen,
+EUR 5.000 und Datenlage vollständig. Originaler 5189-Testkontext unverändert.
+
+Finale Suite nach Vereinfachung des Scripts: 61 Dateien / 781 Tests,
+`make lint`, `make typecheck`, ShellCheck, bash -n, XML und diff-check erfolgreich.
+`make` und `make help` liefern identische Hilfe; Dry-Run build/push ruft wie
+StockInfo `--build x86` und `--push` auf. Vorschau weiterhin 23.613 UTF-8-Bytes
+bei Ref master. Für Veröffentlichung wird eine veröffentlichte Prüffassung als
+`DOCKER_README_REF` verwendet und deren endgültige Größe erneut geprüft.
+
+**Review-Auftrag Runde 1:** Produktdiff von `f867331` nach `f70516e` prüfen,
+insbesondere Build/Push-Trennung, Laufzeit ohne nginx, Shared-README-Anbindung,
+Browserkonfiguration, Cache-Regeln und aktuelle Anleitungen. Kein Push durch
+den Verifier. Nach Freigabe führt Codex den bereits beauftragten Image-/README-Push
+mit Registry-Nachweis aus. StockInfo T-77/ProjectTools ist eine externe, noch
+in Runde 1 geprüfte Abhängigkeit; keine fremden Rollen oder Freigaben übernommen.
+
+**Scheduler:** Zelle 473 wegen fehlender sichtbarer Heartbeats beendet; pmset
+zeigt für den relevanten Zeitraum keine Systemruhe. Ersatz-Zelle 531 startet
+um 11:27:28 UTC mit 300-Sekunden-Takt und sichtbarem Startsignal. Ein Folgetakt
+ist bei dieser Übergabe noch abzuwarten; keine rückwirkende Abdeckung behauptet.
