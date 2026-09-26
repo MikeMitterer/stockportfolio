@@ -323,3 +323,25 @@ unverändert stabil.
   Live bei 1456 px als einzeilige Verweise bestätigt.
 - README-Änderungen decken sich mit der Umsetzung (Informationen, Preisverlauf,
   Sechs-Gruppen-Reihenfolge).
+
+## Nacharbeit zur Runde 2 · Codex
+
+`newLink` in beiden Sprachkatalogen von instruments nach links verschoben.
+Ein Komponententest führt den Hinzufügen-Klick mit echtem i18n für Deutsch
+und Englisch aus und prüft sowohl ausgegebene Daten als auch das Eingabefeld.
+Vor Korrektur beide Fälle rot (links.newLink), danach grün. Gesamtlauf:
+743 Tests / 58 Dateien, Lint und Typecheck erfolgreich. Neue Bezeichner per
+TS-Compiler-API inventarisiert: englisch.
+Browser: Hinzufügen unter Deutsch ergibt „Neuer Verweis“, unter Englisch
+„New link“. Beide Testverweise anschließend über die Löschbestätigung entfernt;
+die drei ursprünglichen Verweise bleiben erhalten. Browser auf Deutsch zurückgesetzt.
+
+Dynamische StockInfo-Typen sind ein weiterer Nutzerauftrag mit eigenem
+API-Bedarf, erfasst in T-48. StockInfo-Konsumententicket T-73 liegt dort im
+Backlog; die zwei Typen werden nicht durch eine neue feste Liste ersetzt.
+Keine Umsetzung dieses API-Auftrags in der T-46-Prüffassung.
+
+**Doku-Abgleich:** Die Bezeichnung eines neuen Verweises ist eine Korrektur
+des bestehenden Verhaltens; keine Anleitung verspricht den Schlüsseltext.
+README bleibt hierfür unverändert. Die unvollständige Beschreibung der
+Asset-Typen wird mit dem zugehörigen Verhalten in T-48 korrigiert.

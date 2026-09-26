@@ -475,7 +475,6 @@ export const en: MessageSchema = {
     inSelection: 'In selection',
     inPortfolio: 'held',
     unknownType: 'unknown',
-    newLink: 'New link',
   },
 
   addPosition: {
@@ -493,6 +492,7 @@ export const en: MessageSchema = {
   },
 
   links: {
+    newLink: 'New link',
     hint: "In the address, {'{isin}'} and {'{symbol}'} are substituted. An empty kind or group selection includes all of that type. When both are set, a position must match both. A link using {'{isin}'} does not appear for positions without one.",
     labelPlaceholder: 'Label',
     url: 'Address',

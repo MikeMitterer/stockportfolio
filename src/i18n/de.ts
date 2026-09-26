@@ -488,7 +488,6 @@ export const de = {
     inSelection: 'In Auswahl',
     inPortfolio: 'im Depot',
     unknownType: 'unbekannt',
-    newLink: 'Neuer Verweis',
   },
 
   addPosition: {
@@ -505,6 +504,7 @@ export const de = {
   },
 
   links: {
+    newLink: 'Neuer Verweis',
     hint: "In der Adresse werden {'{isin}'} und {'{symbol}'} ersetzt. Leere Typ- oder Gruppenauswahl gilt jeweils für alle. Sind beide gesetzt, muss die Position beide erfüllen. Ein Verweis mit {'{isin}'} erscheint nicht bei Positionen ohne ISIN.",
     labelPlaceholder: 'Bezeichnung',
     url: 'Adresse',
