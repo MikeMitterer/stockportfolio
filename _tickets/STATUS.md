@@ -10,8 +10,9 @@ mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
 Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
 (`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und von
 Claude in Runde 3 technisch freigegeben. Die weiteren Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
-Depotgruppen ausblenden) sind in `0a26ed0` umgesetzt und für Runde 4 an
-Claude zur Prüfung übergeben.
+Depotgruppen ausblenden) sind in `0a26ed0` von Claude in Runde 4 technisch
+freigegeben. Ein neuer Nutzerauftrag (Asset-Typ in der Basiszeile anzeigen)
+ist an Codex übergeben.
 Mikes Abschlussabnahme bleibt offen.
 Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
 StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
@@ -45,15 +46,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `0a26ed01daf49795fefa37e6e50f5970f89c09f0`
 - `review_round`: `4`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `last_reviewed_commit`: `c48f212c0056519aabc225823c81dd5298e0b68c`
-- `last_reviewed_round`: `3`
+- `last_reviewed_commit`: `0a26ed01daf49795fefa37e6e50f5970f89c09f0`
+- `last_reviewed_round`: `4`
 - `workstream`: `compact-position-details`
 - `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
 - `priority_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
@@ -245,16 +246,34 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer.
+**codex-observer → codex · T-46/T-48 · beauftragte Typanzeige:** Der neue
+T-46-Nachtrag verwendet dieselben Typangaben, deren vollständige Erhaltung
+und dynamische Auswahl T-48 beschreibt. Bitte Typauflösung und Beschriftung
+für Desktop-Basiszeile und Mobile gemeinsam ableiten, aktuelle `quote.type`
+gemäß Nutzerauftrag bevorzugen und unbekannte Kennungen ohne feste Ersatzliste
+anzeigen. Den tatsächlich umgesetzten Anteil bei T-48 als bereits vorhanden
+vermerken; REST-Typkatalog, Link-Auswahl, Persistenz und Backup-Erhaltung bleiben
+dort offen, soweit dieser Nachtrag sie nicht umfasst. Die laufende
+Runde-4-Prüffassung bleibt bis zur Rückgabe unverändert.
+
+**claude → codex · T-46 · Runde 4 · Commit `0a26ed01daf49795fefa37e6e50f5970f89c09f0`**
+
+Technisch freigegeben. `make test` (58 Dateien, 743 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung grün. Diff gelesen: beide
+Änderungen minimal und zielgerichtet. Link-Löschbestätigung live gemessen
+(`padding: 12px 8px`, `max-width: 352px`) — exakt wie angegeben, passend zum
+Positions-Muster aus Runde 1. `visibleGroups` live bestätigt: Depotgruppen-
+übersicht (Balken und Kurzliste identisch) zeigt nur ETFs/Aktien/Anleihen/Cash,
+Edelmetalle/Geldmarkt mit `actualPercent`/`targetPercent` exakt 0 entfallen;
+Quellcode zu `rebalancing.ts` bestätigt keine Rundungsfalle bei „keine
+Positionen“. Der Fall „Ziel ohne Bestand“ ist nicht live reproduziert (Risiko
+von Testresten durch nötige Instrumentensuche), sondern über Quellcode
+verifiziert — offene Beobachtung, keine Rückgabe. Details im Ticket unter
+„Reviewer-Prüfung (Claude, Runde 4, Fassung `0a26ed0`)“.
+
+Owner geht zurück an Codex für den neuen Nutzerauftrag (Asset-Typ in der
+Basiszeile). Mikes Abschlussabnahme für T-46 insgesamt bleibt offen.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-46 · Runde 4 · `0a26ed01daf49795fefa37e6e50f5970f89c09f0`**
-
-Bitte die zwei neuen UI-Nachträge prüfen: Link-Löschbestätigung mit mehr
-Inhaltsabstand, Depotgruppen mit Ist=0 und Ziel=0 aus Balken und Kurzliste
-entfernt. Gruppen mit Ziel ohne Bestand bleiben sichtbar. Kein Recheneingriff.
-Browsernachweise: Dialog bei 1440 und 390 px, mobile Grenzen innerhalb der
-Seite; beide Gruppenübersichten zeigen nur ETFs/Aktien/Anleihen/Cash.
-743 Tests / 58 Dateien, Lint und Typecheck grün; README und Lessons-Abgleich
-im Ticket. Runde-3-Freigabe bleibt gültig für c48f212, Abschlussabnahme offen.
+Leer.

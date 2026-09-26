@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 10:20:12 CEST · claude · T-46 Runde 4 technisch freigegeben: Link-Löschbestätigungs-Abstand und leere Depotgruppen ausblenden live bestätigt (58 Dateien/743 Tests, Lint/Typecheck grün); Owner zurück an Codex für Asset-Typ-Anzeige in der Basiszeile
+- 2026-09-26 10:14:53 CEST · codex-observer · Überschneidung der neuen T-46-Typanzeige mit T-48 geprüft und Codex einen Abgleich zur gemeinsamen Typauflösung sowie zur Abgrenzung des späteren REST-Katalogs hinterlegt. Die laufende Prüffassung bleibt unverändert.
+- 2026-09-26 10:13:44 CEST · codex · Typanzeige in der Asset-Basiszeile vorbereitet: aktueller StockInfo-Typ liegt bereits im Kurs vor, auch unbekannte Kennungen müssen sichtbar bleiben. Darstellungspräferenz angefragt; laufende Claude-Prüfung bleibt stabil.
+- 2026-09-26 10:12:07 CEST · codex · Link-Löschbestätigung mit mehr Raum und Nullgruppen aus beiden Depotgruppen-Ansichten entfernt. Browser Desktop/Mobile geprüft, 743 Tests grün; Nachträge als 0a26ed0 an Claude übergeben.
+- 2026-09-26 10:10:16 CEST · codex · Claude hat Runde 3 freigegeben. Link-Löschbestätigung erhält mehr Inhaltsabstand; Depotgruppen ohne Ist- und Zielanteil werden in Balken und Kurzliste ausgeblendet. Browserprüfung läuft.
 - 2026-09-26 10:09:40 CEST · claude · T-46 Runde 3 technisch freigegeben: links.newLink-Fix live in beiden Sprachen bestätigt, neuer Regressionstest grün (58 Dateien/743 Tests); Owner zurück an Codex für Löschbestätigungs-Abstand und leere Depotgruppen ausblenden
 - 2026-09-26 10:06:40 CEST · codex · Mehr Inhaltsabstand für die Link-Löschbestätigung aufgenommen. Vorhandene Gestaltung der Positions-Löschbestätigung geprüft; Umsetzung folgt nach Rückgabe der laufenden Claude-Prüfung.
 - 2026-09-26 10:03:07 CEST · claude · startet unabhängigen Review von T-46 Runde 3, Fassung c48f212 (Übersetzungsfix)
@@ -45,10 +50,5 @@
 - 2026-09-25 22:35:44 CEST · claude · T-43 Runde 3 technisch freigegeben: mobile Positionskarten (eigener Rahmen, up(md)-Panel-Rahmen, 8px-Abstand) per Diff/CSS-Abgleich bestätigt; Owner zurück an codex
 - 2026-09-25 22:32:49 CEST · codex · T-43: Die überarbeitete mobile Positionsliste mit einzeln abgesetzten Karten ist als Fassung 9a92abe mit Browserprüfung bei 390 px und 729 bestandenen Tests an Claude für Runde 3 übergeben. Ich warte auf das Prüfurteil.
 - 2026-09-25 22:28:50 CEST · codex · T-43: Claudes Freigabe für Runde 2 ist verarbeitet. Ich überarbeite nach Mikes Rückmeldung die mobile Positionsliste mit klar getrennten Karten und prüfe sie erneut im Browser.
-- 2026-09-25 22:27:48 CEST · claude · T-43 Runde 2 technisch freigegeben: Folgekorrekturen (Gruppensymbole enger, mobile Delta-Zeile) per DOM-Messung und Tests bestätigt; Owner zurück an codex
-- 2026-09-25 22:20:59 CEST · codex · T-43: Die Folgekorrekturen am Symbolabstand und am mobilen Delta-Balken sind als Fassung 3855bb7 mit grünen Prüfungen und Browserbelegen an Claude für Runde 2 übergeben. Ich warte auf die unabhängige Rückgabe.
-- 2026-09-25 22:17:37 CEST · codex · T-43: Claudes technische Freigabe für Runde 1 ist verarbeitet. Ich setze Mikes Folgekorrekturen am Symbolabstand und am mobilen Bereichsbalken für eine neue Prüffassung um.
-- 2026-09-25 22:15:43 CEST · claude · T-43 Runde 1 technisch freigegeben: make test/lint/typecheck plus Live-Browserprüfung (4 Bereiche, Editor, Mobile) bestanden; Owner zurück an codex
-- 2026-09-25 22:03:27 CEST · codex-observer · beobachtet T-43 nach formaler Übergabe an Claude: Reviewrunde 1 prüft Produktfassung 1f75154. Seit der Übergabe ist keine Produktänderung festgestellt; T-44 und T-45 bleiben eingeplant.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

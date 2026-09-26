@@ -4,9 +4,11 @@
 T-46 ist nach der technischen Freigabe von T-47 umgesetzt und durch Codex selbst geprüft.
 Runde 1 ist technisch freigegeben. Der in Runde 2 bestätigte Übersetzungsfehler
 (`links.newLink`) ist korrigiert und in Runde 3 (`c48f212`) technisch
+freigegeben. Die zwei Nachträge (Löschbestätigungs-Abstand bei Verweisen,
+leere Depotgruppen ausblenden) sind in Runde 4 (`0a26ed0`) technisch
 freigegeben. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen;
-zwei weitere Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
-Depotgruppen ausblenden) sind an Codex übergeben.
+ein neuer Nutzerauftrag (Asset-Typ in der Basiszeile anzeigen) ist an Codex
+übergeben.
 
 ## Für dich
 
@@ -410,3 +412,59 @@ Rückgabe an Codex.
 und den sichtbaren Zielanteil ohne Bestand. Der Dialogabstand verändert keine
 Bedienfolge und erfordert keine weitere Anleitung. SP-CX-02 berücksichtigt:
 die technische Freigabe der Runde 3 bleibt auf ihre alte Fassung beschränkt.
+
+## Reviewer-Prüfung (Claude, Runde 4, Fassung `0a26ed0`)
+
+**Technische Freigabe.** `make test` (58 Dateien, 743 Tests — unverändert
+gegenüber Runde 3, kein neuer Testfall in dieser Runde), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Seit dem Handoff-Commit betraf der Folgecommit ausschließlich
+Board-Dateien; der Produktstand war während der Prüfung stabil.
+
+Diff `c48f212..0a26ed0` gelesen (`README.md`, `ExternalLinkEditor.vue`,
+`DashboardView.vue`, 37 Zeilen). Beide Änderungen sind minimal und zielgerichtet:
+
+- **Link-Löschbestätigung:** Der bisherige nackte Text im `NPopconfirm` steckt
+  jetzt in `<p class="linkeditor__delete-confirmation">` mit
+  `padding: var(--space-3) var(--space-2)` — genau das bei der
+  Positions-Löschung bereits verwendete Muster (12 px vertikal / 8 px
+  horizontal, Runde 1 bestätigt). `max-width: min(22rem, calc(100vw - 6rem))`
+  und `overflow-wrap: anywhere` verhindern Überlauf bei langen Bezeichnungen.
+  Live im Browser gemessen (`getComputedStyle`):
+  `padding: "12px 8px"`, `maxWidth: "352px"` — exakt wie im Code. Kein CSS auf
+  der Naive-Komponente selbst (nur auf dem eigenen `<p>`), der
+  Naive-Wächter-Test bleibt unberührt.
+- **Leere Depotgruppen ausblenden:** Neuer `visibleGroups`-Computed in
+  `DashboardView.vue` filtert `actualPercent !== 0 || targetPercent !== 0`
+  und wird sowohl für die aufgeklappten Balken als auch die eingeklappte
+  Kurzliste verwendet (eine gemeinsame Quelle, kein doppelter Filter).
+  Quellcode zu `actualPercent`/`groupTargetPercent` geprüft
+  (`src/domain/rebalancing.ts:88`, `:448`): Beide Werte entstehen durch
+  Multiplikation mit dem tatsächlichen Gruppenwert bzw. durch Summierung
+  vorhandener Ziel-Prozentsätze — bei keiner Position in der Gruppe ergeben
+  sich exakt `0`, kein Gleitkommarest durch Rundung. Der `!==0`-Vergleich ist
+  damit für den Fall „keine Positionen“ verlässlich, keine Rundungsfalle.
+
+**Live im Browser** (Testdienst Port 8899, App auf `:5189`) nachvollzogen:
+Depotgruppenübersicht zeigt nur ETFs/Aktien/Anleihen/Cash (aufgeklappt und
+eingeklappt identisch), Edelmetalle/Geldmarkt entfallen — passend dazu über
+IndexedDB bestätigt, dass im Testdepot keine Position und kein Ziel-% in
+diesen beiden Gruppen existiert (`actualPercent`/`targetPercent` also exakt 0
+in beiden Fällen). Link-Löschbestätigung mit „Abbrechen“ abgebrochen, kein
+Verweis gelöscht; die drei ursprünglichen Verweise unverändert vorhanden.
+
+**Einschränkung (nicht blockierend):** Der Fall „Ziel gesetzt, aber ohne
+Bestand bleibt die Gruppe sichtbar“ ist nicht live reproduziert — ein Test
+dafür hätte eine reale Instrumentensuche gegen den Testdienst und eine neue
+Position erfordert, was das Risiko von Testresten im Depot erhöht hätte. Die
+Prüfung stützt sich hier auf die Quellcodeanalyse oben (`targetPercent` wird
+unabhängig von `actualValue`/Bestand berechnet, der Filter verknüpft beide
+Bedingungen mit „oder“) sowie darauf, dass für DashboardView projektweit
+keine Komponententests existieren (kein Rückschritt gegenüber dem
+bestehenden Testumfang). Diese Einschränkung ist keine Rückgabe, sondern eine
+offene Beobachtung für eine künftige gezielte Probe.
+
+**Ergebnis:** Fassung `0a26ed0` technisch freigegeben. Kein `changes_requested`.
+Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen; der neue
+Nutzerauftrag „Asset-Typ in der Basiszeile anzeigen“ aus der OUTBOX ist nicht
+Teil dieser Prüffassung.
