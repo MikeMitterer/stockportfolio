@@ -35,7 +35,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `handoff_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
 - `review_round`: `1`
@@ -45,7 +45,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `last_reviewed_commit`: `d38a8f523899f506fc66428f626a042039a50528`
 - `last_reviewed_round`: `1`
 - `workstream`: `amount-setting-mode`
-- `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md → T-46-detailtabs-und-felder-kompakter.md`
+- `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md → T-47-verrechnungskonto-wieder-hinzufuegen.md → T-46-detailtabs-und-felder-kompakter.md`
 - `priority_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -228,7 +228,9 @@ INBOX und OUTBOX enthalten nur unverarbeitete Nachrichten. Befunde und
 dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
-T-46 ist auf Mikes Auftrag vom 2026-09-26 nach T-45 eingeplant: Kursverlauf
+T-47 behebt Mikes neuen Befund vom 2026-09-26: gelöschtes Verrechnungskonto
+kann nicht wieder hinzugefügt werden. Die Funktionskorrektur folgt auf T-45.
+T-46 ist auf Mikes Auftrag vom 2026-09-26 danach eingeplant: Kursverlauf
 zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen.
 
 ## INBOX → Coder
@@ -244,6 +246,6 @@ Leer.
   Typecheck und Build grün. Desktop/Mobile, EUR→USD-Depotwechsel und Rückwechsel,
   20 % ↔ 1.000 EUR bzw. 5 % ↔ 250 EUR, Reload und Tastatur geprüft.
   Testadresse `http://127.0.0.1:5189/#/settings?tab=calc`, Dienst 8899 läuft.
-  Details und Doku-/Lessons-Abgleich im Ticket. T-46 folgt nach Freigabe;
+  Details und Doku-/Lessons-Abgleich im Ticket. T-47 (Cash wieder hinzufügen), danach T-46 folgen nach Freigabe;
   dessen Observer-Hinweis ist ins Ticket übernommen, noch keine Produktänderung.
 

@@ -1,7 +1,7 @@
 # T-46 · Detailtabs und Felder kompakter
 
 **Stand:** Mike hat die Anpassungen am 2026-09-26 während T-45 beauftragt.
-T-46 folgt auf T-45; noch keine Produktumsetzung.
+T-46 folgt nach T-45 und der vorgezogenen Cash-Korrektur T-47; noch keine Produktumsetzung.
 
 ## Für dich
 

@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 08:36:26 CEST · claude · startet unabhängigen Review von T-45, Fassung 8ae20a6 (Runde 1)
+- 2026-09-26 08:36:20 CEST · codex · Neuer Befund: Cash kann gelöscht, über den Wertpapierdialog aber nicht wieder angelegt werden. T-47 vor den optischen Detailänderungen eingeplant; T-45 wartet bei Claude auf Review.
 - 2026-09-26 08:32:50 CEST · codex · T-45 an Claude übergeben: Fassung 8ae20a6, Browserprüfung sowie 735 Tests erfolgreich. T-46 mit den drei Detailansicht-Wünschen folgt nach dem Review.
 - 2026-09-26 07:46:05 CEST · codex · T-45: Betragswahl im Browser korrigiert und auf Desktop/Mobile geprüft; 735 Tests sowie Lint, Typprüfung und Build erfolgreich. Bereitet die Übergabe an Claude vor.
 - 2026-09-26 07:44:54 CEST · codex-observer · T-46 gegen die bestehende T-43-Detailansicht abgeglichen und Codex Hinweise zur gemeinsamen Tab-Auswahl, zum Chart-Abruf und zur Cash-Ansicht hinterlegt. T-45 bleibt aktiv; keine parallele Umsetzung angefordert.
@@ -48,7 +50,5 @@
 - 2026-09-11 19:43:02 CEST · claude · STATUS und README nach dem AgentLessons-Umzug bereinigt: Mailboxen geleert, Reviewfelder auf none, T-41-Abschnitte entfernt; master gepusht
 - 2026-09-11 19:35:32 CEST · claude · Umzug committet: T-41/T-42 an AgentLessons abgegeben, T-31 bis T-34 abgeschlossen, master gemerged und gepusht
 - 2026-09-11 19:06:02 CEST · claude · Umzug nach AgentLessons abgeschlossen: T-41 und T-42 dort, hier Verweise; 267 Links und 94 Anker geprueft
-- 2026-09-11 18:58:06 CEST · codex-observer · T-42: Globaler Helfer und Tätigkeitsregeln fertig und geprüft; Coder und Verifier informiert.
-- 2026-09-11 18:56:27 CEST · codex-observer · T-42: Den globalen Schreibhelfer installiert und geprüft; gleiche die Board-Regeln ab.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
