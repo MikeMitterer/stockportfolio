@@ -277,3 +277,9 @@ Bitte die Nachträge seit `0a26ed0` prüfen (`52b6716` und `1124b4b`):
 Der Produktstand bleibt bis zum Review stabil. Mikes Abschlussabnahme ist offen.
 Die offene Übernahme auf `2026-09-11-lessons-follow-through` bleibt sichtbar;
 der lokale Workflow steht weiterhin auf `2026-09-11-activity-feed`.
+
+
+**Weiterer Nutzerauftrag während Runde 5:** Mike möchte „Delta Bestand“ im
+Bewertungsbereich auf volle Stücke gerundet sehen. Als offener Nachtrag im
+T-46-Ticket dokumentiert; Umsetzung durch Codex nach Review-Rückgabe.
+Die Prüffassung `1124b4b` bleibt unverändert.

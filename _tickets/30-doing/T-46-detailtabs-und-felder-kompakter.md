@@ -516,3 +516,14 @@ Anzeigeanteil und die noch offenen API-/Speicher-/Filter-Aufgaben. T-38 verweist
 auf den UI-Nachtrag hier. SP-CX-02 und Observer-Hinweis zur Abgrenzung umgesetzt;
 SP-CX-04: vorhandenes Browser-Testdepot weiterverwendet. Keine StockInfo-
 Produktänderung, keine vorweggenommene vollständige Typkatalog-Integration.
+
+
+## Offener Nutzer-Nachtrag · Delta Bestand als ganze Stückzahl
+
+Mike, 2026-09-26: „Bei der Bewertung in den Detail-Ansicht - Delta Bestand
+Stück - runde auf die volle Stückzahl“.
+
+Nach Rückgabe der Runde 5 umsetzen: Stückanzeige bei Delta Bestand auf eine
+volle Stückzahl runden, positive und negative Werte berücksichtigen. Die
+Berechnung selbst bleibt präzise. Desktop/Mobile im Browser prüfen.
+Dieser Nachtrag ist noch nicht Teil der Prüffassung `1124b4b`.
