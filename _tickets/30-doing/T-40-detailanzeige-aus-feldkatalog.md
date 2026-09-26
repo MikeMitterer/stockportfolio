@@ -106,7 +106,7 @@ Status: angelegt am 2026-09-10 auf Mikes Ansage „Leg die Umsetzungs-Tickets in
 doing an - das hat prio". Repo: StockPortfolio, betroffene Fremdschnittstelle:
 StockInfo (nur lesend). Zeitbudget nicht beziffert.
 
-**Hängt an [T-39](T-39-identitaet-normalisieren.md).** Ohne normalisierte
+**Hängt an [T-39](../40-done/T-39-identitaet-normalisieren.md).** Ohne normalisierte
 Identität lassen sich Detailwerte keiner Position verlässlich zuordnen.
 
 Der Feldkatalog ist veränderlich: `/fields` liefert `generation_id`,

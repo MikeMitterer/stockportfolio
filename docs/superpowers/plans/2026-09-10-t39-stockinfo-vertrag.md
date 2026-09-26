@@ -17,7 +17,7 @@ sichtbar; vorhandene Kurse bleiben beim Abruffehler höchstens veraltet.
 **Tech Stack:** Vue 3, TypeScript, Pinia, Vitest, injiziertes Fetch,
 fake-indexeddb. Keine neue Laufzeitabhängigkeit.
 
-**Spec:** [T-39](../../../_tickets/30-doing/T-39-identitaet-normalisieren.md)
+**Spec:** [T-39](../../../_tickets/40-done/T-39-identitaet-normalisieren.md)
 und [Integrationsvorschlag](../../stockinfo-integration-proposal.md).
 
 ## Grenzen

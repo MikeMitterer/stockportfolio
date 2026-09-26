@@ -103,7 +103,7 @@ StockInfo. Der aktive Owner und die Reviewfassung stehen ausschließlich in STAT
 Mike, 2026-09-10: „T-37 und T-38 sind die nächsten Tickets die du abarbeiten sollst“.
 Basiswährung je Depot und Umgang mit veralteten Kursen sind geklärt.
 
-**Voraussetzung ist [T-39](../30-doing/T-39-identitaet-normalisieren.md).** Dort werden
+**Voraussetzung ist [T-39](../40-done/T-39-identitaet-normalisieren.md).** Dort werden
 Identität und Core-Pflichtfelder einschließlich Kurswährung geprüft und die
 geratenen Ersatzwährungen entfernt. T-38 verwendet diese Prüfung weiter.
 Der Generationsauftrag aus T-35 bleibt separat im Backlog.

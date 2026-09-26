@@ -31,8 +31,9 @@ eigenen AgentLessons-Repository; Einzelheiten stehen unter
 
 **T-38 ist abgeschlossen.** Nach technischer Freigabe in Runde 2 hat Mike am
 2026-09-26 bestätigt: „T-38 ist erledigt“. Das Ticket liegt unter `40-done/`.
-T-39 und T-40 sind technisch freigegeben und warten unter `30-doing/`
-auf Mikes Abschlussabnahme.
+T-39 ist ebenfalls abgeschlossen: Mike bestätigte am 2026-09-26
+„T-39 ist erledigt“. T-40 ist technisch freigegeben und wartet unter
+`30-doing/` auf Mikes Abschlussabnahme.
 T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
 abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
 T-31 bis T-34 sind durch Mike am 2026-09-10 abgeschlossen und liegen unter
@@ -102,8 +103,8 @@ Einzeldateien unter `.agents/lessons/`, die Linkeinstiege,
 ist in Runde 1 und 2 technisch freigegeben; **Mikes Abschlussabnahme erfolgt
 auf dem AgentLessons-Board**.
 
-Der Workstream dieses Boards ist damit wieder frei. T-38 wurde inzwischen am 2026-09-26 durch Mike abgeschlossen. Offen bleiben
-T-39 und T-40 mit ausstehender Abschlussabnahme sowie T-35 und T-36 im Backlog.
+Der Workstream dieses Boards ist damit wieder frei. T-38 wurde inzwischen am 2026-09-26 durch Mike abgeschlossen. T-39 ist seit demselben Tag ebenfalls abgeschlossen. Offen bleiben
+T-40 mit ausstehender Abschlussabnahme sowie T-35 und T-36 im Backlog.
 
 **Formatänderung für alle Autoren:** Vor der nächsten Lessons-Pflege
 [LESSONS-ACCESS.md](.agents/LESSONS-ACCESS.md) lesen. Originale liegen unter
@@ -151,7 +152,7 @@ ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
 
 Mike, 2026-09-10: „Leg die Umsetzungs-Tickets in doing an - das hat prio“.
 Aus dem freigegebenen T-37-Vorschlag entstanden dafür
-[T-39](30-doing/T-39-identitaet-normalisieren.md) — Identität normalisieren —
+[T-39](40-done/T-39-identitaet-normalisieren.md) — Identität normalisieren —
 und [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) — automatische
 Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
@@ -162,7 +163,7 @@ technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-4
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
-T-38 ist seit 2026-09-26 durch Mike abgeschlossen; T-39 und T-40 warten weiter auf seine Abschlussabnahme.
+T-38 und T-39 sind seit 2026-09-26 durch Mike abgeschlossen; T-40 wartet weiter auf seine Abschlussabnahme.
 T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
 zeilengenauen Dublettenabgleich. T-43 hat diese Darstellung neu geordnet
 und ist abgeschlossen. T-40 wird dafür weder erneut implementiert noch neu
@@ -218,7 +219,7 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-35](10-backlog/T-35-stockinfo-generation-und-waehrung.md) | Bisher `offen`; ausführlicher Entwurf mit bisherigen Prüfnotizen, Implementierungsnachweise leer. Keine belegte Einplanung der Umsetzung. Abhängigkeiten vor Aufnahme neu prüfen. |
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
-| [T-39](30-doing/T-39-identitaet-normalisieren.md) | Technisch freigegeben; Mikes Abschlussabnahme offen. Identitäts- und Kursprüfung ist umgesetzt. |
+| [T-39](40-done/T-39-identitaet-normalisieren.md) | In Runde 1 technisch freigegeben; am 2026-09-26 durch Mike abgeschlossen: „T-39 ist erledigt“. |
 | [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
 | [T-38](40-done/T-38-basiswaehrung-und-devisenkurse.md) | In Runde 2 technisch freigegeben; am 2026-09-26 durch Mike abgeschlossen: „T-38 ist erledigt“. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
@@ -226,7 +227,7 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 T-31 bis T-34 sind auf Mikes Auftrag im Observer-Chat abgeschlossen:
 „Schließ ab und bereinige die Aussage“. Die bisherigen Einzelantworten bleiben
 erhalten; neue Einzelprüfurteile wurden nicht ergänzt.
-T-38 ist abgeschlossen; T-39 und T-40 warten auf die menschliche Abschlussabnahme.
+T-38 und T-39 sind abgeschlossen; T-40 wartet auf die menschliche Abschlussabnahme.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.

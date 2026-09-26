@@ -24,7 +24,7 @@ Header, Fixtures) und **T-25** (implementiert und rotiert die Generation).
 ## Zuschnitt nach T-37 · 2026-09-10
 
 **Die gemeinsame Kursprüfung wird in
-[T-39](../30-doing/T-39-identitaet-normalisieren.md) umgesetzt.** Dazu gehören
+[T-39](../40-done/T-39-identitaet-normalisieren.md) umgesetzt.** Dazu gehören
 Identität, Core-Pflichtfelder und die bislang geratene Kurswährung in Quote,
 Katalog und Detaildiagramm. T-35 baut dafür keinen zweiten Decoder.
 

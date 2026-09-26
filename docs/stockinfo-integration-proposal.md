@@ -8,7 +8,7 @@ parallele Spezifikation oder laufender Umsetzungsstand fortgeschrieben.
 **Verbindliche Anforderungen, Entscheidungen und Prüfnachweise stehen vollständig
 im jeweiligen Ticket:**
 
-- [T-39 · Identität und Kursprüfung](../_tickets/30-doing/T-39-identitaet-normalisieren.md)
+- [T-39 · Identität und Kursprüfung](../_tickets/40-done/T-39-identitaet-normalisieren.md)
 - [T-40 · Zusätzliche Kennzahlen](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md)
 - [T-38 · Depotwährung und FX](../_tickets/40-done/T-38-basiswaehrung-und-devisenkurse.md)
 
@@ -224,7 +224,7 @@ nachträgliche Erweiterung des Reviewurteils zu Fassung `2e4c378`.
    gleiche Labels bei verschiedenen Schlüsseln und `0`/`false`.
 
 Die gemeinsame API-Prüfung aus Schritt 1 liegt in
-[T-39](../_tickets/30-doing/T-39-identitaet-normalisieren.md), einschließlich
+[T-39](../_tickets/40-done/T-39-identitaet-normalisieren.md), einschließlich
 der Währungskorrektur aus T-35. Sie betrifft Quote, Katalog und Detaildiagramm;
 `instrument.currency` ersetzt kein fehlendes `latest_currency`. Der
 Generationsauftrag bleibt bei T-35. Es entsteht kein zweiter Kursdecoder.

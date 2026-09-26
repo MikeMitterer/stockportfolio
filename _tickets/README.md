@@ -166,13 +166,13 @@ Identitätszuordnung, zusätzliche Kennzahlen und Nutzen einer flachen
 Quote-Ansicht bewertet. Technisch freigegeben und durch Mike am 2026-09-10 abgeschlossen.
 
 Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
-[T-39 · Identität normalisieren](30-doing/T-39-identitaet-normalisieren.md) und
+[T-39 · Identität normalisieren](40-done/T-39-identitaet-normalisieren.md) und
 [T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
 Beide sind bereits umgesetzt und technisch freigegeben. Anschließend wurde
 auch die Depotwährung aus T-38 technisch freigegeben und am 2026-09-26
 durch Mike abgeschlossen; der aktive Auftrag steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
-T-39 ist technisch freigegeben und wartet auf Mikes Abschlussabnahme.
+T-39 ist technisch freigegeben und durch Mike am 2026-09-26 abgeschlossen: „T-39 ist erledigt“.
 T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
 
 | Ticket | Zuständiger Umfang |

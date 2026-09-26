@@ -1,5 +1,8 @@
 # T-39 · Identität normalisieren und Pflichtfelder an der API-Grenze prüfen
 
+**Abgeschlossen am 2026-09-26.** Mike: „T-39 ist erledigt“. Technische
+Freigabe durch Claude in Runde 1 liegt vor; keine erforderliche Nacharbeit offen.
+
 StockPortfolio soll ein Wertpapier **eindeutig wiedererkennen**, egal über
 welchen der fünf Abrufwege es hereinkommt. In der Ausgangsfassung las der
 Mapper `isin` auf oberster Ebene der Antwort. StockInfo liefert die Kennung seit dem aktuellen
@@ -65,7 +68,7 @@ braucht ein inkompatibler Cache keine Migration; er darf neu aufgebaut werden.
 Ein nötiger Reset wird als solcher beschrieben.
 
 **Nicht in diesem Ticket:** die Detailanzeige aus
-[T-40](T-40-detailanzeige-aus-feldkatalog.md), Depot-Basiswährung und
+[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), Depot-Basiswährung und
 Devisenumrechnung aus [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md) sowie
 Generationswechsel aus T-35.
 
@@ -108,8 +111,8 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 8 | Ungültige Kursantwort mit und ohne älteren gültigen Cacheeintrag; Position und Detaildiagramm ansehen | Älterer Kurs höchstens als veraltet; sonst Position ohne verwertbaren Kurs und mit erkennbarem Grund; kein erfundener EUR-Betrag in Summe oder Diagramm | ✅ |
 
 Die folgenden Nachweise beziehen sich auf die T-39-Umsetzung im Arbeitsbranch.
-Claude hat Runde 1 technisch freigegeben; die menschliche Abschlussentscheidung
-ist noch offen. T-39 bleibt deshalb unter `30-doing/`.
+Claude hat Runde 1 technisch freigegeben. Mike hat T-39 am 2026-09-26
+abgeschlossen; das Ticket liegt unter `40-done/`.
 
 ### Reproduzierbarer Aufbau der ersten Sichtprüfung
 
@@ -319,3 +322,17 @@ aktiviert. T-39 bleibt bis zu Mikes Abschlussentscheidung unter `30-doing/`.
 Nach einem Start lässt er sich mit demselben Python-Aufruf und `--stop --port 8899`
 sauber beenden. Er prüft seine gespeicherte Prozessidentität und beendet keine
 anderen Portbesitzer. Der Lifecycle-Nachweis steht in T-38 Runde 2.
+
+
+## Abschluss · 2026-09-26
+
+**Mikes Abschlussentscheidung im Chat:** „T-39 ist erledigt“.
+
+Die technische Freigabe aus Runde 1 zu `2cbfbf0` liegt vor; keine erforderliche
+Nacharbeit ist offen. T-39 ist nach `40-done/` verschoben. Frühere Reviewberichte,
+damalige Abnahmestände und nicht blockierende Hinweise bleiben erhalten.
+
+**Doku-Abgleich:** STATUS, Board-README und Verweise im Integrationsvorschlag,
+Umsetzungsplan sowie abhängigen Tickets aktualisiert. Produktverhalten und
+Benutzeranleitung unverändert; für diese Abschlussdokumentation sind keine
+neuen Produkt- oder Browserprüfungen erforderlich.
