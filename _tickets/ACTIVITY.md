@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 11:12:12 CEST · claude · T-46 Runde 6 technisch freigegeben: KPI-Basiswährung nicht mehr abgeschnitten, Zielmarkierung hinter Header (isolation:isolate, gegen UxTopbar-Quellcode geprüft), Delta Bestand zeigt '0' statt '-0' (live bestätigt, 58 Dateien/750 Tests grün); Owner zurück an Codex
+- 2026-09-26 11:04:46 CEST · codex-observer · Runde-6-Übergabe von T-46 geprüft und KPI-Kürzung sowie Zielmarkierung vor dem Header als getrennte Layout-Einzelfälle eingeordnet. Konkrete Gegenproben im Ticket festgehalten; keine neue Lesson ohne belegte Musterwiederholung.
+- 2026-09-26 11:04:14 CEST · codex · hat Zielmarkierung, Ganzzahl-Delta und Basiswährungsanzeige korrigiert und im Browser geprüft. 750 Tests, Lint und Typecheck grün; T-46 Runde 6 liegt bei Claude.
+- 2026-09-26 11:00:38 CEST · codex · korrigiert die über dem Header sichtbare Zielmarkierung, rundet Delta Bestand und behebt Claudes Befund zur abgeschnittenen Basiswährung.
 - 2026-09-26 10:57:22 CEST · claude · T-46 Runde 5 mit changes_requested zurückgegeben: neuer Basiswährungs-Hinweis an der Gesamtwert-Karte wird bei üblicher Desktop-Breite zu 'Basiswährung: E…' abgeschnitten (live gemessen); Icons/Tooltip/Statuszeile sonst bestätigt (58 Dateien/750 Tests grün)
 - 2026-09-26 10:54:41 CEST · codex-observer · T-46/Runde 5 blieb mindestens 15 Minuten ohne erkennbaren Prüfstart. Claude über die OUTBOX um Übernahme oder konkreten Verzögerungsgrund gebeten; Rollen und Prüffassung unverändert gelassen.
 - 2026-09-26 10:42:05 CEST · codex · hat die gewünschte Ganzzahl-Anzeige für Delta Bestand als T-46-Nachtrag erfasst. Wartet auf Claudes Rückgabe von Runde 5; die Prüffassung bleibt unverändert.
@@ -46,9 +50,5 @@
 - 2026-09-25 23:54:36 CEST · codex · T-44 wurde von Claude in Runde 1 technisch freigegeben; ich habe die Rückgabe verarbeitet. Mikes Bedien- und Abschlussentscheidung ist der verbleibende Schritt.
 - 2026-09-25 23:51:06 CEST · claude · T-44 Runde 1 technisch freigegeben: Gruppenmodell, Migration, Verweisfilter und Ausrichtung per Diff/Tests/Live-Browser bestätigt (Cash-Versatz behoben); Owner zurück an codex
 - 2026-09-25 23:12:23 CEST · claude · startet unabhängigen Review von T-44, Fassung d38a8f5 (Runde 1)
-- 2026-09-25 23:10:24 CEST · codex · T-44 ist als Fassung d38a8f5 an Claude für Runde 1 übergeben. 734 Tests, Lint, Typecheck, Build und Browsercheck sind dokumentiert; ich warte auf das unabhängige Prüfurteil.
-- 2026-09-25 23:00:02 CEST · codex · T-44 Browsercheck: sechs Gruppen und bündige Gruppenköpfe am Desktop, kombinierter Linkfilter und mobile Navigation bei 390 px geprüft. Der Observer-Hinweis zur T-43-Abschlussformulierung ist verarbeitet.
-- 2026-09-25 22:52:04 CEST · codex · T-44: Gruppenmodell, einmalige ETF-Übernahme und kombinierte Verweisfilter sind implementiert; gezielte Tests bestehen. Ich prüfe nun Desktop und Mobile im Browser.
-- 2026-09-25 22:48:48 CEST · codex-observer · T-43-Abschluss gegen Ticketkopf geprüft und widersprüchliche Aussagen zu Mikes Abnahme sowie der letzten Übergabefassung per INBOX an Codex gemeldet. T-44 bleibt der aktive Auftrag; T-45 folgt in der Pri-Chain.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

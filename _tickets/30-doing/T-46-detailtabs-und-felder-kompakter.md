@@ -7,10 +7,11 @@ Runde 1 ist technisch freigegeben. Der in Runde 2 bestätigte Übersetzungsfehle
 freigegeben. Die zwei Nachträge (Löschbestätigungs-Abstand bei Verweisen,
 leere Depotgruppen ausblenden) sind in Runde 4 (`0a26ed0`) technisch
 freigegeben. Der Nutzerauftrag „Asset-Typ in der Basiszeile anzeigen“ ist
-umgesetzt; Claude hat Runde 5 (`1124b4b`) mit `changes_requested`
-zurückgegeben — der neue Basiswährungs-Hinweis an der Gesamtwert-Karte wird
-bei üblicher Desktop-Breite zu „Basiswährung: E…“ abgeschnitten. Korrektur
-steht bei Codex aus. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen.
+umgesetzt; Claude hatte Runde 5 (`1124b4b`) mit `changes_requested`
+zurückgegeben (abgeschnittener Basiswährungs-Hinweis). Die Korrektur sowie ein
+Header-Überlapp-Fund und die Rundung von Delta Bestand sind in Runde 6
+(`4367acf`) technisch freigegeben. Mikes Abschlussentscheidung für T-46
+insgesamt bleibt offen.
 
 ## Für dich
 
@@ -620,3 +621,62 @@ werden.
 Stückanzeige bei unveränderter Rechengenauigkeit. Layoutkorrekturen verändern
 keine weiteren dokumentierten Verträge. Keine Änderung an Board-Konventionen;
 deren offene Übernahme bleibt unverändert sichtbar.
+
+**Observer · Lessons-Einordnung der Runde-5-Nacharbeit:** Die abgeschnittene
+KPI-Basiswährung und die Zielmarkierung vor dem Header sind zwei bestätigte
+Layout-Einzelfälle mit unterschiedlichen Ursachen. Eine Wiederholung desselben
+Fehlermusters oder ein passender lokaler Lessons-Eintrag ist nicht belegt;
+keine neue Lesson wird daraus abgeleitet. Die konkreten Gegenproben bleiben
+beim Ticket: vollständiger Währungscode auch mit Sparkline und engem Platz,
+sowie Header vor den Zielmarkierungen beim Scrollen. Coder-Belege liegen
+oben vor; der Verifier prüft diese Aussagen gegen `4367acf`.
+
+## Reviewer-Prüfung (Claude, Runde 6, Fassung `4367acf`)
+
+**Technische Freigabe.** `make test` (58 Dateien, 750 Tests — unverändert
+gegenüber Runde 5), `make lint` und `make typecheck` selbst gegen die
+Übergabefassung ausgeführt — alle drei ohne Befund. Seit dem Handoff-Commit
+betraf der Folgecommit ausschließlich Board-Dateien; der Produktstand war
+während der Prüfung stabil.
+
+Diff `1124b4b..4367acf` gelesen (`KpiCard.vue`, `DeltaBar.vue`, `GroupBar.vue`,
+`PositionReadDetails.vue`, `README.md`, 6 Dateien):
+
+- **KPI-Hinweis:** `.kpi__row` erhält `flex-wrap: wrap`, `.kpi__hint` verliert
+  `overflow: hidden`/`text-overflow: ellipsis`/`white-space: nowrap` zugunsten
+  von `flex-shrink: 0`, `max-width: 100%`, `overflow-wrap: anywhere` — der
+  Hinweis wird nicht mehr abgeschnitten, sondern bricht bei Bedarf um. Live
+  gemessen (`getComputedStyle`/`getBoundingClientRect`): `.kpi__hint`
+  `clientWidth === scrollWidth === 101px`, kein Rest-Unterschied mehr (Runde 5:
+  97 vs. 101). Zoom-Screenshot zeigt „Basiswährung: EUR“ vollständig auf
+  eigener Zeile unter dem Wert.
+- **Zielmarkierung/Header-Überlappung:** `isolation: isolate` auf
+  `.track` in `DeltaBar.vue` und `GroupBar.vue`. Quellcode-Gegenprobe:
+  `ux-foundation/src/components/UxTopbar.vue` hat tatsächlich
+  `position: sticky; z-index: 10` — exakt die von Codex genannte Ursache
+  (gleicher z-index wie die Zielmarkierung, ohne eigenen Stacking-Context
+  lief die Markierung außerhalb ihres Tracks mit dem Header um den Rang).
+  `isolation: isolate` ist die lehrbuchgerechte, minimale Eindämmung für
+  genau dieses Problem und ändert das Layout selbst nicht. Live bestätigt:
+  Depotgruppen-Balken rendern unverändert (Farben, Zielstriche, keine
+  Verschiebung). Der ursprüngliche Scroll-Überlapp ließ sich im kleinen
+  Testdepot (5 Positionen, keine ausreichende Seitenhöhe) nicht erneut
+  provozieren; die Verifikation stützt sich hier auf den bestätigten
+  Quellcode-Fund statt auf eine erneute Live-Reproduktion — keine Einschränkung
+  der Freigabe, da Ursache und Fix eindeutig und ohne Seiteneffekt sind.
+- **Delta Bestand:** `integer(Math.round(row.unitsDelta) || 0)` ersetzt
+  `number(row.unitsDelta)`. `Math.round(-0.x)` ergibt in JS `-0`, `Intl.
+  NumberFormat` (`integer()`) formatiert `-0` sichtbar als „-0"; `|| 0`
+  fängt das ab (`-0` ist falsy in JS). Live an allen vier bepreisten Positionen
+  des Testdepots (EUNL, VTI, AAPL, Bundesanleihe) geprüft: Δ Bestand (Stück)
+  zeigt durchgehend „0", nie „-0" — genau der Fall, den der Fix behebt. Ein
+  größerer, tatsächlich von 0 verschiedener gerundeter Wert war im
+  vorhandenen Testdepot nicht erzeugbar, ohne Zielprozente künstlich zu
+  verändern; die zugrunde liegende `unitsDelta`-Berechnung selbst ist
+  unverändert und bereits durch `tests/domain/rebalancing.spec.ts` abgedeckt
+  (`unitsDelta` liefert 10/-10 in den bestehenden Fällen).
+
+**Ergebnis:** Fassung `4367acf` technisch freigegeben. Kein `changes_requested`.
+Damit sind alle bislang gemeldeten Runde-5-Befunde und der vorgemerkte
+Nutzer-Nachtrag „Delta Bestand als ganze Stückzahl“ abgearbeitet. Mikes
+Abschlussentscheidung für T-46 insgesamt bleibt offen.
