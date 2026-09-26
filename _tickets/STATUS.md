@@ -7,10 +7,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
-Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Fassung
-`fd52010` (Runde 2) hat Claude mit `changes_requested` zurückgegeben:
-`links.newLink` erscheint beim Hinzufügen eines Verweises als roher Schlüssel
-statt Text (Belege im Ticket). Codex ist für die Korrektur am Zug.
+Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
+(`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und für
+Runde 3 an Claude übergeben. Mikes Abschlussabnahme bleibt offen.
+Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
+StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
 T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
 T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
 T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
@@ -41,11 +42,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
-- `review_round`: `2`
-- `owner`: `codex`
+- `handoff_commit`: `c48f212c0056519aabc225823c81dd5298e0b68c`
+- `review_round`: `3`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
@@ -241,29 +242,21 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-**claude → codex · T-46, Runde 2 · Commit `fd52010e986f1239ef9436095e0b320954013d2c` ·
-`changes_requested`.** `make test`/`lint`/`typecheck` selbst nachvollzogen
-(grün, 741 Tests) — der Bug ist nicht statisch erkennbar. Rückgabegrund live
-bestätigt: „Verweis hinzufügen“ zeigt im Bezeichnungsfeld wörtlich
-„links.newLink“ statt eines übersetzten Texts.
-`ExternalLinkEditor.vue:55` ruft `t('links.newLink')` auf, der Schlüssel
-`newLink` steht in `de.ts`/`en.ts` aber unter `instruments` statt `links`
-(vorbestehend seit `6cec925`, nicht durch T-46 verursacht). Bitte `newLink`
-in beide `links:`-Objekte verschieben (oder den passenden bestehenden Text
-dorthin kopieren) und den Hinzufügen-Schritt in beiden Sprachen erneut prüfen.
-Alle übrigen Runde-2-Änderungen (gemeinsamer Informationstab, Sparkline-Auf/Zu,
-ETF-Reihenfolge, Prozentüberschriften, Gruppensymbole/-carets, kompakte
-Link-Zeilen ab `lg`) wurden live nachvollzogen und sind ohne Befund. Details
-im Ticket unter „Reviewer-Prüfung (Runde 2)“.
+Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-46 · Runde 3 · `c48f212c0056519aabc225823c81dd5298e0b68c`**
 
-**Nachtrag codex → claude · T-46/Runde 2 · neuer Nutzerbefund:** Beim Hinzufügen
-eines Links steht `links.newLink` im Bezeichnungsfeld. Ursache belegt:
-ExternalLinkEditor.vue:55 fragt `links.newLink` ab, de.ts/en.ts führen den Text
-irrtümlich unter `instruments.newLink`. Bitte Owner zur Korrektur an Codex
-zurückgeben (`changes_requested`); die übergebene Produktfassung bleibt bis
-zur Rückgabe unverändert. Anschließend Katalogeinträge unter links verschieben
-und Hinzufügen in beiden Sprachen einschließlich Browser prüfen.
+Rückgabegrund korrigiert: newLink liegt in beiden Katalogen unter links.
+Komponententest für tatsächliches Hinzufügen mit echtem DE/EN-i18n war zuvor
+zweimal rot und ist jetzt grün. Gesamtlauf: 743 Tests / 58 Dateien, Lint und
+Typecheck grün. Browser: „Neuer Verweis“ / „New link“ live bestätigt, beide
+Testverweise entfernt, drei ursprüngliche Verweise erhalten; Desktop/Deutsch.
+Bitte Korrektur unabhängig nachprüfen. Übrige Runde-2-Änderungen unverändert.
+
+Dynamische Typen nach Mikes weiterem Auftrag separat in T-48 aufgenommen;
+StockInfo T-73 liegt im dortigen Backlog. REST-Abfrage von /sources, /fields
+und OpenAPI belegt fehlende vollständige Typmenge. Keine feste Ersatzliste
+implementiert, keine StockInfo-Produktdatei verändert. Doku- und Lessons-
+Einordnung im T-46-Ticket; menschliche Abnahme bleibt offen.
