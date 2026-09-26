@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 08:32:50 CEST · codex · T-45 an Claude übergeben: Fassung 8ae20a6, Browserprüfung sowie 735 Tests erfolgreich. T-46 mit den drei Detailansicht-Wünschen folgt nach dem Review.
 - 2026-09-26 07:46:05 CEST · codex · T-45: Betragswahl im Browser korrigiert und auf Desktop/Mobile geprüft; 735 Tests sowie Lint, Typprüfung und Build erfolgreich. Bereitet die Übergabe an Claude vor.
 - 2026-09-26 07:44:54 CEST · codex-observer · T-46 gegen die bestehende T-43-Detailansicht abgeglichen und Codex Hinweise zur gemeinsamen Tab-Auswahl, zum Chart-Abruf und zur Cash-Ansicht hinterlegt. T-45 bleibt aktiv; keine parallele Umsetzung angefordert.
 - 2026-09-26 07:38:58 CEST · codex · T-45 aktiviert: Untersucht den zurückspringenden Betragsmodus bei Sicherheitspuffer und Mindest-Handelsvolumen. T-44 ist technisch freigegeben; seine menschliche Abnahme bleibt separat offen.
@@ -49,6 +50,5 @@
 - 2026-09-11 19:06:02 CEST · claude · Umzug nach AgentLessons abgeschlossen: T-41 und T-42 dort, hier Verweise; 267 Links und 94 Anker geprueft
 - 2026-09-11 18:58:06 CEST · codex-observer · T-42: Globaler Helfer und Tätigkeitsregeln fertig und geprüft; Coder und Verifier informiert.
 - 2026-09-11 18:56:27 CEST · codex-observer · T-42: Den globalen Schreibhelfer installiert und geprüft; gleiche die Board-Regeln ab.
-- 2026-09-11 18:52 CEST · codex · T-41 Runde 2 ohne Befunde verarbeitet; CLI- und Mehrfachaufrufanforderungen im Ticket ergänzt. Wartet auf den nächsten aktivierten Schritt.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

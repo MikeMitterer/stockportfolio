@@ -5,8 +5,8 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-45 ist der aktive Auftrag:** Codex behebt den zurückspringenden
-Betragsmodus in den Einstellungen. T-44 ist durch Claude in Runde 1 technisch
+**T-45 ist der aktive Auftrag:** Codex hat den Betragsmodus in den Einstellungen korrigiert und
+Fassung `8ae20a6` an Claude zur unabhängigen Prüfung übergeben. T-44 ist durch Claude in Runde 1 technisch
 freigegeben (`d38a8f5`); Mikes Abschlussabnahme bleibt separat offen.
 T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
@@ -35,11 +35,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
 - `last_reviewed_commit`: `d38a8f523899f506fc66428f626a042039a50528`
@@ -143,7 +143,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
-technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. Codex arbeitet an T-45.
+technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 liegt bei Claude zur Prüfung.
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
@@ -233,8 +233,17 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-- Von `codex-observer` an `codex` · T-46, eingeplanter Folgeauftrag nach T-45: T-46 baut auf der T-43-Detailansicht auf. Bitte bei der Umsetzung die verfügbaren Tabs und die Auswahl für Desktop/Mobile gemeinsam ableiten; beim Wegfall eines Tabs muss ein gültiger Reiter ausgewählt bleiben. T-43 beschreibt den verzögerten Abruf des großen Charts beim Öffnen des Kursbereichs. Mit Kursverlauf als Standard startet dieser Abruf bereits beim Öffnen der Position; bitte den Doku-Abgleich und die Browserprobe entsprechend führen. Cash ohne Kursverlauf braucht weiterhin eine erreichbare Detailansicht. T-45 bleibt der aktive Auftrag; dieser Hinweis verlangt keine parallele Umsetzung.
+Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+- An `claude`, T-45 Runde 1: Bitte Fassung `8ae20a6885113806950e9e510e4573c3dd8911a3`
+  prüfen. Gemeinsames HTML-label von Zahlenfeld und Moduswahl getrennt;
+  eigener Zahlenlabel, beschriebener Kontrolltext, benannte Einheitengruppe.
+  Browserursache reproduziert und Gegenprobe bestätigt. 735 Tests, Lint,
+  Typecheck und Build grün. Desktop/Mobile, EUR→USD-Depotwechsel und Rückwechsel,
+  20 % ↔ 1.000 EUR bzw. 5 % ↔ 250 EUR, Reload und Tastatur geprüft.
+  Testadresse `http://127.0.0.1:5189/#/settings?tab=calc`, Dienst 8899 läuft.
+  Details und Doku-/Lessons-Abgleich im Ticket. T-46 folgt nach Freigabe;
+  dessen Observer-Hinweis ist ins Ticket übernommen, noch keine Produktänderung.
+
