@@ -1,5 +1,16 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 13:35:01 CEST · codex-observer · T-49-Übergabe an Claude abgeglichen: eindeutige Prüffassung, echte Containerbelege und noch ausstehender Registry-/README-Push sind getrennt dokumentiert. Externer ProjectTools-Review und Unraid-Grenzen bleiben sichtbar; kein Eingriff nötig.
+- 2026-09-26 13:31:07 CEST · codex · übergibt T-49, Fassung f70516e, an Claude: 781 Tests und echter Container-/Browsercheck bestanden. Docker-Hub-Push folgt nach technischer Freigabe.
+- 2026-09-26 13:25:20 CEST · codex · hat Makefile und build.sh auf den StockInfo-Ablauf build, prüfen, push reduziert. Prüft jetzt die finale Commit-Fassung für die Übergabe.
+- 2026-09-26 13:19:11 CEST · codex · prüft das Docker-Image ohne nginx im Browser mit dem wiederverwendbaren Testdepot; bereitet anschließend die T-49-Übergabe vor.
+- 2026-09-26 12:55:33 CEST · codex · T-49 aktiviert: prüft Dockerfile und Build-/Push-Ziele. Übernimmt den zentralen ProjectTools-README-Helfer nach StockInfo T-77 und prüft die 25.000-Byte-Grenze.
+- 2026-09-26 12:29:51 CEST · codex-observer · Nach T-48-Abschluss steht das Board auf idle. Eigene Observer-Schleife wegen fehlender sichtbarer Heartbeats neu gestartet; Ausgangsdurchlauf und eindeutige Rollenzuordnung bestätigt.
+- 2026-09-26 12:14:18 CEST · codex · Schließt T-48 auf Mikes ausdrückliche Abschlussentscheidung. Dokumentiert Runde 1 als technische Freigabe und beendet den noch offenen Kurzreview zum Beschriftungsnachtrag.
+- 2026-09-26 12:12:02 CEST · codex · Deutsche Link-Einstellungen heißen jetzt durchgängig Links. Im Browser geprüft; Beschriftungsnachtrag an Claude für Runde 2 übergeben.
+- 2026-09-26 12:11:59 CEST · codex-observer · T-48: technische Freigabe und offene Abschlussentscheidung abgeglichen; den beauftragten Nachtrag zur deutschen Bezeichnung Links im Board verfolgt. Rollen bleiben eindeutig, derzeit kein Observer-Eingriff nötig.
+- 2026-09-26 12:11:13 CEST · codex · T-48: Vereinheitlicht die deutschen Beschriftungen der Link-Einstellungen auf Links, einschließlich Aktionen und Bestätigungen.
+- 2026-09-26 12:08:43 CEST · codex · T-48: Claudes technische Freigabe aus Runde 1 verarbeitet. Keine erforderliche Nacharbeit; Mikes Abschlussentscheidung steht aus.
 - 2026-09-26 12:05:53 CEST · claude · T-48 Runde 1 technisch freigegeben: dynamischer StockInfo-Typkatalog live in allen vier Zuständen geprüft (normal/future-retained/leer/unvollständig/gestört), resolveKind-Umkehr und syncKinds bestätigt (60 Dateien/764 Tests grün); Owner zurück an Codex
 - 2026-09-26 11:57:53 CEST · codex · T-48 an Claude übergeben: Fassung 2aac1e9, Review Runde 1. Links und Typanzeige teilen die Typauflösung; Katalog-, Speicher- und Browsernachweise stehen im Ticket.
 - 2026-09-26 11:56:10 CEST · codex · T-48: Dynamischer Typkatalog und gemeinsame Typauflösung umgesetzt; 764 Tests sowie Desktop-/Mobile-Prüfung bestanden. Dokumentiert die Übergabe an Claude.
@@ -39,16 +50,5 @@
 - 2026-09-26 09:26:42 CEST · claude · T-46 Runde 1 technisch freigegeben: Bereichsliste, Notiz-Sicherheit (kein v-html), Padding-Maße und Symbolfarbe per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
 - 2026-09-26 09:19:09 CEST · claude · startet unabhängigen Review von T-46, Fassung 573d15b (Runde 1)
 - 2026-09-26 09:18:05 CEST · codex · übergibt T-46 an Claude: dezente Detailnavigation, Mobile-Auswahl, sichtbare Notizen und Gruppensymbole. Browsercheck und 741 Tests, Lint sowie Typecheck erfolgreich.
-- 2026-09-26 09:11:00 CEST · codex · hat Notizanzeige, kompaktere Felder und Gruppensymbole umgesetzt und auf Desktop/Mobile geprüft. Klärt mit Mike noch die Darstellung der Detailnavigation.
-- 2026-09-26 09:05:10 CEST · codex-observer · T-45-Archivierung und Übergang nach T-47-Freigabe zu T-46 geprüft. Den eigenen T-46-Hinweis auf dauerhafte Prüfpunkte gekürzt und die inzwischen überholte T-45-Aktivitätsangabe entfernt.
-- 2026-09-26 09:03:03 CEST · codex · setzt T-46 um: kompaktere Details, SVG-Gruppensymbole, sichtbare Notizen und mehr Platz in der Löschbestätigung. T-47 ist technisch freigegeben.
-- 2026-09-26 09:02:18 CEST · claude · T-47 Runde 1 technisch freigegeben: Cash-Wiederanlegen (Dublettenschutz, katalogunabhängig, Dialogbreite) per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
-- 2026-09-26 08:51:59 CEST · claude · startet unabhängigen Review von T-47, Fassung 4c51480 (Runde 1)
-- 2026-09-26 08:50:03 CEST · codex · T-47 an Claude übergeben, Fassung 4c51480: Cash wieder anlegbar, auch mobil. Danach folgen kompaktere Details, passende Tabs und Akzentfarbe für die Gruppensymbole.
-- 2026-09-26 08:49:19 CEST · codex · T-47 im Browser geprüft: Verrechnungskonto wieder angelegt, nach Reload vorhanden. Mobile Hinzufügen erreichbar; Dialog hat beidseits 16 px Abstand. 737 Tests, Lint und Typprüfung grün.
-- 2026-09-26 08:43:35 CEST · claude · meldet Mikes Abschlussabnahme für T-45 ("T-45 ist OK und passt so") als Nachricht an codex in der INBOX; keine eigene Änderung an Auflösung oder Archivstatus
-- 2026-09-26 08:42:20 CEST · codex · Claude hat T-45 technisch freigegeben. T-47 ist aktiviert: Verrechnungskonto nach Löschen ohne StockInfo-Kurs wieder anlegen.
-- 2026-09-26 08:41:47 CEST · claude · T-45 Runde 1 technisch freigegeben: Betragsmodus-Rücksprung behoben, Root-Ursache (implizites Label) und Fix per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
-- 2026-09-26 08:36:26 CEST · claude · startet unabhängigen Review von T-45, Fassung 8ae20a6 (Runde 1)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
