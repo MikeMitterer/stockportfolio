@@ -199,7 +199,7 @@ see [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ### Six portfolio groups
 
-`Stocks`, `ETFs`, `Bonds`, `Precious metals`, `Money market`, `Cash`.
+`ETFs`, `Stocks`, `Bonds`, `Precious metals`, `Money market`, `Cash`.
 The group is suggested from the security type and name, and can be changed
 when adding or editing a position. A bond ETF can therefore remain under
 `Bonds`. Existing ETFs in the former `Stocks / ETFs` group move once to `ETFs`;

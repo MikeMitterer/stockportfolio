@@ -131,15 +131,15 @@ function add(): void {
   }
 
   /*
-   * Zwei Eingabezeilen halten auch bei schmaler Desktopbreite Platz für URL
-   * und die beiden unabhängigen Filter.
+   * Am Desktop bleibt jeder Verweis in einer Zeile. Auf schmaleren Ansichten
+   * stehen Adresse und Filter untereinander, ohne horizontales Scrollen.
    */
   &__row {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'label' 'url' 'kind' 'group' 'controls';
     gap: var(--space-2);
-    align-items: center;
+    align-items: end;
 
     @include up(md) {
       grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
@@ -147,11 +147,31 @@ function add(): void {
         'label url url'
         'kind group controls';
     }
+
+    @include up(lg) {
+      grid-template-columns: minmax(9rem, 1fr) minmax(12rem, 2fr) minmax(9rem, 1fr) minmax(9rem, 1fr) auto;
+      grid-template-areas: 'label url kind group controls';
+    }
   }
 
   &__row + &__row {
     border-top: 1px solid token(--border-subtle);
     padding-top: var(--space-3);
+
+    @include up(lg) {
+      border-top: 0;
+      padding-top: 0;
+
+      // Beschriftungen bleiben für Hilfstechnik erreichbar, ohne jede Zeile zu wiederholen.
+      .linkeditor__field > span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
   }
 
   &__field {
@@ -169,7 +189,7 @@ function add(): void {
 
   &__controls {
     display: flex;
-    align-items: end;
+    align-items: center;
     gap: var(--space-2);
     grid-area: controls;
     padding-bottom: var(--space-1);

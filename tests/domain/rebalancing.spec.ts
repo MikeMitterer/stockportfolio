@@ -662,7 +662,7 @@ describe('computeRebalancing', () => {
   it('gibt für jede AssetGroup ein Group-Result zurück (auch wenn leer)', () => {
     const result = computeRebalancing(portfolio, quotes, settings)
     const groupNames = result.groups.map((group) => group.group)
-    expect(groupNames).toEqual(['stocks', 'etfs', 'bonds', 'metals', 'moneymarket', 'cash'])
+    expect(groupNames).toEqual(['etfs', 'stocks', 'bonds', 'metals', 'moneymarket', 'cash'])
     const metals = result.groups.find((group) => group.group === 'metals')
     expect(metals?.actualValue).toBe(0)
     expect(metals?.targetPercent).toBe(0)

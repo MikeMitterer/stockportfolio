@@ -13,7 +13,7 @@ import type { DetailValue } from './details'
  * Investitionsreserve — Laufzeit-Anleihen (`bonds`) tun das nicht.
  */
 /** Gemeinsame Reihenfolge für Berechnung, Anzeige, Formulare und Sicherungen. */
-export const ASSET_GROUPS = ['stocks', 'etfs', 'bonds', 'metals', 'moneymarket', 'cash'] as const
+export const ASSET_GROUPS = ['etfs', 'stocks', 'bonds', 'metals', 'moneymarket', 'cash'] as const
 export type AssetGroup = typeof ASSET_GROUPS[number]
 
 export type Suggestion = 'buy' | 'sell' | 'ok'

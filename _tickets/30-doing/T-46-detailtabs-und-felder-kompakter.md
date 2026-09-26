@@ -245,3 +245,19 @@ Runde-1-Freigabe bleibt auf `573d15b` bezogen; Nachträge werden getrennt überg
 und beide externen Links; 0 und Nein bleiben erhalten, Dokumentbreite 390 px.
 Desktop 1024 px zeigt drei Bereiche und keine wiederholten Kennungen/Rohkurse.
 `make test`: 741 Tests / 57 Dateien, `make lint` und `make typecheck` grün.
+
+**Gruppenreihenfolge · Mike:** ETFs zuerst, danach Stocks. Gemeinsame ASSET_GROUPS-
+Vorgabe geändert; alle übrigen Gruppen folgen in ihrer bisherigen Reihenfolge.
+README „Six portfolio groups“ entsprechend aktualisiert.
+Bestehende Reihenfolge-Erwartung im Rebalancing-Test angepasst; Browser zeigt
+ETFs vor Aktien, danach Anleihen und Cash.
+
+**Link-Einstellungen · Mikes UI-Rückmeldung:** Seit T-44 belegte jeder Verweis
+am Desktop zwei breite Formularzeilen. Ab lg wieder eine Zeile pro Verweis,
+Spaltenbeschriftungen nur einmal; kleinere Ansichten behalten die Feldbeschriftungen
+und umbrechende Anordnung. Browser bei 1440, 1024 und 390 px geprüft, kein
+horizontaler Überlauf. Desktop-Zeilen nach der ersten jeweils 28 px hoch.
+`make test`: 741/741, `make lint` und `make typecheck` erfolgreich.
+**Doku-Abgleich:** README-Abschnitt zu Links beschreibt weiterhin korrekt beide
+Filter; keine Verhaltensänderung an Speicherung, Filterung oder Sicherung.
+Nur die Darstellung geändert, daher dort keine Textanpassung erforderlich.
