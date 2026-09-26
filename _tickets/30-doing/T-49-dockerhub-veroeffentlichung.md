@@ -14,8 +14,10 @@ Browser geprüft. Claude hat Runde 1 technisch freigegeben (eigener
 arm64-Testbuild plus echter Container). Mikes Nachtrag (eigenes
 `docker/README.md`, früher GitHub-Link, gegenseitige Links, sowie die
 nachgereichte README-Pflegeregel) ist in Runde 2 (`c059f4d`) technisch
-freigegeben. Der anschließende Abgleich mit den neuen Docker-Skills hat weitere
-Korrekturen ergeben; diese gehen in Runde 3. Veröffentlichung durch Codex steht aus.
+freigegeben. Der anschließende Abgleich mit den neuen Docker-Skills (Marker-
+Entwertung, zentrale Unraid-Vorlage, vereinheitlichter README-Vorschaupfad,
+Dashboard-Screenshot) ist in Runde 3 (`bbcb9e0`) und Runde 4 (`7aef019`)
+technisch freigegeben. Veröffentlichung durch Codex steht aus.
 StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
 keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
 
@@ -547,3 +549,89 @@ erfolgreich (System-Python allein hat kein PyYAML). Aktuelle App-Dokumentation
 entspricht der Regel: beide referenzieren dasselbe Dashboard-Bild.
 Mike beauftragt anschließend Commit und Merge dieser Nachträge; kein Push in
 diesem Schritt. Der technische Runde-4-Prüfbericht wird nicht vorweggenommen.
+
+## Reviewer-Prüfung (Claude, Runde 3, Fassung `bbcb9e0`) — nachträglich dokumentiert
+
+**Hinweis zur Verzögerung:** Diese Prüfung wurde zum damaligen Zeitpunkt
+vollständig durchgeführt, aber wegen einer Sitzungsunterbrechung nicht in
+Echtzeit ins Ticket geschrieben — der vom Observer zu Recht bemängelte fehlende
+schriftliche Nachweis. Sie wird hier nachgetragen, ohne bereits erledigte
+Prüfschritte zu wiederholen.
+
+**Technische Freigabe.** `make test` (61 Dateien, 783 Tests), `make lint` und
+`make typecheck` gegen `bbcb9e0` ausgeführt — alle drei ohne Befund. Diff seit
+`c059f4d` gelesen: einzige Produktänderung ist `docker/build.sh` (6 Zeilen)
+plus der zugehörige neue Test in `tests/dockerBuild.spec.ts`.
+
+- `docker/build.sh`: Die Push-Markerdatei wird jetzt ganz am Skriptanfang
+  gelöscht, sobald `--build`/`-b` erkannt wird — noch vor Bibliotheks-Check,
+  Plattform-Validierung und der `gitDockerTag`-Prüfung. Vorher stand das
+  Entwerten des Markers erst in `build()`, also hinter all diesen möglichen
+  Abbruchpunkten; ein fehlgeschlagener Build-Versuch (z. B. unsauberer
+  Git-Stand) ließ den alten, noch gültig aussehenden Marker eines früheren
+  Builds unangetastet zurück — ein `--push` direkt danach hätte still das
+  alte statt des gerade angeforderten neuen Images veröffentlicht.
+- Neuer Test `sperrt den alten Push-Marker bereits bei $name` (`it.each` für
+  ungültige Plattform und unsauberen Git-Stand): baut zunächst erfolgreich,
+  löst dann gezielt einen frühen Abbruch aus, prüft dass ein anschließendes
+  `--push` verweigert wird und kein Image-Push stattfand — deckt genau das
+  beschriebene Szenario ab, keine reine Kosmetik.
+
+**Live selbst nachvollzogen, nicht nur den Test vertraut:** Vor jeder
+Veränderung den vorhandenen `docker/.last-build-tag` (Codex' geprüfter
+Release-Marker) nach `/tmp` gesichert. Dann `./docker/build.sh --build
+not-a-real-platform` ausgeführt (Exit 2, bewusst ungültige Plattform) —
+die Markerdatei war danach tatsächlich verschwunden. `./docker/build.sh
+--push` direkt danach verweigert korrekt mit „Kein Build-Marker. Zuerst
+--build ausführen.“ (Exit 1). Anschließend den gesicherten Original-Marker
+byteidentisch wiederhergestellt (`diff` bestätigt) und die temporäre Kopie
+entfernt — keine Spur im Arbeitsbaum, keine Beeinträchtigung des später
+tatsächlich zu veröffentlichenden Builds.
+
+**Ergebnis:** Fassung `bbcb9e0` technisch freigegeben. Kein `changes_requested`.
+
+## Reviewer-Prüfung (Claude, Runde 4, Fassung `7aef019`) — begrenzter Umfang
+
+**Technische Freigabe.** `make test` (61 Dateien, 783 Tests — unverändert),
+`make lint`, `make typecheck` gegen die aktuelle Fassung ausgeführt — alle
+drei ohne Befund. `bash -n` und `shellcheck` auf beiden Scripts sauber;
+`git diff --check c059f4d..HEAD` sauber.
+
+Diff seit `b058682` gelesen (begrenzter Umfang wie angefragt), zusätzlich die
+dazwischenliegenden, noch nicht geprüften Produktcommits `9c1d6d1`
+(Unraid-Vorlage) und `bbcb9e0` (siehe Runde 3 oben) eingeordnet:
+
+- **`9c1d6d1` (Unraid-Vorlage zentralisiert):** Lokale `unraid/stockportfolio.xml`
+  entfernt, `AGENTS.md`/`unraid/README.md` zeigen jetzt auf die zentrale
+  Vorlage unter `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/
+  stockportfolio.xml`. Selbst geprüft: Datei existiert dort, ist wohlgeformtes
+  XML (`xml.dom.minidom`), enthält denselben Inhalt wie die zuvor in Runde 1
+  geprüfte lokale Kopie plus jetzt gesetztem `TemplateURL` und `Screenshot`.
+  Löst die in Runde 1 offen gestellte Umfangsfrage; keine neue Prüflücke.
+- **`27705b1` (Vorschaupfad vereinheitlicht):** `mkdir -p logs` und der
+  abweichende `--output`-Parameter aus `updateDockerHubReadme()` entfernt;
+  Vorschau und dokumentierter Direktaufruf verwenden jetzt beide den
+  Shared-Default `docker/preview/README.md`. Behebt genau das von Mike
+  gemeldete Problem (vier verschiedene README-Ausgabedateien unter `docker/`).
+  Live selbst nachvollzogen: `./.libs/ProjectTools/src/bash/dockerhub-readme.sh
+  --readme docker/README.md --preview --ref master` schreibt tatsächlich nach
+  `docker/preview/README.md` (4.734 Bytes — siehe unten), `docker/logs/`
+  enthält nur echte Build-Logs, keine README-Ausgabe mehr. `docker/preview/`
+  taucht korrekt nicht in `git status` auf (ignoriert).
+- **`7aef019` (Dashboard-Screenshot):** `![StockPortfolio dashboard](../docs/images/dashboard.png)`
+  direkt nach der Kurzbeschreibung in `docker/README.md` ergänzt — entspricht
+  dem Docker-Skill („relativ zur Docker-README, Uploader erzeugt absolute
+  Raw-GitHub-URL"). Live geprüft: erzeugte Vorschau enthält
+  `https://raw.githubusercontent.com/MikeMitterer/stockportfolio/master/docs/images/dashboard.png`,
+  `curl -s -o /dev/null -w "%{http_code}"` auf genau diese URL ergibt **200** —
+  bestätigt zugleich, dass der zuvor gemeldete Master-Push tatsächlich
+  stattgefunden hat (sonst gäbe es dort keine erreichbare Datei).
+  Gesamtgröße der Vorschau: **4.734 UTF-8-Bytes**, exakt wie behauptet, klar
+  unter dem 25.000-Byte-Limit.
+
+**Ergebnis:** Fassung `7aef019` technisch freigegeben. Kein `changes_requested`.
+Kein Push durch mich in beiden Runden — ausschließlich lesende Vorschau und
+reversible lokale Marker-Tests. Die Container-/Laufzeitverifikation aus
+Runde 1 bleibt unverändert gültig, da Runde 3 und 4 ausschließlich Buildscript-
+Robustheit und Dokumentation betreffen. Codex führt die weiterhin ausstehende
+Docker-Hub-Veröffentlichung inklusive Registry-/README-Nachweis aus.
