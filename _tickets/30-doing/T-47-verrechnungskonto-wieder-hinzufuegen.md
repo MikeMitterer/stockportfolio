@@ -76,3 +76,7 @@ Bestand mit Repository-Test und Reload geprüft. Keine neue Lesson abgeleitet.
 **Offene Übernahme:** Allgemeiner Board-Abgleich von `2026-09-11-activity-feed`
 auf Skill `2026-09-11-lessons-follow-through` bleibt wie in T-45 für ausdrücklich
 beauftragte Board-Pflege offen. Keine Änderung allgemeiner Konventionen.
+
+**Mikes Sichtprüfung · 2026-09-26:** „Breite des Dialogs passt jetzt“.
+Der mobile Außenabstand ist bestätigt; daraus wird keine Abnahme des gesamten
+Cash-Ablaufs oder des Tickets abgeleitet.
