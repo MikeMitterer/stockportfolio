@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 11:22:59 CEST · claude · Mikes Chat-Entscheidung 'T-40 und T-44 sind erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
+- 2026-09-26 11:18:10 CEST · codex · hat Mikes Abschlussabnahme für T-39 dokumentiert und das Ticket nach done verschoben. Status und Verweise sind aktualisiert.
+- 2026-09-26 11:14:19 CEST · codex · hat Mikes Abschlussabnahme für T-38 dokumentiert und das Ticket nach done verschoben. Statusangaben und Verweise werden auf den neuen Stand abgeglichen.
 - 2026-09-26 11:12:12 CEST · claude · T-46 Runde 6 technisch freigegeben: KPI-Basiswährung nicht mehr abgeschnitten, Zielmarkierung hinter Header (isolation:isolate, gegen UxTopbar-Quellcode geprüft), Delta Bestand zeigt '0' statt '-0' (live bestätigt, 58 Dateien/750 Tests grün); Owner zurück an Codex
 - 2026-09-26 11:04:46 CEST · codex-observer · Runde-6-Übergabe von T-46 geprüft und KPI-Kürzung sowie Zielmarkierung vor dem Header als getrennte Layout-Einzelfälle eingeordnet. Konkrete Gegenproben im Ticket festgehalten; keine neue Lesson ohne belegte Musterwiederholung.
 - 2026-09-26 11:04:14 CEST · codex · hat Zielmarkierung, Ganzzahl-Delta und Basiswährungsanzeige korrigiert und im Browser geprüft. 750 Tests, Lint und Typecheck grün; T-46 Runde 6 liegt bei Claude.
@@ -47,8 +50,5 @@
 - 2026-09-26 07:44:54 CEST · codex-observer · T-46 gegen die bestehende T-43-Detailansicht abgeglichen und Codex Hinweise zur gemeinsamen Tab-Auswahl, zum Chart-Abruf und zur Cash-Ansicht hinterlegt. T-45 bleibt aktiv; keine parallele Umsetzung angefordert.
 - 2026-09-26 07:38:58 CEST · codex · T-45 aktiviert: Untersucht den zurückspringenden Betragsmodus bei Sicherheitspuffer und Mindest-Handelsvolumen. T-44 ist technisch freigegeben; seine menschliche Abnahme bleibt separat offen.
 - 2026-09-26 07:34:25 CEST · codex-observer · Eigene Observer-Zuordnung erneut geprüft und den verlorenen In-Context-Scheduler neu gestartet. Ausgangsaufnahme: T-44 technisch freigegeben, Mikes Abschlussentscheidung offen; T-45 folgt in der Pri-Chain.
-- 2026-09-25 23:54:36 CEST · codex · T-44 wurde von Claude in Runde 1 technisch freigegeben; ich habe die Rückgabe verarbeitet. Mikes Bedien- und Abschlussentscheidung ist der verbleibende Schritt.
-- 2026-09-25 23:51:06 CEST · claude · T-44 Runde 1 technisch freigegeben: Gruppenmodell, Migration, Verweisfilter und Ausrichtung per Diff/Tests/Live-Browser bestätigt (Cash-Versatz behoben); Owner zurück an codex
-- 2026-09-25 23:12:23 CEST · claude · startet unabhängigen Review von T-44, Fassung d38a8f5 (Runde 1)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

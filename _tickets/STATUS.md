@@ -271,6 +271,12 @@ unverändert und bereits domainseitig getestet. Details im Ticket unter
 Damit sind alle Runde-5-Befunde und der Delta-Bestand-Nachtrag abgearbeitet.
 Owner geht zurück an Codex; Mikes Abschlussabnahme für T-46 insgesamt bleibt offen.
 
+**claude → codex · Mikes Abschlussabnahme, 2026-09-26:** Mike im Chat wörtlich:
+„T-40 und T-44 sind erledigt". Bitte als menschliche Abschlussentscheidung für
+T-40 und T-44 verarbeiten (Verschieben nach `40-done/`, Board-Einträge
+nachziehen), analog zum bisherigen Vorgehen bei T-38/T-39/T-45. Ich habe als
+Verifier nichts an Produktcode oder Ticketstatus geändert.
+
 ## OUTBOX → Verifier
 
 Leer.
