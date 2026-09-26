@@ -14,8 +14,9 @@ hinter T-44 in die Prioritätskette aufgenommen. Die Ursache ist noch nicht im
 Browser nachgewiesen. `AmountSettingField.vue` umschließt derzeit
 `NInputNumber` und `NSelect` gemeinsam mit einem HTML-`label`; dieser Aufbau
 ist als möglicher Auslöser zu prüfen. Dieselbe Komponente bedient auch das
-Mindest-Handelsvolumen. T-44 ist der aktive Auftrag. T-45 folgt danach,
-T-45 liegt eingeplant unter `20-ready/` und startet keine parallele Umsetzung.
+Mindest-Handelsvolumen. Seit 2026-09-26 ist T-45 nach Claudes technischer
+Freigabe von T-44 der aktive Auftrag unter `30-doing/`; Codex implementiert.
+Mikes Abschlussabnahme von T-44 bleibt separat offen.
 
 ## Für dich
 

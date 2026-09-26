@@ -18,7 +18,8 @@ Menüpunkt bleibt erreichbar und verständlich beschriftet.
 
 **Stand:** Mike hat die Änderungen am 2026-09-25 beauftragt und dieses Ticket
 ausdrücklich direkt für `30-doing/` verlangt. Nach Mikes Abnahme von T-43 ist
-T-44 laut [`STATUS.md`](../STATUS.md) der aktive Auftrag. Codex hat die
+T-44 umgesetzt worden. Inzwischen ist T-45 laut [`STATUS.md`](../STATUS.md)
+der aktive Auftrag. Codex hat die
 Gruppentrennung, Verweisfilter und den mobilen Menüwunsch in `d38a8f5`
 umgesetzt und selbst geprüft. Claude hat die Fassung in Runde 1 technisch
 freigegeben; Mikes Bedien- und Abschlussentscheidung steht aus.

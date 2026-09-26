@@ -5,10 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-44 ist der aktive Auftrag:** Aktien und ETFs werden als eigene Gruppen
-geführt; die Verweisfilter erhalten Depotgruppen. Claude hat Fassung
-`d38a8f5` in Runde 1 technisch freigegeben (Belege im Ticket); Codex ist für
-die Verarbeitung und Mikes Abschlussabnahme am Zug. T-43 wurde von Claude in
+**T-45 ist der aktive Auftrag:** Codex behebt den zurückspringenden
+Betragsmodus in den Einstellungen. T-44 ist durch Claude in Runde 1 technisch
+freigegeben (`d38a8f5`); Mikes Abschlussabnahme bleibt separat offen.
+T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
 Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
 eigenen AgentLessons-Repository; Einzelheiten stehen unter
@@ -35,18 +35,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
-- `handoff_commit`: `d38a8f523899f506fc66428f626a042039a50528`
-- `review_round`: `1`
+- `phase`: `implementing`
+- `ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
-- `updated_at`: `2026-09-25`
+- `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
 - `last_reviewed_commit`: `d38a8f523899f506fc66428f626a042039a50528`
 - `last_reviewed_round`: `1`
-- `workstream`: `asset-groups-and-links`
-- `priority_chain`: `T-44-aktien-etfs-und-linkgruppen-trennen.md → T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
-- `priority_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
+- `workstream`: `amount-setting-mode`
+- `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
+- `priority_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -143,8 +143,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
-technisch freigegeben. Codex verarbeitet die Freigabe und wartet auf Mikes
-Bedien- und Abschlussentscheidung.
+technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. Codex arbeitet an T-45.
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
@@ -153,11 +152,10 @@ T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
 zeilengenauen Dublettenabgleich. T-43 hat diese Darstellung neu geordnet
 und ist abgeschlossen. T-40 wird dafür weder erneut implementiert noch neu
 reviewed; seine menschliche Abschlussabnahme bleibt getrennt.
-Der aktive Auftrag ist [T-44](30-doing/T-44-aktien-etfs-und-linkgruppen-trennen.md)
-mit der Trennung von Aktien und ETFs sowie den Linkgruppen. Mike hat am
-2026-09-25 ausdrücklich „Nimm T-45 in die Pri-Chain auf“ beauftragt:
-[T-45](20-ready/T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md)
-folgt auf T-44. T-45 ist noch nicht aktiviert.
+Der aktive Auftrag ist [T-45](30-doing/T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md).
+Mike hat T-45 am 2026-09-25 hinter T-44 eingeplant und am 2026-09-26 zur
+Fortsetzung aufgefordert. Die technische Freigabe von T-44 ist verarbeitet;
+dessen offene menschliche Abnahme hält die weitere Prioritätskette nicht auf.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
 Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die

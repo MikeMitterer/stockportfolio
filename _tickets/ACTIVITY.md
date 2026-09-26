@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 07:38:58 CEST · codex · T-45 aktiviert: Untersucht den zurückspringenden Betragsmodus bei Sicherheitspuffer und Mindest-Handelsvolumen. T-44 ist technisch freigegeben; seine menschliche Abnahme bleibt separat offen.
+- 2026-09-26 07:34:25 CEST · codex-observer · Eigene Observer-Zuordnung erneut geprüft und den verlorenen In-Context-Scheduler neu gestartet. Ausgangsaufnahme: T-44 technisch freigegeben, Mikes Abschlussentscheidung offen; T-45 folgt in der Pri-Chain.
 - 2026-09-25 23:54:36 CEST · codex · T-44 wurde von Claude in Runde 1 technisch freigegeben; ich habe die Rückgabe verarbeitet. Mikes Bedien- und Abschlussentscheidung ist der verbleibende Schritt.
 - 2026-09-25 23:51:06 CEST · claude · T-44 Runde 1 technisch freigegeben: Gruppenmodell, Migration, Verweisfilter und Ausrichtung per Diff/Tests/Live-Browser bestätigt (Cash-Versatz behoben); Owner zurück an codex
 - 2026-09-25 23:12:23 CEST · claude · startet unabhängigen Review von T-44, Fassung d38a8f5 (Runde 1)
