@@ -267,7 +267,8 @@ Bei Änderungen an Verhalten, Verträgen, Konfiguration, Installation oder
 beschlossenem Umfang gehört der **Doku-Abgleich zum selben Auftrag**. Mike muss
 betroffene Anleitungen nicht eigens nennen. Betroffen sind hier vor allem
 `README.md` als Projektanleitung, `docker/README.md` als Container-Anleitung,
-die Dateien unter `docs/` und die Unraid-Vorlage unter `unraid/`.
+die Dateien unter `docs/`, die Unraid-Anleitung unter `unraid/` und die zentrale
+Vorlage `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`.
 
 **Beide READMEs gemeinsam prüfen:** Bei Änderungen an Funktionen,
 Konfiguration, Installation oder Betrieb immer `README.md` und

@@ -19,8 +19,8 @@ Korrekturen ergeben; diese gehen in Runde 3. Veröffentlichung durch Codex steht
 StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
 keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
 
-**Für Mike:** Die zentrale Aufnahme der Unraid-Vorlage ist noch offen; die
-lokale Vorlage ist korrigiert. Veröffentlichung, lokale
+**Für Mike:** Die Unraid-Vorlage liegt auf Mikes Anweisung ausschließlich im
+zentralen Templates-Repository; die lokale XML-Kopie ist entfernt. Veröffentlichung, lokale
 Prüfung und unabhängiger Review werden mit ihren tatsächlichen Ergebnissen
 getrennt dokumentiert. Kein Versionssprung oder Master-Merge impliziert.
 
@@ -450,3 +450,28 @@ Marker-Entwertung samt zwei Gegenproben, Vorschau-Ausschlüsse und ergänzte
 Anleitungen. Bestehende Containerlaufzeit ist unverändert. Kein Push durch den
 Verifier. Nach technischer Freigabe bleibt Codex für die bereits beauftragte
 Veröffentlichung zuständig.
+
+
+## Nachtrag · zentrale Unraid-Vorlage als einzige Quelle · 2026-09-26
+
+Mike legt `/Volumes/DevLocal/DevUnraid/Production/Templates` als Ablage fest
+und verlangt ausdrücklich das Löschen der lokalen Vorlage.
+
+- Zentrale Datei `templates/stockportfolio.xml` angelegt, mit TemplateURL auf
+  den vorgesehenen Raw-Pfad dieses Repositories. README dort um StockPortfolio
+  ergänzt und Veröffentlichung als ausstehend markiert. Änderungen dort noch
+  uncommitted; Template-Push folgt erst nach dem Image-Push.
+- `unraid/stockportfolio.xml` aus StockPortfolio entfernt. `unraid/README.md`
+  benennt die zentrale Quelle und erzeugt für lokale Tests eine temporäre
+  Kopie ohne TemplateURL. AGENTS nennt den tatsächlichen Vorlagenort.
+- Zentrales XML mit xmllint geprüft; bis auf die gesetzte TemplateURL identisch
+  zur bereits geprüften Vorlage. Temporäre Testkopie ebenfalls wohlgeformt und
+  ohne TemplateURL. Kein Live-Unraid-Test und kein Push behauptet.
+- Doku-Abgleich: Root-README und docker/README verlinken bereits die erhaltene
+  Unraid-Anleitung; dort ist keine Änderung nötig. Aktuelle Verweise auf die
+  gelöschte lokale XML-Datei entfernt; historische Ticketbelege bleiben erhalten.
+
+Dies ist Mikes ausdrücklicher Nachtrag während Runde 3; ursprüngliche
+Übergabefassung bbcb9e0 bleibt als Commit unverändert prüfbar. Der Verifier
+prüft den zusätzlichen Vorlagen-/Dokumentationsdiff ergänzend; Laufzeit und
+Buildscript wurden für diesen Nachtrag nicht verändert.

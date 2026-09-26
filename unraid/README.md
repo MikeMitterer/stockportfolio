@@ -1,19 +1,25 @@
 # Unraid
 
 StockPortfolio liefert eine statische Browser-App aus. Kurse und Stammdaten
-kommen aus einer getrennten StockInfo-Instanz. Die lokale Vorlage liegt in
-[stockportfolio.xml](stockportfolio.xml); das zentrale Repository ist
-[MikeMitterer/unraid-templates](https://github.com/MikeMitterer/unraid-templates).
-Die Aufnahme dort wird im Veröffentlichungsauftrag T-49 geprüft.
+kommen aus einer getrennten StockInfo-Instanz. Die einzige gepflegte Vorlage
+liegt im Repository
+[MikeMitterer/unraid-templates](https://github.com/MikeMitterer/unraid-templates)
+unter `templates/stockportfolio.xml`. Die lokale Arbeitskopie dieses Repositories
+liegt unter `/Volumes/DevLocal/DevUnraid/Production/Templates`.
+Vorlage und Docker-Image sind für die Veröffentlichung vorbereitet; der Push
+steht noch aus.
 
 ## Lokale Vorlage testen
 
-Die Vorlage enthält bewusst keine `TemplateURL`: Unraid soll beim Test keine
+Für eine Testkopie `TemplateURL` entfernen: Unraid soll beim Test keine
 andere Fassung nachladen. Unter einem eigenen Namen ablegen, niemals eine
 bestehende `my-stockportfolio.xml` mit gespeicherten Nutzereinstellungen ersetzen:
 
 ```bash
-scp unraid/stockportfolio.xml root@unraid:/boot/config/plugins/dockerMan/templates-user/stockportfolio-test.xml
+sed '/<TemplateURL>/d' \
+  /Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml \
+  > /tmp/stockportfolio-test.xml
+scp /tmp/stockportfolio-test.xml root@unraid:/boot/config/plugins/dockerMan/templates-user/stockportfolio-test.xml
 ```
 
 Im Docker-Reiter „Add Container“ wählen, Vorlage `stockportfolio`. Für einen
