@@ -2,7 +2,8 @@
 
 **Stand:** Mike hat die Anpassungen am 2026-09-26 während T-45 beauftragt.
 T-46 ist nach der technischen Freigabe von T-47 umgesetzt und durch Codex selbst geprüft.
-Unabhängige Prüfung durch Claude folgt.
+Runde 1 ist technisch freigegeben. Mikes anschließend beauftragte Nachträge sind
+umgesetzt und selbst geprüft; ihre unabhängige Prüfung folgt.
 
 ## Für dich
 
@@ -15,8 +16,8 @@ weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
 - Kursverlauf steht zuerst und ist beim Öffnen ausgewählt.
 - Leere Informationsbereiche erzeugen keinen Tab. Vorhandene Werte einschließlich
   0 und Nein bleiben sichtbar. Lade- und Fehlerzustände dürfen nicht unerreichbar werden.
-- Informationen und Zusatzinformationen erhalten kompaktere Innenabstände und
-  Zeilenabstände; Desktop und Mobile bleiben lesbar und umbrechbar.
+- Ein gemeinsamer Informationstab zeigt nur ergänzende Angaben und Zusatzwerte.
+  Desktop und Mobile bleiben kompakt, lesbar und umbrechbar.
 - StockInfo bleibt Datenquelle, keine neue Bearbeitung seiner Angaben.
 
 ## Verify
@@ -26,6 +27,9 @@ weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
 | Wertpapier öffnen | Kursverlauf zuerst und aktiv | ✅ |
 | Position mit/ohne Zusatzwerte öffnen | Nur tatsächlich verfügbare Informations-Tabs; 0/Nein bleiben erhalten | ✅ |
 | Desktop und Mobile im Browser | Kompakte Felder, kein Überlauf oder abgeschnittener Inhalt | ✅ |
+| Sparkline zweimal anklicken | Kursverlauf öffnet, zweiter Klick schließt die Zeile | ✅ |
+| Gruppencarets und globale Symbole | Caret in Gruppenfarbe; globale SVGs dezent | ✅ |
+| Englischer Tabellenkopf / Gattung | Prozentzeichen einzeilig; Label und Wert an einer Grundlinie | ✅ |
 | Tests, Lint, Typecheck | Erfolgreich; Doku-Abgleich dokumentiert | ✅ |
 
 ## Auflösung
@@ -201,7 +205,43 @@ Mikes „Passt“ bestätigt den Vorschlag zur Zusammenführung, keinen Ticketab
   von Symbol, ISIN und Rohkurs aus der Hauptzeile. Umgerechneter Stückpreis bleibt;
   mobil auch Kursstand und externe Links, da sie dort sonst fehlen.
 - Klick auf die kleine Kursgrafik öffnet gezielt den Kursverlauf, auch wenn zuvor
-  ein anderer Detailbereich gewählt war. Erneuter Klick darf die Ansicht nicht schließen.
+  ein anderer Detailbereich gewählt war. Mikes Präzisierung: Klick schaltet die Zeile
+  auf und zu; beim Öffnen wird Kursverlauf gewählt.
 - Hintergrund hinter der Navigation deutlicher als der verworfene sehr schwache Stand.
 - Symbole für alle Gruppen öffnen/schließen kleiner und kontrastärmer; Hover/Fokus klar.
 - Gruppen-Caret in der Farbe des zugehörigen Gruppenpunkts.
+
+- Tabellenüberschriften: Actual/Target bzw. IST/Ziel und Prozentzeichen mit
+  geschütztem Leerzeichen zusammenhalten; Mike meldete ein allein umgebrochenes %.
+
+## Umsetzung der Nachträge · Codex · 2026-09-26
+
+- Ein gemeinsamer Informationstab enthält Gattung und Zusatzwerte. Desktop entfernt
+  wiederholte Kennungen, Rohkurs, Kursstand und Links; Mobile behält Kursstand/Links.
+  Der umgerechnete Stückpreis bleibt bei Fremdwährungen sichtbar. Gemeinsame
+  Verfügbarkeitsprüfung und Auswahl; 0/Nein/Lade-/Fehlerzustände bleiben erreichbar.
+- Sparkline als beschrifteter, per Tastatur bedienbarer Knopf. Er schaltet die Zeile
+  auf/zu und fordert beim Öffnen gezielt Kursverlauf an. Browserfolge geöffnet →
+  geschlossen → geöffnet geprüft, einschließlich vorheriger Informationsauswahl.
+- Globale Gruppen-SVGs auf 16 px verkleinert und Text-Muted statt Text-Secondary;
+  Hover und Fokus bleiben klar. Gruppen-Carets verwenden denselben Farbwert wie
+  der jeweilige Punkt (vier Gruppen im Browser per berechneter Farbe verglichen).
+- Navigationshintergrund nach Mikes Rückmeldung auf eine Zwischenstufe reduziert:
+  40 % Surface-Raised gegenüber der zu schwachen 18-%- und zu starken 75-%-Probe.
+  Gattung und Typ an gemeinsamer Grundlinie; der bisherige dd-Abstand entfällt.
+- Prozentüberschriften erhalten geschützten Zwischenraum und einen nicht
+  umbrechenden Label-Wrapper; Actual-Spalte 110 statt 90 px für Text plus Sortierer.
+  Im englischen Browser bei 1024 px beide Labels per Text-Range exakt eine Zeile.
+- Betroffene Komponentenproben vor Umsetzung rot, danach grün. Test durch echte
+  Tabelle prüft Sparkline-Auf/Zu, Standardbereich und gemeinsamen Informationstab.
+  TS-Compiler-API-Inventar sämtlicher angefasster TS/Vue-Dateien: englische Namen.
+
+**Doku-Abgleich der Nachträge:** README „Position information“ und „Price history“
+beschreiben zusammengeführte Informationen, verbleibende mobile Angaben und
+Sparkline-Auf/Zu. Keine Änderung an Konfiguration, StockInfo oder Unraid.
+Runde-1-Freigabe bleibt auf `573d15b` bezogen; Nachträge werden getrennt übergeben.
+
+**Letzter Nachweis:** Mobile 390 px zeigt im gemeinsamen Informationstab auch Kursstand
+und beide externen Links; 0 und Nein bleiben erhalten, Dokumentbreite 390 px.
+Desktop 1024 px zeigt drei Bereiche und keine wiederholten Kennungen/Rohkurse.
+`make test`: 741 Tests / 57 Dateien, `make lint` und `make typecheck` grün.

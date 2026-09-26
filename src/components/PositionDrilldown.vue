@@ -16,6 +16,7 @@ const props = defineProps<{
   visibleStockInfoFields?: readonly string[]
   /** Solange der Kurs dieser Position geholt wird — der Knopf dreht. */
   refreshing?: boolean
+  historyRequest?: number
 }>()
 
 const emit = defineEmits<{
@@ -80,6 +81,9 @@ function updateTargetPercent(value: number | null): void {
       :row="row"
       :links="links"
       :visible-stock-info-fields="visibleStockInfoFields"
+      :history-request="historyRequest"
+      :quote-age-visible="true"
+      :links-visible="!isCash"
     >
       <template #toolbar>
         <div class="drill__head">

@@ -114,15 +114,17 @@ schema 5 rebuilds older quote caches; portfolio positions remain stored.
 
 ### Position information
 
-Open a position on the dashboard. **Information** shows identifiers, the current
-price and external links. **Additional information** shows fields supplied by
-StockInfo plugins, plus TER and volatility. On mobile, tap the position card
+Open a position on the dashboard. **Information** combines the asset kind with
+fields supplied by StockInfo plugins, TER and volatility. Symbol, ISIN and the
+original price stay in the main row without being repeated in the details.
+A converted unit price remains available here when needed. On mobile the area
+also provides the quote age and external links, which the card does not show. On mobile, tap the position card
 or its caret to reach the same sections. Fields already
 displayed in a configured main column are omitted from additional information.
 The dashboard's **Position** column shows both ticker and ISIN when StockInfo
 provides both, separated by a vertical bar. The mobile card and rebalancing
 view follow the same rule.
-For an ISIN-only asset, **Information** shows its ISIN without inventing a
+For an ISIN-only asset, the main row shows its ISIN without inventing a
 ticker. Identifiers come from StockInfo and cannot be edited here. On desktop,
 the refresh icon beside the quote age reloads that position's quote and rotates
 while the request runs.
@@ -157,7 +159,8 @@ recomputed, they cannot.
 
 ### Price history
 
-Every row carries a small sparkline. It answers a question no number does: is
+Clicking the small sparkline opens the row with **Price history** selected;
+clicking it again closes the row. The sparkline answers a question no number does: is
 the price coming from above or from below? The period is shown in the column
 header and is chosen under _Settings → Data_ — one month, one week or one day.
 "One day" shows no line but the change from the last trading day to today.

@@ -54,7 +54,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
       darunter". Nicht `flip`: Die Gruppe verschwindet nicht, sie ist nur
       zusammengeschoben.
     -->
-    <UxCaret class="groupheader__chevron" :open="!collapsed" motion="turn" size="md" />
+    <UxCaret class="groupheader__chevron" :style="{ color }" :open="!collapsed" motion="turn" size="md" />
 
     <!-- Farbpunkt wie im Assetklassen-Balken oben — gleiche Klasse, gleiche Farbe -->
     <span class="groupheader__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>

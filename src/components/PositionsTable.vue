@@ -101,6 +101,7 @@ watch(
 )
 
 const expandedRowKeys = ref<RowKey[]>([])
+const historyRequests = ref<Record<string, number>>({})
 const hoveredRowKey = ref<RowKey | null>(null)
 const tableThemeOverrides = { tdColorHover: 'transparent' }
 
@@ -249,6 +250,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         total: props.total,
         links: props.links,
         visibleStockInfoFields: columns.value.flatMap(column => column.stockInfoFields?.(row) ?? []),
+        historyRequest: historyRequests.value[row.position.id] ?? 0,
         refreshing: props.refreshingIds?.has(row.position.id) ?? false,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
         onRemove: (id: string) => emit('remove', id),
@@ -390,12 +392,25 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         return h('span', { class: 'cell-empty' }, '—')
       }
       const series = pointsFor(row.position)
-      return h(PriceSparkline, {
+      return h('button', {
+        type: 'button',
+        class: 'cell-openable',
+        'data-open-history': row.position.id,
+        'aria-label': `${t('drilldown.sectionHistory')}: ${row.position.displayName}`,
+        'aria-expanded': expandedRowKeys.value.includes(row.position.id),
+        onClick: (event: MouseEvent) => {
+          event.stopPropagation()
+          toggleRow(row.position.id)
+          if (expandedRowKeys.value.includes(row.position.id)) {
+            historyRequests.value[row.position.id] = (historyRequests.value[row.position.id] ?? 0) + 1
+          }
+        },
+      }, [h(PriceSparkline, {
         points: series.points,
         loading: series.loading,
         width: 62,
         periodLabel: periodLabel.value,
-      })
+      })])
     },
   },
   {
@@ -414,7 +429,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
       ),
   },
   {
-    title: t('table.targetPercent'),
+    title: () => h('span', { class: 'cell-head-label' }, t('table.targetPercent')),
     key: 'targetPercent',
     align: 'right',
     width: 110,
@@ -435,10 +450,10 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
       }),
   },
   {
-    title: t('table.actualPercent'),
+    title: () => h('span', { class: 'cell-head-label' }, t('table.actualPercent')),
     key: 'actualPercent',
     align: 'right',
-    width: 90,
+    width: 110,
     sorter: (a, b) => a.actualPercent - b.actualPercent,
     render: (row) =>
       row.isActive

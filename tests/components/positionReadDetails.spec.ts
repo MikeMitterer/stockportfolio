@@ -60,16 +60,17 @@ describe('Positionsdetails nach Aufgabe', () => {
   it('versteckt leere Zusatzinfos und wählt beim Wegfall eines Tabs den Kursverlauf', async () => {
     const row = makeRow()
     if (!row.quote) throw new Error('Kurs fehlt')
-    row.quote = { ...row.quote, details: {}, ter: 0, volatility: null }
+    row.position.kind = null
+    row.quote = { ...row.quote, type: null, details: {}, ter: 0, volatility: null }
     const wrapper = mount(PositionDrilldown, { props: { row, total: 1000, links: [] } })
-    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
+    await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     expect(wrapper.text()).toContain('0,0 %')
     await wrapper.setProps({ row: { ...row, quote: { ...row.quote, ter: null } } })
-    expect(wrapper.findAll('button').some(button => button.text() === translate('drilldown.sectionDetails'))).toBe(false)
+    expect(wrapper.findAll('button').some(button => button.text() === translate('drilldown.sectionAsset'))).toBe(false)
     expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
     useFieldsStore().error = 'Katalog nicht erreichbar'
     await flushPromises()
-    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
+    await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     expect(wrapper.text()).toContain('Katalog nicht erreichbar')
     wrapper.unmount()
   })
@@ -90,14 +91,14 @@ describe('Positionsdetails nach Aufgabe', () => {
       props: { row, total: 1000, links: [] }, global: { provide: { [STOCK_INFO_CLIENT]: client } },
     })
     expect(finishCatalog).toBeDefined()
-    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
+    await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     expect(useFieldsStore().loading).toBe(true)
     finishCatalog?.(new Response(JSON.stringify(catalogFixture)))
     await flushPromises()
     expect(wrapper.get('[data-detail-field="risk-a.flag"]').text()).toContain(translate('detailFields.no'))
     await wrapper.setProps({ visibleStockInfoFields: ['risk-a.flag'] })
-    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
-    expect(wrapper.findAll('.position-details__tabs button').some(button => button.text() === translate('drilldown.sectionDetails'))).toBe(false)
+    expect(wrapper.find('[data-detail-field="risk-a.flag"]').exists()).toBe(false)
+    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(true)
     wrapper.unmount()
   })
 
@@ -128,11 +129,9 @@ describe('Positionsdetails nach Aufgabe', () => {
     await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     expect(wrapper.findComponent(PriceChart).exists()).toBe(false)
     expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(true)
-    expect(wrapper.find('[data-position-section="details"]').exists()).toBe(false)
-
-    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
-    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(false)
-    expect(wrapper.find('[data-position-section="details"]').exists()).toBe(true)
+    expect(wrapper.findAll('.position-details__tabs button').map(button => button.text())).toEqual([
+      translate('drilldown.sectionHistory'), translate('drilldown.sectionPortfolio'), translate('drilldown.sectionAsset'),
+    ])
     wrapper.unmount()
   })
 
@@ -183,12 +182,12 @@ describe('Positionsdetails nach Aufgabe', () => {
 
     await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     const labels = wrapper.findAll('[data-position-section="asset"] dt').map(label => label.text())
-    expect(labels).toContain('ISIN')
+    expect(labels).not.toContain('ISIN')
     expect(labels).not.toContain(translate('table.symbol'))
     wrapper.unmount()
   })
 
-  it('zeigt bei einem Listing das Symbol aus StockInfo statt eines alten Positionswerts', async () => {
+  it('wiederholt bei einem Listing weder Symbol noch Kursstand aus der Hauptansicht', async () => {
     const row = makeRow()
     if (!row.quote) throw new Error('Kurs fehlt')
     row.position.symbol = 'ALT.DE'
@@ -196,7 +195,8 @@ describe('Positionsdetails nach Aufgabe', () => {
 
     await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     const symbol = wrapper.findAll('[data-position-section="asset"] div').find(element => element.find('dt').exists() && element.find('dt').text() === translate('table.symbol'))
-    expect(symbol?.find('dd').text()).toBe(row.quote.symbol)
+    expect(symbol).toBeUndefined()
+    expect(wrapper.findAll('[data-position-section="asset"] dt').map(label => label.text())).not.toContain(translate('dashboard.quoteAge'))
     wrapper.unmount()
   })
 
@@ -213,7 +213,7 @@ describe('Positionsdetails nach Aufgabe', () => {
     missing.unmount()
   })
 
-  it('macht alle vier Lesebereiche auch auf der Mobilkarte erreichbar', async () => {
+  it('zeigt mobil die drei Bereiche und ergänzt den dort fehlenden Kursstand', async () => {
     const row = makeRow()
     row.position.notes = 'Mobile Notiz'
     const wrapper = mount(PositionCard, { props: { row } })
@@ -227,10 +227,9 @@ describe('Positionsdetails nach Aufgabe', () => {
     await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
     await flushPromises()
     expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(true)
-    await buttonWithText(wrapper, translate('drilldown.sectionDetails')).trigger('click')
-    expect(wrapper.find('[data-position-section="details"]').exists()).toBe(true)
+    expect(wrapper.find('[data-position-section="asset"]').text()).toContain(translate('dashboard.quoteAge'))
     await wrapper.get(`button[aria-label="${translate('drilldown.closeDetails')}"]`).trigger('click')
-    expect(wrapper.find('[data-position-section="details"]').exists()).toBe(false)
+    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(false)
     wrapper.unmount()
   })
 })

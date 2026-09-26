@@ -30,6 +30,9 @@
   gap: var(--space-1);
 }
 
+/** Kurze Prozentüberschriften bleiben trotz Sortiersymbol in einer Zeile. */
+.cell-head-label { white-space: nowrap; }
+
 /** Symbol oder Kürzel — die Kennung der Zeile. */
 .cell-symbol {
   font-size: var(--font-sm);

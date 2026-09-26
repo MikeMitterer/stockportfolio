@@ -8,7 +8,6 @@ import { formatAge } from '@/composables/useRelativeTime'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields, hasDetailContent } from '@/domain/detailFields'
 import { resolveKind, resolveLinks } from '@/domain/links'
-import { positionIsin, positionSymbol } from '@/domain/positionIdentity'
 import { integer, money, number, percent } from '@/domain/formatters'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import PositionDetailFields from '@/components/PositionDetailFields.vue'
@@ -16,12 +15,15 @@ import PriceChart from '@/components/PriceChart.vue'
 import type { PositionResult } from '@/domain/rebalancing'
 import type { ExternalLink } from '@/types/portfolio'
 
-type DetailSection = 'portfolio' | 'history' | 'asset' | 'details'
+type DetailSection = 'portfolio' | 'history' | 'asset'
 
 const props = defineProps<{
   row: PositionResult
   links?: ExternalLink[]
   visibleStockInfoFields?: readonly string[]
+  quoteAgeVisible?: boolean
+  linksVisible?: boolean
+  historyRequest?: number
 }>()
 
 const { t, locale } = useI18n()
@@ -32,8 +34,6 @@ const section = ref<DetailSection>(props.row.position.group === 'cash' ? 'portfo
 
 const sectionMenuOpen = ref(false)
 const isCash = computed(() => props.row.position.group === 'cash')
-const stockInfoSymbol = computed(() => positionSymbol(props.row))
-const stockInfoIsin = computed(() => positionIsin(props.row))
 const resolvedLinks = computed(() => resolveLinks(props.row.position, props.links ?? [], props.row.quote?.type))
 const kind = computed(() => resolveKind(props.row.position, props.row.quote?.type))
 const kindLabel = computed(() => {
@@ -53,15 +53,17 @@ const hasAdditionalInfo = computed(() => props.row.quote && (
   fields.loading || fields.error || props.row.quote.details == null ||
   projectDetailFields(props.row.quote, fields.catalog?.definitions ?? [], props.visibleStockInfoFields ?? [], locale.value).some(hasDetailContent)
 ))
+const showConvertedPrice = computed(() => props.row.quote && props.row.basePrice !== null && props.row.quote.currency !== props.row.baseCurrency)
+const showQuoteAge = computed(() => props.row.quote && !props.quoteAgeVisible)
+const showLinks = computed(() => !props.linksVisible && resolvedLinks.value.length > 0)
 const sections = computed<DetailSection[]>(() => {
   const available: DetailSection[] = isCash.value ? ['portfolio'] : ['history', 'portfolio']
-  if (stockInfoSymbol.value || stockInfoIsin.value || kindLabel.value || props.row.quote || resolvedLinks.value.length) available.push('asset')
-  if (hasAdditionalInfo.value) available.push('details')
+  if (kindLabel.value || showConvertedPrice.value || showQuoteAge.value || showLinks.value || hasAdditionalInfo.value) available.push('asset')
   return available
 })
 const sectionLabels: Record<DetailSection, string> = {
   history: 'drilldown.sectionHistory', portfolio: 'drilldown.sectionPortfolio',
-  asset: 'drilldown.sectionAsset', details: 'drilldown.sectionDetails',
+  asset: 'drilldown.sectionAsset',
 }
 
 const sectionOptions = computed(() => sections.value.map(key => ({ key, label: t(sectionLabels[key]) })))
@@ -72,6 +74,9 @@ function selectSection(key: string | number): void {
 
 watch(() => [props.row.position.id, props.row.position.group], () => {
   section.value = isCash.value ? 'portfolio' : 'history'
+})
+watch(() => props.historyRequest, request => {
+  if (request && !isCash.value) section.value = 'history'
 })
 watch(sections, available => {
   if (!available.includes(section.value)) section.value = available[0] ?? 'portfolio'
@@ -132,29 +137,19 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
     </section>
 
     <section v-else-if="section === 'asset'" class="position-details__panel" data-position-section="asset" :aria-label="t('drilldown.sectionAsset')">
-      <dl class="position-details__facts position-details__facts--asset">
-        <div v-if="stockInfoIsin"><dt>ISIN</dt><dd>{{ stockInfoIsin }}</dd></div>
-        <div v-if="stockInfoSymbol"><dt>{{ t('table.symbol') }}</dt><dd>{{ stockInfoSymbol }}</dd></div>
+      <dl v-if="kindLabel || showConvertedPrice || showQuoteAge" class="position-details__facts position-details__facts--asset">
         <div v-if="kindLabel"><dt>{{ t('dashboard.kind') }}</dt><dd>{{ kindLabel }}</dd></div>
-        <div v-if="row.quote">
+        <div v-if="showConvertedPrice && row.quote && row.basePrice !== null">
           <dt>{{ t('table.price') }}</dt>
-          <dd>{{ money(row.quote.price, row.quote.currency, 2) }}</dd>
-          <dd v-if="row.basePrice !== null && row.quote.currency !== row.baseCurrency" class="position-details__hint">
-            {{ t('fx.converted', { price: money(row.basePrice, row.baseCurrency, 2), pair: `${row.quote.currency}/${row.baseCurrency}` }) }}
-          </dd>
+          <dd>{{ t('fx.converted', { price: money(row.basePrice, row.baseCurrency, 2), pair: `${row.quote.currency}/${row.baseCurrency}` }) }}</dd>
         </div>
-        <div v-if="row.quote"><dt>{{ t('dashboard.quoteAge') }}</dt><dd>{{ quoteAge }}</dd></div>
+        <div v-if="showQuoteAge"><dt>{{ t('dashboard.quoteAge') }}</dt><dd>{{ quoteAge }}</dd></div>
       </dl>
-      <p v-if="!isCash && !row.quote">{{ t('currency.missingQuote') }}</p>
-      <div class="position-details__links">
+      <div v-if="showLinks" class="position-details__links">
         <a v-for="link in resolvedLinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }} ↗</a>
-        <span v-if="resolvedLinks.length === 0">{{ t('dashboard.noMatchingLinks') }}</span>
       </div>
+      <PositionDetailFields v-if="hasAdditionalInfo" :quote="row.quote" :visible-keys="visibleStockInfoFields" :show-heading="false" />
     </section>
-
-    <div v-else class="position-details__panel" data-position-section="details">
-      <PositionDetailFields :quote="row.quote" :visible-keys="visibleStockInfoFields" :show-heading="false" />
-    </div>
   </div>
 </template>
 
@@ -168,7 +163,7 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
     padding: var(--space-1) var(--space-2);
     margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
     border-radius: var(--radius-sm);
-    background: color-mix(in srgb, token(--surface-raised) 18%, token(--surface-card));
+    background: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
   }
   &__tabs { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: var(--space-4); }
   &__selection { display: none; font-size: var(--font-sm); }
@@ -183,7 +178,7 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
     &--active { border-bottom-color: token(--accent); }
   }
   &__note { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--font-sm); color: token(--text-secondary); }
-  &__panel { min-width: 0; }
+  &__panel { @include stack(var(--space-2)); min-width: 0; }
   &__facts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
@@ -199,15 +194,12 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
     background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
   }
   &__facts--asset {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-    gap: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
   }
-  &__facts--asset > div {
-    padding: var(--space-2);
-    border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
-    border-radius: var(--radius-sm);
-    background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
-  }
+  &__facts--asset > div { @include row(var(--space-2), baseline); flex-wrap: wrap; }
+  &__facts--asset > div > dd { margin: 0; }
   dt, &__hint { @include muted(var(--font-xs)); }
   dd { margin: var(--space-1) 0 0; font-variant-numeric: tabular-nums; }
   &__ok { color: token(--status-ok); }

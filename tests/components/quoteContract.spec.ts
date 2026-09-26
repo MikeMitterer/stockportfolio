@@ -107,7 +107,7 @@ describe('Kursvertrag in der Oberfläche', () => {
     const assetButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionAsset'))
     await assetButton?.trigger('click')
     const facts = wrapper.find('.position-details__facts').text()
-    expect(facts).toContain(currency === 'GBp' ? 'GBp' : '$')
+    expect(wrapper.findAll('.position-details__facts dt').map(label => label.text())).not.toContain(translate('table.price'))
     // Ohne Umrechnung gibt es weder Euro-Ziele noch einen Euro-Fehlbetrag.
     expect(facts).not.toContain('€')
     wrapper.unmount()

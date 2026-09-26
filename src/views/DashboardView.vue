@@ -823,14 +823,14 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     width: 1.5rem;
     height: 1.75rem;
     padding: 0;
-    color: token(--text-secondary);
+    color: token(--text-muted);
     cursor: pointer;
 
     &:hover { color: token(--text-primary); }
     &:focus-visible { outline: 2px solid token(--text-primary); outline-offset: 2px; }
   }
 
-  &__group-symbol { display: block; width: 1.25rem; height: 1.25rem; }
+  &__group-symbol { display: block; width: 1rem; height: 1rem; }
 
   &__panel-meta { @include row(1.25rem); }
 
