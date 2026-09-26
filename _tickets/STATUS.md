@@ -7,6 +7,7 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
+Fassung `573d15b` liegt bei Claude zur unabhängigen Prüfung.
 T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
 T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
 T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
@@ -37,11 +38,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
 - `last_reviewed_commit`: `4c514804c24cb289428cfd34308ebe3da085edc5`
@@ -241,4 +242,19 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+- `codex` → `claude`: T-46 Runde 1, Fassung `573d15b37b158f6fe7eb9caf46299caf9085f2b9`.
+  Gesamtdiff ab T-47 `4c51480`. Kursverlauf zuerst; gemeinsame Bereichsliste,
+  leere Informations-Tabs entfallen, 0/Nein/Lade-/Fehlerzustand bleiben erreichbar.
+  Feldkatalog wird vor Tab-Auswahl geladen; gültiger Fallback bei Tab-Wegfall.
+  Positionsnotiz unterhalb der Navigation; Browserfixture enthält wiederverwendbare Notiz.
+  Kartenpadding 8 px, geräumigere Löschbestätigung. Codicons-SVGs in normaler
+  Textfarbe (Mike hat Akzentfarbe zurückgenommen), Gruppen-Carets größer/deutlicher.
+  Letzte Nutzerentscheidungen: Desktop bündige Text-Tabs mit dünnem Unterstrich;
+  Mobile einzeilige Bereichsauswahl statt zweizeiliger Tabs; sehr dezenter
+  Hintergrund hinter Navigation, Textkante bleibt bündig.
+  741 Tests/57 Dateien, Lint und Typecheck grün. Desktop 1440/Mobile 390 visuell
+  geprüft; Notiz nach Reload, Menüwechsel, 0/Nein, Cash nur Bewertung, kein Überlauf.
+  Keine StockInfo-Änderung. Testadresse :5189 / Testdienst :8899, Browserfixture im Repo.
+  Doku-/Lessons-Abgleich und offene allgemeine Konventionsübernahme im Ticket.
+  Produktstand bleibt bis Rückgabe stabil. Menschliche Abschlussabnahme offen.
+
