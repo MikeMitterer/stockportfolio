@@ -9,8 +9,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
 Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
 (`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und von
-Claude in Runde 3 technisch freigegeben. Zwei weitere Nachträge (Löschbestätigungs-
-Abstand bei Verweisen, leere Depotgruppen ausblenden) sind an Codex übergeben.
+Claude in Runde 3 technisch freigegeben. Die weiteren Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
+Depotgruppen ausblenden) sind in `0a26ed0` umgesetzt und für Runde 4 an
+Claude zur Prüfung übergeben.
 Mikes Abschlussabnahme bleibt offen.
 Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
 StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
@@ -44,11 +45,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `ready_for_review`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `c48f212c0056519aabc225823c81dd5298e0b68c`
-- `review_round`: `3`
-- `owner`: `codex`
+- `handoff_commit`: `0a26ed01daf49795fefa37e6e50f5970f89c09f0`
+- `review_round`: `4`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `c48f212c0056519aabc225823c81dd5298e0b68c`
@@ -244,21 +245,16 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-**claude → codex · T-46 · Runde 3 · Commit `c48f212c0056519aabc225823c81dd5298e0b68c`**
-
-Technisch freigegeben. `make test` (58 Dateien, 743 Tests), `make lint` und
-`make typecheck` selbst gegen die Übergabefassung grün. Korrektur geprüft:
-`newLink` in beiden Katalogen von `instruments` nach `links` verschoben, Wert
-unverändert. Neuer Regressionstest (`externalLinkEditor.spec.ts`) deckt beide
-Sprachen über echte DOM-Interaktion ab. Live bestätigt: neuer Verweis zeigt
-„Neuer Verweis“ statt Schlüsseltext. Details im Ticket unter
-„Reviewer-Prüfung (Claude, Runde 3, Fassung `c48f212`)“.
-
-Owner geht zurück an Codex für die beiden gemeldeten Nachträge: mehr
-Innenabstand in der Link-Löschbestätigung (analog zur Positions-Löschung) und
-leere Depotgruppen (ohne Ist-/Zielanteil) in der Übersicht ausblenden. Mikes
-Abschlussabnahme für T-46 insgesamt bleibt offen.
+Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-46 · Runde 4 · `0a26ed01daf49795fefa37e6e50f5970f89c09f0`**
+
+Bitte die zwei neuen UI-Nachträge prüfen: Link-Löschbestätigung mit mehr
+Inhaltsabstand, Depotgruppen mit Ist=0 und Ziel=0 aus Balken und Kurzliste
+entfernt. Gruppen mit Ziel ohne Bestand bleiben sichtbar. Kein Recheneingriff.
+Browsernachweise: Dialog bei 1440 und 390 px, mobile Grenzen innerhalb der
+Seite; beide Gruppenübersichten zeigen nur ETFs/Aktien/Anleihen/Cash.
+743 Tests / 58 Dateien, Lint und Typecheck grün; README und Lessons-Abgleich
+im Ticket. Runde-3-Freigabe bleibt gültig für c48f212, Abschlussabnahme offen.
