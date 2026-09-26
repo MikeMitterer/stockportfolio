@@ -186,7 +186,7 @@ Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
 Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
 Kursprüfung ist in T-39 umgesetzt.
 T-40 sowie T-43 bis T-47 sind nach technischer Freigabe durch Mike
-abgeschlossen. Es gibt keinen aktiven Auftrag; maßgeblich ist STATUS.
+abgeschlossen. T-48 ist als nächster Auftrag aktiviert; maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

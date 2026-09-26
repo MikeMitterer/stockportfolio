@@ -7,7 +7,7 @@
  */
 
 import { ApiError, type ApiUrlSource } from './errors'
-import { normalizeFields, normalizeFx, normalizeInstruments, normalizeQuote } from './normalizers'
+import { normalizeFields, normalizeFx, normalizeInstruments, normalizeInstrumentTypes, normalizeQuote } from './normalizers'
 import { translate } from '@/i18n'
 import type {
   DailyPoint,
@@ -15,6 +15,7 @@ import type {
   FxResponse,
   HealthResponse,
   InstrumentSummary,
+  InstrumentTypesResponse,
   Period,
   QuotePoint,
   QuoteResponse,
@@ -49,6 +50,11 @@ export class StockInfoClient {
   /** Felddefinitionen werden unabhängig von den Kursen geladen. */
   async getFields(): Promise<FieldsResponse> {
     return normalizeFields(await this.request<unknown>('/fields'), `${this.baseUrl}/fields`)
+  }
+
+  /** Verfügbare Plugin-Typen, unabhängig von bereits aufgenommenen Assets. */
+  async getInstrumentTypes(): Promise<InstrumentTypesResponse> {
+    return normalizeInstrumentTypes(await this.request<unknown>('/instrument-types'), `${this.baseUrl}/instrument-types`)
   }
 
   /** Eine Einheit Ausgangswährung entspricht rate Einheiten Zielwährung. */

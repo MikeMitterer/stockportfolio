@@ -8,3 +8,9 @@ StockInfo-Produktstands. Sie sind keine aufgezeichneteten HTTP-Antworten.
 Die optionale Detailvorbereitung im T-39-Testserver verwendet diese Daten
 für echte REST-Antworten aus einer separaten SQLite-Datenbank.
 Die Textprobe enthält absichtlich HTML-Zeichen; sie darf nur als Text erscheinen.
+
+
+Die `instrument-types-200*.json`-HTTP-Fixtures stammen aus StockInfo-Commit
+`8b0f547c699a8bb1bde62e054f652f6fabfe3204` (REST-Typkatalog). Sie enthalten
+einen vollständigen Katalog mit `future-type`, einen bekannten Leerstand und
+einen unvollständigen Katalog. Andere Core-4.3.0-Fixtures bleiben unverändert.

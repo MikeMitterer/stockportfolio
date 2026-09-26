@@ -5,8 +5,9 @@
  * `src/domain/` und `src/components/` fließt, geht durch hier durch.
  */
 
-import type { DetailValueResponse, FieldsResponse, FxResponse, InstrumentSummary, QuoteResponse } from './types'
+import type { DetailValueResponse, FieldsResponse, FxResponse, InstrumentTypesResponse, InstrumentSummary, QuoteResponse } from './types'
 import type { DetailValue, FieldCatalog } from '@/types/details'
+import type { InstrumentTypeCatalog } from '@/types/instrumentTypes'
 import type { FxRate } from '@/types/fx'
 import type { QuoteCacheEntry } from '@/types/portfolio'
 import { requireCurrency } from './normalizers'
@@ -95,4 +96,15 @@ export function toFxRate(response: FxResponse): FxRate {
   return { base: response.base, quote: response.quote, rate: response.rate,
     quoteTime: response.quote_time, fetchedAt: response.fetched_at,
     cached: response.cached, stale: response.stale, source: response.source }
+}
+
+
+export function toInstrumentTypeCatalog(response: InstrumentTypesResponse): InstrumentTypeCatalog {
+  return {
+    types: response.instrument_types,
+    complete: response.complete,
+    sources: response.sources.map(source => ({
+      name: source.name, role: source.role, types: source.instrument_types, status: source.status,
+    })),
+  }
 }

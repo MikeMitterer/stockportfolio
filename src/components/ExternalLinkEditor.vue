@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NInput, NSelect, NSwitch, NButton, NPopconfirm } from 'naive-ui'
 import type { AssetGroup, ExternalLink, InstrumentKind } from '@/types/portfolio'
+import type { InstrumentTypeCatalog } from '@/types/instrumentTypes'
 import { ASSET_GROUPS } from '@/types/portfolio'
 
 const { t } = useI18n()
@@ -16,17 +17,27 @@ const { t } = useI18n()
  */
 const props = defineProps<{
   links: ExternalLink[]
+  typeCatalog?: InstrumentTypeCatalog | null
+  typesLoading?: boolean
+  typesError?: string | null
 }>()
 
 const emit = defineEmits<{
   (event: 'update', links: ExternalLink[]): void
   (event: 'reset'): void
+  (event: 'reload-types'): void
 }>()
 
-const kindOptions = computed<{ label: string; value: InstrumentKind }[]>(() => [
-  { label: t('links.etf'), value: 'etf' },
-  { label: t('links.stock'), value: 'stock' },
-])
+/** Fehlende gespeicherte Filter nur an ihrem Verweis erhalten, niemals als Ersatzkatalog. */
+function kindOptions(link: ExternalLink): { label: string; value: InstrumentKind }[] {
+  const available = props.typeCatalog?.types ?? []
+  const retained = link.appliesTo.filter(type => !available.includes(type))
+  const absentLabel = props.typeCatalog?.complete ? 'links.typeNotOffered' : 'links.typeUnconfirmed'
+  return [
+    ...available.map(type => ({ label: type, value: type })),
+    ...retained.map(type => ({ label: t(absentLabel, { type }), value: type })),
+  ]
+}
 const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
   ASSET_GROUPS.map(value => ({ label: t(`groups.${value}`), value })),
 )
@@ -68,6 +79,15 @@ function add(): void {
       {{ t('links.hint') }}
     </p>
 
+    <div class="linkeditor__catalog" role="status">
+      <span v-if="typesLoading">{{ t('links.typesLoading') }}</span>
+      <span v-else-if="typesError">{{ t('links.typesFailed', { reason: typesError }) }}</span>
+      <span v-else-if="typeCatalog && !typeCatalog.complete">{{ t('links.typesIncomplete') }}</span>
+      <span v-else-if="typeCatalog && !typeCatalog.types.length">{{ t('links.typesEmpty') }}</span>
+      <span v-else>{{ t('links.typesSource') }}</span>
+      <NButton text size="small" :loading="typesLoading" @click="emit('reload-types')">{{ t('links.reloadTypes') }}</NButton>
+    </div>
+
     <div v-if="hasLinks" class="linkeditor__list">
       <div
         v-for="link in links"
@@ -84,7 +104,7 @@ function add(): void {
         </div>
         <div class="linkeditor__field linkeditor__field--kind">
           <span>{{ t('links.appliesToKind') }}</span>
-          <NSelect :value="link.appliesTo" :options="kindOptions" multiple size="small" :placeholder="t('links.allKinds')" @update:value="(value: InstrumentKind[]) => patch(link.id, { appliesTo: value ?? [] })" />
+          <NSelect :value="link.appliesTo" :options="kindOptions(link)" :loading="typesLoading" :aria-label="t('links.appliesToKind')" filterable multiple size="small" :placeholder="t('links.allKinds')" @update:value="(value: InstrumentKind[]) => patch(link.id, { appliesTo: value ?? [] })" />
         </div>
         <div class="linkeditor__field linkeditor__field--group">
           <span>{{ t('links.appliesToGroup') }}</span>
@@ -124,6 +144,16 @@ function add(): void {
     font-size: var(--font-xs);
     line-height: 1.625;
     @include muted(null);
+  }
+
+  &__catalog {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--font-xs);
+    @include muted(null);
+    overflow-wrap: anywhere;
   }
 
   &__list {
@@ -176,6 +206,7 @@ function add(): void {
 
   &__field {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1);
     min-width: 0;
     font-size: var(--font-xs);

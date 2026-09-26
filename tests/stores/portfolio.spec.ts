@@ -427,3 +427,21 @@ describe('Verrechnungskonto wieder anlegen', () => {
     ])
   })
 })
+
+
+describe('Aktuelle dynamische Typen speichern', () => {
+  it('ersetzt alte Typen ohne manuelle Gruppenzuordnung zu verändern und überlebt Neuladen', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    await store.addPosition(makePosition({ id: 'dynamic', kind: 'stock', group: 'bonds' }))
+    const quotes = new Map([['IE0000000001', { type: 'future-type' }]])
+    expect(await store.syncKinds(quotes)).toBe(1)
+    expect(await store.syncKinds(quotes)).toBe(0)
+    setActivePinia(createPinia())
+    const reloaded = usePortfolioStore()
+    await reloaded.load()
+    expect(reloaded.positions.find(position => position.id === 'dynamic')).toMatchObject({ kind: 'future-type', group: 'bonds' })
+    await reloaded.syncKinds(new Map())
+    expect(reloaded.positions.find(position => position.id === 'dynamic')?.kind).toBe('future-type')
+  })
+})

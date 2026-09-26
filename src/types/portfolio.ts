@@ -25,7 +25,8 @@ export type Suggestion = 'buy' | 'sell' | 'ok'
  * ergibt nur bei Fonds Sinn — eine Aktie kann keiner sein. Auch Profilseiten
  * wie extraETF trennen ihre Adressen danach.
  */
-export type InstrumentKind = 'etf' | 'stock'
+/** Offene StockInfo-Kennung; neue Plugin-Typen benötigen keine lokale Enumeration. */
+export type InstrumentKind = string
 
 export interface Position {
   id: string
@@ -181,7 +182,7 @@ export interface QuoteCacheEntry {
   symbol: string
   price: number
   currency: string
-  /** Gattung laut API (`etf` | `stock`) — Rückfall für Positionen ohne `kind`. */
+  /** Aktuelle offene Typkennung laut StockInfo. */
   type: string | null
   volatility: number | null
   name: string | null

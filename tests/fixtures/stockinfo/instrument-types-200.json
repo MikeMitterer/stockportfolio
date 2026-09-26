@@ -1,0 +1,37 @@
+{
+  "endpoint": "/instrument-types",
+  "model": "instrument_types",
+  "contract_compliant": true,
+  "violates": null,
+  "note": "Vollständiger Katalog mit einem neuen Typ, ohne gespeicherte Instrumente.",
+  "request": {
+    "method": "GET",
+    "path": "/instrument-types"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "StockInfo-Generation": "37336a68-6dfe-42c3-81cd-4678856ae407"
+    },
+    "body": {
+      "instrument_types": [
+        "future-type",
+        "stock"
+      ],
+      "complete": true,
+      "sources": [
+        {
+          "name": "catalog-quote",
+          "role": "quotes",
+          "instrument_types": [
+            "future-type",
+            "stock"
+          ],
+          "status": "available"
+        }
+      ]
+    }
+  }
+}

@@ -19,22 +19,19 @@ export interface ResolvedLink {
 /**
  * Bestimmt die Gattung einer Position.
  *
- * Bevorzugt den auf der Position gespeicherten Wert; fällt auf die Angabe
- * aus dem Kurs zurück, damit auch ältere Positionen ohne `kind` Verweise
- * bekommen.
+ * Aktuelle StockInfo-Angaben gehen vor der gespeicherten Kopie. Fehlt ein Kurs,
+ * bleibt der zuletzt bekannte Typ erhalten. Cash hat keinen Asset-Typ.
  *
- * @param position   Die Position.
- * @param quoteType  `type`-Feld aus dem Kurs (`etf` | `stock` | null).
- * @returns Gattung oder `null`, wenn sie sich nicht bestimmen lässt.
+ * @param position Die Position mit gespeichertem Typ.
+ * @param quoteType Aktuelle offene Typkennung aus dem Kurs.
+ * @returns Typkennung oder null, wenn sie sich nicht bestimmen lässt.
  */
 export function resolveKind(
   position: Pick<Position, 'kind' | 'group'>,
   quoteType?: string | null,
 ): InstrumentKind | null {
-  if (position.kind) return position.kind
   if (position.group === 'cash') return null
-  if (quoteType === 'etf' || quoteType === 'stock') return quoteType
-  return null
+  return quoteType?.trim() || position.kind?.trim() || null
 }
 
 /**
@@ -68,7 +65,7 @@ export function appliesToKind(link: ExternalLink, kind: InstrumentKind | null): 
  *
  * @param position Die Position (liefert ISIN, Symbol, Gattung).
  * @param links    Konfigurierte Vorlagen aus den Einstellungen.
- * @param quoteType Gattung aus dem Kurs, als Rückfallebene.
+ * @param quoteType Aktueller Typ aus StockInfo, hat Vorrang vor der gespeicherten Kopie.
  */
 export function resolveLinks(
   position: Pick<Position, 'isin' | 'symbol' | 'kind' | 'group'>,

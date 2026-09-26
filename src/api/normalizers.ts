@@ -1,7 +1,7 @@
 /** Gemeinsame Laufzeitprüfung für Quote, Refresh und Instrumentkatalog. */
 import { ApiError } from './errors'
 import { translate } from '@/i18n'
-import type { DetailDefinitionResponse, DetailValueResponse, FieldsResponse, FxResponse, InstrumentSummary, QuoteResponse } from './types'
+import type { DetailDefinitionResponse, DetailValueResponse, FieldsResponse, FxResponse, InstrumentTypesResponse, InstrumentSummary, QuoteResponse } from './types'
 import type { DetailScalar } from '@/types/details'
 import type { InstrumentIdentity } from '@/types/portfolio'
 
@@ -228,5 +228,33 @@ export function normalizeFields(input: unknown, url: string): FieldsResponse {
     core_version: text(data.core_version, 'core_version', url),
     details_version: version,
     details,
+  }
+}
+
+
+/** Typkennungen bleiben offen; nur Form und Pflichtfelder des Katalogs prüfen. */
+export function normalizeInstrumentTypes(input: unknown, url: string): InstrumentTypesResponse {
+  const data = object(input, 'instrument-types', url)
+  function types(value: unknown, field: string): string[] {
+    if (!Array.isArray(value)) invalid(field, url)
+    return [...new Set(value.map(entry => {
+      const identifier = text(entry, field, url)
+      if (identifier.trim() !== identifier) invalid(field, url)
+      return identifier
+    }))]
+  }
+  if (!Array.isArray(data.sources)) invalid('sources', url)
+  return {
+    instrument_types: types(data.instrument_types, 'instrument_types'),
+    complete: boolean(data.complete, 'complete', url),
+    sources: data.sources.map(entry => {
+      const source = object(entry, 'sources', url)
+      return {
+        name: text(source.name, 'sources.name', url),
+        role: text(source.role, 'sources.role', url),
+        instrument_types: types(source.instrument_types, 'sources.instrument_types'),
+        status: text(source.status, 'sources.status', url),
+      }
+    }),
   }
 }

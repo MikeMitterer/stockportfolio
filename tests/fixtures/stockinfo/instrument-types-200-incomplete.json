@@ -1,0 +1,31 @@
+{
+  "endpoint": "/instrument-types",
+  "model": "instrument_types",
+  "contract_compliant": true,
+  "violates": null,
+  "note": "Konfigurierte Quelle nicht geladen: unvollständige Auskunft statt erfundener Typen.",
+  "request": {
+    "method": "GET",
+    "path": "/instrument-types"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "StockInfo-Generation": "6de52e9b-edd4-49d4-980a-283ae08129b8"
+    },
+    "body": {
+      "instrument_types": [],
+      "complete": false,
+      "sources": [
+        {
+          "name": "missing",
+          "role": "quotes",
+          "instrument_types": [],
+          "status": "unknown_source"
+        }
+      ]
+    }
+  }
+}

@@ -253,10 +253,21 @@ app.router.lifespan_context = test_lifespan
 async def test_faults(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     if request.url.path == "/__test/scenario" and request.method == "POST":
         changes = await request.json()
-        if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down", "fx-stale", "fx-missing", "fx-invalid"}:
+        if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down", "fx-stale", "fx-missing", "fx-invalid", "types-empty", "types-incomplete", "types-future", "types-down"}:
             return JSONResponse({"error": "unknown test mode"}, status_code=400)
         state.update({key: changes[key] for key in ("mode", "symbol") if key in changes})
         return JSONResponse(state, headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+    if request.url.path == "/instrument-types" and state["mode"].startswith("types-"):
+        headers = {"Access-Control-Allow-Origin": "http://127.0.0.1:5189", "Cache-Control": "no-store"}
+        if state["mode"] == "types-down":
+            return JSONResponse({"detail": "Typkatalog im Testszenario nicht verfügbar"}, status_code=503, headers=headers)
+        if detail_fixtures is None:
+            return JSONResponse({"detail": "--detail-fixtures fehlt"}, status_code=500, headers=headers)
+        fixture_name = {"types-empty": "instrument-types-200-empty.json",
+                        "types-incomplete": "instrument-types-200-incomplete.json",
+                        "types-future": "instrument-types-200.json"}[state["mode"]]
+        fixture = json.loads((detail_fixtures / fixture_name).read_text())
+        return JSONResponse(fixture["response"]["body"], headers=headers)
     if request.url.path == "/fx" and state["mode"] == "fx-missing":
         return JSONResponse({"code": "fx_source_unavailable"}, status_code=502,
                             headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})

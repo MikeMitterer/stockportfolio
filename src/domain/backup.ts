@@ -11,7 +11,7 @@
 
 import { isCurrency } from '@/domain/fx'
 import type { ValueSnapshot } from '@/domain/portfolioHistory'
-import type { AmountSetting, AssetGroup, InstrumentKind, Portfolio, Position, Settings } from '@/types/portfolio'
+import type { AmountSetting, AssetGroup, Portfolio, Position, Settings } from '@/types/portfolio'
 import { ASSET_GROUPS } from '@/types/portfolio'
 
 /** Erkennungsmerkmal der Datei — verhindert das Einlesen fremder JSON-Dateien. */
@@ -130,7 +130,6 @@ export function backupFileName(portfolioName: string, exportedAt: string): strin
   return `stockportfolio-${slug}-${day}.json`
 }
 
-const KINDS: readonly InstrumentKind[] = ['etf', 'stock']
 
 /**
  * Liest und prüft den Inhalt einer Sicherungsdatei.
@@ -334,7 +333,7 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
     symbol: value.symbol,
     displayName: typeof value.displayName === 'string' ? value.displayName : value.symbol,
     group: value.group as AssetGroup,
-    kind: KINDS.includes(value.kind as InstrumentKind) ? (value.kind as InstrumentKind) : null,
+    kind: typeof value.kind === 'string' && value.kind.trim() ? value.kind : null,
     units: value.units,
     targetPercent: value.targetPercent,
     // Fehlend heißt aktiv — ältere Sicherungen kannten das Feld nicht.

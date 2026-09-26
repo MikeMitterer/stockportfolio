@@ -1,8 +1,8 @@
 /**
  * Ableitung der Assetklasse aus den API-Metadaten eines Instruments.
  *
- * Die StockInfo-API unterscheidet nur `etf` und `stock`; unsere Gruppen sind
- * feiner. Diese Heuristik liefert einen **Vorschlag** für den
+ * StockInfo liefert offene Typkennungen; Depotgruppen sind eine eigene
+ * Zuordnung. Diese Heuristik liefert einen **Vorschlag** für den
  * Hinzufügen-Dialog — die letzte Entscheidung trifft der Nutzer.
  */
 
@@ -53,7 +53,7 @@ const METAL_HINTS = [
  * Schlägt eine Assetklasse vor.
  *
  * @param name Anzeigename des Instruments (kann `null` sein).
- * @param type API-Typ (`etf` | `stock` | null).
+ * @param type Offene API-Typkennung oder null.
  * @returns Vorgeschlagene Gruppe; `stocks` bei unbekanntem Typ.
  */
 export function suggestAssetGroup(name: string | null, type: string | null): AssetGroup {

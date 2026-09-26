@@ -504,6 +504,14 @@ export const de = {
   },
 
   links: {
+    typesSource: 'Asset-Typen werden von StockInfo vorgegeben.',
+    typesLoading: 'Asset-Typen werden geladen …',
+    typesFailed: 'Asset-Typen konnten nicht geladen werden: {reason}. Gespeicherte Filter bleiben erhalten.',
+    typesIncomplete: 'Die Typauskunft ist unvollständig. Bekannte Typen sind auswählbar; gespeicherte Filter bleiben erhalten.',
+    typesEmpty: 'StockInfo bietet derzeit keine Asset-Typen an. Gespeicherte Filter bleiben erhalten.',
+    reloadTypes: 'Typen neu laden',
+    typeNotOffered: '{type} (nicht im aktuellen Katalog)',
+    typeUnconfirmed: '{type} (gespeichert, derzeit unbestätigt)',
     newLink: 'Neuer Verweis',
     hint: "In der Adresse werden {'{isin}'} und {'{symbol}'} ersetzt. Leere Typ- oder Gruppenauswahl gilt jeweils für alle. Sind beide gesetzt, muss die Position beide erfüllen. Ein Verweis mit {'{isin}'} erscheint nicht bei Positionen ohne ISIN.",
     labelPlaceholder: 'Bezeichnung',
@@ -519,7 +527,7 @@ export const de = {
     reset: 'Auf Vorgaben zurücksetzen',
     confirmReset: 'Alle Verweise auf die Vorgaben zurücksetzen?',
     confirmDelete: 'Verweis „{label}" löschen?',
-    etf: 'ETF / Fonds',
+    etf: 'ETF',
     stock: 'Aktie',
     noneConfigured: 'Keine Verweise konfiguriert — im Drilldown erscheinen dann keine externen Links.',
     confirmDeleteShort: 'Verweis „{label}“ entfernen?',

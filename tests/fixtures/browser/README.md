@@ -37,3 +37,25 @@ EUNL.DE enthält eine mehrzeilige Positionsnotiz zum Prüfen der Anzeige direkt
 unter der Detail-Button-Leiste; die anderen Positionen bleiben ohne Notiz.
 
 Den eigenen Testdienst mit demselben Skript und `--stop --port 8899` beenden.
+
+
+## Dynamische Typauswahl prüfen
+
+Der Testserver bietet den echten `/instrument-types`-Endpunkt aus dem
+StockInfo-Checkout. Für gezielte Katalogfälle lassen sich folgende Szenarien
+über `POST /__test/scenario` wählen: `types-future` (neuer Typ ohne Bestand),
+`types-empty` (bekannter Leerstand), `types-incomplete` (unvollständig) und
+`types-down` (HTTP 503). Die ersten drei verwenden die versionierten
+`instrument-types-200*.json` unter `tests/fixtures/stockinfo/`.
+
+```bash
+curl -X POST http://127.0.0.1:8899/__test/scenario \
+  -H 'Content-Type: application/json' -d '{"mode":"types-future"}'
+```
+
+In **Einstellungen → Verweise → Typen neu laden** die Auswahl prüfen. Einen
+neuen Typ auswählen, Seite neu laden, dann leeren oder gestörten Katalog wählen:
+Der Filter bleibt erhalten und ist entsprechend markiert. Eine Auswahl darf
+nicht still zu „alle Typen“ werden. Nach der Probe vorübergehende Filter entfernen
+und das Szenario mit `{"mode":"normal"}` wiederherstellen. Vorhandene Depotdaten
+können für alle Fälle weiterverwendet werden.

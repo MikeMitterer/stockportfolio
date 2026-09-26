@@ -14,7 +14,7 @@ import { baseCurrencyOf, isCurrency } from '@/domain/fx'
 import { upgradeAssetGroups } from '@/domain/assetGroup'
 import { translate } from '@/i18n'
 import type { FxRate } from '@/types/fx'
-import type { AmountSetting, InstrumentKind, Portfolio, Position } from '@/types/portfolio'
+import type { AmountSetting, Portfolio, Position } from '@/types/portfolio'
 
 /** Kopf-Daten eines Depots für die Verwaltungsliste. */
 export interface PortfolioSummary {
@@ -318,37 +318,27 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     await addPosition(cashPosition(units, targetPercent))
   }
 
-  /**
-   * Trägt fehlende Gattungen aus den Kursen nach.
-   *
-   * Positionen, die vor der Einführung von `kind` angelegt wurden, kennen
-   * ihre Gattung nicht — ohne sie bleiben die externen Verweise leer. Sobald
-   * die Kurse da sind, lässt sie sich ableiten und dauerhaft festhalten.
-   *
-   * @param quotes Kurs-Cache (Key = ISIN oder Symbol).
-   * @returns Anzahl der ergänzten Positionen.
-   */
-  async function backfillKinds(quotes: Map<string, { type: string | null }>): Promise<number> {
+  /** Aktuelle StockInfo-Typen speichern; fehlende Kurse und manuelle Gruppen bleiben erhalten. */
+  async function syncKinds(quotes: Map<string, { type: string | null }>): Promise<number> {
     if (!portfolio.value) return 0
 
     let changed = 0
     const next = portfolio.value.positions.map((position) => {
-      if (position.kind || position.group === 'cash') return position
+      if (position.group === 'cash') return position
 
       const quote = quotes.get(position.isin ?? position.symbol)
-      const kind: InstrumentKind | null =
-        quote?.type === 'etf' || quote?.type === 'stock' ? quote.type : null
-      if (!kind) return position
+      const kind = quote?.type?.trim()
+      if (!kind || kind === position.kind) return position
 
       changed += 1
-      return { ...position, kind, group: position.group === 'stocks' && kind === 'etf' ? 'etfs' : position.group }
+      return { ...position, kind }
     })
 
     if (changed === 0) return 0
 
     portfolio.value = { ...portfolio.value, positions: next }
     await persist()
-    consola.info('portfolio: Gattung nachgetragen', { count: changed })
+    consola.info('portfolio: Typen aktualisiert', { count: changed })
     return changed
   }
 
@@ -407,7 +397,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     addCashPosition,
     removePosition,
     replacePortfolio,
-    backfillKinds,
+    syncKinds,
     markRebalanced,
   }
 })

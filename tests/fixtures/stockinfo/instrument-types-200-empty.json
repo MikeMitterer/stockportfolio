@@ -1,0 +1,24 @@
+{
+  "endpoint": "/instrument-types",
+  "model": "instrument_types",
+  "contract_compliant": true,
+  "violates": null,
+  "note": "Leere Konfiguration: vollständige, bekannte Leermenge ohne Ersatztypen.",
+  "request": {
+    "method": "GET",
+    "path": "/instrument-types"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "StockInfo-Generation": "da070106-f894-4825-bdfd-df32dec8fdd5"
+    },
+    "body": {
+      "instrument_types": [],
+      "complete": true,
+      "sources": []
+    }
+  }
+}

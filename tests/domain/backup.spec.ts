@@ -442,3 +442,17 @@ describe('Depotwährung und Geldschwellen in Sicherungen', () => {
     expect(result.backup.valueHistory).toEqual([{ date: '2026-09-01', total: 100, currency: 'USD' }, { date: '2026-09-02', total: 90, currency: 'EUR' }])
   })
 })
+
+
+describe('Dynamische Typen in Sicherungen', () => {
+  it('erhält neue Positions-Typen und Linkfilter unverändert', () => {
+    const portfolio = makePortfolio([makePosition({ kind: 'future-type' })])
+    const settings = defaultSettings('depot-1')
+    settings.links[0]!.appliesTo = ['fund', 'future-type']
+    const result = parseBackup(JSON.stringify(buildBackup(portfolio, settings, makeAllowlist(), '0.2.0', '2026-09-26T00:00:00Z')))
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.backup.portfolio.positions[0]?.kind).toBe('future-type')
+    expect(result.backup.settings.links[0]?.appliesTo).toEqual(['fund', 'future-type'])
+  })
+})

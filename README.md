@@ -223,12 +223,27 @@ together with cash, the thing a purchase can be paid from.
 The dashboard group overview hides groups whose actual and target shares are
 both zero. A group with a target allocation remains visible even without holdings.
 
-Under _Settings → Links_, a link can be limited to asset kinds (`Stock` or
-`ETF / fund`) and independently to portfolio groups, including `Cash`. An
-empty selection in either filter means all kinds or groups. When both filters
-are set, a position must match both. Cash has no asset kind, so leave the kind
-filter empty for a Cash link. Links needing an ISIN remain unavailable for
-positions without one.
+Under _Settings → Links_, asset types come from StockInfo's
+`GET /instrument-types` catalog, independently of your holdings. The catalog
+reloads when you open this tab; **Reload types** refreshes it while editing.
+Identifiers such as `etf` and `fund` stay separate. New plugin types appear
+without a StockPortfolio update.
+
+A link can be limited to these types and independently to portfolio groups,
+including `Cash`. An empty selection in either filter means all types or groups.
+When both filters are set, a position must match both. Cash has no asset type,
+so leave the type filter empty for a Cash link. Links needing an ISIN remain
+unavailable for positions without one.
+
+A partial, empty or unavailable type catalog is indicated beside the editor.
+Existing filters are preserved and marked when their type is absent or cannot
+be confirmed. There is no built-in fallback catalog. A source outage does not
+necessarily make the catalog incomplete: StockInfo can still know which types
+that source declares.
+
+The current quote's type takes precedence over the stored position type.
+Refreshes save updated types for offline use without changing portfolio groups.
+Positions and link filters retain new type identifiers in backups.
 
 If you delete the cash account, use **Add position → Cash account** to create it
 again. Enter the balance in the portfolio currency and its target percentage.

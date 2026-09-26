@@ -5,16 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Auftrag.** T-38, T-39, T-40, T-44, T-46 und T-47 sind nach
-technischer Freigabe am 2026-09-26 durch Mike abgeschlossen und liegen unter
-`40-done/`. Für T-40/T-44 und T-46 hat Claude Mikes ausdrückliche Entscheidung
-über die INBOX weitergeleitet; T-38/T-39/T-47 wurden im Codex-Chat bestätigt.
-T-43 und T-45 sind ebenfalls abgeschlossen. `30-doing/` ist leer.
-
-Der letzte Review ist T-46, Runde 6, Fassung `4367acf`, technisch freigegeben
-durch Claude. Die Rückgabe ist verarbeitet. T-48 (dynamische Asset-Typen)
-bleibt im Backlog und hängt an StockInfo T-73; daraus entsteht kein Auftrag.
-T-35/T-36 bleiben ebenfalls im Backlog. T-41/T-42 werden in AgentLessons geführt.
+**Aktiver Auftrag: T-48 · dynamische Asset-Typen.** Mike hat am 2026-09-26
+„Los gehts mit T-48“ beauftragt und den verfügbaren StockInfo-Endpunkt
+`/instrument-types` genannt. Codex implementiert; Claude prüft danach.
+T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47 sind abgeschlossen.
+Der letzte Review bleibt T-46, Runde 6 (`4367acf`). T-35/T-36 bleiben im Backlog;
+T-41/T-42 werden in AgentLessons geführt.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 `codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
@@ -29,18 +25,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`
 - `last_reviewed_round`: `6`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `dynamic-asset-types`
+- `priority_chain`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
+- `priority_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -135,7 +131,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-47 sind abgeschlossen.
-Kein Ticket ist aktiv. Die früheren Prioritätsentscheidungen unten bleiben
+T-48 ist aktiv. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.

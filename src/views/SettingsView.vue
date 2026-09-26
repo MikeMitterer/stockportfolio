@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted } from 'vue'
+import { computed, inject, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -38,6 +38,7 @@ import { LOCALE_IDS, LOCALES, useLocaleStore } from '@/stores/locale'
 import { HISTORY_PERIODS, HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
 import type { AmountSetting, HistoryPeriod, RebalancingTrigger } from '@/types/portfolio'
 import { THEME_IDS, THEMES } from '@mmit/ux-foundation'
+import { useInstrumentTypesStore } from '@/stores/instrumentTypes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
@@ -198,6 +199,11 @@ const historyPeriods = HISTORY_PERIODS.map((id) => HISTORY_PERIOD_INFO[id])
 // ─── Status der Gegenstelle ─────────────────────────────────────────────────
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
+const instrumentTypes = useInstrumentTypesStore()
+function loadInstrumentTypes(): void {
+  if (client) void instrumentTypes.load(client)
+}
+watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immediate: true })
 const api = useApiStatusStore()
 const apiCheckedAgo = useRelativeTime(computed(() => api.checkedAt))
 
@@ -420,6 +426,10 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
           <ExternalLinkEditor
             :links="settingsStore.settings.links"
+            :type-catalog="instrumentTypes.catalog"
+            :types-loading="instrumentTypes.loading"
+            :types-error="client ? instrumentTypes.error : t('notify.noClient')"
+            @reload-types="loadInstrumentTypes"
             @update="settingsStore.setLinks"
             @reset="settingsStore.resetLinks"
           />

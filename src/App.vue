@@ -40,6 +40,11 @@ const apiStatus = useApiStatusStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
+// Typänderungen auch nach Aktualisierung außerhalb des Dashboards speichern.
+watch(() => [quotesStore.quotes, portfolioStore.portfolio?.id], () => {
+  void portfolioStore.syncKinds(quotesStore.quotes)
+}, { immediate: true })
+
 const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
 

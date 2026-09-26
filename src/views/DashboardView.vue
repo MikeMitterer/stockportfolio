@@ -245,7 +245,7 @@ async function onAddPosition(payload: {
     isin: instrument.isin,
     symbol: instrument.symbol,
     // Gattung mitschreiben — sie entscheidet später über die externen Verweise.
-    kind: instrument.type === 'etf' || instrument.type === 'stock' ? instrument.type : null,
+    kind: quotesStore.quotes.get(instrument.isin ?? instrument.symbol)?.type ?? instrument.type,
     displayName: instrument.name ?? instrument.symbol,
     group,
     units,
@@ -395,10 +395,6 @@ onMounted(async () => {
       )
     }
   }
-
-  // Ältere Positionen kennen ihre Gattung nicht — jetzt, wo die Kurse da
-  // sind, lässt sie sich ableiten und dauerhaft festhalten.
-  await portfolioStore.backfillKinds(quotesStore.quotes)
 
   // Der Tageswert wird festgehalten, sobald die Kurse stehen — einmal je Tag.
   await loadFx()

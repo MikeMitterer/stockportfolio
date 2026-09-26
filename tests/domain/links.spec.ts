@@ -44,16 +44,16 @@ describe('resolveKind', () => {
     expect(resolveKind({ kind: null, group: 'stocks' }, 'etf')).toBe('etf')
   })
 
-  it('bevorzugt die Position gegenüber dem Kurs', () => {
-    expect(resolveKind({ kind: 'stock', group: 'stocks' }, 'etf')).toBe('stock')
+  it('bevorzugt den aktuellen Kurs gegenüber der gespeicherten Position', () => {
+    expect(resolveKind({ kind: 'stock', group: 'stocks' }, 'etf')).toBe('etf')
   })
 
   it('liefert null für Cash', () => {
     expect(resolveKind({ kind: null, group: 'cash' }, 'etf')).toBeNull()
   })
 
-  it('liefert null bei unbekanntem Kurs-Typ', () => {
-    expect(resolveKind({ kind: null, group: 'stocks' }, 'zertifikat')).toBeNull()
+  it('erhält neue Kurs-Typen ohne feste Liste', () => {
+    expect(resolveKind({ kind: null, group: 'stocks' }, 'future-type')).toBe('future-type')
   })
 
   it('liefert null, wenn nichts bekannt ist', () => {
@@ -124,20 +124,20 @@ describe('resolveLinks', () => {
     urlTemplate: 'https://extraetf.com/de/stock-profile/{isin}',
     appliesTo: ['stock'],
   })
-  const alle = [oekb, extraetfEtf, extraetfStock]
+  const allLinks = [oekb, extraetfEtf, extraetfStock]
 
   it('zeigt einem ETF den Meldefonds-Nachweis und das ETF-Profil', () => {
-    const links = resolveLinks(makePosition({ kind: 'etf' }), alle)
+    const links = resolveLinks(makePosition({ kind: 'etf' }), allLinks)
     expect(links.map((link) => link.id)).toEqual(['oekb', 'extraetf-etf'])
   })
 
   it('zeigt einer Aktie weder Meldefonds-Nachweis noch ETF-Profil', () => {
-    const links = resolveLinks(makePosition({ kind: 'stock' }), alle)
+    const links = resolveLinks(makePosition({ kind: 'stock' }), allLinks)
     expect(links.map((link) => link.id)).toEqual(['extraetf-stock'])
   })
 
   it('nutzt für eine Aktie die Aktien-Adresse', () => {
-    const links = resolveLinks(makePosition({ kind: 'stock', isin: 'US0846707026' }), alle)
+    const links = resolveLinks(makePosition({ kind: 'stock', isin: 'US0846707026' }), allLinks)
     expect(links[0]?.url).toBe('https://extraetf.com/de/stock-profile/US0846707026')
   })
 
@@ -150,13 +150,13 @@ describe('resolveLinks', () => {
   })
 
   it('lässt Verweise weg, deren Platzhalter nicht füllbar ist', () => {
-    const links = resolveLinks(makePosition({ kind: 'etf', isin: null }), alle)
+    const links = resolveLinks(makePosition({ kind: 'etf', isin: null }), allLinks)
     expect(links).toHaveLength(0)
   })
 
   it('liefert für Cash gar nichts', () => {
     const cash = makePosition({ group: 'cash', kind: null, isin: null, symbol: 'CASH' })
-    expect(resolveLinks(cash, alle)).toHaveLength(0)
+    expect(resolveLinks(cash, allLinks)).toHaveLength(0)
   })
 
   it('liefert nichts bei leerer Verweisliste', () => {
@@ -164,7 +164,7 @@ describe('resolveLinks', () => {
   })
 
   it('zieht die Gattung aus dem Kurs, wenn die Position sie nicht kennt', () => {
-    const links = resolveLinks(makePosition({ kind: null }), alle, 'stock')
+    const links = resolveLinks(makePosition({ kind: null }), allLinks, 'stock')
     expect(links.map((link) => link.id)).toEqual(['extraetf-stock'])
   })
 
@@ -176,5 +176,16 @@ describe('resolveLinks', () => {
     expect(resolveLinks(makePosition({ group: 'bonds', kind: 'etf' }), [groupOnly, both]).map(link => link.id)).toEqual(['bond-etf'])
     expect(resolveLinks(makePosition({ group: 'etfs', kind: 'etf' }), [groupOnly, both])).toEqual([])
     expect(resolveLinks(makePosition({ group: 'bonds', kind: 'stock' }), [groupOnly, both])).toEqual([])
+  })
+})
+
+
+describe('Dynamische Typen und Gruppenfilter', () => {
+  it('verwendet den aktuellen Typ und kombiniert ihn mit der gewählten Depotgruppe', () => {
+    const link = makeLink({ appliesTo: ['future-type'], appliesToGroups: ['bonds'] })
+    expect(resolveLinks(makePosition({ kind: 'stock', group: 'bonds' }), [link], 'future-type')).toHaveLength(1)
+    expect(resolveLinks(makePosition({ kind: 'future-type', group: 'stocks' }), [link], 'future-type')).toHaveLength(0)
+    expect(resolveLinks(makePosition({ kind: 'future-type', group: 'bonds' }), [link], 'fund')).toHaveLength(0)
+    expect(resolveLinks(makePosition({ kind: 'future-type', group: 'bonds' }), [link])).toHaveLength(1)
   })
 })

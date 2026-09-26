@@ -46,8 +46,8 @@ export interface FieldsResponse {
 /** Zeitraum für History-Endpunkte. */
 export type Period = '1w' | '1m' | '3m' | '1y' | 'max'
 
-/** Instrument-Typ laut API (`stock | etf`). */
-export type InstrumentType = 'stock' | 'etf'
+/** Offene Instrument-Typkennung laut API. */
+export type InstrumentType = string
 
 /** Vollständige Kurs- und Metadaten-Antwort für ein Wertpapier. */
 export interface QuoteResponse {
@@ -138,4 +138,17 @@ export interface FxResponse {
   cached: boolean
   stale: boolean
   source: string | null
+}
+
+
+/** Plugin-Typkatalog aus GET /instrument-types, unabhängig vom Instrumentbestand. */
+export interface InstrumentTypesResponse {
+  instrument_types: string[]
+  complete: boolean
+  sources: {
+    name: string
+    role: string
+    instrument_types: string[]
+    status: string
+  }[]
 }
