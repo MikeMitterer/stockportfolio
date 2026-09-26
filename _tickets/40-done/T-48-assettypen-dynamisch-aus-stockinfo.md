@@ -9,13 +9,11 @@ Nachladen und Sicherungsimport und blendete sie in der Detailansicht aus.
 dynamischen Plugin-Angebot laden. Keine feste Ersatzliste und keine Ableitung
 nur aus vorhandenen Instrumenten. Depotgruppen bleiben eine eigene Zuordnung.
 
-**Stand:** Mike hat T-48 am 2026-09-26 aktiviert. Der neue StockInfo-Endpunkt
-`GET /instrument-types` ist live verfügbar: sechs Typkennungen, `complete`
-und Quelldiagnosen. Die T-46-Typanzeige ist abgeschlossen und wird weiterverwendet.
-Die frühere API-Abhängigkeit (StockInfo T-73) ist erfüllt. Umsetzung und
-Coder-Prüfung sind abgeschlossen; Claude hat Runde 1 (`2aac1e9`) technisch
-freigegeben. Mikes Nachtrag zur deutschen Bezeichnung „Links“ ist umgesetzt
-und wird separat übergeben. Mikes Abschlussentscheidung steht aus.
+**Stand:** Am 2026-09-26 durch Mike abgeschlossen: „OK, damit ist T-48 erledigt“.
+Claude hat die Umsetzung in Runde 1 (`2aac1e9`) technisch freigegeben.
+Der anschließende Beschriftungsnachtrag (`3b63788`) ist durch Codex geprüft
+und von Mikes Abschluss umfasst; der noch offene Kurzreview in Runde 2
+wird mit dieser Entscheidung beendet. Keine technische Runde-2-Freigabe behauptet.
 
 ## Ausgangsbefund vor Umsetzung
 
@@ -267,3 +265,13 @@ erfolgreich. Browser auf Desktop: Tab „Links“, Überschrift „Externe Links
 „Link aktiv“ und „Link hinzufügen“ sichtbar. Testdaten unverändert.
 Doku-Abgleich: README verwendet bereits „Links“; keine Anleitung oder
 Konfiguration betroffen. Schlüssel und englische Übersetzungen bleiben gleich.
+
+## Abschluss · Mike · 2026-09-26
+
+„OK, damit ist T-48 erledigt“ (direkt im Codex-Chat nach dem Links-Nachtrag).
+Ticket nach `40-done/` verschoben; Status und Board-Einstieg abgeglichen.
+Letzter abgeschlossener unabhängiger Review bleibt Runde 1, Fassung `2aac1e9`.
+Der für `3b63788` vorbereitete Kurzreview wird durch Mikes ausdrücklichen
+Abschluss beendet. Seine Coder-Prüfnachweise stehen im Nachtrag oben.
+Historische Aussagen zur damals offenen Abschlussentscheidung bleiben auf
+ihren jeweiligen Reviewzeitpunkt bezogen. Keine Produktänderung beim Abschluss.

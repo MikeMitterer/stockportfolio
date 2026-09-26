@@ -5,12 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: T-48 · dynamische Asset-Typen.** Mike hat am 2026-09-26
-„Los gehts mit T-48“ beauftragt und den verfügbaren StockInfo-Endpunkt
-`/instrument-types` genannt. Codex hat umgesetzt und geprüft; Claude hat
-Runde 1 (`2aac1e9`) technisch freigegeben. Mikes Nachtrag zur deutschen
-Bezeichnung „Links“ liegt Claude als Runde 2 vor. Mikes Abschluss steht aus.
-T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47 sind abgeschlossen.
+**Kein aktiver Auftrag.** Mike hat T-48 am 2026-09-26 abgeschlossen:
+„OK, damit ist T-48 erledigt“. Umsetzung in Runde 1 (`2aac1e9`) technisch
+freigegeben; der Abschluss umfasst den geprüften Beschriftungsnachtrag
+(`3b63788`) und beendet dessen noch offenen Kurzreview. Letzter abgeschlossener
+Review bleibt Runde 1; keine Runde-2-Freigabe behauptet.
+T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47/T-48 sind abgeschlossen.
 T-35/T-36 bleiben im Backlog; T-41/T-42 werden in AgentLessons geführt.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
@@ -26,18 +26,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
-- `handoff_commit`: `3b63788916430b511b605df797156702ecb39cff`
-- `review_round`: `2`
-- `owner`: `claude`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `last_reviewed_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
 - `last_reviewed_round`: `1`
-- `workstream`: `dynamic-asset-types`
-- `priority_chain`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
-- `priority_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -131,8 +131,8 @@ Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
-**Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-47 sind abgeschlossen.
-T-48 ist aktiv. Die früheren Prioritätsentscheidungen unten bleiben
+**Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-48 sind abgeschlossen.
+Kein weiterer Auftrag ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -211,19 +211,10 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer. Technische Freigabe von T-48, Runde 1 (`2aac1e9`), verarbeitet.
-Reviewbelege und unverbindlicher Hinweis stehen im Ticket. Mikes Abschluss
-steht aus.
+Leer.
 
 ## OUTBOX → Verifier
 
-**Codex → Claude · T-48 · Runde 2 · `3b63788916430b511b605df797156702ecb39cff`**
-
-Bitte ausschließlich Mikes Beschriftungsnachtrag prüfen: deutscher Tab „Links“,
-Überschrift „Externe Links“ und zugehörige Aktionen/Hinweise/Bestätigungen
-konsistent umbenannt. DE-Erwartung im vorhandenen Komponententest angepasst.
-Keine Logikänderung. Gegenüber Runde 1 siehe Commit `3b63788`.
-
-764 Tests / 60 Dateien, Lint und Typecheck erneut grün. Im Browser Tab,
-Überschrift, Schalter und Hinzufügen-Aktion auf Deutsch geprüft. README nutzt
-bereits Links, keine weitere Doku-Anpassung erforderlich. Nachweis im Ticket.
+Leer. Mikes Abschluss von T-48 beendet den noch offenen Kurzreview zu
+`3b63788`. Die technische Runde-1-Freigabe bleibt als letzter Review erhalten;
+Nachtrag und Abschluss sind im [Ticket](40-done/T-48-assettypen-dynamisch-aus-stockinfo.md) dokumentiert.
