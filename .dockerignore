@@ -11,14 +11,18 @@ coverage
 .git
 .idea
 .claude
+.codex
+.agents
 .libs
 
 docker/logs
-docker/.last-build-tag
+docker/.last-build-tag*
+docker/.last_login
 
 # Die lokale .env würde die Adresse aus der Entwicklung ins Abbild backen.
 # Gesetzt wird sie beim Start (STOCKINFO_API_URL) oder per --build-arg.
 .env
+.env.*
 
 _tickets
 docs

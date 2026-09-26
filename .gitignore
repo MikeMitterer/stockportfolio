@@ -48,7 +48,8 @@ coverage/
 .nyc_output/
 
 # Docker build metadata
-docker/.last-build-tag
+docker/.last-build-tag*
+docker/.last_login
 docker/logs/
 
 # Local libs (symlinks, not tracked)

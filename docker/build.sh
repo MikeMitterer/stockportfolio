@@ -13,18 +13,18 @@ if [[ -z ${BASH_LIBS+x} ]]; then echo "Var 'BASH_LIBS' nicht gesetzt!"; exit 1; 
 # -u  unset-Variable = Fehler
 set -eou pipefail
 
-readonly APPNAME="$(basename "$0")"
+readonly APPNAME="${0##*/}"
 
-readonly SCRIPT=$(realpath "$0")
-readonly SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+readonly SCRIPT SCRIPTPATH
 
 #------------------------------------------------------------------------------
 # Set WORKSPACE
 #
 cd "${SCRIPTPATH}"
 
-mkdir -p logs
-LOGFILE="logs/build-$(date +%y%m%d).log"
+
 
 readonly NAMESPACE="mangolila"
 readonly NAME="stockportfolio"
@@ -36,25 +36,17 @@ readonly WARN_DAYS=7
 # Einbinden der globalen Build-Lib
 #   Hier sind z.B. Farben, generell globale VARs und Funktionen definiert
 #
+# shellcheck disable=SC1091  # externe BashLib aus BASH_LIBS
 if [[ "${__BUILD_LIB__:=""}"   == "" ]]; then . "${BASH_LIBS}/build.lib.sh";   fi
+# shellcheck disable=SC1091  # externe BashLib aus BASH_LIBS
 if [[ "${__DOCKER_LIB__:=""}"  == "" ]]; then . "${BASH_LIBS}/docker.lib.sh";  fi
+# shellcheck disable=SC1091  # externe BashLib aus BASH_LIBS
 if [[ "${__VERSION_LIB__:=""}" == "" ]]; then . "${BASH_LIBS}/version.lib.sh"; fi
 
-readonly PROJECT_NAME="${NAMESPACE}.${NAME}"
 
-# Base-Image aus dem Dockerfile lesen — über eine temporäre Variable, damit
-# DOCKER_BASE_IMAGE erst NACH der Prüfung readonly wird ('readonly VAR=$(cmd)'
-# würde den Exit-Code des Subshell-Befehls verschlucken).
-#
-# Das letzte FROM, nicht das erste: Die erste Stufe baut nur, ausgeliefert wird
-# das Abbild der letzten.
-_BASE_IMAGE=$(\grep "^FROM " < Dockerfile | tail -1 | sed "s/FROM //;s/ AS.*//") || _BASE_IMAGE=""
-if [[ -z "${_BASE_IMAGE}" ]]; then
-    echo -e "\n${RED}Fehler:${NC} Kein 'FROM' im Dockerfile gefunden (${SCRIPTPATH}/Dockerfile).\n" >&2
-    exit 1
-fi
-readonly DOCKER_BASE_IMAGE="${_BASE_IMAGE}"
-unset _BASE_IMAGE
+
+# --update zieht eine explizite Referenz; Dockerfile-Syntax wird nicht nachgebaut.
+readonly DOCKER_BASE_IMAGE="${BASE_IMAGE:-}"
 
 #------------------------------------------------------------------------------
 # Registry-Ziel (TARGET) — wohin `--push` das Image lädt
@@ -67,7 +59,7 @@ unset _BASE_IMAGE
 #                       echo <PAT> | docker login ghcr.io -u <user> --password-stdin   (Scope: write:packages)
 #              Braucht: GITHUB_OWNER  (per Env/.bashrc, sonst der hier gesetzte Default)
 #
-#   dockerhub  Docker Hub (docker.io)                                     [Default]
+#   dockerhub  Docker Hub (docker.io)
 #              Image:   <NAMESPACE>/<NAME>            (NAMESPACE = Docker-Hub-User/Org)
 #              Login:   loginToDockerHub — liest das Passwort aus ${DOCKER_PW_FILE} (12h-Cache)
 #              Braucht: DOCKER_PW_FILE  (Default: ${HOME}/.docker/dockerhub.sec)
@@ -81,7 +73,7 @@ unset _BASE_IMAGE
 readonly TARGET="${TARGET:-dockerhub}"
 
 # Registry-spezifische Variablen setzen: REGISTRY (Anzeige) + IMAGE (voll qualifizierte
-# Registry-Referenz). Das lokal gebaute Image heisst immer ${NAMESPACE}/${NAME}.
+# Registry-Referenz); lokaler Testbuild trägt zusätzlich ${NAMESPACE}/${NAME}.
 case "${TARGET}" in
     ghcr)
         GITHUB_OWNER="${GITHUB_OWNER:-MikeMitterer}"
@@ -91,8 +83,8 @@ case "${TARGET}" in
         fi
         readonly GITHUB_OWNER
         readonly REGISTRY="ghcr.io"
-        # Docker/OCI-Image-Referenzen müssen lowercase sein — GITHUB_OWNER kommt i.d.R.
-        # in GitHub-Schreibweise (z.B. "MikeMitterer").
+        # Docker/OCI-Image-Referenzen müssen lowercase sein — GITHUB_OWNER kommt
+        # i.d.R. in GitHub-Schreibweise (z.B. "MikeMitterer"), daher ${VAR,,}.
         readonly IMAGE="${REGISTRY}/${GITHUB_OWNER,,}/${NAMESPACE}-${NAME}"
     ;;
     dockerhub)
@@ -123,46 +115,28 @@ esac
 readonly CMDLINE=${1:-}
 readonly OPTION=${2:-""}
 
-# DEV_LOCAL ist bei den Jenkins-Tests bzw. in Docker-Containern nicht gesetzt,
-# IS_CI geht also auf "true"
-readonly IS_CI="${DEV_LOCAL:-"true"}"
-readonly HAS_DEV_LOCAL="[[ ${IS_CI} != 'true' ]]"
-
 # Die möglichen Plattformen:
 #   https://docs.docker.com/build/building/multi-platform/
 readonly PLATFORMS="linux/arm64 linux/amd64"
 
-if [[ "${ARCHITECTURE}" == "x86_64" ]]; then
-    readonly DEFAULT_PLATFORM="linux/amd64"
-elif [[ "${ARCHITECTURE}" == "arm64" ]]; then
-    readonly DEFAULT_PLATFORM="linux/arm64"
-else
-    readonly DEFAULT_PLATFORM="linux/amd64"
-fi
+# Ohne Make-Plattformangabe gilt wie bei StockInfo die Host-Architektur.
+PLATFORM="${ARCHITECTURE}"
 
-PLATFORM="${DEFAULT_PLATFORM}"
-BUILD_MULTIARCH=false
-
-while [ $# -ne 0 ]; do
-    case "${1}" in
-        --build | -b)
-            shift
-            if [[ "${OPTION}" == "x86" ]]; then
-                PLATFORM="linux/amd64"
-            elif [[ "${OPTION}" == "arm" || "${OPTION}" == "m1" ]]; then
-                PLATFORM="linux/arm64"
-            elif [[ "${OPTION}" == "all" ]]; then
-                PLATFORM="linux/arm64,linux/amd64"
-                BUILD_MULTIARCH=true
-            else
-                PLATFORM="${DEFAULT_PLATFORM}"
-                echo "Platform: ${PLATFORM}"
-                break
-            fi
-        ;;
-    esac
-    shift
-done
+case "${CMDLINE}" in
+    --build|-b)
+        [[ $# -le 2 ]] || { echo 'Zu viele Argumente.' >&2; exit 2; }
+        _REQUESTED="${OPTION:-${ARCHITECTURE}}"
+        case "${_REQUESTED}" in
+            x86|x86_64|amd64|linux/amd64) PLATFORM=linux/amd64 ;;
+            arm|m1|arm64|aarch64|linux/arm64) PLATFORM=linux/arm64 ;;
+            all) echo 'Eine Plattform wählen: x86 oder arm. Erst lokal prüfen, dann --push.' >&2; exit 2 ;;
+            *) echo "Unbekannte Plattform: ${_REQUESTED}" >&2; exit 2 ;;
+        esac
+        unset _REQUESTED ;;
+    ''|-h|help|-help|--help|-u|--update|-i|--images|-s|--samples|-p|--push)
+        [[ $# -le 1 ]] || { echo 'Zu viele Argumente.' >&2; exit 2; } ;;
+    *) echo "Unbekannte Option: ${CMDLINE}" >&2; exit 2 ;;
+esac
 
 #------------------------------------------------------------------------------
 # TAG via gitDockerTag (version.lib.sh): Git-Tag als Basis, docker-safe Build-Meta
@@ -173,25 +147,25 @@ done
 #
 readonly STRICT=${STRICT:-2}
 
-# Streng nur für --build (dort wird das Image getaggt). Für Anzeige/Hilfe reicht
+# Streng für den Build (dort wird das Image getaggt). Für Anzeige/Hilfe reicht
 # best-effort (STRICT=0) — so funktioniert --help auch ohne Git-Tag im Clone.
 if [[ "${CMDLINE}" == "-b" || "${CMDLINE}" == "--build" ]]; then
-    _tag_rc=0
-    TAG="$(gitDockerTag "${STRICT}")" || _tag_rc=$?
-    if [[ $_tag_rc -eq 2 ]]; then
+    _TAG_RC=0
+    TAG="$(gitDockerTag "${STRICT}")" || _TAG_RC=$?
+    if [[ $_TAG_RC -eq 2 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} Kein Git-Tag gefunden." >&2
-        echo -e "${YELLOW}Tipp:${NC} make tag-patch  ${BLUE}# oder manuell:${NC} git tag -a v0.1.0+$(date +%y%m%d.%H%M) -m 'Initial release'\n" >&2
+        echo -e "${YELLOW}Tipp:${NC} Release-Tag gemäß versioning-conventions anlegen (Bump pusht). Lokal: git tag -a v0.1.0+$(date +%y%m%d.%H%M) -m 'Initial release'\n" >&2
         exit 1
-    elif [[ $_tag_rc -eq 3 ]]; then
+    elif [[ $_TAG_RC -eq 3 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} Working-Tree ist dirty." >&2
         echo -e "${YELLOW}Tipp:${NC} git commit oder git stash\n" >&2
         exit 1
-    elif [[ $_tag_rc -eq 4 ]]; then
+    elif [[ $_TAG_RC -eq 4 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} Repo ist ahead vom letzten Tag (STRICT=1)." >&2
-        echo -e "${YELLOW}Tipp:${NC} make tag-patch — oder mit ${BLUE}STRICT=2 ./build.sh --build${NC} (ahead erlaubt)\n" >&2
+        echo -e "${YELLOW}Tipp:${NC} Release-Tag anlegen (Bump pusht) — oder mit ${BLUE}STRICT=2 ./build.sh --build${NC} (ahead erlaubt)\n" >&2
         exit 1
-    elif [[ $_tag_rc -ne 0 ]]; then
-        echo -e "\n${RED}Build abgebrochen:${NC} gitDockerTag fehlgeschlagen (rc=${_tag_rc}).\n" >&2
+    elif [[ $_TAG_RC -ne 0 ]]; then
+        echo -e "\n${RED}Build abgebrochen:${NC} gitDockerTag fehlgeschlagen (rc=${_TAG_RC}).\n" >&2
         exit 1
     fi
 else
@@ -205,9 +179,9 @@ readonly TAG
 
 # prepareConfig — Optionaler Build-Vorbereitungs-Schritt
 #
-#   No-op: Das Multi-Stage-Dockerfile baut das Bündel selbst, und die
-#   API-Adresse wird nicht hier, sondern beim Start des Containers gesetzt
-#   (docker/entrypoint.sh → config.js).
+#   No-op solange das (Multi-Stage-)Dockerfile Build + Deps selbst übernimmt.
+#   Bei Services die vor dem Build Dateien ins Build-Kontext-Verzeichnis kopieren
+#   müssen (Configs, Scripts, Zertifikate) hier befüllen — vgl. certbot-Template.
 #
 prepareConfig() {
     : # kein separates Config-Prep nötig
@@ -215,22 +189,42 @@ prepareConfig() {
 
 # pushImage — Delegiert an die Registry-spezifische Lib-Push-Funktion (nach TARGET)
 #
-#   Jede Lib-Push-Funktion kapselt ihren eigenen Login und pusht ${_tag} + latest.
+#   Jede Lib-Push-Funktion kapselt ihren eigenen Login und pusht ${_TAG} + latest.
 #
 #   Params:
 #     - Tag des zu pushenden Images
 #
 pushImage() {
-    local _tag=${1:?}
+    local -r _TAG=${1:?}
 
     case "${TARGET}" in
-        ghcr)      pushImage2GHCR      "${GITHUB_OWNER,,}"  "${NAMESPACE}-${NAME}" "${_tag}" ;;
-        dockerhub) pushImage2DockerHub "${NAMESPACE}"       "${NAME}"              "${_tag}" ;;
-        ecr)       pushImage2Amazon    "${AMAZON_REPO_URI}" "${NAME}" "${_tag}" "${AWS_REGION}" ;;
+        ghcr)      pushImage2GHCR      "${GITHUB_OWNER,,}"  "${NAMESPACE}-${NAME}" "${_TAG}" ;;
+        dockerhub) pushImage2DockerHub "${NAMESPACE}"       "${NAME}"              "${_TAG}" ;;
+        ecr)       pushImage2Amazon    "${AMAZON_REPO_URI}" "${NAME}" "${_TAG}" "${AWS_REGION}" ;;
     esac
 }
 
+# Gemeinsamer ProjectTools-Helfer: Vorschau vor, Übertragung nach dem Image-Push.
+# $1: --preview oder --publish; nur Token-Dateipfad, niemals Token-Inhalt übergeben.
+updateDockerHubReadme() {
+    [[ "${TARGET}" == dockerhub ]] || return 0
+    local -r _ACTION="$1"
+    local -r _HELPER="${PROJECT_TOOLS:-${SCRIPTPATH}/../.libs/ProjectTools/src}/bash/dockerhub-readme.sh"
+    mkdir -p "${SCRIPTPATH}/logs"
+    if [[ "${_ACTION}" == --publish ]]; then
+        DOCKER_README_AFTER_PUSH=1 "${_HELPER}" \
+            --project-dir "${SCRIPTPATH}/.." --ref "${DOCKER_README_REF:-master}" \
+            --publish --repository "${NAMESPACE}/${NAME}" --token-file "${DOCKER_PW_FILE}"
+    else
+        "${_HELPER}" --project-dir "${SCRIPTPATH}/.." --ref "${DOCKER_README_REF:-master}" \
+            --preview --output "${SCRIPTPATH}/logs/dockerhub-readme.md"
+    fi
+}
+
 # showBuiltImages — Lokale (und bei ECR zusätzlich Registry-)Images anzeigen
+#
+#   showImages nimmt optional die Amazon-URI als 4. Parameter und listet dann
+#   auch die ECR-getaggten Images — bei ghcr/dockerhub weggelassen.
 #
 showBuiltImages() {
     if [[ "${TARGET}" == "ecr" ]]; then
@@ -240,99 +234,90 @@ showBuiltImages() {
     fi
 }
 
-# build — Image für die gewählte Plattform bauen
-#
-#   Multiarch (BUILD_MULTIARCH=true): buildx baut UND pusht in einem Schritt —
-#   Login vorher via ensureRegistryLogin; danach kein TAGFILE, push() nicht aufrufen.
-#   Single-arch: lokal bauen, Images anzeigen, Tag + Zeitstempel in TAGFILE
-#   persistieren (von push()/loadLastBuildTag gelesen).
-#
-#   Der Build-Kontext ist das Projekt-Root ('..'), nicht docker/: Das
-#   Dockerfile braucht package.json, src/ und index.html. Beides ist bereits
-#   die Vorgabe der Lib-Funktionen — die Pfade im Dockerfile sind entsprechend
-#   relativ zum Root notiert (COPY docker/default.conf …).
-#
+# Speichert $1=Build-Art und $2=Image-ID; ein neuer Versuch invalidiert alte Marker.
+# Rückgabe: 0 bei Erfolg, sonst Fehler des Dateiwerkzeugs.
+saveBuild() {
+    local -r _KIND="$1" _IMAGE_ID="$2"
+    local _TIMESTAMP _TEMP
+    _TIMESTAMP=$(date +%s)
+    _TEMP=$(mktemp "${TAGFILE}.XXXXXX")
+    if ! printf '%s\n' "${TAG}" "${_TIMESTAMP}" "${_KIND}" "${_IMAGE_ID}" > "${_TEMP}"; then
+        unlink "${_TEMP}"
+        return 1
+    fi
+    mv -f "${_TEMP}" "${TAGFILE}"
+}
+
+# Baut lokal und speichert die Image-ID für die spätere Veröffentlichung.
+# Rückgabe: 0 bei Erfolg, Fehler beenden den Lauf vor einem Erfolgsclaim.
 build() {
+    local _IMAGE_ID _LOGFILE
+    saveBuild pending '-'
     prepareConfig
-
-    echo -e "\nBuilding for Platform: ${YELLOW}${PLATFORM}${NC} → Target: ${YELLOW}${TARGET}${NC}\n"
-
-    if [[ "${BUILD_MULTIARCH}" == true ]]; then
-        ensureRegistryLogin "${TARGET}" "${NAME}" "${AWS_REGION:-}" "${AMAZON_REPO_URI:-}"
-        buildMultiArchImage "${PLATFORM}" "${IMAGE}" "${TAG}" "${LOGFILE}"
-        # Push ist bereits erledigt — kein TAGFILE, push() nicht aufrufen
-        return
-    fi
-
-    buildSingleArchImage "${PLATFORM}" "${NAMESPACE}/${NAME}" "${IMAGE}" "${TAG}" "${LOGFILE}"
+    mkdir -p logs
+    _LOGFILE="logs/build-$(date +%y%m%d).log"
+    buildSingleArchImage "${PLATFORM}" "${NAMESPACE}/${NAME}" "${IMAGE}" "${TAG}" "${_LOGFILE}" "${SCRIPTPATH}/Dockerfile" ..
+    _IMAGE_ID=$(docker image inspect "${IMAGE}:${TAG}" --format '{{.Id}}')
+    [[ "${_IMAGE_ID}" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo 'Ungültige Image-ID.' >&2; exit 1; }
+    saveBuild single "${_IMAGE_ID}"
     showBuiltImages
-
-    # Tag + Zeitstempel persistieren — wird von push() gelesen
-    echo "${TAG}"      > "${TAGFILE}"
-    echo "$(date +%s)" >> "${TAGFILE}"
 }
 
-# loadLastBuildTag — Tag des letzten Builds lesen und zurückgeben
-#
-#   Gibt den gespeicherten Tag via stdout zurück (für Zuweisung per $(...)).
-#   Alle Meldungen und Warnungen gehen nach stderr, damit stdout sauber bleibt.
-#   Bricht mit exit 1 ab wenn kein Build existiert.
-#   Gibt eine Warnung aus wenn der Build älter als WARN_DAYS Tage ist.
-#
-loadLastBuildTag() {
+# Liest Daten ohne source/eval in SAVED_TAG/SAVED_IMAGE_ID; Rückgabe: 1 bei altem,
+# unvollständigem oder nicht lokal pushbarem Marker. Diagnose nur auf stderr.
+loadBuild() {
+    local _TIMESTAMP _KIND _NOW
     if [[ ! -f "${TAGFILE}" ]]; then
-        echo -e "\n${RED}Kein gespeicherter Build-Tag gefunden: ${TAGFILE}${NC}" >&2
-        echo -e "${YELLOW}Zuerst '--build' ausführen.${NC}\n" >&2
-        exit 1
+        echo 'Kein Build-Marker. Zuerst --build ausführen.' >&2
+        return 1
     fi
-
-    local _saved_tag _build_ts _now _age_days _build_date
-    _saved_tag=$(sed -n '1p' "${TAGFILE}")
-    _build_ts=$(sed -n '2p'  "${TAGFILE}")
-    _now=$(date +%s)
-    _age_days=$(( (_now - _build_ts) / 86400 ))
-    _build_date=$(date -d "@${_build_ts}" "+%Y-%m-%d" 2>/dev/null \
-               || date -r "${_build_ts}" "+%Y-%m-%d" 2>/dev/null \
-               || echo "unbekannt")
-
-    if (( _age_days >= WARN_DAYS )); then
-        echo -e "\n${YELLOW}Warnung: Build ist ${_age_days} Tage alt (gebaut am ${_build_date}).${NC}" >&2
-        echo -e "${YELLOW}         Neu bauen? → $(basename "$0") --build${NC}\n" >&2
+    {
+        IFS= read -r SAVED_TAG && IFS= read -r _TIMESTAMP &&
+        IFS= read -r _KIND && IFS= read -r SAVED_IMAGE_ID
+    } < "${TAGFILE}" || { echo 'Alter/unvollständiger Build-Marker. Neu bauen.' >&2; return 1; }
+    [[ "${_KIND}" == single ]] || { echo 'Kein fertiger lokaler Singlearch-Build; --push gesperrt.' >&2; return 1; }
+    [[ "${SAVED_TAG}" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ &&
+       "${SAVED_IMAGE_ID}" =~ ^sha256:[0-9a-f]{64}$ &&
+       "${_TIMESTAMP}" =~ ^[1-9][0-9]{0,10}$ ]] || { echo 'Ungültiger Build-Marker.' >&2; return 1; }
+    _NOW=$(date +%s)
+    if (( (_NOW - _TIMESTAMP) / 86400 >= WARN_DAYS )); then
+        printf '%bWarnung: Build ist mindestens %s Tage alt.%b\n' "${YELLOW}" "${WARN_DAYS}" "${NC}" >&2
     fi
-
-    echo -e "Build vom ${YELLOW}${_build_date}${NC}: ${BLUE}${_saved_tag}${NC}" >&2
-    echo "${_saved_tag}"
 }
 
-# push — Zuletzt gebautes Image ins gewählte Registry-Ziel (TARGET) laden
-#
+# Bindet Version und latest an dieselbe gespeicherte Image-ID und pusht via BashLib.
+# Ein Wechsel von TARGET veröffentlicht damit denselben Build in einer anderen Registry.
 push() {
-    local _tag
-    _tag=$(loadLastBuildTag) || exit 1
-
-    echo -e "\nPushing ${YELLOW}${IMAGE}:${_tag}${NC} → ${YELLOW}${REGISTRY}${NC} (target: ${YELLOW}${TARGET}${NC})\n"
-    pushImage "${_tag}"
-
-    echo -e "\n${GREEN}Push erfolgreich: ${IMAGE}:${_tag}${NC}"
+    local _ACTUAL_ID
+    loadBuild
+    _ACTUAL_ID=$(docker image inspect "${SAVED_IMAGE_ID}" --format '{{.Id}}')
+    [[ "${_ACTUAL_ID}" == "${SAVED_IMAGE_ID}" ]] || { echo 'Gespeichertes Image fehlt.' >&2; exit 1; }
+    docker tag "${SAVED_IMAGE_ID}" "${IMAGE}:${SAVED_TAG}"
+    docker tag "${SAVED_IMAGE_ID}" "${IMAGE}:latest"
+    updateDockerHubReadme --preview
+    pushImage "${SAVED_TAG}"
+    updateDockerHubReadme --publish
+    printf '%bPush erfolgreich: %s:%s%b\n' "${GREEN}" "${IMAGE}" "${SAVED_TAG}" "${NC}"
 }
 
 # Samples-Array — Beispiel-`docker run`-Befehle für dieses Image
 #
 #   Erste Zeile jedes Eintrags: "# Beschreibung ||"  ('#' → Sample-Index, '||' → Zeilenende)
 #   Folgezeilen: \t und \\ für Einrückung/Zeilenfortsetzung. Wird von showSamples() gelesen.
+#   Pro Service anpassen: Ports, Env-Variablen, Volumes.
 #
 # shellcheck disable=SC2034  # samples wird von showSamples() aus build.lib.sh gelesen
 declare -a samples=(
 "# StockPortfolio starten — API-Adresse zur Laufzeit setzen ||
 \t     docker run --name ${NAME} \\
-\t         --rm -p 8080:80 \\
+\t         --rm -p 8080:8080 \\
 \t         -e STOCKINFO_API_URL=https://stockinfo.int.mikemitterer.at \\
 \t         ${NAMESPACE}/${NAME}
 "
-"# Gegen eine lokale API — der Container braucht die Host-Adresse ||
+"# Gegen eine lokale API — erreichbar vom Browser auf demselben Rechner ||
 \t     docker run --name ${NAME} \\
-\t         --rm -p 8080:80 \\
-\t         -e STOCKINFO_API_URL=http://host.docker.internal:8000 \\
+\t         --rm -p 8080:8080 \\
+\t         -e STOCKINFO_API_URL=http://localhost:8000 \\
 \t         ${NAMESPACE}/${NAME}
 "
 )
@@ -349,27 +334,26 @@ usage() {
     echo -e "Architecture: ${YELLOW}${ARCHITECTURE}${NC}"
     echo -e "Platform:     ${YELLOW}${PLATFORM}${NC}"
     echo -e "Target:       ${YELLOW}${TARGET}${NC} → ${YELLOW}${REGISTRY}${NC}"
-    echo -e "Base Image:   ${YELLOW}${DOCKER_BASE_IMAGE}${NC}"
+    echo -e "Base Image:   ${YELLOW}${DOCKER_BASE_IMAGE:-BASE_IMAGE für --update setzen}${NC}"
     echo
-    echo "Usage: $(basename "$0") [ options ]"
-    echo -e "       Env: ${YELLOW}TARGET=ghcr|dockerhub|ecr${NC} (Default: dockerhub) — Registry-Ziel für --push"
+    echo "Usage: ${APPNAME} [ options ]"
+    echo -e "       Env: ${YELLOW}TARGET=ghcr|dockerhub|ecr${NC} (Default: dockerhub) — Ziel für --push"
     echo
-    usageLine "-u | --update                          " "Update base image: ${YELLOW}${DOCKER_BASE_IMAGE}${NC}"
+    usageLine "-u | --update                          " "BASE_IMAGE=<Referenz> mit docker pull aktualisieren"
     echo
-    usageLine "-b | --build [ ${YELLOW}platform${NC} ]" "Build docker image: ${BLUE}${NAMESPACE}/${NAME}:${TAG}${NC}" 14
+    usageLine "-b | --build [ ${YELLOW}platform${NC} ]" "Lokaler Testbuild (Default Host-Plattform): ${BLUE}${NAMESPACE}/${NAME}:${TAG}${NC}" 14
     echo
     usageLine "                                         " "${YELLOW}$PLATFORMS${NC}" 2
     usageLine "                                         " "${YELLOW}x86${NC}      - shortcut for ${YELLOW}linux/amd64${NC}" 2
     usageLine "                                         " "${YELLOW}arm | m1${NC} - shortcut for ${YELLOW}linux/arm64${NC}" 2
-    usageLine "                                         " "${YELLOW}all${NC}      - shortcut for ${YELLOW}linux/amd64, linux/arm64${NC}" 2
     echo
     usageLine "-p | --push                              " "Push zu ${YELLOW}${IMAGE}${NC}"
     echo
     usageLine "-i | --images                            " "Images anzeigen: ${YELLOW}${NAMESPACE}/${NAME}${NC}"
     usageLine "-s | --samples                           " "Beispiel docker run Befehle anzeigen"
-    echo
-    echo -e "  ${YELLOW}Laufzeit:${NC} ${WHITE}STOCKINFO_API_URL${NC} bestimmt, welche API die App anspricht."
-    echo -e "            Ohne die Variable gilt der Wert aus dem Build."
+    usageLine "-h | --help                              " "Diese Hilfe anzeigen"
+    echo "Docker Hub: README nach dem Push aktualisieren (DOCKER_README_REF=master)."
+    echo -e "\n${YELLOW}Hints:${NC} --build baut lokal; nach der Prüfung veröffentlicht --push denselben Stand."
     echo
 }
 
@@ -377,6 +361,7 @@ usage() {
 case "${CMDLINE}" in
 
     -u|--update)
+        [[ -n "${DOCKER_BASE_IMAGE}" && "${DOCKER_BASE_IMAGE}" != -* ]] || { echo "BASE_IMAGE=<Referenz> setzen." >&2; exit 2; }
         docker pull "${DOCKER_BASE_IMAGE}"
     ;;
 
@@ -396,7 +381,7 @@ case "${CMDLINE}" in
         push
     ;;
 
-    help|-help|--help|*)
+    help|-help|-h|--help|'')
         usage
     ;;
 

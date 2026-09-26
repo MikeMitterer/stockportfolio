@@ -53,9 +53,18 @@ curl -X POST http://127.0.0.1:8899/__test/scenario \
   -H 'Content-Type: application/json' -d '{"mode":"types-future"}'
 ```
 
-In **Einstellungen → Verweise → Typen neu laden** die Auswahl prüfen. Einen
+In **Einstellungen → Links → Typen neu laden** die Auswahl prüfen. Einen
 neuen Typ auswählen, Seite neu laden, dann leeren oder gestörten Katalog wählen:
 Der Filter bleibt erhalten und ist entsprechend markiert. Eine Auswahl darf
 nicht still zu „alle Typen“ werden. Nach der Probe vorübergehende Filter entfernen
 und das Szenario mit `{"mode":"normal"}` wiederherstellen. Vorhandene Depotdaten
 können für alle Fälle weiterverwendet werden.
+
+## Container unabhängig prüfen
+
+Für eine andere Browser-Adresse `--origin` setzen, beispielsweise
+`--port 8901 --origin http://127.0.0.1:55095`. Der Container erhält dazu
+`STOCKINFO_API_URL=http://127.0.0.1:8901` und die Portzuordnung
+`127.0.0.1:55095:8080`. So können Vite-Probe und Container-Probe nebeneinander
+mit getrennten Testservern und Browserbeständen laufen. Dieselbe Sicherung
+oben importieren. Nur den eigenen Testserver mit `--stop --port 8901` beenden.

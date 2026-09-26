@@ -12,7 +12,8 @@
     <!--
       Vor dem Bündel geladen und bewusst kein Modul: Die Datei wird im
       Container zur Startzeit geschrieben und muss stehen, bevor die App den
-      API-Client baut. Sie ist klein und ungecached (siehe nginx.conf).
+      API-Client baut. Der statische Server lässt sie vor Verwendung erneut
+      prüfen (Cache-Control: no-cache, siehe docker/runtime/serve.json).
     -->
     <script src="/config.js"></script>
     <script type="module" src="/src/main.ts"></script>

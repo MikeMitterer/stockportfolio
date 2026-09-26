@@ -179,7 +179,9 @@ make dev        # Vite-Dev-Server, Port 5175
 make test       # Vitest, einmalig
 make lint       # ESLint über src/ und tests/
 make typecheck  # vue-tsc --noEmit
-make build      # typecheck + Production-Build nach dist/
+make build-frontend # typecheck + Production-Build nach dist/
+make build          # Docker-Image lokal bauen (linux/amd64)
+make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
 `make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Vor einer
@@ -231,6 +233,16 @@ anderen Betriebsstand festlegt.
 **Schreibe für normale Programmierer, ohne Vorwissen über dieses Projekt.**
 Der Leser soll schnell erkennen, was etwas macht, wie er es benutzt und welche
 Grenzen gelten.
+
+**README und Docker Hub:** Nach erfolgreichem Docker-Hub-Image-Push wird das
+README über den gemeinsamen ProjectTools-Helfer übertragen. Die konvertierte
+Fassung darf höchstens **25.000 UTF-8-Bytes** enthalten; absolute Bild- und
+Dokumentlinks zählen mit. Nach README-Änderungen die echte Vorschau prüfen:
+`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --preview --ref master --output docker/logs/dockerhub-readme.md`.
+Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. README als
+kompakten Projekteinstieg halten, längere Details gegebenenfalls auslagern.
+`DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.
+Keine lokale Kopie des Helfers und kein separates README-Push-Target anlegen.
 
 - Kurze, direkte Sätze und geläufige Wörter. Keine KI-Floskeln, Werbesprache
   oder erfundenen Fachbegriffe.

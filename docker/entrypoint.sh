@@ -1,6 +1,6 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
-# entrypoint.sh — Laufzeit-Konfiguration schreiben, dann nginx starten
+# entrypoint.sh — Laufzeit-Konfiguration schreiben, dann statischen Server starten
 #
 # Der einzige Grund, warum es dieses Script gibt: die API-Adresse.
 #
@@ -12,29 +12,13 @@
 #------------------------------------------------------------------------------
 set -e
 
-CONFIG_FILE="/usr/share/nginx/html/config.js"
-
-# Ohne gesetzte Variable bleibt der Wert leer — die App fällt dann auf das
-# zurück, was beim Bauen im Bündel gelandet ist.
-API_URL="${STOCKINFO_API_URL:-}"
-
-# Anführungszeichen und Backslashes entschärfen: Der Wert kommt von außen und
-# landet unverändert in einer JavaScript-Datei.
-ESCAPED=$(printf '%s' "${API_URL}" | sed 's/\\/\\\\/g; s/"/\\"/g')
-
-# `container: true` unterscheidet diese Datei von der Platzhalter-Fassung aus
-# `public/`. Beide tragen bei fehlender Variable eine leere Adresse — ohne das
-# Kennzeichen riete eine Fehlermeldung im Container zur `.env`, die es dort
-# nicht gibt, statt zu STOCKINFO_API_URL.
-cat > "${CONFIG_FILE}" <<CONFIG
-/* Beim Start des Containers erzeugt — nicht bearbeiten. */
-window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: "${ESCAPED}", container: true }
-CONFIG
-
-if [ -n "${API_URL}" ]; then
-    echo "StockPortfolio: API-Adresse = ${API_URL}"
-else
-    echo "StockPortfolio: STOCKINFO_API_URL nicht gesetzt — es gilt der Wert aus dem Build."
-fi
+# JSON.stringify erhält auch Quotes, Backslashes und Steuerzeichen korrekt.
+# Node gehört bereits zum statischen Server; keine zweite Serialisierung bauen.
+node --input-type=commonjs <<'JS'
+const { writeFileSync } = require('node:fs')
+const config = { apiUrl: process.env.STOCKINFO_API_URL || '', container: true }
+writeFileSync('/app/public/config.js',
+  'window.__STOCKPORTFOLIO_CONFIG__ = ' + JSON.stringify(config) + ';\n')
+JS
 
 exec "$@"

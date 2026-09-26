@@ -1,9 +1,14 @@
-SHELL := /bin/bash
+SHELL := bash
 
 .DEFAULT_GOAL := help
 
 WORKSPACE    := $(realpath $(shell pwd))
 PROJECT_NAME := $(notdir $(WORKSPACE))
+
+BASH_LIBS ?= $(WORKSPACE)/.libs/BashLib/src
+PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
+DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
+export BASH_LIBS PROJECT_TOOLS
 
 -include ${DEV_MAKE}/colours.mk
 -include ${DEV_MAKE}/tools.mk
@@ -57,11 +62,11 @@ info: ## Umgebungsvariablen anzeigen
 	@echo "    $(YELLOW)VITE_STOCKINFO_API_URL$(RESET) = $(BLUE)$${VITE_STOCKINFO_API_URL:-<nicht gesetzt>}$(RESET)"
 	@echo
 	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
-	  "PLATFORM" "$(PLATFORM)"   "# docker-build: x86 | arm | all"
+	  "PLATFORM" "$(PLATFORM)"   "# build: x86 | arm"
 	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
 	  "STRICT"   "$(STRICT)"     "# 1 = auch abbrechen, wenn Commits nach dem Tag liegen"
 	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
-	  "TARGET"   "$${TARGET:-dockerhub}" "# docker-push: dockerhub | ghcr | ecr"
+	  "TARGET"   "$${TARGET:-dockerhub}" "# push: dockerhub | ghcr | ecr"
 	@echo
 
 .PHONY: hints
@@ -82,32 +87,17 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@echo
 	@echo "  $(YELLOW)Docker$(RESET)"
 	@echo
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Server (x86)"  "make docker-build            # Vorgabe"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Lokal auf M1"  "make docker-build PLATFORM=arm"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Beide Archs"   "make docker-build PLATFORM=all  # baut und pusht"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Push-Ziel"     "make docker-push TARGET=ghcr"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Server (x86)"  "make build                  # nur bauen, danach prüfen"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Lokal auf M1"  "make build PLATFORM=arm     # lokaler ARM-Test"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Veröffentlichen" "make push               # geprüftes Image + README"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Push-Ziel"     "make push TARGET=ghcr"
 	@echo
 
 # ─── Precheck ────────────────────────────────────────────────────────────────
 
 .PHONY: precheck
-precheck: ## Umgebung prüfen — BASH_LIBS + DEV_MAKE gesetzt?
-	@if [[ -z "$${BASH_LIBS+x}" ]]; then \
-		echo ""; \
-		echo "$(RED)Achtung: '$(YELLOW)BASH_LIBS$(RED)' ist nicht gesetzt!$(RESET)"; \
-		echo "$(YELLOW)Tipp:$(RESET) Env-Variable in ~/.bashrc / ~/.zshrc setzen, z.B."; \
-		echo "     $(GREEN)export BASH_LIBS=/Volumes/DevLocal/DevBash/Production/BashLib/src$(RESET)"; \
-		echo ""; \
-		exit 1; \
-	fi
-	@if [[ -z "$${DEV_MAKE+x}" ]]; then \
-		echo ""; \
-		echo "$(RED)Achtung: '$(YELLOW)DEV_MAKE$(RED)' ist nicht gesetzt!$(RESET)"; \
-		echo "$(YELLOW)Tipp:$(RESET) Env-Variable in ~/.bashrc / ~/.zshrc setzen, z.B."; \
-		echo "     $(GREEN)export DEV_MAKE=/Volumes/DevLocal/DevMake/Production/MakeLib$(RESET)"; \
-		echo ""; \
-		exit 1; \
-	fi
+precheck: ## Benötigte Bibliotheksdateien prüfen
+	@test -r "$(BASH_LIBS)/version.lib.sh" || { echo "BashLib fehlt: make setup ausführen."; exit 1; }
 
 # ─── Setup ───────────────────────────────────────────────────────────────────
 
@@ -122,11 +112,6 @@ setup: ## Symlinks (.libs/) + Deps installieren
 
 ##@ Status
 
-# Geteilte Check-Scripte aus ProjectTools. PROJECT_TOOLS kommt normalerweise aus
-# der Umgebung (~/.ci.machine.bashrc); der Fallback greift in nicht-interaktiven
-# Shells (CI, Jenkins), wo nur der .libs-Symlink da ist.
-PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
-
 .PHONY: status
 status: ## Git-Status des Repos + offene Blocker-Issues
 	@bash $(PROJECT_TOOLS)/bash/repo-status.sh --show
@@ -139,8 +124,8 @@ status: ## Git-Status des Repos + offene Blocker-Issues
 dev: ## Vite Dev-Server starten (Port 5175)
 	@npm run dev
 
-.PHONY: build
-build: ## Production-Build (typecheck + vite build → dist/)
+.PHONY: build-frontend
+build-frontend: ## Production-Build (typecheck + vite build → dist/)
 	@npm run build
 
 .PHONY: preview
@@ -180,33 +165,22 @@ clean: ## dist/, coverage/, .vite/ löschen
 
 ##@ Docker
 
-# Zielplattform für docker-build — x86, nicht die Architektur des Rechners.
-#
-# Das Abbild läuft auf dem Server, nicht hier: Ein arm64-Build vom Mac startet
-# auf Unraid und den meisten NAS nicht. Wer es lokal auf Apple Silicon
-# ausprobieren will, baut mit PLATFORM=arm.
-#
-#   x86        linux/amd64   (Vorgabe)
-#   arm | m1   linux/arm64
-#   all        beide — buildx baut und pusht in einem Schritt (Login nötig)
+# Veröffentlichung für Unraid/Server, unabhängig von der Host-Architektur.
 PLATFORM ?= x86
-
-# Wie streng build.sh den Git-Zustand prüft:
-#   2   ohne Tag oder mit dirty Working-Tree wird abgebrochen, Commits nach
-#       dem letzten Tag sind erlaubt (Vorgabe)
-#   1   zusätzlich abbrechen, wenn Commits nach dem letzten Tag liegen
+# Ohne Tag und bei uncommittierten Änderungen abbrechen; Commits nach Tag erlaubt.
 STRICT ?= 2
+# Bereits veröffentlichter GitHub-Stand für README-Bilder und Dokumentlinks.
+DOCKER_README_REF ?= master
 
-.PHONY: docker-build
-docker-build: ## Docker-Image bauen  [PLATFORM=x86|arm|all, Default x86 — STRICT=1|2, Default 2]
-	@./docker/build.sh --build $(PLATFORM)
+.PHONY: build push
+build: ## Docker-Image lokal bauen (PLATFORM=x86|arm, Default x86)
+	@./docker/build.sh --build "$(PLATFORM)"
 
-.PHONY: docker-push
-docker-push: ##R Image pushen  [TARGET=dockerhub|ghcr|ecr, Default dockerhub]
+push: ## Geprüften lokalen Build veröffentlichen, danach README (TARGET=dockerhub)
 	@./docker/build.sh --push
 
 .PHONY: docker-update
-docker-update: ## Basis-Image aktualisieren (docker pull)
+docker-update: ## Explizites Basis-Image aktualisieren (BASE_IMAGE=<Referenz>)
 	@./docker/build.sh --update
 
 .PHONY: docker-images
@@ -236,14 +210,14 @@ tags: ## Letzte 10 Tags mit Message anzeigen
 	@git tag --sort=-version:refname -n1 | head -10 | \
 	  awk '{printf "    \033[34m%-28s\033[0m \033[32m%s\033[0m\n", $$1, substr($$0, index($$0,$$2))}'
 
-.PHONY: tag-major
-tag-major: precheck ## Version hochzählen — Major (X.y.z → X+1.0.0)  [MSG="..."]
+.PHONY: tag-and-push-major
+tag-and-push-major: precheck ## Version committen, taggen UND pushen — Major (X.y.z → X+1.0.0)  [MSG="..."]
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump major auto "" "$${MSG:-}"
 
-.PHONY: tag-minor
-tag-minor: precheck ## Version hochzählen — Minor (x.Y.z → x.Y+1.0)  [MSG="..."]
+.PHONY: tag-and-push-minor
+tag-and-push-minor: precheck ## Version committen, taggen UND pushen — Minor (x.Y.z → x.Y+1.0)  [MSG="..."]
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump minor auto "" "$${MSG:-}"
 
-.PHONY: tag-patch
-tag-patch: precheck ## Version hochzählen — Patch (x.y.Z → x.y.Z+1)  [MSG="..."]
+.PHONY: tag-and-push-patch
+tag-and-push-patch: precheck ## Version committen, taggen UND pushen — Patch (x.y.Z → x.y.Z+1)  [MSG="..."]
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump patch auto "" "$${MSG:-}"

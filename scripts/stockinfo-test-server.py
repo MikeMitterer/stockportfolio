@@ -34,6 +34,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--stockinfo-root", type=Path)
 parser.add_argument("--stop", action="store_true", help="Den eigenen Server auf --port sauber beenden")
 parser.add_argument("--port", type=int, default=8899)
+parser.add_argument("--origin", default="http://127.0.0.1:5189", help="Erlaubte Browser-Herkunft, auch für isolierte Containerproben")
 parser.add_argument("--detail-fixtures", type=Path)
 parser.add_argument("--demo-details", action="store_true", help="Lesbare Quellen und Notiz für wiederholbare Browserproben")
 args = parser.parse_args()
@@ -97,7 +98,7 @@ stockinfo_root = args.stockinfo_root.resolve()
 detail_fixtures = args.detail_fixtures.resolve() if args.detail_fixtures else None
 data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t39-server-"))
 os.environ["DATABASE_PATH"] = str(data_dir / "stockinfo.db")
-os.environ["CORS_ORIGINS"] = '["http://127.0.0.1:5189"]'
+os.environ["CORS_ORIGINS"] = json.dumps([args.origin])
 os.chdir(data_dir)
 sys.path.insert(0, str(stockinfo_root))
 
@@ -256,9 +257,9 @@ async def test_faults(request: Request, call_next: Callable[[Request], Awaitable
         if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down", "fx-stale", "fx-missing", "fx-invalid", "types-empty", "types-incomplete", "types-future", "types-down"}:
             return JSONResponse({"error": "unknown test mode"}, status_code=400)
         state.update({key: changes[key] for key in ("mode", "symbol") if key in changes})
-        return JSONResponse(state, headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+        return JSONResponse(state, headers={"Access-Control-Allow-Origin": args.origin})
     if request.url.path == "/instrument-types" and state["mode"].startswith("types-"):
-        headers = {"Access-Control-Allow-Origin": "http://127.0.0.1:5189", "Cache-Control": "no-store"}
+        headers = {"Access-Control-Allow-Origin": args.origin, "Cache-Control": "no-store"}
         if state["mode"] == "types-down":
             return JSONResponse({"detail": "Typkatalog im Testszenario nicht verfügbar"}, status_code=503, headers=headers)
         if detail_fixtures is None:
@@ -270,10 +271,10 @@ async def test_faults(request: Request, call_next: Callable[[Request], Awaitable
         return JSONResponse(fixture["response"]["body"], headers=headers)
     if request.url.path == "/fx" and state["mode"] == "fx-missing":
         return JSONResponse({"code": "fx_source_unavailable"}, status_code=502,
-                            headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+                            headers={"Access-Control-Allow-Origin": args.origin})
     if request.url.path == "/fields" and state["mode"] == "fields-down":
         return JSONResponse({"code": "t40_test_fields_unavailable"}, status_code=503,
-                            headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+                            headers={"Access-Control-Allow-Origin": args.origin})
     response = await call_next(request)
     if request.url.path == "/fx" and response.status_code == 200 and state["mode"] in {"fx-stale", "fx-invalid"}:
         body = json.loads(b"".join([chunk async for chunk in response.body_iterator]))
@@ -281,7 +282,7 @@ async def test_faults(request: Request, call_next: Callable[[Request], Awaitable
             body["rate"] = 0
         else:
             body.update(stale=True, cached=True, quote_time="2026-09-01T10:00:00Z")
-        return JSONResponse(body, headers={"Access-Control-Allow-Origin": "http://127.0.0.1:5189"})
+        return JSONResponse(body, headers={"Access-Control-Allow-Origin": args.origin})
     if response.status_code != 200 or state["mode"] == "normal":
         return response
     is_quote = request.url.path.startswith(("/quote", "/refresh"))
