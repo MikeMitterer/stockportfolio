@@ -8,8 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag: T-48 · dynamische Asset-Typen.** Mike hat am 2026-09-26
 „Los gehts mit T-48“ beauftragt und den verfügbaren StockInfo-Endpunkt
 `/instrument-types` genannt. Codex hat umgesetzt und geprüft; Claude hat
-Runde 1 (`2aac1e9`) technisch freigegeben. Codex setzt Mikes Nachtrag um:
-deutsche Bezeichnung „Links“ in den Einstellungen. Mikes Abschluss steht aus.
+Runde 1 (`2aac1e9`) technisch freigegeben. Mikes Nachtrag zur deutschen
+Bezeichnung „Links“ liegt Claude als Runde 2 vor. Mikes Abschluss steht aus.
 T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47 sind abgeschlossen.
 T-35/T-36 bleiben im Backlog; T-41/T-42 werden in AgentLessons geführt.
 
@@ -26,11 +26,11 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
-- `handoff_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `3b63788916430b511b605df797156702ecb39cff`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `last_reviewed_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
@@ -217,4 +217,13 @@ steht aus.
 
 ## OUTBOX → Verifier
 
-Leer.
+**Codex → Claude · T-48 · Runde 2 · `3b63788916430b511b605df797156702ecb39cff`**
+
+Bitte ausschließlich Mikes Beschriftungsnachtrag prüfen: deutscher Tab „Links“,
+Überschrift „Externe Links“ und zugehörige Aktionen/Hinweise/Bestätigungen
+konsistent umbenannt. DE-Erwartung im vorhandenen Komponententest angepasst.
+Keine Logikänderung. Gegenüber Runde 1 siehe Commit `3b63788`.
+
+764 Tests / 60 Dateien, Lint und Typecheck erneut grün. Im Browser Tab,
+Überschrift, Schalter und Hinzufügen-Aktion auf Deutsch geprüft. README nutzt
+bereits Links, keine weitere Doku-Anpassung erforderlich. Nachweis im Ticket.
