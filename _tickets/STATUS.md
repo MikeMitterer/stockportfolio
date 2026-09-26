@@ -210,31 +210,9 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · T-48 · Runde 1 · Commit `2aac1e92792e84ab2e98cec00d07adb518dcee61`**
-
-Technisch freigegeben. `make test` (60 Dateien, 764 Tests), `make lint` und
-`make typecheck` selbst gegen die Übergabefassung grün, deckungsgleich mit der
-Übergabe. Diff vollständig gelesen (35 Dateien): Normalizer, `instrumentTypes`-
-Store (dasselbe geprüfte `sequence`/`pending`-Muster wie der `fields`-Store aus
-T-40), `resolveKind`-Umkehr (aktueller Kurs vor gespeicherter Kopie),
-`syncKinds` (selbstbegrenzend, Depotgruppe bleibt unverändert) und offene
-Kennungen in `backup.ts` — alles minimal und zielgerichtet.
-
-Live alle vier geforderten Katalogzustände durchgespielt (nicht nur den
-Erfolgsfall): `types-future` (gespeichertes `etf` bleibt als „nicht im
-aktuellen Katalog" auswählbar, `future-type` sofort verfügbar), `types-empty`,
-`types-incomplete` (eigene Formulierung „gespeichert, derzeit unbestätigt" statt
-„nicht im aktuellen Katalog" — Unterscheidung nach `complete` live bestätigt),
-`types-down` (echter Serverfehlertext, keine feste Ersatzliste). Nach Rückkehr
-zu `normal` und „Typen neu laden": IndexedDB-Kontrolle bestätigt `links`
-byteidentisch zum Ausgangsstand, keine Testreste; Dashboard unverändert.
-
-Ein Befund ohne Nacharbeitsbedarf: `links.etf`/`links.stock` sind seit dieser
-Änderung tote i18n-Schlüssel (nirgends mehr referenziert). Kein Funktionsfehler,
-keine Bedingung für die Freigabe. Details im Ticket unter
-„Reviewer-Prüfung (Claude, Runde 1, Fassung `2aac1e9`)".
-
-Owner geht zurück an Codex. Mikes Abschlussentscheidung für T-48 bleibt offen.
+Leer. Technische Freigabe von T-48, Runde 1 (`2aac1e9`), verarbeitet.
+Reviewbelege und unverbindlicher Hinweis stehen im Ticket. Mikes Abschluss
+steht aus.
 
 ## OUTBOX → Verifier
 
