@@ -5,10 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-45 ist der aktive Auftrag:** Claude hat den Betragsmodus-Fix aus `8ae20a6`
-in Runde 1 technisch freigegeben (Belege im Ticket); Codex ist für die
-Verarbeitung und Mikes Abschlussabnahme am Zug. T-44 ist durch Claude in Runde 1 technisch
-freigegeben (`d38a8f5`); Mikes Abschlussabnahme bleibt separat offen.
+**T-47 ist der aktive Auftrag:** Codex ergänzt das Wiederanlegen eines gelöschten
+Verrechnungskontos. T-45 wurde von Claude in Runde 1 technisch freigegeben
+(`8ae20a6`); Mikes Abschlussabnahme bleibt offen. T-44 ist ebenfalls technisch
+freigegeben (`d38a8f5`) und wartet auf menschliche Abnahme.
 T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
 Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
@@ -36,18 +36,18 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
-- `handoff_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
-- `review_round`: `1`
+- `phase`: `implementing`
+- `ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `last_reviewed_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
 - `last_reviewed_round`: `1`
-- `workstream`: `amount-setting-mode`
-- `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md → T-47-verrechnungskonto-wieder-hinzufuegen.md → T-46-detailtabs-und-felder-kompakter.md`
-- `priority_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
+- `workstream`: `restore-cash-position`
+- `priority_chain`: `T-47-verrechnungskonto-wieder-hinzufuegen.md → T-46-detailtabs-und-felder-kompakter.md`
+- `priority_ticket`: `T-47-verrechnungskonto-wieder-hinzufuegen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -144,7 +144,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
-technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 liegt bei Claude zur Prüfung.
+technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 ist technisch freigegeben; Codex arbeitet an T-47.
 T-43 wurde nach drei freigegebenen
 Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
 freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
@@ -153,7 +153,7 @@ T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
 zeilengenauen Dublettenabgleich. T-43 hat diese Darstellung neu geordnet
 und ist abgeschlossen. T-40 wird dafür weder erneut implementiert noch neu
 reviewed; seine menschliche Abschlussabnahme bleibt getrennt.
-Der aktive Auftrag ist [T-45](30-doing/T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md).
+Der aktive Auftrag ist [T-47](30-doing/T-47-verrechnungskonto-wieder-hinzufuegen.md).
 Mike hat T-45 am 2026-09-25 hinter T-44 eingeplant und am 2026-09-26 zur
 Fortsetzung aufgefordert. Die technische Freigabe von T-44 ist verarbeitet;
 dessen offene menschliche Abnahme hält die weitere Prioritätskette nicht auf.
@@ -230,26 +230,13 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 T-47 behebt Mikes neuen Befund vom 2026-09-26: gelöschtes Verrechnungskonto
-kann nicht wieder hinzugefügt werden. Die Funktionskorrektur folgt auf T-45.
+kann nicht wieder hinzugefügt werden. Die Funktionskorrektur ist nach T-45 jetzt aktiv.
 T-46 ist auf Mikes Auftrag vom 2026-09-26 danach eingeplant: Kursverlauf
 zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen.
 
 ## INBOX → Coder
 
-**claude → codex · T-45, Runde 1 · Commit `8ae20a6885113806950e9e510e4573c3dd8911a3` ·
-technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
-(grün, 735 Tests). Diff gelesen: `<label>` umschloss zuvor beide
-Steuerelemente, dadurch übertrug ein Klick auf die Auswahl den Fokus aufs
-Zahlenfeld (implizite Label-Assoziation) — Root-Ursache bestätigt. Fix trennt
-explizites `<label for>` fürs Zahlenfeld von `role="group"`/`aria-label` für
-die Auswahl; `useId()` verhindert Kollisionen zwischen den beiden
-Bausteininstanzen (Sicherheitspuffer, Mindest-Handelsvolumen). Live im
-Browser nachvollzogen: Menü bleibt offen, „Betrag in EUR“ mit 1.000
-übernommen, nach Reload erhalten; per DOM (`input.labels`,
-`aria-describedby`) beide Instanzen mit eindeutigen IDs bestätigt. Der
-Komponententest mit echter Naive-Komponente bestätigt zusätzlich, dass ein
-Klick auf die Auswahl keinen Klick ans Zahlenfeld durchreicht. Details im
-Ticket unter „Reviewer-Prüfung“.
+Leer.
 
 ## OUTBOX → Verifier
 

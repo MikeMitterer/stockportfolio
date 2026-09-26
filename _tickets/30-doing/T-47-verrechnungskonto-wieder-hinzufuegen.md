@@ -2,7 +2,9 @@
 
 **Stand:** Mike meldet am 2026-09-26: Verrechnungskonto gelöscht; Hinzufügen
 ist anschließend nicht mehr möglich. Als Funktionskorrektur nach T-45 und vor
-den optischen Detailänderungen T-46 eingeplant. Noch keine Produktumsetzung.
+den optischen Detailänderungen T-46 aktiviert. Codex ist am Zug.
+Browserbefund mit dem gespeicherten Testdepot bestätigt: Cash gelöscht,
+anschließend bietet der Dialog nur Wertpapiere an.
 
 ## Für dich
 

@@ -13,7 +13,8 @@ Betrag als Geldwert bearbeiten und die Auswahl nach einem Neuladen erhalten.
 Der Browsernachweis bestätigt die gemeinsame HTML-Beschriftung als Ursache:
 Klick auf die Modusauswahl fokussierte das Zahlenfeld, das Menü schloss sofort.
 Getrennte Beschriftung und neutraler Container beheben den Rücksprung.
-Unabhängige Freigabe und menschliche Abschlussabnahme stehen noch aus.
+Claude hat Fassung `8ae20a6` in Runde 1 technisch freigegeben. Die Rückgabe
+ist verarbeitet; keine Nacharbeit. Mikes Abschlussabnahme bleibt offen.
 
 ## Für dich
 
