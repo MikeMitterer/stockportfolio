@@ -10,6 +10,10 @@ pushed to Docker Hub yet; installation requires it to be published first.
 
 ## Installing the template
 
+The download command overwrites the target file. If `my-stockportfolio.xml`
+already contains your saved settings, keep it and use the existing template
+instead. To update a running container, see [Updating](#updating).
+
 For a new installation, run this command in the terminal on your Unraid server:
 
 ```bash
@@ -17,12 +21,12 @@ wget -O /boot/config/plugins/dockerMan/templates-user/my-stockportfolio.xml \
   https://raw.githubusercontent.com/MikeMitterer/unraid-templates/master/templates/stockportfolio.xml
 ```
 
-The command overwrites the target file. If `my-stockportfolio.xml` already
-contains your saved settings, keep it and use the existing template instead.
-
 Then choose **Docker → Add Container** and select **stockportfolio** under
 **User templates**. Set **StockInfo API** to your API address and check the
 [configuration](#configuration) before starting the container.
+
+The image includes WebUI and icon labels for Unraid. Its healthcheck reports
+the container's health in the Docker tab.
 
 ## Testing the local template
 
@@ -43,8 +47,11 @@ name and an available host port.
 
 ## Configuration
 
+The default image build targets `linux/amd64` for x86 Unraid servers.
+
 | Field | Meaning |
 |---|---|
+| Repository | `mangolila/stockportfolio:latest` |
 | WebUI Port | Default host port 8088, container port **8080** |
 | StockInfo API | Required: your StockInfo instance's URL, reachable from the **browser** |
 | Timezone | Container log timezone; defaults to UTC |
@@ -53,6 +60,18 @@ name and an available host port.
 mapping to container port 8080. Keep the same host address and host port:
 the browser associates its data with that web address. A different host port
 uses separate browser storage, which is initially empty.
+
+## Updating
+
+For an existing container, choose **Docker → stockportfolio → Force Update**.
+Keep its settings and the same web address and host port so the browser
+continues to use the same stored portfolio. Export a backup under
+**Settings → Backup** before updating.
+
+An image update does not require downloading the template again. Do not
+overwrite `my-stockportfolio.xml`, which contains your saved container settings.
+When upgrading from an image that used container port 80, update the mapping
+as described under [Configuration](#configuration).
 
 ## Running without a template
 

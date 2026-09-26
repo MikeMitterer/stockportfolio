@@ -419,8 +419,8 @@ make build PLATFORM=arm       # optional local ARM build
 ```
 
 As in StockInfo, building and publishing are separate steps: test the built
-container before running `make push`. `make build` defaults to linux/amd64
-for Unraid, independently of the host architecture. `make build-frontend`
+container before running `make push`. `make build` defaults to linux/amd64,
+independently of the host architecture. `make build-frontend`
 runs only the frontend production build.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
@@ -484,33 +484,8 @@ empty price table.
 
 ### Unraid
 
-For a new installation, download the user template from a terminal on your
-Unraid server:
-
-```bash
-wget -O /boot/config/plugins/dockerMan/templates-user/my-stockportfolio.xml \
-  https://raw.githubusercontent.com/MikeMitterer/unraid-templates/master/templates/stockportfolio.xml
-```
-
-This overwrites the target file. Keep an existing `my-stockportfolio.xml` if it
-contains your saved settings, and use that template instead.
-
-Then choose **Docker → Add Container** → **User templates → stockportfolio**
-and check these settings:
-
-| Field      | Value                                                   |
-| ---------- | ------------------------------------------------------- |
-| Repository | `mangolila/stockportfolio`                              |
-| Port       | container `8080` → host port of your choice               |
-| Variable   | `STOCKINFO_API_URL` = address of the StockInfo instance |
-
-There are no volumes — the app stores everything in the browser, not in the
-container. An update is a plain "pull & restart" and loses no data. The image
-carries the WebUI link and icon as labels, and the healthcheck colours the state
-in the Docker tab.
-
-See the [Unraid guide](unraid/README.md) for template configuration and local
-testing instructions.
+See the [Unraid guide](unraid/README.md) for installation, configuration,
+backups, updates and local template testing.
 
 ## Not there yet
 

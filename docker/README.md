@@ -80,7 +80,7 @@ Start with `docker compose up -d`.
 Restart the container after changing its environment variables.
 The image runs as user `node` (UID/GID 1000), without privileged mode.
 Its healthcheck verifies that the web page is served; it does not test StockInfo.
-The default build targets `linux/amd64`, including x86 Unraid servers.
+The default build targets `linux/amd64`.
 
 ## Status and logs
 
@@ -123,10 +123,6 @@ unchanged, for example `8088:80` becomes `8088:8080`.
 
 ## Unraid and support
 
-Use `mangolila/stockportfolio:latest`, map container port `8080`, and set
-`STOCKINFO_API_URL`. No volume mapping is needed. The image includes WebUI and
-icon labels for Unraid.
-
-- [Unraid template and installation notes](../unraid/README.md)
+- [Unraid installation, configuration, backups and updates](../unraid/README.md)
 - [Full documentation](../README.md)
 - [Report an issue](https://github.com/MikeMitterer/stockportfolio/issues)
