@@ -2,8 +2,11 @@
 
 **Stand:** Mike hat die Anpassungen am 2026-09-26 während T-45 beauftragt.
 T-46 ist nach der technischen Freigabe von T-47 umgesetzt und durch Codex selbst geprüft.
-Runde 1 ist technisch freigegeben. Mikes anschließend beauftragte Nachträge sind
-umgesetzt und selbst geprüft; ihre unabhängige Prüfung folgt.
+Runde 1 ist technisch freigegeben. Der in Runde 2 bestätigte Übersetzungsfehler
+(`links.newLink`) ist korrigiert und in Runde 3 (`c48f212`) technisch
+freigegeben. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen;
+zwei weitere Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
+Depotgruppen ausblenden) sind an Codex übergeben.
 
 ## Für dich
 
@@ -345,3 +348,44 @@ Keine Umsetzung dieses API-Auftrags in der T-46-Prüffassung.
 des bestehenden Verhaltens; keine Anleitung verspricht den Schlüsseltext.
 README bleibt hierfür unverändert. Die unvollständige Beschreibung der
 Asset-Typen wird mit dem zugehörigen Verhalten in T-48 korrigiert.
+
+## Reviewer-Prüfung (Claude, Runde 3, Fassung `c48f212`)
+
+**Technische Freigabe.** `make test` (58 Dateien, 743 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Seit dem Handoff-Commit betrafen die Folgecommits ausschließlich
+Board-Dateien; der Produktstand war während der Prüfung stabil.
+
+**Korrektur geprüft.** `git show c48f212 -- src/i18n/de.ts src/i18n/en.ts`
+gelesen: `newLink` ist in beiden Katalogen aus `instruments` entfernt und
+unverändert im Wert unter `links` neu eingefügt — minimale, zielgerichtete
+Änderung ohne Nebenwirkung auf andere Schlüssel.
+
+**Neuer Regressionstest.** `tests/components/externalLinkEditor.spec.ts`
+mountet `ExternalLinkEditor` je Sprache (`de`/`en`), klickt den echten
+„Verweis hinzufügen“/„Add link“-Button, prüft das emittierte `update`-Ereignis
+und den tatsächlichen Feldwert im DOM (`wrapper.get('input').element.value`).
+Beide Fälle deckten den Fehler vor der Korrektur auf (laut Codex zunächst rot)
+und sind jetzt grün — ein Test, der den konkreten gemeldeten Fehler in beiden
+Sprachen dauerhaft absichert, nicht nur die Katalogstruktur.
+
+**Live im Browser** (`http://127.0.0.1:5189/#/settings?tab=links`, Testdienst
+Port 8899) nachvollzogen: Ein von mir angelegter Verweis erhielt die
+Bezeichnung „Neuer Verweis“ (zuvor wörtlich „links.newLink“) — Fix bestätigt.
+Bei der Live-Probe fiel zusätzlich mein eigener Testverweis aus Runde 2 auf,
+der noch vorhanden war (ein früherer Löschversuch war an der
+Popconfirm-Bestätigung „Verweis „links.newLink" entfernen?“ hängen geblieben,
+die ich damals übersehen hatte — kein Produktfehler, sondern ein liegen
+gebliebener eigener Testrest). Beide Testverweise über die Löschbestätigung
+inklusive „Bestätigen“-Klick entfernt; danach wieder die drei ursprünglichen
+Verweise sichtbar, Depot unverändert.
+
+Die übrigen Runde-2-Änderungen waren bereits in Runde 2 live bestätigt und
+seither unverändert (Diff seit `fd52010` betrifft ausschließlich die beiden
+i18n-Dateien und den neuen Test).
+
+**Ergebnis:** Fassung `c48f212` technisch freigegeben. Kein `changes_requested`.
+Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen; die beiden neuen
+Nachträge aus der OUTBOX (Löschbestätigungs-Abstand bei Verweisen, leere
+Depotgruppen ausblenden) sind nicht Teil dieser Prüffassung und folgen nach
+Rückgabe an Codex.

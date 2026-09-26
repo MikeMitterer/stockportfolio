@@ -8,8 +8,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
 Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
-(`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und für
-Runde 3 an Claude übergeben. Mikes Abschlussabnahme bleibt offen.
+(`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und von
+Claude in Runde 3 technisch freigegeben. Zwei weitere Nachträge (Löschbestätigungs-
+Abstand bei Verweisen, leere Depotgruppen ausblenden) sind an Codex übergeben.
+Mikes Abschlussabnahme bleibt offen.
 Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
 StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
 T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
@@ -42,15 +44,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `c48f212c0056519aabc225823c81dd5298e0b68c`
 - `review_round`: `3`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `last_reviewed_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `c48f212c0056519aabc225823c81dd5298e0b68c`
+- `last_reviewed_round`: `3`
 - `workstream`: `compact-position-details`
 - `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
 - `priority_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
@@ -242,21 +244,21 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-46 · Runde 3 · Commit `c48f212c0056519aabc225823c81dd5298e0b68c`**
+
+Technisch freigegeben. `make test` (58 Dateien, 743 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung grün. Korrektur geprüft:
+`newLink` in beiden Katalogen von `instruments` nach `links` verschoben, Wert
+unverändert. Neuer Regressionstest (`externalLinkEditor.spec.ts`) deckt beide
+Sprachen über echte DOM-Interaktion ab. Live bestätigt: neuer Verweis zeigt
+„Neuer Verweis“ statt Schlüsseltext. Details im Ticket unter
+„Reviewer-Prüfung (Claude, Runde 3, Fassung `c48f212`)“.
+
+Owner geht zurück an Codex für die beiden gemeldeten Nachträge: mehr
+Innenabstand in der Link-Löschbestätigung (analog zur Positions-Löschung) und
+leere Depotgruppen (ohne Ist-/Zielanteil) in der Übersicht ausblenden. Mikes
+Abschlussabnahme für T-46 insgesamt bleibt offen.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-46 · Runde 3 · `c48f212c0056519aabc225823c81dd5298e0b68c`**
-
-Rückgabegrund korrigiert: newLink liegt in beiden Katalogen unter links.
-Komponententest für tatsächliches Hinzufügen mit echtem DE/EN-i18n war zuvor
-zweimal rot und ist jetzt grün. Gesamtlauf: 743 Tests / 58 Dateien, Lint und
-Typecheck grün. Browser: „Neuer Verweis“ / „New link“ live bestätigt, beide
-Testverweise entfernt, drei ursprüngliche Verweise erhalten; Desktop/Deutsch.
-Bitte Korrektur unabhängig nachprüfen. Übrige Runde-2-Änderungen unverändert.
-
-Dynamische Typen nach Mikes weiterem Auftrag separat in T-48 aufgenommen;
-StockInfo T-73 liegt im dortigen Backlog. REST-Abfrage von /sources, /fields
-und OpenAPI belegt fehlende vollständige Typmenge. Keine feste Ersatzliste
-implementiert, keine StockInfo-Produktdatei verändert. Doku- und Lessons-
-Einordnung im T-46-Ticket; menschliche Abnahme bleibt offen.
+Leer.

@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 10:09:40 CEST · claude · T-46 Runde 3 technisch freigegeben: links.newLink-Fix live in beiden Sprachen bestätigt, neuer Regressionstest grün (58 Dateien/743 Tests); Owner zurück an Codex für Löschbestätigungs-Abstand und leere Depotgruppen ausblenden
+- 2026-09-26 10:06:40 CEST · codex · Mehr Inhaltsabstand für die Link-Löschbestätigung aufgenommen. Vorhandene Gestaltung der Positions-Löschbestätigung geprüft; Umsetzung folgt nach Rückgabe der laufenden Claude-Prüfung.
+- 2026-09-26 10:03:07 CEST · claude · startet unabhängigen Review von T-46 Runde 3, Fassung c48f212 (Übersetzungsfix)
+- 2026-09-26 09:58:58 CEST · codex · StockInfo T-73 liegt im Backlog, StockPortfolio T-48 erfasst die dynamische Übernahme. Übersetzungsfehler bei neuen Links korrigiert, DE/EN im Browser geprüft; 743 Tests grün, T-46 Runde 3 an Claude übergeben.
 - 2026-09-26 09:56:53 CEST · claude · T-46 Runde 2: changes_requested — links.newLink erscheint als roher Schlüssel beim Verweis hinzufügen (live bestätigt); übrige Änderungen ohne Befund; Owner zurück an codex
 - 2026-09-26 09:56:22 CEST · codex · Dynamische Plugin-Typen geprüft: StockPortfolio begrenzt sie fälschlich auf stock/etf. Vollständiger REST-Typkatalog fehlt aktuell; Bedarf als StockInfo T-73 und konsumierende Übernahme als StockPortfolio T-48 erfasst.
 - 2026-09-26 09:46:34 CEST · claude · startet unabhängigen Review von T-46 Runde 2, Fassung fd52010
@@ -46,9 +50,5 @@
 - 2026-09-25 22:17:37 CEST · codex · T-43: Claudes technische Freigabe für Runde 1 ist verarbeitet. Ich setze Mikes Folgekorrekturen am Symbolabstand und am mobilen Bereichsbalken für eine neue Prüffassung um.
 - 2026-09-25 22:15:43 CEST · claude · T-43 Runde 1 technisch freigegeben: make test/lint/typecheck plus Live-Browserprüfung (4 Bereiche, Editor, Mobile) bestanden; Owner zurück an codex
 - 2026-09-25 22:03:27 CEST · codex-observer · beobachtet T-43 nach formaler Übergabe an Claude: Reviewrunde 1 prüft Produktfassung 1f75154. Seit der Übergabe ist keine Produktänderung festgestellt; T-44 und T-45 bleiben eingeplant.
-- 2026-09-25 22:03:14 CEST · claude · startet unabhängigen Review von T-43, Fassung 1f75154 (Runde 1)
-- 2026-09-25 22:01:08 CEST · codex · T-43: Die geprüfte Produktfassung 1f751548 wurde mit Browserbelegen und 729 bestandenen Tests an Claude für den unabhängigen Review übergeben. Ich warte auf das Prüfurteil; T-44 und T-45 bleiben eingeplant.
-- 2026-09-25 21:56:39 CEST · codex · T-43: Ticker und ISIN stehen mit senkrechtem Trenner in der Positionszeile. Hover für offene Details und geschlossene Nachbarzeilen nutzt nun öffentliche Naive-Props; Desktop und 390-px-Ansicht wurden im Browser geprüft. Abschlussprüfungen laufen.
-- 2026-09-25 21:50:28 CEST · codex-observer · hat Mikes Prioritätsentscheidung eingetragen: T-43, danach T-44, danach T-45. T-45 liegt nun in ready; T-43 bleibt aktiv und Rollen sowie Owner bleiben unverändert.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
