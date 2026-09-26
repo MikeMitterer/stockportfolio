@@ -7,7 +7,7 @@ import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { formatAge } from '@/composables/useRelativeTime'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields, hasDetailContent } from '@/domain/detailFields'
-import { resolveKind, resolveLinks } from '@/domain/links'
+import { resolveLinks } from '@/domain/links'
 import { integer, money, number, percent } from '@/domain/formatters'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import PositionDetailFields from '@/components/PositionDetailFields.vue'
@@ -35,12 +35,6 @@ const section = ref<DetailSection>(props.row.position.group === 'cash' ? 'portfo
 const sectionMenuOpen = ref(false)
 const isCash = computed(() => props.row.position.group === 'cash')
 const resolvedLinks = computed(() => resolveLinks(props.row.position, props.links ?? [], props.row.quote?.type))
-const kind = computed(() => resolveKind(props.row.position, props.row.quote?.type))
-const kindLabel = computed(() => {
-  if (kind.value === 'etf') return t('dashboard.kindEtf')
-  if (kind.value === 'stock') return t('dashboard.kindStock')
-  return null
-})
 const optimalUnits = computed(() =>
   props.row.basePrice && props.row.basePrice > 0
     ? Math.round(props.row.targetValue / props.row.basePrice)
@@ -58,7 +52,7 @@ const showQuoteAge = computed(() => props.row.quote && !props.quoteAgeVisible)
 const showLinks = computed(() => !props.linksVisible && resolvedLinks.value.length > 0)
 const sections = computed<DetailSection[]>(() => {
   const available: DetailSection[] = isCash.value ? ['portfolio'] : ['history', 'portfolio']
-  if (kindLabel.value || showConvertedPrice.value || showQuoteAge.value || showLinks.value || hasAdditionalInfo.value) available.push('asset')
+  if (showConvertedPrice.value || showQuoteAge.value || showLinks.value || hasAdditionalInfo.value) available.push('asset')
   return available
 })
 const sectionLabels: Record<DetailSection, string> = {
@@ -137,8 +131,7 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
     </section>
 
     <section v-else-if="section === 'asset'" class="position-details__panel" data-position-section="asset" :aria-label="t('drilldown.sectionAsset')">
-      <dl v-if="kindLabel || showConvertedPrice || showQuoteAge" class="position-details__facts position-details__facts--asset">
-        <div v-if="kindLabel"><dt>{{ t('dashboard.kind') }}</dt><dd>{{ kindLabel }}</dd></div>
+      <dl v-if="showConvertedPrice || showQuoteAge" class="position-details__facts position-details__facts--asset">
         <div v-if="showConvertedPrice && row.quote && row.basePrice !== null">
           <dt>{{ t('table.price') }}</dt>
           <dd>{{ t('fx.converted', { price: money(row.basePrice, row.baseCurrency, 2), pair: `${row.quote.currency}/${row.baseCurrency}` }) }}</dd>

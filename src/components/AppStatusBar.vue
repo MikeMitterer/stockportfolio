@@ -8,6 +8,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { integer } from '@/domain/formatters'
+import { baseCurrencyOf } from '@/domain/fx'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 /**
@@ -77,7 +78,7 @@ const context = computed(() => {
   const count = t('units.positions', positionCount.value, {
     named: { count: integer(positionCount.value) },
   })
-  return name ? `${name}, ${count}` : count
+  return name ? `${name} (${baseCurrencyOf(portfolioStore.portfolio)}), ${count}` : count
 })
 
 /**
@@ -88,8 +89,8 @@ const context = computed(() => {
  * oben sichtbar geladen wurde — drei Anzeigen, zwei Meinungen.
  */
 const dataAge = computed(() => {
-  const wert = quotesStore.busy ? t('status.quotesLoading') : quoteAge.value
-  return `${t('status.quotes')} ${wert}`
+  const age = quotesStore.busy ? t('status.quotesLoading') : quoteAge.value
+  return `${t('status.quotes')} ${age}`
 })
 
 const failureCount = computed(() => quotesStore.failures.length)

@@ -73,6 +73,8 @@ the chosen unit and value are saved with the active portfolio.
 
 Choose a currency for each portfolio in **Settings → Data → Portfolios**.
 New portfolios default to EUR; USD, CAD and other ISO currencies are available.
+The dashboard states the base currency beside the total value. The status bar
+also shows its code beside the active portfolio name on every page.
 Cash, security buffers and minimum trade amounts belong to that portfolio and
 use its currency. You can change the currency at any time. A confirmation
 shows the rate used to convert cash and absolute limits; holdings and percentage
@@ -114,7 +116,11 @@ schema 5 rebuilds older quote caches; portfolio positions remain stored.
 
 ### Position information
 
-Open a position on the dashboard. **Information** combines the asset kind with
+The main row has a small tag icon beside the name, on desktop and mobile.
+Hover or focus it to see the current StockInfo asset type; tap it on mobile.
+The tooltip preserves new type identifiers without a fixed list.
+The type is not repeated in the details.
+Open a position on the dashboard. **Information** combines
 fields supplied by StockInfo plugins, TER and volatility. Symbol, ISIN and the
 original price stay in the main row without being repeated in the details.
 A converted unit price remains available here when needed. On mobile the area
@@ -398,8 +404,9 @@ The dashboard works as a **reading view**: basic figures, delta and status.
 Each card shows target percentage before actual percentage. Its compact delta
 bar sits beside the deviation value instead of spanning the card.
 Positions appear as separate cards beneath their asset-class heading.
-Tap a position card or its caret for **Valuation**, **Price history**, **Information** and
-**Additional information**. The four buttons form two rows on a narrow screen.
+Tap a position card or its caret for **Price history**, **Valuation** and
+**Information**, when additional information is available. A compact menu selects
+the section on a narrow screen.
 The card does not offer editing.
 Rebalancing stays on the desktop — entering unit counts in a wide table is not a
 good idea on a phone.

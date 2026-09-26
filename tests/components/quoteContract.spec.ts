@@ -106,10 +106,9 @@ describe('Kursvertrag in der Oberfläche', () => {
     expect(wrapper.findComponent(PriceChart).props('currency')).toBe(currency)
     const assetButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionAsset'))
     await assetButton?.trigger('click')
-    const facts = wrapper.find('.position-details__facts').text()
     expect(wrapper.findAll('.position-details__facts dt').map(label => label.text())).not.toContain(translate('table.price'))
-    // Ohne Umrechnung gibt es weder Euro-Ziele noch einen Euro-Fehlbetrag.
-    expect(facts).not.toContain('€')
+    // Ohne Umrechnung und ohne wiederholte Typangabe gibt es keinen Faktenblock.
+    expect(wrapper.find('.position-details__facts').exists()).toBe(false)
     wrapper.unmount()
     const card = mount(PositionCard, { props: { row } })
     expect(card.find('.poscard__line--base').text()).not.toContain('€')

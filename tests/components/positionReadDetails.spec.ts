@@ -44,6 +44,27 @@ function buttonWithText(wrapper: ReturnType<typeof mount>, label: string) {
 }
 
 describe('Positionsdetails nach Aufgabe', () => {
+  it.each(['etc', 'fund', 'crypto', 'new-plugin-type'])('zeigt den aktuellen StockInfo-Typ %s bereits mobil beim Namen', (type) => {
+    const row = makeRow()
+    if (!row.quote) throw new Error('Kurs fehlt')
+    row.position.kind = 'stock'
+    row.quote.type = type
+    const wrapper = mount(PositionCard, { props: { row } })
+    expect(wrapper.get('[data-asset-type]').attributes('data-asset-type')).toBe(type)
+    expect(wrapper.get('[data-asset-type]').attributes('aria-label')).toContain(type)
+    expect(wrapper.find('[data-position-section]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('zeigt keinen Informationstab nur für den bereits in der Basiszeile sichtbaren Typ', () => {
+    const row = makeRow()
+    if (!row.quote) throw new Error('Kurs fehlt')
+    row.quote = { ...row.quote, type: 'bond', details: {}, ter: null, volatility: null }
+    const wrapper = mount(PositionDrilldown, { props: { row, total: 1000, links: [] } })
+    expect(wrapper.findAll('.position-details__tabs button').map(button => button.text())).not.toContain(translate('drilldown.sectionAsset'))
+    wrapper.unmount()
+  })
+
   it('zeigt Notizen unter der Button-Leiste als Text und entfernt leere Notizen', async () => {
     const row = makeRow()
     row.position.notes = 'Langfristig halten\n<img src=x onerror=alert(1)>'
@@ -98,7 +119,8 @@ describe('Positionsdetails nach Aufgabe', () => {
     expect(wrapper.get('[data-detail-field="risk-a.flag"]').text()).toContain(translate('detailFields.no'))
     await wrapper.setProps({ visibleStockInfoFields: ['risk-a.flag'] })
     expect(wrapper.find('[data-detail-field="risk-a.flag"]').exists()).toBe(false)
-    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(true)
+    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(false)
+    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
     wrapper.unmount()
   })
 

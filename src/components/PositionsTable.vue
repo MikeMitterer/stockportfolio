@@ -11,10 +11,11 @@ import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
 import { safeStorage, UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
 import LinkIcons from '@/components/LinkIcons.vue'
+import AssetTypeHint from '@/components/AssetTypeHint.vue'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields } from '@/domain/detailFields'
-import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
+import { positionIsin, positionPrimaryLabel, positionSymbol, positionType } from '@/domain/positionIdentity'
 import { integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
@@ -317,7 +318,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
             : null,
         ]),
         row.position.group !== 'cash'
-          ? h(
+          ? h('div', { class: 'cell-name-row' }, [h(
               'button',
               {
                 class: 'cell-name cell-openable',
@@ -329,7 +330,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
                 },
               },
               row.position.displayName,
-            )
+            ), h(AssetTypeHint, { type: positionType(row), label: t('links.appliesToKind') })])
           : null,
         quoteIssue(row) ? h('span', { class: 'cell-num--missing' }, quoteIssue(row)) : null,
       ]),

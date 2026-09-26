@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { defineComponent, h } from 'vue'
 import { flushPromises, mount } from '@vue/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
+import AppStatusBar from '@/components/AppStatusBar.vue'
 import FxNotice from '@/components/FxNotice.vue'
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
@@ -17,6 +19,19 @@ import { translate } from '@/i18n'
 beforeEach(() => setActivePinia(createPinia()))
 
 describe('Depotwährung in der Oberfläche', () => {
+  it('zeigt die Basiswährung des aktiven Depots in der Statuszeile und folgt dem Depotwechsel', async () => {
+    const portfolio = usePortfolioStore()
+    portfolio.portfolio = emptyPortfolio('Europa', 'EUR')
+    const router = createRouter({ history: createMemoryHistory(), routes: [] })
+    const wrapper = mount(AppStatusBar, { global: { plugins: [router] } })
+    expect(wrapper.text()).toContain('Europa (EUR)')
+    portfolio.portfolio = emptyPortfolio('Amerika', 'USD')
+    await flushPromises()
+    expect(wrapper.text()).toContain('Amerika (USD)')
+    expect(wrapper.text()).not.toContain('Europa (EUR)')
+    wrapper.unmount()
+  })
+
   it('rechnet nach Depotwechsel um und hält Warnung samt Wiederholen sichtbar', async () => {
     const portfolio = usePortfolioStore()
     portfolio.portfolio = emptyPortfolio('Europa', 'EUR')

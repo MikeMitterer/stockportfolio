@@ -425,7 +425,7 @@ watch(groupsCollapsed, (collapsed) => {
 function toggleGroups(): void {
   groupsCollapsed.value = !groupsCollapsed.value
 }
-const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
+const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
 </script>
 
@@ -468,6 +468,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
         <KpiCard
           :label="t('kpi.total')"
           :value="formatMoney(result.total)"
+          :hint="`${t('fx.baseCurrency')}: ${baseCurrency}`"
           :trend="trendPoints"
           expandable
           :expanded="valueChartOpen"

@@ -9,8 +9,10 @@ Nachladen und Sicherungsimport und blendet sie in der Detailansicht aus.
 dynamischen Plugin-Angebot laden. Keine feste Ersatzliste und keine Ableitung
 nur aus vorhandenen Instrumenten. Depotgruppen bleiben eine eigene Zuordnung.
 
-**Stand:** Analyse abgeschlossen, noch nicht aktiviert. T-46 ist im Review
-bei Claude; dessen Fassung bleibt unverändert. StockInfo benötigt dafür eine
+**Stand:** Analyse abgeschlossen, noch nicht aktiviert. T-46 setzt inzwischen
+den beauftragten Anzeigeanteil um: gemeinsame Typauflösung aus aktuellem
+quote.type, unbekannte Kennungen in Desktop-Basiszeile und Mobile sichtbar,
+keine Typwiederholung im Informationstab. StockInfo benötigt für die Auswahl eine
 vollständige REST-Typauskunft; Konsumentenanfrage
 [T-73](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/10-backlog/T-73-plugin-assettypen-per-rest-bereitstellen.md)
 ist im StockInfo-Backlog abgelegt. Dort wurde keine Umsetzung aktiviert.
@@ -24,6 +26,8 @@ ist im StockInfo-Backlog abgelegt. Dort wurde keine Umsetzung aktiviert.
   einer neueren StockInfo-Angabe bevorzugt.
 - domain/backup.ts: KINDS-Liste verwirft weitere Positions-Typen beim Import.
 - PositionReadDetails.vue: Darstellung nur für stock/etf.
+  Dieser Anzeigebefund ist durch den T-46-Nachtrag behoben; die Angaben stehen
+  jetzt gemeinsam über positionType/AssetTypeHint in der Basiszeile.
 - API-Normalisierung erhält type bereits als String. Die Einschränkung liegt
   überwiegend danach im Konsumenten, nicht im API-Response-Typ.
 - Gehostete API 1.0.0/Core 4.3.0 geprüft: /sources ohne Typmenge,
@@ -31,6 +35,9 @@ ist im StockInfo-Backlog abgelegt. Dort wurde keine Umsetzung aktiviert.
   keinen vollständigen verfügbaren Plugin-Typkatalog dar.
 
 ## Gewünschtes Verhalten
+
+Offen bleiben REST-Typkatalog, dynamische Link-Auswahl, vollständige Speicherung
+und Sicherungsimport. Die bereits in T-46 umgesetzte Typanzeige wird weiterverwendet.
 
 - API-Typkatalog über src/api/client.ts laden und normalisieren; Auswahl
   reagiert auf dessen Werte, einschließlich bisher unbekannter Kennungen.

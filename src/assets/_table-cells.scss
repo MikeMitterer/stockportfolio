@@ -74,7 +74,15 @@
 }
 
 /** Ausgeschriebener Name unter der Kennung. */
+.cell-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
 .cell-name {
+  min-width: 0;
   overflow: hidden;
   font-size: var(--font-xs);
   color: rgb(var(--text-muted));

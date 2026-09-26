@@ -1,5 +1,11 @@
 import type { PositionResult } from './rebalancing'
 
+/** Aktuelle StockInfo-Angabe hat Vorrang; Typkennungen sind ein offener Vertrag. */
+export function positionType(row: PositionResult): string | null {
+  if (row.position.group === 'cash') return null
+  return row.quote?.type?.trim() || row.position.kind?.trim() || null
+}
+
 /** StockInfo kennzeichnet reine ISIN-Assets ausdrücklich über die Identität. */
 export function positionSymbol(row: PositionResult): string | null {
   if (row.position.group === 'cash') return null

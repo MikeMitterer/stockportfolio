@@ -19,6 +19,12 @@ für alle Depotbeträge denselben umgerechneten Stückpreis.
 
 ## Was sich geändert hat
 
+**UI-Nachtrag vom 2026-09-26:** Mike beanstandet, dass die Basiswährung nur
+in den Einstellungen ausdrücklich erkennbar ist. Umsetzung und Prüfung
+laufen im aktiven T-46-Nachtrag: Basiswährung beim Gesamtwert im Dashboard
+und Währungscode beim aktiven Depot in der Statuszeile. Die bestehende
+T-38-Rechenfreigabe wird dadurch nicht nachträglich erweitert.
+
 **StockInfo hat den Devisenkurs gebaut.** `GET /fx?base=EUR&quote=USD` liefert
 `rate`, `quote_time`, `fetched_at`, `cached`, `stale` und optional `source` — also die
 Alterskennzeichnung, ohne die ein stiller alter Kurs jede Prozentzahl dieser App

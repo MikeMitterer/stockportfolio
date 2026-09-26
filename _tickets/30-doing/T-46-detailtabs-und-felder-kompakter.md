@@ -8,13 +8,15 @@ freigegeben. Die zwei Nachträge (Löschbestätigungs-Abstand bei Verweisen,
 leere Depotgruppen ausblenden) sind in Runde 4 (`0a26ed0`) technisch
 freigegeben. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen;
 ein neuer Nutzerauftrag (Asset-Typ in der Basiszeile anzeigen) ist an Codex
-übergeben.
+übergeben und inzwischen umgesetzt; unabhängige Prüfung dieses Nachtrags folgt.
 
 ## Für dich
 
 Die Detailansicht beginnt mit „Kursverlauf“. Tabs für weitere Informationen
 erscheinen nur, wenn sie Inhalte anbieten. Die Informationsfelder brauchen
 weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
+Die Basiswährung steht außerdem beim Gesamtwert und beim aktiven Depot in
+der Statuszeile (Mikes UI-Nachtrag zu T-38).
 
 ## Gewünschtes Verhalten
 
@@ -24,6 +26,11 @@ weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
 - Ein gemeinsamer Informationstab zeigt nur ergänzende Angaben und Zusatzwerte.
   Desktop und Mobile bleiben kompakt, lesbar und umbrechbar.
 - StockInfo bleibt Datenquelle, keine neue Bearbeitung seiner Angaben.
+- Die Basiswährung ist beim Gesamtwert und in der globalen Depot-Statuszeile
+  sichtbar; ein Depotwechsel aktualisiert beide Anzeigen.
+- Ein dezentes SVG-Etikett neben dem Namen in der Basiszeile (Desktop und Mobile)
+  zeigt den aktuellen StockInfo-Typ im Tooltip. Auch neue Typen
+  erscheinen ohne lokale Enumeration. Kein Informationstab allein für den Typ.
 
 ## Verify
 
@@ -468,3 +475,35 @@ offene Beobachtung für eine künftige gezielte Probe.
 Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen; der neue
 Nutzerauftrag „Asset-Typ in der Basiszeile anzeigen“ aus der OUTBOX ist nicht
 Teil dieser Prüffassung.
+
+## Typanzeige und sichtbare Basiswährung · Codex-Nachtrag
+
+- Gemeinsame `positionType`-Auflösung bevorzugt den aktuellen StockInfo-Kurstyp
+  gegenüber einer gespeicherten alten Gattung. Offene Kennungen einschließlich
+  etc, fund, crypto und new-plugin-type werden unverändert durchgereicht.
+- Gemeinsamer `AssetTypeHint` für Desktop/Mobile. Mike fand den ersten Textentwurf
+  schlecht; endgültig steht ein dezentes 16-px-Etikett-SVG neben dem Namen.
+  Microsoft Codicons tag, Herkunft/Lizenz in THIRD_PARTY_NOTICES.md. Tooltip
+  öffnet am Desktop per Hover/Fokus, mobil per Tippen; der Klick öffnet nicht
+  die Zeile. Cash trägt keine StockInfo-Typmarkierung.
+- Typangabe aus dem Informationstab entfernt; bei der Bundesanleihe im Browser
+  nur noch Kursverlauf/Bewertung. Lade-/Fehlerzustände und echte Zusatzdaten
+  bleiben weiterhin Inhalt. Ein leer gewordener gewählter Tab fällt zurück.
+- Mikes T-38-UI-Befund: Dashboard nennt neben dem Gesamtwert ausdrücklich die
+  Basiswährung, globale Statuszeile nennt sie beim Depotnamen. Kein Eingriff
+  in Währungswahl oder FX-Rechnung; die T-38-Freigabe bleibt historisch getrennt.
+- Browser: Desktop 1440 px mit ETF/stock/bond, Fokus-Tooltip „Asset-Typ: bond“;
+  Mobile 390 px mit per Tippen geöffnetem „Asset-Typ: etf“, keine gleichzeitig
+  geöffnete Detailansicht und kein horizontaler Überlauf. EUR in KPI und
+  Statuszeile bei beiden Breiten sichtbar. Desktopansicht wiederhergestellt.
+- Regression: fünf Typ-/Leer-Tab-Proben zunächst rot. Aktuelle Suite 749 Tests
+  / 58 Dateien, Lint, Typecheck und diff-check grün. Statuszeilentest wechselt
+  von Europa (EUR) auf Amerika (USD). Alle angefassten TS/Vue-Bezeichner per
+  Compiler-API inventarisiert, deutsche Altvariable in AppStatusBar bereinigt.
+
+**Doku-Abgleich:** README „Position information“, mobile Bedienung und
+„Portfolio base currency“ aktualisiert. T-48 nennt den bereits umgesetzten
+Anzeigeanteil und die noch offenen API-/Speicher-/Filter-Aufgaben. T-38 verweist
+auf den UI-Nachtrag hier. SP-CX-02 und Observer-Hinweis zur Abgrenzung umgesetzt;
+SP-CX-04: vorhandenes Browser-Testdepot weiterverwendet. Keine StockInfo-
+Produktänderung, keine vorweggenommene vollständige Typkatalog-Integration.

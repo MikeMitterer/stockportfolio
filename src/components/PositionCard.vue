@@ -7,8 +7,9 @@ import { useI18n } from 'vue-i18n'
 import DeltaBar from '@/components/DeltaBar.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionReadDetails from '@/components/PositionReadDetails.vue'
+import AssetTypeHint from '@/components/AssetTypeHint.vue'
 import { assetColor } from '@/domain/assetColors'
-import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
+import { positionIsin, positionPrimaryLabel, positionSymbol, positionType } from '@/domain/positionIdentity'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { integer, money, percent } from '@/domain/formatters'
 import type { PositionResult } from '@/domain/rebalancing'
@@ -61,7 +62,10 @@ function toggleDetails(): void {
               <span v-if="isin" class="poscard__isin"><span aria-hidden="true">|</span> {{ isin }}</span>
               <span v-if="!row.isActive" class="poscard__tag">{{ row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : row.excludedReason === 'currency' ? row.quote?.currency : t('currency.inactive') }}</span>
             </div>
-            <div v-if="!isCash" class="poscard__subtitle">{{ row.position.displayName }}</div>
+            <div v-if="!isCash" class="poscard__name-row">
+              <span class="poscard__subtitle">{{ row.position.displayName }}</span>
+              <AssetTypeHint :type="positionType(row)" :label="t('links.appliesToKind')" />
+            </div>
           </div>
         </div>
 
@@ -175,11 +179,14 @@ function toggleDetails(): void {
   }
 
   &__subtitle {
+    min-width: 0;
     overflow: hidden;
     @include muted(var(--font-xs));
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  &__name-row { display: flex; align-items: baseline; gap: var(--space-2); min-width: 0; }
 
   &__isin { @include muted(var(--font-xs)); font-variant-numeric: tabular-nums; }
 
