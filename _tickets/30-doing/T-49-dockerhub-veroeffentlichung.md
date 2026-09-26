@@ -10,7 +10,8 @@ Docker-Hub-Push erledigen; StockInfo T-77 als Vorlage für den zentralen
 README-Helfer nutzen und das Größenlimit in AGENTS.md verankern.
 
 **Stand:** Implementiert und als Commit `f70516e` mit echtem Container und
-Browser geprüft. Runde 1 geht an Claude; Veröffentlichung steht danach aus.
+Browser geprüft. Claude hat Runde 1 technisch freigegeben (eigener
+arm64-Testbuild plus echter Container). Veröffentlichung durch Codex steht aus.
 StockInfo/ProjectTools werden nur als bestehende Abhängigkeiten gelesen;
 keine parallele Implementierung oder Änderung in deren Arbeitsbäumen.
 
@@ -168,3 +169,102 @@ in Runde 1 geprüfte Abhängigkeit; keine fremden Rollen oder Freigaben übernom
 zeigt für den relevanten Zeitraum keine Systemruhe. Ersatz-Zelle 531 startet
 um 11:27:28 UTC mit 300-Sekunden-Takt und sichtbarem Startsignal. Ein Folgetakt
 ist bei dieser Übergabe noch abzuwarten; keine rückwirkende Abdeckung behauptet.
+
+## Reviewer-Prüfung (Claude, Runde 1, Fassung `f70516e`)
+
+**Technische Freigabe.** `make test` (61 Dateien, 781 Tests — darunter die 17
+neuen `tests/dockerBuild.spec.ts`), `make lint` und `make typecheck` selbst
+gegen die Übergabefassung ausgeführt — alle drei ohne Befund, deckungsgleich
+mit der Übergabe. `bash -n` und `shellcheck` auf `docker/build.sh` und
+`docker/entrypoint.sh`: beide sauber. `git diff --check f867331..f70516e`:
+sauber.
+
+**Diff vollständig gelesen** (19 Dateien). Kernpunkte:
+
+- `Dockerfile`: sauberer Zweistufenbau, Laufzeit ohne nginx (Node 22 +
+  `serve`), `USER node`, Healthcheck über `node -e fetch(...)`, OCI-/Unraid-
+  Labels korrekt gesetzt.
+- `entrypoint.sh`: schreibt `config.js` per `JSON.stringify` über einen
+  Node-Heredoc — sicher gegen Quotes/Backslashes in der API-Adresse (live
+  geprüft, siehe unten); `exec "$@"` erhält korrektes Signal-Handling.
+- `docker/runtime/serve.json`: `no-cache` für `**`, `immutable`/1 Jahr für
+  `assets/**`, `directoryListing: false` — das von Codex dokumentierte
+  `cleanUrls`-Problem ist tatsächlich behoben (Option entfernt, nicht nur
+  umgestellt).
+- `Makefile`: gegen den Skill `makefile-conventions` geprüft — Kopf
+  (`BASH_LIBS`/`PROJECT_TOOLS`/`DEV_MAKE`, `export`, `-include`), `help`/
+  `info`/`hints`, `precheck`, `setup`, `status`, Zielreihenfolge und
+  `tag-and-push-*` entsprechen dem Grundgerüst. `build`/`push` statt
+  `docker-build`/`docker-push`, `build-frontend` statt `build` — genau die
+  von Mike geforderten Namen. Einzige Abweichung: `precheck` ist eine knappe
+  Einzeiler-Fassung statt des vollen farbigen Templates — funktional
+  gleichwertig, nicht blockierend.
+- `docker/build.sh`: `saveBuild`/`loadBuild` binden Version **und** `latest`
+  an dieselbe validierte Image-ID (Regex-Prüfung von Tag/ID/Timestamp vor
+  Verwendung, kein `eval`/`source` der Markerdatei); ein fehlgeschlagener
+  Rebuild kann nicht per `--push` veröffentlicht werden (`_KIND != single`).
+  `updateDockerHubReadme` ruft ausschließlich den geteilten
+  `$PROJECT_TOOLS/bash/dockerhub-readme.sh` auf (keine lokale Kopie),
+  `--preview` vor und `--publish` **nach** dem Image-Push, nur für
+  `TARGET=dockerhub`, Token ausschließlich über `--token-file`. `PLATFORM=all`
+  ist explizit gesperrt („Eine Plattform wählen: x86 oder arm.“); `--build`
+  und `--push` sind getrennte, nicht verkettete Pfade — kein
+  `--build-and-push` mehr vorhanden.
+- `AGENTS.md`: 25.000-UTF-8-Byte-Regel und Build-Zielnamen korrekt verankert.
+- `unraid/stockportfolio.xml`: wohlgeformt (`xml.dom.minidom` geprüft), Port
+  8080/TZ-Default UTC konsistent mit dem Dockerfile.
+- `scripts/stockinfo-test-server.py`: neue `--origin`-Option für isolierte
+  Containerproben, sauber auf `CORS_ORIGINS`/`Access-Control-Allow-Origin`
+  durchgereicht.
+- `tests/fixtures/browser/README.md`: „Einstellungen → Verweise“ zu
+  „Einstellungen → Links“ korrigiert — deckt sich mit dem bereits separat
+  akzeptierten Label-Fix `3b63788` (Teil von T-48s Abschluss), kein neuer
+  Rückschritt.
+
+**Live selbst nachgebaut und getestet** (nicht nur die Coder-Angaben
+übernommen): `make build PLATFORM=arm` lokal ausgeführt (eigener
+arm64-Testbuild, da Zweitprüfung des bereits getesteten amd64-Pfads keinen
+Zusatznutzen hätte). Container über `docker run -p 18080:8080` gestartet und
+unabhängig geprüft:
+
+- `/` → 200, `Cache-Control: no-cache`, korrekter Inhalt.
+- `/config.js` → `window.__STOCKPORTFOLIO_CONFIG__ = {"apiUrl":"...","container":true};`
+  mit no-cache.
+- Gehashtes Asset (`assets/index-*.js`) → `Cache-Control: public,
+  max-age=31536000, immutable`.
+- `/assets/` (Verzeichnis ohne Datei) → 404, kein Directory-Listing.
+- `docker exec ... id` → `uid=1000(node) gid=1000(node)`, kein root.
+- `which nginx` im Container → nicht vorhanden, bestätigt „ohne nginx“.
+- Healthcheck nach Start → `healthy`.
+- Sonderzeichen-Probe: `STOCKINFO_API_URL='https://a"b\c.test'` ergibt
+  `{"apiUrl":"https://a\"b\\c.test",...}` in `config.js` — mit Node
+  nachgeprüft, dass dieser Ausdruck exakt `https://a"b\c.test` zurückliefert.
+- README-Vorschau selbst mit dem echten `dockerhub-readme.sh --preview --ref
+  master` erzeugt: **23.613 UTF-8-Bytes**, exakt wie im Ticket behauptet, klar
+  unter dem 25.000-Byte-Limit.
+- `make help`/`make hints`/`make -n build build-frontend push`: Ausgaben
+  geprüft, `build`/`push`/`build-frontend`-Namen und Docker-Hinweise korrekt.
+
+**Nebenwirkung erkannt und behoben:** Mein eigener `make build
+PLATFORM=arm`-Testlauf hat `docker/.last-build-tag` (gitignored, lokaler
+Marker für `push`) sowie den `latest`-Tag auf mein Testbild umgeschrieben —
+dadurch hätte ein nachfolgender `make push` versehentlich meinen
+Review-Build statt Codex' geprüften amd64-Build (`f70516e`,
+`sha256:c323ca708648...`) veröffentlicht. Behoben: eigenes Testimage entfernt,
+`latest` wieder auf `c323ca708648` (Codex' Build) zurückgetaggt, Marker-Datei
+mit den im Ticket dokumentierten Werten (Tag `0.2.0-260926.1126.f7051.ahead146`,
+dieselbe Image-ID) neu geschrieben und gegen `docker image inspect`
+verifiziert. Für den eigenen Testbuild war zusätzlich ein Commit nötig
+(`0c50b9a`, nur `_tickets/ACTIVITY.md` — `build.sh` bricht bei unclean
+working tree ab); kein Produktcode berührt. Codex sollte vor `make push`
+dennoch einmal `git status`/`docker/.last-build-tag` gegenkontrollieren, da
+dies lokaler Maschinenzustand ist, kein versionierter Nachweis.
+
+**Kein Push durch den Verifier** — wie im Review-Auftrag verlangt; nur
+`--preview` (lesend) und lokale `--build`/`docker run`-Verifikation.
+
+**Ergebnis:** Fassung `f70516e` technisch freigegeben. Kein `changes_requested`.
+StockInfo T-77/ProjectTools bleibt eine geprüfte externe Abhängigkeit (eigener
+Prüfstand `8780252`/`a7e37ba`); keine fremde Rolle oder Freigabe übernommen.
+Codex führt den bereits beauftragten Image-/README-Push aus und dokumentiert
+den Registry-Nachweis (Punkt 7 der Verify-Tabelle) separat.

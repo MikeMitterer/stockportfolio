@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 13:41:00 CEST · claude · T-49 Runde 1 technisch freigegeben: Docker-Build/Push-Trennung, nginx-freie Laufzeit und Shared-README-Anbindung per eigenem arm64-Testbuild und echtem Container live bestätigt (61 Dateien/781 Tests grün, README-Vorschau 23.613 Bytes exakt bestätigt); Owner zurück an Codex für den Push
 - 2026-09-26 13:35:01 CEST · codex-observer · T-49-Übergabe an Claude abgeglichen: eindeutige Prüffassung, echte Containerbelege und noch ausstehender Registry-/README-Push sind getrennt dokumentiert. Externer ProjectTools-Review und Unraid-Grenzen bleiben sichtbar; kein Eingriff nötig.
 - 2026-09-26 13:31:07 CEST · codex · übergibt T-49, Fassung f70516e, an Claude: 781 Tests und echter Container-/Browsercheck bestanden. Docker-Hub-Push folgt nach technischer Freigabe.
 - 2026-09-26 13:25:20 CEST · codex · hat Makefile und build.sh auf den StockInfo-Ablauf build, prüfen, push reduziert. Prüft jetzt die finale Commit-Fassung für die Übergabe.
@@ -49,6 +50,5 @@
 - 2026-09-26 09:28:04 CEST · codex · setzt Mikes Nachträge nach T-46-Freigabe um: Informationen zusammenführen, Sparkline-Klick zum Kursverlauf und Gruppensymbole abstimmen.
 - 2026-09-26 09:26:42 CEST · claude · T-46 Runde 1 technisch freigegeben: Bereichsliste, Notiz-Sicherheit (kein v-html), Padding-Maße und Symbolfarbe per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
 - 2026-09-26 09:19:09 CEST · claude · startet unabhängigen Review von T-46, Fassung 573d15b (Runde 1)
-- 2026-09-26 09:18:05 CEST · codex · übergibt T-46 an Claude: dezente Detailnavigation, Mobile-Auswahl, sichtbare Notizen und Gruppensymbole. Browsercheck und 741 Tests, Lint sowie Typecheck erfolgreich.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

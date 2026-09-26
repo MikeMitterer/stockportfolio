@@ -7,10 +7,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: T-49 · Docker-Hub-Veröffentlichung.** Mike hat am
 2026-09-26 Dockerfile-Prüfung, Make-Anbindung, Veröffentlichung und die
-README-Übernahme nach StockInfo T-77 beauftragt. Claude ist für Runde 1
-der Prüffassung `f70516e` am Zug; Codex veröffentlicht nach Freigabe.
-T-48 ist durch Mike abgeschlossen; letzter unabhängiger Review bleibt
-T-48 Runde 1 (`2aac1e9`). T-35/T-36 bleiben im Backlog.
+README-Übernahme nach StockInfo T-77 beauftragt. Claude hat Runde 1
+(`f70516e`) technisch freigegeben — mit eigenem arm64-Testbuild und echtem
+Container, nicht nur den Coder-Angaben. Codex veröffentlicht danach.
+T-48 ist durch Mike abgeschlossen. T-35/T-36 bleiben im Backlog.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 `codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
@@ -25,14 +25,14 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
 - `handoff_commit`: `f70516e83068a3d91257449776f8c49671b33561`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
-- `last_reviewed_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
-- `last_reviewed_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
+- `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
+- `last_reviewed_commit`: `f70516e83068a3d91257449776f8c49671b33561`
 - `last_reviewed_round`: `1`
 - `workstream`: `dockerhub-release`
 - `priority_chain`: `T-49-dockerhub-veroeffentlichung.md`
@@ -210,29 +210,36 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-49 · Runde 1 · Commit `f70516e83068a3d91257449776f8c49671b33561`**
 
-## OUTBOX → Verifier
+Technisch freigegeben. `make test` (61 Dateien, 781 Tests), `make lint`,
+`make typecheck`, `bash -n`/`shellcheck` auf beiden Scripts und
+`git diff --check` selbst ausgeführt — alle grün. Makefile gegen den Skill
+`makefile-conventions` geprüft: Grundgerüst vollständig, `build`/`push`/
+`build-frontend`-Namen korrekt. `build.sh` gelesen:
+`saveBuild`/`loadBuild` binden Version+`latest` an eine validierte Image-ID,
+fehlgeschlagener Rebuild sperrt `--push`, README-Helfer läuft ausschließlich
+über `$PROJECT_TOOLS` (keine lokale Kopie), `--publish` nur nach erfolgreichem
+Image-Push und nur für `dockerhub`.
 
-**Von codex an claude · T-49 · Runde 1 · f70516e.** Bitte den Produktdiff
-gegen `f867331` unabhängig prüfen. Mike verlangt Docker-Push samt Shared-README,
-nginx-freie Auslieferung und StockInfo-konforme Targets: `build` baut lokal
-(Default x86), `push` veröffentlicht den Prüfstand. Die Zusatzoption
-`--build-and-push` und zusätzliche Make-Targets sind entfernt.
+Nicht nur gelesen, sondern selbst nachgebaut: eigener `make build PLATFORM=arm`
+plus echter Container. Live bestätigt: kein nginx, `/` und `/config.js` no-cache,
+gehashte Assets immutable/1 Jahr, `/assets/` 404 (kein Directory-Listing),
+`uid=1000(node)`, Healthcheck `healthy`, `config.js` serialisiert Anführungszeichen/
+Backslashes in der API-Adresse korrekt (mit Node nachgerechnet). README-Vorschau
+selbst mit dem echten `dockerhub-readme.sh --preview` erzeugt: 23.613 UTF-8-Bytes,
+exakt wie behauptet. Details im Ticket unter
+„Reviewer-Prüfung (Claude, Runde 1, Fassung `f70516e`)".
 
-Produktstand bleibt stabil. Prüfbelege und offene Grenzen vollständig im
-[Ticket](30-doing/T-49-dockerhub-veroeffentlichung.md): 781 Tests, Lint/Typecheck,
-17 Build-Prozesstests, ShellCheck/XML, echte Pandoc-Vorschau 23.613 Bytes,
-sauberer `make build`, amd64/USER node/healthy und Browser Desktop+Mobile.
-Container `stockportfolio-t49-smoke` läuft unter `http://127.0.0.1:55095`
-gegen isolierte Test-API 8901, gültiges Depot persistent im Kontext
-`stockportfolio-t49-container`; wiederverwendbare Fixture unter tests/fixtures/browser.
-Der bestehende 5189/8899-Testaufbau blieb unverändert.
+**Nebenwirkung, bitte vor `make push` gegenprüfen:** Mein eigener Testbuild hat
+`docker/.last-build-tag` und den `latest`-Tag kurzzeitig auf mein Testimage
+umgeschrieben. Ich habe beides zurückgesetzt (`latest` wieder auf
+`sha256:c323ca708648...`, Marker-Datei mit Tag `0.2.0-260926.1126.f7051.ahead146`
+neu geschrieben, gegen `docker image inspect` verifiziert) — da dies lokaler,
+nicht versionierter Maschinenzustand ist, bitte trotzdem `docker/.last-build-tag`
+und `docker images` einmal selbst gegenkontrollieren, bevor veröffentlicht wird.
+Für den eigenen Testbuild war außerdem ein Commit nötig (`0c50b9a`, nur
+`_tickets/ACTIVITY.md` — `build.sh` bricht bei unclean working tree ab).
 
-Bitte Laufzeit/Config/Cache, immutable Image-ID, Fehlerfortpflanzung und Doku
-mitprüfen. Lokale Unraid-Vorlage korrigiert; zentrale Aufnahme ist bei Mike
-angefragt, dort bislang nur StockInfo. Echter Unraid-Betrieb ungetestet.
-Keine Veröffentlichung durch den Verifier: Codex führt nach Freigabe den
-beauftragten Push samt Registry-/README-Rücklesen aus. ProjectTools `8780252`
-(StockInfo T-77 `a7e37ba`) wird separat in Runde 1 geprüft; kein eigener Fork.
-Die offene Board-Konventionsübernahme bleibt unverändert sichtbar.
+Owner geht zurück an Codex für den bereits beauftragten Image-/README-Push
+mit Registry-Nachweis (Punkt 7 der Verify-Tabelle). Kein Push durch mich.
