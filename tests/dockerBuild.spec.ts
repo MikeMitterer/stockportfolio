@@ -40,11 +40,16 @@ if [[ "$1 $2" == 'image inspect' ]]; then echo '${imageId}';
 else echo "docker:$*" >> "$TRACE"; fi
 `, { mode: 0o755 })
   writeFileSync(join(projectTools, 'bash/dockerhub-readme.sh'), `#!/usr/bin/env bash
+README_SOURCE=''
+ARGUMENTS=("$@")
+for (( INDEX=0; INDEX<\${#ARGUMENTS[@]}; INDEX++ )); do
+  if [[ "\${ARGUMENTS[INDEX]}" == --readme ]]; then README_SOURCE="\${ARGUMENTS[INDEX+1]}"; fi
+done
 for ARGUMENT in "$@"; do
   if [[ "$ARGUMENT" == --preview ]]; then
-    echo preview >> "$TRACE"; exit "\${PREVIEW_RC:-0}"
+    echo "preview:\${README_SOURCE}" >> "$TRACE"; exit "\${PREVIEW_RC:-0}"
   elif [[ "$ARGUMENT" == --publish ]]; then
-    echo "readme-publish:\${DOCKER_README_AFTER_PUSH:-}" >> "$TRACE"
+    echo "readme-publish:\${DOCKER_README_AFTER_PUSH:-}:\${README_SOURCE}" >> "$TRACE"
     exit "\${README_RC:-0}"
   fi
 done
@@ -96,7 +101,7 @@ describe('Docker-Build und README-Übertragung', () => {
       'local:linux/arm64',
       `docker:tag ${fixture.imageId} mangolila/stockportfolio:0.2.0-test`,
       `docker:tag ${fixture.imageId} mangolila/stockportfolio:latest`,
-      'preview', 'image-push', 'readme-publish:1',
+      'preview:docker/README.md', 'image-push', 'readme-publish:1:docker/README.md',
     ])
   })
 
@@ -114,7 +119,7 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.run(['--push'], { PREVIEW_RC: '1' }).status).not.toBe(0)
     expect(fixture.calls()).not.toContain('image-push')
     expect(fixture.run(['--push'], { PUSH_RC: '1' }).status).not.toBe(0)
-    expect(fixture.calls()).not.toContain('readme-publish:1')
+    expect(fixture.calls()).not.toContain('readme-publish:1:docker/README.md')
   })
 
   it('meldet einen README-Fehler nach erfolgreichem Image-Push als Fehler', () => {
@@ -122,7 +127,7 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.run(['--build']).status).toBe(0)
     expect(fixture.run(['--push'], { README_RC: '1' }).status).not.toBe(0)
     expect(fixture.calls()).toContain('image-push')
-    expect(fixture.calls().at(-1)).toBe('readme-publish:1')
+    expect(fixture.calls().at(-1)).toBe('readme-publish:1:docker/README.md')
   })
 
   it.each(['ghcr', 'ecr'])('überträgt für %s kein Docker-Hub-README', target => {
@@ -130,7 +135,7 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.run(['--build']).status).toBe(0)
     expect(fixture.run(['--push'], { TARGET: target, AMAZON_REPO_URI: 'ecr.example/repo' }).status).toBe(0)
     expect(fixture.calls()).toContain(`${target}-push`)
-    expect(fixture.calls()).not.toContain('preview')
-    expect(fixture.calls()).not.toContain('readme-publish:1')
+    expect(fixture.calls()).not.toContain('preview:docker/README.md')
+    expect(fixture.calls()).not.toContain('readme-publish:1:docker/README.md')
   })
 })

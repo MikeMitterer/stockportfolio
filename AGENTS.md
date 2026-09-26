@@ -234,13 +234,18 @@ anderen Betriebsstand festlegt.
 Der Leser soll schnell erkennen, was etwas macht, wie er es benutzt und welche
 Grenzen gelten.
 
-**README und Docker Hub:** Nach erfolgreichem Docker-Hub-Image-Push wird das
-README über den gemeinsamen ProjectTools-Helfer übertragen. Die konvertierte
-Fassung darf höchstens **25.000 UTF-8-Bytes** enthalten; absolute Bild- und
-Dokumentlinks zählen mit. Nach README-Änderungen die echte Vorschau prüfen:
-`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --preview --ref master --output docker/logs/dockerhub-readme.md`.
-Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. README als
-kompakten Projekteinstieg halten, längere Details gegebenenfalls auslagern.
+**Docker-Hub-Beschreibung:** `docker/README.md` ist die eigene englische
+Container-Anleitung für Docker Hub. Direkt nach der Kurzbeschreibung steht
+ein gut sichtbarer Link zum GitHub-Repository. Sie erklärt Start,
+Konfiguration, Browser-Daten, Backups und Updates; Entwicklungsdetails stehen
+im Projekt-README.
+Nach erfolgreichem Image-Push überträgt der gemeinsame ProjectTools-Helfer
+`docker/README.md`. Die konvertierte Fassung darf höchstens **25.000
+UTF-8-Bytes** enthalten; absolute Bild- und Dokumentlinks zählen mit.
+Nach Änderungen an dieser Datei die echte Vorschau prüfen:
+`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master --output docker/logs/dockerhub-readme.md`.
+Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. Die Grenze
+gilt für die Hub-Beschreibung, nicht für das Projekt-README.
 `DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.
 Keine lokale Kopie des Helfers und kein separates README-Push-Target anlegen.
 

@@ -5,6 +5,9 @@ rebalancing — built with Vue 3, Vite and TypeScript. Prices come from
 [StockInfo](https://github.com/MikeMitterer/stockinfo), a separate service you
 run yourself.
 
+**Docker:** [Container setup and configuration](docker/README.md) ·
+[Docker Hub repository](https://hub.docker.com/r/mangolila/stockportfolio)
+
 ![Version](https://img.shields.io/github/package-json/v/MikeMitterer/stockportfolio)
 
 ![Dashboard](docs/images/dashboard.png)
@@ -426,8 +429,9 @@ uses the immutable image ID saved by the local build, including for `latest`.
 Failed or incomplete builds cannot reuse an old build marker. `make docker-update BASE_IMAGE=node:22-bookworm-slim` pulls an explicit base reference.
 
 After a successful Docker Hub image push, the common **ProjectTools** helper
-updates the repository overview from this README and reads it back. Other
-registries skip this step. Python 3.11+ and Pandoc are required; the helper
+updates the repository overview from [docker/README.md](docker/README.md) and
+reads it back. That file is the dedicated container guide; this README remains
+the full project documentation. Other registries skip this step. Python 3.11+ and Pandoc are required; the helper
 manages its own Python environment in the user cache. `make setup` provides
 the `.libs/ProjectTools` link. No helper copy or separate README Make target is used.
 
@@ -435,14 +439,14 @@ Preview without uploading:
 
 ```bash
 ./.libs/ProjectTools/src/bash/dockerhub-readme.sh \
-  --preview --ref master --output docker/logs/dockerhub-readme.md
+  --readme docker/README.md --preview --ref master --output docker/logs/dockerhub-readme.md
 ```
 
 Relative image/document links become absolute GitHub URLs. Set
 `DOCKER_README_REF` to a **published** branch or commit containing those files
-(default `master`). The converted Markdown must fit in **25,000 UTF-8 bytes**;
-the preview checks the limit and never truncates content. Recheck after README
-changes. Raw HTML must use absolute links.
+(default `master`). The converted Docker Hub guide must fit in **25,000 UTF-8 bytes**;
+the preview checks the limit and never truncates content. Recheck after changes
+to `docker/README.md`. Raw HTML must use absolute links.
 
 The helper reads the Docker Hub token from `DOCKER_PW_FILE`, otherwise
 `${DOCKER_CONFIG:-$HOME/.docker}/dockerhub.sec`. Keep it outside the repository;
@@ -453,7 +457,7 @@ Retry the metadata upload without rebuilding or repushing the image:
 
 ```bash
 ./.libs/ProjectTools/src/bash/dockerhub-readme.sh \
-  --publish --ref master --repository mangolila/stockportfolio
+  --readme docker/README.md --publish --ref master --repository mangolila/stockportfolio
 ```
 
 ### API address
