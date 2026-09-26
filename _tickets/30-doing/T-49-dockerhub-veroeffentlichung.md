@@ -43,7 +43,7 @@ getrennt dokumentiert. Kein Versionssprung oder Master-Merge impliziert.
 | 1 | Dockerfile, Laufzeit-API und Healthcheck am amd64-Release-Build f70516e geprüft | ✅ |
 | 2 | Help, Make-Dry-Runs und 19 Prozessgrenzen-Tests zu Plattform-/Push-Fehlern erfolgreich | ✅ |
 | 3 | Zentraler README-Helfer; Vorschau/Upload wählen docker/README.md; Reihenfolge/Fehlercodes geprüft, Live-Aufruf offen | ✅ |
-| 4 | Eigene Docker-Anleitung: echte Vorschau 4.609 UTF-8-Bytes, früher GitHub-Link und korrekte Dokumentlinks; AGENTS-Regel angepasst | ✅ |
+| 4 | Eigene Docker-Anleitung: echte Vorschau 4.734 UTF-8-Bytes, früher GitHub-Link und korrekte Dokumentlinks; AGENTS-Regel angepasst | ✅ |
 | 5 | Echter amd64-Container: Desktop 1440 und Mobile 390, Testdepot/Neuladen/Kursverlauf erfolgreich | ✅ |
 | 6 | 783 Tests, Lint, Typecheck, ShellCheck/XML; Doku und Lessons abgeglichen | ✅ |
 | 7 | Image auf Docker Hub, Architektur/Tag und README-Rücklesen belegt | ➖ |
@@ -527,3 +527,23 @@ korrigiert. Keine Board-/Skill-Konvention geändert.
 Review-Nachtrag Runde 4: begrenzter Diff seit b058682; keine erneute Prüfung
 der unveränderten Containerlaufzeit. Frühere Freigabe laut Mike bestätigt;
 ein eigener schriftlicher Runde-3-Bericht von Claude liegt weiterhin nicht vor.
+
+
+**Weiterer Nachtrag von Mike:** Screenshot in docker/README ergänzen.
+Dasselbe vorhandene docs/images/dashboard.png wie im Projekt-README direkt
+nach der Einleitung eingebunden, keine Bildkopie. Bestehenden Screenshot
+angesehen; keine neue Aufnahme oder aktualisierte UI-Abbildung behauptet.
+Shared-Vorschau neu erzeugt: Bildpfad korrekt zu raw.githubusercontent.com
+aufgelöst, öffentlicher Abruf HTTP 200, Gesamtlänge 4.734 UTF-8-Bytes.
+Doku-Abgleich beider READMEs: gleiche Bildquelle. Reine Markdown-Ergänzung;
+kein weiterer App-Testlauf nötig. Gehört zum begrenzten Review-Nachtrag Runde 4.
+
+
+**Skill-Abgleich und Integrationsauftrag:** Auf Mikes ausdrücklichen Auftrag
+verlangt docker-conventions nun dieselben Screenshots in Projekt- und Docker-
+README, gemeinsame Pflege sowie URL-Prüfung in der Vorschau. Regel im zentralen
+PersonalSkills-Quellrepo angepasst; quick_validate mit vorhandener Python-Umgebung
+erfolgreich (System-Python allein hat kein PyYAML). Aktuelle App-Dokumentation
+entspricht der Regel: beide referenzieren dasselbe Dashboard-Bild.
+Mike beauftragt anschließend Commit und Merge dieser Nachträge; kein Push in
+diesem Schritt. Der technische Runde-4-Prüfbericht wird nicht vorweggenommen.

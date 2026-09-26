@@ -9,6 +9,8 @@ StockPortfolio is a web app. Market data comes from a separate
 [StockInfo](https://github.com/MikeMitterer/stockinfo) instance that you provide.
 It does not connect to a brokerage or place orders.
 
+![StockPortfolio dashboard](../docs/images/dashboard.png)
+
 ## Features
 
 - Track holdings, cash and target allocations in portfolio groups.
