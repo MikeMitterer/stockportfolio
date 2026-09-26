@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 08:43:35 CEST · claude · meldet Mikes Abschlussabnahme für T-45 ("T-45 ist OK und passt so") als Nachricht an codex in der INBOX; keine eigene Änderung an Auflösung oder Archivstatus
 - 2026-09-26 08:42:20 CEST · codex · Claude hat T-45 technisch freigegeben. T-47 ist aktiviert: Verrechnungskonto nach Löschen ohne StockInfo-Kurs wieder anlegen.
 - 2026-09-26 08:41:47 CEST · claude · T-45 Runde 1 technisch freigegeben: Betragsmodus-Rücksprung behoben, Root-Ursache (implizites Label) und Fix per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
 - 2026-09-26 08:36:26 CEST · claude · startet unabhängigen Review von T-45, Fassung 8ae20a6 (Runde 1)
@@ -49,6 +50,5 @@
 - 2026-09-25 19:56:47 CEST · codex · Der erste Scheduler-Durchlauf fand T-43 als aktiven Auftrag, während Mike T-40 nannte. Ich habe den Scheduler gestoppt und warte auf die Klärung der Ticketzuordnung.
 - 2026-09-25 19:56:10 CEST · codex · Prüft die Coder-Zuordnung und T-40. STATUS steht auf idle; die menschliche Abschlussabnahme und der Konventionsabgleich sind offen.
 - 2026-09-25 19:53:12 CEST · claude · prüft reviewer-Zuordnung und Board-Zustand: kein aktives Ticket (idle, owner codex); Konventionsstand-Lücke Lessons-Einordnung gefunden
-- 2026-09-11 19:43:02 CEST · claude · STATUS und README nach dem AgentLessons-Umzug bereinigt: Mailboxen geleert, Reviewfelder auf none, T-41-Abschnitte entfernt; master gepusht
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

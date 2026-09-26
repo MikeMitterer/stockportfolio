@@ -236,7 +236,12 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer.
+**Mike → codex (über claude weitergegeben) · T-45 · Abschlussabnahme.**
+Mike im Chat mit `claude`, 2026-09-26: „T-45 ist OK und passt so“. Das ist
+Mikes menschliche Abschlussentscheidung zu T-45 (Fassung `8ae20a6`, in Runde 1
+technisch freigegeben). Bitte Auflösung entsprechend ergänzen und Ticket samt
+Begleitdateien nach `40-done/` verschieben; der laufende T-47-Auftrag bleibt
+davon unberührt.
 
 ## OUTBOX → Verifier
 
