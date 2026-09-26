@@ -5,8 +5,9 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-45 ist der aktive Auftrag:** Codex hat den Betragsmodus in den Einstellungen korrigiert und
-Fassung `8ae20a6` an Claude zur unabhängigen Prüfung übergeben. T-44 ist durch Claude in Runde 1 technisch
+**T-45 ist der aktive Auftrag:** Claude hat den Betragsmodus-Fix aus `8ae20a6`
+in Runde 1 technisch freigegeben (Belege im Ticket); Codex ist für die
+Verarbeitung und Mikes Abschlussabnahme am Zug. T-44 ist durch Claude in Runde 1 technisch
 freigegeben (`d38a8f5`); Mikes Abschlussabnahme bleibt separat offen.
 T-43 wurde von Claude in
 Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
@@ -35,14 +36,14 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
 - `handoff_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
-- `last_reviewed_ticket`: `T-44-aktien-etfs-und-linkgruppen-trennen.md`
-- `last_reviewed_commit`: `d38a8f523899f506fc66428f626a042039a50528`
+- `last_reviewed_ticket`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md`
+- `last_reviewed_commit`: `8ae20a6885113806950e9e510e4573c3dd8911a3`
 - `last_reviewed_round`: `1`
 - `workstream`: `amount-setting-mode`
 - `priority_chain`: `T-45-betragsmodus-in-einstellungen-bleibt-nicht-stehen.md → T-47-verrechnungskonto-wieder-hinzufuegen.md → T-46-detailtabs-und-felder-kompakter.md`
@@ -235,17 +236,22 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-45, Runde 1 · Commit `8ae20a6885113806950e9e510e4573c3dd8911a3` ·
+technisch freigegeben.** `make test`/`lint`/`typecheck` selbst nachvollzogen
+(grün, 735 Tests). Diff gelesen: `<label>` umschloss zuvor beide
+Steuerelemente, dadurch übertrug ein Klick auf die Auswahl den Fokus aufs
+Zahlenfeld (implizite Label-Assoziation) — Root-Ursache bestätigt. Fix trennt
+explizites `<label for>` fürs Zahlenfeld von `role="group"`/`aria-label` für
+die Auswahl; `useId()` verhindert Kollisionen zwischen den beiden
+Bausteininstanzen (Sicherheitspuffer, Mindest-Handelsvolumen). Live im
+Browser nachvollzogen: Menü bleibt offen, „Betrag in EUR“ mit 1.000
+übernommen, nach Reload erhalten; per DOM (`input.labels`,
+`aria-describedby`) beide Instanzen mit eindeutigen IDs bestätigt. Der
+Komponententest mit echter Naive-Komponente bestätigt zusätzlich, dass ein
+Klick auf die Auswahl keinen Klick ans Zahlenfeld durchreicht. Details im
+Ticket unter „Reviewer-Prüfung“.
 
 ## OUTBOX → Verifier
 
-- An `claude`, T-45 Runde 1: Bitte Fassung `8ae20a6885113806950e9e510e4573c3dd8911a3`
-  prüfen. Gemeinsames HTML-label von Zahlenfeld und Moduswahl getrennt;
-  eigener Zahlenlabel, beschriebener Kontrolltext, benannte Einheitengruppe.
-  Browserursache reproduziert und Gegenprobe bestätigt. 735 Tests, Lint,
-  Typecheck und Build grün. Desktop/Mobile, EUR→USD-Depotwechsel und Rückwechsel,
-  20 % ↔ 1.000 EUR bzw. 5 % ↔ 250 EUR, Reload und Tastatur geprüft.
-  Testadresse `http://127.0.0.1:5189/#/settings?tab=calc`, Dienst 8899 läuft.
-  Details und Doku-/Lessons-Abgleich im Ticket. T-47 (Cash wieder hinzufügen), danach T-46 folgen nach Freigabe;
-  dessen Observer-Hinweis ist ins Ticket übernommen, noch keine Produktänderung.
+Leer.
 

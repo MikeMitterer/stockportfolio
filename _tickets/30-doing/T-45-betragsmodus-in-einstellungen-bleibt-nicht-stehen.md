@@ -57,10 +57,46 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 Keine Änderung an StockInfo, keine neue Berechnungsformel und keine
 unbeauftragte Umstellung gespeicherter Entwicklungsdaten.
 
+### Reviewer-Prüfung (Claude, Runde 1, Fassung `8ae20a6`)
+
+**Technische Freigabe.** `make test` (56 Dateien, 735 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund. Seit dem Handoff-Commit betrafen die Folgecommits ausschließlich
+Ticket-/Board-Dateien; der Produktstand war während der Prüfung stabil.
+
+Diff `d38a8f5..8ae20a6` gelesen: `AmountSettingField.vue` ersetzt das
+umschließende `<label>` durch ein `<div>` mit explizitem
+`<label :for="inputId">` nur für das Zahlenfeld; die Auswahl bekommt
+`role="group"` mit `aria-label` über den neuen i18n-Schlüssel
+`settings.amountMode`. Root-Ursache nachvollzogen: Das implizite Label
+umschloss zuvor beide Steuerelemente, ein Klick auf die Auswahl übertrug den
+Fokus auf das erste labelfähige Kind (das Zahlenfeld) und schloss das Menü
+sofort. Die Klassen in `<style scoped>` sind ausschließlich klassenbasiert;
+der Wechsel von `<label>` (inline) zu `<div>` (block) hat keine
+CSS-Auswirkung, da `.amount` über den `stack`-Mixin ohnehin `display: flex`
+setzt. `tests/components/amountSettingField.spec.ts` ist eine echte
+Regressionsprobe mit der echten Naive-Komponente (`.n-base-selection-label`,
+`attachTo: document.body`): bestätigt, dass ein Klick auf die Auswahl keinen
+Klick ans Zahlenfeld durchreicht, und dass `input.labels[0]` weiterhin auf
+das Zahlenfeld zeigt.
+
+Live im Browser (Testdienst Port 8899, App auf `:5189`) nachvollzogen: Klick
+auf „% vom Gesamtwert“ hält das Menü offen, Auswahl von „Betrag in EUR“
+übernimmt korrekt ohne Rücksprung; Wert 1000 gesetzt, Hinweis „Entspricht
+derzeit € 1.000.“ erscheint; nach Reload bleiben Modus und Wert erhalten.
+Per `input.labels`/`aria-describedby` direkt im DOM geprüft: beide
+`AmountSettingField`-Instanzen (Mindest-Handelsvolumen, Sicherheitspuffer)
+haben eindeutige, kollisionsfreie IDs (`useId()`) und korrekte
+Label-Zuordnung. Tastaturbedienung (Pfeiltasten/Enter) und schmale Ansicht
+wurden nicht erneut live nachgestellt, sondern anhand des Komponententests
+und der Codex-Angabe als plausibel eingestuft.
+
+**Ergebnis:** Fassung `8ae20a6` technisch freigegeben. Kein `changes_requested`.
+
 ### Auflösung
 
-Offen. Technische Freigabe und Mikes Abschlussentscheidung werden getrennt
-dokumentiert.
+Fassung `8ae20a6` technisch freigegeben (Runde 1, `claude`). Mikes
+Abschlussentscheidung bleibt offen und wird getrennt dokumentiert.
 
 ### Selbstprüfung · Codex · 2026-09-26
 
