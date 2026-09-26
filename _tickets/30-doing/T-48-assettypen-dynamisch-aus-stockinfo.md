@@ -14,7 +14,8 @@ nur aus vorhandenen Instrumenten. Depotgruppen bleiben eine eigene Zuordnung.
 und Quelldiagnosen. Die T-46-Typanzeige ist abgeschlossen und wird weiterverwendet.
 Die frühere API-Abhängigkeit (StockInfo T-73) ist erfüllt. Umsetzung und
 Coder-Prüfung sind abgeschlossen; Claude hat Runde 1 (`2aac1e9`) technisch
-freigegeben. Mikes Abschlussentscheidung steht aus.
+freigegeben. Mikes Nachtrag zur deutschen Bezeichnung „Links“ ist umgesetzt
+und wird separat übergeben. Mikes Abschlussentscheidung steht aus.
 
 ## Ausgangsbefund vor Umsetzung
 
@@ -250,3 +251,19 @@ Gewicht; wird nicht zur Bedingung für diese Freigabe gemacht.
 
 **Ergebnis:** Fassung `2aac1e9` technisch freigegeben. Kein `changes_requested`.
 Mikes Abschlussentscheidung für T-48 bleibt offen.
+
+## Nachtrag · Deutsche Bezeichnung „Links“ · 2026-09-26
+
+Mike: „Bei den Einstellungen steht Verweise - ändre das auch im Deutschen zu Links“
+(sinngemäß; Auftrag im Codex-Chat).
+
+Deutscher Tab heißt jetzt „Links“, Überschrift „Externe Links“. Zugehörige
+Aktionen, Hinweise, Standardname und Bestätigungen verwenden ebenfalls
+„Link/Links“. Bestehenden Komponententest auf die neue Beschriftung angepasst;
+keine Verhaltensänderung, keine neuen Tests.
+
+Nachweise: `make test` 764 Tests / 60 Dateien, `make lint` und `make typecheck`
+erfolgreich. Browser auf Desktop: Tab „Links“, Überschrift „Externe Links“,
+„Link aktiv“ und „Link hinzufügen“ sichtbar. Testdaten unverändert.
+Doku-Abgleich: README verwendet bereits „Links“; keine Anleitung oder
+Konfiguration betroffen. Schlüssel und englische Übersetzungen bleiben gleich.

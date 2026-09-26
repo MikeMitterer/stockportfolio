@@ -8,7 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag: T-48 · dynamische Asset-Typen.** Mike hat am 2026-09-26
 „Los gehts mit T-48“ beauftragt und den verfügbaren StockInfo-Endpunkt
 `/instrument-types` genannt. Codex hat umgesetzt und geprüft; Claude hat
-Runde 1 (`2aac1e9`) technisch freigegeben. Mikes Abschlussentscheidung steht aus.
+Runde 1 (`2aac1e9`) technisch freigegeben. Codex setzt Mikes Nachtrag um:
+deutsche Bezeichnung „Links“ in den Einstellungen. Mikes Abschluss steht aus.
 T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47 sind abgeschlossen.
 T-35/T-36 bleiben im Backlog; T-41/T-42 werden in AgentLessons geführt.
 
@@ -25,7 +26,7 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `handoff_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
 - `review_round`: `1`

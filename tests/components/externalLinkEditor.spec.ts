@@ -8,9 +8,9 @@ import type { ExternalLink } from '@/types/portfolio'
 const originalLocale = i18n.global.locale.value
 afterEach(() => { i18n.global.locale.value = originalLocale })
 
-describe('Externe Verweise hinzufügen', () => {
+describe('Externe Links hinzufügen', () => {
   it.each<[AppLocale, string, string]>([
-    ['de', 'Verweis hinzufügen', 'Neuer Verweis'],
+    ['de', 'Link hinzufügen', 'Neuer Link'],
     ['en', 'Add link', 'New link'],
   ])('vergibt in %s eine übersetzte Bezeichnung', async (locale, action, label) => {
     i18n.global.locale.value = locale
