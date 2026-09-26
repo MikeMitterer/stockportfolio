@@ -1,5 +1,7 @@
 # T-44 · Aktien und ETFs als eigene Gruppen führen
 
+**Abgeschlossen am 2026-09-26.** Mike: „T-40 und T-44 sind erledigt“.
+
 Im Dashboard teilen sich **Aktien und ETFs derzeit eine Gruppe**. Dadurch
 lassen sich ihre Anteile und Zielwerte nicht getrennt ansehen. In den
 Einstellungen lassen sich externe Verweise nur nach Instrumenttyp filtern;
@@ -16,16 +18,9 @@ versetzt. Die Gruppenköpfe sollen ihre Werte in bündigen Spalten zeigen.
 In der mobilen Navigation soll das Rebalancing-Symbol entfallen; der
 Menüpunkt bleibt erreichbar und verständlich beschriftet.
 
-**Stand:** Mike hat die Änderungen am 2026-09-25 beauftragt und dieses Ticket
-ausdrücklich direkt für `30-doing/` verlangt. Nach Mikes Abnahme von T-43 ist
-T-44 umgesetzt worden. Inzwischen ist T-45 laut [`STATUS.md`](../STATUS.md)
-der aktive Auftrag. Codex hat die
-Gruppentrennung, Verweisfilter und den mobilen Menüwunsch in `d38a8f5`
-umgesetzt und selbst geprüft. Claude hat die Fassung in Runde 1 technisch
-freigegeben; Mikes Bedien- und Abschlussentscheidung steht aus.
-
-Für Mike ist die Bedien- und Abschlussabnahme jetzt offen. Eine weitere
-Entwurfsentscheidung vor der Umsetzung ist nicht mehr nötig.
+**Stand:** Codex hat Gruppentrennung, Verweisfilter und mobile Navigation
+in `d38a8f5` umgesetzt und geprüft. Claude hat Runde 1 technisch freigegeben.
+Mike hat das Ticket am 2026-09-26 abgeschlossen.
 
 ## Für dich
 
@@ -39,7 +34,7 @@ Probe das [Browser-Testdepot](../../tests/fixtures/browser/README.md) gegen
 Übergabefassung: `d38a8f523899f506fc66428f626a042039a50528`.
 
 Dein Urteil: Sind die Gruppen und die Link-Auswahl für dein Depot verständlich?
-Die Antwort bleibt offen und wird nicht aus technischen Tests abgeleitet.
+Die Abschlussentscheidung vom 2026-09-26 ist unten dokumentiert.
 
 ## Umsetzung und technische Nachweise
 
@@ -235,6 +230,19 @@ unverändert außerhalb des Umfangs dieses Tickets.
 
 ### Auflösung
 
-Fassung `d38a8f5` technisch freigegeben (Runde 1, `claude`). Mikes
-Bedien- und Abschlussentscheidung bleibt offen und wird getrennt
-dokumentiert.
+Fassung `d38a8f5` ist in Runde 1 technisch freigegeben. Mike hat das Ticket
+am 2026-09-26 abgeschlossen.
+
+
+## Abschluss · 2026-09-26
+
+**Mikes Abschlussentscheidung:** „T-40 und T-44 sind erledigt“ — im Claude-Chat, von Claude über die STATUS-INBOX weitergeleitet.
+
+Technische Freigabe liegt vor, keine erforderliche Nacharbeit offen.
+Ticket nach `40-done/` verschoben; frühere Prüfurteile und damalige
+Abnahmestände bleiben als Historie erhalten.
+
+**Doku-Abgleich:** STATUS, Board-README und Ticket-Verweise auf den Abschluss
+und den neuen Ablageort aktualisiert. Kein Produktcode geändert; vorhandene
+Prüfnachweise bleiben gültig. Allgemeine Konventionsübernahme weiterhin offen
+(`2026-09-11-activity-feed` → `2026-09-11-lessons-follow-through`).

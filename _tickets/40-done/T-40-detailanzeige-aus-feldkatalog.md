@@ -1,5 +1,7 @@
 # T-40 · Zusätzliche StockInfo-Kennzahlen automatisch im Detailbereich zeigen
 
+**Abgeschlossen am 2026-09-26.** Mike: „T-40 und T-44 sind erledigt“.
+
 Neue Kennzahlen aus StockInfo-Plugins sollen **ohne Frontend-Änderung sichtbar**
 werden. Vor der Umsetzung verwarf der Mapper sie: Ein Risikoscore unter
 `details["risk-demo.score"].value` kam genauso wenig an wie ein flaches Feld
@@ -66,7 +68,7 @@ Die Detailwerte samt Metadaten müssen den Weg durch Cache und Neuladen
 überstehen. Ein Eintrag ohne Details heißt „noch nicht geladen", nicht
 „StockInfo liefert nichts".
 
-**Abgrenzung zu [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md):** Ein
+**Abgrenzung zu [T-38](T-38-basiswaehrung-und-devisenkurse.md):** Ein
 Plugin-Betrag von 100 USD wird hier mit seiner Originalwährung angezeigt.
 T-40 lädt keine Devisenkurse und rechnet ihn nicht in die Depotwährung um.
 Die spätere Depotbewertung verändert weder diesen Detailwert noch den
@@ -81,18 +83,10 @@ aus Zusatzfeldern und jede Änderung an StockInfo.
 
 ## Für dich
 
-Die Anzeige steht und ist durch Claude technisch freigegeben.
-Deine Abschlussabnahme bleibt offen: Öffne eine Position
-und prüfe, ob Beschriftung, Werte und Herkunft verständlich sind. Im aktuellen
-T-43-Umbau gibt es dafür den Bereich „Zusatzinformationen“, auch mobil. Die
-erste Sichtprüfung durch Codex steht unten und bezieht sich auf die damalige
-T-40-Fassung.
-
-[T-43](../40-done/T-43-positionsdetails-ordnen.md) ordnet die Positionsansicht neu. Die
-Zusatzwerte stehen dort in einem eigenen Bereich. T-43 prüft, ob Feldprojektion,
-Herkunft und Originalwährung beim Umbau erhalten bleiben. Die technische
-Freigabe dieses Tickets wird dadurch nicht erneut geöffnet; deine
-Abschlussabnahme für T-40 bleibt eine eigene Entscheidung.
+Die Anzeige ist technisch freigegeben und durch Mike abgeschlossen. T-43
+hat die Positionsansicht neu gegliedert; T-46 zeigt ergänzende Werte im
+Informationstab. Die Prüfberichte unten beziehen sich auf die damalige
+T-40-Fassung und bleiben erhalten.
 
 **Voraussetzung der Testumgebung:** Bei der T-37-Bewertung stand StockInfos
 `details_version` auf `0`, und `/fields` bezieht die Definitionen aus seiner
@@ -106,7 +100,7 @@ Status: angelegt am 2026-09-10 auf Mikes Ansage „Leg die Umsetzungs-Tickets in
 doing an - das hat prio". Repo: StockPortfolio, betroffene Fremdschnittstelle:
 StockInfo (nur lesend). Zeitbudget nicht beziffert.
 
-**Hängt an [T-39](../40-done/T-39-identitaet-normalisieren.md).** Ohne normalisierte
+**Hängt an [T-39](T-39-identitaet-normalisieren.md).** Ohne normalisierte
 Identität lassen sich Detailwerte keiner Position verlässlich zuordnen.
 
 Der Feldkatalog ist veränderlich: `/fields` liefert `generation_id`,
@@ -137,7 +131,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | 10 | TER und Volatilität prüfen | Erscheinen genau einmal, über dieselbe Felddarstellung | ✅ |
 
 Die Nachweise wurden am 2026-09-10 durch Codex erbracht. Die unabhängige
-technische Freigabe liegt vor; die menschliche Abschlussabnahme ist offen.
+technische Freigabe liegt vor; Mike hat am 2026-09-26 abgeschlossen.
 
 ### Umsetzung
 
@@ -384,3 +378,17 @@ auf Mikes Abschlussabnahme.
 Nach einem Start lässt er sich mit demselben Python-Aufruf und `--stop --port 8899`
 sauber beenden. Er prüft seine gespeicherte Prozessidentität und beendet keine
 anderen Portbesitzer. Der Lifecycle-Nachweis steht in T-38 Runde 2.
+
+
+## Abschluss · 2026-09-26
+
+**Mikes Abschlussentscheidung:** „T-40 und T-44 sind erledigt“ — im Claude-Chat, von Claude über die STATUS-INBOX weitergeleitet.
+
+Technische Freigabe liegt vor, keine erforderliche Nacharbeit offen.
+Ticket nach `40-done/` verschoben; frühere Prüfurteile und damalige
+Abnahmestände bleiben als Historie erhalten.
+
+**Doku-Abgleich:** STATUS, Board-README und Ticket-Verweise auf den Abschluss
+und den neuen Ablageort aktualisiert. Kein Produktcode geändert; vorhandene
+Prüfnachweise bleiben gültig. Allgemeine Konventionsübernahme weiterhin offen
+(`2026-09-11-activity-feed` → `2026-09-11-lessons-follow-through`).

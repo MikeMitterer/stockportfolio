@@ -36,7 +36,7 @@ T-39 übernommen und nur zusätzliche Generationsfälle hier geprüft.
 
 Der Generationswechsel, Cache-Namespace und die Bestätigung der Generation
 bleiben Gegenstand dieses Backlog-Tickets. Die Detailanzeige liegt bei
-[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), Depotbewertung und
+[T-40](../40-done/T-40-detailanzeige-aus-feldkatalog.md), Depotbewertung und
 FX-Umrechnung bei [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md).
 Die nachfolgenden technischen Erläuterungen beschreiben die Anforderungen;
 für ihre Umsetzung gilt diese Zuordnung.

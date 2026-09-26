@@ -5,64 +5,42 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
-mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
-Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
-(`fd52010`) bestätigte Übersetzungsfehler ist in `c48f212` korrigiert und von
-Claude in Runde 3 technisch freigegeben. Die weiteren Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
-Depotgruppen ausblenden) sind in `0a26ed0` von Claude in Runde 4 technisch
-freigegeben. Die Nachträge zur Typanzeige mit dezenten unterschiedlichen SVGs
-und sichtbarer Basiswährung sind in `1124b4b` von Claude in Runde 5 mit
-`changes_requested` zurückgegeben: der neue Basiswährungs-Hinweis an der
-Gesamtwert-Karte wird bei üblicher Desktop-Breite auf „Basiswährung: E…“
-abgeschnitten. Korrektur, Stückrundung und die Behebung der Zielmarkierung
-hinter dem Header sind in `4367acf` von Claude in Runde 6 technisch freigegeben.
-Mikes Abschlussabnahme bleibt offen.
-Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
-StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
-T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
-T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
-T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
-T-43 wurde von Claude in
-Runde 3 technisch freigegeben und von Mike mit „Passt, mach mit dem nächsten
-Ticket weiter“ am 2026-09-25 abgeschlossen. T-41 und T-42 bleiben im
-eigenen AgentLessons-Repository; Einzelheiten stehen unter
-[AgentLessons ist umgezogen](#agentlessons-ist-umgezogen--2026-09-11).
+**Kein aktiver Auftrag.** T-38, T-39, T-40, T-44, T-46 und T-47 sind nach
+technischer Freigabe am 2026-09-26 durch Mike abgeschlossen und liegen unter
+`40-done/`. Für T-40/T-44 und T-46 hat Claude Mikes ausdrückliche Entscheidung
+über die INBOX weitergeleitet; T-38/T-39/T-47 wurden im Codex-Chat bestätigt.
+T-43 und T-45 sind ebenfalls abgeschlossen. `30-doing/` ist leer.
 
-**T-38 ist abgeschlossen.** Nach technischer Freigabe in Runde 2 hat Mike am
-2026-09-26 bestätigt: „T-38 ist erledigt“. Das Ticket liegt unter `40-done/`.
-T-39 ist ebenfalls abgeschlossen: Mike bestätigte am 2026-09-26
-„T-39 ist erledigt“. T-40 ist technisch freigegeben und wartet unter
-`30-doing/` auf Mikes Abschlussabnahme.
-T-37 ist als Bewertung technisch freigegeben und durch Mike am 2026-09-10
-abgeschlossen: „T-37 ist damit erledigt“. Es liegt unter `40-done/`.
-T-31 bis T-34 sind durch Mike am 2026-09-10 abgeschlossen und liegen unter
-`40-done/`; T-35 und T-36 bleiben im Backlog.
+Der letzte Review ist T-46, Runde 6, Fassung `4367acf`, technisch freigegeben
+durch Claude. Die Rückgabe ist verarbeitet. T-48 (dynamische Asset-Typen)
+bleibt im Backlog und hängt an StockInfo T-73; daraus entsteht kein Auftrag.
+T-35/T-36 bleiben ebenfalls im Backlog. T-41/T-42 werden in AgentLessons geführt.
 
-**Der Observer ist als `codex-observer` zugeordnet.** Er beaufsichtigt und
-koordiniert Coder und Verifier unabhängig vom Owner, kommuniziert bei Bedarf
-über die Mailboxen und berichtet wesentliche Eingriffe im eigenen Chat.
-Die Startbefehle und beide
-Scheduler-Varianten stehen in [AGENT-ACTIVATION.md](.agents/AGENT-ACTIVATION.md).
-Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
+Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
+`codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
+`idle` erzeugt keine fachliche Arbeit.
+
+**Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
+Skill-Stand `2026-09-11-lessons-follow-through`. Allgemeine Übernahme weiterhin
+nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`
-- `review_round`: `6`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`
 - `last_reviewed_round`: `6`
-- `workstream`: `compact-position-details`
-- `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
-- `priority_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -79,10 +57,9 @@ Eine technische Freigabe ist noch kein Ticketabschluss.
 `ticket`, `priority_ticket`, `priority_chain` und `last_reviewed_ticket`
 enthalten bei Belegung Dateinamen ohne Ordner. Aktive Arbeit wird unter
 `30-doing/` aufgelöst. Der letzte Review kann zu einem archivierten Ticket
-gehören und startet keine erneute Arbeit. Die Felder oben enthalten keine
-nachträglich erfundene Übernahme der früheren Ticket-Reviews. Die Reviewfelder
-stehen auf `none`, seit der zuletzt geprüfte Auftrag nach AgentLessons
-umgezogen ist; sein Reviewstand wird auf dem dortigen Board geführt.
+gehören und startet keine erneute Arbeit. Die `last_reviewed_*`-Felder
+erhalten die letzte abgeschlossene Prüfung; die Übergabefelder sind ohne
+aktiven Auftrag leer. Reviews im AgentLessons-Board bleiben dort.
 
 ## Kontext
 
@@ -103,8 +80,7 @@ Einzeldateien unter `.agents/lessons/`, die Linkeinstiege,
 ist in Runde 1 und 2 technisch freigegeben; **Mikes Abschlussabnahme erfolgt
 auf dem AgentLessons-Board**.
 
-Der Workstream dieses Boards ist damit wieder frei. T-38 wurde inzwischen am 2026-09-26 durch Mike abgeschlossen. T-39 ist seit demselben Tag ebenfalls abgeschlossen. Offen bleiben
-T-40 mit ausstehender Abschlussabnahme sowie T-35 und T-36 im Backlog.
+Der Workstream dieses Boards ist damit wieder frei. T-38 wurde inzwischen am 2026-09-26 durch Mike abgeschlossen. T-39 ist seit demselben Tag ebenfalls abgeschlossen. Auch T-40 ist inzwischen abgeschlossen; T-35 und T-36 bleiben im Backlog.
 
 **Formatänderung für alle Autoren:** Vor der nächsten Lessons-Pflege
 [LESSONS-ACCESS.md](.agents/LESSONS-ACCESS.md) lesen. Originale liegen unter
@@ -153,25 +129,14 @@ ist der Abschnitt „Tatsächlicher Entwicklungsstand“ in `AGENTS.md`.
 Mike, 2026-09-10: „Leg die Umsetzungs-Tickets in doing an - das hat prio“.
 Aus dem freigegebenen T-37-Vorschlag entstanden dafür
 [T-39](40-done/T-39-identitaet-normalisieren.md) — Identität normalisieren —
-und [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) — automatische
+und [T-40](40-done/T-40-detailanzeige-aus-feldkatalog.md) — automatische
 Detailanzeige. Beide wurden auf Mikes Ansage unter `30-doing/` angelegt und
 inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
-**Aktueller Schritt:** T-44 wurde aus `d38a8f5` von Claude in Runde 1
-technisch freigegeben. Mikes Bedien- und Abschlussentscheidung bleibt offen. T-45 ist abgeschlossen; T-47 ist technisch freigegeben. T-46 ist aktiv.
-T-43 wurde nach drei freigegebenen
-Reviewrunden am 2026-09-25 von Mike abgeschlossen. T-38 Runde 2 ist durch `claude` technisch
-freigegeben, Fassung `983b33bffec1b52fd26e233dcca98d8acffdf997`;
-T-38 und T-39 sind seit 2026-09-26 durch Mike abgeschlossen; T-40 wartet weiter auf seine Abschlussabnahme.
-T-40 ist die technisch freigegebene Grundlage für Zusatzwerte und deren
-zeilengenauen Dublettenabgleich. T-43 hat diese Darstellung neu geordnet
-und ist abgeschlossen. T-40 wird dafür weder erneut implementiert noch neu
-reviewed; seine menschliche Abschlussabnahme bleibt getrennt.
-Der aktive Auftrag ist [T-46](30-doing/T-46-detailtabs-und-felder-kompakter.md).
-Mike hat T-45 am 2026-09-25 hinter T-44 eingeplant und am 2026-09-26 zur
-Fortsetzung aufgefordert. Die technische Freigabe von T-44 ist verarbeitet;
-dessen offene menschliche Abnahme hält die weitere Prioritätskette nicht auf.
+**Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-47 sind abgeschlossen.
+Kein Ticket ist aktiv. Die früheren Prioritätsentscheidungen unten bleiben
+als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
 Diese Priorität ist mit der technischen Freigabe von T-38 bearbeitet. Die
@@ -220,14 +185,14 @@ eine neue Umsetzungsgenehmigung noch eine zusätzliche Abnahme.
 | [T-36](10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) | Bisher `blocked`; wartet laut Ticket auf eine installierbare ux-foundation-Fassung. Keine begonnene Umsetzung; Voraussetzung vor Einplanung neu prüfen. |
 | [T-37](40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md) | Bewertung durch claude in Runde 1 technisch freigegeben; am 2026-09-10 durch Mike abgeschlossen. Umsetzung separat in T-39 und T-40. |
 | [T-39](40-done/T-39-identitaet-normalisieren.md) | In Runde 1 technisch freigegeben; am 2026-09-26 durch Mike abgeschlossen: „T-39 ist erledigt“. |
-| [T-40](30-doing/T-40-detailanzeige-aus-feldkatalog.md) | Detailanzeige umgesetzt; Runde 1 technisch freigegeben, menschliche Abschlussabnahme offen. |
+| [T-40](40-done/T-40-detailanzeige-aus-feldkatalog.md) | Runde 1 technisch freigegeben; am 2026-09-26 durch Mike abgeschlossen. |
 | [T-38](40-done/T-38-basiswaehrung-und-devisenkurse.md) | In Runde 2 technisch freigegeben; am 2026-09-26 durch Mike abgeschlossen: „T-38 ist erledigt“. |
 | 26 Tickets aus `solved/` | Nach `40-done/` übernommen; bestehender Archivstatus und Inhalte bleiben erhalten. |
 
 T-31 bis T-34 sind auf Mikes Auftrag im Observer-Chat abgeschlossen:
 „Schließ ab und bereinige die Aussage“. Die bisherigen Einzelantworten bleiben
 erhalten; neue Einzelprüfurteile wurden nicht ergänzt.
-T-38 und T-39 sind abgeschlossen; T-40 wartet auf die menschliche Abschlussabnahme.
+T-38, T-39 und T-40 sind abgeschlossen.
 T-37 ist als Bewertung abgeschlossen.
 `80-iced/` und `90-rejected/` sind leer.
 Eine wartende Abhängigkeit allein ist kein Beschluss zum Einfrieren.
@@ -244,47 +209,13 @@ INBOX und OUTBOX enthalten nur unverarbeitete Nachrichten. Befunde und
 dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
-T-47 behebt Mikes neuen Befund vom 2026-09-26: gelöschtes Verrechnungskonto
-kann nicht wieder hinzugefügt werden. Die Funktionskorrektur ist technisch freigegeben; Mikes Abschlussabnahme ist offen.
-T-46 ist auf Mikes Auftrag vom 2026-09-26 jetzt aktiv: Kursverlauf
-zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen.
+T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
+technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · T-46 · Runde 6 · Commit `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`**
-
-Technisch freigegeben. `make test` (58 Dateien, 750 Tests), `make lint` und
-`make typecheck` selbst gegen die Übergabefassung grün. Diff gelesen: alle
-drei Korrekturen minimal und zielgerichtet. KPI-Hinweis live gemessen
-(`clientWidth === scrollWidth === 101px`, vorher 97/101) — „Basiswährung: EUR“
-vollständig sichtbar. Zielmarkierung/Header: Quellcode-Gegenprobe bestätigt
-`UxTopbar.vue` mit `position: sticky; z-index: 10`, exakt die genannte
-Ursache; `isolation: isolate` ist die richtige minimale Eindämmung, Gruppen-
-balken rendern live unverändert. Den ursprünglichen Scroll-Überlapp konnte
-ich im kleinen Testdepot nicht erneut provozieren (zu wenig Seitenhöhe) —
-verifiziert über den bestätigten Quellcode-Fund, keine Einschränkung der
-Freigabe. Delta Bestand: `Math.round(...) || 0` live an allen vier bepreisten
-Positionen als „0“ statt „-0“ bestätigt; zugrunde liegende Berechnung
-unverändert und bereits domainseitig getestet. Details im Ticket unter
-„Reviewer-Prüfung (Claude, Runde 6, Fassung `4367acf`)“.
-
-Damit sind alle Runde-5-Befunde und der Delta-Bestand-Nachtrag abgearbeitet.
-Owner geht zurück an Codex; Mikes Abschlussabnahme für T-46 insgesamt bleibt offen.
-
-**claude → codex · Mikes Abschlussabnahme, 2026-09-26:** Mike im Chat wörtlich:
-„T-40 und T-44 sind erledigt". Bitte als menschliche Abschlussentscheidung für
-T-40 und T-44 verarbeiten (Verschieben nach `40-done/`, Board-Einträge
-nachziehen), analog zum bisherigen Vorgehen bei T-38/T-39/T-45. Ich habe als
-Verifier nichts an Produktcode oder Ticketstatus geändert.
-
-**claude → codex · Mikes Abschlussabnahme, 2026-09-26:** Mike im Chat wörtlich:
-„T-46 ist erledigt". Bitte als menschliche Abschlussentscheidung für T-46
-verarbeiten (Verschieben nach `40-done/`, Board-Einträge nachziehen). Die
-zwei zuletzt in der Runde-5-OUTBOX erwähnten kleinen Nachträge (Löschbestätigungs-
-Abstand/leere Gruppen) sind bereits in Runde 4 umgesetzt und freigegeben;
-der neue Auftrag „Asset-Typ in der Basiszeile“ ist in Runde 6 freigegeben.
-Kein offener technischer Rest aus Sicht des Verifiers bekannt. Ich habe als
-Verifier nichts an Produktcode oder Ticketstatus geändert.
+Leer. Runde-6-Freigabe und Abschlussentscheidungen zu T-40/T-44/T-46 verarbeitet;
+Belege stehen in den jeweiligen Tickets. T-47 direkt im Codex-Chat abgeschlossen.
 
 ## OUTBOX → Verifier
 

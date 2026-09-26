@@ -167,13 +167,13 @@ Quote-Ansicht bewertet. Technisch freigegeben und durch Mike am 2026-09-10 abges
 
 Aus dem freigegebenen Vorschlag entstanden die beiden Umsetzungstickets
 [T-39 · Identität normalisieren](40-done/T-39-identitaet-normalisieren.md) und
-[T-40 · Detailanzeige aus dem Feldkatalog](30-doing/T-40-detailanzeige-aus-feldkatalog.md).
+[T-40 · Detailanzeige aus dem Feldkatalog](40-done/T-40-detailanzeige-aus-feldkatalog.md).
 Beide sind bereits umgesetzt und technisch freigegeben. Anschließend wurde
 auch die Depotwährung aus T-38 technisch freigegeben und am 2026-09-26
 durch Mike abgeschlossen; der aktive Auftrag steht in
 [STATUS](STATUS.md#maschinenlesbarer-zustand).
 T-39 ist technisch freigegeben und durch Mike am 2026-09-26 abgeschlossen: „T-39 ist erledigt“.
-T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
+T-40 ist ebenfalls technisch freigegeben und am 2026-09-26 durch Mike abgeschlossen.
 
 | Ticket | Zuständiger Umfang |
 |---|---|
@@ -185,8 +185,8 @@ T-40 ist ebenfalls technisch freigegeben; Mikes Abschlussabnahme ist offen.
 Typen, Mapper, Cache und Formatierung werden gemeinsam weiterverwendet.
 Der Generationsauftrag aus T-35 bleibt im Backlog; seine allgemeine
 Kursprüfung ist in T-39 umgesetzt.
-T-43 wurde nach technischer Freigabe durch Mike abgeschlossen. T-44 ist laut
-STATUS technisch freigegeben; der aktive Auftrag steht in STATUS. Die menschliche Abschlussabnahme von T-40 bleibt offen.
+T-40 sowie T-43 bis T-47 sind nach technischer Freigabe durch Mike
+abgeschlossen. Es gibt keinen aktiven Auftrag; maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

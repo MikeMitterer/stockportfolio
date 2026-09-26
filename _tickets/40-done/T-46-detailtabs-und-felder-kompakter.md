@@ -1,5 +1,7 @@
 # T-46 · Detailtabs und Felder kompakter
 
+**Abgeschlossen am 2026-09-26.** Mike: „T-46 ist erledigt“.
+
 **Stand:** Mike hat die Anpassungen am 2026-09-26 während T-45 beauftragt.
 T-46 ist nach der technischen Freigabe von T-47 umgesetzt und durch Codex selbst geprüft.
 Runde 1 ist technisch freigegeben. Der in Runde 2 bestätigte Übersetzungsfehler
@@ -10,8 +12,7 @@ freigegeben. Der Nutzerauftrag „Asset-Typ in der Basiszeile anzeigen“ ist
 umgesetzt; Claude hatte Runde 5 (`1124b4b`) mit `changes_requested`
 zurückgegeben (abgeschnittener Basiswährungs-Hinweis). Die Korrektur sowie ein
 Header-Überlapp-Fund und die Rundung von Delta Bestand sind in Runde 6
-(`4367acf`) technisch freigegeben. Mikes Abschlussentscheidung für T-46
-insgesamt bleibt offen.
+(`4367acf`) technisch freigegeben. Mike hat T-46 am 2026-09-26 abgeschlossen.
 
 ## Für dich
 
@@ -31,7 +32,7 @@ der Statuszeile (Mikes UI-Nachtrag zu T-38).
 - StockInfo bleibt Datenquelle, keine neue Bearbeitung seiner Angaben.
 - Die Basiswährung ist beim Gesamtwert und in der globalen Depot-Statuszeile
   sichtbar; ein Depotwechsel aktualisiert beide Anzeigen.
-- Ein dezentes SVG-Etikett neben dem Namen in der Basiszeile (Desktop und Mobile)
+- Ein dezentes typspezifisches SVG mit neutralem Etikett als Rückfall neben dem Namen in der Basiszeile (Desktop und Mobile)
   zeigt den aktuellen StockInfo-Typ im Tooltip. Auch neue Typen
   erscheinen ohne lokale Enumeration. Kein Informationstab allein für den Typ.
 
@@ -49,12 +50,11 @@ der Statuszeile (Mikes UI-Nachtrag zu T-38).
 
 ## Auflösung
 
-Fassung `573d15b` in Runde 1 technisch freigegeben (`claude`). Fassung
-`fd52010` (Runde 2, Nachträge) hat Claude mit `changes_requested`
-zurückgegeben: `links.newLink` erscheint als roher Schlüssel statt Text beim
-Hinzufügen eines Verweises. Korrektur steht bei Codex aus; danach erneute
-Prüfung. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen.
-Mike hat Text-Tabs mit Unterstrich gewählt: ohne Rahmen/Buttonfläche, aktive Akzentlinie; mobil kompakte Bereichsauswahl statt der von Mike beanstandeten zweizeiligen Tabs.
+Alle Nachträge sind bis Runde 6 (`4367acf`) technisch freigegeben. Die
+früheren Rückgaben aus Runde 2 und 5 sind behoben und erneut geprüft.
+Mike hat T-46 am 2026-09-26 abgeschlossen.
+Text-Tabs mit Unterstrich am Desktop und kompakte Bereichsauswahl mobil
+entsprechen Mikes Entscheidung.
 
 ## Umsetzungshinweis des Observers · 2026-09-26
 
@@ -680,3 +680,17 @@ Diff `1124b4b..4367acf` gelesen (`KpiCard.vue`, `DeltaBar.vue`, `GroupBar.vue`,
 Damit sind alle bislang gemeldeten Runde-5-Befunde und der vorgemerkte
 Nutzer-Nachtrag „Delta Bestand als ganze Stückzahl“ abgearbeitet. Mikes
 Abschlussentscheidung für T-46 insgesamt bleibt offen.
+
+
+## Abschluss · 2026-09-26
+
+**Mikes Abschlussentscheidung:** „T-46 ist erledigt“ — im Claude-Chat, von Claude über die STATUS-INBOX weitergeleitet.
+
+Technische Freigabe liegt vor, keine erforderliche Nacharbeit offen.
+Ticket nach `40-done/` verschoben; frühere Prüfurteile und damalige
+Abnahmestände bleiben als Historie erhalten.
+
+**Doku-Abgleich:** STATUS, Board-README und Ticket-Verweise auf den Abschluss
+und den neuen Ablageort aktualisiert. Kein Produktcode geändert; vorhandene
+Prüfnachweise bleiben gültig. Allgemeine Konventionsübernahme weiterhin offen
+(`2026-09-11-activity-feed` → `2026-09-11-lessons-follow-through`).

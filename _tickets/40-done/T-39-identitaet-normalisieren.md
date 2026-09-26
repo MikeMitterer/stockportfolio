@@ -68,7 +68,7 @@ braucht ein inkompatibler Cache keine Migration; er darf neu aufgebaut werden.
 Ein nötiger Reset wird als solcher beschrieben.
 
 **Nicht in diesem Ticket:** die Detailanzeige aus
-[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), Depot-Basiswährung und
+[T-40](T-40-detailanzeige-aus-feldkatalog.md), Depot-Basiswährung und
 Devisenumrechnung aus [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md) sowie
 Generationswechsel aus T-35.
 

@@ -9,7 +9,7 @@ parallele Spezifikation oder laufender Umsetzungsstand fortgeschrieben.
 im jeweiligen Ticket:**
 
 - [T-39 · Identität und Kursprüfung](../_tickets/40-done/T-39-identitaet-normalisieren.md)
-- [T-40 · Zusätzliche Kennzahlen](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md)
+- [T-40 · Zusätzliche Kennzahlen](../_tickets/40-done/T-40-detailanzeige-aus-feldkatalog.md)
 - [T-38 · Depotwährung und FX](../_tickets/40-done/T-38-basiswaehrung-und-devisenkurse.md)
 
 Die folgenden Aussagen zu Ausgangslage, Anpassungsbedarf und geplanter Umsetzung
@@ -229,7 +229,7 @@ der Währungskorrektur aus T-35. Sie betrifft Quote, Katalog und Detaildiagramm;
 `instrument.currency` ersetzt kein fehlendes `latest_currency`. Der
 Generationsauftrag bleibt bei T-35. Es entsteht kein zweiter Kursdecoder.
 
-[T-40](../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md) setzt
+[T-40](../_tickets/40-done/T-40-detailanzeige-aus-feldkatalog.md) setzt
 Schritt 2 um und zeigt Plugin-Beträge in ihrer Originalwährung.
 [T-38](../_tickets/40-done/T-38-basiswaehrung-und-devisenkurse.md) ergänzt
 anschließend FX und die Bewertung je Depot. Ein Plugin-Detailbetrag von

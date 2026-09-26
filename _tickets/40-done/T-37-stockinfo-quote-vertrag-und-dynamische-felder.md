@@ -152,7 +152,7 @@ Die weitere Entscheidung und ihr Stand werden hier festgehalten.
 
 Die Umsetzung des bewerteten Vertrags liegt in
 [T-39](../40-done/T-39-identitaet-normalisieren.md) und
-[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md), danach folgt
+[T-40](T-40-detailanzeige-aus-feldkatalog.md), danach folgt
 [T-38](../40-done/T-38-basiswaehrung-und-devisenkurse.md). T-39 übernimmt die gemeinsame
 Pflichtfeldprüfung einschließlich Kurswährung aus
 [T-35](../10-backlog/T-35-stockinfo-generation-und-waehrung.md).

@@ -108,7 +108,7 @@ Identität und Core-Pflichtfelder einschließlich Kurswährung geprüft und die
 geratenen Ersatzwährungen entfernt. T-38 verwendet diese Prüfung weiter.
 Der Generationsauftrag aus T-35 bleibt separat im Backlog.
 
-**[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md) liefert zuvor die
+**[T-40](T-40-detailanzeige-aus-feldkatalog.md) liefert zuvor die
 Detailanzeige.** T-38 ergänzt die Bewertung je Depot und den FX-Abruf.
 Originalkurse und Plugin-Detailbeträge behalten im gemeinsamen Cache ihre
 Währung; daraus abgeleitete Depotwerte gehören zur gewählten Basiswährung.

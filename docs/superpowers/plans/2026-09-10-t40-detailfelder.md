@@ -16,7 +16,7 @@ bei fehlendem Feldkatalog verfügbar.
 **Tech Stack:** Vue 3, Naive UI, Pinia, TypeScript, Vitest, fake-indexeddb.
 Keine neue Abhängigkeit und keine Änderung am StockInfo-Produktcode.
 
-**Spec:** [T-40](../../../_tickets/30-doing/T-40-detailanzeige-aus-feldkatalog.md).
+**Spec:** [T-40](../../../_tickets/40-done/T-40-detailanzeige-aus-feldkatalog.md).
 Das Ticket enthält sämtliche Anforderungen und Mikes bestätigte Entscheidungen.
 
 ## Globale Grenzen

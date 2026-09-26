@@ -1,5 +1,7 @@
 # T-47 · Verrechnungskonto wieder hinzufügen
 
+**Abgeschlossen am 2026-09-26.** Mike: „T-47 ist erledigt“.
+
 **Stand:** Mike meldet am 2026-09-26: Verrechnungskonto gelöscht; Hinzufügen
 ist anschließend nicht mehr möglich. Als Funktionskorrektur nach T-45 und vor
 den optischen Detailänderungen T-46 aktiviert. Codex hat die Korrektur umgesetzt und selbst geprüft.
@@ -35,8 +37,8 @@ ihre bestehende Kursprüfung. Funktioniert auch ohne StockInfo-Katalog.
 
 ## Auflösung
 
-Fassung `4c51480` technisch freigegeben (Runde 1, `claude`). Mikes
-Abschlussentscheidung bleibt offen und wird getrennt dokumentiert.
+Fassung `4c51480` technisch freigegeben (Runde 1, `claude`). Mike hat
+T-47 am 2026-09-26 abgeschlossen.
 
 ## Umsetzung und Selbstprüfung · Codex · 2026-09-26
 
@@ -124,3 +126,17 @@ Tastaturbedienung wurden nicht erneut live nachgestellt, sondern anhand der
 Codex-Angabe und der Maßeinheiten-Rechnung als plausibel eingestuft.
 
 **Ergebnis:** Fassung `4c51480` technisch freigegeben. Kein `changes_requested`.
+
+
+## Abschluss · 2026-09-26
+
+**Mikes Abschlussentscheidung:** „T-47 ist erledigt“ — direkt im Codex-Chat.
+
+Technische Freigabe liegt vor, keine erforderliche Nacharbeit offen.
+Ticket nach `40-done/` verschoben; frühere Prüfurteile und damalige
+Abnahmestände bleiben als Historie erhalten.
+
+**Doku-Abgleich:** STATUS, Board-README und Ticket-Verweise auf den Abschluss
+und den neuen Ablageort aktualisiert. Kein Produktcode geändert; vorhandene
+Prüfnachweise bleiben gültig. Allgemeine Konventionsübernahme weiterhin offen
+(`2026-09-11-activity-feed` → `2026-09-11-lessons-follow-through`).

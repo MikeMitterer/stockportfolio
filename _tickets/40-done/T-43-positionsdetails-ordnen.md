@@ -24,7 +24,7 @@ Rollen, Phase und Reviewfassung stehen ausschließlich in
 [`STATUS.md`](../STATUS.md).
 
 Die technische Grundlage für die StockInfo-Zusatzwerte ist in
-[T-40](../30-doing/T-40-detailanzeige-aus-feldkatalog.md) bereits umgesetzt und unabhängig
+[T-40](T-40-detailanzeige-aus-feldkatalog.md) bereits umgesetzt und unabhängig
 freigegeben. T-43 folgt darauf als Umbau der Bedienansicht. Der T-40-Review
 wird nicht wiederholt; Mikes Abschlussabnahme für T-40 bleibt offen.
 
