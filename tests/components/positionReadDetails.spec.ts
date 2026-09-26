@@ -5,6 +5,7 @@ import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import { useFieldsStore } from '@/stores/fields'
 import PositionCard from '@/components/PositionCard.vue'
 import PriceChart from '@/components/PriceChart.vue'
+import AssetTypeHint from '@/components/AssetTypeHint.vue'
 import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
 import { toQuoteCacheEntry } from '@/api/mappers'
 import { normalizeQuote } from '@/api/normalizers'
@@ -44,6 +45,24 @@ function buttonWithText(wrapper: ReturnType<typeof mount>, label: string) {
 }
 
 describe('Positionsdetails nach Aufgabe', () => {
+  it('unterscheidet sechs Typen visuell und erhält neue Kennungen mit neutralem Symbol', async () => {
+    const wrapper = mount(AssetTypeHint, { props: { type: 'stock', label: 'Asset-Typ' } })
+    const shapes = new Set<string>()
+    for (const type of ['stock', 'etf', 'etc', 'fund', 'crypto', 'bond', 'new-plugin-type']) {
+      await wrapper.setProps({ type })
+      shapes.add(wrapper.get('svg').element.innerHTML)
+      expect(wrapper.get('button').attributes('aria-label')).toBe(`Asset-Typ: ${type}`)
+    }
+    expect(shapes.size).toBe(7)
+    const fallback = wrapper.get('svg').element.innerHTML
+    await wrapper.setProps({ type: 'another-plugin-type' })
+    expect(wrapper.get('svg').element.innerHTML).toBe(fallback)
+    expect(wrapper.get('button').attributes('aria-label')).toBe('Asset-Typ: another-plugin-type')
+    await wrapper.setProps({ type: null })
+    expect(wrapper.find('button').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it.each(['etc', 'fund', 'crypto', 'new-plugin-type'])('zeigt den aktuellen StockInfo-Typ %s bereits mobil beim Namen', (type) => {
     const row = makeRow()
     if (!row.quote) throw new Error('Kurs fehlt')

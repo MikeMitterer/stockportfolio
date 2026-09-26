@@ -482,8 +482,12 @@ Teil dieser Prüffassung.
   gegenüber einer gespeicherten alten Gattung. Offene Kennungen einschließlich
   etc, fund, crypto und new-plugin-type werden unverändert durchgereicht.
 - Gemeinsamer `AssetTypeHint` für Desktop/Mobile. Mike fand den ersten Textentwurf
-  schlecht; endgültig steht ein dezentes 16-px-Etikett-SVG neben dem Namen.
-  Microsoft Codicons tag, Herkunft/Lizenz in THIRD_PARTY_NOTICES.md. Tooltip
+  schlecht; auf seinen Folgeauftrag stehen unterschiedliche Lucide-SVGs neben
+  dem Namen: stock/Kurschart, etf/Ebenen, etc/Edelstein, fund/Kreisdiagramm,
+  crypto/Münzen, bond/Urkunde. Unbekannte Typen bekommen ein neutrales Etikett.
+  Dies ist ausschließlich eine Darstellungszuordnung, keine Typbeschränkung.
+  Auf Mikes letzten Wunsch 14 statt 16 px und 75 % Deckkraft mit text-muted.
+  Herkunft/ISC-Lizenz in THIRD_PARTY_NOTICES.md. Tooltip
   öffnet am Desktop per Hover/Fokus, mobil per Tippen; der Klick öffnet nicht
   die Zeile. Cash trägt keine StockInfo-Typmarkierung.
 - Typangabe aus dem Informationstab entfernt; bei der Bundesanleihe im Browser
@@ -496,10 +500,15 @@ Teil dieser Prüffassung.
   Mobile 390 px mit per Tippen geöffnetem „Asset-Typ: etf“, keine gleichzeitig
   geöffnete Detailansicht und kein horizontaler Überlauf. EUR in KPI und
   Statuszeile bei beiden Breiten sichtbar. Desktopansicht wiederhergestellt.
-- Regression: fünf Typ-/Leer-Tab-Proben zunächst rot. Aktuelle Suite 749 Tests
+- Regression: fünf Typ-/Leer-Tab-Proben zunächst rot. Aktuelle Suite 750 Tests
   / 58 Dateien, Lint, Typecheck und diff-check grün. Statuszeilentest wechselt
   von Europa (EUR) auf Amerika (USD). Alle angefassten TS/Vue-Bezeichner per
   Compiler-API inventarisiert, deutsche Altvariable in AppStatusBar bereinigt.
+- Symbol-Nachtrag: sieben verschiedene SVG-Geometrien einschließlich Fallback
+  geprüft; weitere freie Kennungen behalten Fallback und unveränderten zugänglichen
+  Namen. Browser 1440/390 px: unterschiedliche ETF-/Aktien-/Anleihen-Symbole,
+  Mobile-Tooltip öffnet ohne Details, kein horizontaler Überlauf. Nach Verkleinerung
+  14 px / opacity 0.75 im Desktop-Browser gemessen.
 
 **Doku-Abgleich:** README „Position information“, mobile Bedienung und
 „Portfolio base currency“ aktualisiert. T-48 nennt den bereits umgesetzten

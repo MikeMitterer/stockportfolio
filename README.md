@@ -116,7 +116,9 @@ schema 5 rebuilds older quote caches; portfolio positions remain stored.
 
 ### Position information
 
-The main row has a small tag icon beside the name, on desktop and mobile.
+The main row has a small type icon beside the name, on desktop and mobile.
+Stocks use a chart, ETFs layers, ETCs a gem, funds a pie chart, crypto coins
+and bonds a scroll. Other dynamic types use a neutral tag icon.
 Hover or focus it to see the current StockInfo asset type; tap it on mobile.
 The tooltip preserves new type identifiers without a fixed list.
 The type is not repeated in the details.
@@ -199,7 +201,8 @@ Empty notes leave no gap. Cash opens with **Valuation**. Information tabs withou
 content are hidden; loading states, missing cached details and errors remain
 accessible. Additional values of zero or false count as content.
 
-The icons for expanding and collapsing all groups use Microsoft Codicons;
+Asset type icons use Lucide. The icons for expanding and collapsing all groups
+use Microsoft Codicons;
 see [third-party notices](THIRD_PARTY_NOTICES.md).
 
 
