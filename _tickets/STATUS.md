@@ -13,9 +13,11 @@ Container, nicht nur den Coder-Angaben. Mikes Nachtrag (eigenes
 `docker/README.md`, früher GitHub-Link, gegenseitige Links) ist in der
 begrenzten Runde 2 (`8a8e77a`) ebenfalls technisch freigegeben — Vorschau
 selbst mit dem echten Shared-Helfer erzeugt, 4.078 Bytes bestätigt.
-Der Abgleich mit den neuen Docker-Skills ist umgesetzt und für Runde 3
-an Claude übergeben: frühe Push-Marker-Entwertung, Vorschau-Ausschlüsse und
-Anleitungen. Docker-Hub-Veröffentlichung kommt erst danach; bisher kein Push. T-48 ist durch Mike abgeschlossen.
+Mike hat Claudes Freigabe bestätigt und die Git-Integration beauftragt; beide
+Repositories sind nach master übernommen und gepusht. Sein neuer Nachtrag
+zur Bereinigung doppelter Docker-README-Vorschauen ist umgesetzt und als
+begrenzte Runde 4 an Claude übergeben.
+Docker-Hub-Veröffentlichung steht weiter aus; bisher kein Image-Push. T-48 ist durch Mike abgeschlossen.
 T-35/T-36 bleiben im Backlog.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
@@ -33,8 +35,8 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `observer`: `codex-observer`
 - `phase`: `ready_for_review`
 - `ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `handoff_commit`: `bbcb9e0e9a3d9377c709fc2edf021be41a5baf8d`
-- `review_round`: `3`
+- `handoff_commit`: `7aef0196b7e298cb667afaac50c7353816128958`
+- `review_round`: `4`
 - `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
@@ -220,27 +222,31 @@ Leer.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-49 · Runde 3 · Commit `bbcb9e0e9a3d9377c709fc2edf021be41a5baf8d`**
+**codex → claude · T-49 · Runde 4 · Commit `7aef0196b7e298cb667afaac50c7353816128958`**
 
-Bitte den begrenzten Nachtrag seit c059f4d prüfen: frühe Entwertung des
-Push-Markers bei neuem Buildversuch, zwei Gegenproben für Plattform-/Git-Fehler,
-Vorschau-Ausschlüsse sowie ergänzte READMEs. 61 Dateien / 783 Tests, Lint,
-abschließender Typecheck und 19 Docker-Prozesstests grün; ShellCheck/XML/diff-check
-sauber. Echte README-Vorschau 4.609 Bytes. Bestehender amd64-Container nach
-Stop/Start healthy, Browser-Reload erhält fünf Positionen. Laufzeit unverändert.
+Mike meldet deine frühere Bestätigung; Git-Integration ist auf seinen Auftrag
+bereits erfolgt. Neuer ausdrücklicher Nachtrag: doppelte README-Vorschauen
+bereinigen. Bitte ausschließlich Diff seit b058682 prüfen: Script und Anleitung
+verwenden den Shared-Default docker/preview/README.md; alte lokale Testausgaben
+unter logs entfernt. docker/README.md bleibt einzige gepflegte Upload-Quelle.
 
-Marker-/Image-Abgleich aus der Observer-Nachricht im Ticket belegt; vor dem
-späteren Push erneut prüfen. Mike bestätigt ausdrücklich, dass auf Docker Hub
-noch nichts gepusht wurde; Veröffentlichung kommt erst. Kein Push im Review.
-Details und Doku-/Lessons-Abgleich im Ticket unter „Abgleich mit neuen Docker-Skills“.
+61 Dateien / 783 Tests, Lint/Typecheck, bash -n/ShellCheck/diff-check grün.
+Echte Vorschau einschließlich Dashboard-Screenshot: 4.734 Bytes; Bild-URL HTTP 200. Keine Änderung
+an Containerlaufzeit oder Upload-Quelle; kein neuer Browserlauf nötig.
+Kein Docker-Hub-Push erfolgt. Details im Ticket „README-Vorschauen bereinigen“.
+
+**codex-observer → claude · T-49 · Nachweisgrenze Runde 3/4.**
+Mike hat die frühere Bestätigung gemeldet und die Git-Integration ausdrücklich
+beauftragt. Im Ticket fehlt noch deine schriftliche Rückgabe für Runde 3
+(`bbcb9e0`, insbesondere die frühe Marker-Entwertung); `last_reviewed` steht
+weiter auf Runde 2. Bitte bei der Rückgabe tatsächlich bereits geprüfte
+Fassungen und Befunde nachtragen, ohne erledigte Prüfungen zu wiederholen.
+Falls diese Prüfung noch nicht erfolgt ist, die offene Grenze ausdrücklich
+benennen und den betreffenden Nachtrag im bestehenden T-49-Auftrag mitprüfen.
+Der enge Runde-4-Diff allein belegt die Marker-Korrektur aus Runde 3 nicht.
 
 
-**Nachtrag von codex auf Mikes ausdrücklichen Auftrag · Commit `9c1d6d1`:**
-Unraid-Vorlage zentral unter
-`/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
-angelegt (noch uncommitted/unveröffentlicht). Lokale XML-Kopie ausdrücklich
-entfernt, unraid/README und AGENTS auf die einzige Quelle umgestellt. Bitte
-zusätzlich diesen Dokumentationsdiff prüfen; Übergabe bbcb9e0 bleibt unverändert
-prüfbar. Zentraler XML-Inhalt entspricht der freigegebenen Vorlage mit gesetzter
-TemplateURL; xmllint auf zentraler Vorlage und temporärer Testkopie erfolgreich.
-Root-README und docker/README verlinken weiterhin die erhaltene Unraid-Anleitung.
+Mike hat zusätzlich den Dashboard-Screenshot im Docker-README und die allgemeine
+Screenshot-Regel im Docker-Skill beauftragt; beide umgesetzt. Auf seinen weiteren
+Auftrag werden die StockPortfolio-Nachträge committed und lokal nach master
+übernommen. Kein Push beauftragt. Der eigene Runde-4-Prüfbericht bleibt offen.

@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 14:30:55 CEST · codex · README-Vorschauen bereinigt und Dashboard-Screenshot ergänzt; Hub-Vorschau 4.734 Bytes, Bild erreichbar. Auf Mikes Auftrag folgen Commit und lokaler Merge; Screenshot-Regel im Docker-Skill committed.
+- 2026-09-26 14:30:13 CEST · codex-observer · T-49: Verifier um schriftliche Zuordnung der Runde-3-Prüfung gebeten. Die gemeldete Nutzerbestätigung und autorisierte Git-Integration bleiben gültig; der begrenzte Runde-4-Diff ersetzt keinen Nachweis zur vorherigen Marker-Korrektur.
+- 2026-09-26 14:27:49 CEST · codex · README-Doppelungen bereinigt: nur docker/README.md als Quelle und docker/preview/README.md als erzeugte Vorschau. 783 Tests und Prüfungen grün; begrenzten Nachtrag an Claude übergeben.
+- 2026-09-26 14:26:07 CEST · codex · Bereinigt auf Mikes Nachtrag die Docker-README-Vorschauen: eine gepflegte Quelle und ein gemeinsamer Ausgabeort; alte Testausgaben unter logs werden entfernt.
 - 2026-09-26 14:21:02 CEST · codex · Mike hat Commit, Merge und Git-Push beauftragt; Docker Hub folgt separat. 783 Tests, Lint und Typecheck erfolgreich; zentrale Unraid-Vorlage separat committed.
 - 2026-09-26 14:16:44 CEST · codex · Unraid-Vorlage im zentralen Templates-Repository abgelegt und auf Mikes Auftrag die lokale XML-Kopie gelöscht. Anleitung und AGENTS zeigen auf die einzige Quelle; XML geprüft, nichts veröffentlicht.
 - 2026-09-26 14:13:31 CEST · codex · Docker-Skill-Abgleich abgeschlossen und als Runde 3 an Claude übergeben: Push-Marker korrigiert, Vorschauen ausgeschlossen, Anleitungen ergänzt. 783 Tests grün; Docker-Hub-Push steht wie geplant noch aus.
@@ -46,9 +50,5 @@
 - 2026-09-26 10:10:16 CEST · codex · Claude hat Runde 3 freigegeben. Link-Löschbestätigung erhält mehr Inhaltsabstand; Depotgruppen ohne Ist- und Zielanteil werden in Balken und Kurzliste ausgeblendet. Browserprüfung läuft.
 - 2026-09-26 10:09:40 CEST · claude · T-46 Runde 3 technisch freigegeben: links.newLink-Fix live in beiden Sprachen bestätigt, neuer Regressionstest grün (58 Dateien/743 Tests); Owner zurück an Codex für Löschbestätigungs-Abstand und leere Depotgruppen ausblenden
 - 2026-09-26 10:06:40 CEST · codex · Mehr Inhaltsabstand für die Link-Löschbestätigung aufgenommen. Vorhandene Gestaltung der Positions-Löschbestätigung geprüft; Umsetzung folgt nach Rückgabe der laufenden Claude-Prüfung.
-- 2026-09-26 10:03:07 CEST · claude · startet unabhängigen Review von T-46 Runde 3, Fassung c48f212 (Übersetzungsfix)
-- 2026-09-26 09:58:58 CEST · codex · StockInfo T-73 liegt im Backlog, StockPortfolio T-48 erfasst die dynamische Übernahme. Übersetzungsfehler bei neuen Links korrigiert, DE/EN im Browser geprüft; 743 Tests grün, T-46 Runde 3 an Claude übergeben.
-- 2026-09-26 09:56:53 CEST · claude · T-46 Runde 2: changes_requested — links.newLink erscheint als roher Schlüssel beim Verweis hinzufügen (live bestätigt); übrige Änderungen ohne Befund; Owner zurück an codex
-- 2026-09-26 09:56:22 CEST · codex · Dynamische Plugin-Typen geprüft: StockPortfolio begrenzt sie fälschlich auf stock/etf. Vollständiger REST-Typkatalog fehlt aktuell; Bedarf als StockInfo T-73 und konsumierende Übernahme als StockPortfolio T-48 erfasst.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
