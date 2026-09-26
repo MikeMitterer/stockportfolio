@@ -183,7 +183,8 @@ choice is kept for the next visit.
 ### Detail notes and information
 
 The detail navigation uses text tabs with a thin underline for the active area,
-without button backgrounds. On mobile the tabs wrap into two rows.
+with a subtle background behind the navigation. On mobile a compact menu selects
+the area in one line; no horizontal scrolling is needed.
 Saved position notes appear below the detail toolbar on desktop and mobile.
 Empty notes leave no gap. Cash opens with **Valuation**. Information tabs without
 content are hidden; loading states, missing cached details and errors remain

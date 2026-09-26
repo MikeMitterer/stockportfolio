@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton } from 'naive-ui'
+import { UxCaret } from '@mmit/ux-foundation'
+import { NButton, NDropdown } from 'naive-ui'
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { formatAge } from '@/composables/useRelativeTime'
 import { useFieldsStore } from '@/stores/fields'
@@ -29,6 +30,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
 const client = inject<StockInfoClient | null>(STOCK_INFO_CLIENT, null)
 const section = ref<DetailSection>(props.row.position.group === 'cash' ? 'portfolio' : 'history')
 
+const sectionMenuOpen = ref(false)
 const isCash = computed(() => props.row.position.group === 'cash')
 const stockInfoSymbol = computed(() => positionSymbol(props.row))
 const stockInfoIsin = computed(() => positionIsin(props.row))
@@ -62,6 +64,12 @@ const sectionLabels: Record<DetailSection, string> = {
   asset: 'drilldown.sectionAsset', details: 'drilldown.sectionDetails',
 }
 
+const sectionOptions = computed(() => sections.value.map(key => ({ key, label: t(sectionLabels[key]) })))
+function selectSection(key: string | number): void {
+  const selected = sections.value.find(candidate => candidate === key)
+  if (selected) section.value = selected
+}
+
 watch(() => [props.row.position.id, props.row.position.group], () => {
   section.value = isCash.value ? 'portfolio' : 'history'
 })
@@ -78,6 +86,14 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
   <div class="position-details">
     <div class="position-details__top">
       <nav class="position-details__nav" :aria-label="t('drilldown.sections')">
+        <div class="position-details__selection">
+          <NDropdown v-if="sections.length > 1" v-model:show="sectionMenuOpen" trigger="click" :options="sectionOptions" :value="section" @select="selectSection">
+            <NButton text size="small" :aria-label="`${t('drilldown.sections')}: ${t(sectionLabels[section])}`" aria-haspopup="menu" :aria-expanded="sectionMenuOpen">
+              <span class="position-details__selection-label">{{ t(sectionLabels[section]) }}<UxCaret :open="sectionMenuOpen" size="sm" /></span>
+            </NButton>
+          </NDropdown>
+          <span v-else>{{ t(sectionLabels[section]) }}</span>
+        </div>
         <div class="position-details__tabs">
           <div v-for="available in sections" :key="available" class="position-details__tab" :class="{ 'position-details__tab--active': section === available }">
             <NButton text size="small" type="default" :aria-pressed="section === available" @click="section = available">
@@ -148,7 +164,19 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
   min-width: 0;
 
   &__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  &__nav {
+    padding: var(--space-1) var(--space-2);
+    margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, token(--surface-raised) 18%, token(--surface-card));
+  }
   &__tabs { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; gap: var(--space-4); }
+  &__selection { display: none; font-size: var(--font-sm); }
+  &__selection-label { @include row(var(--space-2)); }
+  @include below(md) {
+    &__tabs { display: none; }
+    &__selection { display: block; }
+  }
   &__tab {
     padding: var(--space-1) 0;
     border-bottom: 1px solid transparent;
@@ -188,7 +216,6 @@ watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
   &__links a { color: token(--accent); text-decoration: underline; }
   &__links span { @include muted(var(--font-xs)); }
   @media (max-width: 600px) {
-    &__tabs { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     &__facts--valuation { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
     &__facts--valuation > div:first-child { grid-column: 1 / -1; }
   }

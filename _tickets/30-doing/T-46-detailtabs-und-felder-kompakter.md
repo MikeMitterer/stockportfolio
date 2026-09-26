@@ -31,7 +31,7 @@ weniger Platz zwischen Rand, Bezeichnung, Wert und Quellenangabe.
 ## Auflösung
 
 Umsetzung und Selbstprüfung vorhanden; technische Freigabe und menschliche Abnahme offen.
-Mike hat Text-Tabs mit Unterstrich gewählt: ohne Rahmen/Buttonfläche, aktive Akzentlinie; mobile Anordnung bleibt zweizeilig.
+Mike hat Text-Tabs mit Unterstrich gewählt: ohne Rahmen/Buttonfläche, aktive Akzentlinie; mobil kompakte Bereichsauswahl statt der von Mike beanstandeten zweizeiligen Tabs.
 
 ## Umsetzungshinweis des Observers · 2026-09-26
 
@@ -84,7 +84,7 @@ Die SVG-Auswahl bleibt erhalten; normale Textfarbe mit Aufhellung beim Hover.
   Zeilenumbrüche bleiben erhalten, leere Notizen erzeugen kein Element.
   Im Desktop-Editor gespeichert und nach Reload auf Mobile wieder angezeigt.
 - Karteninnenabstand von 12 auf 8 px reduziert. Browser 1440 und 390 px geprüft;
-  mobile Tabs zwei Zeilen ohne horizontalen Überlauf (Dokument 390/390 px).
+  mobile Bereichsauswahl ohne horizontalen Überlauf (Dokument 390/390 px).
   0,0 % und Nein im Browser vorhanden, Cash bietet nur Bewertung an.
 - Codicons-SVGs ersetzen Unicode. Herkunft und CC-BY-4.0-Zuordnung in
   THIRD_PARTY_NOTICES.md; normale Textfarbe gemäß jüngster Nutzerentscheidung.
@@ -121,3 +121,18 @@ Desktop und Mobile nach der Umstellung visuell geprüft. Letzte vollständige
 Prüfung nach dieser Korrektur: 740 Tests / 57 Dateien, Lint und Typecheck grün.
 Gruppen-SVGs im Browser in normaler Textfarbe bestätigt (`rgb(196, 186, 177)`),
 transparent und ohne Buttonrand. Die SVG-Vorschau mit Akzentfarbe ist überholt.
+
+**Mobile-Nachbesserung:** Mike bestätigt Desktop, beanstandet die zweizeilige
+Textnavigation auf Mobile. Unter dem Fundament-Breakpoint md bietet jetzt ein
+Naive-Dropdown alle verfügbaren Bereiche aus derselben Liste an. Der aktuelle
+Bereich steht mit UxCaret in einer Zeile; bei nur einem Bereich entfällt die
+Auswahl. Browserwechsel Kursverlauf → Bewertung geprüft, Menü schließt und
+Beschriftung folgt. Komponententest klickt durch das echte Dropdown.
+Mikes weiterer Wunsch: sehr dezenter Hintergrund hinter der Navigation,
+ohne Rand und ohne Verschiebung der Textkante. Aus vorhandenen Token gemischt;
+keine neuen Theme-Werte und keine Fundamentänderung.
+
+**Abschließende Prüfung der Mobile-Auswahl und Hintergrundfläche:**
+`make test`: 741 Tests / 57 Dateien, `make lint` und `make typecheck` erfolgreich.
+Browser Mobile 390 px: Bewertung per Auswahl geöffnet, Label aktualisiert und
+Menü geschlossen, Dokumentbreite 390 px. Desktop Textkante bleibt bei x = 65 px.

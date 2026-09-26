@@ -101,6 +101,22 @@ describe('Positionsdetails nach Aufgabe', () => {
     wrapper.unmount()
   })
 
+  it('wechselt den Bereich über die kompakte Auswahl', async () => {
+    const wrapper = mount(PositionDrilldown, { props: { row: makeRow(), total: 1000, links: [] } })
+    const trigger = wrapper.get('.position-details__selection button')
+    await trigger.trigger('click')
+    await flushPromises()
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+    const option = [...document.querySelectorAll('.n-dropdown-option-body')].find(element => element.textContent === translate('drilldown.sectionPortfolio'))
+    if (!(option instanceof HTMLElement)) throw new Error('Bewertung fehlt in der Bereichsauswahl')
+    option.click()
+    await flushPromises()
+    expect(wrapper.find('[data-position-section="portfolio"]').exists()).toBe(true)
+    expect(trigger.text()).toBe(translate('drilldown.sectionPortfolio'))
+    expect(trigger.attributes('aria-expanded')).toBe('false')
+    wrapper.unmount()
+  })
+
   it('zeigt zuerst den Kursverlauf und wechselt gemeinsam zwischen gültigen Bereichen', async () => {
     const wrapper = mount(PositionDrilldown, { props: { row: makeRow(), total: 1000, links: [] } })
 
