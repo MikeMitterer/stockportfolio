@@ -389,3 +389,24 @@ Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen; die beiden neuen
 Nachträge aus der OUTBOX (Löschbestätigungs-Abstand bei Verweisen, leere
 Depotgruppen ausblenden) sind nicht Teil dieser Prüffassung und folgen nach
 Rückgabe an Codex.
+
+## Weitere UI-Nachträge nach Runde 3 · Codex
+
+- Link-Löschbestätigung: eigener Inhaltsabsatz mit denselben Token-Abständen
+  wie bei der Positions-Löschung (12 px vertikal, 8 px horizontal). Breite
+  begrenzt, lange Bezeichnungen dürfen umbrechen. Keine Naive-Komponente
+  über CSS überschrieben. Desktop 1440 und Mobile 390 px im Browser geprüft;
+  mobil liegt die Bestätigung bei x=80 bis 357 innerhalb der Seite. Abgebrochen,
+  keine bestehenden Links gelöscht.
+- Übersicht „Depotgruppen“: gemeinsame reaktive visibleGroups-Auswahl für
+  Balken und eingeklappte Kurzliste. Nur Gruppen mit Ist=0 und Ziel=0 entfallen;
+  ein gesetztes Ziel ohne Bestand bleibt sichtbar. Positionen und Berechnung
+  werden dadurch nicht verändert. Browser-Testdepot zeigt ETFs, Aktien,
+  Anleihen und Cash; leere Edelmetalle/Geldmarkt entfallen.
+- `make test`: 743 Tests / 58 Dateien; Lint, Typecheck und diff-check grün.
+  TS-Compiler-Inventar der beiden angefassten Vue-Dateien: englische Bezeichner.
+
+**Doku-Abgleich:** README bei „Six portfolio groups“ beschreibt das Ausblenden
+und den sichtbaren Zielanteil ohne Bestand. Der Dialogabstand verändert keine
+Bedienfolge und erfordert keine weitere Anleitung. SP-CX-02 berücksichtigt:
+die technische Freigabe der Runde 3 bleibt auf ihre alte Fassung beschränkt.

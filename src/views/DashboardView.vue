@@ -70,6 +70,9 @@ async function onLoadDemo(): Promise<void> {
 }
 
 const { result, fx, loadFx } = usePortfolioValuation()
+const visibleGroups = computed(() => (result.value?.groups ?? []).filter(
+  group => group.actualPercent !== 0 || group.targetPercent !== 0,
+))
 const positionsTable = ref<InstanceType<typeof PositionsTable> | null>(null)
 const positionGroupCount = computed(() => new Set(result.value?.rows.map(row => row.position.group) ?? []).size)
 
@@ -546,7 +549,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
             <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
             <span v-if="groupsCollapsed" class="dashboard__summary tabular-nums">
               <span
-                v-for="group in result.groups"
+                v-for="group in visibleGroups"
                 :key="group.group"
                 class="dashboard__summary-item"
                 :class="group.suggestion === 'ok' ? 'dashboard__summary-item--ok' : 'dashboard__summary-item--flagged'"
@@ -561,7 +564,7 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
             id="dashboard-groups-panel"
             class="dashboard__group-list"
           >
-            <GroupBar v-for="group in result.groups" :key="group.group" :group="group" />
+            <GroupBar v-for="group in visibleGroups" :key="group.group" :group="group" />
           </div>
         </section>
 

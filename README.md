@@ -210,6 +210,9 @@ Money market is deliberately separate from the other bonds. Bonds with a
 maturity fluctuate; money-market instruments barely do — which makes them,
 together with cash, the thing a purchase can be paid from.
 
+The dashboard group overview hides groups whose actual and target shares are
+both zero. A group with a target allocation remains visible even without holdings.
+
 Under _Settings → Links_, a link can be limited to asset kinds (`Stock` or
 `ETF / fund`) and independently to portfolio groups, including `Cash`. An
 empty selection in either filter means all kinds or groups. When both filters

@@ -94,7 +94,7 @@ function add(): void {
           <NSwitch :value="link.enabled" size="small" :aria-label="t('links.enabled')" @update:value="(value: boolean) => patch(link.id, { enabled: value })" />
           <NPopconfirm @positive-click="remove(link.id)">
             <template #trigger><NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton></template>
-            {{ t('links.confirmDeleteShort', { label: link.label }) }}
+            <p class="linkeditor__delete-confirmation">{{ t('links.confirmDeleteShort', { label: link.label }) }}</p>
           </NPopconfirm>
         </div>
       </div>
@@ -197,6 +197,13 @@ function add(): void {
 
   &__actions {
     @include row(var(--space-2));
+  }
+
+  &__delete-confirmation {
+    margin: 0;
+    padding: var(--space-3) var(--space-2);
+    max-width: min(22rem, calc(100vw - 6rem));
+    overflow-wrap: anywhere;
   }
 }
 </style>
