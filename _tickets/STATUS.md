@@ -38,7 +38,7 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
 - `review_round`: `1`
