@@ -444,8 +444,12 @@ Preview without uploading:
 
 ```bash
 ./.libs/ProjectTools/src/bash/dockerhub-readme.sh \
-  --readme docker/README.md --preview --ref master --output docker/logs/dockerhub-readme.md
+  --readme docker/README.md --preview --ref master
 ```
+
+Edit only `docker/README.md`. The helper generates `docker/preview/README.md`
+with the converted Docker Hub content and overwrites it on each preview.
+This output is ignored by Git and excluded from the Docker build.
 
 Relative image/document links become absolute GitHub URLs. Set
 `DOCKER_README_REF` to a **published** branch or commit containing those files

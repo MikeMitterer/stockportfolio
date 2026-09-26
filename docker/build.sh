@@ -216,14 +216,13 @@ updateDockerHubReadme() {
     [[ "${TARGET}" == dockerhub ]] || return 0
     local -r _ACTION="$1"
     local -r _HELPER="${PROJECT_TOOLS:-${SCRIPTPATH}/../.libs/ProjectTools/src}/bash/dockerhub-readme.sh"
-    mkdir -p "${SCRIPTPATH}/logs"
     if [[ "${_ACTION}" == --publish ]]; then
         DOCKER_README_AFTER_PUSH=1 "${_HELPER}" \
             --project-dir "${SCRIPTPATH}/.." --ref "${DOCKER_README_REF:-master}" \
             --readme docker/README.md --publish --repository "${NAMESPACE}/${NAME}" --token-file "${DOCKER_PW_FILE}"
     else
         "${_HELPER}" --project-dir "${SCRIPTPATH}/.." --ref "${DOCKER_README_REF:-master}" \
-            --readme docker/README.md --preview --output "${SCRIPTPATH}/logs/dockerhub-readme.md"
+            --readme docker/README.md --preview
     fi
 }
 

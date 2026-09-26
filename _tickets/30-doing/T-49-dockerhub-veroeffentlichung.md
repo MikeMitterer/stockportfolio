@@ -496,3 +496,34 @@ Mikes gemeldete Freigabe wird hier als Nutzerbestätigung dokumentiert; kein
 Prüfbericht oder last_reviewed-Eintrag im Namen von Claude erfunden. Seine
 schriftliche Rückgabe bleibt von diesem ausdrücklich beauftragten Git-Schritt
 getrennt. T-49 bleibt wegen Docker-Hub-Veröffentlichung offen.
+
+
+## Nachtrag · README-Vorschauen bereinigen · 2026-09-26
+
+Mike beanstandet vier README-Dateien unter docker. Ursache: Der lokale
+Build-Aufrufer und die README-Anleitung erzwangen noch logs/dockerhub-readme.md,
+während der Shared-Helfer bereits preview/README.md als Standard verwendet.
+logs/dockerhub-readme-default.md war zusätzlich eine eigene Testausgabe.
+
+- Beide veralteten, ignorierten Dateien unter docker/logs entfernt.
+- Abweichenden --output-Parameter und überflüssiges mkdir logs aus dem
+  README-Aufruf entfernt. Script und dokumentierter Direktaufruf verwenden
+  jetzt denselben Shared-Default docker/preview/README.md.
+- README unterscheidet gepflegte Quelle und jederzeit überschreibbare Vorschau.
+  docker/README.md bleibt die einzige Upload-Quelle. Keine Handkopie gepflegt.
+- Echte Vorschau mit ProjectTools 9f94b16 neu erzeugt: 4.609 UTF-8-Bytes;
+  Inventar enthält genau docker/README.md und docker/preview/README.md.
+  Git ignoriert die Vorschau, Docker-Kontext schließt sie ebenfalls aus.
+- make test: 61 Dateien / 783 Tests; make lint, make typecheck, bash -n,
+  ShellCheck und diff-check erfolgreich. Keine App-/Laufzeitänderung, daher
+  kein erneuter Browserlauf erforderlich. Kein Image oder README hochgeladen.
+
+Doku-Abgleich: Projekt-README unter Publishing angepasst. Container-Anleitung
+bleibt unverändert, da die interne Vorschauablage keine Containerbedienung
+ändert. AGENTS-Grenze und gemeinsame README-Pflegeregel bleiben zutreffend.
+SP-CX-01/02: Shared-Standard direkt verwenden; Beispiel und Aufrufer gemeinsam
+korrigiert. Keine Board-/Skill-Konvention geändert.
+
+Review-Nachtrag Runde 4: begrenzter Diff seit b058682; keine erneute Prüfung
+der unveränderten Containerlaufzeit. Frühere Freigabe laut Mike bestätigt;
+ein eigener schriftlicher Runde-3-Bericht von Claude liegt weiterhin nicht vor.
