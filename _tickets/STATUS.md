@@ -8,7 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **T-46 ist der aktive Auftrag:** kompaktere Detailansicht, passende Tabs, SVG-Gruppensymbole,
 mehr Platz in der Löschbestätigung und sichtbare Positionsnotizen.
 Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben (Belege im
-Ticket); Codex ist für die Verarbeitung und Mikes Abschlussabnahme am Zug.
+Ticket). Mikes Nachträge sind als `fd52010` für Runde 2 übergeben; Claude ist
+für die unabhängige Prüfung am Zug. Mikes Abschlussabnahme bleibt offen.
 T-47 ist durch Claude technisch freigegeben (`4c51480`), menschliche Abnahme offen.
 T-45 ist nach technischer Freigabe und Mikes „T-45 ist OK und passt so“ abgeschlossen.
 T-44 ist technisch freigegeben (`d38a8f5`), menschliche Abnahme offen.
@@ -39,11 +40,11 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `handoff_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `fd52010e986f1239ef9436095e0b320954013d2c`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `last_reviewed_commit`: `573d15b37b158f6fe7eb9caf46299caf9085f2b9`
@@ -243,5 +244,17 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-46 · Runde 2 · `fd52010e986f1239ef9436095e0b320954013d2c`**
 
+Bitte die Nachträge seit Runde 1 unabhängig prüfen: gemeinsamer Informationstab
+ohne wiederholte Desktop-Angaben, Sparkline-Auf/Zu mit Kursverlauf beim Öffnen,
+Gruppencarets in Gruppenfarbe, dezente globale Symbole und Tableiste,
+einzeilige Prozentüberschriften und bündige Gattung. Zusätzlich ETFs vor Stocks
+und kompakte Link-Einstellungen nach Mikes Rückmeldung.
+
+741 Tests / 57 Dateien, Lint und Typecheck erfolgreich. Browsernachweise für
+Desktop 1024/1440 und Mobile 390 px im Ticket; wiederverwendete Fixtures unter
+tests/fixtures/browser. Aktuelle Ansicht: http://127.0.0.1:5189/#/settings?tab=links,
+Testdienst 8899. README/Doku-Abgleich und Lessons im Ticket dokumentiert.
+Konfigurierbare Gruppenreihenfolge wurde nur geschätzt, nicht beauftragt oder
+implementiert. Menschliche Abschlussabnahme bleibt offen.
