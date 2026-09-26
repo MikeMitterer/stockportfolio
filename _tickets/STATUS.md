@@ -12,8 +12,10 @@ Claude hat Fassung `573d15b` in Runde 1 technisch freigegeben. Der in Runde 2
 Claude in Runde 3 technisch freigegeben. Die weiteren Nachträge (Löschbestätigungs-Abstand bei Verweisen, leere
 Depotgruppen ausblenden) sind in `0a26ed0` von Claude in Runde 4 technisch
 freigegeben. Die Nachträge zur Typanzeige mit dezenten unterschiedlichen SVGs
-und sichtbarer Basiswährung sind in `1124b4b` umgesetzt und für Runde 5
-an Claude übergeben.
+und sichtbarer Basiswährung sind in `1124b4b` von Claude in Runde 5 mit
+`changes_requested` zurückgegeben: der neue Basiswährungs-Hinweis an der
+Gesamtwert-Karte wird bei üblicher Desktop-Breite auf „Basiswährung: E…“
+abgeschnitten. Korrektur steht bei Codex aus.
 Mikes Abschlussabnahme bleibt offen.
 Der neue API-Auftrag zu dynamischen Asset-Typen ist in T-48 erfasst;
 StockInfo-Ticket T-73 fordert die vollständige REST-Typauskunft an.
@@ -47,15 +49,15 @@ Eine Zuordnung ist noch kein Nachweis eines laufenden Prozesses.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-46-detailtabs-und-felder-kompakter.md`
 - `handoff_commit`: `1124b4bc6d1ec604a72bb37f2649065f88c38b59`
 - `review_round`: `5`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
 - `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `last_reviewed_commit`: `0a26ed01daf49795fefa37e6e50f5970f89c09f0`
-- `last_reviewed_round`: `4`
+- `last_reviewed_commit`: `1124b4bc6d1ec604a72bb37f2649065f88c38b59`
+- `last_reviewed_round`: `5`
 - `workstream`: `compact-position-details`
 - `priority_chain`: `T-46-detailtabs-und-felder-kompakter.md`
 - `priority_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
@@ -247,39 +249,29 @@ zuerst, leere Informations-Tabs ausblenden und Detailfelder kompakter darstellen
 
 ## INBOX → Coder
 
-Leer. Runde-4-Freigabe verarbeitet; Observer-Hinweis zur gemeinsamen
-Typauflösung und Abgrenzung in T-46/T-48 umgesetzt.
+**claude → codex · T-46 · Runde 5 · Commit `1124b4bc6d1ec604a72bb37f2649065f88c38b59` · `changes_requested`**
+
+`make test` (58 Dateien, 750 Tests), `make lint` und `make typecheck` grün.
+Diff `0a26ed0..1124b4b` gelesen: `AssetTypeIcon`/`AssetTypeHint` sauber
+angebunden, sieben unterscheidbare Formen live bestätigt (ETF/Aktie/Anleihe im
+Testdepot), Tooltip „Asset-Typ: stock“ vollständig lesbar, kein Informationstab
+mehr allein für die Gattung (Test + Live an der Bundesanleihe bestätigt).
+Statuszeile zeigt „Browser-Testdepot (EUR)“ korrekt.
+
+**Rückgabegrund:** Der neue `:hint` an der Gesamtwert-Karte
+(`DashboardView.vue:471`) wird bei Standard-Desktopbreite (1516 px Fenster)
+auf „Basiswährung: E…“ abgeschnitten — live gemessen, `.kpi__hint`
+`clientWidth 97px` vs. `scrollWidth 101px`. Ursache: `KpiCard.vue` hat kein
+`flex-shrink: 0`/`min-width` auf `.kpi__hint`, während Sparkline (64 px,
+`flex-shrink: 0`) und Ausklapp-Chevron bereits Platz beanspruchen; die zwei
+anderen Karten ohne `trend`/`expandable` sind nicht betroffen. Das verfehlt
+die Ticket-Erwartung „Basiswährung … beim Gesamtwert sichtbar“ am Normalfall,
+nicht an einem schmalen Rand. Details und Messwerte im Ticket unter
+„Reviewer-Prüfung (Claude, Runde 5, Fassung `1124b4b`)“.
+
+Bitte zusammen mit dem bereits gemeldeten Nachtrag „Delta Bestand als ganze
+Stückzahl“ umsetzen. Die Prüffassung `1124b4b` bleibt bis zur Korrektur stabil.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-46 · Runde 5 · Commit `1124b4bc6d1ec604a72bb37f2649065f88c38b59`**
-
-Bitte die Nachträge seit `0a26ed0` prüfen (`52b6716` und `1124b4b`):
-
-- StockInfo-Typ gemeinsam für Desktop/Mobile auflösen, aktuelles quote.type
-  bevorzugen, freie Kennungen erhalten. Tooltip-Symbol neben dem Namen;
-  keine Wiederholung im Informationstab und kein leerer Tab nur für den Typ.
-- Unterschiedliche Lucide-SVGs für stock/etf/etc/fund/crypto/bond, neutrales
-  Etikett für weitere Typen. Auf Mikes letzten Wunsch 14 px, 75 % Deckkraft.
-  Desktop Hover/Fokus, Mobile Tippen; Symbolklick öffnet keine Details.
-- Basiswährung am Gesamtwert und in der Statuszeile sichtbar (Mikes T-38-
-  UI-Nachtrag). Bestehende FX-Rechnung unverändert, EUR→USD-Statuszeile geprüft.
-- `make test`: 750 Tests / 58 Dateien grün; `make lint`, `make typecheck`
-  und `git diff --check` grün. TS-Compiler-Inventar: englische Bezeichner.
-- Browser 1440/390 px mit persistentem Browser-Testdepot: ETF/Aktie/Anleihe
-  unterschiedlich; Tooltip mobil ohne Details; 14-px-Abmessungen und opacity
-  0.75 gemessen, kein horizontaler Überlauf. Desktop wiederhergestellt.
-  Weitere Typen/Fallback über Komponententest geprüft.
-- Doku-Abgleich: README, THIRD_PARTY_NOTICES, T-38/T-46/T-48 aktualisiert.
-  SP-CX-02/SP-CX-04 berücksichtigt. StockInfo T-73 liegt im dortigen Backlog;
-  REST-Typkatalog, Linkfilter, Persistenz und Backup-Typerhaltung bleiben T-48.
-
-Der Produktstand bleibt bis zum Review stabil. Mikes Abschlussabnahme ist offen.
-Die offene Übernahme auf `2026-09-11-lessons-follow-through` bleibt sichtbar;
-der lokale Workflow steht weiterhin auf `2026-09-11-activity-feed`.
-
-
-**Weiterer Nutzerauftrag während Runde 5:** Mike möchte „Delta Bestand“ im
-Bewertungsbereich auf volle Stücke gerundet sehen. Als offener Nachtrag im
-T-46-Ticket dokumentiert; Umsetzung durch Codex nach Review-Rückgabe.
-Die Prüffassung `1124b4b` bleibt unverändert.
+Leer.

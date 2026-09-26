@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 10:57:22 CEST · claude · T-46 Runde 5 mit changes_requested zurückgegeben: neuer Basiswährungs-Hinweis an der Gesamtwert-Karte wird bei üblicher Desktop-Breite zu 'Basiswährung: E…' abgeschnitten (live gemessen); Icons/Tooltip/Statuszeile sonst bestätigt (58 Dateien/750 Tests grün)
+- 2026-09-26 10:54:41 CEST · codex-observer · T-46/Runde 5 blieb mindestens 15 Minuten ohne erkennbaren Prüfstart. Claude über die OUTBOX um Übernahme oder konkreten Verzögerungsgrund gebeten; Rollen und Prüffassung unverändert gelassen.
+- 2026-09-26 10:42:05 CEST · codex · hat die gewünschte Ganzzahl-Anzeige für Delta Bestand als T-46-Nachtrag erfasst. Wartet auf Claudes Rückgabe von Runde 5; die Prüffassung bleibt unverändert.
+- 2026-09-26 10:38:35 CEST · codex · hat sechs dezente Typ-SVGs und die sichtbare Basiswährung geprüft (750 Tests, Desktop/Mobile). T-46 Runde 5 ist an Claude übergeben; Produktstand bleibt bis zum Review stabil.
+- 2026-09-26 10:35:43 CEST · codex · setzt unterschiedliche SVG-Symbole für sechs Asset-Typen um; unbekannte StockInfo-Typen behalten ein neutrales Symbol und ihre originale Kennung.
 - 2026-09-26 10:20:12 CEST · claude · T-46 Runde 4 technisch freigegeben: Link-Löschbestätigungs-Abstand und leere Depotgruppen ausblenden live bestätigt (58 Dateien/743 Tests, Lint/Typecheck grün); Owner zurück an Codex für Asset-Typ-Anzeige in der Basiszeile
 - 2026-09-26 10:14:53 CEST · codex-observer · Überschneidung der neuen T-46-Typanzeige mit T-48 geprüft und Codex einen Abgleich zur gemeinsamen Typauflösung sowie zur Abgrenzung des späteren REST-Katalogs hinterlegt. Die laufende Prüffassung bleibt unverändert.
 - 2026-09-26 10:13:44 CEST · codex · Typanzeige in der Asset-Basiszeile vorbereitet: aktueller StockInfo-Typ liegt bereits im Kurs vor, auch unbekannte Kennungen müssen sichtbar bleiben. Darstellungspräferenz angefragt; laufende Claude-Prüfung bleibt stabil.
@@ -45,10 +50,5 @@
 - 2026-09-25 23:00:02 CEST · codex · T-44 Browsercheck: sechs Gruppen und bündige Gruppenköpfe am Desktop, kombinierter Linkfilter und mobile Navigation bei 390 px geprüft. Der Observer-Hinweis zur T-43-Abschlussformulierung ist verarbeitet.
 - 2026-09-25 22:52:04 CEST · codex · T-44: Gruppenmodell, einmalige ETF-Übernahme und kombinierte Verweisfilter sind implementiert; gezielte Tests bestehen. Ich prüfe nun Desktop und Mobile im Browser.
 - 2026-09-25 22:48:48 CEST · codex-observer · T-43-Abschluss gegen Ticketkopf geprüft und widersprüchliche Aussagen zu Mikes Abnahme sowie der letzten Übergabefassung per INBOX an Codex gemeldet. T-44 bleibt der aktive Auftrag; T-45 folgt in der Pri-Chain.
-- 2026-09-25 22:44:45 CEST · codex · T-43 nach Mikes Abnahme abgeschlossen; T-44 aktiviert. Ich setze die getrennten Gruppen, Verweisfilter und den mobilen Menüwunsch um.
-- 2026-09-25 22:36:42 CEST · codex · T-43: Claudes Review der mobilen Einzelkarten in Runde 3 ist technisch freigegeben. Die Browseransicht bleibt für Mikes Bedienprüfung bei 390 px geöffnet; die Abschlussabnahme steht noch aus.
-- 2026-09-25 22:35:44 CEST · claude · T-43 Runde 3 technisch freigegeben: mobile Positionskarten (eigener Rahmen, up(md)-Panel-Rahmen, 8px-Abstand) per Diff/CSS-Abgleich bestätigt; Owner zurück an codex
-- 2026-09-25 22:32:49 CEST · codex · T-43: Die überarbeitete mobile Positionsliste mit einzeln abgesetzten Karten ist als Fassung 9a92abe mit Browserprüfung bei 390 px und 729 bestandenen Tests an Claude für Runde 3 übergeben. Ich warte auf das Prüfurteil.
-- 2026-09-25 22:28:50 CEST · codex · T-43: Claudes Freigabe für Runde 2 ist verarbeitet. Ich überarbeite nach Mikes Rückmeldung die mobile Positionsliste mit klar getrennten Karten und prüfe sie erneut im Browser.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

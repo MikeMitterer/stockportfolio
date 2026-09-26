@@ -6,9 +6,11 @@ Runde 1 ist technisch freigegeben. Der in Runde 2 bestätigte Übersetzungsfehle
 (`links.newLink`) ist korrigiert und in Runde 3 (`c48f212`) technisch
 freigegeben. Die zwei Nachträge (Löschbestätigungs-Abstand bei Verweisen,
 leere Depotgruppen ausblenden) sind in Runde 4 (`0a26ed0`) technisch
-freigegeben. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen;
-ein neuer Nutzerauftrag (Asset-Typ in der Basiszeile anzeigen) ist an Codex
-übergeben und inzwischen umgesetzt; unabhängige Prüfung dieses Nachtrags folgt.
+freigegeben. Der Nutzerauftrag „Asset-Typ in der Basiszeile anzeigen“ ist
+umgesetzt; Claude hat Runde 5 (`1124b4b`) mit `changes_requested`
+zurückgegeben — der neue Basiswährungs-Hinweis an der Gesamtwert-Karte wird
+bei üblicher Desktop-Breite zu „Basiswährung: E…“ abgeschnitten. Korrektur
+steht bei Codex aus. Mikes Abschlussentscheidung für T-46 insgesamt bleibt offen.
 
 ## Für dich
 
@@ -527,3 +529,69 @@ Nach Rückgabe der Runde 5 umsetzen: Stückanzeige bei Delta Bestand auf eine
 volle Stückzahl runden, positive und negative Werte berücksichtigen. Die
 Berechnung selbst bleibt präzise. Desktop/Mobile im Browser prüfen.
 Dieser Nachtrag ist noch nicht Teil der Prüffassung `1124b4b`.
+
+## Reviewer-Prüfung (Claude, Runde 5, Fassung `1124b4b`) — `changes_requested`
+
+**Technische Prüfung mit Rückgabe.** `make test` (58 Dateien, 750 Tests — 7 neue
+Fälle gegenüber Runde 4), `make lint` und `make typecheck` selbst gegen die
+Übergabefassung ausgeführt — alle drei ohne Befund. Seit dem Handoff-Commit
+gab es keine weiteren Produktcommits; der Stand war während der Prüfung stabil.
+
+Diff `0a26ed0..1124b4b` vollständig gelesen (19 Dateien). Die neuen Komponenten
+`AssetTypeIcon.vue` (sieben Lucide-SVG-Geometrien plus Fallback) und
+`AssetTypeHint.vue` (Tooltip/Button mit `@click.stop`, Hover am Desktop,
+Klick auf Touch) sind sauber angebunden; `positionType()` in
+`positionIdentity.ts` bevorzugt `quote.type` vor der gespeicherten Gattung und
+lässt beliebige neue Kennungen unverändert durch — passend zur T-48-Abgrenzung.
+`PositionReadDetails.vue` entfernt `kindLabel` konsequent aus `sections`/`facts`,
+sodass kein Informationstab mehr allein für den Typ entsteht; der neue Test
+`zeigt keinen Informationstab nur für den bereits in der Basiszeile sichtbaren
+Typ` sowie die angepasste `quoteContract.spec.ts`-Erwartung belegen das direkt.
+`tests/components/positionReadDetails.spec.ts` prüft alle sieben SVG-Formen auf
+Verschiedenheit (`shapes.size === 7`), `aria-label` je Typ und die mobile
+Einbindung über `PositionCard`. THIRD_PARTY_NOTICES.md enthält die vollständige
+ISC-Lizenz für Lucide; Pfade/Geometrie laut Kommentar unverändert.
+
+**Live im Browser** (Testdienst Port 8899, App auf `:5189`, Fenster 1516×863)
+nachvollzogen: ETF/Aktie/Anleihe zeigen drei sichtbar unterschiedliche Symbole
+(Ebenen/Kurschart/Urkunde), Fokus-Tooltip auf AAPL zeigt sauber „Asset-Typ:
+stock“ ohne Kürzung. Statuszeile zeigt „Browser-Testdepot (EUR)“ vollständig.
+
+**Bestätigter Rückgabegrund:** Der neue `:hint` an der Gesamtwert-Karte
+(`DashboardView.vue:471`, `` `${t('fx.baseCurrency')}: ${baseCurrency}` ``)
+wird bei der Standardfensterbreite abgeschnitten. Live gemessen
+(`getComputedStyle`/`getBoundingClientRect`):
+`.kpi__hint` hat `clientWidth: 97px` bei `scrollWidth: 101px` — der Text
+„Basiswährung: EUR“ passt nicht vollständig, das Ellipsis frisst genau die
+Zeichen, die den Wert ausmachen. Sichtbar erscheint „Basiswährung: E…“ statt
+„Basiswährung: EUR“ (Zoom-Screenshot bei x=81–300/y=108–150 bestätigt). Ursache:
+`KpiCard.vue` legt `.kpi__hint` als einzig flexibles Kind in `.kpi__row` an
+(`overflow: hidden; text-overflow: ellipsis; white-space: nowrap;`, kein
+`flex-shrink: 0`), während `trend` (`flex-shrink: 0`, 64 px Sparkline) und der
+Ausklapp-Chevron bereits Platz beanspruchen — anders als bei den zwei
+bestehenden Hinweisen (Investitionsreserve, Reserve in %), die ohne
+`trend`/`expandable` auskommen und deshalb nicht überlaufen (live ebenfalls
+gemessen: `197px`/`134px` `clientWidth`, kein Unterschied zu `scrollWidth`).
+Die Codex-Notiz „EUR in KPI und Statuszeile bei beiden Breiten sichtbar“ trifft
+für die Statuszeile zu, für die Gesamtwert-Karte bei dieser Fensterbreite nicht.
+
+Dies verfehlt die im Ticket selbst formulierte Erwartung „Die Basiswährung ist
+beim Gesamtwert … sichtbar“ an genau der Stelle, an der der Währungscode
+lesbar sein soll — kein Rand- sondern der Normalfall bei üblicher
+Desktop-Breite. Kein Recheneingriff nötig, nur eine Platz-/Prioritätsfrage im
+Layout der Gesamtwert-Karte (z. B. eigene Zeile für den Hinweis oder
+`min-width`/Priorisierung gegenüber Sparkline und Chevron).
+
+**Übrige Runde-5-Änderungen — live bestätigt, kein weiterer Befund:**
+- Sieben unterscheidbare Icon-Formen inklusive Fallback für unbekannte Typen.
+- Tooltip-Text vollständig lesbar, `@click.stop` verhindert ungewolltes Öffnen
+  der Zeile beim Klick auf das Symbol.
+- Kein Informationstab mehr allein für die Gattung (Bundesanleihe: nur noch
+  Kursverlauf/Bewertung als Bereiche, Quellcode und Test bestätigen dasselbe
+  für den allgemeinen Fall).
+- Statuszeile zeigt Depotname und Basiswährung vollständig und korrekt.
+
+**Ergebnis:** `changes_requested`. Fassung `1124b4b` bleibt bis zur Korrektur
+unverändert stabil. Der offene Nutzer-Nachtrag „Delta Bestand als ganze
+Stückzahl“ ist unabhängig davon und kann mit der Korrektur zusammen umgesetzt
+werden.
