@@ -13,8 +13,8 @@ nur aus vorhandenen Instrumenten. Depotgruppen bleiben eine eigene Zuordnung.
 `GET /instrument-types` ist live verfügbar: sechs Typkennungen, `complete`
 und Quelldiagnosen. Die T-46-Typanzeige ist abgeschlossen und wird weiterverwendet.
 Die frühere API-Abhängigkeit (StockInfo T-73) ist erfüllt. Umsetzung und
-Coder-Prüfung sind abgeschlossen; unabhängiger Review und Mikes Abschluss
-stehen aus.
+Coder-Prüfung sind abgeschlossen; Claude hat Runde 1 (`2aac1e9`) technisch
+freigegeben. Mikes Abschlussentscheidung steht aus.
 
 ## Ausgangsbefund vor Umsetzung
 
@@ -168,3 +168,85 @@ SP-CX-04: vorhandenen Helfer unter `scripts/` erweitert und reproduzierbare
 Szenarien unter `tests/fixtures/` dokumentiert. SP-R-01 als einschlägige
 Gegenprobe: Datenerhalt durch Schreiben und erneutes Laden sowie Backup-Rundlauf
 geprüft. Kein neues belegtes Wiederholungsmuster; keine globale Lessons-Pflege.
+
+## Reviewer-Prüfung (Claude, Runde 1, Fassung `2aac1e9`)
+
+**Technische Freigabe.** `make test` (60 Dateien, 764 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung ausgeführt — alle drei ohne
+Befund, deckungsgleich mit der Übergabeangabe. Seit dem Handoff-Commit betraf
+der Folgecommit ausschließlich Board-Dateien; der Produktstand war während
+der Prüfung stabil.
+
+**Diff vollständig gelesen** (35 Dateien): API-Vertrag
+(`client.ts`/`types.ts`/`normalizers.ts`/`mappers.ts`), neuer Store
+`instrumentTypes.ts`, `ExternalLinkEditor.vue`, Domain (`links.ts`,
+`positionIdentity.ts`, `backup.ts`, `assetGroup.ts`), `portfolio.ts`
+(`backfillKinds` → `syncKinds`) und `App.vue`.
+
+- **Normalizer** prüft Pflichtform streng (`instrument_types: string[]`,
+  `complete: boolean`, `sources[]` mit `name`/`role`/`instrument_types`/`status`),
+  dedupliziert über `Set` und verwirft Kennungen mit Rand-Whitespace. Additive
+  Antwortfelder werden implizit ignoriert (nur bekannte Felder extrahiert) —
+  passend zur Projektkonvention.
+- **`instrumentTypes`-Store** übernimmt exakt das bereits geprüfte Muster aus
+  dem `fields`-Store (T-40): `sequence`/`pending` verhindern verspätete
+  Antworten nach Adresswechsel und doppelte parallele Abrufe; Katalogfehler
+  räumen den Katalog statt eine Rückfallliste zu zeigen.
+- **`resolveKind`** wurde tatsächlich umgedreht: vorher gewann `position.kind`
+  vor dem aktuellen Kurs, jetzt gewinnt der aktuelle Kurs
+  (`quoteType?.trim() || position.kind?.trim() || null`) — deckt sich mit der
+  expliziten Anforderung „Neuere Angaben aus StockInfo werden nicht von einer
+  veralteten lokalen Kopie verdeckt". `positionType()` delegiert jetzt an
+  `resolveKind`, eine einzige Auflösung für Anzeige und Linkfilter.
+- **`syncKinds`** (vormals `backfillKinds`) schreibt Typänderungen nicht mehr
+  nur bei fehlendem `kind`, sondern bei jeder Abweichung vom aktuellen
+  Kurstyp — und lässt die Depotgruppe dabei unverändert (die alte
+  `stocks`→`etfs`-Automigration ist entfernt, passend zu „Depotgruppen bleiben
+  eine eigene Zuordnung"). Der neue `watch` in `App.vue`
+  (`[quotesStore.quotes, portfolioStore.portfolio?.id]`) löst bei jeder
+  Kursaktualisierung aus; `quotesStore.quotes` ist ein `shallowRef`, dessen
+  `.value` bei jeder Änderung komplett ersetzt wird (nie mutiert), der Watch
+  reagiert also zuverlässig. `syncKinds` ist selbstbegrenzend: ein zweiter
+  Aufruf mit unveränderten Typen liefert `changed = 0`, kein Persistenzsturm —
+  durch den neuen Store-Test `store.syncKinds(quotes)` zweimal hintereinander
+  (1, dann 0) bestätigt.
+- **`backup.ts`**: feste `KINDS`-Liste entfernt, `kind` akzeptiert jede
+  nicht-leere getrimmte Zeichenkette — offene Kennungen überstehen Export/Import.
+
+**Live im Browser** (Testdienst Port 8899, App `:5189`, Desktop) alle vier vom
+Ticket geforderten Katalogzustände durchgespielt, nicht nur den dokumentierten
+Erfolgsfall:
+
+- `types-future` (`future-type`, `stock`; `etf` nicht mehr enthalten,
+  `complete: true`): Dropdown zeigt `future-type`/`stock` dynamisch, das
+  gespeicherte `etf` bleibt als „etf (nicht im aktuellen Katalog)" auswählbar
+  und markiert — nichts geht still verloren.
+- `types-empty` (`complete: true`, leer): Statuszeile „StockInfo bietet
+  derzeit keine Asset-Typen an. Gespeicherte Filter bleiben erhalten."; alle
+  drei bestehenden Verweise zeigen weiterhin ihre Typen mit
+  „nicht im aktuellen Katalog".
+- `types-incomplete` (`complete: false`): Statuszeile „Die Typauskunft ist
+  unvollständig …"; dieselben Filter zeigen jetzt „(gespeichert, derzeit
+  unbestätigt)" statt „nicht im aktuellen Katalog" — die vom Code
+  unterschiedene Formulierung (`complete` steuert `absentLabel`) live bestätigt,
+  nicht nur im Test gelesen.
+- `types-down` (HTTP 503): Statuszeile „Asset-Typen konnten nicht geladen
+  werden: Typkatalog im Testszenario nicht verfügbar (HTTP 503). Gespeicherte
+  Filter bleiben erhalten." — der tatsächliche Serverfehlertext erscheint,
+  keine feste Ersatzliste, keine stille Löschung.
+- Zurück auf `normal` und „Typen neu laden" geklickt: alle sechs Katalogtypen
+  wieder verfügbar, ursprüngliche Filter (`etf`/`stock`/`etf`) unverändert.
+  IndexedDB-Kontrolle vor und nach der Probe bestätigt: `links`-Array in
+  `settings` byteidentisch, keine Testreste. Dashboard nach der Probe
+  unverändert (5 Positionen, gleiche Gruppenwerte, Typ-Icons weiterhin sichtbar).
+
+**Befund ohne Nacharbeitsbedarf:** Die alten festen Optionen `links.etf`
+(„ETF / Fonds" → „ETF") und `links.stock` sind seit dieser Änderung nirgends
+mehr referenziert (`kindOptions()` verwendet jetzt die rohen Katalogwerte als
+Label) und damit tote i18n-Schlüssel. Der bestehende Katalogtest
+(`tests/i18n/catalogues.spec.ts`) prüft nur Schlüsselgleichheit zwischen
+DE/EN, keine Verwendung — deckt das nicht auf. Kein Funktionsfehler, geringes
+Gewicht; wird nicht zur Bedingung für diese Freigabe gemacht.
+
+**Ergebnis:** Fassung `2aac1e9` technisch freigegeben. Kein `changes_requested`.
+Mikes Abschlussentscheidung für T-48 bleibt offen.

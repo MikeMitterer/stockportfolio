@@ -7,11 +7,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: T-48 · dynamische Asset-Typen.** Mike hat am 2026-09-26
 „Los gehts mit T-48“ beauftragt und den verfügbaren StockInfo-Endpunkt
-`/instrument-types` genannt. Codex hat umgesetzt und geprüft; Fassung `2aac1e9` liegt
-Claude für Review Runde 1 vor.
+`/instrument-types` genannt. Codex hat umgesetzt und geprüft; Claude hat
+Runde 1 (`2aac1e9`) technisch freigegeben. Mikes Abschlussentscheidung steht aus.
 T-38/T-39/T-40/T-43/T-44/T-45/T-46/T-47 sind abgeschlossen.
-Der letzte Review bleibt T-46, Runde 6 (`4367acf`). T-35/T-36 bleiben im Backlog;
-T-41/T-42 werden in AgentLessons geführt.
+T-35/T-36 bleiben im Backlog; T-41/T-42 werden in AgentLessons geführt.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 `codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
@@ -26,15 +25,15 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `handoff_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-26`
-- `last_reviewed_ticket`: `T-46-detailtabs-und-felder-kompakter.md`
-- `last_reviewed_commit`: `4367acf3d8db7f4ceca9554377e30bfed5fb7e51`
-- `last_reviewed_round`: `6`
+- `last_reviewed_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
+- `last_reviewed_commit`: `2aac1e92792e84ab2e98cec00d07adb518dcee61`
+- `last_reviewed_round`: `1`
 - `workstream`: `dynamic-asset-types`
 - `priority_chain`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
 - `priority_ticket`: `T-48-assettypen-dynamisch-aus-stockinfo.md`
@@ -211,28 +210,32 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer.
+**claude → codex · T-48 · Runde 1 · Commit `2aac1e92792e84ab2e98cec00d07adb518dcee61`**
+
+Technisch freigegeben. `make test` (60 Dateien, 764 Tests), `make lint` und
+`make typecheck` selbst gegen die Übergabefassung grün, deckungsgleich mit der
+Übergabe. Diff vollständig gelesen (35 Dateien): Normalizer, `instrumentTypes`-
+Store (dasselbe geprüfte `sequence`/`pending`-Muster wie der `fields`-Store aus
+T-40), `resolveKind`-Umkehr (aktueller Kurs vor gespeicherter Kopie),
+`syncKinds` (selbstbegrenzend, Depotgruppe bleibt unverändert) und offene
+Kennungen in `backup.ts` — alles minimal und zielgerichtet.
+
+Live alle vier geforderten Katalogzustände durchgespielt (nicht nur den
+Erfolgsfall): `types-future` (gespeichertes `etf` bleibt als „nicht im
+aktuellen Katalog" auswählbar, `future-type` sofort verfügbar), `types-empty`,
+`types-incomplete` (eigene Formulierung „gespeichert, derzeit unbestätigt" statt
+„nicht im aktuellen Katalog" — Unterscheidung nach `complete` live bestätigt),
+`types-down` (echter Serverfehlertext, keine feste Ersatzliste). Nach Rückkehr
+zu `normal` und „Typen neu laden": IndexedDB-Kontrolle bestätigt `links`
+byteidentisch zum Ausgangsstand, keine Testreste; Dashboard unverändert.
+
+Ein Befund ohne Nacharbeitsbedarf: `links.etf`/`links.stock` sind seit dieser
+Änderung tote i18n-Schlüssel (nirgends mehr referenziert). Kein Funktionsfehler,
+keine Bedingung für die Freigabe. Details im Ticket unter
+„Reviewer-Prüfung (Claude, Runde 1, Fassung `2aac1e9`)".
+
+Owner geht zurück an Codex. Mikes Abschlussentscheidung für T-48 bleibt offen.
 
 ## OUTBOX → Verifier
 
-**Codex → Claude · T-48 · Review Runde 1 · 2026-09-26**
-
-Produktfassung: `2aac1e92792e84ab2e98cec00d07adb518dcee61`, Branch `t-48-dynamische-assettypen`.
-Ticket: [T-48](30-doing/T-48-assettypen-dynamisch-aus-stockinfo.md).
-
-Bitte die dynamischen Asset-Typen unabhängig prüfen: `/instrument-types`
-über Client/Normalizer/Mapper und gemeinsamen Store, Linkauswahl ohne feste
-Liste, erhaltene fehlende Filter und gemeinsame Typauflösung für Links/Anzeige.
-Aktuelle Kurstypen werden zentral über App/Portfolio-Store gespeichert;
-Depotgruppen bleiben unverändert. Offene Kennungen überleben Backup-Rundläufe.
-
-Belege: 764 Tests / 60 Dateien, `make lint`, `make typecheck` erfolgreich;
-Desktop 1440 × 1000 und Mobile 390 × 844, DE/EN. Katalog normal, zukünftiger Typ
-ohne Depotposition, leer, unvollständig und Fehler sowie Auswahl nach Neuladen
-geprüft. Bestehender Testbestand erhalten; Browser wieder Desktop/Deutsch,
-Testszenario normal. Start- und Szenarioanleitung in `tests/fixtures/browser/README.md`.
-
-Doku-Abgleich und Lessons-Gegenproben stehen im Ticket. Grenze: zukünftige
-Positionstypen und Backup-Rundlauf automatisiert geprüft; im Browser kein
-zusätzlicher Sicherungsdownload oder fiktiver Asset-Zugang. Keine offene
-Umfangsentscheidung. Allgemeine Konventionsübernahme bleibt separat offen.
+Leer.

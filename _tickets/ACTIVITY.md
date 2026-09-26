@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-26 12:05:53 CEST · claude · T-48 Runde 1 technisch freigegeben: dynamischer StockInfo-Typkatalog live in allen vier Zuständen geprüft (normal/future-retained/leer/unvollständig/gestört), resolveKind-Umkehr und syncKinds bestätigt (60 Dateien/764 Tests grün); Owner zurück an Codex
+- 2026-09-26 11:57:53 CEST · codex · T-48 an Claude übergeben: Fassung 2aac1e9, Review Runde 1. Links und Typanzeige teilen die Typauflösung; Katalog-, Speicher- und Browsernachweise stehen im Ticket.
+- 2026-09-26 11:56:10 CEST · codex · T-48: Dynamischer Typkatalog und gemeinsame Typauflösung umgesetzt; 764 Tests sowie Desktop-/Mobile-Prüfung bestanden. Dokumentiert die Übergabe an Claude.
+- 2026-09-26 11:40:13 CEST · codex · beginnt T-48: REST-Typkatalog anbinden, offene Typkennungen speichern und dynamische Linkfilter ohne Datenverlust umsetzen.
+- 2026-09-26 11:27:55 CEST · codex · verarbeitet die über Claude weitergeleiteten Abnahmen für T-40, T-44 und T-46 sowie Mikes direkte Abnahme für T-47. Danach ist doing leer und das Board ohne aktiven Auftrag.
 - 2026-09-26 11:25:44 CEST · claude · Mikes Chat-Entscheidung 'T-46 ist erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
 - 2026-09-26 11:22:59 CEST · claude · Mikes Chat-Entscheidung 'T-40 und T-44 sind erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
 - 2026-09-26 11:18:10 CEST · codex · hat Mikes Abschlussabnahme für T-39 dokumentiert und das Ticket nach done verschoben. Status und Verweise sind aktualisiert.
@@ -45,10 +50,5 @@
 - 2026-09-26 08:42:20 CEST · codex · Claude hat T-45 technisch freigegeben. T-47 ist aktiviert: Verrechnungskonto nach Löschen ohne StockInfo-Kurs wieder anlegen.
 - 2026-09-26 08:41:47 CEST · claude · T-45 Runde 1 technisch freigegeben: Betragsmodus-Rücksprung behoben, Root-Ursache (implizites Label) und Fix per Diff/Tests/Live-Browser bestätigt; Owner zurück an codex
 - 2026-09-26 08:36:26 CEST · claude · startet unabhängigen Review von T-45, Fassung 8ae20a6 (Runde 1)
-- 2026-09-26 08:36:20 CEST · codex · Neuer Befund: Cash kann gelöscht, über den Wertpapierdialog aber nicht wieder angelegt werden. T-47 vor den optischen Detailänderungen eingeplant; T-45 wartet bei Claude auf Review.
-- 2026-09-26 08:32:50 CEST · codex · T-45 an Claude übergeben: Fassung 8ae20a6, Browserprüfung sowie 735 Tests erfolgreich. T-46 mit den drei Detailansicht-Wünschen folgt nach dem Review.
-- 2026-09-26 07:46:05 CEST · codex · T-45: Betragswahl im Browser korrigiert und auf Desktop/Mobile geprüft; 735 Tests sowie Lint, Typprüfung und Build erfolgreich. Bereitet die Übergabe an Claude vor.
-- 2026-09-26 07:44:54 CEST · codex-observer · T-46 gegen die bestehende T-43-Detailansicht abgeglichen und Codex Hinweise zur gemeinsamen Tab-Auswahl, zum Chart-Abruf und zur Cash-Ansicht hinterlegt. T-45 bleibt aktiv; keine parallele Umsetzung angefordert.
-- 2026-09-26 07:38:58 CEST · codex · T-45 aktiviert: Untersucht den zurückspringenden Betragsmodus bei Sicherheitspuffer und Mindest-Handelsvolumen. T-44 ist technisch freigegeben; seine menschliche Abnahme bleibt separat offen.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
