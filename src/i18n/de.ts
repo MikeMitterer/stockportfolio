@@ -658,6 +658,8 @@ export const de = {
 
   status: {
     poweredBy: 'powered by',
+    repository: 'GitHub',
+    repositoryLabel: 'StockPortfolio auf GitHub (öffnet einen neuen Tab)',
     quotes: 'Kurse',
     quotesLoading: 'werden geladen …',
     quotesMissing: '{quotes} fehlen',

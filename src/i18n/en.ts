@@ -646,6 +646,8 @@ export const en: MessageSchema = {
 
   status: {
     poweredBy: 'powered by',
+    repository: 'GitHub',
+    repositoryLabel: 'StockPortfolio on GitHub (opens a new tab)',
     quotes: 'Prices',
     quotesLoading: 'loading …',
     quotesMissing: '{quotes} missing',

@@ -2,6 +2,7 @@
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { NButton } from 'naive-ui'
 import { UxStatusBar } from '@mmit/ux-foundation'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -121,5 +122,19 @@ const failures = computed(() =>
     :backend-version="apiStatus.version ?? ''"
     :backend-state-label="t('status.apiDetails', { state: stateLabel[apiStatus.state] })"
     @backend-click="router.push('/settings')"
-  />
+  >
+    <template #left>
+      <NButton
+        text
+        tag="a"
+        href="https://github.com/MikeMitterer/stockportfolio"
+        target="_blank"
+        rel="noopener noreferrer"
+        :aria-label="t('status.repositoryLabel')"
+        :title="t('status.repositoryLabel')"
+      >
+        {{ t('status.repository') }}
+      </NButton>
+    </template>
+  </UxStatusBar>
 </template>
