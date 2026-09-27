@@ -7,9 +7,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-50 · GitHub-Link in der Statuszeile](30-doing/T-50-github-link-statuszeile.md).**
 Mike hat am 2026-09-27 die Übernahme der offenen Frage direkt nach Doing und
-den sofortigen Implementierungsbeginn beauftragt. Umsetzung, eigene Prüfung
-und die unabhängige Prüfung (Runde 1, `claude`, approved) sind abgeschlossen.
-Mikes Abschlussbestätigung steht noch aus.
+den sofortigen Implementierungsbeginn beauftragt. Nach Runde 1 hat Mike die
+Darstellung korrigiert: GitHub-Symbol zwischen Herkunft und Depot, mit
+Trennpunkten wie bei StockInfo. Coder `codex` setzt diese Korrektur um.
 
 Der vorherige Auftrag ist abgeschlossen. Mike hat am 2026-09-26 ausdrücklich bestätigt:
 „T-49 ist erledigt“. Das Ticket liegt unter
@@ -30,14 +30,14 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-50 ist in Runde 1 unabhängig geprüft und technisch freigegeben (approved).
-Die Felder `last_reviewed_*` sind entsprechend aktualisiert. Mikes
-Abschlussbestätigung für T-50 steht noch aus.
+T-50 ist nach Mikes Rückmeldung in Nacharbeit. Die Freigabe von Runde 1
+bezieht sich ausschließlich auf die bisherige Textlink-Fassung;
+`last_reviewed_*` erhält diesen Nachweis. Die neue Symbolfassung ist noch ungeprüft.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `changes_requested`
 - `ticket`: `T-50-github-link-statuszeile.md`
 - `handoff_commit`: `75cac676c36f15d5041ce15c47e09a968d975670`
 - `review_round`: `1`
@@ -222,12 +222,7 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Von `claude` an `codex`: T-50, Runde 1, Fassung
-`75cac676c36f15d5041ce15c47e09a968d975670` — **approved**, keine Befunde.
-Diff, Pflichtprüfungen (Lint/Typecheck/Test selbst reproduziert, 61/783 grün)
-und Doku-Abgleich passen; SP-CX-02-Gegenprobe bestanden. Belege im Ticket
-unter „Unabhängige Prüfung · Runde 1 · claude“. Offen bleibt allein Mikes
-Abschlussbestätigung.
+Leer.
 
 ## OUTBOX → Verifier
 

@@ -3,12 +3,12 @@
 In der Statuszeile fehlt ein direkter Weg zum GitHub-Repository von
 StockPortfolio. Der Link soll wie bei StockInfo aus der App erreichbar sein.
 
-**Stand:** Auf Mikes Auftrag vom 2026-09-27 direkt unter `30-doing/`
-angelegt. GitHub-Link umgesetzt; eigene technische Prüfungen und die
-unabhängige Prüfung (Runde 1, `claude`, approved) erfolgreich.
-Mikes Abschlussbestätigung ist noch offen.
+**Stand:** Nacharbeit auf Mikes Rückmeldung vom 2026-09-27. Die bisherige
+Textlink-Fassung war in Runde 1 technisch freigegeben, entsprach aber nicht
+der gewünschten Darstellung von StockInfo. Symbol, Position und Trennpunkte sind korrigiert und durch den Coder geprüft.
+Die erneute unabhängige Prüfung steht aus.
 
-Für Mike bleibt nach der technischen Freigabe die Abschlussbestätigung offen.
+Mikes Abschlussbestätigung bleibt offen.
 
 ## Auftrag
 
@@ -17,24 +17,29 @@ Original aus `QUESTIONS.md`:
 
 Mike: „Für die Question - leg ein Ticket in doing an und starte dann gleich mit der Implementation“.
 
+Mike präzisiert: „Ich habe dir gesagt du sollst das so implementieren wie bei StockInfo - Github-Symbol zwischen Powered by... und Depot“.
+Zusatz: „Getrennt durch einen Punkt - wie eben die anderen Trennungen“.
+
 ## Umsetzung und technische Nachweise
 
 Scope: UI-only in StockPortfolio. StockInfo dient als lesbare Referenz.
 Arbeitsbranch: `t-50-github-link-statuszeile`. Kein GitHub-Issue angelegt.
 
-StockInfo nutzt den Slot `left` von `UxStatusBar` mit einem externen
-`NButton`-Link. StockPortfolio verwendet denselben Slot und einen beschrifteten
-GitHub-Link. Beschriftung und zugänglicher Name kommen aus beiden Sprachkatalogen.
-Das Ziel ist `https://github.com/MikeMitterer/stockportfolio`; der Link öffnet
-einen neuen Tab mit `rel="noopener noreferrer"`.
+Die Statuszeile übernimmt die Reihenfolge aus StockInfo:
+`powered by MangoLila · GitHub-Symbol · Depot · Kursalter`.
+Der linke Slot erhält Symbol und Kontext gemeinsam, weil `UxStatusBar` seine
+Kontext-Props vor dem Slot ausgibt. Das SVG entspricht dem ausdrücklich
+gewünschten StockInfo-Symbol. Keine Änderung an ux-foundation; keine eigenen
+Stile auf Naive-Komponenten. Die Symbolgröße und Trennpunkte verwenden
+Fundament-Token. Auf schmalen Ansichten entfällt der Trenner der ausgeblendeten
+Herkunft; das Symbol und der Trenner vor dem Depot bleiben sichtbar.
 
-Der installierte Fundament-Baustein hat kein Repository-Prop oder GitHub-Symbol.
-Ein Textlink nutzt vorhandene Bausteine ohne kopiertes SVG oder eigene
-Naive-Komponentenstile. Status, Depotkontext und Kursalter bleiben sichtbar.
+Ziel: `https://github.com/MikeMitterer/stockportfolio`, neuer Tab mit
+`rel="noopener noreferrer"`. Zugänglicher Name und Tooltip bleiben in DE/EN.
 
 ### Akzeptanzkriterien
 
-- [x] Die Statuszeile enthält einen sichtbaren Link zum StockPortfolio-Repository.
+- [x] GitHub-Symbol zwischen Herkunft und Depot, getrennt durch Punkte wie in StockInfo.
 - [x] Link ist per Tastatur erreichbar, auf schmalen Ansichten sichtbar und in DE/EN beschriftet.
 - [x] Vorhandene Statusangaben und der Weg zu den Einstellungen bleiben erhalten.
 - [x] Pflichtprüfungen und Doku-Abgleich sind dokumentiert.
@@ -45,19 +50,21 @@ Einzige aktuelle technische Matrix. ✅ geprüft, ◑ teilweise, ➖ noch ohne N
 
 | # | Prüfung | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Linkziel, Beschriftung, neuer Tab und sichere Linkattribute | Chrome: DE/EN-Label, korrektes Ziel, `_blank`, `noopener noreferrer`; Enter öffnet GitHub in separatem Tab | ✅ |
-| 2 | Darstellung auf Desktop und schmaler Ansicht; Tastatur und Statusbereich | 1440 × 900 und 375 × 812, kein horizontaler Überlauf; Tab von MangoLila erreicht GitHub; Statusklick führt nach `#/settings` | ✅ |
-| 3 | `make test`, `make lint`, `make typecheck` | 2026-09-27: 61 Testdateien / 783 Tests bestanden; Lint und Typecheck jeweils Exit 0 | ✅ |
-| 4 | Bezeichnerinventar und Doku-Abgleich | TS-Compiler-API: 509 unterschiedliche Bezeichner aus den drei geänderten Produktdateien inventarisiert; keine deutschen Bezeichner. Doku-Ergebnis unten | ✅ |
+| 1 | GitHub-Symbol, Reihenfolge und Trennpunkte | Identischer SVG-Pfad wie StockInfo. Chrome-DOM und Screenshot: Herkunft · Symbol · Depot · Kursalter, kein sichtbarer GitHub-Text | ✅ |
+| 2 | Desktop/mobil, Tastatur, DE/EN und Statusnavigation | Chrome 1440 × 900 und 375 × 812 ohne Überlauf; Tab erreicht Symbol, DE/EN-Name erhalten, Statusklick nach `#/settings`. Simulierter Kursfehler bleibt sichtbar | ✅ |
+| 3 | `make test`, `make lint`, `make typecheck` | 2026-09-27, 09:16: 61 Dateien / 783 Tests grün; Lint und Typecheck erfolgreich | ✅ |
+| 4 | Bezeichnerinventar und Doku-Abgleich | TS-Compiler-Inventar der Komponente und SCSS-Klassen geprüft; englisch. DE/EN entfernen nur den überflüssigen Textschlüssel. Anleitungen weiterhin zutreffend | ✅ |
 
-Browserprüfung in einem isolierten Chrome-Kontext mit frischem Browserzustand.
-Zunächst wurde der Link bei nicht erreichbarem Dienst geprüft. Auf Mikes Hinweis
-wurde anschließend der vorhandene echte StockInfo-Testserver gestartet:
-temporäre SQLite-Datenbank, lokale Testquelle, keine produktiven Daten.
-Mit erreichbarem Dienst bleiben Depotname, Kursalter und grüner API-Status erhalten.
-DE/EN wurde über die bestehende i18n-Instanz geprüft; keine neue Sprachlogik.
-Der Link öffnete tatsächlich `https://github.com/MikeMitterer/stockportfolio`
-in einem zweiten Tab; die App blieb auf ihrer Einstellungsseite.
+Browserprüfung wieder mit dem vorhandenen StockInfo-Testserver, temporärer
+Datenbank und isoliertem Chrome-Kontext. Zusätzlich wurde ein Kursfehler nur
+im flüchtigen Quote-Store gesetzt und danach zurückgenommen, um die in den
+Slot verschobene Fehleranzeige zu prüfen. Keine Produktionsdaten verändert.
+Desktop-DOM: Herkunft, Punkt, Symbol-Link, Punkt, Depot, Punkt, Kursalter.
+Mobil: Herkunft samt erstem Punkt ausgeblendet; Symbol · Depot bleiben stehen.
+GitHub-Ziel, `_blank` und `noopener noreferrer` unverändert im DOM geprüft.
+
+Frühere Nachweise zur Textlink-Fassung stehen im historischen Review von Runde 1;
+sie belegen weder das Symbol noch seine gewünschte Position.
 
 Reproduktion aus dem Projektverzeichnis, Server jeweils im eigenen Terminal:
 
@@ -95,8 +102,12 @@ Verwendete Dateifassungen (SHA-256-Präfix): SP-CX-02 `ca1ac7a8458f`,
 AL-R-01 `e27b395617b8`, AL-R-02 `3a8094653f02`, AL-R-11 `052ba7162ac0`.
 Belege: STATUS/Ticket-Abgleich, Verify #1–#4 und begrenzter Produktdiff.
 
-Der fehlende Link ist ein einzelner Nutzerbefund ohne belegtes wiederkehrendes
-Fehlermuster; keine neue Lesson erforderlich.
+**Neuer Befund:** Coder und Review haben die verlinkte Referenz nicht auf
+Symbol und Reihenfolge abgeglichen. Die frühere Fertigmeldung erfüllte damit
+Mikes Vorgabe nicht vollständig. Der Observer soll die Lessons-Einordnung
+für die Autorenschaft codex und die Review-Gegenprobe prüfen. Konkrete
+Vorbeugung für diese Nacharbeit: DOM-Reihenfolge, identischer SVG-Pfad und
+sichtbare Trennpunkte direkt mit StockInfo vergleichen; Beleg in Verify #1/#2.
 
 **Doku-Abgleich:** Datei- und Überschrifteninventar geprüft. `README.md`
 („Several portfolios“, „Checking it works“) und `docker/README.md`
@@ -113,7 +124,7 @@ Container-Konfiguration noch Support-/Projektziel wechseln.
 Die allgemeine Board-Übernahme auf
 `2026-09-11-lessons-follow-through` bleibt außerhalb dieses UI-Auftrags offen.
 
-### Unabhängige Prüfung · Runde 1 · claude
+### Historie: Unabhängige Prüfung · Runde 1 · claude
 
 Geprüfte Fassung: `75cac676c36f15d5041ce15c47e09a968d975670` auf
 `t-50-github-link-statuszeile`. Vor der Prüfung die lokale SP-CX-02 sowie
@@ -149,9 +160,6 @@ kein Anlass für eine neue Lesson (Einzelfall, kein belegtes Muster).
 
 ### Auflösung
 
-Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 1, `claude`,
-approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
-Ticket bleibt bis dahin in Doing. Produktfassung
-`75cac676c36f15d5041ce15c47e09a968d975670`. Eigener Vite- und
-StockInfo-Testserver nach der Browserprüfung beendet. Keine Veröffentlichung
-erfolgt.
+Symbol-Nacharbeit und eigene Prüfungen abgeschlossen. Runde 1 bleibt als historisches Urteil zur Produktfassung
+`75cac676c36f15d5041ce15c47e09a968d975670` erhalten. Keine Freigabe der neuen
+Symbolfassung und keine menschliche Abschlussbestätigung vorhanden.

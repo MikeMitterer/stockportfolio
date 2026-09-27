@@ -113,9 +113,6 @@ const failures = computed(() =>
     :powered-by-label="t('status.poweredBy')"
     origin-name="MangoLila"
     origin-href="https://www.mangolila.at/"
-    :context="context"
-    :data-age="dataAge"
-    :failures="failures"
     :version="t('common.version', { version })"
     :backend-host="host"
     :backend-state="apiStatus.state"
@@ -124,6 +121,7 @@ const failures = computed(() =>
     @backend-click="router.push('/settings')"
   >
     <template #left>
+      <span class="status__separator status__separator--brand" aria-hidden="true">·</span>
       <NButton
         text
         tag="a"
@@ -133,8 +131,42 @@ const failures = computed(() =>
         :aria-label="t('status.repositoryLabel')"
         :title="t('status.repositoryLabel')"
       >
-        {{ t('status.repository') }}
+        <svg
+          class="status__repository-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.7c3.3-.4 6.7-1.6 6.7-7.3A5.7 5.7 0 0 0 20.2 4a5.3 5.3 0 0 0-.1-4s-1.2-.4-4.1 1.5a13.4 13.4 0 0 0-7 0C6.1-.4 4.9 0 4.9 0a5.3 5.3 0 0 0-.1 4 5.7 5.7 0 0 0-1.5 4c0 5.7 3.4 6.9 6.7 7.3a3.4 3.4 0 0 0-1 2.7V22" />
+        </svg>
       </NButton>
+      <span v-if="context" class="status__separator" aria-hidden="true">·</span>
+      <span v-if="context" class="status__context">{{ context }}</span>
+      <span v-if="dataAge" class="status__separator status__separator--age" aria-hidden="true">·</span>
+      <span v-if="dataAge">{{ dataAge }}</span>
+      <span v-if="failures" class="status__failures">{{ failures }}</span>
     </template>
   </UxStatusBar>
 </template>
+
+<style scoped lang="scss">
+.status {
+  &__repository-icon {
+    inline-size: var(--font-base);
+    block-size: var(--font-base);
+    color: token(--text-bar-accent);
+  }
+
+  &__context,
+  &__separator { color: token(--text-bar-secondary); }
+
+  &__separator--brand,
+  &__separator--age { @include below(sm) { display: none; } }
+
+  &__failures { color: token(--status-out); }
+}
+</style>
