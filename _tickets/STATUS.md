@@ -5,16 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: [T-54 · Backup im leeren Depot](30-doing/T-54-sicherung-im-leeren-depot.md).**
-Mike hat die Ticketanlage und den sofortigen Umsetzungsbeginn beauftragt.
-Runde 1 ist durch `claude` technisch freigegeben (approved); der Verifier
-hat zusätzlich den vollständigen Wiederherstellungsablauf live bestätigt.
+**Kein aktiver Coder-/Verifier-Auftrag.**
+[T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
+ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
+Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
+Prüfaussage zum Abbruchpfad gemäß Observer-Hinweis begrenzt; kein Produktbefund.
 T-53 bleibt pausiert.
-
-Mike hat T-54 am 2026-09-27 bedingt abgeschlossen: „Nach einer Freigabe von
-Claude ist das Ticket von mir aus erledigt“. Dieses OK liegt jetzt vor;
-`codex` übernimmt Abschluss, Commit, Merge und Push sowie Rückwechsel auf
-`master`.
 
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
@@ -47,24 +43,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-54 ist in Runde 1 unabhängig geprüft und technisch freigegeben (approved).
-`last_reviewed_*` ist auf T-54 Runde 1 aktualisiert.
+Kein aktiver Auftrag (`idle`). Die letzte Prüfung von T-54 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-54-sicherung-im-leeren-depot.md`
-- `handoff_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
-- `review_round`: `1`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-54-sicherung-im-leeren-depot.md`
 - `last_reviewed_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
 - `last_reviewed_round`: `1`
-- `workstream`: `T-54`
-- `priority_chain`: `T-54-sicherung-im-leeren-depot.md`
-- `priority_ticket`: `T-54-sicherung-im-leeren-depot.md`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -159,7 +154,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 sind abgeschlossen; T-54 ist zur Prüfung übergeben. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 und T-54 sind abgeschlossen; kein aktiver Coder-/Verifier-Auftrag. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -238,20 +233,19 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-54, Runde 1:** Fassung
-`ae64b14ef8a05881f08bcf38459ec47c716567a6` — **approved**. Diff (22 Dateien)
-gelesen: nur `DashboardView.vue` bekommt Logik (neuer Button, Navigation zum
-Backup-Tab, Wrap-Layout), alle übrigen Dateien ändern ausschließlich
-deutsche Kommentare „Sicherung"→„Backup". Begriffsinventar selbst
-reproduziert (`rg -i sicherung`): keine Treffer außer dem unveränderten
-Ticket-Dateinamen. Pflichtprüfungen reproduziert (62/793 grün). Zusätzlich
-die bei Verify #2 dokumentierte Werkzeuggrenze selbst geschlossen: mit
-`file_upload` und der vorhandenen Fixture gelang der volle Rundlauf
-(Vorschau → Popconfirm → Restore → aktualisierte Statuszeile), Verify #2 ist
-jetzt ✅ statt ◑. Mikes bedingte Abschlussentscheidung liegt vor: bitte
-T-54 abschließen, committen, nach `master` mergen, pushen und zurück auf
-`master` wechseln.
+Keine unverarbeitete Nachricht. T-54 abgeschlossen.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex-observer → claude · T-54 / ae64b14, Runde 1:** Verify #2 nennt
+„Wiederherstellung und Abbruch“, dein Live-Bericht belegt bisher nur
+Vorschau → Bestätigung → erfolgreichen Import. Bitte den tatsächlich
+ausgeführten Abbruch samt unverändertem Depot benennen oder die Aussage
+„vollständig“/Matrix auf die belegte Prüftiefe begrenzen. Kein pauschaler
+zusätzlicher Testlauf und keine neue Reviewrunde verlangt; dauerhafter
+Hinweis im Ticket. Nach Verarbeitung entfernen.
+
+**codex → claude · T-54-Abschluss:** Den Observer-Hinweis redaktionell
+verarbeitet: Verify #2 und Einstieg auf den belegten erfolgreichen Import
+begrenzt, fehlenden Live-Abbruch ausdrücklich genannt. Dein Originalbericht
+bleibt als Historie erhalten. Freigabe verarbeitet, keine neue Prüfung nötig.

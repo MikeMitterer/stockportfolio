@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:09:32 CEST · codex · schließt T-54 nach Claudes Freigabe und Mikes bedingter Abnahme ab und integriert den geprüften Stand nach master. Der Abbruchtest bleibt als nicht live belegt dokumentiert; fremde T-53-Änderungen bleiben außerhalb des Abschlusscommits.
+- 2026-09-27 11:07:50 CEST · codex-observer · T-53: hält ausschließlich synthetische Testdaten, EUR als Standardwährung und denselben versionierten Datensatz für Folgevideos verbindlich fest. Persönliche Depots sind von sämtlichen Aufnahmen ausgeschlossen.
+- 2026-09-27 11:05:21 CEST · codex-observer · Hat bei T-54 die Abgrenzung des Live-Nachweises angefordert: Erfolgreicher Restore ist belegt, ein Abbruch ohne Datenänderung steht im Bericht noch nicht. Kein neuer Produktbefund; Verifier soll die tatsächliche Prüftiefe präzisieren.
 - 2026-09-27 11:05:03 CEST · claude · T-54 Runde 1 technisch freigegeben (approved): Begriffsumstellung Sicherung→Backup und neuer Leerzustand-Button verifiziert, 62/793 Tests reproduziert; per Live-Browsertest den vollen Backup-Restore-Rundlauf nachgewiesen, den der Coder werkzeugbedingt nicht zeigen konnte (Verify #2 jetzt vollständig ✅); Owner zurück an codex zum Abschluss
 - 2026-09-27 11:01:39 CEST · codex · hat Mikes bedingte Abschlussentscheidung zu T-54 festgehalten. Claudes Freigabe steht noch aus; danach folgen Abschluss, Commit, Merge, Push und Rückwechsel auf master automatisch.
 - 2026-09-27 11:01:13 CEST · codex-observer · T-53: vergleicht ElevenLabs und HeyGen und berücksichtigt Mikes vorhandenen Filmora-Editor. Medienproduktion bleibt pausiert.
@@ -47,8 +50,5 @@
 - 2026-09-27 09:53:04 CEST · claude · beginnt T-51 Runde 4: prüft getrennte Rel.-%-Spalte, ausblendbare Balkenspalte und Simulationshinweis unter 1160px (Fassung ba61838)
 - 2026-09-27 09:52:28 CEST · codex · hat den Simulationshinweis unter 1160 px ausgeblendet und bei 1160/1159 px geprüft. 793 Tests, Lint und Typecheck grün; ergänzte T-51-Fassung an claude übergeben.
 - 2026-09-27 09:51:37 CEST · codex · blendet auf Mikes Vorgabe den Simulationshinweis unter 1160 px aus und prüft die exakte Breitengrenze.
-- 2026-09-27 09:50:32 CEST · codex · hat die getrennte Rel.-Prozent-Spalte und unter 1280 px ausblendbare Balkenspalte an claude übergeben. Browsergrenzen geprüft; 793 Tests, Lint und Typecheck erfolgreich.
-- 2026-09-27 09:49:42 CEST · codex-observer · Erarbeitet den Ablauf für Blogposts und ein erklärtes Video zu StockPortfolio und StockInfo. Lokale Werkzeuge für Screenshots, Sprachentwurf und Videoschnitt sind vorhanden.
-- 2026-09-27 09:47:55 CEST · codex · trennt in T-51 die relative Prozentzahl in eine eigene Spalte. Balken und Anteil-Beschriftung werden unter der xl-Grenze ausgeblendet; die Zahl bleibt sichtbar.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

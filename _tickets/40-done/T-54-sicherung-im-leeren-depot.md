@@ -8,16 +8,14 @@ Einstieg zum Wiederherstellen. Eine dritte Option soll diesen Weg sichtbar mache
 einspielen …“ führt direkt zu „Einstellungen → Backup“, wo die vorhandene
 Dateiauswahl, Prüfung und Bestätigung weiterverwendet werden.
 
-**Stand:** Umgesetzt, durch Codex geprüft und in Runde 1 durch `claude`
-technisch freigegeben (approved). Der zusätzliche Button öffnet den
-Backup-Tab; die deutsche Oberfläche verwendet „Backup“. Der Verifier hat
-zusätzlich den vollständigen Wiederherstellungsablauf live im Browser
-bestätigt, den der Coder aus Werkzeuggründen nicht vollständig zeigen
-konnte. Mikes bedingte Abschlussentscheidung greift damit.
+**Stand:** Am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben
+und aufgrund von Mikes bedingter Abschlussentscheidung abgeschlossen.
+Der zusätzliche Button öffnet den Backup-Tab; die deutsche Oberfläche
+verwendet „Backup“. Der erfolgreiche Import ist durch den Verifier live
+bestätigt. Für den Abbruchpfad liegt kein eigener Live-Beleg vor (Verify #2).
 
-**Für dich:** Kein weiterer Handgriff nötig. Das Ticket wird abgeschlossen,
-committed, nach `master` gemergt und gepusht; anschließend wird wieder
-`master` ausgecheckt.
+**Für dich:** Kein weiterer Handgriff nötig. Abschluss und Integration nach
+`master` sind autorisiert; T-53 bleibt pausiert.
 
 ## Auftrag
 
@@ -70,7 +68,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | # | Handgriff | Erwartung / aktueller Nachweis | AI |
 |---|---|---|:--:|
 | 1 | Leeres Depot öffnen, Backup-Option anklicken | DE-Klick und EN-Enter öffnen `#/settings?tab=backup`; vorhandenes BackupPanel sichtbar | ✅ |
-| 2 | Wiederherstellung und Abbruch gegenprüfen | BackupPanel-Ablauf im Diff unverändert, Domain-/Store-Tests grün. Coder: Browser-Upload vom eigenen Werkzeug abgelehnt. Verifier (Runde 1, claude): voller Live-Rundlauf mit `file_upload` gelang — Vorschau, Bestätigung, Restore und aktualisierte Statuszeile bestätigt; siehe „Unabhängige Prüfung" | ✅ |
+| 2 | Wiederherstellung und Abbruch gegenprüfen | Unveränderte Importlogik; Domain-/Store-Tests grün. Claude bestätigt Vorschau → Bestätigung → Import → aktualisierte Statuszeile live. Abbruch ohne Datenänderung nur im Quellablauf geprüft, kein eigener Live-Beleg | ◑ |
 | 3 | DE/EN sowie schmale und breite Ansicht prüfen | DE/EN bei 390 px ohne Überlauf; DE bei 1440 px einzeilig. Neuer deutscher Tab „Backup“, Download-Button „Backup“, Import „Backup einspielen …“ im Browser bestätigt | ✅ |
 | 4 | Position hinzufügen und Beispiel-Depot laden prüfen | Positionsdialog geöffnet/abgebrochen; Beispiel-Depot mit 6 Positionen geladen, Leerzustand verschwunden. Testdienst hat für 5 Demo-Wertpapiere keine Kurse | ⚠️ |
 | 5 | `make test`, `make lint`, `make typecheck` | Nach letzter Produktänderung: 793 Tests in 62 Dateien bestanden; Lint und Typecheck Exit 0 | ✅ |
@@ -86,8 +84,9 @@ Zu #2: `upload_file` verweigerte die vorhandene Datei
 `tests/fixtures/browser/valid-portfolio.backup.json` mit „not within any of the
 configured workspace roots“. Kein Umgehen der Werkzeugfreigabe. Die unveränderte
 Importlogik wurde gelesen; die vorhandenen Tests decken gültige und ungültige
-Backup-Daten ab. Eine erneute vollständige Browser-Wiederherstellung wird nicht
-behauptet und bleibt als Einschränkung für den Verifier sichtbar.
+Backup-Daten ab. Diese ursprüngliche Werkzeuggrenze des Coders hat Claude
+für den erfolgreichen Import geschlossen. Die aktuelle Einschränkung betrifft
+nur den fehlenden Live-Beleg des Abbruchs; siehe Verify #2.
 Zu #5: Die Suite enthält Warnungen aus Negativfällen sowie eine fehlende
 `stockInfoClient`-Injection in PositionsTable-Tests; keine fehlgeschlagenen Tests.
 Für die reine Verlinkung/Textänderung keine neuen Tests, die nur das Markup spiegeln.
@@ -129,7 +128,10 @@ Codex-Lessons vor Umsetzung und Übergabe per Verzeichnisinventar gelesen.
 Der Nutzerhinweis ist eine einzelne fehlende Einstiegsoption, kein belegtes
 wiederkehrendes Fehlermuster; keine neue Lesson allein aus dieser Ticketanlage.
 
-### Unabhängige Prüfung · Runde 1 · claude
+### Unabhängige Prüfung · Runde 1 · claude · historischer Originalbericht
+
+Die damalige Aussage „vollständig“ zu Verify #2 ist durch den Nachtrag unten
+auf den belegten erfolgreichen Import begrenzt; die aktuelle Matrix ist maßgeblich.
 
 Geprüfte Fassung: `ae64b14ef8a05881f08bcf38459ec47c716567a6` auf
 `t-54-sicherung-im-leeren-depot`.
@@ -173,8 +175,24 @@ nachgewiesen.
 
 ### Auflösung
 
-Umsetzung, eigene Prüfungen und unabhängige Prüfung (Runde 1, `claude`,
-approved) abgeschlossen; die bei #2 dokumentierte Browsergrenze ist durch
-den Verifier live geschlossen. Produktfassung
-`ae64b14ef8a05881f08bcf38459ec47c716567a6`. Mikes bedingte
-Abschlussentscheidung greift damit.
+**Observer-Hinweis · 2026-09-27:** Der unabhängige Browserbeleg aus Runde 1
+schließt den erfolgreichen Import einschließlich Vorschau und Bestätigung.
+Verify #2 nennt zusätzlich den Abbruch ohne Datenänderung; dafür enthält der
+Prüfbericht noch keinen konkreten Live-Schritt. Den Nachweis bitte entweder
+ergänzen, falls ausgeführt, oder die Prüftiefe an dieser Stelle einschränken.
+AL-R-01 gilt auch für Teilpfade einer Prüfzeile. Kein neuer Produktbefund und
+keine neue Reviewrunde daraus abgeleitet; Freigabe bleibt beim Verifier.
+
+**Nachtrag codex · 2026-09-27:** Observer-Hinweis verarbeitet: aktuelle Matrix
+und Einstieg begrenzen den Live-Nachweis ausdrücklich auf den erfolgreichen
+Import. Der unveränderte Abbruchpfad wurde im Quelltext gelesen, nicht live
+nachgewiesen. AL-R-01 (Format 1) angewendet; keine neue Lesson, keine neue
+Reviewrunde und kein offener Produktbefund. Der Originalbericht bleibt als
+Historie erhalten; eine weitergehende Prüfung wird nicht behauptet.
+
+**Abgeschlossen am 2026-09-27.** Produktfassung
+`ae64b14ef8a05881f08bcf38459ec47c716567a6`, Claudes Freigabe Runde 1 in
+`78e1481`, Mikes bedingte Abschlussentscheidung in `7fe7fc0`.
+Umsetzung und Prüfungen sind abgeschlossen; die dokumentierten Prüfgrenzen
+bleiben sichtbar. Seit der geprüften Fassung keine Produktänderung.
+Die Abschlussentscheidung ist mit Claudes Freigabe wirksam.
