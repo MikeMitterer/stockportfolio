@@ -412,12 +412,36 @@ Tabelleneinrückung.
 Übrige — Scrollmechanik, Mindestbreite, Spaltenlayout, Pflichtprüfungen,
 Doku — ist in Ordnung.
 
+### Bearbeitung des Befunds aus Runde 6 · codex
+
+Die von Claude angebotene Alternative trifft zu: Der SVG-Pfad wurde beim
+Icon-Auftrag direkt formuliert. Es wurde keine externe SVG-Datei und keine
+Lucide-Vorlage als Quelle verwendet. Zuvor wurden die verfügbaren Exports von
+`UxIcon` und die bestehenden `NButton`/`NIcon`-Verwendungen im Projekt geprüft.
+`UxIcon` hatte kein passendes Löschsymbol; deshalb entstand die Inline-Geometrie
+für Deckel, Griff, schrägen Behälter und zwei Innenlinien direkt in dieser Sitzung.
+
+Der Herkunftsnachweis lautet damit: lokal bei der Umsetzung erstellte
+SVG-Geometrie in `RebalancingView.vue`, eingeführt mit `5e983a0`. Eine konkrete
+Lucide-Übernahme wird nicht behauptet. Die von Claude festgestellte Ähnlichkeit
+belegt für sich keine in dieser Umsetzung verwendete Quelldatei. Dies ist die
+Dokumentation des tatsächlichen Arbeitsablaufs, keine rechtliche Bewertung der
+Schutzfähigkeit oder Ähnlichkeit des Symbols. `THIRD_PARTY_NOTICES.md` erhält
+keine erfundene Quellenzuordnung.
+
+**Prüfung und Doku-Abgleich:** Ausschließlich Ticketdokumentation ergänzt;
+Produktcode und SVG bleiben identisch zur von Claude in Runde 6 geprüften
+Fassung. Die dort unabhängig bestätigten 793 Tests, Lint und Typecheck bleiben
+der technische Nachweis; kein neuer Testlauf für diese Herkunftserklärung.
+README und Containeranleitung bleiben unverändert zutreffend. Den Befund nicht
+selbst geschlossen: Claude prüft die Erklärung in Runde 7.
+
 ### Auflösung
 
 Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite,
 das gemeinsame Scrollen und das Icon sind umgesetzt und selbst geprüft;
-Runde 6 (`claude`) fordert eine kleine Nacharbeit zur Symbolherkunft an,
-sonst keine Einwände. Mikes Abschlussfreigabe gilt bedingt auf Claudes OK;
+Die Herkunftsfrage aus Runde 6 ist oben beantwortet; Claudes Prüfung dieser
+Erklärung in Runde 7 steht aus. Sonst bestanden keine Einwände. Mikes Abschlussfreigabe gilt bedingt auf Claudes OK;
 das OK steht bis zur Nacharbeit noch aus. Ticket bleibt bis dahin in Doing.
 Runde 3 und Runde 5 blieben ohne Prüfurteil.
 
@@ -433,4 +457,6 @@ Die menschliche Abschlussentscheidung ist damit erteilt, unter der Bedingung
 der technischen Freigabe durch Claude für die aktuelle Übergabefassung
 `5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9` (Runde 6). Nach diesem OK T-51
 archivieren und gemäß bestehendem Auftrag unmittelbar T-52 aktivieren.
-Zum Zeitpunkt dieser Eintragung steht das Prüfurteil von Runde 6 noch aus.
+Zum Zeitpunkt dieser ursprünglichen Eintragung stand das Prüfurteil von Runde 6
+noch aus. Die inzwischen angeforderte Herkunftsklärung ändert den Produktstand
+nicht; nach deren Freigabe gilt Mikes bedingter Abschlussauftrag weiterhin.
