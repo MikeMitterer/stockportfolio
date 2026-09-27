@@ -2,7 +2,7 @@
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NEmpty, NSpin, NTooltip } from 'naive-ui'
+import { NButton, NEmpty, NIcon, NSpin, NTooltip } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
 import InfoHint from '@/components/InfoHint.vue'
 import { UxInlineNumber } from '@mmit/ux-foundation'
@@ -326,6 +326,13 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
               {{ t('rebalancing.simulationNote') }}
             </span>
             <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
+              <template #icon>
+                <NIcon>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
+                  </svg>
+                </NIcon>
+              </template>
               {{ t('rebalancing.clearPlan') }}
             </NButton>
           </div>

@@ -15,7 +15,7 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 **Stand:** Runde 4 technisch freigegeben (`claude`, approved): getrennte
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
 unter 1160 px. Die danach beauftragte Mindestbreite mit gemeinsamem Scrollen
-ist umgesetzt und selbst geprüft; Runde 5 und Mikes Abschlussbestätigung stehen aus.
+ist umgesetzt und selbst geprüft; Runde 6 und Mikes Abschlussbestätigung stehen aus.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
@@ -338,10 +338,23 @@ Mindestbreite und gemeinsames Scrollen. `docker/README.md`, „Features“, blei
 zutreffend: Bedienungsanpassung ohne Änderung von Betrieb oder Funktionsumfang.
 Runde 4 bleibt freigegeben; diese Ergänzung geht in Runde 5 zur Prüfung.
 
+### Icon bei „Plan leeren“
+
+Mike: „Gib zu Plan leeren noch ein Icon dazu“. Mülleimer-Symbol im vorhandenen
+Strichstil über den `NButton`-Icon-Slot und `NIcon` ergänzt. Keine zusätzliche
+Bibliothek; `UxIcon` bietet nur Navigationssymbole. Das SVG ist dekorativ,
+der zugängliche Name bleibt die vorhandene i18n-Beschriftung. Chrome bei
+889 px: Icon vorhanden, Button 118 × 28 px, weiterhin in derselben Kopfzeile.
+793 Tests, Lint und Typecheck nach der Ergänzung erfolgreich.
+
+**Doku-Abgleich:** README und Containeranleitung bleiben zutreffend; ergänzendes
+Symbol ohne Änderung an Bedienung, Funktion oder Betrieb. Wartende Runde 5
+vor Prüfurteil zurückgenommen; Mindestbreite und Icon gehen gemeinsam in Runde 6.
+
 ### Auflösung
 
 Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite
-und das gemeinsame Scrollen sind umgesetzt und selbst geprüft; Runde 5 und
+und das gemeinsame Scrollen sind umgesetzt und selbst geprüft; Runde 6 und
 Mikes Abschlussbestätigung stehen aus. Ticket bleibt in Doing. Runde 3 blieb
 ohne Prüfurteil.
 
