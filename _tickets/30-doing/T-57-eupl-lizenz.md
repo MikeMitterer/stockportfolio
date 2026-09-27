@@ -94,7 +94,7 @@ Ticketabschluss werden dadurch nicht als erledigt behandelt.
   Artefakttests und aktuelle Dokumentation gemeinsam umstellen.
 - [x] Tests, lint, typecheck, Produktionsbuild, Quellarchiv und HTTP-Auslieferung
   sowie echte Docker-Hub-Vorschau prüfen; Befunde hier nachtragen.
-- [ ] Fertige Produktfassung committen und als Runde 3 unabhängig übergeben.
+- [x] Fertige Produktfassung committen und als Runde 3 unabhängig übergeben.
 
 ### Verify
 
@@ -240,7 +240,7 @@ Keine neue Lesson aus der ausdrücklich geänderten Produktentscheidung abgeleit
 ### Auflösung
 
 Technische Umsetzung und eigene Nachweise fertig. Unabhängiger Review Runde 3
-wird nach dem Produktcommit angefordert. Rechtevereinbarung und österreichische
+angefordert für Produktfassung `28aba0924ad59f04d0f6340b931fd29b8b5f4905`. Rechtevereinbarung und österreichische
 Rechtsprüfung bleiben für Mike offen; weder Veröffentlichung noch Ticketabschluss
 sind damit freigegeben. Fremde Änderungen an ACTIVITY.md bleiben außerhalb
 der Produkt-/Ticketcommits.

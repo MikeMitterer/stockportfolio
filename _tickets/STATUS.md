@@ -15,7 +15,7 @@ Nutzungs- und Lizenzierungsrechten. Die interne Vereinbarung und die
 COMMERCIAL-LICENSE.md ist auf Mikes Klarstellung samt Verweisen entfernt.
 Die Übergabe von Runde 2 (e3d068e) ist durch diese Umfangsänderung zurückgezogen;
 kein abgeschlossener Review behauptet. EUPL-Umsetzung und eigene Prüfungen
-sind fertig; codex bereitet die neue Übergabe vor.
+sind fertig; Runde 3 ist an claude zur unabhängigen Prüfung übergeben.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -64,18 +64,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 wird auf EUPL 1.2 umgestellt. Die bisherigen Runden 1 und 2 sind
-zurückgezogen und im Ticket historisch erhalten. Die letzte abgeschlossene
-Prüfung bleibt in `last_reviewed_*` unverändert.
+T-57 ist auf EUPL 1.2 umgestellt und in Runde 3 übergeben. Die bisherigen
+Runden 1 und 2 sind zurückgezogen und im Ticket historisch erhalten. Die letzte
+abgeschlossene Prüfung bleibt in `last_reviewed_*` unverändert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-57-eupl-lizenz.md`
-- `handoff_commit`: ``
-- `review_round`: `2`
-- `owner`: `codex`
+- `handoff_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
+- `review_round`: `3`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
@@ -260,5 +260,28 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer. Runde 2 wurde auf Mikes EUPL-Entscheidung zurückgezogen; die nächste
-Übergabe erfolgt erst mit fertiger EUPL-Fassung und aktuellen Nachweisen.
+Absender `codex`, Empfänger gemäß Rollenfeld `reviewer`: T-57, Runde 3,
+Fassung `28aba0924ad59f04d0f6340b931fd29b8b5f4905`, Branch `t-57-eupl-lizenz`.
+Ticket umbenannt: `30-doing/T-57-eupl-lizenz.md`.
+
+Bitte den gesamten T-57-Umfang seit master unabhängig prüfen, einschließlich
+Build-Helfer und App-Link aus den zurückgezogenen Fassungen. Mike hat EUPL 1.2
+gewählt und die Entfernung von COMMERCIAL-LICENSE.md klargestellt. Offizielle
+EN-/DE-Texte sind bytegleich übernommen; EUPL 1.2 only ist separat erklärt.
+Persönliche Urheberschaft bei Michael Mitterer, Anbieterin und Lizenzgeberin
+MangoLila GmbH; keine unbelegte Ausschließlichkeit behauptet. LICENSING.md
+enthält die gesonderte Verbraucherklärung, keine Nutzungsbeschränkung.
+
+Aktuelle Belege im Ticket: 63 Dateien / 795 Tests, lint/typecheck und Frontend-
+Build erfolgreich; Docker linux/amd64 healthy mit EUPL-1.2-Label. Sechs HTTP-
+Downloads 200, fünf Dokumente und 122 Archivdateien bytegleich. Kommerzielle
+Datei fehlt direkt im Image und in beiden Archiven. Hub-Vorschau 6.658 Bytes,
+beide READMEs und Unraid-Anleitung abgeglichen. Offizielle deutsche Lizenz
+enthält Original-CRLF/Leerzeichen; nur dort meldet Git Whitespace, alle anderen
+Änderungen sind sauber. npm meldete beim Build 5 Funde; kein Dependency-Fix.
+
+Grenzen: keine neue Browser-Layoutprüfung, kein Live-Unraid/CA, keine Publikation.
+Die interne Rechtevereinbarung und österreichische Rechtsprüfung sind explizite
+menschliche Aufgaben, keine durch diesen Review zu ersetzenden Rechtsgutachten.
+Alte Gebührenpflichten nur als Historie erhalten. ACTIVITY enthält fremde
+Änderungen und bleibt außerhalb der Commits. Keine Board-/Skillmigration.
