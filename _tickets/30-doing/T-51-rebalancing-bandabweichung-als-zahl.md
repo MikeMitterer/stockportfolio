@@ -12,9 +12,10 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 −0,5 % beschreibt dagegen die Differenz von −0,5 Prozentpunkten zum Ziel.
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
-**Stand:** Umsetzung und eigene technische Prüfung abgeschlossen auf
-`t-51-rebalancing-bandabweichung-als-zahl`. Die unabhängige Prüfung steht aus.
-T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
+**Stand:** Umsetzung, eigene technische Prüfung und unabhängige Prüfung
+(Runde 2, `claude`, approved) abgeschlossen auf
+`t-51-rebalancing-bandabweichung-als-zahl`. Mikes Abschlussbestätigung steht
+aus. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
 Prüfung bleibt seine Abschlussbestätigung offen.
@@ -201,11 +202,57 @@ Die allgemeine Übernahme der Board-Konventionen auf
 `2026-09-11-lessons-follow-through` bleibt separat offen. Dieser Auftrag
 ändert keine Board-Konvention und erfordert daher keine Skill-Änderung.
 
+### Unabhängige Prüfung · Runde 2 · claude
+
+Geprüfte Fassung: `45f532d9a350c0355b993c0d8eae3e76fa76b54f` auf
+`t-51-rebalancing-bandabweichung-als-zahl`. Runde 1 (`ae8e83c`) wurde vor
+einem Prüfurteil zurückgenommen (siehe oben) und ist deshalb kein Gegenstand
+dieser Prüfung; nur die aktuelle Fassung wurde bewertet. Vor der Prüfung
+SP-CX-05 gelesen (Autor: codex).
+
+- **Diff gelesen (voller Umfang seit T-51-Aktivierung, `2a941de..45f532d`):**
+  `DeltaBar.vue` (neuer `colorBySign`-Prop, Farbklassen nur ohne
+  überschriebenes `label`), `formatters.ts` (`decimalSigned` aus
+  `percentSigned` extrahiert), `RebalancingView.vue` (Spaltenkopf, Balken-Label
+  bei Ziel 0 %, drei neue Hover-Popups nach dem bestehenden DELTA-Muster:
+  `NTooltip` + `.reb__hinted` + `.reb__tooltip`, bereits vor diesem Ticket für
+  „Delta“ vorhanden), i18n-Kataloge.
+- **Referenzvergleich (SP-CX-05):** `PositionsTable.vue` (Dashboard) nutzt
+  `DeltaBar` unverändert ohne `color-by-sign` — die Grundzahl (Vorzeichen,
+  Rundung) kommt aus derselben Komponente und stimmt damit mit dem Dashboard
+  überein; die Vorzeichenfarbe ist eine bewusst auf Rebalancing begrenzte
+  Ergänzung nach Mikes ausdrücklichem Wunsch, keine Dashboard-Änderung.
+- **Domänenebene geprüft:** `tradePlan.ts` setzt `relativeDeviationAfter` bei
+  `target === 0` bereits auf `0` (kein NaN/Infinity); die Ansicht fängt diesen
+  Platzhalter ab und zeigt „—“ mit Erklärung statt einer irreführenden
+  Nullabweichung.
+- **Tooltip-Wiederverwendung bestätigt:** Alle drei neuen Popups verwenden das
+  vorbestehende Delta-Muster, keine neue Abstraktion. Einzige neue CSS-Regel:
+  `white-space: nowrap` auf `.reb__hinted` — adressiert direkt Mikes „ABW. ZIEL
+  bricht um“.
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 62 Testdateien/793 Tests grün,
+  deckt sich mit der gemeldeten Zahl.
+- **Doku-Abgleich gegengeprüft:** README-Ergänzung zu den Hover-Erklärungen
+  vorhanden und zutreffend; `docker/README.md` unverändert, korrekt begründet
+  (Bedienhilfe, kein Funktions-/Betriebswechsel).
+- **Beobachtung, kein Befund:** `decimalSigned` (neu extrahiert aus
+  `percentSigned`) hat keinen eigenen Eintrag in `tests/domain/formatters.spec.ts`,
+  anders als sein Geschwister `percentSigned` dort. Verhalten ist über
+  `rebalancingDeviation.spec.ts` und meinen eigenen Testlauf abgedeckt; keine
+  Nacharbeit verlangt, für spätere Gelegenheit vermerkt.
+- **SP-CX-05-Gegenprobe abgeschlossen:** Nutzerauftrag („wie im Dashboard“,
+  spätere Präzisierungen zu Umbruch, Schriftgröße, Farbe, Kauf/Verkauf-Hinweis)
+  Punkt für Punkt gegen die Prüffassung gehalten; alle erfüllt.
+
+**Verdict: approved.** Keine blockierenden Befunde.
+
 ### Auflösung
 
-Umsetzung und eigene Verifikation abgeschlossen. Unabhängige Prüfung und
-menschliche Abschlussbestätigung stehen aus; Ticket bleibt in Doing.
+Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 2, `claude`,
+approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
+Ticket bleibt bis dahin in Doing.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
-zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wird in
-Runde 2 neu übergeben; die Rücknahme ist keine technische Abnahme.
+zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in
+Runde 2 neu übergeben und geprüft; die Rücknahme war keine technische Abnahme.

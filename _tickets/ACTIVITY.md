@@ -1,5 +1,17 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 09:45:31 CEST · claude · T-51 Runde 2 technisch freigegeben (approved): Referenzvergleich gegen Dashboard/PositionsTable.vue, Ziel-0-Sentinel und DELTA-Tooltip-Wiederverwendung geprüft, 62/793 Tests reproduziert; kleine Testlücke bei decimalSigned vermerkt, keine Nacharbeit; Owner zurück an codex
+- 2026-09-27 09:43:17 CEST · claude · beginnt T-51 Runde 2: prüft gekürzte Tabellenüberschriften mit Hover-Erklärungen (Fassung 45f532d)
+- 2026-09-27 09:42:34 CEST · codex · hat die kurzen, einzeiligen Rebalancing-Header samt DE/EN-Hover-Erklärungen an claude übergeben. Kauf / Verkauf bleibt erhalten; 793 Tests, Lint und Typecheck erfolgreich.
+- 2026-09-27 09:41:28 CEST · claude · T-51 Runde 1 zu ae8e83c: Übergabe von codex zurückgenommen (Mikes Anzeigeauftrag für Tabellenüberschriften), bevor ein Urteil abgegeben wurde; kein Prüfurteil, keine Dateiänderung; wartet auf erneute Übergabe
+- 2026-09-27 09:39:07 CEST · codex · kürzt auf Mikes Auftrag die Rebalancing-Header und ergänzt Hover-Erklärungen nach dem DELTA-Muster. Die wartende T-51-Übergabe ist dafür zurückgenommen.
+- 2026-09-27 09:38:33 CEST · claude · beginnt T-51 Runde 1: prüft relative Bandabweichung als Zahl in der Rebalancing-Ansicht (Fassung ae8e83c)
+- 2026-09-27 09:36:48 CEST · codex · hat T-51 mit Vorzeichenfarben, kleinerer Anteil-Beschriftung und IST-Wert ohne Umbruch an claude übergeben. 793 Tests, Lint und Typecheck erfolgreich; T-52 folgt nach der technischen Freigabe.
+- 2026-09-27 09:34:34 CEST · codex · ergänzt T-51 um Vorzeichenfarben der relativen Abweichung, kleinere Anteil-Beschriftung und eine umbrechungsfreie IST-Prozentzahl.
+- 2026-09-27 09:28:55 CEST · codex-observer · Hat SP-CX-05 zum fehlenden UI-Referenzvergleich in T-50 dokumentiert und Coder sowie Verifier über die konkrete Gegenprobe informiert. Beobachtet die Umsetzung von T-51; T-52 folgt laut Prioritätskette.
+- 2026-09-27 09:27:15 CEST · codex-observer · Prüft die Funktion „Decken aus“ im Rebalancing und den zugehörigen Einstellungsverweis für Mikes Erklärung.
+- 2026-09-27 09:24:45 CEST · codex · T-50 mit Mikes Bestätigung abgeschlossen und archiviert. T-51 aktiviert: Zeige die relative Bandabweichung neben dem Rebalancing-Balken und halte den Anteil nach dem Trade separat sichtbar.
+- 2026-09-27 09:23:57 CEST · codex-observer · Erfasst T-52 in Doing: Die StockInfo-Adresse in der Statuszeile soll direkt Einstellungen → Status öffnen. Vorhandener Tab-Parameter ist geprüft; Umsetzung noch offen.
 - 2026-09-27 09:23:49 CEST · claude · T-50 Runde 2 technisch freigegeben (approved): SVG-Pfad, DOM-Reihenfolge und Trennpunkte gegen StockInfo-Referenz verglichen, 61/783 Tests reproduziert; kosmetische Beobachtung ohne Nacharbeit dokumentiert; Owner zurück an codex
 - 2026-09-27 09:21:33 CEST · codex · T-51 als unmittelbaren Folgeauftrag nach T-50 eingeplant: relative Bandabweichung im Rebalancing sichtbar machen. Warte auf die unabhängige Prüfung der Symbolkorrektur von T-50; danach beginnt T-51 ohne erneute Rückfrage.
 - 2026-09-27 09:18:38 CEST · codex · T-50 korrigiert: StockInfo-GitHub-Symbol zwischen Herkunft und Depot mit Trennpunkten. Desktop/mobil geprüft, 783 Tests sowie Lint/Typecheck grün; Runde 2 an claude übergeben.
@@ -38,17 +50,5 @@
 - 2026-09-26 14:21:02 CEST · codex · Mike hat Commit, Merge und Git-Push beauftragt; Docker Hub folgt separat. 783 Tests, Lint und Typecheck erfolgreich; zentrale Unraid-Vorlage separat committed.
 - 2026-09-26 14:16:44 CEST · codex · Unraid-Vorlage im zentralen Templates-Repository abgelegt und auf Mikes Auftrag die lokale XML-Kopie gelöscht. Anleitung und AGENTS zeigen auf die einzige Quelle; XML geprüft, nichts veröffentlicht.
 - 2026-09-26 14:13:31 CEST · codex · Docker-Skill-Abgleich abgeschlossen und als Runde 3 an Claude übergeben: Push-Marker korrigiert, Vorschauen ausgeschlossen, Anleitungen ergänzt. 783 Tests grün; Docker-Hub-Push steht wie geplant noch aus.
-- 2026-09-26 14:03:56 CEST · codex · gleicht T-49 mit docker-conventions, docker-build-script und unraid-ca-template ab; prüft Build-Marker bei frühem Fehler und ergänzt konkrete Doku-/Ignore-Lücken.
-- 2026-09-26 13:51:25 CEST · claude · T-49 Runde 2 technisch freigegeben: eigenes docker/README.md live per echtem ProjectTools-Helfer geprüft (4.078 Bytes exakt bestätigt, GitHub-Link/absolute Links korrekt), neue README-Pflegeregel gegengeprüft (keine Abweichung); Owner zurück an Codex für die Veröffentlichung
-- 2026-09-26 13:49:10 CEST · codex · übernimmt auf Mikes Auftrag die README-Pflegeregel aus StockInfo AGENTS.md/T-77: beide Anleitungen inhaltlich abgleichen und unveränderte Gegenstücke begründen.
-- 2026-09-26 13:46:02 CEST · codex · hat docker/README.md und die beidseitigen Links fertiggestellt; echte Hub-Vorschau 4.078 Bytes. Übergibt den begrenzten README-Nachtrag 8a8e77a an Claude.
-- 2026-09-26 13:45:31 CEST · codex-observer · T-49: belegte Änderung von Push-Marker/latest durch den Review-Testbuild eingeordnet. Coder vor Veröffentlichung zum gemeinsamen Abgleich von Produktcommit, Marker, Image-ID und amd64 aufgefordert; Freigabe und Rollen unverändert.
-- 2026-09-26 13:42:02 CEST · codex · übernimmt Mikes Nachtrag zu T-49: eigenes docker/README.md für Docker Hub mit frühem GitHub-Link; passt Quelle und Größenregel an.
-- 2026-09-26 13:41:00 CEST · claude · T-49 Runde 1 technisch freigegeben: Docker-Build/Push-Trennung, nginx-freie Laufzeit und Shared-README-Anbindung per eigenem arm64-Testbuild und echtem Container live bestätigt (61 Dateien/781 Tests grün, README-Vorschau 23.613 Bytes exakt bestätigt); Owner zurück an Codex für den Push
-- 2026-09-26 13:35:01 CEST · codex-observer · T-49-Übergabe an Claude abgeglichen: eindeutige Prüffassung, echte Containerbelege und noch ausstehender Registry-/README-Push sind getrennt dokumentiert. Externer ProjectTools-Review und Unraid-Grenzen bleiben sichtbar; kein Eingriff nötig.
-- 2026-09-26 13:31:07 CEST · codex · übergibt T-49, Fassung f70516e, an Claude: 781 Tests und echter Container-/Browsercheck bestanden. Docker-Hub-Push folgt nach technischer Freigabe.
-- 2026-09-26 13:25:20 CEST · codex · hat Makefile und build.sh auf den StockInfo-Ablauf build, prüfen, push reduziert. Prüft jetzt die finale Commit-Fassung für die Übergabe.
-- 2026-09-26 13:19:11 CEST · codex · prüft das Docker-Image ohne nginx im Browser mit dem wiederverwendbaren Testdepot; bereitet anschließend die T-49-Übergabe vor.
-- 2026-09-26 12:55:33 CEST · codex · T-49 aktiviert: prüft Dockerfile und Build-/Push-Ziele. Übernimmt den zentralen ProjectTools-README-Helfer nach StockInfo T-77 und prüft die 25.000-Byte-Grenze.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
