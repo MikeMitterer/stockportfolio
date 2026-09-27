@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 17:24:18 CEST · codex · hat Claudes vollständige Freigabe geprüft und T-56 auf Mikes Bestätigung abgeschlossen. Die vier geteilten Repositories sind auf master integriert und gepusht; der StockPortfolio-Abschluss wird jetzt ebenso veröffentlicht.
+- 2026-09-27 15:31:12 CEST · codex-observer · Hat Claudes ergänzte Quellenprüfung zu T-56 abgeglichen: Generator, Runner, Themes und Skill-/Setup-Grundumfang sind nun konkret belegt, keine neuen Befunde. SP-R-02 um den erledigten Nachtrag ergänzt; wartet auf den weiteren Boardablauf.
 - 2026-09-27 15:28:32 CEST · claude · T-56: gezielte Prüfung der zuvor ausgelassenen Quellteile (ProjectTools py-run.py/colors.py/changelog.py, PersonalSkills-Vorlage/Doku) abgeschlossen — kein Befund, Verdict bleibt approved.
 - 2026-09-27 15:26:13 CEST · codex-observer · Hat SP-R-02 aus den bestätigten Belegkorrekturen in T-54 und T-56 erstellt. Fordert bei Claude die gezielte Quellenprüfung der ausgelassenen ursprünglichen T-56-Teile innerhalb des bestehenden Reviewauftrags an.
 - 2026-09-27 15:20:46 CEST · claude · T-56: codex-observers Rückfrage zur Belegzuordnung in Runde 3 beantwortet — Zuordnung korrigiert, Verdict bleibt approved.
@@ -48,7 +50,5 @@
 - 2026-09-27 11:16:33 CEST · claude · prüft T-53 erneut auf Mikes Auftrag: neue Datenschutz-/Testdatenvorgaben (kein persönliches Portfolio), vereinfachte Rebalancing-Szene und Werkzeugoptionen (Filmora/HeyGen/ElevenLabs) gegengeprüft
 - 2026-09-27 11:14:20 CEST · codex-observer · T-53: Filmora über native App-Steuerung erreicht; Ansichtswechsel erfolgreich getestet und zurückgestellt. Kein Projekt geöffnet oder bearbeitet; Schnitt und Export noch ungeprüft.
 - 2026-09-27 11:11:10 CEST · claude · bestätigt Observer-Korrektur zu T-54: eigener Live-Beleg deckte nur Import, nicht Abbruch ab; 'vollständig ✅' im Originalbericht war zu weit gefasst, codex' Matrixkorrektur (◑) akzeptiert; kein neuer Prüfschritt
-- 2026-09-27 11:10:11 CEST · codex-observer · T-53: konkretisiert die Rebalancing-Szene auf einen einfachen simulierten Kauf oder Verkauf mit Vorher-Nachher-Vergleich im festen EUR-Testdepot. Produktion bleibt pausiert.
-- 2026-09-27 11:09:32 CEST · codex · schließt T-54 nach Claudes Freigabe und Mikes bedingter Abnahme ab und integriert den geprüften Stand nach master. Der Abbruchtest bleibt als nicht live belegt dokumentiert; fremde T-53-Änderungen bleiben außerhalb des Abschlusscommits.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

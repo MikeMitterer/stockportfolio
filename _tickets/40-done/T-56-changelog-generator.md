@@ -5,14 +5,13 @@ Python-Generator in ProjectTools soll daraus eine wiederholbar erzeugbare
 `CHANGELOG.md` machen, gruppiert nach Releases und relevanten Commit-Arten.
 Die Tag-Nachricht (`MSG`) liefert die Kurzbeschreibung.
 
-**Stand:** Generator, Theme-Vereinheitlichung, gemeinsamer Python-Starter und
-Setup-Anpassung sind umgesetzt und durch den Coder geprüft. Mike hat die
-ursprüngliche Prüfung für diese Ergänzungen ausdrücklich zurückgestellt.
-Der direkte Python-Aufruf funktioniert auch mit Python 3.9; benannte Symlinks
-und die automatische Paketumgebung sind ergänzt. Neue Prüffassung: Runde 3.
-Unabhängige technische Freigabe und menschlicher Abschluss stehen aus.
-**Für dich:** Aktuell kein Handgriff erforderlich; technische Prüfung und
-Abschluss bleiben offen.
+**Stand:** Abgeschlossen am 2026-09-27. Claude hat den gesamten Umfang in
+Runde 3 technisch freigegeben und die zunächst ausgelassene Quellenprüfung
+nachgetragen; keine offenen Befunde. Mike bestätigt: „T-56 sollte durch sein
+-oder?“ Der Coder verarbeitet dies als Abschluss nach der vorliegenden Freigabe.
+Generator, gemeinsame Themes, Python-Runner, automatische Werkzeugumgebungen,
+Symlinks und Skill-Anpassungen sind enthalten. Die nachfolgenden Abschnitte
+halten die jeweiligen historischen Umsetzungs- und Prüffassungen fest.
 
 ## Auftrag und Abgrenzung
 
@@ -657,3 +656,23 @@ kein historischer Einzelcommit erneut aufgerollt:
 Damit ist der gesamte in Runde 3 übergebene Umfang aller fünf Repositories
 mindestens einmal von claude selbst gelesen oder live geprüft worden, nicht
 nur die Runde-3-Delta. **Verdict unverändert: approved.**
+
+## Abschluss · 2026-09-27
+
+Claudes Freigabe aus Runde 3 und der Nachtrag zur gezielten Quellenprüfung
+sind gegengeprüft: keine verbleibende Nacharbeit. Observer-Hinweis SP-R-02
+zur Kenntnis genommen; die dort benannte konkrete Prüflücke ist durch Claudes
+Nachtrag geschlossen. Die Lesson bleibt samt Herkunft erhalten.
+Mike: „T-56 sollte durch sein -oder?“ — Abschluss mit der vorhandenen
+technischen Freigabe. Ticket nach `40-done/`, Board auf idle, letzte Review-
+Referenz bleibt erhalten. T-53 bleibt pausiert; keine Folgearbeit aktiviert.
+
+Die freigegebenen Änderungen in ProjectTools, PersonalSkills, MakeLib und
+BashLib sind jeweils per Fast-Forward auf master übernommen und nach
+origin/master gepusht. Die Repositories stehen wieder auf master. MakeLibs
+bereits vorher auf master liegende zwei Palette-/Theme-Commits sind als
+Vorfahren enthalten. BashLibs vorgefundene zwei `2>&1`-Ergänzungen in
+`src/docker.lib.sh` wurden weder verändert noch committet; ProjectTools'
+unversionierte `AGENTS.md` bleibt ebenfalls unberührt.
+StockPortfolio erhält diesen Abschlusscommit vor dem eigenen Fast-Forward
+und Push. Keine Versionsanhebung und keine Container-Veröffentlichung.

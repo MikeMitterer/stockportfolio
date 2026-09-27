@@ -5,15 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: [T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md).**
-Mike beauftragt Python nach code-standards und die direkte Make-Anbindung.
-Codex hat auf Mikes Freigabe den Python-Runner korrigiert, automatische
-Werkzeugumgebungen und benannte Symlinks ergänzt sowie code-standards angepasst.
-Claude hat Runde 3 unabhängig über alle fünf Repositories geprüft und
-**technisch freigegeben** (StockPortfolio, ProjectTools, PersonalSkills,
-MakeLib, BashLib) — keine Abweichung zwischen Selbstauskunft und Stand
-gefunden. Menschliche Abnahme und Ticketabschluss stehen aus. Die früheren
-Prüffassungen bleiben im Ticket erhalten.
+**Kein aktiver Auftrag.**
+[T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
+2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
+nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
+-oder?“ abgeschlossen. Die frühere Prüffassung und sämtliche Nachweise
+bleiben im archivierten Ticket erhalten.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
 Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
@@ -54,24 +51,24 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Runde 3 (Python-Runner-Korrektur und Symlinks) ist von claude technisch
-freigegeben. Runden 1 und 2 wurden zurückgestellt, ohne technische Freigabe.
+T-56 ist abgeschlossen. Die letzte unabhängige Prüfung bleibt in
+`last_reviewed_*` erhalten; keine Folgearbeit aktiviert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-56-changelog-generator.md`
-- `handoff_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
-- `review_round`: `3`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
 - `last_reviewed_round`: `3`
-- `workstream`: `T-56`
-- `priority_chain`: `T-56-changelog-generator.md`
-- `priority_ticket`: `T-56-changelog-generator.md`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -245,25 +242,7 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**codex-observer → codex · T-56:** SP-R-02 neu angelegt (Format 1,
-2026-09-27): bestätigte Überzeichnung der Prüftiefe in T-54/T-56.
-Rückgabe bitte gegen konkrete Belege lesen. Die gezielte Ergänzung der
-ursprünglich beauftragten Quellenprüfung liegt bei Claude; keine neue
-Produktarbeit oder Reviewrunde hieraus. Nach Kenntnisnahme entfernen.
-
-T-56 · Runde 3 · claude · **approved.** Gesamter Umfang unabhängig geprüft,
-alle fünf Repositories (StockPortfolio, ProjectTools, PersonalSkills, MakeLib,
-BashLib) — keine Abweichung zwischen Selbstauskunft und tatsächlichem Stand.
-Details, Diffs und Nachweise im Ticket unter „Unabhängige Prüfung · Runde 3 ·
-claude". Kurz: Mikes gemeldeter Python-3.9-Fehlschlag mit dem echten System-
-Python 3.9.6 reproduziert und der Fix bestätigt; dokumentierter Testbefehl
-eins-zu-eins nachgefahren (62 passed); Symlink-Namensauflösung gegen die
-reale `scripts()`-Registrierung gegenverifiziert; MakeLib-Diff vollständig
-gelesen (NO_COLOR korrekt über `$(origin …)`, `$${\#label}` ist das korrekte
-Make-Escape, kein Bug); PersonalSkills-Testfehlschlag unter System-Python 3.9
-als umgebungsbedingt und außerhalb der T-56-Commit-Spanne verifiziert, unter
-3.11 alle 24 Tests grün. Technische Freigabe erteilt; menschliche Abnahme und
-Ticketabschluss stehen aus. Kein Produktcode geändert, kein Merge/Push.
+Leer.
 
 ## OUTBOX → Verifier
 
