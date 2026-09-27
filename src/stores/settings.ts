@@ -155,11 +155,11 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   /**
-   * Ersetzt die Einstellungen vollständig — für das Einspielen einer Sicherung.
+   * Ersetzt die Einstellungen vollständig — für das Einspielen eines Backups.
    *
    * Läuft durch `withDefaults`, damit eine ältere Datei nicht daran scheitert,
    * dass inzwischen ein Feld hinzugekommen ist. Die Kennung des aktiven Depots
-   * kommt aus der Sicherung mit, weil sie sonst auf ein Depot zeigt, das es
+   * kommt aus dem Backup mit, weil sie sonst auf ein Depot zeigt, das es
    * nach dem Einspielen nicht mehr gibt.
    *
    * @param next Eingelesene Einstellungen, möglicherweise unvollständig.

@@ -101,6 +101,7 @@ portfolio.
 Use **Settings → Backup** to download a JSON backup or restore one. Downloads
 are saved by your browser, normally in its Downloads folder. Other devices,
 browser profiles and web addresses have separate storage.
+In an empty portfolio, **Restore backup …** opens **Settings → Backup** directly.
 
 Keep the same web address and host port when updating. Clearing the browser's
 site data removes the locally stored portfolio.

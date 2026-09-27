@@ -266,7 +266,7 @@ describe('AllowlistRepository — je Depot', () => {
     expect((await repository.loadAll('depot-b')).get('fremd')).toBe(false)
   })
 
-  it('leert die Liste, wenn die Sicherung keine enthält', async () => {
+  it('leert die Liste, wenn das Backup keine enthält', async () => {
     const repository = new AllowlistRepository()
     await repository.setEnabled('depot-a', 'alt', false)
 

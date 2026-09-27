@@ -5,7 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Coder-/Verifier-Auftrag.**
+**Aktiver Auftrag: [T-54 · Backup im leeren Depot](30-doing/T-54-sicherung-im-leeren-depot.md).**
+Mike hat die Ticketanlage und den sofortigen Umsetzungsbeginn beauftragt.
+Coder `codex` ist am Zug; T-53 bleibt pausiert.
+
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
 Mike mit „T-52 passt“ abgeschlossen. Die beauftragte Kette T-51 → T-52 ist erledigt.
@@ -37,23 +40,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Kein aktiver Auftrag (`idle`). Die letzte Prüfung von T-52 bleibt erhalten.
+T-54 ist in Umsetzung. Die letzte Prüfung von T-52 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-54-sicherung-im-leeren-depot.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
 - `last_reviewed_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
 - `last_reviewed_round`: `1`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `T-54`
+- `priority_chain`: `T-54-sicherung-im-leeren-depot.md`
+- `priority_ticket`: `T-54-sicherung-im-leeren-depot.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -148,7 +151,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 sind abgeschlossen; kein aktiver Coder-/Verifier-Auftrag. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 sind abgeschlossen; T-54 ist zur Umsetzung aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.

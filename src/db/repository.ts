@@ -157,10 +157,10 @@ export class AllowlistRepository {
   }
 
   /**
-   * Ersetzt die Whitelist eines Depots vollständig — für Sicherungen.
+   * Ersetzt die Whitelist eines Depots vollständig — für Backups.
    *
    * Erst die Einträge dieses Depots löschen, dann schreiben: Ein
-   * Zusammenführen ließe Einträge stehen, die in der Sicherung bewusst nicht
+   * Zusammenführen ließe Einträge stehen, die im Backup bewusst nicht
    * mehr vorkommen. Andere Depots bleiben unberührt.
    *
    * @param portfolioId Kennung des Depots.

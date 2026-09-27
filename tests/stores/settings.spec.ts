@@ -183,7 +183,7 @@ describe('useSettingsStore — replaceAll', () => {
     expect(store.settings.bands).toEqual({ lowerPercent: 3, upperPercent: 9 })
   })
 
-  it('ergänzt Felder, die eine ältere Sicherung noch nicht kannte', async () => {
+  it('ergänzt Felder, die ein älteres Backup noch nicht kannte', async () => {
     // Sonst scheitert das Einspielen daran, dass die App inzwischen ein Feld
     // mehr hat — und der Nutzer steht vor undefined.
     const store = useSettingsStore()

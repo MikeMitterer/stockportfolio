@@ -19,7 +19,7 @@ import { useInstrumentsStore } from '@/stores/instruments'
 import { useValueHistoryStore } from '@/stores/valueHistory'
 
 /**
- * Sichern und Wiederherstellen.
+ * Backup und Wiederherstellung.
  *
  * Alles liegt im Browser — ein gelöschter Website-Speicher oder ein neues
  * Gerät heißt sonst: alles weg. Diese Datei ist das einzige Backup.
@@ -48,7 +48,7 @@ const historyDayCount = computed(() => new Set(pending.value?.valueHistory.map(e
 
 const positionCount = computed(() => pending.value?.portfolio.positions.length ?? 0)
 
-/** Zeitpunkt der Sicherung, lesbar. */
+/** Zeitpunkt des Backups, lesbar. */
 const exportedAtLabel = computed(() => {
   const raw = pending.value?.exportedAt
   if (!raw) return 'unbekannt'
@@ -138,7 +138,7 @@ async function onFileChosen(event: Event): Promise<void> {
 }
 
 /**
- * Spielt die geprüfte Sicherung ein.
+ * Spielt das geprüfte Backup ein.
  *
  * Mit Auffangnetz: Schlägt das Schreiben fehl — voller Speicher, gesperrte
  * IndexedDB im privaten Modus, ein veraltetes Modul nach einem Hot-Reload —
@@ -194,7 +194,7 @@ notify(computed(() => done.value !== null), {
 })
 
 /**
- * Wie viele Assets die Sicherung ausblendet.
+ * Wie viele Assets das Backup ausblendet.
  *
  * Nur die abgeschalteten sind eine Entscheidung — ein Eintrag mit `true`
  * entspricht dem Normalfall und sagt nichts.

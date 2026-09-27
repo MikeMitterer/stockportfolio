@@ -11,7 +11,7 @@ import { defaultSettings } from '@/stores/settings'
 beforeEach(async () => { await closeDb(); await deleteDB(DB_NAME); setActivePinia(createPinia()) })
 afterEach(async () => { await closeDb(); await deleteDB(DB_NAME) })
 
-describe('Währung in Tageswerten und Sicherungen', () => {
+describe('Währung in Tageswerten und Backups', () => {
   it('mischt beim Laden keine verschiedenen Währungen', async () => {
     const store = useValueHistoryStore()
     await store.load('depot', 'USD')

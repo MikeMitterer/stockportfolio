@@ -73,7 +73,7 @@ onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
   await quotesStore.hydrate()
-  // Ohne den Katalog, aber mit der Whitelist — die gehört in die Sicherung.
+  // Ohne den Katalog, aber mit der Whitelist — die gehört in das Backup.
   await instrumentsStore.hydrateAllowlist()
   // Ungefragt prüfen: Wer diese Seite öffnet, will den Zustand sehen, nicht
   // erst einen Knopf suchen.

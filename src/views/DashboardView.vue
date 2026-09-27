@@ -4,6 +4,7 @@ import { computed, inject, onMounted, ref, watch } from 'vue'
 import GroupActionIcon from '@/components/GroupActionIcon.vue'
 import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { NSpin, NEmpty, NButton } from 'naive-ui'
 import InfoHint from '@/components/InfoHint.vue'
 import KpiCard from '@/components/KpiCard.vue'
@@ -34,7 +35,7 @@ import type { InstrumentSummary } from '@/api/types'
 import type { AssetGroup, Position } from '@/types/portfolio'
 
 const { t } = useI18n()
-
+const router = useRouter()
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
@@ -436,8 +437,7 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
     <!--
       Leeres Depot: kein Rebalancing möglich, aber auch keine Sackgasse —
-      das Beispiel-Depot lässt die App ausprobieren, ohne dass jemand
-      fremde Bestände für die eigenen hält.
+      erste Position, gekennzeichnetes Beispiel-Depot oder eigenes Backup.
     -->
     <NEmpty v-else-if="!hasHoldings" class="dashboard__empty" :description="t('dashboard.empty')">
       <template #extra>
@@ -451,6 +451,9 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
             </NButton>
             <NButton size="small" secondary :loading="demoLoading" @click="onLoadDemo">
               {{ t('dashboard.loadDemo') }}
+            </NButton>
+            <NButton size="small" secondary @click="router.push({ path: '/settings', query: { tab: 'backup' } })">
+              {{ t('backup.restore') }}
             </NButton>
           </div>
         </div>
@@ -698,7 +701,12 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     text-align: center;
   }
 
-  &__empty-buttons { @include row; }
+  &__empty-buttons {
+    @include row;
+
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 
   &__kpis {
     display: grid;

@@ -93,7 +93,7 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
   }
 
   /**
-   * Ersetzt die Tageswerte eines Depots — beim Einspielen einer Sicherung.
+   * Ersetzt die Tageswerte eines Depots — beim Einspielen eines Backups.
    *
    * Erst löschen, dann schreiben: Ein Zusammenführen mit dem, was gerade da
    * ist, ergäbe eine Kurve aus zwei Depots.
@@ -108,7 +108,7 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     snapshots.value = [...entries].sort((a, b) => a.date.localeCompare(b.date))
   }
 
-  /** Sicherungen erhalten alle Währungsreihen; die Anzeige filtert separat. */
+  /** Backups erhalten alle Währungsreihen; die Anzeige filtert separat. */
   async function exportAll(portfolioId: string): Promise<ValueSnapshot[]> {
     const entries = await repository.findByPortfolio(portfolioId)
     return entries.filter(entry => isCurrency(entry.currency))

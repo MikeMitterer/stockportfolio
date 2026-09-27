@@ -12,7 +12,7 @@ import type { DetailValue } from './details'
  * Sie zählen zusammen mit Cash zur verfügbaren Liquidität und damit zur
  * Investitionsreserve — Laufzeit-Anleihen (`bonds`) tun das nicht.
  */
-/** Gemeinsame Reihenfolge für Berechnung, Anzeige, Formulare und Sicherungen. */
+/** Gemeinsame Reihenfolge für Berechnung, Anzeige, Formulare und Backups. */
 export const ASSET_GROUPS = ['etfs', 'stocks', 'bonds', 'metals', 'moneymarket', 'cash'] as const
 export type AssetGroup = typeof ASSET_GROUPS[number]
 

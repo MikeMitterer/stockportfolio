@@ -245,7 +245,7 @@ export const de = {
     targetsExceededBody:
       'Die Ziel-Anteile summieren sich auf {sum} — mehr als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht schlüssig.',
     assetsFailedTitle: 'Assets konnten nicht geladen werden',
-    backupTitle: 'Sicherung',
+    backupTitle: 'Backup',
     doneTitle: 'Erledigt',
     // Beschriftung der Restzeit am Balken einer Meldung. Steht hier einmal,
     // weil sie in der ganzen App gleich lautet — das Fundament nimmt sie
@@ -261,7 +261,7 @@ export const de = {
       links: 'Links',
       notifications: 'Meldungen',
       data: 'Daten',
-      backup: 'Sicherung',
+      backup: 'Backup',
       status: 'Status',
     },
     triggerHeading: 'Auslöser',
@@ -378,27 +378,27 @@ export const de = {
   },
 
   backup: {
-    heading: 'Sichern und Wiederherstellen',
+    heading: 'Backup und Wiederherstellung',
     intro:
-      'Depot und Einstellungen liegen ausschließlich in diesem Browser. Eine Sicherung ist die einzige Möglichkeit, sie auf ein anderes Gerät zu holen oder nach einem gelöschten Website-Speicher zurückzubekommen. Kurse sind nicht enthalten — die holt die App ohnehin neu.',
-    download: 'Sicherung herunterladen',
-    restore: 'Sicherung einspielen …',
-    confirmHeading: 'Diese Sicherung einspielen?',
+      'Depot und Einstellungen liegen ausschließlich in diesem Browser. Ein Backup ist die einzige Möglichkeit, sie auf ein anderes Gerät zu holen oder nach einem gelöschten Website-Speicher zurückzubekommen. Kurse sind nicht enthalten — die holt die App ohnehin neu.',
+    download: 'Backup',
+    restore: 'Backup einspielen …',
+    confirmHeading: 'Dieses Backup einspielen?',
     portfolio: 'Depot',
     positions: 'Positionen',
     hidden: 'Ausgeblendet',
     valueHistory: 'Tageswerte',
     ofWhichCash: 'davon Cash',
-    savedAt: 'Gesichert am',
+    savedAt: 'Backup vom',
     appVersion: 'App-Fassung',
     unknown: 'unbekannt',
     replaceWarning:
-      'Das aktuelle Depot mit {positions} und alle Einstellungen werden dabei ersetzt. Das lässt sich nicht rückgängig machen — bei Zweifeln vorher eine eigene Sicherung herunterladen.',
+      'Das aktuelle Depot mit {positions} und alle Einstellungen werden dabei ersetzt. Das lässt sich nicht rückgängig machen — bei Zweifeln vorher ein eigenes Backup herunterladen.',
     replaceNow: 'Jetzt ersetzen',
     confirmReplace: 'Aktuelles Depot wirklich überschreiben?',
-    saved: 'Gesichert: {file}',
+    saved: 'Backup erstellt: {file}',
     restored: 'Eingespielt: „{name}" mit {positions}.',
-    exportFailed: 'Die Sicherung konnte nicht erstellt werden: {reason}',
+    exportFailed: 'Das Backup konnte nicht erstellt werden: {reason}',
     importFailed: 'Das Einspielen ist fehlgeschlagen: {reason}',
   },
 
@@ -467,7 +467,7 @@ export const de = {
     scheduleDue: 'Termin fällig',
     scheduleNext: 'Nächster Termin {date}',
     emptyTitle: 'Noch keine Wertpapiere im Depot',
-    emptyHint: 'Lege deine erste Position an — oder lade ein Beispiel-Depot, um die App auszuprobieren.',
+    emptyHint: 'Lege deine erste Position an, lade ein Beispiel-Depot oder spiele ein vorhandenes Backup ein.',
     loadDemo: 'Beispiel-Depot laden',
     reloadQuote: 'Kurs neu laden',
     noMatchingLinks: 'Keine passenden Links — unter „Einstellungen" konfigurierbar.',
@@ -639,11 +639,11 @@ export const de = {
   },
 
   backupErrors: {
-    invalidAmountSettings: 'Ungültige Geldschwellen in der Sicherung.',
-    invalidCurrency: 'Ungültige Depotwährung in der Sicherung.',
+    invalidAmountSettings: 'Ungültige Geldschwellen im Backup.',
+    invalidCurrency: 'Ungültige Depotwährung im Backup.',
     invalidJson: 'Die Datei enthält kein gültiges JSON.',
     notAnObject: 'Die Datei enthält kein Objekt.',
-    wrongKind: 'Das ist keine StockPortfolio-Sicherung — die Kennung fehlt oder passt nicht.',
+    wrongKind: 'Das ist kein StockPortfolio-Backup — die Kennung fehlt oder passt nicht.',
     noSchemaVersion: 'Der Datei fehlt die Format-Angabe (schemaVersion).',
     newerFormat:
       'Die Datei stammt aus einer neueren Fassung (Format {found}, diese App kennt {known}). Bitte die App aktualisieren.',

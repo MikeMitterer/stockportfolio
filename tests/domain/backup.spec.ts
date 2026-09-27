@@ -1,5 +1,5 @@
 /**
- * Tests für Sicherung und Wiederherstellung.
+ * Tests für Backup und Wiederherstellung.
  *
  * Geprüft werden Schlüssel, nicht Sätze: Die Domäne kennt keine Sprache, und
  * ein Test, der an einem deutschen Satz klebt, bricht bei der ersten
@@ -56,7 +56,7 @@ function makePortfolio(positions: Position[] = [makePosition()]): Portfolio {
   }
 }
 
-/** Baut eine gültige Sicherung als Text — Ausgangspunkt für die Fehlerfälle. */
+/** Baut ein gültiges Backup als Text — Ausgangspunkt für die Fehlerfälle. */
 function validRaw(mutate: (data: Record<string, unknown>) => void = () => {}): string {
   const backup = buildBackup(
     makePortfolio(),
@@ -90,7 +90,7 @@ describe('buildBackup', () => {
 
 describe('backupFileName', () => {
   it('enthält Depotnamen und Datum', () => {
-    // Mehrere Sicherungen im Download-Ordner sollen unterscheidbar sein,
+    // Mehrere Backups im Download-Ordner sollen unterscheidbar sein,
     // ohne dass man sie öffnet.
     expect(backupFileName('Mein Depot', '2026-08-10T18:00:00.000Z')).toBe(
       'stockportfolio-mein-depot-2026-08-10.json',
@@ -111,7 +111,7 @@ describe('backupFileName', () => {
 })
 
 describe('parseBackup — der gute Fall', () => {
-  it('liest eine selbst geschriebene Sicherung wieder ein', () => {
+  it('liest ein selbst geschriebenes Backup wieder ein', () => {
     const result = parseBackup(validRaw())
     expect(result.ok).toBe(true)
   })
@@ -199,7 +199,7 @@ describe('parseBackup — der gute Fall', () => {
     ])
   })
 
-  it('übergeht unlesbare Tageswerte, statt die Sicherung abzulehnen', () => {
+  it('übergeht unlesbare Tageswerte, statt das Backup abzulehnen', () => {
     const result = parseBackup(
       validRaw((data) => {
         data.valueHistory = [
@@ -215,14 +215,14 @@ describe('parseBackup — der gute Fall', () => {
     expect(result.backup.valueHistory).toEqual([{ date: '2026-08-09', total: 160000, currency: 'EUR' }])
   })
 
-  it('nimmt eine Sicherung ohne Tageswerte an', () => {
+  it('nimmt ein Backup ohne Tageswerte an', () => {
     const result = parseBackup(validRaw((data) => delete data.valueHistory))
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.backup.valueHistory).toEqual([])
   })
 
-  it('nimmt eine Sicherung ohne diesen Vermerk an', () => {
+  it('nimmt ein Backup ohne diesen Vermerk an', () => {
     const result = parseBackup(validRaw())
     expect(result.ok).toBe(true)
     if (!result.ok) return
@@ -235,7 +235,7 @@ describe('parseBackup — der gute Fall', () => {
   })
 
   it('behandelt eine fehlende Aktiv-Angabe als aktiv', () => {
-    // Ältere Sicherungen kannten das Feld nicht — sie sollen nicht dazu
+    // Ältere Backups kannten das Feld nicht — sie sollen nicht dazu
     // führen, dass plötzlich alle Positionen stillgelegt sind.
     const result = parseBackup(
       validRaw((data) => {
@@ -389,7 +389,7 @@ describe('Freigabeliste', () => {
   })
 
   it('fehlt sie, gilt sie als leer — nicht als „nichts erlaubt"', () => {
-    // Genau so sehen Sicherungen aus, die vor dieser Erweiterung entstanden.
+    // Genau so sehen Backups aus, die vor dieser Erweiterung entstanden.
     const result = parseBackup(validRaw((data) => delete data.allowlist))
 
     expect(result.ok).toBe(true)
@@ -399,7 +399,7 @@ describe('Freigabeliste', () => {
 
   it('überspringt unbrauchbare Einträge, statt die Datei abzulehnen', () => {
     // Ein kaputter Eintrag heißt höchstens: ein Papier taucht wieder auf.
-    // Deswegen die ganze Sicherung zu verweigern stünde in keinem Verhältnis.
+    // Deswegen das ganze Backup zu verweigern stünde in keinem Verhältnis.
     const result = parseBackup(
       validRaw((data) => {
         data.allowlist = { valid: false, invalid: 'nein', alsoValid: true }
@@ -421,7 +421,7 @@ describe('Freigabeliste', () => {
 })
 
 
-describe('Depotwährung und Geldschwellen in Sicherungen', () => {
+describe('Depotwährung und Geldschwellen in Backups', () => {
   it.each([null, {}, { securityBuffer: { mode: 'absolute', value: -1 }, minTradeSize: { mode: 'absolute', value: 0 } }, { securityBuffer: { mode: 'absolute', value: 300 }, minTradeSize: { mode: 'other', value: 20 } }])('lehnt fehlerhafte Geldschwellen ab statt sie still auf null zu setzen', amountSettings => {
     const result = parseBackup(validRaw(data => {
       Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
@@ -444,7 +444,7 @@ describe('Depotwährung und Geldschwellen in Sicherungen', () => {
 })
 
 
-describe('Dynamische Typen in Sicherungen', () => {
+describe('Dynamische Typen in Backups', () => {
   it('erhält neue Positions-Typen und Linkfilter unverändert', () => {
     const portfolio = makePortfolio([makePosition({ kind: 'future-type' })])
     const settings = defaultSettings('depot-1')

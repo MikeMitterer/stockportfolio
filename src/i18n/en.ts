@@ -454,7 +454,7 @@ export const en: MessageSchema = {
     scheduleDue: 'Review due',
     scheduleNext: 'Next review {date}',
     emptyTitle: 'No instruments in this portfolio yet',
-    emptyHint: 'Add your first position — or load a sample portfolio to try the app.',
+    emptyHint: 'Add your first position, load a sample portfolio or restore an existing backup.',
     loadDemo: 'Load sample portfolio',
     reloadQuote: 'Reload price',
     noMatchingLinks: 'No matching links — configurable under “Settings”.',

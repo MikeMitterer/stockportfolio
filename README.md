@@ -264,6 +264,8 @@ _Settings → Backup_ offers backup and restore: a JSON file with the
 portfolio, the settings and the list of hidden assets. Prices are not included —
 the app fetches those anyway. On restore the file is checked and its contents are
 shown first; nothing is overwritten without confirmation.
+An empty portfolio also offers **Restore backup …**, which opens the Backup tab
+directly, alongside adding a position or loading a sample portfolio.
 
 ### Several portfolios
 

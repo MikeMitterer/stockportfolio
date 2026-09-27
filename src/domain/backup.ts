@@ -1,5 +1,5 @@
 /**
- * Sicherung und Wiederherstellung des Depots.
+ * Backup und Wiederherstellung des Depots.
  *
  * Alle Daten der App liegen im Browser. Ein gelöschter Website-Speicher, ein
  * neues Gerät oder ein anderer Browser heißt: alles weg. Diese Datei ist die
@@ -43,7 +43,7 @@ export interface Backup {
    * Dutzend Papiere ausgeblendet hat, will das nach einem Gerätewechsel nicht
    * noch einmal tun.
    *
-   * Ältere Sicherungen kennen das Feld nicht — dort gilt eine leere Liste,
+   * Ältere Backups kennen das Feld nicht — dort gilt eine leere Liste,
    * und leer heißt „nichts ausgeblendet", nicht „nichts erlaubt".
    */
   allowlist: Record<string, boolean>
@@ -52,10 +52,10 @@ export interface Backup {
    *
    * Der Rückblick lässt sich jederzeit neu rechnen — die gemessenen Tageswerte
    * nicht. Sie entstehen nur, indem die App über Monate benutzt wird; ohne sie
-   * in der Sicherung wäre nach einem Gerätewechsel genau der Teil weg, der am
+   * im Backup wäre nach einem Gerätewechsel genau der Teil weg, der am
    * längsten gebraucht hat.
    *
-   * Ältere Sicherungen kennen das Feld nicht — dort gilt eine leere Liste.
+   * Ältere Backups kennen das Feld nicht — dort gilt eine leere Liste.
    */
   valueHistory: ValueSnapshot[]
 }
@@ -80,10 +80,10 @@ export type ParseResult =
   | { ok: false; error: BackupError }
 
 /**
- * Baut den Inhalt der Sicherungsdatei.
+ * Baut den Inhalt der Backup-Datei.
  *
  * Kurse bleiben bewusst draußen: Sie sind abgeleitet, jederzeit neu abrufbar
- * und in einer Sicherung von gestern ohnehin wertlos.
+ * und in einem Backup von gestern ohnehin wertlos.
  *
  * @param portfolio  Das zu sichernde Depot.
  * @param settings   Die zugehörigen Einstellungen.
@@ -114,7 +114,7 @@ export function buildBackup(
 /**
  * Dateiname mit Depotnamen und Datum.
  *
- * Wer mehrere Sicherungen im Download-Ordner liegen hat, soll sie ohne
+ * Wer mehrere Backups im Download-Ordner liegen hat, soll sie ohne
  * Öffnen unterscheiden können.
  *
  * @param portfolioName Name des Depots.
@@ -132,7 +132,7 @@ export function backupFileName(portfolioName: string, exportedAt: string): strin
 
 
 /**
- * Liest und prüft den Inhalt einer Sicherungsdatei.
+ * Liest und prüft den Inhalt einer Backup-Datei.
  *
  * Streng statt nachsichtig: Eine halb gelesene Datei würde ein halbes Depot
  * herstellen, und das fiele erst auf, wenn die Zahlen nicht mehr stimmen. Im
@@ -167,7 +167,7 @@ function checkEnvelope(data: Record<string, unknown>): BackupError | null {
 }
 
 /**
- * Liest und prüft den Inhalt einer Sicherungsdatei.
+ * Liest und prüft den Inhalt einer Backup-Datei.
  *
  * Streng statt nachsichtig: Eine halb gelesene Datei würde ein halbes Depot
  * herstellen, und das fiele erst auf, wenn die Zahlen nicht mehr stimmen. Im
@@ -206,7 +206,7 @@ export function parseBackup(raw: string): ParseResult {
       exportedAt: typeof data.exportedAt === 'string' ? data.exportedAt : '',
       portfolio,
       // Fehlende Felder ergänzt der Settings-Store beim Übernehmen
-      // (`withDefaults`) — eine ältere Sicherung soll nicht daran scheitern,
+      // (`withDefaults`) — ein älteres Backup soll nicht daran scheitern,
       // dass später ein Feld hinzugekommen ist.
       settings: data.settings as unknown as Settings,
       allowlist: parseAllowlist(data.allowlist),
@@ -220,7 +220,7 @@ export function parseBackup(raw: string): ParseResult {
  *
  * Bewusst nachsichtig statt streng: Ein unbrauchbarer Eintrag bedeutet
  * höchstens, dass ein Papier in der Auswahl auftaucht, das man ausgeblendet
- * hatte — ärgerlich, aber ohne Folgen für die Zahlen. Die Sicherung deswegen
+ * hatte — ärgerlich, aber ohne Folgen für die Zahlen. Das Backup deswegen
  * ganz abzulehnen stünde in keinem Verhältnis.
  */
 function parseAllowlist(value: unknown): Record<string, boolean> {
@@ -285,7 +285,7 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
 /**
  * Liest die Tageswerte.
  *
- * Fehlerhafte Einträge werden übergangen statt die ganze Sicherung
+ * Fehlerhafte Einträge werden übergangen statt das ganze Backup
  * abzulehnen: Ein unlesbarer Tageswert ist ein Schönheitsfehler in der Kurve,
  * kein Grund, ein Depot nicht wiederherzustellen.
  */
@@ -336,7 +336,7 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
     kind: typeof value.kind === 'string' && value.kind.trim() ? value.kind : null,
     units: value.units,
     targetPercent: value.targetPercent,
-    // Fehlend heißt aktiv — ältere Sicherungen kannten das Feld nicht.
+    // Fehlend heißt aktiv — ältere Backups kannten das Feld nicht.
     enabled: typeof value.enabled === 'boolean' ? value.enabled : true,
     ...(typeof value.notes === 'string' ? { notes: value.notes } : {}),
   }

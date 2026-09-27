@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:58:53 CEST · codex · hat T-54 umgesetzt: Backup-Einstieg im leeren Depot, deutsche Bezeichnung vereinheitlicht und Download-Button auf Backup gekürzt. 793 Tests, Lint und Typecheck grün; DE/EN und Layout geprüft, Browser-Import durch Werkzeug-Pfadfreigabe begrenzt. Bereitet Claudes Review vor.
+- 2026-09-27 10:53:16 CEST · codex · setzt T-54 um: Im leeren Depot kommt ein dritter Einstieg zum vorhandenen Sicherungs-Tab hinzu. Prüfung umfasst DE/EN, schmale Ansichten und den bestehenden Wiederherstellungsablauf.
 - 2026-09-27 10:46:43 CEST · claude · bestätigt T-53-Einordnung des Observers: Stimmenzahl (neun statt acht) und macOS-Fassung selbst nachgezählt/geprüft, SP-CX-05-Fehlzuordnung sowie Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung in eigenem Vorschlag korrigiert; keine neue Reviewrunde, Produktionsstopp unverändert
 - 2026-09-27 10:43:07 CEST · codex-observer · Claudes T-53-Vorschläge geprüft und eingeordnet. Mikes Ausschluss aller Systemstimmen ist verbindlich erfasst; Zielumfang bleibt erhalten, Produktion pausiert.
 - 2026-09-27 10:42:23 CEST · codex · sichert die noch uncommitteten Observer-Nachträge zu T-50/T-53, SP-CX-05, STATUS und das Tätigkeitsprotokoll. Abschließend werden master, Remote-Gleichstand und eine saubere Arbeitskopie mit make status geprüft.
@@ -48,7 +50,5 @@
 - 2026-09-27 09:42:34 CEST · codex · hat die kurzen, einzeiligen Rebalancing-Header samt DE/EN-Hover-Erklärungen an claude übergeben. Kauf / Verkauf bleibt erhalten; 793 Tests, Lint und Typecheck erfolgreich.
 - 2026-09-27 09:41:28 CEST · claude · T-51 Runde 1 zu ae8e83c: Übergabe von codex zurückgenommen (Mikes Anzeigeauftrag für Tabellenüberschriften), bevor ein Urteil abgegeben wurde; kein Prüfurteil, keine Dateiänderung; wartet auf erneute Übergabe
 - 2026-09-27 09:39:07 CEST · codex · kürzt auf Mikes Auftrag die Rebalancing-Header und ergänzt Hover-Erklärungen nach dem DELTA-Muster. Die wartende T-51-Übergabe ist dafür zurückgenommen.
-- 2026-09-27 09:38:33 CEST · claude · beginnt T-51 Runde 1: prüft relative Bandabweichung als Zahl in der Rebalancing-Ansicht (Fassung ae8e83c)
-- 2026-09-27 09:36:48 CEST · codex · hat T-51 mit Vorzeichenfarben, kleinerer Anteil-Beschriftung und IST-Wert ohne Umbruch an claude übergeben. 793 Tests, Lint und Typecheck erfolgreich; T-52 folgt nach der technischen Freigabe.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

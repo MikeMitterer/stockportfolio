@@ -1,11 +1,11 @@
 # Wiederverwendbares Browser-Testdepot
 
-[`valid-portfolio.backup.json`](valid-portfolio.backup.json) ist eine reguläre
-StockPortfolio-Sicherung. Sie enthält fünf Positionen mit zusammen 100 % Ziel:
+[`valid-portfolio.backup.json`](valid-portfolio.backup.json) ist ein reguläres
+StockPortfolio-Backup. Es enthält fünf Positionen mit zusammen 100 % Ziel:
 MSCI World ETF (EUNL.DE), US Total Market ETF (VTI), Apple (AAPL), eine Bundesanleihe
 (DE0001135275) und 500 EUR Cash. Alle vier Wertpapiere haben im lokalen
-StockInfo-Testserver einen gültigen Kurs. Die Kurse selbst stehen nicht in der
-Sicherung und werden beim Öffnen frisch geladen.
+StockInfo-Testserver einen gültigen Kurs. Die Kurse selbst stehen nicht im
+Backup und werden beim Öffnen frisch geladen.
 
 1. Den lokalen Dienst vom StockPortfolio-Repo aus starten:
 
@@ -23,7 +23,7 @@ Sicherung und werden beim Öffnen frisch geladen.
    ```
 
 3. In einem frischen Browserkontext `http://127.0.0.1:5189/` öffnen. Unter
-   **Einstellungen → Sicherung → Sicherung einspielen** die JSON-Datei wählen
+   **Einstellungen → Backup → Backup einspielen** die JSON-Datei wählen
    und das Ersetzen bestätigen. Der Import ersetzt das aktive Depot und die
    Einstellungen dieses Browserkontexts.
 
@@ -66,5 +66,5 @@ Für eine andere Browser-Adresse `--origin` setzen, beispielsweise
 `--port 8901 --origin http://127.0.0.1:55095`. Der Container erhält dazu
 `STOCKINFO_API_URL=http://127.0.0.1:8901` und die Portzuordnung
 `127.0.0.1:55095:8080`. So können Vite-Probe und Container-Probe nebeneinander
-mit getrennten Testservern und Browserbeständen laufen. Dieselbe Sicherung
+mit getrennten Testservern und Browserbeständen laufen. Dasselbe Backup
 oben importieren. Nur den eigenen Testserver mit `--stop --port 8901` beenden.

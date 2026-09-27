@@ -98,7 +98,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   }
 
   /**
-   * Ersetzt die Whitelist — für das Einspielen einer Sicherung.
+   * Ersetzt die Whitelist — für das Einspielen eines Backups.
    *
    * @param entries Neue Whitelist (Key → freigegeben).
    */
@@ -115,7 +115,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   /**
    * Lädt nur die Whitelist, ohne den Katalog.
    *
-   * Die Sicherung lässt sich auch dann einspielen, wenn die Assets-Seite in
+   * Das Backup lässt sich auch dann einspielen, wenn die Assets-Seite in
    * dieser Sitzung nie geöffnet wurde — dann steht der Katalog noch nicht,
    * die Whitelist aber sehr wohl.
    */
