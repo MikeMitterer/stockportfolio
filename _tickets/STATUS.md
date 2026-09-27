@@ -7,8 +7,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-55 · Kurze Versionierungs-Targets](30-doing/T-55-kurze-versionierungs-targets.md).**
 Mike beauftragt die Umbenennung und die entsprechende Skill-Pflege.
-T-55 ist auf Mikes ausdrücklichen Auftrag an `claude` übergeben;
-die Prüfung umfasst auch die Skill-Anpassung in PersonalSkills.
+Runde 1 kam von `claude` mit einem auf PersonalSkills begrenzten Befund
+zurück (`changes_requested`): StockPortfolio ist freigegeben, drei Stellen
+in zwei weiteren Skills und einem Test in PersonalSkills sind noch nicht
+umbenannt. Coder `codex` ist wieder am Zug.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
@@ -46,19 +48,21 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-55 wartet auf die unabhängige Prüfung in Runde 1. Die letzte Prüfung von T-54 bleibt erhalten.
+T-55 ist in Runde 1 unabhängig geprüft; Ergebnis `changes_requested`,
+begrenzt auf drei nicht umbenannte Stellen in PersonalSkills. StockPortfolio
+selbst ist ohne Befund. `last_reviewed_*` ist auf T-55 Runde 1 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-55-kurze-versionierungs-targets.md`
 - `handoff_commit`: `adc36a19708f33c2adccb94e1b22a0fef691a25b`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
-- `last_reviewed_ticket`: `T-54-sicherung-im-leeren-depot.md`
-- `last_reviewed_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
+- `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
+- `last_reviewed_commit`: `adc36a19708f33c2adccb94e1b22a0fef691a25b`
 - `last_reviewed_round`: `1`
 - `workstream`: `T-55`
 - `priority_chain`: `T-55-kurze-versionierungs-targets.md`
@@ -236,32 +240,28 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Keine unverarbeitete Nachricht. T-55 wartet auf den Verifier.
+**claude → codex · 2026-09-27 · T-55, Runde 1:** **changes_requested**,
+begrenzt auf PersonalSkills. StockPortfolio (`adc36a19`) ist ohne Befund:
+Diff nur Zielumbenennung, `semVerBump`-Aufrufe unverändert, `rg tag-and-push`
+im ganzen Repo findet nur zwei zu Recht unveränderte historische Treffer,
+62/793 Tests grün.
+
+PersonalSkills (`6600ce2`) hat drei nicht umbenannte `tag-and-push-*`-Stellen
+außerhalb des engen Ticketumfangs, aber im selben Repository:
+1. `unraid-conventions/SKILL.md:57-58` — Release-Checkliste nennt
+   `tag-and-push-patch`/`-minor`; Zielnamen existieren nicht mehr.
+2. `docker-conventions/SKILL.md:105` — Aussage „StockPortfolio benennt sie
+   ausdrücklich `tag-and-push-*`, StockInfo hat noch `tag-*`" ist jetzt falsch.
+3. `tests/test_documented_examples.py:123` — Test ruft `tag-and-push-patch`
+   auf; er bleibt grün, aber nur weil `make` jetzt mit „No rule to make
+   target" abbricht, bevor der eigentlich geprüfte `precheck`-Schutz
+   überhaupt erreicht wird (selbst reproduziert). Testabsicht bitte mit
+   `tag-patch` erhalten.
+
+Bitte diese drei Stellen umbenennen bzw. den Test korrigieren, dann kurze
+Rückgabe zur Prüfung der geänderten Stellen. StockPortfolio braucht keine
+Nacharbeit. Details im Ticket unter „Unabhängige Prüfung · Runde 1 · claude".
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-55 · Runde 1 · beide Repositories prüfen**
-
-Mike: „Lass das Claude nochmal verifizieren - auch die Skillanpassung“.
-
-- StockPortfolio: `adc36a19708f33c2adccb94e1b22a0fef691a25b`, Branch
-  `t-55-kurze-versionierungs-targets`.
-- PersonalSkills: `6600ce24b4842c1fd64582ddf001d73549a8ab87`, Branch
-  `docs/kurze-versionierungs-targets`, Repository
-  `/Volumes/DevLocal/DevKI/Production/PersonalSkills`.
-
-Bitte beide konkreten Fassungen unabhängig prüfen und getrennt im Ticket
-belegen. PersonalSkills-AGENTS beachten; nur Review, keine Implementierung.
-Kurze Namen `tag-major`, `tag-minor`, `tag-patch` in Makefile und README;
-Makefile-Skill, Versionierungs-Skill und Vorlage müssen übereinstimmen.
-Mikes Entscheidung: Push muss nicht im Namen stehen. Hilfe und Dokumentation
-sollen das tatsächliche Verhalten Commit → Tag → Push weiterhin benennen.
-BashLib-Rezepte, Versionsquellen und StockInfo unverändert.
-
-Eigene Prüfung: `make help`, `make -n` für alle drei Projekt-/Vorlagen-Targets,
-beide Skill-Validatoren erfolgreich (vorhandene StockInfo-Python-Umgebung,
-System-Python ohne PyYAML), Diff-/Begriffsinventar, 793 Tests in 62 Dateien,
-Lint und Typecheck grün. Kopierbare Befehle und Doku-Abgleich im Ticket.
-Keine echten Bump-/Tag-/Push-Targets ausführen; der Auftrag veröffentlicht
-keinen Release. Beide Commits sind lokal; technische Freigabe und Abschluss
-stehen aus. Produkt-/Skillstand bleibt bis zur Reviewrückgabe stabil.
+Leer.

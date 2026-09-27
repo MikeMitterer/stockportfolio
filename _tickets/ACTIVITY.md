@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:34:02 CEST · claude · T-55 Runde 1: changes_requested, begrenzt auf PersonalSkills — drei nicht umbenannte tag-and-push-*-Stellen gefunden (unraid-conventions, docker-conventions, ein Regressionstest der jetzt nur noch zufällig grün ist); StockPortfolio selbst ohne Befund, 62/793 Tests reproduziert; Owner zurück an codex
+- 2026-09-27 11:32:08 CEST · codex-observer · T-53: überarbeitet die Story auf zwei aufeinander aufbauende Videos, StockInfo zuerst und StockPortfolio danach. Prüft Asset-Übernahme samt notwendigem Kursabruf und Cash-Ausnahme.
+- 2026-09-27 11:29:22 CEST · claude · beginnt T-55 Runde 1: prüft kürzere Versionierungs-Targets im Makefile (Fassung adc36a1)
+- 2026-09-27 11:27:57 CEST · codex-observer · T-53: recherchiert EU-Kennzeichnungspflichten für KI-Stimme, Avatar und Blogtexte anhand von Artikel 50 und offiziellen EU-Erläuterungen. Prüft insbesondere menschliche Redaktion und den Erhalt von KI-Herkunftsmarkierungen.
 - 2026-09-27 11:27:41 CEST · codex · hat T-55 an Claude übergeben: StockPortfolio adc36a1 und PersonalSkills 6600ce2. Der ausdrückliche Prüfauftrag umfasst Makefile, README, beide Skills und die Versionierungsvorlage; kein echter Versionsbump oder Release soll ausgeführt werden.
 - 2026-09-27 11:26:50 CEST · codex · hat T-55 umgesetzt und geprüft: kurze tag-Targets in Makefile und README sowie gemeinsame Namensvorgabe in beiden Skills und Vorlage. Trockenläufe, Skill-Validierung, 793 Tests, Lint und Typecheck erfolgreich; bereitet Claudes Review vor.
 - 2026-09-27 11:25:27 CEST · codex-observer · T-53: prüft Claudes neue Vorschläge und den roten Faden der Story. Konkretisiert einfache Rebalancing-Demo, Übergang zur Datenquelle und Backup; Produktion bleibt pausiert.
@@ -46,9 +50,5 @@
 - 2026-09-27 10:15:06 CEST · claude · T-53-Konzept gegengeprüft: Kernaussagen (lokale Speicherung, Backup-Inhalt, Restore-Ablauf) gegen README und Quellcode verifiziert, Machbarkeit lokal geprüft (ffmpeg, Stimmen, Bildschirmzugriff); Konzept freigegeben mit Ergänzung zur Bildschirmaufnahme-Berechtigung
 - 2026-09-27 10:14:47 CEST · codex · hat den einzigen Befund aus T-51 Runde 6 beantwortet und die Herkunftsklärung an claude übergeben. Produktcode unverändert; Abschluss und T-52 folgen nach dem OK.
 - 2026-09-27 10:14:11 CEST · codex · bearbeitet Claudes einzigen T-51-Befund zur Symbolherkunft. Der direkt formulierte SVG-Pfad wird im Ticket dokumentiert; Produktcode und Prüfergebnisse bleiben unverändert.
-- 2026-09-27 10:13:46 CEST · claude · beginnt T-53-Konzeptgegenprüfung: Blogposts/Erklärvideo für StockPortfolio und StockInfo (Fassung 838176c)
-- 2026-09-27 10:11:57 CEST · claude · T-51 Runde 6: changes_requested — neues Mülleimer-Symbol entspricht strukturell Lucide trash-2, THIRD_PARTY_NOTICES.md-Eintrag fehlt; übriger Umfang (Scrollmechanik, Mindestbreite, 62/793 Tests) in Ordnung; Owner zurück an codex
-- 2026-09-27 10:08:16 CEST · codex · hat Mikes Abschlussfreigabe für T-51 unter der Bedingung von Claudes OK festgehalten. Nach Freigabe der aktuellen Fassung folgt ohne weitere Rückfrage der Abschluss und T-52.
-- 2026-09-27 10:07:12 CEST · codex-observer · T-53 ergänzt: Lokale Depotdaten als zentrale Story-Aussage; Backup und Restore mit eigener Browserwechsel-Szene. Aktualisierte Fassung zur Gegenprüfung an Claude gemeldet.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
