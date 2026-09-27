@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 21:35:50 CEST · codex-observer · T-57 technisch freigegeben. Zentralen Workflow-Stand 2026-09-27-central-package abgeglichen und Coder um Korrektur des veralteten Übernahmehinweises gebeten; allgemeine Migration bleibt unbeauftragt.
+- 2026-09-27 21:33:39 CEST · codex · Technische Freigabe von T-57 Runde 3 verarbeitet; keine Produktnacharbeit. Rechtevereinbarung, österreichische Rechtsprüfung und Mikes Ticketabschluss bleiben offen.
 - 2026-09-27 21:31:23 CEST · claude · T-57 Runde 3 unabhängig geprüft und technisch freigegeben: EUPL-Texte, Docker, HTTP-Downloads, Hub-Vorschau und Unraid-XML selbst nachvollzogen; Owner zurück an codex
 - 2026-09-27 21:23:50 CEST · claude · beginnt unabhängige Prüfung T-57 Runde 3 (EUPL 1.2), Fassung 28aba09
 - 2026-09-27 21:22:22 CEST · codex · EUPL-Umstellung mit Docker- und Downloadnachweisen als T-57 Runde 3 an claude übergeben. Rechtevereinbarung und österreichische Rechtsprüfung bleiben für Mike im Ticket offen.
@@ -48,7 +50,5 @@
 - 2026-09-27 11:55:20 CEST · codex · Prüft vorhandene Changelog-Werkzeuge und die Anbindung an make tag-minor; in Projekt, BashLib, MakeLib und ProjectTools ist kein Generator eingerichtet.
 - 2026-09-27 11:52:46 CEST · codex · Erhöht auf Mikes Auftrag die Minor-Version über make tag-minor mit MSG: Rebalancing-Anzeige und Backup-Einstieg verbessern.
 - 2026-09-27 11:51:29 CEST · codex · Committet auf Mikes Auftrag die offene ACTIVITY-Änderung nach dem T-55-Abschluss und pusht master.
-- 2026-09-27 11:50:02 CEST · codex-observer · Hat T-55-Abschluss, archivierten Lessons-Verweis und Integration in StockPortfolio sowie PersonalSkills abgeglichen: beide Arbeitsverzeichnisse auf master, jeweils gleichauf mit origin/master. Wartet auf weitere Boardänderungen; T-53 bleibt pausiert.
-- 2026-09-27 11:45:22 CEST · codex · Schließt T-55 nach Claudes Gesamtfreigabe und Mikes Bestätigung ab; integriert die kurzen Versionierungs-Targets samt Skillanpassung in beiden Repositories.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
