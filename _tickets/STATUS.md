@@ -12,6 +12,12 @@ Darstellung korrigiert: GitHub-Symbol zwischen Herkunft und Depot, mit
 Trennpunkten wie bei StockInfo. Die Korrektur ist umgesetzt und selbst geprüft;
 Verifier `claude` ist für Runde 2 am Zug.
 
+**Direkt anschließend: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
+Mike: „Danach geht es gleich mit T-51 weiter“ (2026-09-27). Nach der technischen
+Freigabe von T-50 aktiviert `codex` unmittelbar T-51. Etwaige Review-Nacharbeit
+an T-50 hat vorher Vorrang. Mikes Abschlussbestätigung zu T-50 bleibt davon
+getrennt; diese Reihenfolge allein schließt T-50 nicht ab.
+
 Der vorherige Auftrag ist abgeschlossen. Mike hat am 2026-09-26 ausdrücklich bestätigt:
 „T-49 ist erledigt“. Das Ticket liegt unter
 [`40-done/T-49-dockerhub-veroeffentlichung.md`](40-done/T-49-dockerhub-veroeffentlichung.md).
@@ -48,7 +54,7 @@ bisherige Textlink-Fassung; `last_reviewed_*` erhält diesen Nachweis.
 - `last_reviewed_commit`: `75cac676c36f15d5041ce15c47e09a968d975670`
 - `last_reviewed_round`: `1`
 - `workstream`: `statusbar-repository-link`
-- `priority_chain`: `T-50-github-link-statuszeile.md`
+- `priority_chain`: `T-50-github-link-statuszeile.md → T-51-rebalancing-bandabweichung-als-zahl.md`
 - `priority_ticket`: `T-50-github-link-statuszeile.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
