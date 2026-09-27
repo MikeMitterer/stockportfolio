@@ -13,11 +13,13 @@ schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
 beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
 Runde 6 kam mit einer Herkunftsfrage zum Mülleimer-Symbol zurück. Coder `codex`
 hat die direkte Erstellung des SVG-Pfads ohne externe Vorlage im Ticket
-festgehalten; Runde 7 ist durch `claude` technisch freigegeben (approved).
+festgehalten; Runde 7 ist durch `claude` technisch freigegeben. Mike hat danach
+ausdrücklich ein originales Lucide-Symbol beauftragt. Es ist eingesetzt und
+samt Lizenz dokumentiert; `claude` ist für Runde 8 am Zug.
 Runden 3 und 5 wurden zurückgenommen.
 Mike hat den Abschluss bereits bedingt freigegeben: „Wenn Claude das OK gibt
-dann ist das Ticket von mir aus erledigt“. Dieses OK liegt jetzt vor; `codex`
-schließt T-51 ab und aktiviert danach T-52.
+dann ist das Ticket von mir aus erledigt“. Das OK für Runde 7 liegt vor; vor dem Abschluss wird noch Mikes neuer
+Lucide-Auftrag umgesetzt und geprüft.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -44,18 +46,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist in Runde 7 unabhängig geprüft und technisch freigegeben (approved).
-Mikes bedingte Abschlussfreigabe greift damit. Runden 1, 3 und 5 wurden ohne
+T-51 ist mit originalem Lucide-Symbol und Lizenzvermerk in Runde 8 übergeben.
+Mikes bedingte Abschlussfreigabe bleibt erhalten. Runden 1, 3 und 5 wurden ohne
 Prüfurteil zurückgenommen. `last_reviewed_*` ist auf Runde 7 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `ready_for_review`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `c843df626d348e4375a96acf75b6ab1bae7dff0f`
-- `review_round`: `7`
-- `owner`: `codex`
+- `handoff_commit`: `7e07224d5af11dd00e0a1e0467702a370c613acf`
+- `review_round`: `8`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `last_reviewed_commit`: `c843df626d348e4375a96acf75b6ab1bae7dff0f`
@@ -236,18 +238,20 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-51, Runde 7:** Fassung
-`c843df626d348e4375a96acf75b6ab1bae7dff0f` — **approved**. Reiner
-Dokumentationsdiff gegen Runde 6 bestätigt (kein `src/`-, `tests/`- oder
-`THIRD_PARTY_NOTICES.md`-Unterschied). Die Herkunftserklärung ist plausibel
-und ausreichend konkret (geprüfte `UxIcon`/`navIcons.ts`-Exports vor der
-eigenen Inline-Geometrie); anders als beim unverwechselbaren GitHub-Zeichen
-aus T-50 ist ein Mülleimer mit Deckel und zwei Innenlinien eine generische
-Form, bei der strukturelle Nähe allein keine Übernahme belegt — Vermutung
-und belegte Übernahme bleiben damit auseinandergehalten, wie vom Observer
-erbeten. Mikes bedingte Abschlussfreigabe liegt vor: bitte T-51 nach
-`40-done/` verschieben und danach T-52 aktivieren.
+Runde 7 verarbeitet; Freigabe bleibt im Ticket, neuer Lucide-Auftrag in Umsetzung.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · T-51, Runde 8:** Bitte Fassung
+`7e07224d5af11dd00e0a1e0467702a370c613acf` prüfen. Nach deiner Freigabe von
+Runde 7 hat Mike ausdrücklich ein originales Lucide-Symbol verlangt. Der
+selbst formulierte Pfad ist durch die fünf unveränderten Pfade aus Lucide
+`trash` (früher `trash-2`), Commit `66d8f9fc394b8530377e5f6112f0b8908ba01280`,
+ersetzt. Exakter Pfadvergleich mit der Originaldatei erfolgreich.
+
+THIRD_PARTY_NOTICES nennt Originalquelle und Komponente; ISC sowie die laut
+Upstream für trash relevante Feather-MIT-Notiz sind enthalten. Browser zeigt
+die Originalpfade im 18-px-SVG. 793 Tests, Lint und Typecheck erfolgreich.
+Keine neue Abhängigkeit; Bedienung und i18n unverändert. Ticket enthält Belege.
+Nach deinem OK T-51 aufgrund Mikes bereits erteilter bedingter Freigabe
+abschließen und T-52 aktivieren.
