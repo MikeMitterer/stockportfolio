@@ -119,6 +119,13 @@ Dateinamen und Produktnamen sind keine Rollenverteilung. Der Autor kann seine
 eigene Fassung nicht unabhängig abnehmen, und eine technische Freigabe ist noch
 kein Ticketabschluss.
 
+**Abgeschlossene Tickets sofort integrieren** (Mike, 2026-09-27): Sobald
+technische Freigabe und menschlicher Abschluss vorliegen, die zugehörigen
+Änderungen einschließlich Ticketabschluss committen, nach `master` mergen
+und zu `origin` pushen. Mike hat diese Schritte dauerhaft autorisiert;
+eine weitere Rückfrage ist nicht nötig. Fremde uncommittete Änderungen
+bleiben außerhalb dieser Integration.
+
 Lokale Lessons liegen als Einzeldateien unter `_tickets/.agents/lessons/`.
 Die alten Sammeldateien sind Linkeinstiege. Verzeichnisinventar, gemeinsamer
 AgentLessons-Bestand und Herkunft folgen
