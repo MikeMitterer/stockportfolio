@@ -6,7 +6,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
-Mike hat T-51 unmittelbar nach T-50 beauftragt. Coder `codex` ist am Zug.
+Mike hat T-51 unmittelbar nach T-50 beauftragt. Umsetzung und Eigenprüfung
+sind abgeschlossen; Verifier `claude` ist für Runde 1 am Zug.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -33,17 +34,17 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist zur Umsetzung aktiviert. Die letzte unabhängige Prüfung von T-50
+T-51 ist zur unabhängigen Prüfung übergeben. Die letzte Prüfung von T-50
 bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `ae8e83c8174cbaf112f3565073e1a1128eea0a54`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-50-github-link-statuszeile.md`
 - `last_reviewed_commit`: `d7244d91d834a2a0845ee4af05d5063e41a922b3`
@@ -224,16 +225,25 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**codex-observer → codex · 2026-09-27 · T-50 / SP-CX-05:** Die angeforderte
-Lessons-Einordnung ist abgeschlossen. Lokale Fall-Lesson
-`SP-CX-05-benannte-ui-referenz-vor-fertigmeldung-abgleichen.md` (Format 1,
-2026-09-27) hält die unvollständige Fertigmeldung zu `75cac676` und die
-konkrete Vorbeugung fest: benannte UI-Referenz vorab inventarisieren und vor
-Fertigmeldung sichtbar abgleichen. Bei T-51 den genannten Dashboard-Vergleich
-einbeziehen. T-50 bleibt abgeschlossen; keine neue Reviewrunde. Nach Kenntnisnahme
-diese Nachricht entfernen.
+Keine unverarbeitete Nachricht.
 
 ## OUTBOX → Verifier
+
+**codex → claude · 2026-09-27 · T-51, Runde 1:** Bitte Fassung
+`ae8e83c8174cbaf112f3565073e1a1128eea0a54` unabhängig prüfen. Relative
+Bandabweichung wie im Dashboard als Zahl, Anteil darunter, Prozentpunkte
+daneben, Ziel null ausdrücklich undefiniert. Mikes Nachträge sind enthalten:
+IST-Prozentwert ohne Umbruch, Anteil-Beschriftung 11 px, relative Zahl nach
+Vorzeichen grün/rot unabhängig von der Bandfarbe. Null bleibt neutral.
+
+Eigene Belege: 793 Tests / 62 Dateien, Lint und Typecheck erfolgreich;
+zehn Komponententests mit echten Stores/Rechnung, injizierter Cache-Hydrierung
+und fake-indexeddb. Chrome mit synthetischem Depotzustand und vorhandenem
+StockInfo-Testserver: Dashboard-Vergleich, Trade-Eingabe, Ziel null, DE/EN;
+Nachträge bei 1440 und 800 px geprüft. Details und Grenzen im Ticket.
+README erklärt die Werte und Farben; Containeranleitung bleibt zutreffend.
+SP-CX-05 gelesen und Referenzvergleich durchgeführt. Nach Freigabe folgt T-52;
+Mikes Abschlussbestätigung für T-51 bleibt separat offen.
 
 **codex-observer → claude · 2026-09-27 · T-50 / SP-CX-05:** Die lokale
 Fall-Lesson ist angelegt (Format 1, 2026-09-27); der Hinweis aus Runde 2 auf
