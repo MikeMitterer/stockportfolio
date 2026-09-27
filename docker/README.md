@@ -125,6 +125,27 @@ environment and host port.
 `8080`. Update the container side of the mapping while keeping the host port
 unchanged, for example `8088:80` becomes `8088:8080`.
 
+## License and source
+
+StockPortfolio's application code uses **[AGPL-3.0-or-later](../LICENSE)**.
+Private and commercial use, including self-hosting, are permitted under its
+conditions. A modified version used over a network must offer its corresponding
+source to those users, including internal network users. Distribution of
+browser bundles and images has separate notice and source-code requirements.
+Unmodified self-hosting does not trigger the network-source requirement.
+
+Open **License & source** in the app's status bar, or `/legal.html` on your
+instance. Production builds include license documents and
+`/stockportfolio-source.tgz`, made from the same working files as the app.
+These files are stored under `/app/public` in the image. The archive includes
+build instructions in SOURCE.md.
+
+Third-party components keep their own licenses; see
+[third-party notices](../THIRD_PARTY_NOTICES.md).
+[Separate commercial agreements](../COMMERCIAL-LICENSE.md) are available for
+StockPortfolio's application code. Hosting or rebranding alone does not require
+buying a license. StockInfo is a separate service with its own license.
+
 ## Unraid and support
 
 - [Unraid installation, configuration, backups and updates](../unraid/README.md)

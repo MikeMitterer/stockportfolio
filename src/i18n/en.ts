@@ -651,6 +651,7 @@ export const en: MessageSchema = {
   },
 
   status: {
+    licenseLabel: 'License & source',
     poweredBy: 'powered by',
     repositoryLabel: 'StockPortfolio on GitHub (opens a new tab)',
     quotes: 'Prices',

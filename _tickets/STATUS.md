@@ -5,7 +5,8 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Auftrag.**
+**Aktiver Auftrag:** [T-57 · AGPL-Lizenz](30-doing/T-57-agpl-lizenz.md).
+Mike hat die Angleichung an StockInfo am 2026-09-27 beauftragt.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -54,24 +55,24 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-56 ist abgeschlossen. Die letzte unabhängige Prüfung bleibt in
-`last_reviewed_*` erhalten; keine Folgearbeit aktiviert.
+T-57 wird umgesetzt. Die letzte unabhängige Prüfung bleibt in
+`last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-57-agpl-lizenz.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
 - `last_reviewed_round`: `3`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `T-57`
+- `priority_chain`: `T-57-agpl-lizenz.md`
+- `priority_ticket`: `T-57-agpl-lizenz.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich

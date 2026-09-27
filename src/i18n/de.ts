@@ -663,6 +663,7 @@ export const de = {
   },
 
   status: {
+    licenseLabel: 'Lizenz & Quellcode',
     poweredBy: 'powered by',
     repositoryLabel: 'StockPortfolio auf GitHub (öffnet einen neuen Tab)',
     quotes: 'Kurse',

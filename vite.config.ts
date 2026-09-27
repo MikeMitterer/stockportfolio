@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { readFileSync } from 'node:fs'
+import { createLegalAssets } from './scripts/licenseAssets'
 
 /**
  * Version aus der package.json — eine Quelle, kein zweiter Ort zum Pflegen.
@@ -16,7 +17,15 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(packageVersion),
   },
-  plugins: [vue()],
+  plugins: [vue(), {
+    name: 'stockportfolio-license-assets',
+    apply: 'build',
+    generateBundle() {
+      for (const asset of createLegalAssets(fileURLToPath(new URL('.', import.meta.url)))) {
+        this.emitFile({ type: 'asset', ...asset })
+      }
+    },
+  }],
 
   /*
    * Das Fundament liegt als `file:`-Abhängigkeit vor — npm legt dafür einen
