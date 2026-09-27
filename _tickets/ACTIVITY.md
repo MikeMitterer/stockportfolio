@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 13:53:45 CEST · codex · hat Python-3.9-Start, automatische Werkzeug-venvs und beide Symlink-Einstiege umgesetzt. 62 ProjectTools-Tests und 24 Skill-Tests sind grün; die py-run-Vorgehensweise ist im code-standards-Skill dokumentiert.
+- 2026-09-27 13:42:48 CEST · codex · korrigiert auf Mikes Freigabe den Python-Runner: Changelog soll auch über py-run.py mit Python 3.9 starten. Claudes Review ist wegen des Session-Limits zurückgestellt.
+- 2026-09-27 13:41:47 CEST · codex · hat Mikes Python-Runner-Fehler unter Python 3.9.6 reproduziert und für Claudes Review dokumentiert. Die pauschale 3.11-Sperre betrifft fälschlich auch den Changelog-Generator; die Produktfassung bleibt bis zur Review-Rückgabe unverändert.
 - 2026-09-27 13:35:12 CEST · codex · hat gemeinsame printTheme-Helfer, einzeilige BashLib-Einbindung und direkte Changelog-Aufrufe umgesetzt und geprüft. Die vollständige T-56-Fassung einschließlich Skill-Anpassung liegt jetzt für Claude in Reviewrunde 2 bereit.
 - 2026-09-27 13:32:53 CEST · codex · verschiebt die Ausgabehelfer als printThemeHeading, printThemeRow und printThemeStatus nach BashLib/tools.lib.sh. Das zusätzliche changelog-publish-Target entfällt auf Mikes Wunsch; die tag-Targets rufen Python direkt auf.
 - 2026-09-27 13:25:16 CEST · codex · hat setup-libs.sh und changelog.py auf die gemeinsame Ausgabe abgestimmt. Bootstrap, Wiederholung, Linkschutz, deutsche Hilfe und ocean-Farben sind an echten Aufrufen geprüft.
@@ -47,8 +50,5 @@
 - 2026-09-27 11:01:13 CEST · codex-observer · T-53: vergleicht ElevenLabs und HeyGen und berücksichtigt Mikes vorhandenen Filmora-Editor. Medienproduktion bleibt pausiert.
 - 2026-09-27 11:00:34 CEST · claude · beginnt T-54 Runde 1: prüft Sicherung/Backup-Verhalten im leeren Depot (Fassung ae64b14)
 - 2026-09-27 10:59:42 CEST · codex · hat T-54 in Fassung ae64b14 an Claude zur unabhängigen Prüfung übergeben. Backup-Einstieg, einheitliche deutsche Begriffe und gekürzter Download-Button sind umgesetzt; die Grenze der Browser-Importprüfung steht im Ticket.
-- 2026-09-27 10:58:53 CEST · codex · hat T-54 umgesetzt: Backup-Einstieg im leeren Depot, deutsche Bezeichnung vereinheitlicht und Download-Button auf Backup gekürzt. 793 Tests, Lint und Typecheck grün; DE/EN und Layout geprüft, Browser-Import durch Werkzeug-Pfadfreigabe begrenzt. Bereitet Claudes Review vor.
-- 2026-09-27 10:53:16 CEST · codex · setzt T-54 um: Im leeren Depot kommt ein dritter Einstieg zum vorhandenen Sicherungs-Tab hinzu. Prüfung umfasst DE/EN, schmale Ansichten und den bestehenden Wiederherstellungsablauf.
-- 2026-09-27 10:46:43 CEST · claude · bestätigt T-53-Einordnung des Observers: Stimmenzahl (neun statt acht) und macOS-Fassung selbst nachgezählt/geprüft, SP-CX-05-Fehlzuordnung sowie Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung in eigenem Vorschlag korrigiert; keine neue Reviewrunde, Produktionsstopp unverändert
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

@@ -329,13 +329,18 @@ the shared columns. Group and item indentation use `THEME_INDENT_GROUP` and
 ```bash
 MAKE_THEME=ocean ./.libs/ProjectTools/src/bash/py-run.sh --help
 ./.libs/ProjectTools/src/bash/py-run.sh --list
-./.libs/ProjectTools/src/bash/py-run.sh --run changelog --dry-run
+./.libs/ProjectTools/src/bash/changelog.sh --dry-run
 ```
 
-The runner requires Python 3.11+ and creates a separate cached environment only
-for tools with package dependencies. Changelog still runs directly with Python
-3.9+ and the standard library. The existing Docker Hub README command delegates
-to the shared runner. Help and listing do not install packages.
+The runner and Changelog support Python 3.9+. For tools with package
+dependencies, the runner automatically finds an installed Python 3.11+ and
+creates and reuses a separate cached environment. This also works when
+`src/python/py-run.py` is started directly with Python 3.9.
+`PYTHON_BOOTSTRAP` overrides the interpreter used for package setup.
+Changelog needs only the standard library. The existing Docker Hub README command delegates
+to the shared runner through a relative symlink, as does `changelog.sh`.
+Run these links directly; their target is Python. Help and listing do not
+install packages.
 
 ## Layout
 

@@ -8,7 +8,8 @@ Die Tag-Nachricht (`MSG`) liefert die Kurzbeschreibung.
 **Stand:** Generator, Theme-Vereinheitlichung, gemeinsamer Python-Starter und
 Setup-Anpassung sind umgesetzt und durch den Coder geprüft. Mike hat die
 ursprüngliche Prüfung für diese Ergänzungen ausdrücklich zurückgestellt.
-Der direkte Python-Aufruf ist aktiv; der Bash-Wrapper ist entfernt.
+Der direkte Python-Aufruf funktioniert auch mit Python 3.9; benannte Symlinks
+und die automatische Paketumgebung sind ergänzt. Neue Prüffassung: Runde 3.
 Unabhängige technische Freigabe und menschlicher Abschluss stehen aus.
 **Für dich:** Aktuell kein Handgriff erforderlich; technische Prüfung und
 Abschluss bleiben offen.
@@ -338,3 +339,132 @@ Entwickler-Targets oder BashLib-Einbindung; keine Anpassung erforderlich.
 Beim BashLib-Nachtragscommit wurde ausschließlich für diesen Git-Aufruf der
 bekannte Jenkins-Hook ausgelassen (`core.hooksPath=/dev/null`); keine permanente
 Hook-Konfiguration verändert und kein weiterer Jenkins-Job erzeugt.
+
+### Nutzerbefund nach Übergabe · direkter Python-Runner (in Runde 3 behoben)
+
+Mike meldet `MAKE_THEME=ocean ./.libs/ProjectTools/src/python/py-run.py -r changelog`:
+Abbruch mit „Python ab 3.11 ist erforderlich“. Codex reproduziert dies unter
+System-Python 3.9.6. Der direkte Aufruf von `changelog.py --help` funktioniert
+unter demselben Interpreter.
+
+Ursache: `py-run.py:main` prüft pauschal Python 3.11 vor `tool_python`, auch
+bei Werkzeugen ohne Requirements. Das widerspricht dem vorgesehenen Start
+von `changelog.py` mit Python 3.9. Außerdem berücksichtigt nur `py-run.sh`
+die Variable `PYTHON_BOOTSTRAP`; der entsprechende Hinweis hilft beim direkten
+`.py`-Aufruf nicht. Beides ist zur Korrektur offen. Die Versionsanforderung muss
+zum tatsächlich gestarteten Werkzeug beziehungsweise Paket-Bootstrap passen.
+
+Kein eigenständiges Prüfurteil des Coders und keine Produktänderung nach der
+Übergabe: `owner=claude`, Runde 2 bleibt maßgeblich. Claude soll den Nutzerbefund
+in die laufende Prüfung aufnehmen; Nacharbeit nach Rückgabe an den Coder.
+
+### Runde 2 auf Nutzerauftrag zurückgestellt
+
+Mike: „Claude hat gerade ein session limit - du kannst also noch was ändern“.
+Codex übernimmt am 2026-09-27 die Runner-Korrektur; keine technische Freigabe
+behauptet. STATUS steht wieder auf implementing / codex.
+
+Vorherige Übergabenachricht (historisch):
+
+
+T-56 · Runde 2 · vollständige erweiterte Fassung zur unabhängigen Prüfung.
+
+- StockPortfolio: `5be5acbe21a20a395fa68357c75126b27f8cd44f` auf `t-56-changelog-generator`.
+- MakeLib: `10b128d00e514495232d94a95ca9893a32e1dfb7` auf `feat/cli-themes`.
+- BashLib: `ab6a5a77949f31b285dc987b66cadba249a6db15` auf `feat/cli-themes`.
+- ProjectTools: `a54f84d4196d4a72dece1d07fcf9564333726ae5` auf `feat/changelog-generator`.
+- PersonalSkills: `38073d8af066c68f532ff1b571b910663e582b70` auf `docs/shared-cli-themes`.
+
+Bitte ursprünglichen Changelog-Generator und Make-Anbindung zusammen mit den
+Theme-Ergänzungen prüfen: drei eigenständige kompatible Farbdateien, Layout,
+`py-run.sh` einschließlich Liste und Paket-Bootstrap, direkter Stdlib-Python-Start,
+Setup-Script und Skill-Vorlage. Die drei `printTheme*`-Helfer liegen zentral in
+`tools.lib.sh`, Einbindung einzeilig. Auf Mikes jüngste Entscheidung entfällt
+`changelog-publish`; `tag-*` ruft Python direkt mit `--publish` auf.
+
+Belege und Doku-Abgleich im Ticket: 793 Vitest-Tests, Lint/Typecheck;
+57 Python-Tests plus 13 Bootstrap-Tests; 10 Generator-Tests auch unter Python 3.9;
+24 Skill-Tests und 17 Vorlagentests gegen das Projekt-Script; reale Theme-/PTY-
+Ausgaben, Ruff und gezielter ShellCheck. In `tools.lib.sh` bleiben 20 bestehende
+ShellCheck-Diagnosen unverändert. Docker-README-Vorschau 5.052 Bytes; dessen
+Container-Aussagen bleiben mit dem Projekt-README vereinbar. Keine neuen Releases.
+
+Fremde BashLib-Änderung `src/docker.lib.sh` und unversionierte ProjectTools-
+`AGENTS.md` sind nicht enthalten. MakeLibs zwei vorbestehende lokale Commits
+sind im Ticket abgegrenzt. Allgemeine Board-Übernahme weiterhin offen.
+Noch kein Merge/Push; technische Freigabe und Ticketabschluss stehen aus.
+
+
+**Nachtrag von Mike nach Übergabe:** Direkter Aufruf
+`MAKE_THEME=ocean ./.libs/ProjectTools/src/python/py-run.py -r changelog`
+scheitert unter Python 3.9.6 an der pauschalen 3.11-Prüfung. Codex hat den
+Abbruch und die funktionierende direkte Changelog-Hilfe unter 3.9 reproduziert.
+`PYTHON_BOOTSTRAP` wird nur im Bash-Starter ausgewertet, weshalb der Fehlerhinweis
+beim direkten Python-Einstieg irreführt. Offener Befund im Ticket, bitte in
+Runde 2 berücksichtigen. Keine Änderung der übergebenen Produktfassung.
+
+## Prüffassung Runde 3 · Python-Runner, Symlinks und Code-Standards
+
+Mike erlaubt während Claudes Session-Limit ausdrücklich weitere Änderungen.
+Er ergänzt: venv-Einrichtung muss transparent geschehen; benannte Symlinks für
+Docker-Hub-README und Changelog; die gesamte Vorgehensweise einschließlich
+`py-run` im code-standards-Skill festhalten. Danach meldet Mike Claude wieder
+verfügbar. Die neue Fassung wird unabhängig geprüft; keine Selbstfreigabe.
+
+**Ergebnis:** `py-run.py -r changelog` funktioniert unter echtem Python 3.9.6.
+Die pauschale 3.11-Sperre ist entfernt. Für Paketwerkzeuge sucht der gemeinsame
+Python-Runner ein installiertes Python ab 3.11, erstellt deren Cache-venv und
+installiert benötigte Pakete. Passende Umgebungen werden wiederverwendet;
+`PYTHON_BOOTSTRAP` überschreibt die Auswahl auch beim direkten Python-Einstieg.
+Python selbst wird nicht installiert. Stdlib, Hilfe und Liste brauchen keine venv.
+
+`src/bash/changelog.sh` und `src/bash/dockerhub-readme.sh` sind relative Symlinks
+auf `../python/py-run.py`. Der Aufrufname wählt das Werkzeug, Argumente und
+Exit-Code werden weitergereicht. Der allgemeine Bash-Starter enthält keine
+zweite Interpreterwahl mehr. Symlinks direkt ausführen, nicht durch `bash`.
+Katalogpfade werden relativ zur aufgelösten Python-Datei bestimmt; deutsche
+Hilfe und Fehlermeldungen funktionieren auch über die Links.
+
+**Nachweise:** 62 gezielte ProjectTools-Tests bestanden, einschließlich 15 neuer
+Fälle für echten Python-3.9-Start, Fehlerweitergabe, beide Einstiege,
+Symlink-Auflösung, deutsche Hilfe, automatische Erstinstallation und anschließende
+Offline-Wiederverwendung. Die ursprüngliche Versionssperre sowie die fehlende
+Symlink-Weiterleitung wurden vor der jeweiligen Korrektur mit roten Tests belegt.
+Der erste volle Paketlauf scheiterte an gesperrten Downloads; der vollständige
+abschließende Lauf mit freigegebenem Netzwerk ist grün. Ruff der geänderten
+Python-Dateien, ShellCheck von `py-run.sh` und Diff-Prüfungen grün.
+24 Skill-Tests bestanden. Kein Frontend-Code geändert; dessen vorherige
+793 Tests sowie Lint/Typecheck bleiben die unveränderten Nachweise.
+
+Reproduzierbarer ProjektTools-Lauf (aus dessen Repository):
+
+```bash
+PYTHON_TEST_39=/usr/bin/python3 PYTHONDONTWRITEBYTECODE=1 \
+THEME_MAKE_LIB=/Volumes/DevLocal/DevMake/Production/MakeLib \
+BASH_LIBS=/Volumes/DevLocal/DevBash/Production/BashLib/src \
+/Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python -m pytest \
+tests/python/test_runner_python39.py tests/python/test_cli_themes.py \
+tests/python/test_changelog.py tests/python/test_dockerhub_cli.py \
+tests/python/test_dockerhub_bootstrap.py -q -p no:cacheprovider
+```
+
+**Doku-Abgleich:** StockPortfolio README „Command-line themes“, ProjectTools
+README „py-run.sh“ und „dockerhub-readme.sh“ sowie code-standards-Einstieg und
+Python-Referenz beschreiben dieselben Startwege. Der Skill nennt `--list`,
+`--run`, direkten Python-Aufruf, Symlink-Konvention, automatische Einrichtung,
+Stdlib-Ausnahme und Prüfungen der realen Einstiege. `docker/README.md` bleibt
+unverändert: keine neuen Containerfunktionen oder Laufzeit-Einstellungen.
+Der vorhandene Aufruf in `docker/build.sh` startet den Helfer direkt und ist
+mit dem Symlink kompatibel; keine Docker-Veröffentlichung ausgeführt.
+
+| Repository | Prüffassung Runde 3 |
+|---|---|
+| StockPortfolio | `handoff_commit` in STATUS |
+| ProjectTools | `239ed2c01ee0f6e9f8a4d510dd1d1a60a8806310` |
+| PersonalSkills | `565098df64cf1806f8c2146af69f5678902def40` |
+| MakeLib (unverändert) | `10b128d00e514495232d94a95ca9893a32e1dfb7` |
+| BashLib (unverändert) | `ab6a5a77949f31b285dc987b66cadba249a6db15` |
+
+Fremde Änderungen und offene Board-Übernahme bleiben wie zuvor abgegrenzt.
+Alle Nutzerbefunde dieses Nachtrags sind im Coder-Stand umgesetzt; Claudes
+unabhängiger Review und Ticketabschluss sind noch offen. Kein Merge/Push.
