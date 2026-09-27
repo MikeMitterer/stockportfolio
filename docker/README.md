@@ -127,12 +127,17 @@ unchanged, for example `8088:80` becomes `8088:8080`.
 
 ## License and source
 
-StockPortfolio's application code uses **[AGPL-3.0-or-later](../LICENSE)**.
-Private and commercial use, including self-hosting, are permitted under its
-conditions. A modified version used over a network must offer its corresponding
-source to those users, including internal network users. Distribution of
-browser bundles and images has separate notice and source-code requirements.
-Unmodified self-hosting does not trigger the network-source requirement.
+Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
+
+The **[StockPortfolio License 1.0](../LICENSE)** permits free personal and
+internal business use, including your own modifications. Unchanged copies may
+be passed on free of charge under the StockPortfolio name, with all copyright,
+license and third-party notices.
+
+Rebranded offerings, resale, hosting for third parties (even free of charge)
+and distribution of modified versions require a **separate paid written
+agreement with MangoLila GmbH**. Internal branding for your own use remains
+free. This is a source-available license, not an open-source license.
 
 Open **License & source** in the app's status bar, or `/legal.html` on your
 instance. Production builds include license documents and
@@ -141,10 +146,9 @@ These files are stored under `/app/public` in the image. The archive includes
 build instructions in SOURCE.md.
 
 Third-party components keep their own licenses; see
-[third-party notices](../THIRD_PARTY_NOTICES.md).
-[Separate commercial agreements](../COMMERCIAL-LICENSE.md) are available for
-StockPortfolio's application code. Hosting or rebranding alone does not require
-buying a license. StockInfo is a separate service with its own license.
+[third-party notices](../THIRD_PARTY_NOTICES.md). StockInfo is a separate service
+with its own license. For [commercial agreements](../COMMERCIAL-LICENSE.md),
+contact **office@MangoLila.at**.
 
 ## Unraid and support
 

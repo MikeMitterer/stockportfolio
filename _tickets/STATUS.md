@@ -5,8 +5,15 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** [T-57 · AGPL-Lizenz](30-doing/T-57-agpl-lizenz.md).
-Mike hat die Angleichung an StockInfo am 2026-09-27 beauftragt.
+**Aktiver Auftrag:** [T-57 · Nutzungslizenz](30-doing/T-57-agpl-lizenz.md).
+Mike hat die AGPL-Fassung am 2026-09-27 nach der Klärung zum Rebranding
+abgelehnt. Das Nutzungsziel ist bestätigt: eigene Nutzung und Anpassungen auch in Firmen
+kostenlos; Rebranding als Angebot, Weiterverkauf und Hosting für Dritte nur
+mit kostenpflichtiger Vereinbarung. Mikes gewünschte Aufteilung: persönliches Copyright; MangoLila GmbH soll
+als Anbieterin/Lizenzgeberin die vertragliche Verantwortung übernehmen.
+Mike hat bestätigt: „OK, also ich bin der Urheber, MangoLila erhält die Nutzungs- und Lizenzierungsrechte“.
+Unveränderte kostenlose Weitergabe unter StockPortfolio mit allen Hinweisen ist erlaubt.
+Die neue Lizenzfassung wird umgesetzt; die interne Rechtevereinbarung bleibt rechtlich zu prüfen.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -55,17 +62,19 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 ist für Runde 1 an den Verifier übergeben. Die letzte unabhängige Prüfung bleibt in
-`last_reviewed_*` erhalten.
+T-57 setzt das von Mike bestätigte Modell um
+(persönliches Copyright, MangoLila GmbH als Anbieterin/Lizenzgeberin). Runde 1 ist vor
+Reviewbeginn zurückgezogen; die bisherige Prüffassung bleibt als Bezug erhalten.
+Die letzte abgeschlossene Prüfung bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `implementing`
 - `ticket`: `T-57-agpl-lizenz.md`
 - `handoff_commit`: `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
@@ -251,18 +260,8 @@ Leer.
 ## OUTBOX → Verifier
 
 Absender `codex`, Empfänger gemäß Rollenfeld `reviewer`: T-57, Runde 1,
-Fassung `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a` auf `t-57-agpl-lizenz`.
-Bitte Lizenzmodell mit StockInfo, Paketmetadaten, Browser-/Container-Auslieferung,
-Quellarchiv, UI-Zugänglichkeit und Doku-Abgleich unabhängig prüfen.
-
-Eigene Nachweise: 795 Tests, Lint, Typecheck, Frontend-Build und Docker-amd64-
-Build erfolgreich. Drei Lizenztexte und alle 121 Quelldateien bytegleich;
-Neubau aus Archiv mit vorhandenen Abhängigkeiten erfolgreich. Fünf HTTP-Downloads
-im echten lokalen Container bestätigt, Browserprüfung bei 375 px. Hub-Vorschau
-6.352 Bytes. Vollständige Befehle und Grenzen im Ticket.
-
-Keine Veröffentlichung; Unraid nur inhaltlich abgeglichen. Der Testcontainer
-ist gestoppt. Fremde ACTIVITY-Änderungen nicht in den Produktcommit aufgenommen.
-Mike fragte während der Übergabe, ob Rebranding eine kommerzielle Lizenz braucht:
-beantwortet gemäß AGPL/StockInfo; bislang kein Auftrag für ein anderes Modell.
-
+Fassung `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a`.
+Die Reviewanforderung ist zurückgezogen: Mike antwortete nach der Erklärung,
+dass Rebranding unter AGPL keine kommerzielle Lizenz braucht:
+„Also das geällt mir nicht.“ Das gewünschte Lizenzmodell wird zuerst geklärt.
+Bitte diese Fassung nicht freigeben oder integrieren. Die neue Fassung wird nach Mikes Modellentscheidung umgesetzt; noch kein neuer Reviewauftrag.

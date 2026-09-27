@@ -3,6 +3,5 @@
   "private": true,
   "dependencies": {
     "serve": "14.2.6"
-  },
-  "license": "AGPL-3.0-or-later"
+  }
 }

@@ -1,8 +1,8 @@
 # Building the supplied source
 
-Copyright © 2026 Mike Mitterer. StockPortfolio's application code is licensed
-under AGPL-3.0-or-later; see LICENSE. It comes without warranty, to the extent
-permitted by law. Third-party components retain their own licenses.
+Copyright © 2026 Michael Mitterer. Provider and licensor: MangoLila GmbH.
+StockPortfolio's own application code uses the StockPortfolio License 1.0;
+see LICENSE. Third-party components retain their own licenses.
 
 Every production build includes `stockportfolio-source.tgz`, created from the
 same working files as the browser bundle. The archive contains the application,
@@ -21,7 +21,7 @@ npm run build
 
 Dependencies are downloaded from the registries recorded in the lockfile and
 retain their own licenses. Use the published `@mmit/ux-foundation` dependency
-when distributing builds; local package links require supplying their matching
+for reproducible builds; local package links require access to their matching
 sources separately. Local development uses `npm run dev`.
 
 For Docker, build the extracted sources with:
@@ -35,7 +35,9 @@ contain the separate StockInfo service. License files and the source archive
 are available next to `legal.html` in the built site and at `/app/public` in
 the container. The source archive is generated only for production builds.
 
-When distributing a modified build, retain the notices and provide the
-corresponding source for that build. The included build step creates a new
-archive automatically; a link to the upstream repository alone does not
-describe your modifications. See LICENSE for the full conditions.
+The source archive is supplied for inspection and permitted own modifications.
+It does not grant additional redistribution or hosting rights. Own use and
+internal modifications are free; redistribution of modified versions, rebranded
+offerings, resale and hosting for third parties require a separate paid written
+agreement with MangoLila GmbH. Unchanged copies may be passed on free of charge
+under the StockPortfolio name with all notices. See LICENSE for the terms.

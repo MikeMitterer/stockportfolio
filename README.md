@@ -569,16 +569,17 @@ The design this was built against:
 
 ## License
 
-Copyright © 2026 Mike Mitterer.
+Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
 
-StockPortfolio's application code is licensed under
-**[GNU AGPL-3.0-or-later](LICENSE)**. Private and commercial use, self-hosting,
-modification and redistribution are permitted subject to its terms.
-If you run a modified version that users interact with over a network,
-section 13 requires offering those users its corresponding source code,
-including users on an internal network. Distributing copies, including
-browser bundles and container images, has separate notice and source-code
-requirements. Unmodified self-hosting does not trigger section 13.
+The **[StockPortfolio License 1.0](LICENSE)** permits free personal and
+internal business use, including your own modifications. Unchanged copies may
+be passed on free of charge under the StockPortfolio name, with all copyright,
+license and third-party notices.
+
+Rebranded offerings, resale, hosting for third parties (even free of charge)
+and distribution of modified versions require a **separate paid written
+agreement with MangoLila GmbH**. Internal branding for your own use remains
+free. This is a source-available license, not an open-source license.
 
 Every production build includes the license documents and a source archive
 made from the same working files. Open **License & source** in the status bar
@@ -588,6 +589,5 @@ or `/legal.html` to access them. In the container they are under `/app/public`.
 
 Third-party components keep their own licenses; see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The separate StockInfo service
-has its own license. [Commercial terms](COMMERCIAL-LICENSE.md) for StockPortfolio's
-application code are available by separate agreement if the AGPL does not fit
-your use. Hosting or rebranding alone does not require one.
+has its own license. For [commercial agreements](COMMERCIAL-LICENSE.md),
+contact **office@MangoLila.at**.

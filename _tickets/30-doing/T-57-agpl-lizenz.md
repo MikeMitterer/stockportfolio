@@ -1,25 +1,50 @@
-# T-57 · AGPL-Lizenz für StockPortfolio
+# T-57 · Nutzungslizenz für StockPortfolio
 
-**Warum dieses Ticket:** StockPortfolio wird über GitHub und Container verteilt,
-das README erteilt bisher aber keine Lizenz. Das von Mike bestätigte Modell
-von StockInfo soll auch hier gelten: AGPL-3.0-or-later und eine separat
-vereinbarte kommerzielle Alternative für den eigenen Anwendungscode.
+**Warum dieses Ticket:** StockPortfolio braucht klare Nutzungsbedingungen für
+GitHub und Container. Die zunächst übernommene AGPL passt nicht zum bestätigten
+Ziel: eigene Nutzung und interne Anpassungen kostenlos, Angebote unter eigener
+Marke, Weiterverkauf und Hosting für Dritte gegen gesonderte Vereinbarung.
 
-**Stand:** Umsetzung und eigene technische Prüfung abgeschlossen. Die Fassung
-wird zum unabhängigen Review übergeben; dessen Freigabe steht aus.
+**Stand:** Neue StockPortfolio License 1.0 umgesetzt. Copyright bei Michael
+Mitterer; Anbieterin, Lizenzgeberin und Vertragspartnerin ist MangoLila GmbH.
+Kostenlose Weitergabe unveränderter Kopien unter dem Namen StockPortfolio mit
+allen Lizenz- und Urheberhinweisen ist erlaubt. Eigene technische Prüfung erfolgreich; unabhängiger Review steht aus;
+die erste AGPL-Reviewanforderung wurde vor Prüfbeginn zurückgezogen.
 
 ## Für dich
 
-Während der Umsetzung ist nichts zu tun. Nach dem unabhängigen Review bleibt
-die menschliche Abschlussentscheidung offen.
+Kostenlos: eigene private Nutzung, interne Firmennutzung und eigene Änderungen,
+auch internes Branding; unveränderte kostenlose Weitergabe mit allen Hinweisen.
+Eine gesonderte kostenpflichtige schriftliche Vereinbarung mit MangoLila GmbH
+ist nötig für Rebranding als Angebot, Weiterverkauf, Hosting für Dritte
+(auch kostenlos) und Weitergabe veränderter Fassungen. Download-Mirrors
+unveränderter Kopien fallen unter die kostenlose Weitergabe.
 
-Auftrag von Mike, 2026-09-27: „Ja, pass das für StockPortfolio so an“.
+Die Texte setzen die beauftragte Rollenverteilung um. Sie ersetzen weder die
+interne Rechtevereinbarung zwischen Michael Mitterer und MangoLila GmbH noch
+eine rechtliche Prüfung. Ausschließlichkeit, Umfang und Dauer der Rechte sowie
+die Berechtigung zur Unterlizenzierung müssen intern dokumentiert werden.
+Die Umsetzung behauptet keinen unterschriebenen internen Vertrag und keine
+vollständige Befreiung von persönlicher gesetzlicher Haftung.
+
+### Entscheidungen von Mike · 2026-09-27
+
+- Ursprünglich: „Ja, pass das für StockPortfolio so an“.
+- Nach Erklärung der AGPL-Erlaubnis zum Rebranding: „Also das geällt mir nicht.“
+- Zum neuen Nutzungsziel: „Genau, fraglich ist ob die Vereinbarung mit mir getroffen werden muss oder mit MangoLila?“
+- Rollenwunsch: „Am liebsten wäre es mir wenn ich das CopyRight hätte, MangoLila Gmbh aber rechtlich dafür verantwortlich wäre“.
+- Ergänzung: „Die Firma gehört mir - also ist die Trennung schwierig.“
+- Bestätigung: „OK, also ich bin der Urheber, MangoLila erhält die Nutzungs- und Lizenzierungsrechte“.
+- Rückfrage: „Probleme mit Unraid?“ — Katalogfall geprüft und ausdrücklich erlaubt.
+- Klarstellung: „Unraid-templates ist ja nicht die Applikation“ — MIT gilt nur
+  für die Vorlagen. Keine Open-Source-Pflicht der App daraus abgeleitet.
+- Auf „Soll auch die kostenlose Weitergabe der unveränderten App unter dem Namen StockPortfolio erlaubt sein?“: „Ja, mit allen Lizenz- und Urheberhinweisen“.
 
 ## Umsetzung und technische Nachweise
 
 | Repo | Scope | GH-Issue |
 |---|---|---|
-| StockPortfolio | Lizenztexte, Paketmetadaten, Build-Auslieferung, zugängliche Hinweise, Dokumentation | — |
+| StockPortfolio | Lizenztexte, Paketmetadaten, Build-Auslieferung, Hinweise, Dokumentation | — |
 
 ### Verify
 
@@ -27,11 +52,125 @@ Auftrag von Mike, 2026-09-27: „Ja, pass das für StockPortfolio so an“.
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Lizenzmodell mit StockInfo vergleichen | AGPL-3.0-or-later, kommerzielle Alternative, Fremdlizenzen bleiben erhalten | ✅ |
-| 2 | Frontend bauen und Quellarchiv prüfen | Lizenzdateien und baubarer Quellstand im Bundle, keine lokalen Geheimnisse | ✅ |
-| 3 | Docker lokal bauen und HTTP prüfen | Lizenzlabel, Hinweise und Quellarchiv im Image erreichbar | ✅ |
-| 4 | Pflichtprüfungen ausführen | make test, make lint, make typecheck erfolgreich | ✅ |
-| 5 | Anleitungen und Hub-Vorschau abgleichen | konsistente Lizenzangaben, Vorschau unter 25.000 Bytes, Unraid-Abgleich | ✅ |
+| 1 | Nutzungsfälle und Rollen gegen Mikes Entscheidungen lesen | LICENSE §§ 1–5; gleiche Aussagen in beiden READMEs, kommerzieller Seite und Legal-Seite | ✅ |
+| 2 | Frontend bauen und Archiv gegen Arbeitsdateien prüfen | 121 Dateien bytegleich; explizite Dateiliste geprüft; Lizenzdownloads bytegleich | ✅ |
+| 3 | Docker bauen, Lizenzlabel und HTTP-Downloads prüfen | linux/amd64 gebaut, healthy; fünf HTTP-Downloads 200 und Inhalte bytegleich | ✅ |
+| 4 | Pflichtprüfungen ausführen | 63 Testdateien, 795 Tests; lint, typecheck und Frontend-Build erfolgreich | ✅ |
+| 5 | Dokumentation und Hub-Vorschau abgleichen | beide READMEs konsistent, Hub-Vorschau 6.459 UTF-8-Bytes; Unraid unverändert passend | ✅ |
+| 6 | Interne Rechtevereinbarung und rechtliche Tragfähigkeit prüfen | technische Umsetzung ist kein Rechtsgutachten; Prüfung ausstehend | ➖ |
+
+### Umsetzung
+
+- `LICENSE`: eigener Text StockPortfolio License 1.0 statt AGPL. Eigene Nutzung,
+  unveränderte kostenlose Weitergabe und Fälle mit Vertragsbedarf getrennt.
+  Fremdlizenzen und zwingende gesetzliche Rechte bleiben unberührt.
+- `COMMERCIAL-LICENSE.md`: Vertrag mit MangoLila GmbH, Kontakt office@MangoLila.at;
+  keine pauschale Gebührenpflicht für interne geschäftliche Nutzung.
+- Root-Paket und Lockfile: `SEE LICENSE IN LICENSE` gemäß
+  [npm-Dokumentation](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#license).
+  Der private interne Server-Wrapper hat keine eigene Lizenzdeklaration; er
+  gehört zur Projektlizenz. Lizenzen der npm-Abhängigkeiten bleiben unverändert.
+- Docker-OCI-Label: `LicenseRef-StockPortfolio-1.0`, Bezeichner im Lizenztext
+  definiert. App-Link und bestehender Build-Helfer liefern Lizenz und Quellen.
+- Lizenzseite und SOURCE.md nennen die neuen Bedingungen. Der Quellcode wird
+  freiwillig mitgeliefert; es wird keine AGPL-Veröffentlichungspflicht behauptet.
+
+### Prüfbelege · neue Fassung
+
+`make test`, `make lint`, `make typecheck`, `make build-frontend`: erfolgreich.
+Bekannte Buildwarnung: vendor-ui-Chunk größer als 500 kB; kein neuer Fehler.
+`python3 /private/tmp/t57-verify-archive.py`: 121 reguläre Archivdateien
+bytegleich zum Arbeitsstand, 258.501 Bytes, keine Symlinks, alle Pfade in der
+expliziten Liste. Die drei ausgelieferten Lizenzdateien stimmen byteweise mit
+den Originalen überein. Der bestehende Archivtest prüft ausgelassene private
+Dateien, alte Buildausgaben und AppleDouble-Metadaten. Keine neuen Tests allein
+für Textänderungen hinzugefügt.
+
+Docker neu gebaut: `stockportfolio-t57:local`, linux/amd64,
+Manifest `sha256:be54ad20ffee2232705b097972ce37a1c6ea943adde3194128251b3bb5cee8f4`.
+Temporärer Container `stockportfolio-t57-check`, localhost:58455, Status healthy;
+OCI-Lizenzlabel `LicenseRef-StockPortfolio-1.0`. Fünf HTTP-Downloads erfolgreich:
+legal.html (2.013 Bytes), LICENSE.txt (4.067), COMMERCIAL-LICENSE.md (1.775),
+THIRD_PARTY_NOTICES.md (3.156), stockportfolio-source.tgz (246.100).
+Alle Dokumente und alle 121 regulären Dateien des heruntergeladenen Archivs
+bytegleich zum Arbeitsstand. API absichtlich unerreichbar (`127.0.0.1:9`);
+kein Backend-/Kursnachweis. Testcontainer anschließend entfernt.
+Die früheren Neubau- und Browserprüfungen stehen im historischen Abschnitt;
+sie werden nicht als neue Prüfung ausgegeben.
+
+### Doku-Abgleich
+
+- `README.md` / License und `docker/README.md` / License and source: identische
+  Erlaubnisse, Beschränkungen, Rechteinhaber und Kontakt. Quellarchiv und Downloads
+  beschrieben. Docker-Anleitung enthält keine unnötige Entwicklungsanleitung.
+- `COMMERCIAL-LICENSE.md`, `SOURCE.md`, `public/legal.html`: alle AGPL-Zusagen
+  durch das beschlossene Modell ersetzt. Keine Behauptung freier Drittanbieter-
+  Dienste oder beliebiger Umbenennung als Angebot mehr.
+- Hub-Vorschau mit dem echten ProjectTools-Helfer erzeugt: 6.459 von höchstens
+  25.000 UTF-8-Bytes. Noch keine Veröffentlichung; GitHub-Links mit `master`
+  werden erst durch Integration der Fassung verfügbar.
+- `unraid/README.md`: Lizenzabschnitt ergänzt; eigene Nutzung und Katalogfall
+  ausdrücklich erlaubt, MIT des Template-Repos getrennt. Zentrale Vorlage
+  `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`:
+  keine betroffenen Lizenzzusagen; Ports, Variablen, Start und Datenhaltung
+  unverändert. Keine XML-Änderung nötig, kein Live-Unraid-Test.
+- `docs/stockinfo-integration-proposal.md` und historische Specs/Pläne: keine
+  aktuelle Lizenzzusage betroffen. Vorhandene Fremdlizenztexte bleiben erhalten;
+  kein vollständiger neuer Audit aller Abhängigkeiten behauptet.
+
+Keine Änderung der Board- oder Lessons-Konventionen. Aktuellen zentralen
+Workflow-Stand gelesen; keine allgemeine Board-Migration in diesem Auftrag.
+
+### Unraid-Abgleich
+
+Die [offiziellen CA-Einreichungsvorgaben](https://ca.unraid.net/submit/help)
+verlangen eine OSI-anerkannte Lizenz für das eingereichte Repository.
+Das lokale zentrale Template-Repository hat bereits eine MIT-LICENSE;
+`templates/stockportfolio.xml` verweist auf das offizielle Original-Image
+`mangolila/stockportfolio:latest`. Daraus folgt kein belegter Lizenzkonflikt
+für diesen Katalogweg; eine CA-Freigabe wird nicht behauptet. LICENSE § 3
+stellt Katalogeinträge und Installationsvorlagen auch bei kostenpflichtigen
+Plattformen ausdrücklich frei, solange die App selbst unverändert und
+kostenlos unter Originalnamen angeboten wird. Kein Betrieb für Dritte erlaubt.
+
+### Grenzen und Rechtsgrundlage
+
+[§ 24 österreichisches UrhG](https://www.ris.bka.gv.at/eli/bgbl/1936/111/P24/NOR40041612)
+ermöglicht die Einräumung von Nutzungsrechten; die konkrete interne Vereinbarung
+wird durch einen Copyright-Vermerk nicht ersetzt. Die Texte bestimmen die GmbH
+als Lizenzgeberin, garantieren aber keine vollständige Haftungsverlagerung.
+Rechtsprüfung betrifft insbesondere die interne Rechtekette und die konkrete
+Wirksamkeit der Nutzungsbedingungen. Der technische Review prüft Konsistenz
+und Auslieferung, nicht die rechtliche Wirksamkeit.
+
+StockInfo bleibt unverändert. Keine Veröffentlichung von Images oder Tags.
+Die lokale AGPL-Zwischenfassung wird ersetzt; keine rückwirkende Aufhebung
+bereits anderweitig erteilter Rechte behauptet.
+
+### Vorbeugung und Lessons
+
+SP-CX-01/04: vorhandenen Build-Helfer und Publish-Weg beibehalten.
+SP-CX-02: Lizenzentscheidung in allen aktuellen Texten und Metadaten nachgezogen.
+SP-CX-05: ursprüngliche StockInfo-Referenz tatsächlich geprüft; Abweichung jetzt
+bewusste Produktentscheidung. AL-R-01/02/06: konkrete Belege mit Grenzen,
+Dateiinventar und fertiger Commit vor unabhängiger Übergabe. Kein neuer
+Wiederholungsbefund und keine zusätzliche Lesson angelegt.
+
+### Auflösung
+
+Umsetzung und eigene technische Prüfungen abgeschlossen; bereit für den
+unabhängigen Review von `claude`, Runde 2.
+Rechtliche Prüfung der internen Vereinbarung bleibt gesondert offen.
+Kein Ticketabschluss, Merge oder Push behauptet.
+
+## Historie · zurückgezogene AGPL-Fassung
+
+Die folgenden Nachweise und Aussagen beschreiben ausschließlich den früheren
+Stand `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a`. Sie sind historisch und keine
+aktuellen Produktzusagen. Runde 1 wurde vor Reviewbeginn zurückgezogen.
+
+<details>
+<summary>Frühere Umsetzung, Prüfbelege und damaliger Doku-Abgleich</summary>
 
 ### Ergebnisse · 2026-09-27
 
@@ -116,7 +255,9 @@ docker stop stockportfolio-t57-check
   --preview --ref master --output docker/logs/dockerhub-readme.md
 ```
 
-### Akzeptanzkriterien
+### Akzeptanzkriterien der bisherigen AGPL-Fassung
+
+Nach der Modellentscheidung neu abzugleichen; keine aktuelle Abschlussfreigabe.
 
 - [x] Eigener Anwendungscode unter AGPL-3.0-or-later; separate kommerzielle Vereinbarung.
 - [x] Browser-Build und Container liefern Hinweise und passenden Quellstand aus.
@@ -175,7 +316,10 @@ kein neues belegtes Wiederholungsmuster und keine zusätzliche Lesson angelegt.
 
 ### Auflösung
 
-Eigene Umsetzung und Verifikation abgeschlossen. Unabhängige technische
-Freigabe und menschliche Abschlussentscheidung stehen noch aus. Die
-Übergabefassung wird ausschließlich in STATUS.md referenziert. Keine Images,
-Release-Tags oder Änderungen auf `master` veröffentlicht.
+Die bisherige Umsetzung und Verifikation sind abgeschlossen, das AGPL-Modell
+ist aber durch Mikes spätere Rückmeldung abgelehnt. Runde 1 wurde vor Beginn
+zurückgezogen. Neue Lizenzentscheidung und daran anschließende Umsetzung/Prüfung
+sind offen. Keine Images, Release-Tags oder Änderungen auf `master` durch
+den Coder veröffentlicht.
+
+</details>

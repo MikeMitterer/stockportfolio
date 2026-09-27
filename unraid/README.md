@@ -8,6 +8,20 @@ repository is at `/Volumes/DevLocal/DevUnraid/Production/Templates`.
 The template is published through that Git repository. The image is available
 on [Docker Hub](https://hub.docker.com/r/mangolila/stockportfolio).
 
+## License
+
+Personal and internal business use on your own Unraid server is free under the
+[StockPortfolio License 1.0](../LICENSE), including your own modifications.
+Listing the unchanged app in Community Applications and providing a template
+that points to its official image are explicitly permitted, even though Unraid
+itself is a paid platform. Hosting the application for third parties, resale
+and rebranded offerings require a separate agreement with MangoLila GmbH.
+
+The separate [template repository](https://github.com/MikeMitterer/unraid-templates)
+is MIT-licensed. That license covers the templates; StockPortfolio's application
+code has its own terms. Catalog acceptance and operation on a real Unraid server
+have not been verified for this license revision.
+
 ## Installing through Unraid Apps
 
 Use **Apps / Community Applications** in the Unraid web interface for a normal

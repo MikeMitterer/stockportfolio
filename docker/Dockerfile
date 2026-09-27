@@ -52,7 +52,7 @@ EXPOSE 8080
 LABEL org.opencontainers.image.title="StockPortfolio" \
       org.opencontainers.image.description="Portfolio management with market data, valuation, charts and rebalancing" \
       org.opencontainers.image.source="https://github.com/MikeMitterer/stockportfolio" \
-      org.opencontainers.image.licenses="AGPL-3.0-or-later" \
+      org.opencontainers.image.licenses="LicenseRef-StockPortfolio-1.0" \
       net.unraid.docker.webui="http://[IP]:[PORT:8080]" \
       net.unraid.docker.icon="https://raw.githubusercontent.com/MikeMitterer/stockportfolio/master/public/stockportfolio-icon.png"
 
