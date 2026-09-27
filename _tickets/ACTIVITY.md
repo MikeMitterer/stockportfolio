@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 13:32:53 CEST · codex · verschiebt die Ausgabehelfer als printThemeHeading, printThemeRow und printThemeStatus nach BashLib/tools.lib.sh. Das zusätzliche changelog-publish-Target entfällt auf Mikes Wunsch; die tag-Targets rufen Python direkt auf.
 - 2026-09-27 13:25:16 CEST · codex · hat setup-libs.sh und changelog.py auf die gemeinsame Ausgabe abgestimmt. Bootstrap, Wiederholung, Linkschutz, deutsche Hilfe und ocean-Farben sind an echten Aufrufen geprüft.
 - 2026-09-27 13:15:03 CEST · codex · hat die alten Make-/Bash-Aufrufe und alle neun Theme-Paletten geprüft. Der gemeinsame py-run.sh bietet Hilfe, Werkzeugliste und isolierte Paketumgebungen; die Dokumentation wird für Claudes Review abgeglichen.
 - 2026-09-27 13:03:07 CEST · codex-observer · StockInfo: Docker-Hub-Hinweis als 7764aee committed und auf origin/master gepusht; make hints und Diff-Prüfung erfolgreich.
@@ -49,6 +50,5 @@
 - 2026-09-27 10:53:16 CEST · codex · setzt T-54 um: Im leeren Depot kommt ein dritter Einstieg zum vorhandenen Sicherungs-Tab hinzu. Prüfung umfasst DE/EN, schmale Ansichten und den bestehenden Wiederherstellungsablauf.
 - 2026-09-27 10:46:43 CEST · claude · bestätigt T-53-Einordnung des Observers: Stimmenzahl (neun statt acht) und macOS-Fassung selbst nachgezählt/geprüft, SP-CX-05-Fehlzuordnung sowie Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung in eigenem Vorschlag korrigiert; keine neue Reviewrunde, Produktionsstopp unverändert
 - 2026-09-27 10:43:07 CEST · codex-observer · Claudes T-53-Vorschläge geprüft und eingeordnet. Mikes Ausschluss aller Systemstimmen ist verbindlich erfasst; Zielumfang bleibt erhalten, Produktion pausiert.
-- 2026-09-27 10:42:23 CEST · codex · sichert die noch uncommitteten Observer-Nachträge zu T-50/T-53, SP-CX-05, STATUS und das Tätigkeitsprotokoll. Abschließend werden master, Remote-Gleichstand und eine saubere Arbeitskopie mit make status geprüft.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

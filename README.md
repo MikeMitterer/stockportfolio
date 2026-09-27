@@ -317,7 +317,9 @@ Frontend commands are also available as `npm run …`.
 Make, BashLib helpers and ProjectTools Python scripts share the themes from
 MakeLib: `classic`, `ocean`, `earth`, `night`, `mono`, `sunset`, `forest`, `neon`
 and `shell`. `scripts/setup-libs.sh` uses the same theme for help and status;
-before the libraries are available, its bootstrap output is plain text.
+it uses the shared `printTheme*` helpers from BashLib `tools.lib.sh`.
+Without BashLib, it shows brief startup help; set `BASH_LIBS` to the source
+library’s `src` directory before installing the links.
 `--info` also checks the shared CLI files. Select one with `make help MAKE_THEME=ocean`; Make passes it to
 scripts it starts. `THEME_WIDTH_TARGET` (22) and `THEME_COLUMN_GAP` (1) control
 the shared columns. Group and item indentation use `THEME_INDENT_GROUP` and
@@ -483,7 +485,8 @@ Use `make changelog PYTHON=/path/to/python3` to select another interpreter.
 
 `make changelog` regenerates the file locally. Generated text is replaced on
 the next run. Commit messages and the release `MSG` determine its contents. If the changelog step or its push fails after tagging, the release
-already exists. Fix the reported cause and run `make changelog-publish` to
+already exists. Fix the reported cause and run
+`python3 .libs/ProjectTools/src/python/changelog.py --publish` to
 retry without increasing the version again. A repeated successful call creates
 no additional changelog commit.
 The build uses `node:22-bookworm-slim` for build and runtime, with locked `serve` dependencies.

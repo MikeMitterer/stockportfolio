@@ -181,7 +181,7 @@ Fremde Änderung `BashLib/src/docker.lib.sh` und unversionierte
 | 5 | Neun Themes, unbekanntes Theme, alte Farbnamen und Aufrufe | 20 CLI-Tests; Palette gegen echtes Make und Bash, alte Makros und usageLine-Argumente | ✅ |
 | 6 | Einheitliche Spalten und anpassbare Abstände; lange Optionen ohne Überlappung | Beschreibung Spalte 31; lange Beschriftungen separat, OUTPUT mit Abstand; PTY ocean in Make/Setup/Changelog/Runner | ✅ |
 | 7 | Direkter Python-Aufruf, TTY/NO_COLOR; bestehende Generator-Tests | 57 Python-Tests plus 13 Bootstrap-Tests; 10 Generator-Tests zusätzlich direkt unter Python 3.9 | ✅ |
-| 8 | Dokumentation und Regressionen aller betroffenen Repositories | 793 Vitest; Lint/Typecheck; Ruff; ShellCheck der neuen/überarbeiteten Einstiege; 23 Skill-Tests, zusätzlich 16 Tests gegen SP-Setup | ✅ |
+| 8 | Dokumentation und Regressionen aller betroffenen Repositories | 793 Vitest; Lint/Typecheck; Ruff; ShellCheck der neuen/überarbeiteten Einstiege; 24 Skill-Tests, zusätzlich 17 Tests gegen SP-Setup | ✅ |
 
 ### Zurückgestellte Übergabe Runde 1
 
@@ -224,8 +224,10 @@ seine TERM-basierte Farberkennung und berücksichtigt zusätzlich NO_COLOR.
 Beschreibungstexte weiterhin unverändert aus. Alle Layout-Parameter sind in den
 Library-READMEs beschrieben; Einrückungen bleiben Leerzeichenketten.
 
-`setup-libs.sh` und die gemeinsame Skill-Vorlage nutzen Theme-Helfer, vor dem
-ersten Setup eine farblose Bootstrap-Ausgabe ohne eigene Palette. `--info`/`-s`
+`setup-libs.sh` und die gemeinsame Skill-Vorlage nutzen zentral
+`printThemeHeading`, `printThemeRow` und `printThemeStatus` aus BashLib
+`tools.lib.sh`. Ohne Quellbibliothek bleibt eine kurze Starthilfe; vor
+`--install` muss `BASH_LIBS` auf deren `src`-Verzeichnis zeigen. `--info`/`-s`
 prüft auch die tatsächlich benötigten CLI-Dateien. Wiederholung erhält gültige
 Links; Quellen aus bestehenden lokalen Links werden physisch aufgelöst, damit
 kein Link auf sich selbst entsteht. Echte Dateien, Verzeichnisse und eine
@@ -294,9 +296,9 @@ unverändert. Kein Jenkins-Erfolg oder veröffentlichter Build behauptet.
 |---|---|---|
 | StockPortfolio | `t-56-changelog-generator` | `handoff_commit` in STATUS |
 | MakeLib | `feat/cli-themes` | `10b128d00e514495232d94a95ca9893a32e1dfb7` |
-| BashLib | `feat/cli-themes` | `b6551b6ba91131d16633586c394d4a905515e641` |
+| BashLib | `feat/cli-themes` | `ab6a5a77949f31b285dc987b66cadba249a6db15` |
 | ProjectTools | `feat/changelog-generator` | `a54f84d4196d4a72dece1d07fcf9564333726ae5` |
-| PersonalSkills | `docs/shared-cli-themes` | `14ef1bf21408cb37dd5d6eab5162ae524b942794` |
+| PersonalSkills | `docs/shared-cli-themes` | `38073d8af066c68f532ff1b571b910663e582b70` |
 
 MakeLib hatte bereits vor Beginn zwei lokale Commits auf master; Ausgangsfassung
 `df55af9` bleibt erhalten. BashLibs fremde Änderung an `src/docker.lib.sh` und
@@ -304,3 +306,35 @@ ProjectTools' unversionierte `AGENTS.md` sind nicht in den Prüffassungen enthal
 Keine der neuen Fassungen ist durch den Coder gemergt oder gepusht. Technische
 Freigabe und Ticketabschluss bleiben offen; danach gilt Mikes Integrationsablauf
 mit Rückkehr auf master.
+
+### Nachtrag vor Übergabe · zentrale Bash-Helfer und direkte Changelog-Anbindung
+
+Mike verlangt gemeinsame Ausgabehelfer in `tools.lib.sh`, Namen mit
+`printTheme` und die kurze einzeilige BashLib-Einbindung. Setup-Script und
+Skill-Vorlage enthalten keine eigenen Kopien der drei Helfer mehr. Die bisher
+öffentlichen `themeHeading` und `themeLine` bleiben kompatibel verfügbar.
+Shell-Konvention und BashLib-README beschreiben die gemeinsame Schnittstelle.
+Ohne BashLib liefert die Starthilfe Status 0; Installationsversuche brechen
+mit Status 1 ab und legen keine Links an.
+
+Mike bestätigt außerdem den direkten Aufruf von `changelog.py --publish`
+in den drei `tag-*`-Targets. Das öffentliche Target `changelog-publish` entfällt.
+`make changelog` erzeugt weiterhin nur die Datei. Wiederholung nach einem
+fehlgeschlagenen Changelog-Schritt erfolgt direkt über Python, ohne neuen Tag;
+der historische Runde-1-Nachweis oben beschreibt noch die damaligen Targets.
+
+Nachprüfung: 24 Skill-Tests und 17 Vorlagentests gegen das StockPortfolio-Script
+bestanden. Echter BashLib-Aufruf unter `set -euo pipefail`: Beschreibung in
+Spalte 31, Statusausgabe, farblose Pipe und ocean-Farben im PTY geprüft.
+ShellCheck des Setup-Scripts grün; die 20 vorhandenen Diagnosen in `tools.lib.sh`
+sind nach Code und Meldung unverändert. `make help` enthält nur `changelog`,
+`make -n tag-minor MSG=...` zeigt den direkten Python-Aufruf nach dem Bump.
+Kein echtes Release ausgeführt.
+
+**Doku-Abgleich:** README-Abschnitte „Command-line themes“ und Release-Anleitung
+angepasst; BashLib-README, Shell-Konvention und gemeinsame Setup-Vorlage ebenso.
+`docker/README.md` erneut abgeglichen: beschreibt den Containerbetrieb, keine
+Entwickler-Targets oder BashLib-Einbindung; keine Anpassung erforderlich.
+Beim BashLib-Nachtragscommit wurde ausschließlich für diesen Git-Aufruf der
+bekannte Jenkins-Hook ausgelassen (`core.hooksPath=/dev/null`); keine permanente
+Hook-Konfiguration verändert und kein weiterer Jenkins-Job erzeugt.

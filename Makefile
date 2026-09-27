@@ -222,10 +222,6 @@ tags: ## Letzte 10 Tags mit Message anzeigen
 changelog: ## CHANGELOG.md aus Release-Tags erstellen (ohne Commit)
 	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --generate
 
-.PHONY: changelog-publish
-changelog-publish: ## CHANGELOG.md erstellen, committen und pushen (auch zum Wiederholen)
-	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --publish
-
 .PHONY: tag-major tag-minor tag-patch
 tag-major: ## Version committen, taggen UND pushen — Major; danach Changelog [MSG="..."]
 tag-minor: ## Version committen, taggen UND pushen — Minor; danach Changelog [MSG="..."]
@@ -236,4 +232,4 @@ tag-major tag-minor tag-patch: precheck
 	@test -r "$(PROJECT_TOOLS)/python/changelog.py"
 	@test -z "$$(git status --porcelain)"
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump "$(patsubst tag-%,%,$@)" auto "" "$${MSG:-}"
-	@$(MAKE) changelog-publish
+	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --publish
