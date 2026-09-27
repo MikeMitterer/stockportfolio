@@ -245,6 +245,106 @@ Rechtsprüfung bleiben für Mike offen; weder Veröffentlichung noch Ticketabsch
 sind damit freigegeben. Fremde Änderungen an ACTIVITY.md bleiben außerhalb
 der Produkt-/Ticketcommits.
 
+### Unabhängige Prüfung Runde 3 · Verifier `claude` · 2026-09-27
+
+Geprüfte Fassung: `28aba0924ad59f04d0f6340b931fd29b8b5f4905` auf Branch
+`t-57-eupl-lizenz`, gesamter Umfang seit `master` (`git diff --stat
+master..28aba09`: 19 Dateien). Arbeitsbaum entspricht dieser Fassung
+bis auf `_tickets/ACTIVITY.md` und `_tickets/STATUS.md`. Alle folgenden
+Prüfungen selbst ausgeführt, nicht nur aus den Codex-Nachweisen übernommen
+(SP-R-02).
+
+1. **Lizenztexte gegen die Originalquelle:** `LICENSE` und `LICENSE.de.txt`
+   frisch von den beiden in diesem Ticket verlinkten EU-Originaladressen
+   heruntergeladen und mit `cmp` gegen die Arbeitsdateien verglichen —
+   bytegleich, gleiche Größen (13.827 / 15.282 Bytes) und gleiche SHA-256.
+   `git diff --check master..28aba09` erneut ausgeführt: Whitespace-/CRLF-
+   Meldungen ausschließlich in `LICENSE.de.txt` (Original-BOM und
+   Trailing-Spaces der EU-Quelle); alle übrigen Dateien sauber.
+2. **LICENSING.md inhaltlich gegen den EUPL-Originaltext geprüft:** Artikel
+   14/15 im heruntergeladenen Original gelesen — die Aussage „Article 15…
+   points to Austrian law for MangoLila GmbH as an Austrian licensor“ ist
+   korrekt (Art. 15 verweist auf den Sitzstaat der Lizenzgeberin), ebenso
+   die Zurückhaltung bei Art. 14 (keine pauschale ausschließliche
+   Verbrauchergerichtsstandsklausel). Copyright/Anbieterrollen decken sich
+   mit Mikes Entscheidungen oben (Michael Mitterer Urheber, MangoLila GmbH
+   Anbieterin/Lizenzgeberin); die Verbrauchererklärung schränkt die
+   EUPL-Rechte nicht ein und begründet keine Fremdpflichten.
+3. **Konsistenz über alle Texte (SP-CX-02-Gegenprobe):** `README.md`,
+   `docker/README.md`, `unraid/README.md`, `SOURCE.md`, `public/legal.html`
+   und `LICENSING.md` gelesen — gleiche Rechteinhaberin, gleicher Umfang,
+   gleiche Verbrauchererklärung, gleicher StockInfo-Hinweis überall. Keine
+   verbliebene Stelle mit altem Lizenzstand gefunden.
+4. **Konsistenz mit StockInfo:** `StockInfo/LICENSE` und `pyproject.toml`
+   gelesen — StockInfo bleibt `AGPL-3.0-or-later`, eigenes Repository, nur
+   über HTTP-API verbunden. Kein Lizenzkonflikt, da keine Codeverbindung;
+   „StockInfo is a separate product with its own license“ ist zutreffend.
+   Mikes Hinweis, StockInfo werde perspektivisch ebenfalls auf EUPL
+   umgestellt, ändert an diesem Befund nichts und ist eine eigene künftige
+   Aufgabe im StockInfo-Board, nicht Teil dieses Tickets.
+5. **App-Link aus den zurückgezogenen Runden:** Diff von
+   `AppStatusBar.vue`/`i18n/de.ts`/`i18n/en.ts` gelesen — neuer Link
+   „License & source“/„Lizenz & Quellcode“ nutzt das vorhandene `NButton`
+   (kein eigenes CSS, `target="_blank"` mit `rel="noopener noreferrer"`),
+   folgt demselben Muster wie der bestehende GitHub-Link. Kein neuer
+   Browser-Layouttest durchgeführt; Umfang ist eine unveränderte
+   Komponentenverwendung, durch die Guard-Tests abgedeckt.
+6. **Build-Helfer und Manifest:** `scripts/licenseAssets.ts`,
+   `tests/licenseAssets.spec.ts`, `vite.config.ts` und `package.json`
+   gelesen — Dateiliste enthält die vier neuen Dokumente, keine
+   `COMMERCIAL-LICENSE.md` mehr. Alle Bezeichner in beiden geänderten
+   TS-Dateien englisch. Repo-weite Suche nach `COMMERCIAL-LICENSE` und dem
+   alten Ticketnamen `T-57-agpl-lizenz`: keine Fundstelle außerhalb der
+   historischen STATUS-Erzählung.
+7. **Pflichtprüfungen selbst ausgeführt:** `make test` (63 Dateien / 795
+   Tests, davon die vier Wächter-Tests grün), `make lint` und
+   `make typecheck` — alle Exit 0. `npm audit`: 5 Funde (3 moderate, 2
+   high, `js-yaml`/`nanoid` u.a.), deckt sich mit der gemeldeten Zahl;
+   vorbestehend und außerhalb dieses Lizenzauftrags.
+8. **Produktionsbuild und Archiv:** `make build-frontend` erfolgreich;
+   `LICENSE`, `LICENSE.de.txt`, `LICENSING.md`, `THIRD_PARTY_NOTICES.md`,
+   `public/legal.html` je mit `cmp` bytegleich zur `dist/`-Ausgabe.
+   `dist/stockportfolio-source.tgz` entpackt: 122 reguläre Dateien, 0
+   Symlinks — deckt sich mit dem gemeldeten Archivinventar.
+9. **Docker-Image frisch gebaut** (`stockportfolio-t57-verify:local`,
+   linux/amd64) und als Testcontainer auf `127.0.0.1:60944` mit
+   absichtlich unerreichbarer API gestartet: `healthy`, OCI-Label
+   `org.opencontainers.image.licenses=EUPL-1.2`. Sechs HTTP-Downloads
+   (`legal.html`, `LICENSE.txt`, `LICENSE.de.txt`, `LICENSING.md`,
+   `THIRD_PARTY_NOTICES.md`, `stockportfolio-source.tgz`) je Status 200 mit
+   den gemeldeten Byte-Größen; alle fünf Dokumente und das Archiv mit
+   `cmp`/`diff -rq` bytegleich zu Arbeitsstand und `dist/`. `GET
+   /COMMERCIAL-LICENSE.md` liefert **404** (stärkerer Abwesenheitsbeleg als
+   ein reiner SPA-Fallback-200), zusätzlich kein Treffer für `find /
+   -iname '*commercial*'` im Container. Testcontainer und Testimage
+   anschließend entfernt; kein Push, keine Veröffentlichung.
+10. **Hub-Vorschau real erzeugt:** eigener Lauf von
+    `dockerhub-readme.sh --readme docker/README.md --preview --ref master`
+    ergibt 6.658 Bytes — deckt sich exakt mit dem gemeldeten Wert, deutlich
+    unter der 25.000-Byte-Grenze.
+11. **Zentrale Unraid-Vorlage selbst gelesen:**
+    `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
+    enthält keine Lizenzerwähnung — bestätigt die Aussage „keine
+    betroffenen Lizenzzusagen“ unabhängig, nicht nur aus dem Ticket
+    übernommen.
+12. **Konventionsabgleich (Auftrag außerhalb T-57):** Das installierte
+    Workflow-Paket steht aktuell auf `2026-09-27-central-package`; der
+    lokale Board-Stand bleibt bei `2026-09-11-activity-feed`
+    (siehe STATUS.md „Offene Übernahme“). Diese Lücke ist bereits vor
+    diesem Review dokumentiert und bleibt ausdrücklich ohne eigenen
+    Board-Auftrag unangetastet; kein neuer Befund, keine Auswirkung auf
+    die Freigabe der Lizenzumsetzung.
+
+**Offen bleibt, ausdrücklich außerhalb der technischen Prüfung:** die interne
+Rechtevereinbarung Michael Mitterer → MangoLila GmbH und die österreichische
+Rechtsprüfung (Verify #6, weiterhin ➖). Ein technischer Review ersetzt kein
+Rechtsgutachten und erteilt keine menschliche Abnahme oder Freigabe zur
+Veröffentlichung.
+
+**Urteil:** Technisch freigegeben. Alle geprüften Punkte (Verify #1–#5)
+sind durch eigene Ausführung bestätigt, keine Abweichung zu den
+Codex-Nachweisen gefunden. Kein Produktbefund, keine Änderung angefordert.
+
 ## Historie · zurückgezogene eigene Lizenz, Runde 2
 
 Die folgenden Texte und die darin enthaltene Verify-Matrix sind der
