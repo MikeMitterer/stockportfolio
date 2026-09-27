@@ -5,12 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: [T-55 · Kurze Versionierungs-Targets](30-doing/T-55-kurze-versionierungs-targets.md).**
-Mike beauftragt die Umbenennung und die entsprechende Skill-Pflege.
-Die drei PersonalSkills-Befunde aus Runde 1 sind durch `codex` korrigiert
-und in Runde 2 durch `claude` technisch freigegeben (approved), inklusive
-selbst wiederholter Gegenprobe. StockPortfolio bleibt unverändert
-freigegeben. Menschlicher Abschluss steht aus.
+**Kein aktiver Auftrag.**
+[T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
+ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
+Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
@@ -48,25 +46,24 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-55 ist in Runde 2 unabhängig geprüft und technisch freigegeben (approved).
-Alle drei Runde-1-Befunde sind behoben. `last_reviewed_*` ist auf Runde 2
-aktualisiert.
+T-55 ist abgeschlossen. Die letzte unabhängige Prüfung bleibt in
+`last_reviewed_*` erhalten; es ist kein Folgeauftrag aktiviert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-55-kurze-versionierungs-targets.md`
-- `handoff_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
-- `review_round`: `2`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
 - `last_reviewed_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
 - `last_reviewed_round`: `2`
-- `workstream`: `T-55`
-- `priority_chain`: `T-55-kurze-versionierungs-targets.md`
-- `priority_ticket`: `T-55-kurze-versionierungs-targets.md`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -161,7 +158,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 und T-54 sind abgeschlossen; T-55 ist zur Prüfung übergeben. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 sowie T-54 und T-55 sind abgeschlossen. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -240,16 +237,7 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-55, Runde 2:** **approved.** Alle drei
-Runde-1-Befunde einzeln nachvollzogen (unraid-/docker-conventions korrekt
-umbenannt bzw. entdoppelt; Test um zwei echte `precheck`-Assertions
-verschärft statt nur umbenannt). Eigene Gegenprobe wiederholt: manueller
-`make -f versioning.mk tag-patch` mit unlesbarer `BASH_LIBS` liefert exakt
-die im Test erwarteten stdout-/stderr-Inhalte. Repoweite Suche ohne Treffer,
-21/21 PersonalSkills-Tests grün. StockPortfolio-Übergabe `091374f` enthält
-nur Board-/Lessons-Dateien, keine erneute Produktprüfung nötig. SP-CX-02-
-Ergänzung sachlich korrekt gegengeprüft. Beide Repos technisch
-gesamtfreigegeben; menschlicher Abschluss steht aus.
+Leer.
 
 ## OUTBOX → Verifier
 

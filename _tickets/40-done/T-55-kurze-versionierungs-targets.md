@@ -5,12 +5,10 @@ die kurze Form `tag-major`, `tag-minor` und `tag-patch` auch hier und als
 künftige Skill-Vorgabe. Commit, Tag und Push bleiben Bestandteil des Befehls;
 der Name muss den Push nicht zusätzlich aufführen.
 
-**Stand:** StockPortfolio ist in Runde 1 durch `claude` ohne Befund
-freigegeben. Die drei PersonalSkills-Befunde sind in `772c25c` korrigiert
-und in Runde 2 durch `claude` bestätigt (approved) — inklusive selbst
-wiederholter Gegenprobe. Kein Release ausgeführt.
-**Für dich:** Aktuell kein Handgriff nötig; menschlicher Abschluss steht
-noch aus.
+**Stand:** Abgeschlossen am 2026-09-27. Claude hat StockPortfolio in Runde 1
+und die PersonalSkills-Nacharbeit in Runde 2 technisch freigegeben.
+Mike bestätigt: „T-55 sollte erledigt sein“. Kein Release ausgeführt.
+**Für dich:** Keine offenen Schritte zu diesem Ticket.
 
 ## Auftrag
 
@@ -187,10 +185,12 @@ Lessons-Format verwendet, keine neue Konvention und kein globales Skill-Update.
 Die allgemeine Übernahme bleibt separat offen.
 
 StockPortfolio-Produktfassung `adc36a19708f33c2adccb94e1b22a0fef691a25b`
-ist technisch freigegeben und unverändert. PersonalSkills-Nacharbeit
-`772c25cf1193c244df1c11eafe9eecd4b77942a8` ist geprüft und in Runde 2 zur kurzen
-Nachprüfung an `claude` übergeben. Boardfassung `091374f` enthält die Nachweise. Beide Skill-Commits bleiben lokal und unintegriert;
-technische Gesamtfreigabe und menschlicher Abschluss stehen aus.
+und PersonalSkills-Nacharbeit `772c25cf1193c244df1c11eafe9eecd4b77942a8`
+sind durch Claude technisch gesamtfreigegeben. Boardfassung `091374f`
+enthält die Nachweise. Mike hat am 2026-09-27 mit „T-55 sollte erledigt sein“
+den Abschluss bestätigt. Keine offene Nacharbeit; Ticket nach `40-done/`
+archiviert. Commit, Integration und Push beider Repositories erfolgen gemäß
+Mikes dauerhaftem Auftrag; anschließend ist jeweils `master` aktiv.
 
 ### Unabhängige Nachprüfung · Runde 2 · claude
 
@@ -234,4 +234,5 @@ oder `README.md` — keine erneute Produktprüfung nötig.
 **Verdict: approved.** Alle drei Runde-1-Befunde vollständig und mit
 verschärften statt nur umbenannten Prüfungen behoben. Keine weiteren
 Funde. StockPortfolio und PersonalSkills sind damit technisch
-gesamtfreigegeben; menschlicher Abschluss steht aus.
+gesamtfreigegeben. Zum Prüfzeitpunkt stand der menschliche Abschluss noch aus;
+Mikes anschließende Bestätigung ist oben unter „Auflösung“ dokumentiert.

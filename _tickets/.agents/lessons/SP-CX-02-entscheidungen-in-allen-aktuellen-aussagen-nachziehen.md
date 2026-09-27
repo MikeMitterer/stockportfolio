@@ -66,7 +66,7 @@ Einstiegstexte gegeneinander lesen; historische Belege getrennt einordnen.
 
 ## Ergänzung · 2026-09-27 · T-55
 
-In [T-55](../../30-doing/T-55-kurze-versionierungs-targets.md) wurden die
+In [T-55](../../40-done/T-55-kurze-versionierungs-targets.md) wurden die
 Versionsziele auf `tag-major`, `tag-minor` und `tag-patch` vereinheitlicht.
 Die Codex-Fassung von PersonalSkills `6600ce24b4842c1fd64582ddf001d73549a8ab87`
 passte Makefile-Skill, Versionierungs-Skill und Vorlage an, ließ aber
