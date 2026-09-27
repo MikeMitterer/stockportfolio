@@ -198,7 +198,7 @@ ist ebenfalls abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist nach Claudes Freigabe und Mikes bedingtem Abschluss erledigt.
 [T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md)
-ist umgesetzt und wird zur unabhängigen Prüfung vorbereitet.
+ist umgesetzt und in Runde 1 zur unabhängigen Prüfung übergeben.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist nach Claudes Gesamtfreigabe und Mikes Bestätigung am 2026-09-27 abgeschlossen.
 

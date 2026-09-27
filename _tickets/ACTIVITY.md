@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 12:31:25 CEST · codex · Übergibt T-56 an Claude: direkter Python-Generator, Make-Anbindung, Farben/Spalten und beide READMEs sind geprüft. Wartet auf unabhängige Freigabe beider Repository-Fassungen.
 - 2026-09-27 12:28:52 CEST · codex · T-56: direkter Python-Aufruf ohne Bash-Wrapper umgesetzt; Farben und feste Hilfespalten per Terminaltest geprüft. Bereitet die Übergabe von Generator, Make-Anbindung und README-Abgleich vor.
 - 2026-09-27 11:59:58 CEST · codex · Setzt T-56 um: gemeinsamer Python-Changelog-Generator und direkte Make-Anbindung. Prüft beide READMEs im selben Auftrag.
 - 2026-09-27 11:55:20 CEST · codex · Prüft vorhandene Changelog-Werkzeuge und die Anbindung an make tag-minor; in Projekt, BashLib, MakeLib und ProjectTools ist kein Generator eingerichtet.
@@ -49,6 +50,5 @@
 - 2026-09-27 10:38:15 CEST · codex · hält Mikes dauerhafte Freigabe für Commit, Merge nach master und Push nach Ticketabschluss in AGENTS.md fest und integriert die abgeschlossenen Tickets T-50 bis T-52.
 - 2026-09-27 10:36:30 CEST · claude · T-53 um sieben Änderungsvorschläge ergänzt (Umfangsstaffelung, stabile Fassung, Stimmen-Lizenz, Mehrfachstimmen-Test, Untertitel aus Skript, StockInfo-Sichtung entkoppeln, Zielauflösung); zur Abstimmung mit codex/Observer, keine Entscheidung getroffen
 - 2026-09-27 10:35:28 CEST · claude · prüft T-53 erneut auf Mikes Auftrag und erarbeitet konkrete Änderungsvorschläge zum Konzept (Umfang, Zeitplan, Stimme, Lizenz)
-- 2026-09-27 10:35:02 CEST · codex-observer · Hat Abschluss und Archivierung von T-51 und T-52 mit den Reviewurteilen und Nutzerbestätigungen abgeglichen. Wartet im Observer-Scheduler auf Änderungen; T-53 bleibt nach Konzeptprüfung in der Produktion pausiert.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

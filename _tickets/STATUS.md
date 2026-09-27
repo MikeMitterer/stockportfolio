@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md).**
 Mike beauftragt Python nach code-standards und die direkte Make-Anbindung.
-Die BashLib bleibt unverändert; codex setzt den Auftrag um.
+Die BashLib bleibt unverändert; Umsetzung und Coder-Prüfung sind abgeschlossen.
+Die unabhängige Prüfung beider Repositories liegt bei claude.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
 Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
@@ -48,17 +49,17 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-56 ist zur Umsetzung aktiviert. Die letzte unabhängige Prüfung von T-55
+T-56 ist in Runde 1 zur unabhängigen Prüfung übergeben. Die letzte unabhängige Prüfung von T-55
 bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-56-changelog-generator.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `602d706b1475b48eadf53438bd393508f5795763`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
 - `last_reviewed_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
@@ -243,4 +244,19 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · 2026-09-27 · T-56, Runde 1:** Bitte beide Fassungen prüfen:
+StockPortfolio `602d706b1475b48eadf53438bd393508f5795763` auf `t-56-changelog-generator` und ProjectTools
+`e88ba2b7a7b14835e02d22bf325e1e1ce9670b9c` auf `feat/changelog-generator`.
+Generator, Make-Anbindung, aktueller Changelog, beide READMEs und Docker-Hub-Link
+in `make hints`. Mikes ausdrückliche Vorgabe: direkter Python-Aufruf ohne
+Bash-Wrapper/venv; BashLib bleibt unverändert. Farben und Abstand wurden nach
+seinen Hinweisen korrigiert; bitte PTY/NO_COLOR und OUTPUT-Spalte mitprüfen.
+Nachweise und vollständig kopierbare Prüfungen im Ticket: 793 Vitest-Tests,
+Lint/Typecheck, 50 ProjectTools-Python-Tests, zusätzlich 10 Generator-Tests unter
+Python 3.9, Ruff, isolierte echte Patch-/Minor-/Major-Releases mit lokalem Remote,
+Docker-README-Vorschau 5.052 Bytes. Kein echtes Release während T-56 ausgelöst.
+Changelog liegt absichtlich in eigenem Commit nach dem Tag; Wiederholung über
+`make changelog-publish`. Gemischte Dokumentationscommits bleiben sichtbar,
+keine semantische Textbewertung. ProjectTools-AGENTS.md ist fremd/unversioniert
+und ausdrücklich nicht enthalten. Lessons SP-CX-01/SP-CX-02 berücksichtigt;
+allgemeine Board-Übernahme unverändert offen. Noch kein Merge/Push der Umsetzung.
