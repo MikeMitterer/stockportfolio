@@ -427,9 +427,11 @@ export const de = {
       delta: 'Delta',
       trade: 'Kauf / Verkauf',
       value: 'Wert',
-      shareAfter: 'Anteil nachher',
-      deviation: 'Abw. Ziel',
+      relativeDeviationAfter: 'Rel. Abweichung nachher',
+      deviation: 'Abw. Ziel (Prozentpunkte)',
     },
+    shareAfterLabel: 'Anteil nachher: {share}',
+    relativeUndefined: 'Bei Ziel 0 % nicht definiert',
     deltaTooltip: 'Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen. Anklicken übernimmt den Wert in die Eingabe.',
     deltaTooltipMore:
       'Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht.',

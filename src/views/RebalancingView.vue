@@ -10,7 +10,7 @@ import { useAppNotification } from '@/composables/useAppNotification'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
-import { integer, percent, percentSigned } from '@/domain/formatters'
+import { decimalSigned, integer, percent } from '@/domain/formatters'
 import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
 import type { GroupResult } from '@/domain/rebalancing'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
@@ -207,14 +207,9 @@ function bandColor(group: AssetGroup): string {
   return `color-mix(in srgb, ${assetColor(group)} 7%, transparent)`
 }
 
-/**
- * Abweichung vom Ziel, für die Anzeige: „Ziel 10 %, danach 9,5 %" → „−0,5 %".
- *
- * Gemeint sind Prozentpunkte, aber der Zusatz „%-P" stand als Fachkürzel in
- * jeder Zeile, ohne etwas zu klären — die Spaltenüberschrift sagt es bereits.
- */
+/** Prozentpunkte: Ziel 10 %, danach 9,5 % ergibt −0,5. Einheit im Spaltenkopf. */
 function deviationLabel(row: NonNullable<typeof plan.value>['rows'][number]): string {
-  return percentSigned(row.deviationAfter)
+  return decimalSigned(row.deviationAfter)
 }
 
 /** Kurs je Stück — für die Anzeige in der Zeile. */
@@ -376,7 +371,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                 <th class="reb__th reb__th--w32">{{ t('rebalancing.columns.trade') }}</th>
                 <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
                 <th class="reb__th reb__th--left reb__th--w56">
-                  {{ t('rebalancing.columns.shareAfter') }}
+                  {{ t('rebalancing.columns.relativeDeviationAfter') }}
                 </th>
                 <th class="reb__th">{{ t('rebalancing.columns.deviation') }}</th>
                 <th class="reb__th reb__th--center reb__th--wide reb__th--w32">{{ t('table.status') }}</th>
@@ -442,9 +437,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                         :class="{ 'reb__override--on': row.targetOverridden }"
                         :title="
                           row.targetOverridden
-                            ? `Probeweise geändert — im Depot steht ${percent(
-                              row.current.position.targetPercent,
-                            )}`
+                            ? t('rebalancing.targetProbe', {
+                              target: percent(row.current.position.targetPercent),
+                            })
                             : ''
                         "
                         aria-hidden="true"
@@ -513,17 +508,19 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                   </td>
 
                   <td class="reb__td">
-                    <!--
-                      Derselbe Balken wie auf dem Dashboard: Mitte ist das
-                      Ziel, statt des Deltas steht der Anteil am Gesamtvermögen
-                      daneben.
-                    -->
+                    <!-- Balken und Zahl beziehen sich auf denselben simulierten Zustand. -->
                     <DeltaBar
                       :relative-percent="row.relativeDeviationAfter"
                       :suggestion="row.suggestionAfter"
-                      :label="percent(row.percentAfter)"
+                      :label="row.targetPercent === 0 ? '—' : undefined"
                       compact
                     />
+                    <div class="reb__share-after">
+                      {{ t('rebalancing.shareAfterLabel', { share: percent(row.percentAfter) }) }}
+                    </div>
+                    <div v-if="row.targetPercent === 0" class="reb__share-after">
+                      {{ t('rebalancing.relativeUndefined') }}
+                    </div>
                   </td>
 
                   <!--
@@ -534,7 +531,6 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                   <td
                     class="reb__td reb__td--num tabular-nums"
                     :class="row.inBandAfter ? 'reb__muted' : 'reb__flow--out'"
-                    :title="`${percentSigned(row.relativeDeviationAfter)} relativ zum Ziel`"
                   >
                     {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
                   </td>
@@ -713,6 +709,11 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
    * Kartenliste; die Eingabe wäre einzeln untereinander sinnlos.
    */
   &__scroll { overflow-x: auto; }
+
+  &__share-after {
+    margin-top: var(--space-1);
+    @include muted(var(--font-xs));
+  }
 
   &__table {
     width: 100%;

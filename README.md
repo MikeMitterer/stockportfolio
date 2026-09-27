@@ -227,6 +227,11 @@ resulting allocations and bands. _Cover from_ offers liquid positions when a
 plan is underfunded. **Nothing is booked.** Place orders at your bank, then
 update holdings on the dashboard.
 
+The bar and its number show the relative deviation from the target after
+the planned trade, using the same format as the dashboard. The resulting
+portfolio share appears below it; the adjacent column shows the difference
+in percentage points. Relative deviation is undefined when the target is zero.
+
 ### Explanations inside the app
 
 Question-mark tooltips explain the method and link to the relevant setting

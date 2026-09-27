@@ -12,11 +12,9 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 −0,5 % beschreibt dagegen die Differenz von −0,5 Prozentpunkten zum Ziel.
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
-**Stand:** Auf Mikes ausdrücklichen Auftrag vom 2026-09-27 unter `30-doing/`
-angelegt und nach Mikes Abschluss von T-50 zur Umsetzung aktiviert.
-Implementierung läuft auf `t-51-rebalancing-bandabweichung-als-zahl`. Der aktive Auftrag
-und die Reihenfolge stehen ausschließlich in [STATUS.md](../STATUS.md);
-T-50 ist in Runde 2 freigegeben und durch Mike abgeschlossen.
+**Stand:** Umsetzung und eigene technische Prüfung abgeschlossen auf
+`t-51-rebalancing-bandabweichung-als-zahl`. Die unabhängige Prüfung steht aus.
+T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
 Prüfung bleibt seine Abschlussbestätigung offen.
@@ -39,7 +37,7 @@ Mike, anschließend am 2026-09-27:
 Scope: UI-only in StockPortfolio. Die bestehende Berechnung und die
 Bedeutung der Bänder bleiben erhalten. Kein GitHub-Issue angelegt.
 
-### Ausgangsbefund und Ansatz
+### Ausgangsbefund bei Aufnahme
 
 Quelltext bei Aufnahme gelesen; keine Browserprüfung durchgeführt:
 
@@ -57,7 +55,16 @@ Quelltext bei Aufnahme gelesen; keine Browserprüfung durchgeführt:
   `relativeDeviationAfter`. Die vorhandene Behandlung eines Zielanteils
   von null berücksichtigen; keine zweite Berechnung in der Ansicht aufbauen.
 
-Die Darstellung soll die vorhandenen Werte wiederverwenden. Anteil nach
+**Umsetzung:** `DeltaBar` zeigt `relativeDeviationAfter` wieder mit seinem
+unveränderten Standardformat wie im Dashboard. Der Anteil danach steht als
+beschriftete zweite Zeile darunter. Die Nachbarspalte benennt Prozentpunkte
+und verwendet eine Zahl ohne irreführendes Prozentzeichen. Bei Ziel 0 %
+steht am Balken „—“ mit einer sichtbaren Erklärung. Die Berechnung bleibt in
+`computeTradePlan`; `decimalSigned` teilt die vorhandene Zahlenformatierung
+mit `percentSigned`. Der vorhandene i18n-Schlüssel für den Tooltip am
+probeweisen Ziel ersetzt dort außerdem den hartkodierten deutschen Text.
+
+Die Darstellung verwendet die vorhandenen Werte wieder. Anteil nach
 dem Trade, relative Abweichung und Differenz in Prozentpunkten müssen
 verständlich unterscheidbar bleiben. Der Zahlenwert bezieht sich im
 Rebalancing auf denselben simulierten Zustand wie der zugehörige Balken.
@@ -77,16 +84,41 @@ Rebalancing auf denselben simulierten Zustand wie der zugehörige Balken.
 
 ### Verify
 
-Einzige aktuelle technische Matrix. Alle Nachweise sind noch offen.
-`➖` bedeutet: keine ausgeführte Verifikation.
+Einzige aktuelle technische Matrix. ✅ ausgeführt und bestätigt.
+Tests und Browserprüfung sind unten getrennt beschrieben.
 
 | # | Prüfung | Erwartetes Ergebnis / Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Beispiel mit Ziel 10 %, Anteil danach 9,5 % und unterem Band 6 % | −5 % relative Abweichung direkt sichtbar; Anteil 9,5 % und Differenz −0,5 Prozentpunkte unterscheidbar | ➖ |
-| 2 | Negative, positive und null Abweichung; beide Bandgrenzen und Überschreitungen; Zielanteil null | Zahlenwert und bestehende Bandbewertung konsistent; Format wie im Dashboard, keine ungültigen Zahlen | ➖ |
-| 3 | Simulierten Trade und Zielanteil ändern, anschließend DE/EN prüfen | Zahl und Balken zeigen denselben aktualisierten Zustand; verständliche Beschriftungen ohne Hover | ➖ |
-| 4 | `make test`, `make lint`, `make typecheck`; Bezeichnerinventar geänderter Dateien | Erfolgreiche Pflichtprüfungen; englische Bezeichner | ➖ |
-| 5 | Betroffene Anleitungen und bestehende Anzeigen abgleichen | Doku-Abgleich belegt; Anteil nach dem Trade und bisherige Statusinformationen weiterhin verständlich | ➖ |
+| 1 | Ziel 10 %, Anteil danach 9,5 %, unteres Band 6 % | Komponententest und Chrome: −5,0 % am Balken, Anteil nachher 9,5 %, −0,5 in der Prozentpunktspalte; Dashboard ebenfalls −5,0 % | ✅ |
+| 2 | Vorzeichen, Null, Bandgrenzen und Ziel null | Tests: −7/−6/0/+5/+15/+16 % mit zugehörigem Status. Ziel null: erklärter Strich, kein NaN/Infinity; auch im Browser geprüft | ✅ |
+| 3 | Trade und Ziel ändern, DE/EN | Tests über Commit-Ereignisse; Browser über Eingabefeld/Enter: +10 Stück → +5,0 % und Anteil 10,5 %. Zielwechsel auf 5 % im Test → +110,0 %. Englische Beschriftung und Dezimalpunkt bestätigt | ✅ |
+| 4 | Pflichtprüfungen und Bezeichnerinventar | 2026-09-27, 09:28: 62 Testdateien / 793 Tests grün; Lint und Typecheck Exit 0. TS-Compiler-API-Inventar der fünf geänderten Code-/Testdateien: englische Bezeichner | ✅ |
+| 5 | Doku und Dashboard-Vergleich | README erläutert die drei Werte; Containeranleitung bleibt zutreffend. Browser-Dashboard und Rebalancing vor Trade zeigen beide −5,0 % | ✅ |
+
+**Prüfumgebung:** `tests/components/rebalancingDeviation.spec.ts` führt die
+vollständige Ansicht, echte Stores, `computeRebalancing`, `computeTradePlan`,
+`DeltaBar` und die Inline-Eingaben aus. Nur die Cache-Hydrierung ist ersetzt;
+IndexedDB läuft durch das globale Testsetup mit `fake-indexeddb`. Kein Netz.
+Die zehn neuen Fälle scheiterten vor der Korrektur an der falschen sichtbaren
+Zahl (etwa 9,5 % statt −5,0 %); danach 10/10 erfolgreich.
+
+Chrome: isolierter Kontext `t51-rebalancing`, 1440 × 1000, echter vorhandener
+StockInfo-Testserver mit temporärer Datenbank für den API-Status. Das Beispiel
+wurde als synthetischer Browser-Store-Zustand gesetzt: Aktie 95 Stück zu 10 EUR,
+Ziel 10 %, Cash 9.050 EUR, Gesamt 10.000 EUR. Keine behauptete echte Marktquote.
+Dashboard-Zahl verglichen; danach Rebalancing, Trade +10 über das echte
+Eingabefeld und Enter, Ziel 0 über das Zielfeld, DE/EN über i18n geprüft.
+Rebalancing bleibt eine Simulation; die Tests prüfen den unveränderten
+Depot-Zielwert nach dem probeweisen Wechsel.
+
+```bash
+# #1–#3: Sichtbare Zahlen und Reaktivität.
+npx vitest run tests/components/rebalancingDeviation.spec.ts
+# #4: Gesamte Pflichtprüfung.
+make test
+make lint
+make typecheck
+```
 
 ### Side-Effects
 
@@ -102,14 +134,22 @@ angelegt. AL-R-01 gilt für die Nachweise: Der Quelltextbefund bei Aufnahme
 ersetzt keine Prüfung der sichtbaren Darstellung. SP-CX-02 ist beim späteren
 Doku-Abgleich zu berücksichtigen.
 
-**Doku-Abgleich bei Aufnahme:** `README.md` beschreibt unter „What it does“
-relative Bänder und unter „Rebalancing is a simulation“ die simulierten
-Anteile. `docker/README.md` nennt unter „Features“ das Rebalancing mit
-Toleranzbändern. Beide Anleitungen versprechen bislang keinen solchen
-Zahlenwert und bleiben für die reine Ticketaufnahme unverändert.
-Bei Umsetzung diese Abschnitte und betroffene Erklärungen in App und `docs/`
-abgleichen; nötige Anpassungen oder begründete Nichtänderung dokumentieren.
-Installation, Betrieb und Unraid-Konfiguration sind nicht betroffen.
+**Doku-Abgleich:** Datei- und Überschrifteninventar aus README, Containeranleitung,
+`docs/` und Unraid geprüft. `README.md`, „Rebalancing is a simulation“, ergänzt
+relative Abweichung am Balken, Anteil darunter, Prozentpunkte daneben und Ziel 0.
+`docker/README.md`, „Features“, bleibt unverändert: Die vorhandene Zusage zum
+Rebalancing mit Toleranzbändern stimmt weiterhin, die ergänzte Zahl braucht
+keine eigene Container-Anweisung. Die Methoden-Erklärung in `src/i18n/de.ts`
+und `en.ts` beschreibt relative Bänder bereits richtig; neue Beschriftungen
+stehen in beiden Katalogen. Historische Pläne/Spezifikation unter
+`docs/superpowers/` und die StockInfo-Integrationsbewertung ändern keine aktuelle
+Zusage dieser Anzeige. `unraid/README.md` und zentrale Unraid-Vorlage bleiben
+unverändert, da Installation, Speicherung und Konfiguration nicht betroffen sind.
+
+**Lessons angewendet:** SP-CX-02 (aktuelle Board-Aussagen/Doku), AL-R-01
+(Testdouble und Browserdaten ausdrücklich benannt), SP-CX-05 (neue Lesson
+vor Umsetzung gelesen: Dashboard als echte Referenz auf Format und sichtbare
+Zahl verglichen). Keine neue Lesson durch diesen einzelnen Anzeigeauftrag.
 
 Die allgemeine Übernahme der Board-Konventionen auf
 `2026-09-11-lessons-follow-through` bleibt separat offen. Dieser Auftrag
@@ -117,5 +157,5 @@ Die allgemeine Übernahme der Board-Konventionen auf
 
 ### Auflösung
 
-Ticket erfasst. Umsetzung, technische Prüfung und menschlicher Abschluss
-stehen aus.
+Umsetzung und eigene Verifikation abgeschlossen. Unabhängige Prüfung und
+menschliche Abschlussbestätigung stehen aus; Ticket bleibt in Doing.

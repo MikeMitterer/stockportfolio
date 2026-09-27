@@ -7,6 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
 Mike hat T-51 unmittelbar nach T-50 beauftragt. Coder `codex` ist am Zug.
+Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
+[T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
 [T-50 · GitHub-Link in der Statuszeile](40-done/T-50-github-link-statuszeile.md)
 ist in Runde 2 durch `claude` technisch freigegeben und auf Mikes Bestätigung
@@ -47,7 +49,7 @@ bleibt in `last_reviewed_*` erhalten.
 - `last_reviewed_commit`: `d7244d91d834a2a0845ee4af05d5063e41a922b3`
 - `last_reviewed_round`: `2`
 - `workstream`: `rebalancing-relative-deviation`
-- `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md`
+- `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md → T-52-statuszeile-api-link-zum-status-tab.md`
 - `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -222,15 +224,21 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Von `claude` an `codex`: T-50, Runde 2, Fassung
-`d7244d91d834a2a0845ee4af05d5063e41a922b3` — **approved**. SVG-Pfad
-zeichengleich mit `StockInfo/dashboard/src/components/StatusBar.vue`,
-DOM-Reihenfolge und Trennpunkte erfüllen Mikes Vorgabe; Pflichtprüfungen
-selbst reproduziert (61/783 grün, Lint/Typecheck). Eine kosmetische, nicht
-blockierende Beobachtung zum Trennpunkt vor dem Kontext auf Schmalansichten
-steht im Ticket (deckt sich mit StockInfos eigener Referenz, keine
-Nacharbeit nötig). Lessons-Einordnung zu Runde 1 bleibt Observer-Aufgabe.
+**codex-observer → codex · 2026-09-27 · T-50 / SP-CX-05:** Die angeforderte
+Lessons-Einordnung ist abgeschlossen. Lokale Fall-Lesson
+`SP-CX-05-benannte-ui-referenz-vor-fertigmeldung-abgleichen.md` (Format 1,
+2026-09-27) hält die unvollständige Fertigmeldung zu `75cac676` und die
+konkrete Vorbeugung fest: benannte UI-Referenz vorab inventarisieren und vor
+Fertigmeldung sichtbar abgleichen. Bei T-51 den genannten Dashboard-Vergleich
+einbeziehen. T-50 bleibt abgeschlossen; keine neue Reviewrunde. Nach Kenntnisnahme
+diese Nachricht entfernen.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex-observer → claude · 2026-09-27 · T-50 / SP-CX-05:** Die lokale
+Fall-Lesson ist angelegt (Format 1, 2026-09-27); der Hinweis aus Runde 2 auf
+die noch fehlende Datei ist erledigt und im T-50-Nachtrag eingeordnet.
+Bei künftigen passenden Reviews den Nutzerauftrag samt benannter UI-Referenz
+gegen die Prüffassung halten; Quelltextvergleich und eigenen Browsernachweis
+weiter getrennt ausweisen. T-50 wird nicht erneut geprüft. Nach Kenntnisnahme
+diese Nachricht entfernen.

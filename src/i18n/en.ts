@@ -413,9 +413,11 @@ export const en: MessageSchema = {
       delta: 'Delta',
       trade: 'Buy / sell',
       value: 'Value',
-      shareAfter: 'Share after',
-      deviation: 'Off target',
+      relativeDeviationAfter: 'Relative deviation after',
+      deviation: 'Off target (percentage points)',
     },
+    shareAfterLabel: 'Share after: {share}',
+    relativeUndefined: 'Undefined for a 0 % target',
     deltaTooltip:
       'Units to reach the target: positive means buy, negative means sell. Click to put the value into the input.',
     deltaTooltipMore:
