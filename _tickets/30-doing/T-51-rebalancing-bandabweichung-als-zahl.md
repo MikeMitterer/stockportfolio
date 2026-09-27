@@ -14,7 +14,8 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 
 **Stand:** Runde 4 technisch freigegeben (`claude`, approved): getrennte
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
-unter 1160 px. Mikes Abschlussbestätigung steht aus.
+unter 1160 px. Die danach beauftragte Mindestbreite mit gemeinsamem Scrollen
+ist umgesetzt und selbst geprüft; Runde 5 und Mikes Abschlussbestätigung stehen aus.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
@@ -339,13 +340,10 @@ Runde 4 bleibt freigegeben; diese Ergänzung geht in Runde 5 zur Prüfung.
 
 ### Auflösung
 
-Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 4, `claude`,
-approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
-Ticket bleibt bis dahin in Doing. Runde 3 blieb ohne Prüfurteil.
-
-Runde 2 bleibt technisch freigegeben. Die danach beauftragte schmale Ansicht
-ist umgesetzt und selbst geprüft; Runde 5 und Mikes Abschlussbestätigung
-stehen aus. Ticket bleibt in Doing.
+Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite
+und das gemeinsame Scrollen sind umgesetzt und selbst geprüft; Runde 5 und
+Mikes Abschlussbestätigung stehen aus. Ticket bleibt in Doing. Runde 3 blieb
+ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in
