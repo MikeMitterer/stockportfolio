@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:01:39 CEST · codex · hat Mikes bedingte Abschlussentscheidung zu T-54 festgehalten. Claudes Freigabe steht noch aus; danach folgen Abschluss, Commit, Merge, Push und Rückwechsel auf master automatisch.
+- 2026-09-27 11:01:13 CEST · codex-observer · T-53: vergleicht ElevenLabs und HeyGen und berücksichtigt Mikes vorhandenen Filmora-Editor. Medienproduktion bleibt pausiert.
+- 2026-09-27 11:00:34 CEST · claude · beginnt T-54 Runde 1: prüft Sicherung/Backup-Verhalten im leeren Depot (Fassung ae64b14)
 - 2026-09-27 10:59:42 CEST · codex · hat T-54 in Fassung ae64b14 an Claude zur unabhängigen Prüfung übergeben. Backup-Einstieg, einheitliche deutsche Begriffe und gekürzter Download-Button sind umgesetzt; die Grenze der Browser-Importprüfung steht im Ticket.
 - 2026-09-27 10:58:53 CEST · codex · hat T-54 umgesetzt: Backup-Einstieg im leeren Depot, deutsche Bezeichnung vereinheitlicht und Download-Button auf Backup gekürzt. 793 Tests, Lint und Typecheck grün; DE/EN und Layout geprüft, Browser-Import durch Werkzeug-Pfadfreigabe begrenzt. Bereitet Claudes Review vor.
 - 2026-09-27 10:53:16 CEST · codex · setzt T-54 um: Im leeren Depot kommt ein dritter Einstieg zum vorhandenen Sicherungs-Tab hinzu. Prüfung umfasst DE/EN, schmale Ansichten und den bestehenden Wiederherstellungsablauf.
@@ -47,8 +50,5 @@
 - 2026-09-27 09:49:42 CEST · codex-observer · Erarbeitet den Ablauf für Blogposts und ein erklärtes Video zu StockPortfolio und StockInfo. Lokale Werkzeuge für Screenshots, Sprachentwurf und Videoschnitt sind vorhanden.
 - 2026-09-27 09:47:55 CEST · codex · trennt in T-51 die relative Prozentzahl in eine eigene Spalte. Balken und Anteil-Beschriftung werden unter der xl-Grenze ausgeblendet; die Zahl bleibt sichtbar.
 - 2026-09-27 09:45:31 CEST · claude · T-51 Runde 2 technisch freigegeben (approved): Referenzvergleich gegen Dashboard/PositionsTable.vue, Ziel-0-Sentinel und DELTA-Tooltip-Wiederverwendung geprüft, 62/793 Tests reproduziert; kleine Testlücke bei decimalSigned vermerkt, keine Nacharbeit; Owner zurück an codex
-- 2026-09-27 09:43:17 CEST · claude · beginnt T-51 Runde 2: prüft gekürzte Tabellenüberschriften mit Hover-Erklärungen (Fassung 45f532d)
-- 2026-09-27 09:42:34 CEST · codex · hat die kurzen, einzeiligen Rebalancing-Header samt DE/EN-Hover-Erklärungen an claude übergeben. Kauf / Verkauf bleibt erhalten; 793 Tests, Lint und Typecheck erfolgreich.
-- 2026-09-27 09:41:28 CEST · claude · T-51 Runde 1 zu ae8e83c: Übergabe von codex zurückgenommen (Mikes Anzeigeauftrag für Tabellenüberschriften), bevor ein Urteil abgegeben wurde; kein Prüfurteil, keine Dateiänderung; wartet auf erneute Übergabe
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

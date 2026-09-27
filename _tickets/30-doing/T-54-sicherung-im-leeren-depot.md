@@ -10,10 +10,12 @@ Dateiauswahl, Prüfung und Bestätigung weiterverwendet werden.
 
 **Stand:** Umgesetzt und am 2026-09-27 durch Codex geprüft. Der zusätzliche
 Button öffnet den Backup-Tab; die deutsche Oberfläche verwendet „Backup“.
-Unabhängige Freigabe und Abschlussabnahme stehen noch aus.
+Claudes technische Freigabe steht noch aus. Mike hat den Abschluss bereits
+unter dieser Bedingung autorisiert.
 
-**Für dich:** Aktuell kein Handgriff nötig. Nach Umsetzung und unabhängiger
-Prüfung bleibt die Abschlussentscheidung offen.
+**Für dich:** Kein weiterer Handgriff nötig. Nach Claudes Freigabe wird das
+Ticket abgeschlossen, committed, nach `master` gemergt und gepusht;
+anschließend wird wieder `master` ausgecheckt.
 
 ## Auftrag
 
@@ -29,6 +31,9 @@ auf Einstellungen/Sicherung“.
 
 Weitere Vorgaben von Mike: „Übrigens wird immer der Begriff "Sicherung" verwendet - änder das überall zu "Backup" - das passt auch im deutschen“.
 Zum Download-Button: „Bei den Einstellungen heiß der Punkt auch "Sicherung herunterladen" - Da genügt "Backup"“.
+
+**Bedingte Abschlussentscheidung · Mike, 2026-09-27:** „Nach einer Freigabe
+von Claude ist das Ticket von mir aus erledigt“.
 
 ## Umsetzung und technische Nachweise
 
@@ -126,4 +131,5 @@ wiederkehrendes Fehlermuster; keine neue Lesson allein aus dieser Ticketanlage.
 
 Umsetzung und eigene Prüfungen abgeschlossen, mit der bei #2 dokumentierten
 Browsergrenze. Produktfassung `ae64b14ef8a05881f08bcf38459ec47c716567a6` in Runde 1 an
-den Verifier übergeben. Technische Freigabe und menschlicher Abschluss stehen aus.
+den Verifier übergeben. Technische Freigabe steht aus. Mikes bedingte
+Abschlussentscheidung liegt vor; sie wird nach Claudes Freigabe wirksam.

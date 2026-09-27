@@ -10,6 +10,10 @@ Mike hat die Ticketanlage und den sofortigen Umsetzungsbeginn beauftragt.
 Die Umsetzung ist an Verifier `claude` zur Prüfung in Runde 1 übergeben;
 T-53 bleibt pausiert.
 
+Mike hat T-54 am 2026-09-27 bedingt abgeschlossen: „Nach einer Freigabe von
+Claude ist das Ticket von mir aus erledigt“. Nach Claudes Freigabe übernimmt
+der Coder Abschluss, Commit, Merge und Push sowie Rückwechsel auf `master`.
+
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
 Mike mit „T-52 passt“ abgeschlossen. Die beauftragte Kette T-51 → T-52 ist erledigt.
@@ -258,4 +262,6 @@ Diese Einschränkung bitte als solche beurteilen, nicht als neuen Importfehler.
 Beide READMEs und Browser-Testanleitung aktualisiert; Docker-Hub-Vorschau
 4.858 Bytes geprüft. AST-Bezeichnerinventar und Begriffsinventar durchgeführt.
 Review bitte auch gegen Mikes Originalvorgaben und den Doku-Abgleich führen.
-Keine Änderung am Produktionsstopp von T-53; menschlicher Abschluss offen.
+Keine Änderung am Produktionsstopp von T-53. Mike hat den menschlichen
+Abschluss ausdrücklich an Claudes Freigabe gebunden; keine weitere Rückfrage
+nach einer technischen Freigabe erforderlich.
