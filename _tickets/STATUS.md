@@ -13,7 +13,8 @@ mit kostenpflichtiger Vereinbarung. Mikes gewünschte Aufteilung: persönliches 
 als Anbieterin/Lizenzgeberin die vertragliche Verantwortung übernehmen.
 Mike hat bestätigt: „OK, also ich bin der Urheber, MangoLila erhält die Nutzungs- und Lizenzierungsrechte“.
 Unveränderte kostenlose Weitergabe unter StockPortfolio mit allen Hinweisen ist erlaubt.
-Die neue Lizenzfassung wird umgesetzt; die interne Rechtevereinbarung bleibt rechtlich zu prüfen.
+Die neue Lizenzfassung ist umgesetzt und für Reviewrunde 2 übergeben;
+die interne Rechtevereinbarung bleibt rechtlich zu prüfen.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -62,19 +63,19 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 setzt das von Mike bestätigte Modell um
-(persönliches Copyright, MangoLila GmbH als Anbieterin/Lizenzgeberin). Runde 1 ist vor
-Reviewbeginn zurückgezogen; die bisherige Prüffassung bleibt als Bezug erhalten.
+T-57 ist in Runde 2 zur unabhängigen Prüfung übergeben
+(persönliches Copyright, MangoLila GmbH als Anbieterin/Lizenzgeberin). Runde 1
+wurde vor Reviewbeginn zurückgezogen; ihre Nachweise stehen im Ticket.
 Die letzte abgeschlossene Prüfung bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-57-agpl-lizenz.md`
-- `handoff_commit`: `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `e3d068e81abc55e0474e445bbf2edfae868bb305`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
@@ -259,9 +260,27 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Absender `codex`, Empfänger gemäß Rollenfeld `reviewer`: T-57, Runde 1,
-Fassung `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a`.
-Die Reviewanforderung ist zurückgezogen: Mike antwortete nach der Erklärung,
-dass Rebranding unter AGPL keine kommerzielle Lizenz braucht:
-„Also das geällt mir nicht.“ Das gewünschte Lizenzmodell wird zuerst geklärt.
-Bitte diese Fassung nicht freigeben oder integrieren. Die neue Fassung wird nach Mikes Modellentscheidung umgesetzt; noch kein neuer Reviewauftrag.
+Absender `codex`, Empfänger gemäß Rollenfeld `reviewer`: T-57, Runde 2,
+Fassung `e3d068e81abc55e0474e445bbf2edfae868bb305`.
+
+Die zurückgezogene AGPL-Fassung ist durch StockPortfolio License 1.0 ersetzt:
+Michael Mitterer als Urheber/Copyright-Inhaber, MangoLila GmbH als Anbieterin
+und Lizenzgeberin. Eigene Nutzung einschließlich interner Firmenanpassungen
+kostenlos; unveränderte kostenlose Weitergabe mit Hinweisen erlaubt.
+Angebote unter eigener Marke, Weiterverkauf, Hosting für Dritte und geänderte
+Weitergabe brauchen eine gesonderte kostenpflichtige Vereinbarung.
+Unraid-Katalogeinträge und Vorlagen für Original-Images ausdrücklich erlaubt;
+MIT des separaten Template-Repos gilt nicht für die App.
+
+Bitte den gesamten T-57-Umfang seit master prüfen, einschließlich des bereits
+in Runde 1 bereitgestellten Build-Helfers und App-Links. Aktuelle Belege im
+Ticket: 63 Testdateien/795 Tests, lint/typecheck/Frontend-Build erfolgreich,
+Docker linux/amd64 healthy, fünf HTTP-Artefakte 200, Dokumente und 121 Dateien
+im heruntergeladenen Archiv bytegleich. Hub-Vorschau 6.459 Bytes.
+
+Grenzen: keine neue Browserprüfung nach den reinen Textänderungen; frühere
+Browser- und Neubauprüfungen als historisch gekennzeichnet. Kein Live-Unraid,
+keine bestätigte CA-Aufnahme, keine Veröffentlichung. Rechtliche Wirksamkeit
+und interne Rechtevereinbarung sind nicht durch technischen Review abgedeckt.
+Keine pauschale persönliche Haftungsbefreiung behauptet. ACTIVITY enthält
+fremde Änderungen und bleibt außerhalb der Commits.

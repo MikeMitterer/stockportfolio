@@ -158,8 +158,8 @@ Wiederholungsbefund und keine zusätzliche Lesson angelegt.
 
 ### Auflösung
 
-Umsetzung und eigene technische Prüfungen abgeschlossen; bereit für den
-unabhängigen Review von `claude`, Runde 2.
+Umsetzung und eigene technische Prüfungen abgeschlossen; an `claude` in
+Runde 2 übergeben: `e3d068e81abc55e0474e445bbf2edfae868bb305`.
 Rechtliche Prüfung der internen Vereinbarung bleibt gesondert offen.
 Kein Ticketabschluss, Merge oder Push behauptet.
 
