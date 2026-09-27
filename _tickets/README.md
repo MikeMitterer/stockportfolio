@@ -197,7 +197,8 @@ T-51 ist [abgeschlossen](40-done/T-51-rebalancing-bandabweichung-als-zahl.md).
 ist ebenfalls abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist nach Claudes Freigabe und Mikes bedingtem Abschluss erledigt.
-Kein aktiver Coder-/Verifier-Auftrag; maßgeblich ist STATUS.
+[T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
+ist nach Claudes Gesamtfreigabe und Mikes Bestätigung am 2026-09-27 abgeschlossen.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

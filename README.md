@@ -307,7 +307,7 @@ development, `npm install` works without these shared tools.
 | `make lint` / `make typecheck` | ESLint / `vue-tsc --noEmit`                 |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
-| `make tag-and-push-minor`       | Bump, commit, tag **and push** the version   |
+| `make tag-minor`              | Bump, commit, tag **and push** the version   |
 
 Frontend commands are also available as `npm run …`.
 
@@ -444,7 +444,7 @@ runs only the frontend production build.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
 `STRICT=2` allows commits after a tag; `STRICT=1` requires the tagged commit.
-Version changes use `make tag-and-push-major/minor/patch`, which commit, tag and
+Version changes use `make tag-major/minor/patch`, which commit, tag and
 push to GitHub. A normal image build does not bump the version.
 The build uses `node:22-bookworm-slim` for build and runtime, with locked `serve` dependencies.
 

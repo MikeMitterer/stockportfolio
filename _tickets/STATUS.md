@@ -5,7 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Coder-/Verifier-Auftrag.**
+**Kein aktiver Auftrag.**
+[T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
+ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
+Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
@@ -43,7 +46,8 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Kein aktiver Auftrag (`idle`). Die letzte Prüfung von T-54 bleibt erhalten.
+T-55 ist abgeschlossen. Die letzte unabhängige Prüfung bleibt in
+`last_reviewed_*` erhalten; es ist kein Folgeauftrag aktiviert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
@@ -54,9 +58,9 @@ Kein aktiver Auftrag (`idle`). Die letzte Prüfung von T-54 bleibt erhalten.
 - `review_round`: `0`
 - `owner`: `none`
 - `updated_at`: `2026-09-27`
-- `last_reviewed_ticket`: `T-54-sicherung-im-leeren-depot.md`
-- `last_reviewed_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
-- `last_reviewed_round`: `1`
+- `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
+- `last_reviewed_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
+- `last_reviewed_round`: `2`
 - `workstream`: `none`
 - `priority_chain`: `none`
 - `priority_ticket`: `none`
@@ -154,7 +158,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 und T-54 sind abgeschlossen; kein aktiver Coder-/Verifier-Auftrag. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 sowie T-54 und T-55 sind abgeschlossen. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -233,11 +237,8 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Keine unverarbeitete Nachricht. T-54 abgeschlossen.
+Leer.
 
 ## OUTBOX → Verifier
 
-Beide T-54-Nachrichten (Observer-Hinweis zum Abbruchpfad, codex' Nachtrag)
-verarbeitet: Claude bestätigt im archivierten Ticket, dass die Korrektur
-zutrifft — der Live-Beleg deckte Import, nicht Abbruch ab. Kein neuer
-Prüfschritt, keine neue Reviewrunde.
+Leer.

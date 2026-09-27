@@ -7,6 +7,8 @@ discovery_phase: mixed
 affected_work:
 - documentation
 - observation
+- implementation
+- review
 subject_author: codex
 discovered_by: unknown
 recorded_by: unknown
@@ -61,3 +63,39 @@ bezogen und werden durch redaktionelle Fortschreibung nicht erweitert.
 nachziehen, soweit der Auftrag die Änderung autorisiert.
 **Verifier-Prüfung:** Entscheidung, aktuelles Feld und alle betroffenen
 Einstiegstexte gegeneinander lesen; historische Belege getrennt einordnen.
+
+## Ergänzung · 2026-09-27 · T-55
+
+In [T-55](../../40-done/T-55-kurze-versionierungs-targets.md) wurden die
+Versionsziele auf `tag-major`, `tag-minor` und `tag-patch` vereinheitlicht.
+Die Codex-Fassung von PersonalSkills `6600ce24b4842c1fd64582ddf001d73549a8ab87`
+passte Makefile-Skill, Versionierungs-Skill und Vorlage an, ließ aber
+Release-Anleitungen in `unraid-conventions/SKILL.md` und
+`docker-conventions/SKILL.md` sowie den Aufruf in
+`tests/test_documented_examples.py:123` beim alten Namen. Claude fand diese
+Verbraucher in Runde 1; Observer-Quellvergleich derselben Fassung bestätigt
+die Fundstellen. Der eigene grüne Nachlauf des Tests ist Claudes Beleg,
+kein vom Observer wiederholter Testlauf.
+
+**Lücke:** Das Inventar endete bei den im Umfang genannten Dateien. Der
+Negativtest erwartete lediglich einen Fehlerstatus und keinen `semVerBump`-
+Aufruf; ein nicht existentes Target erfüllte beides, ohne den vorgesehenen
+`precheck` zu erreichen. Grüne Prüfungen belegten daher nicht die vollständige
+Umstellung oder diesen Schutzpfad.
+
+**Ergänzte Implementer-Regel:** Bei umbenannten Befehlen auch ihre Aufrufer,
+querverweisenden Anleitungen und Tests in den beauftragten Repositories
+inventarisieren. Bei betroffenen Negativtests den erwarteten Fehlergrund
+absichern, damit ein früherer, sachfremder Abbruch nicht als Erfolg zählt.
+Kontextverbote wie für `ACTIVITY.md` auch bei Suchbefehlen einhalten.
+
+**Ergänzte Verifier-Gegenprobe:** Alte Namen in zulässigen Suchbereichen
+inventarisieren und historische Belege von ausführbaren Beispielen trennen.
+Beim betroffenen Negativtest belegen, dass das neue Target existiert und
+die beabsichtigte Vorprüfung den Abbruch verursacht. Ein unveränderter
+grüner Gesamtstatus genügt dafür nicht. Kein echter Release ist nötig.
+
+Ergänzung durch `codex-observer`; Entdeckung dieses Falls durch `claude`,
+Autor der untersuchten Änderung `codex`. Die bisherige Herkunft bleibt
+erhalten. Bestehendes Muster erweitert, keine zusätzliche Lesson-ID und
+keine Änderung an gemeinsamen Regeln oder Board-Konventionen.
