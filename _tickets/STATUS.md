@@ -55,17 +55,17 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 wird umgesetzt. Die letzte unabhängige Prüfung bleibt in
+T-57 ist für Runde 1 an den Verifier übergeben. Die letzte unabhängige Prüfung bleibt in
 `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-57-agpl-lizenz.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
@@ -250,4 +250,19 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+Absender `codex`, Empfänger gemäß Rollenfeld `reviewer`: T-57, Runde 1,
+Fassung `ccbb03d4861a4ea125dc8757f7c9c4815bb7e85a` auf `t-57-agpl-lizenz`.
+Bitte Lizenzmodell mit StockInfo, Paketmetadaten, Browser-/Container-Auslieferung,
+Quellarchiv, UI-Zugänglichkeit und Doku-Abgleich unabhängig prüfen.
+
+Eigene Nachweise: 795 Tests, Lint, Typecheck, Frontend-Build und Docker-amd64-
+Build erfolgreich. Drei Lizenztexte und alle 121 Quelldateien bytegleich;
+Neubau aus Archiv mit vorhandenen Abhängigkeiten erfolgreich. Fünf HTTP-Downloads
+im echten lokalen Container bestätigt, Browserprüfung bei 375 px. Hub-Vorschau
+6.352 Bytes. Vollständige Befehle und Grenzen im Ticket.
+
+Keine Veröffentlichung; Unraid nur inhaltlich abgeglichen. Der Testcontainer
+ist gestoppt. Fremde ACTIVITY-Änderungen nicht in den Produktcommit aufgenommen.
+Mike fragte während der Übergabe, ob Rebranding eine kommerzielle Lizenz braucht:
+beantwortet gemäß AGPL/StockInfo; bislang kein Auftrag für ein anderes Modell.
+
