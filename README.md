@@ -307,7 +307,8 @@ development, `npm install` works without these shared tools.
 | `make lint` / `make typecheck` | ESLint / `vue-tsc --noEmit`                 |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
-| `make tag-minor`              | Bump, commit, tag **and push** the version   |
+| `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |
+| `make changelog`              | Regenerate `CHANGELOG.md` without committing |
 
 Frontend commands are also available as `npm run …`.
 
@@ -444,8 +445,24 @@ runs only the frontend production build.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
 `STRICT=2` allows commits after a tag; `STRICT=1` requires the tagged commit.
-Version changes use `make tag-major/minor/patch`, which commit, tag and
-push to GitHub. A normal image build does not bump the version.
+Version changes use `make tag-major/minor/patch MSG="Release summary"`, which
+commit, tag and push to GitHub. Each target then generates and publishes
+[CHANGELOG.md](CHANGELOG.md) in a separate commit. The release tag itself
+precedes this changelog update. A normal image build does not bump the version.
+
+The shared ProjectTools generator reads complete Git history and release tags
+on the current branch's first-parent history. It groups Conventional Commits,
+uses annotated tag messages as summaries, and omits internal ticket, activity,
+merge and version-bump commits. Untagged changes are not included. Keep the
+working tree clean before running a release target. The generator runs directly
+with Python 3.9+ and uses only the standard library. No packages, Bash launcher or virtual environment are needed.
+Use `make changelog PYTHON=/path/to/python3` to select another interpreter.
+
+`make changelog` regenerates the file locally. Generated text is replaced on
+the next run. Commit messages and the release `MSG` determine its contents. If the changelog step or its push fails after tagging, the release
+already exists. Fix the reported cause and run `make changelog-publish` to
+retry without increasing the version again. A repeated successful call creates
+no additional changelog commit.
 The build uses `node:22-bookworm-slim` for build and runtime, with locked `serve` dependencies.
 
 `TARGET=dockerhub` is the default; GHCR and ECR remain optional. `make push`

@@ -197,6 +197,8 @@ T-51 ist [abgeschlossen](40-done/T-51-rebalancing-bandabweichung-als-zahl.md).
 ist ebenfalls abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist nach Claudes Freigabe und Mikes bedingtem Abschluss erledigt.
+[T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md)
+ist umgesetzt und wird zur unabhängigen Prüfung vorbereitet.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist nach Claudes Gesamtfreigabe und Mikes Bestätigung am 2026-09-27 abgeschlossen.
 

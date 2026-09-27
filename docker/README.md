@@ -108,6 +108,9 @@ site data removes the locally stored portfolio.
 
 ## Updating
 
+See the [changelog](../CHANGELOG.md) for changes grouped by Git release.
+A Git release does not by itself publish a new container image.
+
 With Compose:
 
 ```bash

@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 12:28:52 CEST · codex · T-56: direkter Python-Aufruf ohne Bash-Wrapper umgesetzt; Farben und feste Hilfespalten per Terminaltest geprüft. Bereitet die Übergabe von Generator, Make-Anbindung und README-Abgleich vor.
+- 2026-09-27 11:59:58 CEST · codex · Setzt T-56 um: gemeinsamer Python-Changelog-Generator und direkte Make-Anbindung. Prüft beide READMEs im selben Auftrag.
+- 2026-09-27 11:55:20 CEST · codex · Prüft vorhandene Changelog-Werkzeuge und die Anbindung an make tag-minor; in Projekt, BashLib, MakeLib und ProjectTools ist kein Generator eingerichtet.
 - 2026-09-27 11:52:46 CEST · codex · Erhöht auf Mikes Auftrag die Minor-Version über make tag-minor mit MSG: Rebalancing-Anzeige und Backup-Einstieg verbessern.
 - 2026-09-27 11:51:29 CEST · codex · Committet auf Mikes Auftrag die offene ACTIVITY-Änderung nach dem T-55-Abschluss und pusht master.
 - 2026-09-27 11:50:02 CEST · codex-observer · Hat T-55-Abschluss, archivierten Lessons-Verweis und Integration in StockPortfolio sowie PersonalSkills abgeglichen: beide Arbeitsverzeichnisse auf master, jeweils gleichauf mit origin/master. Wartet auf weitere Boardänderungen; T-53 bleibt pausiert.
@@ -47,8 +50,5 @@
 - 2026-09-27 10:36:30 CEST · claude · T-53 um sieben Änderungsvorschläge ergänzt (Umfangsstaffelung, stabile Fassung, Stimmen-Lizenz, Mehrfachstimmen-Test, Untertitel aus Skript, StockInfo-Sichtung entkoppeln, Zielauflösung); zur Abstimmung mit codex/Observer, keine Entscheidung getroffen
 - 2026-09-27 10:35:28 CEST · claude · prüft T-53 erneut auf Mikes Auftrag und erarbeitet konkrete Änderungsvorschläge zum Konzept (Umfang, Zeitplan, Stimme, Lizenz)
 - 2026-09-27 10:35:02 CEST · codex-observer · Hat Abschluss und Archivierung von T-51 und T-52 mit den Reviewurteilen und Nutzerbestätigungen abgeglichen. Wartet im Observer-Scheduler auf Änderungen; T-53 bleibt nach Konzeptprüfung in der Produktion pausiert.
-- 2026-09-27 10:33:55 CEST · codex · hat T-52 nach Claudes Freigabe und Mikes Bestätigung „T-52 passt“ archiviert. Die Kette T-51 → T-52 ist abgeschlossen; das Board steht für Coder/Verifier auf idle.
-- 2026-09-27 10:31:15 CEST · claude · T-52 Runde 1 technisch freigegeben (approved): einzeilige Routenänderung gegen SettingsView-Tab-Logik verifiziert, 62/793 Tests reproduziert, Doku-Abgleich bestätigt; Owner zurück an codex
-- 2026-09-27 10:29:19 CEST · claude · beginnt T-52 Runde 1: prüft API-Link direkt zum Status-Tab in der Statuszeile (Fassung 031d0e0)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

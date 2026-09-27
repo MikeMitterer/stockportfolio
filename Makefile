@@ -7,6 +7,7 @@ PROJECT_NAME := $(notdir $(WORKSPACE))
 
 BASH_LIBS ?= $(WORKSPACE)/.libs/BashLib/src
 PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
+PYTHON ?= python3
 DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
 export BASH_LIBS PROJECT_TOOLS
 
@@ -77,6 +78,7 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Dev-Server"   "http://localhost:5175"
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Preview"      "http://localhost:4175"
 	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "StockInfo API" "https://stockinfo.int.mikemitterer.at/docs"
+	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Docker Hub"   "https://hub.docker.com/r/mangolila/stockportfolio"
 	@echo
 	@echo "  $(YELLOW)Setup$(RESET)"
 	@echo
@@ -210,14 +212,22 @@ tags: ## Letzte 10 Tags mit Message anzeigen
 	@git tag --sort=-version:refname -n1 | head -10 | \
 	  awk '{printf "    \033[34m%-28s\033[0m \033[32m%s\033[0m\n", $$1, substr($$0, index($$0,$$2))}'
 
-.PHONY: tag-major
-tag-major: precheck ## Version committen, taggen UND pushen — Major (X.y.z → X+1.0.0)  [MSG="..."]
-	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump major auto "" "$${MSG:-}"
+.PHONY: changelog
+changelog: ## CHANGELOG.md aus Release-Tags erstellen (ohne Commit)
+	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --generate
 
-.PHONY: tag-minor
-tag-minor: precheck ## Version committen, taggen UND pushen — Minor (x.Y.z → x.Y+1.0)  [MSG="..."]
-	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump minor auto "" "$${MSG:-}"
+.PHONY: changelog-publish
+changelog-publish: ## CHANGELOG.md erstellen, committen und pushen (auch zum Wiederholen)
+	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --publish
 
-.PHONY: tag-patch
-tag-patch: precheck ## Version committen, taggen UND pushen — Patch (x.y.Z → x.y.Z+1)  [MSG="..."]
-	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump patch auto "" "$${MSG:-}"
+.PHONY: tag-major tag-minor tag-patch
+tag-major: ## Version committen, taggen UND pushen — Major; danach Changelog [MSG="..."]
+tag-minor: ## Version committen, taggen UND pushen — Minor; danach Changelog [MSG="..."]
+tag-patch: ## Version committen, taggen UND pushen — Patch; danach Changelog [MSG="..."]
+
+# Ein gemeinsames Rezept hält Reihenfolge und Fehlerverhalten für alle Stufen gleich.
+tag-major tag-minor tag-patch: precheck
+	@test -r "$(PROJECT_TOOLS)/python/changelog.py"
+	@test -z "$$(git status --porcelain)"
+	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump "$(patsubst tag-%,%,$@)" auto "" "$${MSG:-}"
+	@$(MAKE) changelog-publish

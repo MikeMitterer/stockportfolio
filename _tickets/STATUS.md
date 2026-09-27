@@ -5,7 +5,9 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Auftrag.**
+**Aktiver Auftrag: [T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md).**
+Mike beauftragt Python nach code-standards und die direkte Make-Anbindung.
+Die BashLib bleibt unverändert; codex setzt den Auftrag um.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
 Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
@@ -46,24 +48,24 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-55 ist abgeschlossen. Die letzte unabhängige Prüfung bleibt in
-`last_reviewed_*` erhalten; es ist kein Folgeauftrag aktiviert.
+T-56 ist zur Umsetzung aktiviert. Die letzte unabhängige Prüfung von T-55
+bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-56-changelog-generator.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
 - `last_reviewed_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
 - `last_reviewed_round`: `2`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `T-56`
+- `priority_chain`: `T-56-changelog-generator.md`
+- `priority_ticket`: `T-56-changelog-generator.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
