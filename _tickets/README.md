@@ -191,7 +191,8 @@ ist durch Mike abgeschlossen. [T-49](40-done/T-49-dockerhub-veroeffentlichung.md
 ist am 2026-09-26 auf Mikes ausdrückliche Entscheidung abgeschlossen. Der
 Docker-Hub-Push ist durch Mike als erledigt bestätigt; die technischen
 Prüfnachweise bleiben im Ticket getrennt ausgewiesen.
-Es ist kein Ticket aktiviert; maßgeblich ist STATUS.
+Aktiv ist [T-50 · GitHub-Link in der Statuszeile](30-doing/T-50-github-link-statuszeile.md);
+maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

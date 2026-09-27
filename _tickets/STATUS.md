@@ -5,7 +5,11 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Auftrag.** Mike hat am 2026-09-26 ausdrücklich bestätigt:
+**Aktiver Auftrag: [T-50 · GitHub-Link in der Statuszeile](30-doing/T-50-github-link-statuszeile.md).**
+Mike hat am 2026-09-27 die Übernahme der offenen Frage direkt nach Doing und
+den sofortigen Implementierungsbeginn beauftragt. Coder `codex` ist am Zug.
+
+Der vorherige Auftrag ist abgeschlossen. Mike hat am 2026-09-26 ausdrücklich bestätigt:
 „T-49 ist erledigt“. Das Ticket liegt unter
 [`40-done/T-49-dockerhub-veroeffentlichung.md`](40-done/T-49-dockerhub-veroeffentlichung.md).
 Die technischen Freigaben der Runden 1 bis 4 und die nachfolgenden README-/
@@ -16,7 +20,7 @@ T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
 Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 `codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
-`idle` erzeugt keine fachliche Arbeit.
+er prüft die Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
 Skill-Stand `2026-09-11-lessons-follow-through`. Allgemeine Übernahme weiterhin
@@ -31,18 +35,18 @@ offene Übergabe; die letzte unabhängige Prüfung bleibt in `last_reviewed_*` e
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-50-github-link-statuszeile.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
-- `updated_at`: `2026-09-26`
+- `owner`: `codex`
+- `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
 - `last_reviewed_commit`: `7aef0196b7e298cb667afaac50c7353816128958`
 - `last_reviewed_round`: `4`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `statusbar-repository-link`
+- `priority_chain`: `T-50-github-link-statuszeile.md`
+- `priority_ticket`: `T-50-github-link-statuszeile.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -137,7 +141,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-Es ist kein Ticket aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.

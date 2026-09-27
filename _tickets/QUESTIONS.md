@@ -11,4 +11,3 @@
 > Merksatz: Tickets akkumulieren (in `40-done/`), Fragen **drainieren** (nach GitHub / raus).
 
 ---
-
