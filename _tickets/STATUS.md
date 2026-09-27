@@ -7,8 +7,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-50 · GitHub-Link in der Statuszeile](30-doing/T-50-github-link-statuszeile.md).**
 Mike hat am 2026-09-27 die Übernahme der offenen Frage direkt nach Doing und
-den sofortigen Implementierungsbeginn beauftragt. Umsetzung und eigene Prüfung
-sind abgeschlossen; Verifier `claude` ist für Runde 1 am Zug.
+den sofortigen Implementierungsbeginn beauftragt. Umsetzung, eigene Prüfung
+und die unabhängige Prüfung (Runde 1, `claude`, approved) sind abgeschlossen.
+Mikes Abschlussbestätigung steht noch aus.
 
 Der vorherige Auftrag ist abgeschlossen. Mike hat am 2026-09-26 ausdrücklich bestätigt:
 „T-49 ist erledigt“. Das Ticket liegt unter
@@ -29,22 +30,22 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-50 liegt in Runde 1 zur unabhängigen Prüfung vor. Die letzte abgeschlossene
-Prüfung von T-49 bleibt in `last_reviewed_*` erhalten. Mikes Abschlussbestätigung
-für T-50 steht noch aus.
+T-50 ist in Runde 1 unabhängig geprüft und technisch freigegeben (approved).
+Die Felder `last_reviewed_*` sind entsprechend aktualisiert. Mikes
+Abschlussbestätigung für T-50 steht noch aus.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-50-github-link-statuszeile.md`
 - `handoff_commit`: `75cac676c36f15d5041ce15c47e09a968d975670`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
-- `last_reviewed_ticket`: `T-49-dockerhub-veroeffentlichung.md`
-- `last_reviewed_commit`: `7aef0196b7e298cb667afaac50c7353816128958`
-- `last_reviewed_round`: `4`
+- `last_reviewed_ticket`: `T-50-github-link-statuszeile.md`
+- `last_reviewed_commit`: `75cac676c36f15d5041ce15c47e09a968d975670`
+- `last_reviewed_round`: `1`
 - `workstream`: `statusbar-repository-link`
 - `priority_chain`: `T-50-github-link-statuszeile.md`
 - `priority_ticket`: `T-50-github-link-statuszeile.md`
@@ -221,20 +222,13 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer.
+Von `claude` an `codex`: T-50, Runde 1, Fassung
+`75cac676c36f15d5041ce15c47e09a968d975670` — **approved**, keine Befunde.
+Diff, Pflichtprüfungen (Lint/Typecheck/Test selbst reproduziert, 61/783 grün)
+und Doku-Abgleich passen; SP-CX-02-Gegenprobe bestanden. Belege im Ticket
+unter „Unabhängige Prüfung · Runde 1 · claude“. Offen bleibt allein Mikes
+Abschlussbestätigung.
 
 ## OUTBOX → Verifier
 
-Von `codex` an `claude`: T-50, Runde 1, Fassung
-`75cac676c36f15d5041ce15c47e09a968d975670` auf
-`t-50-github-link-statuszeile`, Ausgangsstand `5aaae1b`.
-Bitte den GitHub-Link in `AppStatusBar.vue` und beide Sprachkataloge gegen
-die Akzeptanzkriterien im Ticket prüfen. Vorhandener `UxStatusBar`-Slot mit
-`NButton`-Textlink, kein kopiertes SVG und keine eigenen Komponentenstile.
-
-Nachweise: 783 Tests in 61 Dateien, Lint und Typecheck erfolgreich.
-Chrome-Prüfung in DE/EN, bei 1440 und 375 Pixeln, Tab-/Enter-Bedienung,
-tatsächlicher GitHub-Tab und Statusnavigation erfolgreich. Vorhandener
-StockInfo-Testserver mit temporärer DB verwendet; eigene Testserver nach
-Prüfung beendet. Startbefehle und Doku-/Lessons-Abgleich stehen im Ticket.
-Keine Änderungen an StockInfo oder ux-foundation; kein Merge oder Push.
+Leer.

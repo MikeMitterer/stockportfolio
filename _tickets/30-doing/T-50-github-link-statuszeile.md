@@ -4,10 +4,11 @@ In der Statuszeile fehlt ein direkter Weg zum GitHub-Repository von
 StockPortfolio. Der Link soll wie bei StockInfo aus der App erreichbar sein.
 
 **Stand:** Auf Mikes Auftrag vom 2026-09-27 direkt unter `30-doing/`
-angelegt. GitHub-Link umgesetzt; eigene technische Prüfungen erfolgreich.
-Die unabhängige Prüfung und Mikes Abschlussbestätigung sind noch offen.
+angelegt. GitHub-Link umgesetzt; eigene technische Prüfungen und die
+unabhängige Prüfung (Runde 1, `claude`, approved) erfolgreich.
+Mikes Abschlussbestätigung ist noch offen.
 
-Für Mike bleibt nach der technischen Prüfung die Abschlussbestätigung offen.
+Für Mike bleibt nach der technischen Freigabe die Abschlussbestätigung offen.
 
 ## Auftrag
 
@@ -112,10 +113,45 @@ Container-Konfiguration noch Support-/Projektziel wechseln.
 Die allgemeine Board-Übernahme auf
 `2026-09-11-lessons-follow-through` bleibt außerhalb dieses UI-Auftrags offen.
 
+### Unabhängige Prüfung · Runde 1 · claude
+
+Geprüfte Fassung: `75cac676c36f15d5041ce15c47e09a968d975670` auf
+`t-50-github-link-statuszeile`. Vor der Prüfung die lokale SP-CX-02 sowie
+die gemeinsamen AL-R-01/02/11 gelesen (Autor: codex).
+
+- **Diff gelesen:** `AppStatusBar.vue`, `de.ts`, `en.ts`. `NButton` (Naive UI)
+  im vorhandenen `UxStatusBar`-Slot `left`, `tag="a"`, `target="_blank"`,
+  `rel="noopener noreferrer"`, `aria-label`/`title` aus i18n. Kein eigenes
+  CSS, keine Utility-Klasse, kein kopiertes SVG.
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 61 Testdateien / 783 Tests grün,
+  deckt sich exakt mit der gemeldeten Zahl. Wächter-Tests (`storageAccess`,
+  `componentStyles`, `utilityClasses`, `caretUsage`) darunter bestanden.
+- **Bezeichner:** Neue Bezeichner im Diff (`repository`, `repositoryLabel`,
+  Import `NButton`) durchgesehen — englisch, keine Auffälligkeit. Die volle
+  509er-TS-Compiler-API-Inventur der drei Dateien wurde nicht erneut gefahren;
+  bei diesem kleinen, klar abgegrenzten Diff unverhältnismäßig (AL-R-11).
+- **Doku-Abgleich gegengeprüft:** Repository-URL im Link identisch mit
+  `README.md`, `docker/README.md` und dem Git-Remote. Keine der genannten
+  Anleitungen behauptet einen fehlenden GitHub-Zugang; die Einschätzung
+  „keine Anpassung nötig" ist zutreffend.
+- **SP-CX-02-Gegenprobe:** Ticketkopf, Akzeptanzkriterien, Verify-Matrix,
+  STATUS-Kontext und -Zustandsblock beschreiben übereinstimmend Runde 1,
+  abgeschlossene Umsetzung, offene Mike-Bestätigung.
+- **Nicht erneut ausgeführt:** die interaktive Chrome-Sitzung (Tab/Enter,
+  1440×900 und 375×812, StockInfo-Testserver) aus Runde 1 des Coders. Als
+  plausibel bewertet, da `NButton` mit `tag="a"` + `href` nativ fokussierbar
+  ist und der `UxStatusBar`-Rahmen selbst unverändert bleibt; kein eigener
+  Nachweis dieses Teilschritts.
+
+**Verdict: approved.** Keine Befunde. Scope bleibt UI-only wie vereinbart;
+kein Anlass für eine neue Lesson (Einzelfall, kein belegtes Muster).
+
 ### Auflösung
 
-Umsetzung und eigene Verifikation abgeschlossen. Keine unabhängige technische
-Freigabe oder menschliche Abschlussbestätigung vorhanden; Ticket bleibt in Doing.
-Produktfassung `75cac676c36f15d5041ce15c47e09a968d975670`, Runde 1 an den
-zugeordneten Verifier übergeben. Eigener Vite- und StockInfo-Testserver nach
-der Browserprüfung beendet. Keine Veröffentlichung erfolgt.
+Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 1, `claude`,
+approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
+Ticket bleibt bis dahin in Doing. Produktfassung
+`75cac676c36f15d5041ce15c47e09a968d975670`. Eigener Vite- und
+StockInfo-Testserver nach der Browserprüfung beendet. Keine Veröffentlichung
+erfolgt.

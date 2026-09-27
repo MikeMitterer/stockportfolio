@@ -1,5 +1,12 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 09:10:52 CEST · claude · T-50 Runde 1 technisch freigegeben (approved): Diff, Pflichtprüfungen (61/783 Tests, Lint, Typecheck) und Doku-Abgleich bestätigt; Owner zurück an codex, Mikes Abschlussbestätigung steht aus
+- 2026-09-27 09:07:49 CEST · codex-observer · Erfasst T-51 in Doing: relative Bandabweichung im Rebalancing als sichtbare Zahl wie im Dashboard. T-50 bleibt der aktive Reviewauftrag.
+- 2026-09-27 09:06:13 CEST · codex · T-50 umgesetzt und an claude zur Prüfung übergeben: GitHub-Link in der Statuszeile, DE/EN und mobile Ansicht geprüft. 783 Tests, Lint und Typecheck erfolgreich; vorhandenen StockInfo-Testserver genutzt und danach beendet.
+- 2026-09-27 09:00:43 CEST · codex · T-50 aktiviert: Ergänze den GitHub-Link in der Statuszeile nach dem StockInfo-Vorbild. Nutze den vorhandenen Slot von UxStatusBar und übersetzte Beschriftungen.
+- 2026-09-27 08:59:16 CEST · claude · prüft Rollenzuordnung: reviewer=claude bestätigt, Board idle ohne aktives Ticket; startet Fünf-Minuten-Scheduler für die Verifier-Rolle
+- 2026-09-27 08:58:35 CEST · codex-observer · Rollen und Board-Konventionen geprüft: kein aktives Ticket, Owner none. Starte die Beobachtung im Fünf-Minuten-Takt; offene Lessons-Übernahme bleibt sichtbar.
+- 2026-09-27 08:58:16 CEST · codex · Rollenzuordnung geprüft: Coder codex, kein aktiver Auftrag (idle, owner none). Starte den Fünf-Minuten-Scheduler und warte auf eine Aktivierung; die dokumentierte Konventionsübernahme bleibt offen.
 - 2026-09-26 18:39:59 CEST · codex-observer · T-49-Abschluss abgeglichen: Mikes Abschlussentscheidung und selbst erledigter Hub-Push sind dokumentiert; Ablage und STATUS stehen konsistent auf done/idle. Alle eigenen offenen Koordinationshinweise sind verarbeitet, Beobachtung läuft weiter.
 - 2026-09-26 18:39:36 CEST · codex · T-49 ist auf Mikes Entscheidung erledigt; Mike hat auch den Docker-Hub-Push bestätigt. Board und veraltete Veröffentlichungshinweise in den READMEs sind abgeglichen.
 - 2026-09-26 18:38:51 CEST · codex · Schließt T-49 auf Mikes Bestätigung ab, gleicht Ticket und Board ab und nimmt die bisher offenen Board-Dateien in Commit und Push auf. Der Docker-Hub-Push bleibt technisch unbelegt.
@@ -43,12 +50,5 @@
 - 2026-09-26 12:12:02 CEST · codex · Deutsche Link-Einstellungen heißen jetzt durchgängig Links. Im Browser geprüft; Beschriftungsnachtrag an Claude für Runde 2 übergeben.
 - 2026-09-26 12:11:59 CEST · codex-observer · T-48: technische Freigabe und offene Abschlussentscheidung abgeglichen; den beauftragten Nachtrag zur deutschen Bezeichnung Links im Board verfolgt. Rollen bleiben eindeutig, derzeit kein Observer-Eingriff nötig.
 - 2026-09-26 12:11:13 CEST · codex · T-48: Vereinheitlicht die deutschen Beschriftungen der Link-Einstellungen auf Links, einschließlich Aktionen und Bestätigungen.
-- 2026-09-26 12:08:43 CEST · codex · T-48: Claudes technische Freigabe aus Runde 1 verarbeitet. Keine erforderliche Nacharbeit; Mikes Abschlussentscheidung steht aus.
-- 2026-09-26 12:05:53 CEST · claude · T-48 Runde 1 technisch freigegeben: dynamischer StockInfo-Typkatalog live in allen vier Zuständen geprüft (normal/future-retained/leer/unvollständig/gestört), resolveKind-Umkehr und syncKinds bestätigt (60 Dateien/764 Tests grün); Owner zurück an Codex
-- 2026-09-26 11:57:53 CEST · codex · T-48 an Claude übergeben: Fassung 2aac1e9, Review Runde 1. Links und Typanzeige teilen die Typauflösung; Katalog-, Speicher- und Browsernachweise stehen im Ticket.
-- 2026-09-26 11:56:10 CEST · codex · T-48: Dynamischer Typkatalog und gemeinsame Typauflösung umgesetzt; 764 Tests sowie Desktop-/Mobile-Prüfung bestanden. Dokumentiert die Übergabe an Claude.
-- 2026-09-26 11:40:13 CEST · codex · beginnt T-48: REST-Typkatalog anbinden, offene Typkennungen speichern und dynamische Linkfilter ohne Datenverlust umsetzen.
-- 2026-09-26 11:27:55 CEST · codex · verarbeitet die über Claude weitergeleiteten Abnahmen für T-40, T-44 und T-46 sowie Mikes direkte Abnahme für T-47. Danach ist doing leer und das Board ohne aktiven Auftrag.
-- 2026-09-26 11:25:44 CEST · claude · Mikes Chat-Entscheidung 'T-46 ist erledigt' in die INBOX für Codex weitergeleitet (Verifier-Grenze: keine eigene Verschiebung nach done)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
