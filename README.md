@@ -312,6 +312,29 @@ development, `npm install` works without these shared tools.
 
 Frontend commands are also available as `npm run …`.
 
+### Command-line themes
+
+Make, BashLib helpers and ProjectTools Python scripts share the themes from
+MakeLib: `classic`, `ocean`, `earth`, `night`, `mono`, `sunset`, `forest`, `neon`
+and `shell`. `scripts/setup-libs.sh` uses the same theme for help and status;
+before the libraries are available, its bootstrap output is plain text.
+`--info` also checks the shared CLI files. Select one with `make help MAKE_THEME=ocean`; Make passes it to
+scripts it starts. `THEME_WIDTH_TARGET` (22) and `THEME_COLUMN_GAP` (1) control
+the shared columns. Group and item indentation use `THEME_INDENT_GROUP` and
+`THEME_INDENT_TARGET` (two and seven spaces). Python help uses
+`THEME_WIDTH_HELP` (110); group spacing uses `THEME_GROUP_SPACING` (1).
+
+```bash
+MAKE_THEME=ocean ./.libs/ProjectTools/src/bash/py-run.sh --help
+./.libs/ProjectTools/src/bash/py-run.sh --list
+./.libs/ProjectTools/src/bash/py-run.sh --run changelog --dry-run
+```
+
+The runner requires Python 3.11+ and creates a separate cached environment only
+for tools with package dependencies. Changelog still runs directly with Python
+3.9+ and the standard library. The existing Docker Hub README command delegates
+to the shared runner. Help and listing do not install packages.
+
 ## Layout
 
 `src/api/` owns HTTP access, `src/db/` IndexedDB, `src/stores/` application state,

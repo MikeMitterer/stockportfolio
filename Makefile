@@ -11,6 +11,8 @@ PYTHON ?= python3
 DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
 export BASH_LIBS PROJECT_TOOLS
 
+-include .env
+
 -include ${DEV_MAKE}/colours.mk
 -include ${DEV_MAKE}/tools.mk
 
@@ -30,8 +32,10 @@ THEME_COLOR_SERVER  ?= $(ORANGE)
 THEME_COLOR_DANGER  ?= $(RED)
 THEME_INDENT_GROUP  ?= $(shell printf '%2s' '')
 THEME_INDENT_TARGET ?= $(shell printf '%7s' '')
+THEME_WIDTH_TARGET ?= 22
+THEME_COLUMN_GAP ?= 1
+THEME_GROUP_SPACING ?= 1
 
--include .env
 export
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
@@ -44,11 +48,16 @@ help: ## Alle verfügbaren Befehle anzeigen
 	@echo "Project: $(THEME_COLOR_GROUP)$(PROJECT_NAME)$(RESET)"
 	@echo
 	@grep -hE '^(##@|[a-zA-Z0-9_-]+:.*?##[RD]? )' $(MAKEFILE_LIST) | \
-	  awk 'BEGIN {FS = ":.*##[RD]? "}; \
-	    /^##@/ { printf "\n$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)%s$(RESET)\n", substr($$0, 4); next }; \
-	    /##D /  { printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_DANGER)%-22s $(THEME_COLOR_DESC)%s$(RESET)\n", $$1, $$2; next }; \
-	    /##R /  { printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_SERVER)%-22s $(THEME_COLOR_DESC)%s$(RESET)\n", $$1, $$2; next }; \
-	    /## /   { printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-22s $(THEME_COLOR_DESC)%s$(RESET)\n", $$1, $$2 }'
+	  awk 'function row(label, description, color) { \
+	      printf "$(THEME_INDENT_TARGET)%s%s$(RESET)", color, label; \
+	      padding = $(THEME_WIDTH_TARGET) - length(label) + $(THEME_COLUMN_GAP); \
+	      if (length(label) > $(THEME_WIDTH_TARGET)) { printf "\n$(THEME_INDENT_TARGET)"; padding = $(THEME_WIDTH_TARGET) + $(THEME_COLUMN_GAP) }; \
+	      printf "%*s$(THEME_COLOR_DESC)%s$(RESET)\n", padding, "", description \
+	    }; BEGIN {FS = ":.*##[RD]? "}; \
+	    /^##@/ { for (i=0; i<$(THEME_GROUP_SPACING); i++) printf "\n"; heading=substr($$0, 4); sub(/^[[:space:]]+/, "", heading); printf "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)%s$(RESET)\n", heading; next }; \
+	    /##D /  { row($$1, $$2, "$(THEME_COLOR_DANGER)"); next }; \
+	    /##R /  { row($$1, $$2, "$(THEME_COLOR_SERVER)"); next }; \
+	    /## /   { row($$1, $$2, "$(THEME_COLOR_TARGET)") }'
 	@echo
 	@echo "  $(THEME_COLOR_TARGET)■$(RESET) lokal   $(THEME_COLOR_SERVER)■$(RESET) SSH → Server, schreibend   $(THEME_COLOR_DANGER)■$(RESET) SSH → Server, destruktiv"
 	@echo
@@ -72,27 +81,24 @@ info: ## Umgebungsvariablen anzeigen
 
 .PHONY: hints
 hints: ## Nützliche Links und Hinweise anzeigen
-	@echo
-	@echo "  $(YELLOW)URLs$(RESET)"
-	@echo
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Dev-Server"   "http://localhost:5175"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Preview"      "http://localhost:4175"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "StockInfo API" "https://stockinfo.int.mikemitterer.at/docs"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Docker Hub"   "https://hub.docker.com/r/mangolila/stockportfolio"
-	@echo
-	@echo "  $(YELLOW)Setup$(RESET)"
-	@echo
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "1. Symlinks"  "make setup"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "2. Env"       "cp .env.example .env"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "3. Deps"      "npm install"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "4. Start"     "make dev"
-	@echo
-	@echo "  $(YELLOW)Docker$(RESET)"
-	@echo
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Server (x86)"  "make build                  # nur bauen, danach prüfen"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Lokal auf M1"  "make build PLATFORM=arm     # lokaler ARM-Test"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Veröffentlichen" "make push               # geprüftes Image + README"
-	@printf "    $(BLUE)%-14s$(RESET) $(WHITE)%s$(RESET)\n" "Push-Ziel"     "make push TARGET=ghcr"
+	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
+	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)URLs$(RESET)"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Dev-Server" ""   "http://localhost:5175"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Preview" ""      "http://localhost:4175"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "StockInfo API" "" "https://stockinfo.int.mikemitterer.at/docs"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Docker Hub" ""   "https://hub.docker.com/r/mangolila/stockportfolio"
+	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
+	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Setup$(RESET)"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Symlinks" ""  "make setup"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "2. Env" ""       "cp .env.example .env"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Deps" ""      "npm install"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "4. Start" ""     "make dev"
+	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
+	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Docker$(RESET)"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Server (x86)" ""  "make build                  # nur bauen, danach prüfen"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Lokal auf M1" ""  "make build PLATFORM=arm     # lokaler ARM-Test"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Veröffentlichen" "" "make push               # geprüftes Image + README"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Push-Ziel" ""     "make push TARGET=ghcr"
 	@echo
 
 # ─── Precheck ────────────────────────────────────────────────────────────────

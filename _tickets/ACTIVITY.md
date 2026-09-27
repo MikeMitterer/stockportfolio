@@ -1,5 +1,12 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 13:25:16 CEST · codex · hat setup-libs.sh und changelog.py auf die gemeinsame Ausgabe abgestimmt. Bootstrap, Wiederholung, Linkschutz, deutsche Hilfe und ocean-Farben sind an echten Aufrufen geprüft.
+- 2026-09-27 13:15:03 CEST · codex · hat die alten Make-/Bash-Aufrufe und alle neun Theme-Paletten geprüft. Der gemeinsame py-run.sh bietet Hilfe, Werkzeugliste und isolierte Paketumgebungen; die Dokumentation wird für Claudes Review abgeglichen.
+- 2026-09-27 13:03:07 CEST · codex-observer · StockInfo: Docker-Hub-Hinweis als 7764aee committed und auf origin/master gepusht; make hints und Diff-Prüfung erfolgreich.
+- 2026-09-27 13:02:45 CEST · codex-observer · Prüft und committet auf Mikes Auftrag den Docker-Hub-Hinweis in StockInfo; anschließend Push.
+- 2026-09-27 13:02:02 CEST · codex-observer · Docker-Hub-Link in StockInfos make hints ergänzt; Abschlussprüfung der Ausgabe und des Einzeilen-Diffs läuft.
+- 2026-09-27 13:00:42 CEST · codex-observer · Ergänzt auf Mikes direkten Auftrag ohne Ticket den Docker-Hub-Link in StockInfos make hints und prüft die Ausgabe.
+- 2026-09-27 12:52:45 CEST · codex · ergänzt die gemeinsamen CLI-Themes in MakeLib, BashLib und ProjectTools. Mike hat die offene T-56-Prüfung dafür zurückgestellt.
 - 2026-09-27 12:31:25 CEST · codex · Übergibt T-56 an Claude: direkter Python-Generator, Make-Anbindung, Farben/Spalten und beide READMEs sind geprüft. Wartet auf unabhängige Freigabe beider Repository-Fassungen.
 - 2026-09-27 12:28:52 CEST · codex · T-56: direkter Python-Aufruf ohne Bash-Wrapper umgesetzt; Farben und feste Hilfespalten per Terminaltest geprüft. Bereitet die Übergabe von Generator, Make-Anbindung und README-Abgleich vor.
 - 2026-09-27 11:59:58 CEST · codex · Setzt T-56 um: gemeinsamer Python-Changelog-Generator und direkte Make-Anbindung. Prüft beide READMEs im selben Auftrag.
@@ -43,12 +50,5 @@
 - 2026-09-27 10:46:43 CEST · claude · bestätigt T-53-Einordnung des Observers: Stimmenzahl (neun statt acht) und macOS-Fassung selbst nachgezählt/geprüft, SP-CX-05-Fehlzuordnung sowie Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung in eigenem Vorschlag korrigiert; keine neue Reviewrunde, Produktionsstopp unverändert
 - 2026-09-27 10:43:07 CEST · codex-observer · Claudes T-53-Vorschläge geprüft und eingeordnet. Mikes Ausschluss aller Systemstimmen ist verbindlich erfasst; Zielumfang bleibt erhalten, Produktion pausiert.
 - 2026-09-27 10:42:23 CEST · codex · sichert die noch uncommitteten Observer-Nachträge zu T-50/T-53, SP-CX-05, STATUS und das Tätigkeitsprotokoll. Abschließend werden master, Remote-Gleichstand und eine saubere Arbeitskopie mit make status geprüft.
-- 2026-09-27 10:41:00 CEST · codex · hat die dauerhafte Regel ergänzt: Nach Commit, Merge und Push zurück auf master wechseln und Gleichstand mit origin/master prüfen. Regel integriert und gepusht; master ist aktiv.
-- 2026-09-27 10:40:22 CEST · codex-observer · Hat in T-53 die falsche Zuordnung von SP-CX-05 zu Lizenzfragen klargestellt und Claude um Korrektur gebeten. Konzeptvorschläge bleiben offen; die Medienproduktion bleibt pausiert.
-- 2026-09-27 10:39:44 CEST · codex-observer · Prüft Claudes Konzepturteil und sieben Vorschläge zu T-53 gegen Mikes Umfang, den Produktionsstopp und die tatsächlich verwendbaren Aufnahmewege.
-- 2026-09-27 10:38:46 CEST · codex · hat die Abschlussregel in AGENTS.md gespeichert und T-50 bis T-52 samt Regel per Fast-forward nach master integriert und zu origin gepusht. master und origin/master stehen auf b8abe48.
-- 2026-09-27 10:38:15 CEST · codex · hält Mikes dauerhafte Freigabe für Commit, Merge nach master und Push nach Ticketabschluss in AGENTS.md fest und integriert die abgeschlossenen Tickets T-50 bis T-52.
-- 2026-09-27 10:36:30 CEST · claude · T-53 um sieben Änderungsvorschläge ergänzt (Umfangsstaffelung, stabile Fassung, Stimmen-Lizenz, Mehrfachstimmen-Test, Untertitel aus Skript, StockInfo-Sichtung entkoppeln, Zielauflösung); zur Abstimmung mit codex/Observer, keine Entscheidung getroffen
-- 2026-09-27 10:35:28 CEST · claude · prüft T-53 erneut auf Mikes Auftrag und erarbeitet konkrete Änderungsvorschläge zum Konzept (Umfang, Zeitplan, Stimme, Lizenz)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

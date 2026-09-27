@@ -1,181 +1,188 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
-# setup-libs.sh — Legt Symlinks unter .libs/ zu BashLib, MakeLib und
-#                 ProjectTools an
+# setup-libs.sh — BashLib, MakeLib und ProjectTools unter .libs/ verlinken
 #
-# Das sind zentrale Konventions-Repos. Dieses Script verlinkt sie ins Projekt
-# (nicht kopieren), damit alle Scripts und das Makefile mit denselben Versionen
-# arbeiten wie systemweit.
+# Farben und Abstände kommen aus BashLib/colors.lib.sh, abgestimmt mit
+# MakeLib/colours.mk und ProjectTools/colors.py. Vor dem ersten Setup bleibt
+# die Ausgabe ohne Bibliothek farblos. Keine Bibliotheken oder Pakete kopieren.
 #
 # Verwendung:
-#   ./scripts/setup-libs.sh [--install|--info|--help]
+#   ./scripts/setup-libs.sh --install | --info | --help
+#   MAKE_THEME=ocean ./scripts/setup-libs.sh --info
 #   make setup
 #
 # Optionen:
-#   -i | --install   Symlinks anlegen (idempotent — überschreibt vorhandene)
-#        --info      Aktuelle Verlinkung anzeigen
-#   -h | --help      Diese Hilfe anzeigen
+#   -i | --install   Symlinks anlegen (vorhandene Symlinks ersetzen)
+#   -s | --info      Verlinkung und gemeinsame CLI-Dateien anzeigen
+#   -h | --help      Diese Hilfe anzeigen; auch ohne Argumente
 #------------------------------------------------------------------------------
-
 set -euo pipefail
 
-BASH_LIBS="${BASH_LIBS:-$(cd "$(dirname "$0")/.." && pwd)/.libs/BashLib/src}"
+readonly APPNAME="${0##*/}"
+PROJECT_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+readonly PROJECT_ROOT
+readonly LIBS_DIR="${PROJECT_ROOT}/.libs"
+BASH_LIBS="${BASH_LIBS:-${LIBS_DIR}/BashLib/src}"
 
-# BashLib einbinden — mit Guard, damit doppelt-Sourcen unschädlich ist
-if [[ "${__COLORS_LIB__:=""}"  == "" ]] && [[ -f "${BASH_LIBS}/colors.lib.sh" ]]; then
+if [[ -z ${__COLORS_LIB__:-} && -r ${BASH_LIBS}/colors.lib.sh ]]; then
+    # shellcheck disable=SC1091  # Wird erst durch dieses Setup verlinkt.
     . "${BASH_LIBS}/colors.lib.sh"
 fi
-if [[ "${__TOOLS_LIB__:=""}"   == "" ]] && [[ -f "${BASH_LIBS}/tools.lib.sh" ]]; then
-    . "${BASH_LIBS}/tools.lib.sh"
-fi
 
-# Fallback-Farben (falls BashLib beim allerersten Setup noch nicht verlinkt ist)
-: "${RED:=$(printf '\033[38;5;196m')}"
-: "${GREEN:=$(printf '\033[38;5;10m')}"
-: "${YELLOW:=$(printf '\033[38;5;11m')}"
-: "${BLUE:=$(printf '\033[38;5;33m')}"
-: "${CYAN:=$(printf '\033[38;5;51m')}"
-: "${LIGHT_BLUE:=$(printf '\033[38;5;45m')}"
-: "${NC:=$(printf '\033[0m')}"
-
-readonly APPNAME="$(basename "$0")"
-readonly PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-readonly LIBS_DIR="${PROJECT_ROOT}/.libs"
-
-# Quell-Repos aus den Env-Variablen ableiten.
-# BASH_LIBS und PROJECT_TOOLS zeigen üblicherweise auf .../<Repo>/src, wir
-# brauchen das Repo-Root (eine Ebene höher). DEV_MAKE zeigt direkt aufs Root.
-readonly BASHLIB_REPO="$(cd "${BASH_LIBS%/src}" 2>/dev/null && pwd || true)"
-readonly MAKELIB_REPO="${DEV_MAKE:-}"
-readonly PROJECTTOOLS_REPO="$([[ -n "${PROJECT_TOOLS:-}" ]] && cd "${PROJECT_TOOLS%/src}" 2>/dev/null && pwd || true)"
-
-# Was verlinkt wird: "<Name>|<Env-Variable>|<Repo-Root>|<erwarteter Wert>"
-# Der Name ist zugleich der Symlink unter .libs/.
+# Repos über die bisherigen Variablen finden. Vorhandene lokale Links sind
+# ebenfalls nutzbar; vor dem Ersetzen wird ihr tatsächliches Ziel aufgelöst.
 readonly LINKED_REPOS=(
-    "BashLib|BASH_LIBS|${BASHLIB_REPO}|.../BashLib/src"
-    "MakeLib|DEV_MAKE|${MAKELIB_REPO}|.../MakeLib"
-    "ProjectTools|PROJECT_TOOLS|${PROJECTTOOLS_REPO}|.../ProjectTools/src"
+    "BashLib|BASH_LIBS|${BASH_LIBS%/src}|.../BashLib/src"
+    "MakeLib|DEV_MAKE|${DEV_MAKE:-${LIBS_DIR}/MakeLib}|.../MakeLib"
+    "ProjectTools|PROJECT_TOOLS|${PROJECT_TOOLS:-${LIBS_DIR}/ProjectTools/src}|.../ProjectTools/src"
+)
+readonly CLI_FILES=(
+    "BashLib/src/colors.lib.sh"
+    "MakeLib/colours.mk"
+    "ProjectTools/src/python/colors.py"
+    "ProjectTools/src/bash/py-run.sh"
+    "ProjectTools/src/python/changelog.py"
 )
 
-usage() {
-    echo
-    echo "Usage: ${APPNAME} [ options ]"
-    echo
-    if command -v usageLine >/dev/null 2>&1; then
-        usageLine "-i | --install         " "Symlinks unter ${YELLOW}.libs/${NC} anlegen (idempotent)"
-        usageLine "     --info            " "Aktuelle Verlinkung anzeigen"
-        usageLine "-h | --help            " "Diese Hilfe anzeigen"
+# Gemeinsame Gruppenüberschrift; beim Bootstrap ist noch kein Theme verfügbar.
+printHeading() {
+    if command -v themeHeading >/dev/null 2>&1; then
+        themeHeading "${1}"
     else
-        printf "    ${CYAN}%-24s${NC} %s\n" "-i | --install" "Symlinks unter ${YELLOW}.libs/${NC} anlegen (idempotent)"
-        printf "    ${CYAN}%-24s${NC} %s\n" "     --info"    "Aktuelle Verlinkung anzeigen"
-        printf "    ${CYAN}%-24s${NC} %s\n" "-h | --help"    "Diese Hilfe anzeigen"
+        printf '\n  %s\n' "${1}"
     fi
-    echo
-    echo -e "${LIGHT_BLUE}Hints:${NC}"
-    echo -e "    Symlinks anlegen: ${GREEN}${APPNAME} --install${NC}"
-    echo -e "    Status prüfen:    ${GREEN}${APPNAME} --info${NC}"
-    echo
-    echo -e "${LIGHT_BLUE}Voraussetzungen:${NC}"
-    printf "    ${YELLOW}%-13s${NC} → ${BLUE}%s${NC}\n" "BASH_LIBS"     "${BASH_LIBS:-<nicht gesetzt>}"
-    printf "    ${YELLOW}%-13s${NC} → ${BLUE}%s${NC}\n" "DEV_MAKE"      "${DEV_MAKE:-<nicht gesetzt>}"
-    printf "    ${YELLOW}%-13s${NC} → ${BLUE}%s${NC}\n" "PROJECT_TOOLS" "${PROJECT_TOOLS:-<nicht gesetzt>}"
-    echo
 }
 
-# Verlinkt <src> nach <dst>, überschreibt bestehende Symlinks.
-#
-# Params:
-#   $1 - Quell-Verzeichnis (absoluter Pfad, muss existieren)
-#   $2 - Ziel-Symlink (wird angelegt/überschrieben)
-#
-# Returns:
-#   0 wenn erfolgreich, 1 wenn Quelle fehlt
-linkOnce() {
-    local -r _src="$1"
-    local -r _dst="$2"
+# Gemeinsame Spalten, mit schlichtem Bootstrap-Fallback ohne ANSI-Kopie.
+printRow() {
+    if command -v themeLine >/dev/null 2>&1; then
+        themeLine "${1}" "${2}"
+    else
+        if (( ${#1} > 22 )); then
+            printf '       %s\n%30s%s\n' "${1}" '' "${2}"
+        else
+            printf '       %-22s %s\n' "${1}" "${2}"
+        fi
+    fi
+}
 
-    if [[ ! -d "${_src}" ]]; then
+# $1 Symbol, $2 Text, $3 semantische Theme-Farbe. Umleitung bleibt beim Aufrufer.
+printStatus() {
+    local -r _SYMBOL="${1}" _MESSAGE="${2}" _ROLE="${3}"
+    local -r _COLOR_NAME="THEME_COLOR_${_ROLE}"
+    printf '%s' "${THEME_INDENT_GROUP-  }"
+    if command -v themeStyle >/dev/null 2>&1; then
+        themeStyle "${_SYMBOL} ${_MESSAGE}" "${!_COLOR_NAME:-}"
+    else
+        printf '%s %s' "${_SYMBOL}" "${_MESSAGE}"
+    fi
+    printf '\n'
+}
+
+# Optionen einmal deklarieren; Hilfe verändert weder Links noch Umgebungen.
+usage() {
+    printf '\nUsage: %s [ options ]\n' "${APPNAME}"
+    printHeading 'Optionen'
+    printRow '-i | --install' 'Symlinks unter .libs/ anlegen (idempotent)'
+    printRow '-s | --info' 'Verlinkung und gemeinsame CLI-Dateien anzeigen'
+    printRow '-h | --help' 'Diese Hilfe anzeigen'
+    printHeading 'Beispiele'
+    printRow "${APPNAME} --install" 'Symlinks anlegen'
+    printRow "${APPNAME} --info" 'Verlinkung und CLI-Dateien prüfen'
+    printRow 'py-run.sh --list' 'Python-Werkzeuge aus ProjectTools anzeigen'
+    printHeading 'Voraussetzungen'
+    printRow 'BASH_LIBS' "${BASH_LIBS}"
+    printRow 'DEV_MAKE' "${DEV_MAKE:-${LIBS_DIR}/MakeLib}"
+    printRow 'PROJECT_TOOLS' "${PROJECT_TOOLS:-${LIBS_DIR}/ProjectTools/src}"
+    printf '\n'
+}
+
+# Ersetzt nur Links. Echte Dateien und Verzeichnisse bleiben erhalten.
+# $1 vorhandenes Quell-Repo; $2 Ziel unter .libs/. Fehler: Status 1.
+linkOnce() {
+    local -r _SOURCE="${1}" _DESTINATION="${2}"
+    if [[ -e ${_DESTINATION} && ! -L ${_DESTINATION} ]]; then
+        printStatus '✗' "${_DESTINATION} ist kein Symlink; bleibt unverändert." DANGER >&2
         return 1
     fi
-
-    mkdir -p "$(dirname "${_dst}")"
-    rm -f "${_dst}"
-    ln -s "${_src}" "${_dst}"
+    if [[ -L ${_DESTINATION} && ${_DESTINATION} -ef ${_SOURCE} ]]; then return 0; fi
+    mkdir -p "$(dirname -- "${_DESTINATION}")" || return 1
+    ln -sfn "${_SOURCE}" "${_DESTINATION}"
 }
 
-cmd_install() {
-    local _rc=0
-    local _entry _name _envvar _repo _expected
+# Prüft die tatsächlich konsumierten CLI-Dateien ohne Programme zu starten.
+checkCliFiles() {
+    local _FILE _RESULT=0
+    printHeading 'Gemeinsame CLI-Dateien'
+    for _FILE in "${CLI_FILES[@]}"; do
+        if [[ -r ${LIBS_DIR}/${_FILE} ]]; then
+            printRow "${_FILE}" '✓ verfügbar'
+        else
+            printStatus '✗' "${_FILE} fehlt; das Quell-Repository aktualisieren." DANGER >&2
+            _RESULT=1
+        fi
+    done
+    return "${_RESULT}"
+}
 
-    echo
-    echo -e "${CYAN}▶ Symlinks anlegen unter ${YELLOW}${LIBS_DIR}${NC}"
-    echo
-
-    for _entry in "${LINKED_REPOS[@]}"; do
-        IFS='|' read -r _name _envvar _repo _expected <<< "${_entry}"
-
-        if [[ -z "${_repo}" || ! -d "${_repo}" ]]; then
-            echo -e "${RED}✗ ${_name}-Repo nicht gefunden${NC}" >&2
-            echo -e "  ${YELLOW}Tipp:${NC} ${YELLOW}${_envvar}${NC} soll auf ${_expected} zeigen — aktuell: ${BLUE}${!_envvar:-<leer>}${NC}" >&2
-            _rc=1
+# Alle Quellen vor ihrem Link-Ersatz physisch auflösen; keine Links auf sich selbst.
+installLinks() {
+    local _RESULT=0 _ENTRY _NAME _VARIABLE _REPO _EXPECTED _SOURCE
+    printHeading "Symlinks unter ${LIBS_DIR}"
+    if [[ -L ${LIBS_DIR} || ( -e ${LIBS_DIR} && ! -d ${LIBS_DIR} ) ]]; then
+        printStatus '✗' '.libs muss ein eigener Ordner sein.' DANGER >&2
+        return 1
+    fi
+    for _ENTRY in "${LINKED_REPOS[@]}"; do
+        IFS='|' read -r _NAME _VARIABLE _REPO _EXPECTED <<< "${_ENTRY}"
+        if [[ ${_NAME} == ProjectTools ]]; then _REPO="${_REPO%/src}"; fi
+        if [[ ! -d ${_REPO} ]]; then
+            printStatus '✗' "${_NAME}-Repo fehlt. ${_VARIABLE} soll auf ${_EXPECTED} zeigen." DANGER >&2
+            _RESULT=1
             continue
         fi
-
-        linkOnce "${_repo}" "${LIBS_DIR}/${_name}" && \
-            printf "  ${GREEN}✓${NC} %-13s → ${BLUE}%s${NC}\n" "${_name}" "${_repo}"
-    done
-
-    echo
-
-    if [[ ${_rc} -ne 0 ]]; then
-        echo -e "${RED}Setup fehlgeschlagen. Env-Variablen prüfen und erneut versuchen.${NC}" >&2
-        exit ${_rc}
-    fi
-
-    echo -e "${GREEN}✓ Setup fertig${NC}"
-    echo
-}
-
-cmd_info() {
-    local _entry _name _path _target
-
-    echo
-    echo -e "${CYAN}▶ Aktuelle Verlinkung${NC}"
-    echo
-
-    for _entry in "${LINKED_REPOS[@]}"; do
-        _name="${_entry%%|*}"
-        _path="${LIBS_DIR}/${_name}"
-
-        if [[ -L "${_path}" ]]; then
-            _target="$(readlink "${_path}")"
-            if [[ -d "${_target}" ]]; then
-                printf "  ${GREEN}✓${NC} %-13s → ${BLUE}%s${NC}\n" "${_name}" "${_target}"
-            else
-                printf "  ${YELLOW}⚠${NC} %-13s → ${BLUE}%s${NC} ${RED}(Ziel fehlt)${NC}\n" "${_name}" "${_target}"
-            fi
-        elif [[ -e "${_path}" ]]; then
-            printf "  ${YELLOW}⚠${NC} %-13s — existiert, ist aber kein Symlink\n" "${_name}"
+        _SOURCE=$(cd -- "${_REPO}" && pwd -P)
+        if linkOnce "${_SOURCE}" "${LIBS_DIR}/${_NAME}"; then
+            printRow "${_NAME}" "✓ ${_SOURCE}"
         else
-            printf "  ${RED}✗${NC} %-13s — nicht verlinkt\n" "${_name}"
+            _RESULT=1
         fi
     done
-    echo
+    checkCliFiles || _RESULT=1
+    if (( _RESULT != 0 )); then
+        printStatus '✗' 'Setup unvollständig. Quellen prüfen und erneut versuchen.' DANGER >&2
+        return "${_RESULT}"
+    fi
+    printStatus '✓' 'Setup fertig' SUCCESS
 }
 
-# Kein Argument → Help anzeigen (keine Ausnahmen)
-if [[ $# -eq 0 ]]; then
-    usage
-    exit 0
-fi
+# Linkstatus und nutzbare CLI-Dateien zeigen; keine Links oder venv anlegen.
+showLinks() {
+    local _ENTRY _NAME _PATH _TARGET _RESULT=0
+    printHeading 'Aktuelle Verlinkung'
+    for _ENTRY in "${LINKED_REPOS[@]}"; do
+        _NAME="${_ENTRY%%|*}"
+        _PATH="${LIBS_DIR}/${_NAME}"
+        if [[ -L ${_PATH} && -d ${_PATH} ]]; then
+            _TARGET=$(readlink "${_PATH}")
+            printRow "${_NAME}" "✓ ${_TARGET}"
+        else
+            printStatus '⚠' "${_NAME}: fehlt, Ziel fehlt oder kein Symlink." WARNING
+            _RESULT=1
+        fi
+    done
+    checkCliFiles || _RESULT=1
+    return "${_RESULT}"
+}
 
-case "$1" in
-    -i|--install) cmd_install ;;
-       --info)    cmd_info ;;
-    -h|--help)    usage; exit 0 ;;
-    *)
-        echo -e "${RED}Unbekannte Option: $1${NC}" >&2
-        usage
-        exit 1
-        ;;
+if (( $# == 0 )); then usage; exit 0; fi
+if (( $# != 1 )); then
+    printStatus '✗' 'Genau eine Option angeben; siehe --help.' DANGER >&2
+    exit 2
+fi
+case "${1}" in
+    -i|--install) installLinks ;;
+    -s|--info) showLinks ;;
+    -h|--help) usage ;;
+    *) printStatus '✗' "Unbekannte Option: ${1}" DANGER >&2; exit 2 ;;
 esac
