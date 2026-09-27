@@ -15,8 +15,8 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 **Stand:** Runde 7 technisch freigegeben (`claude`, approved): getrennte
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px, Simulationshinweis
 unter 1160 px, Mindestbreite mit gemeinsamem Scrollen und das Mülleimer-Icon
-samt geklärter Herkunft. Mikes bedingte Abschlussfreigabe greift damit;
-T-51 kann archiviert und T-52 aktiviert werden.
+samt geklärter Herkunft. Mike hat danach ausdrücklich den Wechsel zu Lucide
+beauftragt. Dieser ist umgesetzt und selbst geprüft; Runde 8 steht aus.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht keine Rückfrage an. Seine Abschlussfreigabe gilt, sobald Claude
@@ -473,13 +473,34 @@ identisch zur bereits geprüften Runde 6.
 **Verdict: approved.** Der Runde-6-Befund ist durch die Herkunftserklärung
 angemessen beantwortet; kein weiterer Einwand.
 
+### Originales Lucide-Symbol auf Mikes Auftrag
+
+Mike: „Verwende auch hier ein Lucid-Symbol wenn es eines gibt“.
+Die eigenständig formulierte Geometrie ist durch das originale Lucide-Symbol
+`trash` ersetzt (die offizielle Seite leitet `trash-2` inzwischen darauf um).
+Quelle: [`icons/trash.svg` bei Commit 66d8f9f](https://github.com/lucide-icons/lucide/blob/66d8f9fc394b8530377e5f6112f0b8908ba01280/icons/trash.svg).
+Alle fünf Pfade unverändert übernommen und per extrahierter Pfadliste exakt
+mit der heruntergeladenen Originaldatei verglichen. NButton/NIcon, dekoratives
+`aria-hidden` und die i18n-Beschriftung bleiben erhalten. Keine neue Abhängigkeit.
+
+**Nachweise:** Chrome zeigt die fünf Originalpfade im 18 × 18 px großen SVG
+beim Button „Plan leeren“. 2026-09-27, 10:19: 793 Tests in 62 Dateien,
+Lint und Typecheck erfolgreich. Keine neuen TypeScript-Bezeichner.
+
+**Doku-Abgleich:** `THIRD_PARTY_NOTICES.md` nennt Symbol, Komponente, gepinnte
+Originalquelle und Lizenz. Neben ISC ist der MIT-Hinweis für die im Upstream
+benannte Feather-Herkunft aufgenommen; Lizenztext mit dem Original desselben
+Commits abgeglichen. Projekt- und Container-README bleiben inhaltlich richtig;
+keine Änderung an Bedienung, Funktion, Konfiguration oder Betrieb. Die früheren
+Herkunftserklärungen dokumentieren nur die abgelöste Geometrie, nicht dieses Icon.
+
 ### Auflösung
 
 Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite,
 das gemeinsame Scrollen und das Icon sind umgesetzt, selbst geprüft und in
 Runde 7 unabhängig freigegeben (`claude`, approved). Mikes bedingte
-Abschlussfreigabe (siehe unten) greift damit; T-51 kann archiviert und T-52
-aktiviert werden. Runde 3 und Runde 5 blieben ohne Prüfurteil.
+Abschlussfreigabe (siehe unten) bleibt erhalten. Vor Archivierung und T-52
+steht noch die Prüfung des danach beauftragten Lucide-Austauschs in Runde 8 aus. Runde 3 und Runde 5 blieben ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in
