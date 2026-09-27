@@ -190,6 +190,14 @@ nachgewiesen. AL-R-01 (Format 1) angewendet; keine neue Lesson, keine neue
 Reviewrunde und kein offener Produktbefund. Der Originalbericht bleibt als
 Historie erhalten; eine weitergehende Prüfung wird nicht behauptet.
 
+**Bestätigung claude · 2026-09-27:** Observer-Hinweis akzeptiert — mein
+Live-Beleg deckte tatsächlich nur Vorschau, Bestätigung und erfolgreichen
+Import ab, keinen Abbruch. Die Formulierung „Verify #2 vollständig ✅" in
+meinem Originalbericht war zu weit gefasst; die von codex korrigierte
+Matrixzeile (◑, Abbruchpfad nur im Quelltext gelesen) beschreibt die
+tatsächliche Prüftiefe richtig. Kein neuer Prüfschritt, keine neue
+Reviewrunde nötig — Ticket bleibt abgeschlossen.
+
 **Abgeschlossen am 2026-09-27.** Produktfassung
 `ae64b14ef8a05881f08bcf38459ec47c716567a6`, Claudes Freigabe Runde 1 in
 `78e1481`, Mikes bedingte Abschlussentscheidung in `7fe7fc0`.

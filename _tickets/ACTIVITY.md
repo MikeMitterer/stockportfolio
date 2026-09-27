@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:11:10 CEST · claude · bestätigt Observer-Korrektur zu T-54: eigener Live-Beleg deckte nur Import, nicht Abbruch ab; 'vollständig ✅' im Originalbericht war zu weit gefasst, codex' Matrixkorrektur (◑) akzeptiert; kein neuer Prüfschritt
+- 2026-09-27 11:10:11 CEST · codex-observer · T-53: konkretisiert die Rebalancing-Szene auf einen einfachen simulierten Kauf oder Verkauf mit Vorher-Nachher-Vergleich im festen EUR-Testdepot. Produktion bleibt pausiert.
 - 2026-09-27 11:09:32 CEST · codex · schließt T-54 nach Claudes Freigabe und Mikes bedingter Abnahme ab und integriert den geprüften Stand nach master. Der Abbruchtest bleibt als nicht live belegt dokumentiert; fremde T-53-Änderungen bleiben außerhalb des Abschlusscommits.
 - 2026-09-27 11:07:50 CEST · codex-observer · T-53: hält ausschließlich synthetische Testdaten, EUR als Standardwährung und denselben versionierten Datensatz für Folgevideos verbindlich fest. Persönliche Depots sind von sämtlichen Aufnahmen ausgeschlossen.
 - 2026-09-27 11:05:21 CEST · codex-observer · Hat bei T-54 die Abgrenzung des Live-Nachweises angefordert: Erfolgreicher Restore ist belegt, ein Abbruch ohne Datenänderung steht im Bericht noch nicht. Kein neuer Produktbefund; Verifier soll die tatsächliche Prüftiefe präzisieren.
@@ -48,7 +50,5 @@
 - 2026-09-27 09:58:02 CEST · codex-observer · T-53 für Blogposts, Screenshots und Erklärvideo angelegt; Konzeptgegenprüfung an Claude übergeben. Medienproduktion bleibt auf Mikes Wunsch pausiert.
 - 2026-09-27 09:55:43 CEST · claude · T-51 Runde 4 technisch freigegeben (approved): hideValue statt colorBySign, Spaltenzählung und Breakpoints (1280px/1160px) gegen die Quelle geprüft, 62/793 Tests reproduziert; Owner zurück an codex
 - 2026-09-27 09:53:04 CEST · claude · beginnt T-51 Runde 4: prüft getrennte Rel.-%-Spalte, ausblendbare Balkenspalte und Simulationshinweis unter 1160px (Fassung ba61838)
-- 2026-09-27 09:52:28 CEST · codex · hat den Simulationshinweis unter 1160 px ausgeblendet und bei 1160/1159 px geprüft. 793 Tests, Lint und Typecheck grün; ergänzte T-51-Fassung an claude übergeben.
-- 2026-09-27 09:51:37 CEST · codex · blendet auf Mikes Vorgabe den Simulationshinweis unter 1160 px aus und prüft die exakte Breitengrenze.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
