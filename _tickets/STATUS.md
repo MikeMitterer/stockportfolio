@@ -8,7 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
 Mike hat T-51 unmittelbar nach T-50 beauftragt. Die Tabellenüberschriften sind gekürzt und mit Erklärungen ergänzt.
 Runde 2 ist durch `claude` technisch freigegeben. Die danach beauftragte
-schmale Darstellung ist umgesetzt; `claude` ist für Runde 3 am Zug.
+schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
+1160 px ist umgesetzt; `claude` ist für Runde 4 am Zug. Runde 3 wurde zurückgenommen.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -35,7 +36,7 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist mit separater Prozentzahl und ausblendbarer Balkenspalte übergeben.
+T-51 ist mit der schmalen Ansicht und der 1160-px-Grenze in Runde 4 übergeben.
 Runde 1 zu `ae8e83c` wurde ohne Prüfurteil zurückgenommen und zählt nicht als
 geprüfte Fassung. `last_reviewed_*` ist auf T-51 Runde 2 aktualisiert.
 
@@ -44,8 +45,8 @@ geprüfte Fassung. `last_reviewed_*` ist auf T-51 Runde 2 aktualisiert.
 - `observer`: `codex-observer`
 - `phase`: `ready_for_review`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `179b5dc07ba986aae5c77222a5cd1a40f4212d93`
-- `review_round`: `3`
+- `handoff_commit`: `ba618382393ce80d5d333361602bafc28d2be94c`
+- `review_round`: `4`
 - `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
@@ -231,19 +232,18 @@ Runde 2 verarbeitet; Freigabe und Nachweise bleiben im Ticket.
 
 ## OUTBOX → Verifier
 
-**codex → claude · 2026-09-27 · T-51, Runde 3:** Bitte Fassung
-`179b5dc07ba986aae5c77222a5cd1a40f4212d93` prüfen. Runde 2 bleibt freigegeben;
-neuer Nutzerauftrag: Balkenspalte bei schmalem Fenster ausblenden, relative
-Prozentzahl in eigener Spalte erhalten. Umsetzung: „Rel. %“ separat mit
-bestehendem `percentSigned` und Vorzeichenfarben. `DeltaBar.hideValue` vermeidet
-Doppelanzeige; der nur in Rebalancing genutzte `colorBySign`-Prop entfällt.
-Unter Fundament-`xl` (1280 px) wird nur die Balkenspalte samt Anteiltext verborgen.
+**codex → claude · T-51, Runde 4:** Bitte Fassung
+`ba618382393ce80d5d333361602bafc28d2be94c` prüfen. Wartende Runde 3 wurde
+wegen Mikes neuem Anzeigeauftrag vor Prüfurteil zurückgenommen. Seit der
+freigegebenen Runde 2: Prozentzahl separat in „Rel. %“, Balkenspalte unter
+1280 px verborgen (`below(xl)`), Anteil darüber einzeilig; `DeltaBar.hideValue`
+statt eigener Farbzahl im Balken. Vorzeichenfarbe und Ziel-null-Behandlung in
+der eigenen Zahlenzelle. Zusätzlich Simulationshinweis unter exakt 1160 px
+verborgen, ausdrücklich von Mike so vorgegeben; „Plan leeren“ bleibt sichtbar.
 
-Eigene Nachweise: 793 Tests, Lint und Typecheck erfolgreich. Zehn bestehende
-Komponententests prüfen die neue Zahlenzelle, Reaktivität, Farben und Ziel null.
-Browser bei 1280/1279/1024/800 px, Screenshots bei 1280/1024: Zahlen und Farben
-bleiben sichtbar, Gruppen und Bilanz ausgerichtet. Bei 800 px bleibt das bisherige
-horizontale Scrollen der Eingabetabelle nötig. Prüfdepot weiterhin synthetisch.
-README beschreibt die Breitenregel, Containeranleitung unverändert zutreffend.
-Neue Überschrift in DE/EN, Bezeichnerinventar englisch. Details im Ticket.
-T-52 folgt nach Freigabe; menschliche Abschlussbestätigung T-51 bleibt offen.
+793 Tests, Lint, Typecheck erneut erfolgreich. Browsergrenzen 1280/1279 und
+1160/1159 geprüft, außerdem 1024/800 px; synthetisches Prüfdepot. Separate Zahl
+und Farben bleiben sichtbar, Summen ausgerichtet. Bei 800 px bleibt bisheriges
+seitliches Scrollen nötig. README aktualisiert, Containeranleitung weiterhin
+zutreffend. Belege und unabhängige Runde 2 im Ticket; neue Fassung noch ungeprüft.
+T-52 folgt nach Freigabe; menschlicher Abschluss von T-51 bleibt offen.
