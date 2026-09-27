@@ -1,5 +1,14 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:11:57 CEST · claude · T-51 Runde 6: changes_requested — neues Mülleimer-Symbol entspricht strukturell Lucide trash-2, THIRD_PARTY_NOTICES.md-Eintrag fehlt; übriger Umfang (Scrollmechanik, Mindestbreite, 62/793 Tests) in Ordnung; Owner zurück an codex
+- 2026-09-27 10:08:16 CEST · codex · hat Mikes Abschlussfreigabe für T-51 unter der Bedingung von Claudes OK festgehalten. Nach Freigabe der aktuellen Fassung folgt ohne weitere Rückfrage der Abschluss und T-52.
+- 2026-09-27 10:07:12 CEST · codex-observer · T-53 ergänzt: Lokale Depotdaten als zentrale Story-Aussage; Backup und Restore mit eigener Browserwechsel-Szene. Aktualisierte Fassung zur Gegenprüfung an Claude gemeldet.
+- 2026-09-27 10:06:59 CEST · claude · beginnt T-51 Runde 6: prüft Mindestbreite, gemeinsames Scrollen und Icon in der Rebalancing-Ansicht (Fassung 5e983a0)
+- 2026-09-27 10:05:10 CEST · codex · hat Plan leeren um ein dekoratives Mülleimer-Symbol ergänzt. Darstellung bei 889 px geprüft, 793 Tests, Lint und Typecheck grün; Runde 6 an claude übergeben.
+- 2026-09-27 10:04:17 CEST · codex · ergänzt ein Mülleimer-Symbol bei Plan leeren im vorhandenen NButton-Icon-Slot.
+- 2026-09-27 10:03:18 CEST · codex · hat Mindestbreite und gemeinsamen Scrollbereich für Rebalancing-Kopf und Tabelle umgesetzt. Browserprüfung bei 889/800/1440 px, 793 Tests, Lint und Typecheck grün; Runde 5 an claude übergeben.
+- 2026-09-27 10:01:14 CEST · codex · setzt Mikes Entscheidung für Mindestbreite und gemeinsames horizontales Scrollen von Rebalancing-Kopf und Tabelle um.
+- 2026-09-27 09:58:02 CEST · codex-observer · T-53 für Blogposts, Screenshots und Erklärvideo angelegt; Konzeptgegenprüfung an Claude übergeben. Medienproduktion bleibt auf Mikes Wunsch pausiert.
 - 2026-09-27 09:55:43 CEST · claude · T-51 Runde 4 technisch freigegeben (approved): hideValue statt colorBySign, Spaltenzählung und Breakpoints (1280px/1160px) gegen die Quelle geprüft, 62/793 Tests reproduziert; Owner zurück an codex
 - 2026-09-27 09:53:04 CEST · claude · beginnt T-51 Runde 4: prüft getrennte Rel.-%-Spalte, ausblendbare Balkenspalte und Simulationshinweis unter 1160px (Fassung ba61838)
 - 2026-09-27 09:52:28 CEST · codex · hat den Simulationshinweis unter 1160 px ausgeblendet und bei 1160/1159 px geprüft. 793 Tests, Lint und Typecheck grün; ergänzte T-51-Fassung an claude übergeben.
@@ -41,14 +50,5 @@
 - 2026-09-26 18:07:25 CEST · codex · wget-Installation in README.md und unraid/README.md ergänzt. Download-URL erreichbar, Befehle syntaktisch geprüft; docker/README.md verweist bereits auf die passende Anleitung.
 - 2026-09-26 18:06:50 CEST · codex · Ergänzt die wget-Installation der Unraid-Vorlage nach dem Vorbild der StockInfo-README.
 - 2026-09-26 18:05:56 CEST · codex · unraid/README.md ist vollständig englisch. Befehle und Links unverändert geprüft; Docker-, API- und Backup-Angaben stimmen mit beiden READMEs überein.
-- 2026-09-26 18:05:51 CEST · codex · Übersetzt unraid/README.md auf Mikes Auftrag ins Englische und gleicht die Angaben mit Projekt- und Docker-README ab.
-- 2026-09-26 17:55:23 CEST · codex · Prüft und integriert den aktualisierten Dashboard-Screenshot samt beiden README-Beschreibungen nach master; Git-Push durch Mike beauftragt.
-- 2026-09-26 17:53:34 CEST · codex · Gleicht die Screenshot-Beschreibung im Docker-README mit dem Projekt-README ab und erneuert die Docker-Hub-Vorschau.
-- 2026-09-26 17:51:11 CEST · codex · Dashboard-Screenshot in Englisch mit fünf Testpositionen erneuert und visuell geprüft. Gemeinsame Bildverweise für README, Docker Hub und Unraid bleiben gültig; noch nicht gepusht.
-- 2026-09-26 17:49:37 CEST · codex · Ersetzt den veralteten Dashboard-Screenshot durch eine aktuelle Browseraufnahme des wiederverwendbaren Testdepots.
-- 2026-09-26 16:59:45 CEST · claude · Beobachterkorrektur akzeptiert: HTTP-200-Bildtest belegte nicht den Master-Push, wie behauptet. Korrekt nachgeprüft via git ls-tree/merge-base gegen origin/master — Push ist tatsächlich verifiziert, technische Freigabe unverändert
-- 2026-09-26 16:41:26 CEST · codex-observer · T-49: nachgetragene Runde-3-Rückgabe und Runde-4-Freigabe abgeglichen, offene Nachweisanfrage erledigt. Im Ticket präzisiert: erreichbares altes Screenshot-Bild belegt dessen URL, keinen aktuellen Git-Push.
-- 2026-09-26 16:40:43 CEST · claude · T-49 Runden 3+4 technisch freigegeben (nachtragend dokumentiert nach Sitzungsunterbrechung): Marker-Entwertung live selbst getestet (Backup/Restore), zentrale Unraid-Vorlage und README-Vorschaupfad-Vereinheitlichung geprüft, Dashboard-Bild-URL selbst mit HTTP 200 bestätigt; Owner zurück an Codex für die Docker-Hub-Veröffentlichung
-- 2026-09-26 15:05:01 CEST · codex-observer · T-49: Nach 30 Minuten unveränderter Review-Übergabe einmalig einen Fortschrittsstand beim Verifier angefordert. Keine Rollen, Phasen oder Prüfurteile geändert.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

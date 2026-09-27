@@ -11,10 +11,13 @@ Runde 2 ist durch `claude` technisch freigegeben. Die danach beauftragte
 schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
 1160 px ist in Runde 4 durch `claude` technisch freigegeben. Die danach
 beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
-`claude` ist für Runde 6 am Zug. Runde 5 wurde zurückgenommen. Runde 3 wurde zurückgenommen.
+Runde 6 kam mit einem Befund zurück (`changes_requested`): dem neuen
+Mülleimer-Symbol fehlt der `THIRD_PARTY_NOTICES.md`-Eintrag, den das Projekt
+für jedes andere übernommene Symbol führt. Coder `codex` ist wieder am Zug.
+Runde 3 und Runde 5 wurden je zurückgenommen.
 Mike hat den Abschluss bereits bedingt freigegeben: „Wenn Claude das OK gibt
-dann ist das Ticket von mir aus erledigt“. Nach Claudes Freigabe der aktuellen
-Fassung T-51 ohne weitere Rückfrage abschließen.
+dann ist das Ticket von mir aus erledigt“. Diese Freigabe steht wegen der
+Nacharbeit noch aus.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -41,22 +44,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist mit Mindestbreite, gemeinsamem Scrollen und Icon in Runde 6 übergeben.
-Runde 1 (`ae8e83c`) und Runde 3 wurden je ohne Prüfurteil zurückgenommen und
-zählen nicht als geprüfte Fassung. `last_reviewed_*` ist auf Runde 4 aktualisiert.
+T-51 ist in Runde 6 unabhängig geprüft; Ergebnis `changes_requested` wegen
+eines fehlenden Third-Party-Vermerks für das neue Symbol. Runde 1 (`ae8e83c`),
+Runde 3 und Runde 5 wurden je ohne Prüfurteil zurückgenommen und zählen nicht
+als geprüfte Fassung. `last_reviewed_*` ist auf Runde 6 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `handoff_commit`: `5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9`
 - `review_round`: `6`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `last_reviewed_commit`: `ba618382393ce80d5d333361602bafc28d2be94c`
-- `last_reviewed_round`: `4`
+- `last_reviewed_commit`: `5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9`
+- `last_reviewed_round`: `6`
 - `workstream`: `rebalancing-relative-deviation`
 - `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md → T-52-statuszeile-api-link-zum-status-tab.md`
 - `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
@@ -233,26 +237,22 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Runde 4 verarbeitet; Freigabe und Nachweise bleiben im Ticket.
-
-## OUTBOX → Verifier
-
-**codex → claude · T-51, Runde 6:** Bitte Fassung
-`5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9` prüfen. Wartende Runde 5 wurde
-wegen Mikes Icon-Auftrag vor Prüfurteil zurückgenommen. Seit freigegebener
-Runde 4: gemeinsamer, benannter und per Tastatur fokussierbarer Scrollbereich
-für Kopf und Tabelle, Mindestbreite 890 px (bei breitem Inhalt mehr), Kopf
-bleibt einzeilig. Dazu Mülleimer-SVG über den NButton-Icon-Slot, dekorativ;
-Beschriftung weiter aus i18n. Kein weiterer Tabellenscroller.
-
-793 Tests, Lint und Typecheck erfolgreich. Browser 889/800/1440 px:
-gemeinsames Scrollen, Button bleibt in der Kopfzeile, kein Überlauf der Seite;
-bei 1440 px kein Scrollbedarf. Nach Icon-Ergänzung Button bei 889 px geprüft.
-Pfeil rechts scrollt den fokussierten Bereich. README beschreibt Mindestbreite
-und Mobile-Verhalten; Icon erfordert keine zusätzliche Anleitung.
-Details im Ticket. `git diff -w` zeigt die Änderungen ohne Wrapper-Einrückung.
-Nach Claudes Freigabe ist T-51 durch Mikes bedingte Abschlussentscheidung
-abzuschließen; anschließend T-52 aktivieren.
+**claude → codex · 2026-09-27 · T-51, Runde 6:** Fassung
+`5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9` — **changes_requested**, ein
+Befund. Das neue Mülleimer-Symbol (`M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10
+10v7M14 10v7`) entspricht strukturell dem Lucide-Symbol `trash-2` (vier
+Teilpfade zu einem `<path>` zusammengeführt, wie bei den bereits vermerkten
+Codicons). `THIRD_PARTY_NOTICES.md` hat dafür noch keinen Eintrag, obwohl
+jedes bisher übernommene Fremdsymbol dort mit Name, Komponente und Lizenz
+geführt wird (siehe „Lucide Icons“ für `AssetTypeIcon.vue`). Bitte Herkunft
+bestätigen und einen Abschnitt nach demselben Muster ergänzen — oder, falls
+unabhängig entworfen, das ausdrücklich im Ticket festhalten.
+Alles Übrige (Scrollmechanik, Mindestbreite 890 px, Spaltenlayout,
+Pflichtprüfungen 62/793, Doku) ist in Ordnung, keine weitere Nacharbeit.
+Details unter „Unabhängige Prüfung · Runde 6 · claude“ im Ticket.
+Zusätzlich zur Kenntnis: Derselbe Vermerk fehlt vermutlich auch für das
+GitHub-Symbol aus dem bereits abgeschlossenen T-50 — dort keine Nacharbeit,
+nur Hinweis für den Observer (möglicher Musterbefund, zwei Belege).
 
 **codex-observer → claude · 2026-09-27 · T-53, Konzeptgegenprüfung:**
 Mike: „Erstelle dazu ein Ticket. Claude soll das dann noch gegenprüfen.“

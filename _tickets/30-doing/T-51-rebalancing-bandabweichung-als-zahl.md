@@ -15,7 +15,10 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 **Stand:** Runde 4 technisch freigegeben (`claude`, approved): getrennte
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
 unter 1160 px. Die danach beauftragte Mindestbreite mit gemeinsamem Scrollen
-ist umgesetzt und selbst geprüft; Runde 6 steht aus; Mike hat den Abschluss bei Claudes Freigabe bereits bestätigt.
+und das Mülleimer-Icon sind umgesetzt; Runde 6 (`claude`) fordert Nacharbeit
+zur Symbolherkunft an (`changes_requested`). Mike hat den Abschluss bei
+Claudes Freigabe bereits bestätigt; diese Freigabe steht wegen der
+Nacharbeit noch aus.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht keine Rückfrage an. Seine Abschlussfreigabe gilt, sobald Claude
@@ -351,13 +354,72 @@ der zugängliche Name bleibt die vorhandene i18n-Beschriftung. Chrome bei
 Symbol ohne Änderung an Bedienung, Funktion oder Betrieb. Wartende Runde 5
 vor Prüfurteil zurückgenommen; Mindestbreite und Icon gehen gemeinsam in Runde 6.
 
+### Unabhängige Prüfung · Runde 6 · claude
+
+Geprüfte Fassung: `5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9` auf
+`t-51-rebalancing-bandabweichung-als-zahl`. Runde 5 wurde vor einem
+Prüfurteil zurückgenommen und ist kein Gegenstand dieser Prüfung; geprüft
+wurde der volle Unterschied seit der freigegebenen Runde 4 (`ba61838`).
+Hinweis für spätere Prüfungen an diesem Diff: `git diff -w` zeigt den
+tatsächlichen Umfang, ein Wrapper-`<div>` verschiebt sonst die gesamte
+Tabelleneinrückung.
+
+- **Diff gelesen (`git diff -w ba61838..5e983a0`):** neue `.reb__workspace`
+  mit `min-width: 890px`, gemeinsamer Scrollbereich (`role="region"`,
+  `aria-label` aus vorhandenem `nav.rebalancing`, `tabindex="0"`) über Kopf
+  und Tabelle statt des bisherigen separaten `.reb__scroll` nur um die
+  Tabelle; `&__summary` nicht mehr umbrechend; Mülleimer-Icon über
+  `NButton`-`#icon`-Slot mit `NIcon`.
+- **Layout nachvollzogen, nicht neu im Browser geprüft:** Wechsel von
+  tabellen-only zu workspace-weitem horizontalen Scrollen ist strukturell
+  konsistent mit der Beschreibung; verlasse mich hier auf den dokumentierten
+  Browsernachweis (889/800/1440 px), da rein strukturell nichts dagegen
+  spricht und die bestehenden Komponententests nach dem Wrapper-Umbau
+  unverändert grün bleiben.
+- **`UxIcon`-Ablehnung nachvollzogen:** `navIcons.ts` enthält tatsächlich nur
+  `dashboard/rebalancing/settings/analysis/exchanges/fx/instruments` — kein
+  Symbol für „löschen“. Ein Rückgriff auf eine eigene Inline-SVG ist damit
+  begründet.
+- **Befund — Drittanbieter-Symbol ohne Vermerk:** Der neue Mülleimer-Pfad
+  (`M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7`) entspricht in Aufbau
+  und Geometrie erkennbar dem Lucide-Symbol `trash-2` (vier Teilpfade zu
+  einem `<path>` zusammengeführt — dieselbe Vereinfachungstechnik wie bei den
+  bereits vermerkten Codicons in `GroupActionIcon.vue`). `THIRD_PARTY_NOTICES.md`
+  enthält bisher nur „Microsoft Codicons“ und „Lucide Icons“ (für
+  `AssetTypeIcon.vue`); für dieses neue Symbol fehlt ein Eintrag, obwohl das
+  Projekt diese Zuordnung für jedes bisher aus einer fremden Bibliothek
+  übernommene Symbol konsequent führt (inklusive vollem Lizenztext bei ISC).
+  Bitte Herkunft bestätigen und einen Abschnitt nach dem vorhandenen Muster
+  ergänzen (Symbolname, Komponente, Lizenz) — oder, falls das Symbol
+  tatsächlich unabhängig entworfen wurde, das ausdrücklich im Ticket
+  festhalten.
+  **Zur Kenntnis, nicht Teil dieses Befundes:** Derselbe Symbolpfad (das
+  GitHub-Zeichen) in `AppStatusBar.vue` aus dem bereits abgeschlossenen T-50
+  hat denselben fehlenden Eintrag; das ist mir in Runde 1/2 von T-50 nicht
+  aufgefallen. T-50 ist archiviert und wird dafür nicht erneut geprüft; der
+  Observer sollte das als möglichen Musterbefund einordnen (zwei Belege).
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 62 Testdateien/793 Tests grün.
+- **Doku-Abgleich gegengeprüft:** README beschreibt Mindestbreite,
+  gemeinsames Scrollen und die angepasste Mobile-Aussage zutreffend; das
+  Icon selbst braucht laut bisherigem Muster (T-50) keine eigene
+  Nutzungsanleitung, nur die Lizenzanmerkung fehlt wie oben beschrieben.
+- **Frühere Beobachtung (Runde 2, `decimalSigned` ohne eigenen Unit-Test)
+  weiterhin unverändert**, nicht erneut als Befund gezählt.
+
+**Verdict: changes_requested.** Ein Befund: fehlender
+`THIRD_PARTY_NOTICES.md`-Eintrag für das neue Mülleimer-Symbol. Alles
+Übrige — Scrollmechanik, Mindestbreite, Spaltenlayout, Pflichtprüfungen,
+Doku — ist in Ordnung.
+
 ### Auflösung
 
-Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite
-und das gemeinsame Scrollen sind umgesetzt und selbst geprüft; Runde 6 steht
-aus. Mikes Abschlussfreigabe gilt bedingt auf Claudes OK. Ticket bleibt bis
-dahin in Doing. Runde 3 blieb
-ohne Prüfurteil.
+Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite,
+das gemeinsame Scrollen und das Icon sind umgesetzt und selbst geprüft;
+Runde 6 (`claude`) fordert eine kleine Nacharbeit zur Symbolherkunft an,
+sonst keine Einwände. Mikes Abschlussfreigabe gilt bedingt auf Claudes OK;
+das OK steht bis zur Nacharbeit noch aus. Ticket bleibt bis dahin in Doing.
+Runde 3 und Runde 5 blieben ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in
