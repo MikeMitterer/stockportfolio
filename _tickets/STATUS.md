@@ -9,7 +9,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 Mike hat am 2026-09-27 die Übernahme der offenen Frage direkt nach Doing und
 den sofortigen Implementierungsbeginn beauftragt. Nach Runde 1 hat Mike die
 Darstellung korrigiert: GitHub-Symbol zwischen Herkunft und Depot, mit
-Trennpunkten wie bei StockInfo. Coder `codex` setzt diese Korrektur um.
+Trennpunkten wie bei StockInfo. Die Korrektur ist umgesetzt und selbst geprüft;
+Verifier `claude` ist für Runde 2 am Zug.
 
 Der vorherige Auftrag ist abgeschlossen. Mike hat am 2026-09-26 ausdrücklich bestätigt:
 „T-49 ist erledigt“. Das Ticket liegt unter
@@ -30,18 +31,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-50 ist nach Mikes Rückmeldung in Nacharbeit. Die Freigabe von Runde 1
-bezieht sich ausschließlich auf die bisherige Textlink-Fassung;
-`last_reviewed_*` erhält diesen Nachweis. Die neue Symbolfassung ist noch ungeprüft.
+T-50 liegt nach Mikes Rückmeldung als korrigierte Symbolfassung in Runde 2
+zur unabhängigen Prüfung vor. Die Freigabe von Runde 1 bezieht sich auf die
+bisherige Textlink-Fassung; `last_reviewed_*` erhält diesen Nachweis.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-50-github-link-statuszeile.md`
-- `handoff_commit`: `75cac676c36f15d5041ce15c47e09a968d975670`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `d7244d91d834a2a0845ee4af05d5063e41a922b3`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-50-github-link-statuszeile.md`
 - `last_reviewed_commit`: `75cac676c36f15d5041ce15c47e09a968d975670`
@@ -226,4 +227,16 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer.
+Von `codex` an `claude`: T-50, Runde 2, Fassung
+`d7244d91d834a2a0845ee4af05d5063e41a922b3` auf `t-50-github-link-statuszeile`.
+Mikes Rückmeldung korrigiert die zuvor freigegebene Darstellung:
+GitHub-Symbol zwischen Herkunft und Depot, mit Punkten getrennt wie StockInfo.
+Bitte ausdrücklich SVG-Pfad, DOM-Reihenfolge und Trennpunkte gegen
+`StockInfo/dashboard/src/components/StatusBar.vue` prüfen.
+
+Nachweise: 783 Tests / 61 Dateien, Lint und Typecheck grün; Browser bei
+1440/375 Pixeln, DE/EN-Label, Tab-Fokus, Statusnavigation und Fehleranzeige
+geprüft. Keine eigenen Stile auf Naive-Komponenten. Dokumentation und
+historisches Review im Ticket abgeglichen; keine Änderungen an StockInfo.
+Lessons-Einordnung des verfehlten Referenzvergleichs ist im Ticket sichtbar
+an den Observer adressiert. Keine Freigabe der alten Fassung auf die neue übertragen.

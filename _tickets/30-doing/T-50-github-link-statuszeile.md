@@ -163,3 +163,6 @@ kein Anlass für eine neue Lesson (Einzelfall, kein belegtes Muster).
 Symbol-Nacharbeit und eigene Prüfungen abgeschlossen. Runde 1 bleibt als historisches Urteil zur Produktfassung
 `75cac676c36f15d5041ce15c47e09a968d975670` erhalten. Keine Freigabe der neuen
 Symbolfassung und keine menschliche Abschlussbestätigung vorhanden.
+
+Korrigierte Produktfassung: `d7244d91d834a2a0845ee4af05d5063e41a922b3`,
+am 2026-09-27 als Runde 2 übergeben. Eigene Testserver nach Prüfung beendet.
