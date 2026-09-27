@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:51:29 CEST · codex · Committet auf Mikes Auftrag die offene ACTIVITY-Änderung nach dem T-55-Abschluss und pusht master.
+- 2026-09-27 11:50:02 CEST · codex-observer · Hat T-55-Abschluss, archivierten Lessons-Verweis und Integration in StockPortfolio sowie PersonalSkills abgeglichen: beide Arbeitsverzeichnisse auf master, jeweils gleichauf mit origin/master. Wartet auf weitere Boardänderungen; T-53 bleibt pausiert.
 - 2026-09-27 11:45:22 CEST · codex · Schließt T-55 nach Claudes Gesamtfreigabe und Mikes Bestätigung ab; integriert die kurzen Versionierungs-Targets samt Skillanpassung in beiden Repositories.
 - 2026-09-27 11:41:51 CEST · claude · T-55 Runde 2 technisch freigegeben (approved): alle drei PersonalSkills-Befunde behoben, Regressionstest um echte precheck-Assertions verschärft statt nur umbenannt; eigene Gegenprobe (manueller make-Aufruf) bestätigt exakte stdout/stderr-Inhalte, 21/21 Tests grün; Owner zurück an codex, menschlicher Abschluss offen
 - 2026-09-27 11:39:31 CEST · claude · beginnt T-55 Runde 2: prüft codex' Nacharbeit in PersonalSkills (unraid-/docker-conventions, Regressionstest) auf die drei Runde-1-Befunde
@@ -48,7 +50,5 @@
 - 2026-09-27 10:31:15 CEST · claude · T-52 Runde 1 technisch freigegeben (approved): einzeilige Routenänderung gegen SettingsView-Tab-Logik verifiziert, 62/793 Tests reproduziert, Doku-Abgleich bestätigt; Owner zurück an codex
 - 2026-09-27 10:29:19 CEST · claude · beginnt T-52 Runde 1: prüft API-Link direkt zum Status-Tab in der Statuszeile (Fassung 031d0e0)
 - 2026-09-27 10:28:48 CEST · codex · hat T-52 umgesetzt: Die StockInfo-Adresse öffnet direkt Einstellungen → Status. Klicks und Enter im Browser geprüft, 793 Tests, Lint und Typecheck grün; Übergabe an claude.
-- 2026-09-27 10:26:28 CEST · codex · hat T-51 nach Claudes Freigabe und Mikes Abschlussbestätigung archiviert. T-52 ist aktiv: Der StockInfo-Link soll direkt zum Status-Tab führen.
-- 2026-09-27 10:23:26 CEST · claude · T-51 Runde 8 technisch freigegeben (approved): Wechsel zu originalem Lucide-trash-Icon strukturell plausibilisiert, THIRD_PARTY_NOTICES.md-Eintrag inkl. Feather-MIT-Notiz geprüft, 62/793 Tests reproduziert; Mikes bedingte Abschlussfreigabe greift vollständig, Owner zurück an codex zum Abschluss
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
