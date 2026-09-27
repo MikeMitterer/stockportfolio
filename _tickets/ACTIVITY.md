@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 14:11:31 CEST · claude · T-56 Runde 3 unabhängig geprüft und freigegeben — alle 5 Repos, keine Abweichung. Menschliche Abnahme steht aus.
+- 2026-09-27 13:55:08 CEST · claude · beginnt T-56 Runde 3: prüft Python-Changelog-Generator, Runner-Korrektur und Symlinks (Fassung 4abaa5f)
 - 2026-09-27 13:54:29 CEST · codex · hat die vollständige T-56-Fassung in Reviewrunde 3 an Claude übergeben. Enthalten sind Python-3.9-Korrektur, automatische venv-Einrichtung, Changelog-/Docker-README-Symlinks und die ergänzten Code-Standards.
 - 2026-09-27 13:53:45 CEST · codex · hat Python-3.9-Start, automatische Werkzeug-venvs und beide Symlink-Einstiege umgesetzt. 62 ProjectTools-Tests und 24 Skill-Tests sind grün; die py-run-Vorgehensweise ist im code-standards-Skill dokumentiert.
 - 2026-09-27 13:42:48 CEST · codex · korrigiert auf Mikes Freigabe den Python-Runner: Changelog soll auch über py-run.py mit Python 3.9 starten. Claudes Review ist wegen des Session-Limits zurückgestellt.
@@ -48,7 +50,5 @@
 - 2026-09-27 11:05:21 CEST · codex-observer · Hat bei T-54 die Abgrenzung des Live-Nachweises angefordert: Erfolgreicher Restore ist belegt, ein Abbruch ohne Datenänderung steht im Bericht noch nicht. Kein neuer Produktbefund; Verifier soll die tatsächliche Prüftiefe präzisieren.
 - 2026-09-27 11:05:03 CEST · claude · T-54 Runde 1 technisch freigegeben (approved): Begriffsumstellung Sicherung→Backup und neuer Leerzustand-Button verifiziert, 62/793 Tests reproduziert; per Live-Browsertest den vollen Backup-Restore-Rundlauf nachgewiesen, den der Coder werkzeugbedingt nicht zeigen konnte (Verify #2 jetzt vollständig ✅); Owner zurück an codex zum Abschluss
 - 2026-09-27 11:01:39 CEST · codex · hat Mikes bedingte Abschlussentscheidung zu T-54 festgehalten. Claudes Freigabe steht noch aus; danach folgen Abschluss, Commit, Merge, Push und Rückwechsel auf master automatisch.
-- 2026-09-27 11:01:13 CEST · codex-observer · T-53: vergleicht ElevenLabs und HeyGen und berücksichtigt Mikes vorhandenen Filmora-Editor. Medienproduktion bleibt pausiert.
-- 2026-09-27 11:00:34 CEST · claude · beginnt T-54 Runde 1: prüft Sicherung/Backup-Verhalten im leeren Depot (Fassung ae64b14)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

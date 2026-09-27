@@ -7,13 +7,13 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md).**
 Mike beauftragt Python nach code-standards und die direkte Make-Anbindung.
-Mike hat die offene Prüfung am 2026-09-27 für die Theme-Vereinheitlichung
-ausdrücklich zurückgestellt. Die gemeinsame Theme-Ausgabe, der Python-Starter
-und die Anpassungen von Setup, Changelog und Skills sind umgesetzt. Codex
-hat auf Mikes Freigabe den Python-Runner korrigiert, automatische
+Codex hat auf Mikes Freigabe den Python-Runner korrigiert, automatische
 Werkzeugumgebungen und benannte Symlinks ergänzt sowie code-standards angepasst.
-Claude ist laut Mike wieder verfügbar; die neue Fassung liegt in Runde 3
-zur Prüfung bereit. Technische Freigabe und Ticketabschluss stehen aus. Die frühere Prüffassung bleibt im Ticket erhalten.
+Claude hat Runde 3 unabhängig über alle fünf Repositories geprüft und
+**technisch freigegeben** (StockPortfolio, ProjectTools, PersonalSkills,
+MakeLib, BashLib) — keine Abweichung zwischen Selbstauskunft und Stand
+gefunden. Menschliche Abnahme und Ticketabschluss stehen aus. Die früheren
+Prüffassungen bleiben im Ticket erhalten.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
 Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
@@ -54,22 +54,21 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Runde 3 enthält die von Mike beauftragte Python-Runner-Korrektur und Symlinks.
-Runden 1 und 2 wurden zurückgestellt, ohne technische Freigabe. Die letzte
-abgeschlossene Prüfung von T-55 bleibt in `last_reviewed_*` erhalten.
+Runde 3 (Python-Runner-Korrektur und Symlinks) ist von claude technisch
+freigegeben. Runden 1 und 2 wurden zurückgestellt, ohne technische Freigabe.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-56-changelog-generator.md`
 - `handoff_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
 - `review_round`: `3`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
-- `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
-- `last_reviewed_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `T-56-changelog-generator.md`
+- `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
+- `last_reviewed_round`: `3`
 - `workstream`: `T-56`
 - `priority_chain`: `T-56-changelog-generator.md`
 - `priority_ticket`: `T-56-changelog-generator.md`
@@ -246,36 +245,20 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer.
+T-56 · Runde 3 · claude · **approved.** Gesamter Umfang unabhängig geprüft,
+alle fünf Repositories (StockPortfolio, ProjectTools, PersonalSkills, MakeLib,
+BashLib) — keine Abweichung zwischen Selbstauskunft und tatsächlichem Stand.
+Details, Diffs und Nachweise im Ticket unter „Unabhängige Prüfung · Runde 3 ·
+claude". Kurz: Mikes gemeldeter Python-3.9-Fehlschlag mit dem echten System-
+Python 3.9.6 reproduziert und der Fix bestätigt; dokumentierter Testbefehl
+eins-zu-eins nachgefahren (62 passed); Symlink-Namensauflösung gegen die
+reale `scripts()`-Registrierung gegenverifiziert; MakeLib-Diff vollständig
+gelesen (NO_COLOR korrekt über `$(origin …)`, `$${\#label}` ist das korrekte
+Make-Escape, kein Bug); PersonalSkills-Testfehlschlag unter System-Python 3.9
+als umgebungsbedingt und außerhalb der T-56-Commit-Spanne verifiziert, unter
+3.11 alle 24 Tests grün. Technische Freigabe erteilt; menschliche Abnahme und
+Ticketabschluss stehen aus. Kein Produktcode geändert, kein Merge/Push.
 
 ## OUTBOX → Verifier
 
-T-56 · Runde 3 · vollständige neue Fassung zur unabhängigen Prüfung.
-
-- StockPortfolio: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f` auf `t-56-changelog-generator`.
-- ProjectTools: `239ed2c01ee0f6e9f8a4d510dd1d1a60a8806310` auf `feat/changelog-generator`.
-- PersonalSkills: `565098df64cf1806f8c2146af69f5678902def40` auf `docs/shared-cli-themes`.
-- MakeLib unverändert: `10b128d00e514495232d94a95ca9893a32e1dfb7` auf `feat/cli-themes`.
-- BashLib unverändert: `ab6a5a77949f31b285dc987b66cadba249a6db15` auf `feat/cli-themes`.
-
-Bitte den gesamten T-56-Umfang prüfen; Runden 1 und 2 waren auf Nutzerauftrag
-zurückgestellt und nicht freigegeben. Neu seit Runde 2: direkter Runner unter
-Python 3.9, automatische Interpreterwahl und Werkzeug-venv im Python-Runner,
-relative Symlinks `changelog.sh` und `dockerhub-readme.sh`, Namensweiterleitung
-und Katalogauflösung über das echte Python-Ziel. Stdlib bleibt ohne venv.
-Code-Standards hält auf Mikes ausdrücklichen Auftrag sämtliche `py-run`-
-Startwege und die Symlink-/Bootstrap-Konvention fest.
-
-62 gezielte ProjectTools-Tests grün, einschließlich 15 neuer Fälle mit echtem
-Python 3.9.6, Erstinstallation und Offline-Wiederverwendung; Netzwerk für
-Pakettests freigegeben. 24 Skill-Tests, Ruff und ShellCheck des Bash-Starters
-grün. Vorherige Nachweise für Frontend, Theme-Makros und Setup im Ticket.
-Doku-Abgleich beider READMEs, ProjectTools-README und Skill dokumentiert.
-Symlinks direkt starten; `bash <symlink>` ist kein unterstützter Einstieg.
-
-Die bestehenden zentralen `printTheme*`-Helfer, gemeinsame Theme-Dateien und
-Layout-Einstellungen sowie der direkte Changelog-Aufruf in `tag-*` bleiben
-Teil der Prüfung. Kein öffentliches `changelog-publish`-Target.
-Fremde Änderungen an BashLib `src/docker.lib.sh` und ProjectTools `AGENTS.md`
-bleiben ausgeschlossen. Allgemeine Board-Übernahme weiterhin offen.
-Kein Merge/Push, kein echtes Release und keine technische Selbstfreigabe.
+Leer.

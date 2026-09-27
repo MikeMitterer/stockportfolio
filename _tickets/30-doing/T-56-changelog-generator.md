@@ -468,3 +468,81 @@ mit dem Symlink kompatibel; keine Docker-Veröffentlichung ausgeführt.
 Fremde Änderungen und offene Board-Übernahme bleiben wie zuvor abgegrenzt.
 Alle Nutzerbefunde dieses Nachtrags sind im Coder-Stand umgesetzt; Claudes
 unabhängiger Review und Ticketabschluss sind noch offen. Kein Merge/Push.
+
+### Unabhängige Prüfung · Runde 3 · claude
+
+**Verdict: approved.** Runde 3 deckt den gesamten Umfang ab, wie im Auftrag
+verlangt (Runden 1 und 2 waren zurückgestellt und ohne Freigabe). Alle fünf
+Repositories geprüft, keine Abweichung zwischen Selbstauskunft und
+tatsächlichem Stand gefunden.
+
+**StockPortfolio** (`4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`, nachfolgende
+Commits nur Ticket/STATUS): vollständiger Diff von `Makefile` und
+`scripts/setup-libs.sh` gegen `master` gelesen. `tag-major/minor/patch` teilen
+sich über `$(patsubst tag-%,%,$@)` ein Rezept; `make -n tag-patch` bestätigt
+den Dry-Run. Das neue `setup-libs.sh` ersetzt nur echte Symlinks
+(`linkOnce` verweigert das Überschreiben einer realen Datei/eines Ordners),
+ist idempotent (`-ef`-Vergleich vor dem Neuanlegen) und löst `PROJECT_TOOLS`
+über `cd … && pwd -P` immer physisch auf — auch der Sonderfall, dass die
+`ProjectTools`-Variable ohne gesetzte Umgebung auf den eigenen `.libs`-Symlink
+zurückfällt, erzeugt dadurch keine Selbstverlinkung. Live geprüft: `--help`,
+`--info`, kein Argument und `--install` (idempotent, `git status .libs/` blieb
+leer) laufen fehlerfrei; ShellCheck sauber. `make lint`, `make typecheck`,
+`make test` (793 Tests) grün; `make help`/`make hints` live angesehen, saubere
+Spaltenausrichtung über die gemeinsamen Theme-Variablen. Kein
+`changelog-publish`-Target vorhanden, wie zugesagt.
+
+**ProjectTools** (`239ed2c01ee0f6e9f8a4d510dd1d1a60a8806310`): `py-run.py`-Diff
+vollständig gelesen. Die pauschale `sys.version_info < (3, 11)`-Sperre ist aus
+`main()` entfernt; `bootstrap_python()` erzwingt ≥3.11 nur noch dort, wo
+`tool_python()` tatsächlich eine Paket-venv anlegt. `PYTHON_BOOTSTRAP` wird
+jetzt auch im direkten Python-Einstieg gelesen. Mikes ursprünglich gemeldeter
+Fehlschlag wurde mit dem echten System-Python 3.9.6 (`/usr/bin/python3`)
+reproduziert und der Fix bestätigt (Exit 0). `changelog.sh` und
+`dockerhub-readme.sh` sind echte relative Symlinks auf `../python/py-run.py`;
+der Aufrufname (`sys.argv[0]`-Stem) wählt über das interne `scripts()`-Register
+korrekt die reale Datei (`changelog.py`, `dockerhub-readme.py`) — mit `grep`
+gegenverifiziert. Der dokumentierte Testbefehl aus dem Ticket wurde
+eins-zu-eins nachgefahren: `62 passed in 21.03s`, exakt wie behauptet. Ruff und
+ShellCheck von `py-run.sh` sauber. Unversionierte `AGENTS.md` bleibt wie
+vereinbart außerhalb des Scopes.
+
+**BashLib** (`ab6a5a77949f31b285dc987b66cadba249a6db15`, laut Auftrag
+unverändert seit Runde 2): neue `colors.lib.sh` ShellCheck-sauber; die neuen
+`printTheme*`-Wrapper in `tools.lib.sh` reviewt, Diagnose-Anzahl vor/nach
+unverändert bei 20. Fremde, unabgeschlossene Änderung an `src/docker.lib.sh`
+bleibt bestätigt außerhalb des Scopes (weiterhin lokal modifiziert, nicht Teil
+dieses Auftrags).
+
+**MakeLib** (`10b128d00e514495232d94a95ca9893a32e1dfb7`, laut Auftrag
+unverändert seit Runde 2): vollständiger Diff von `colours.mk` und `tools.mk`
+gelesen. `NO_COLOR` wird korrekt über `$(origin NO_COLOR)` geprüft (jeder
+gesetzte Wert deaktiviert Farbe, nicht nur bestimmte Werte — entspricht der
+NO_COLOR-Spezifikation). Alle Theme-Blöcke (ocean, mono, sunset, forest, neon,
+shell) konsistent von `:=` auf `?=` umgestellt, keines vergessen. Neue
+gemeinsame Layout-Variablen (`THEME_WIDTH_TARGET`, `THEME_COLUMN_GAP`, …)
+decken sich mit den bereits geprüften Werten aus StockPortfolios eigenem
+Makefile. `tools.mk` bündelt sechs vormals eigenständige Zeilenhelfer über ein
+gemeinsames `_themeLine`; die auffällige `$${\#label}`-Schreibweise ist das
+korrekte Make-Idiom, um ein wörtliches `#` in einem Rezept vor dem
+Kommentar-Stripping zu schützen (ergibt nach Expansion das gültige
+Shell-`${#label}`). Live über StockPortfolios `make help` bestätigt: saubere
+Spalten, keine Escaping-Artefakte. MakeLib hat keine eigene Testsuite; Absicherung
+erfolgt wie bisher über die live geprüfte Ausgabe der konsumierenden Projekte.
+
+**PersonalSkills** (`565098df64cf1806f8c2146af69f5678902def40`): Diff von
+`code-standards/SKILL.md` und `references/python.md` gelesen. Die neue
+Aussage „Runner und Stdlib-Werkzeuge wie Changelog unterstützen Python ab 3.9;
+nur die Paketumgebung benötigt Python ab 3.11“ deckt sich exakt mit dem oben
+verifizierten `py-run.py`-Verhalten; ebenso die Symlink-Konvention
+(`<werkzeug>.sh -> ../python/py-run.py`, Name wählt das Python-Skript) gegen
+die tatsächliche `scripts()`-Registrierung geprüft. Volle Testsuite: unter dem
+System-Python 3.9.6 ein Fehlschlag in `test_skill_structure.py`
+(`TypeError` bei `list[tuple[str, str | None]]`) — durch `git log` bestätigt
+unabhängig von T-56 (letzte Änderung dort `d81d44b`, außerhalb der geprüften
+Commit-Spanne) und rein umgebungsbedingt; unter Python 3.11 alle 24 Tests grün,
+wie im Ticket behauptet.
+
+**Nicht erneut geprüft:** die bereits in Runde 2 bestätigten Nachweise zu
+Frontend, Theme-Makros und Setup (unverändert seit dort). Kein Produktcode
+geändert, keine menschliche Abnahme erteilt, kein Merge/Push.
