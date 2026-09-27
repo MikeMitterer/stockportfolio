@@ -125,5 +125,5 @@ wiederkehrendes Fehlermuster; keine neue Lesson allein aus dieser Ticketanlage.
 ### Auflösung
 
 Umsetzung und eigene Prüfungen abgeschlossen, mit der bei #2 dokumentierten
-Browsergrenze. Zur unabhängigen Prüfung vorgesehen; technische Freigabe und
-menschlicher Abschluss stehen aus. Produktfassung wird in STATUS übergeben.
+Browsergrenze. Produktfassung `ae64b14ef8a05881f08bcf38459ec47c716567a6` in Runde 1 an
+den Verifier übergeben. Technische Freigabe und menschlicher Abschluss stehen aus.

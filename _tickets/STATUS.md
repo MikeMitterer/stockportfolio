@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-54 · Backup im leeren Depot](30-doing/T-54-sicherung-im-leeren-depot.md).**
 Mike hat die Ticketanlage und den sofortigen Umsetzungsbeginn beauftragt.
-Coder `codex` ist am Zug; T-53 bleibt pausiert.
+Die Umsetzung ist an Verifier `claude` zur Prüfung in Runde 1 übergeben;
+T-53 bleibt pausiert.
 
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
@@ -40,16 +41,17 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-54 ist in Umsetzung. Die letzte Prüfung von T-52 bleibt erhalten.
+T-54 wartet auf die unabhängige Prüfung in Runde 1. Die letzte abgeschlossene
+Prüfung von T-52 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-54-sicherung-im-leeren-depot.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
 - `last_reviewed_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
@@ -151,7 +153,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 sind abgeschlossen; T-54 ist zur Umsetzung aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 sind abgeschlossen; T-54 ist zur Prüfung übergeben. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -230,11 +232,30 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Keine unverarbeitete Nachricht. T-52 abgeschlossen.
+Keine unverarbeitete Nachricht. T-54 wartet auf den Verifier.
 
 ## OUTBOX → Verifier
 
-Beide T-53-Nachrichten des Observers verarbeitet: Lessons-Verweis in
-Vorschlag 3 korrigiert, Stimmenzahl (neun statt acht) und die
-Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung richtiggestellt. Details
-im Ticket unter „Claudes Bestätigung der Einordnung“.
+**codex → claude · T-54 · Runde 1**
+
+Bitte Fassung `ae64b14ef8a05881f08bcf38459ec47c716567a6` auf Branch
+`t-54-sicherung-im-leeren-depot` unabhängig prüfen.
+
+Umfang: dritter Button im leeren Depot öffnet `/settings?tab=backup`,
+DE/EN-Hinweis ergänzt, Buttons können umbrechen. Auf Mikes weitere Vorgabe
+„Sicherung“ in deutscher UI, Kommentaren und aktuellen Testanleitungen zu
+„Backup“ vereinheitlicht; deutscher Download-Button heißt genau „Backup“.
+Import-/Exportlogik und Dateiformat unverändert.
+
+Eigene Nachweise im Ticket: 793 Tests/62 Dateien, Lint und Typecheck grün;
+DE-Klick und EN-Enter zum Backup-Tab, 390/1440 px ohne Überlauf, bestehender
+Positionsdialog sowie Laden des Beispiel-Depots geprüft. Letzteres lädt
+6 Positionen, aber 5 Demo-Kurse fehlen im lokalen Testdienst. Kein neuer
+Dateiimport im Browser belegt: Werkzeug lehnte den Fixture-Pfad wegen seiner
+Workspace-Freigabe ab; Domain-/Store-Tests und Quellvergleich vorhanden.
+Diese Einschränkung bitte als solche beurteilen, nicht als neuen Importfehler.
+
+Beide READMEs und Browser-Testanleitung aktualisiert; Docker-Hub-Vorschau
+4.858 Bytes geprüft. AST-Bezeichnerinventar und Begriffsinventar durchgeführt.
+Review bitte auch gegen Mikes Originalvorgaben und den Doku-Abgleich führen.
+Keine Änderung am Produktionsstopp von T-53; menschlicher Abschluss offen.

@@ -196,7 +196,7 @@ T-51 ist [abgeschlossen](40-done/T-51-rebalancing-bandabweichung-als-zahl.md).
 [T-52 · API-Link zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist ebenfalls abgeschlossen.
 [T-54 · Backup im leeren Depot](30-doing/T-54-sicherung-im-leeren-depot.md)
-ist zur Umsetzung aktiviert; maßgeblich ist STATUS.
+ist zur unabhängigen Prüfung übergeben; maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

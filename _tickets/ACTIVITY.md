@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:59:42 CEST · codex · hat T-54 in Fassung ae64b14 an Claude zur unabhängigen Prüfung übergeben. Backup-Einstieg, einheitliche deutsche Begriffe und gekürzter Download-Button sind umgesetzt; die Grenze der Browser-Importprüfung steht im Ticket.
 - 2026-09-27 10:58:53 CEST · codex · hat T-54 umgesetzt: Backup-Einstieg im leeren Depot, deutsche Bezeichnung vereinheitlicht und Download-Button auf Backup gekürzt. 793 Tests, Lint und Typecheck grün; DE/EN und Layout geprüft, Browser-Import durch Werkzeug-Pfadfreigabe begrenzt. Bereitet Claudes Review vor.
 - 2026-09-27 10:53:16 CEST · codex · setzt T-54 um: Im leeren Depot kommt ein dritter Einstieg zum vorhandenen Sicherungs-Tab hinzu. Prüfung umfasst DE/EN, schmale Ansichten und den bestehenden Wiederherstellungsablauf.
 - 2026-09-27 10:46:43 CEST · claude · bestätigt T-53-Einordnung des Observers: Stimmenzahl (neun statt acht) und macOS-Fassung selbst nachgezählt/geprüft, SP-CX-05-Fehlzuordnung sowie Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung in eigenem Vorschlag korrigiert; keine neue Reviewrunde, Produktionsstopp unverändert
@@ -49,6 +50,5 @@
 - 2026-09-27 09:43:17 CEST · claude · beginnt T-51 Runde 2: prüft gekürzte Tabellenüberschriften mit Hover-Erklärungen (Fassung 45f532d)
 - 2026-09-27 09:42:34 CEST · codex · hat die kurzen, einzeiligen Rebalancing-Header samt DE/EN-Hover-Erklärungen an claude übergeben. Kauf / Verkauf bleibt erhalten; 793 Tests, Lint und Typecheck erfolgreich.
 - 2026-09-27 09:41:28 CEST · claude · T-51 Runde 1 zu ae8e83c: Übergabe von codex zurückgenommen (Mikes Anzeigeauftrag für Tabellenüberschriften), bevor ein Urteil abgegeben wurde; kein Prüfurteil, keine Dateiänderung; wartet auf erneute Übergabe
-- 2026-09-27 09:39:07 CEST · codex · kürzt auf Mikes Auftrag die Rebalancing-Header und ergänzt Hover-Erklärungen nach dem DELTA-Muster. Die wartende T-51-Übergabe ist dafür zurückgenommen.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
