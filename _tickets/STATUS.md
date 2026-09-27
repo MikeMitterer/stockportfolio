@@ -5,23 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
-Mike hat T-51 unmittelbar nach T-50 beauftragt. Die Tabellenüberschriften sind gekürzt und mit Erklärungen ergänzt.
-Runde 2 ist durch `claude` technisch freigegeben. Die danach beauftragte
-schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
-1160 px ist in Runde 4 durch `claude` technisch freigegeben. Die danach
-beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
-Runde 6 kam mit einer Herkunftsfrage zum Mülleimer-Symbol zurück. Coder `codex`
-hat die direkte Erstellung des SVG-Pfads ohne externe Vorlage im Ticket
-festgehalten; Runde 7 ist durch `claude` technisch freigegeben. Mike hat danach
-ausdrücklich ein originales Lucide-Symbol beauftragt; Runde 8 ist durch
-`claude` technisch freigegeben (approved).
-Runden 3 und 5 wurden zurückgenommen.
-Mike hat den Abschluss bereits bedingt freigegeben: „Wenn Claude das OK gibt
-dann ist das Ticket von mir aus erledigt“. Dieses OK liegt jetzt vollständig
-vor; `codex` schließt T-51 ab und aktiviert danach T-52.
-Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
-[T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
+**Aktiver Auftrag: [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).**
+Coder `codex` ist am Zug. Mike hat T-52 ausdrücklich direkt nach T-51 beauftragt.
+
+[T-51 · Relative Bandabweichung im Rebalancing](40-done/T-51-rebalancing-bandabweichung-als-zahl.md)
+ist nach Claudes Freigabe in Runde 8 und Mikes bedingter Abschlussentscheidung
+am 2026-09-27 abgeschlossen und archiviert.
 
 [T-50 · GitHub-Link in der Statuszeile](40-done/T-50-github-link-statuszeile.md)
 ist in Runde 2 durch `claude` technisch freigegeben und auf Mikes Bestätigung
@@ -46,26 +35,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist in Runde 8 unabhängig geprüft und technisch freigegeben (approved).
-Mikes bedingte Abschlussfreigabe greift damit vollständig. Runden 1, 3 und 5
-wurden ohne Prüfurteil zurückgenommen. `last_reviewed_*` ist auf Runde 8
-aktualisiert.
+T-52 ist zur Umsetzung aktiviert. Die letzte Prüfung von T-51 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `7e07224d5af11dd00e0a1e0467702a370c613acf`
-- `review_round`: `8`
+- `phase`: `implementing`
+- `ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `last_reviewed_commit`: `7e07224d5af11dd00e0a1e0467702a370c613acf`
 - `last_reviewed_round`: `8`
-- `workstream`: `rebalancing-relative-deviation`
-- `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md → T-52-statuszeile-api-link-zum-status-tab.md`
-- `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
+- `workstream`: `statusbar-api-navigation`
+- `priority_chain`: `T-52-statuszeile-api-link-zum-status-tab.md`
+- `priority_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -160,7 +146,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 ist abgeschlossen; T-51 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 und T-51 sind abgeschlossen; T-52 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -239,18 +225,7 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-51, Runde 8:** Fassung
-`7e07224d5af11dd00e0a1e0467702a370c613acf` — **approved**. Diff betrifft nur
-`THIRD_PARTY_NOTICES.md` und fünf `<path>`-Elemente in `RebalancingView.vue`;
-kein eigener Live-Abgleich mit dem Lucide-Original möglich, aber die
-Bogenbefehle (`a2 2 0 0 1 …`) und der Bruch zum vorherigen zusammengeführten
-Einzelpfad passen strukturell zu einer echten Lucide-Kopie statt einer
-Eigenzeichnung. Die zusätzliche Feather-MIT-Notiz ist plausibel begründet
-(Lucide ist ein Feather-Fork; nur ältere Symbole wie „trash“ haben dieses
-Erbe, die sieben Icons in `AssetTypeIcon.vue` zu Recht nicht). Kein toter
-Code, Pflichtprüfungen reproduziert (62/793 grün). Mikes bedingte
-Abschlussfreigabe greift damit vollständig: bitte T-51 nach `40-done/`
-verschieben und danach T-52 aktivieren.
+Runde 8 verarbeitet, T-51 abgeschlossen. Keine offene Rückgabe.
 
 ## OUTBOX → Verifier
 

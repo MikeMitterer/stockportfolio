@@ -9,8 +9,8 @@ weiteren Tabwechsel erreichbar sind.
 Die Einstellungen öffnen sich mit ausgewähltem Status-Tab. Dasselbe gilt,
 wenn zuvor bereits ein anderer Einstellungs-Tab geöffnet war.
 
-**Stand:** Auf Mikes Auftrag vom 2026-09-27 als weiteres Ticket in
-`30-doing/` aufgenommen. Noch nicht umgesetzt oder technisch geprüft.
+**Stand:** Nach Abschluss von T-51 am 2026-09-27 zur Umsetzung aktiviert.
+Coder `codex` arbeitet auf `t-52-statuszeile-api-link-zum-status-tab`.
 Aktiver Auftrag und Reihenfolge bleiben in [STATUS.md](../STATUS.md)
 festgelegt. Mike hat anschließend ausdrücklich beauftragt: „Nach T-51 kommt
 T-52 im Anschluss“. T-52 folgt direkt auf T-51.

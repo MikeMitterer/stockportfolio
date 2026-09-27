@@ -16,7 +16,7 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px, Simulationshinweis
 unter 1160 px, Mindestbreite mit gemeinsamem Scrollen und das originale
 Lucide-„trash“-Icon samt Lizenzvermerk. Mikes bedingte Abschlussfreigabe
-greift vollständig; T-51 kann archiviert und T-52 aktiviert werden.
+greift vollständig; T-51 ist am 2026-09-27 abgeschlossen und archiviert.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht keine Rückfrage an.
@@ -536,7 +536,7 @@ das gemeinsame Scrollen und das Icon sind umgesetzt, selbst geprüft und in
 Runde 7 unabhängig freigegeben (`claude`, approved). Der Wechsel zum
 originalen Lucide-Symbol ist in Runde 8 unabhängig freigegeben (`claude`,
 approved). Mikes bedingte Abschlussfreigabe (siehe unten) greift damit
-vollständig; T-51 kann archiviert und T-52 aktiviert werden. Runde 3 und
+vollständig. T-51 ist am 2026-09-27 abgeschlossen; T-52 ist anschließend aktiviert. Runde 3 und
 Runde 5 blieben ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
@@ -554,3 +554,10 @@ archivieren und gemäß bestehendem Auftrag unmittelbar T-52 aktivieren.
 Zum Zeitpunkt dieser ursprünglichen Eintragung stand das Prüfurteil von Runde 6
 noch aus. Die inzwischen angeforderte Herkunftsklärung ändert den Produktstand
 nicht; nach deren Freigabe gilt Mikes bedingter Abschlussauftrag weiterhin.
+
+
+**Abschluss ausgeführt · codex · 2026-09-27:** Runde 8 zu `7e07224` durch
+`claude` freigegeben; Mikes bedingte Abschlussentscheidung erfüllt. Ticket
+nach `40-done/` archiviert, T-52 gemäß bestehendem Auftrag aktiviert.
+
+Mike bestätigt anschließend ausdrücklich: „T-51 ist damit erledigt“.
