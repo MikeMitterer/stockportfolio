@@ -9,8 +9,9 @@ weiteren Tabwechsel erreichbar sind.
 Die Einstellungen öffnen sich mit ausgewähltem Status-Tab. Dasselbe gilt,
 wenn zuvor bereits ein anderer Einstellungs-Tab geöffnet war.
 
-**Stand:** Auf `t-52-statuszeile-api-link-zum-status-tab` umgesetzt und selbst
-geprüft. Unabhängige Prüfung und Mikes Abschlussbestätigung stehen aus.
+**Stand:** Auf `t-52-statuszeile-api-link-zum-status-tab` umgesetzt, selbst
+geprüft und in Runde 1 unabhängig freigegeben (`claude`, approved). Mikes
+Abschlussbestätigung steht noch aus.
 Aktiver Auftrag und Reihenfolge bleiben in [STATUS.md](../STATUS.md)
 festgelegt. Mike hat anschließend ausdrücklich beauftragt: „Nach T-51 kommt
 T-52 im Anschluss“. T-52 folgt direkt auf T-51.
@@ -114,7 +115,33 @@ sind nicht betroffen: kein geänderter Vertrag, keine Konfiguration/Installation
 AL-R-01 durch tatsächliche Browsernavigation angewendet; SP-CX-02 durch
 Abschluss von T-51 samt Board-Einstieg und Aktivierung T-52 berücksichtigt.
 
+### Unabhängige Prüfung · Runde 1 · claude
+
+Geprüfte Fassung: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7` auf
+`t-52-statuszeile-api-link-zum-status-tab`.
+
+- **Diff gelesen:** Einzeilige Änderung in `AppStatusBar.vue` —
+  `router.push('/settings')` → `router.push({ path: '/settings', query:
+  { tab: 'status' } })`. Kein weiterer Code betroffen.
+- **Zielmechanismus nachvollzogen:** `SettingsView.vue` liest `route.query.tab`
+  in `activeTab` und akzeptiert `'status'` aus `SETTINGS_TABS`; ungültige oder
+  fehlende Werte fallen auf `'calc'` zurück. Die neue Navigation trifft damit
+  zuverlässig den Status-Tab, unabhängig vom zuvor geöffneten Tab.
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 62 Testdateien/793 Tests grün.
+- **Doku-Abgleich gegengeprüft:** `docker/README.md` nennt „Settings → Status“
+  bereits zweimal (Zeilen 54 und 93); `README.md`, Abschnitt „Layout“,
+  dokumentiert adressierbare Tabs über `?tab=calc` als bestehendes Muster.
+  Keine Anpassung nötig, Einschätzung im Ticket zutreffend.
+- **Testabdeckung:** Keine dedizierte Komponenten- oder Routentests für diese
+  Navigation oder für `SettingsView`s Tab-Auswahl allgemein — vorbestehender
+  Zustand, nicht durch dieses Ticket verursacht; bei einer einzeiligen,
+  klar nachvollziehbaren Änderung kein Blocker (AL-R-11).
+
+**Verdict: approved.** Keine Befunde.
+
 ### Auflösung
 
-Umgesetzt und selbst geprüft. Unabhängige Prüfung und menschlicher Abschluss
-stehen aus; Ticket bleibt in Doing.
+Umgesetzt, selbst geprüft und in Runde 1 unabhängig freigegeben (`claude`,
+approved). Mikes Abschlussbestätigung steht noch aus; Ticket bleibt bis
+dahin in Doing.

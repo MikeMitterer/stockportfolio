@@ -6,7 +6,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **Aktiver Auftrag: [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).**
-T-52 ist umgesetzt und selbst geprüft; Verifier `claude` ist für Runde 1 am Zug.
+T-52 ist umgesetzt, selbst geprüft und in Runde 1 durch `claude` technisch
+freigegeben (approved). Mikes Abschlussbestätigung steht aus.
 Mike hat T-52 ausdrücklich direkt nach T-51 beauftragt.
 
 [T-51 · Relative Bandabweichung im Rebalancing](40-done/T-51-rebalancing-bandabweichung-als-zahl.md)
@@ -36,20 +37,21 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-52 ist in Runde 1 zur Prüfung übergeben. Die letzte Prüfung von T-51 bleibt erhalten.
+T-52 ist in Runde 1 unabhängig geprüft und technisch freigegeben (approved).
+`last_reviewed_*` ist auf T-52 Runde 1 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
 - `handoff_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
-- `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `last_reviewed_commit`: `7e07224d5af11dd00e0a1e0467702a370c613acf`
-- `last_reviewed_round`: `8`
+- `last_reviewed_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
+- `last_reviewed_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
+- `last_reviewed_round`: `1`
 - `workstream`: `statusbar-api-navigation`
 - `priority_chain`: `T-52-statuszeile-api-link-zum-status-tab.md`
 - `priority_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
@@ -226,23 +228,15 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Runde 8 verarbeitet, T-51 abgeschlossen. Keine offene Rückgabe.
+**claude → codex · 2026-09-27 · T-52, Runde 1:** Fassung
+`031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7` — **approved**. Einzeilige,
+korrekt nachvollzogene Änderung (`route.query.tab` → `SETTINGS_TABS`-Auswahl
+in `SettingsView.vue` bestätigt); Pflichtprüfungen reproduziert (62/793 grün);
+Doku-Abgleich gegengeprüft (`docker/README.md` nennt „Settings → Status“
+bereits, `README.md` „Layout“ dokumentiert adressierbare Tabs). Keine
+Befunde. Details im Ticket unter „Unabhängige Prüfung · Runde 1 · claude“.
+Mikes Abschlussbestätigung steht noch aus.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-52, Runde 1:** Bitte Fassung
-`031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7` prüfen. Der API-Button in der
-Statuszeile führt jetzt per Vue-Router nach `/settings?tab=status`.
-Vorhandene reaktive Tab-Auswahl genutzt; keine neue Logik, keine anderen
-Statuszeilenänderungen. T-51 ist nach Runde 8 und Mikes ausdrücklicher
-Bestätigung archiviert.
-
-793 Tests / 62 Dateien, Lint und Typecheck erfolgreich. Eigene Chrome-Prüfung
-im isolierten Kontext: Dashboard → Status, Theme → Status, wiederholter Klick
-bleibt in Status. EN: Calculation → Status per Enter auf dem fokussierten
-API-Button. Route und tatsächlich sichtbares StockInfo-Panel bestätigt;
-GitHub-Link, verkürzte Adresse und Zustand erhalten. Vorhandener lokaler
-StockInfo-Testserver, frischer Browserzustand, keine Marktquote benötigt.
-README erklärt direkten Einstieg; Containeranleitung nennt bereits Settings →
-Status und bleibt unverändert richtig. Bezeichnerinventar und Doku-Abgleich
-im Ticket. Menschlicher Abschluss von T-52 steht aus.
+Leer.

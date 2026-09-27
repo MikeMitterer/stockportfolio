@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:31:15 CEST · claude · T-52 Runde 1 technisch freigegeben (approved): einzeilige Routenänderung gegen SettingsView-Tab-Logik verifiziert, 62/793 Tests reproduziert, Doku-Abgleich bestätigt; Owner zurück an codex
+- 2026-09-27 10:29:19 CEST · claude · beginnt T-52 Runde 1: prüft API-Link direkt zum Status-Tab in der Statuszeile (Fassung 031d0e0)
+- 2026-09-27 10:28:48 CEST · codex · hat T-52 umgesetzt: Die StockInfo-Adresse öffnet direkt Einstellungen → Status. Klicks und Enter im Browser geprüft, 793 Tests, Lint und Typecheck grün; Übergabe an claude.
+- 2026-09-27 10:26:28 CEST · codex · hat T-51 nach Claudes Freigabe und Mikes Abschlussbestätigung archiviert. T-52 ist aktiv: Der StockInfo-Link soll direkt zum Status-Tab führen.
 - 2026-09-27 10:23:26 CEST · claude · T-51 Runde 8 technisch freigegeben (approved): Wechsel zu originalem Lucide-trash-Icon strukturell plausibilisiert, THIRD_PARTY_NOTICES.md-Eintrag inkl. Feather-MIT-Notiz geprüft, 62/793 Tests reproduziert; Mikes bedingte Abschlussfreigabe greift vollständig, Owner zurück an codex zum Abschluss
 - 2026-09-27 10:21:02 CEST · claude · beginnt T-51 Runde 8: prüft den Wechsel zu einem originalen Lucide-Symbol samt Lizenzvermerk (Fassung 7e07224)
 - 2026-09-27 10:20:34 CEST · codex · hat das originale Lucide-Symbol trash samt gepinnter Quelle und Lizenzvermerken eingesetzt. Originalpfade abgeglichen, 793 Tests, Lint und Typecheck grün; Runde 8 an claude übergeben.
@@ -46,9 +50,5 @@
 - 2026-09-27 09:15:02 CEST · codex-observer · T-50-Freigabe abgeglichen: unabhängige Pflichtprüfungen und Grenzen der Browsernachweise sind dokumentiert; Mikes Abschluss bleibt offen. T-51 ist erfasst, aber nicht als aktiver Implementierungsauftrag zugeordnet.
 - 2026-09-27 09:10:52 CEST · claude · T-50 Runde 1 technisch freigegeben (approved): Diff, Pflichtprüfungen (61/783 Tests, Lint, Typecheck) und Doku-Abgleich bestätigt; Owner zurück an codex, Mikes Abschlussbestätigung steht aus
 - 2026-09-27 09:07:49 CEST · codex-observer · Erfasst T-51 in Doing: relative Bandabweichung im Rebalancing als sichtbare Zahl wie im Dashboard. T-50 bleibt der aktive Reviewauftrag.
-- 2026-09-27 09:06:13 CEST · codex · T-50 umgesetzt und an claude zur Prüfung übergeben: GitHub-Link in der Statuszeile, DE/EN und mobile Ansicht geprüft. 783 Tests, Lint und Typecheck erfolgreich; vorhandenen StockInfo-Testserver genutzt und danach beendet.
-- 2026-09-27 09:00:43 CEST · codex · T-50 aktiviert: Ergänze den GitHub-Link in der Statuszeile nach dem StockInfo-Vorbild. Nutze den vorhandenen Slot von UxStatusBar und übersetzte Beschriftungen.
-- 2026-09-27 08:59:16 CEST · claude · prüft Rollenzuordnung: reviewer=claude bestätigt, Board idle ohne aktives Ticket; startet Fünf-Minuten-Scheduler für die Verifier-Rolle
-- 2026-09-27 08:58:35 CEST · codex-observer · Rollen und Board-Konventionen geprüft: kein aktives Ticket, Owner none. Starte die Beobachtung im Fünf-Minuten-Takt; offene Lessons-Übernahme bleibt sichtbar.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
