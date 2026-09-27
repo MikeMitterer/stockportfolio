@@ -5,8 +5,9 @@ StockPortfolio. Der Link soll wie bei StockInfo aus der App erreichbar sein.
 
 **Stand:** Nacharbeit auf Mikes Rückmeldung vom 2026-09-27. Die bisherige
 Textlink-Fassung war in Runde 1 technisch freigegeben, entsprach aber nicht
-der gewünschten Darstellung von StockInfo. Symbol, Position und Trennpunkte sind korrigiert und durch den Coder geprüft.
-Die erneute unabhängige Prüfung steht aus.
+der gewünschten Darstellung von StockInfo. Symbol, Position und Trennpunkte
+sind korrigiert, durch den Coder geprüft und in Runde 2 unabhängig geprüft
+(`claude`, approved).
 
 Mikes Abschlussbestätigung bleibt offen.
 
@@ -158,11 +159,59 @@ die gemeinsamen AL-R-01/02/11 gelesen (Autor: codex).
 **Verdict: approved.** Keine Befunde. Scope bleibt UI-only wie vereinbart;
 kein Anlass für eine neue Lesson (Einzelfall, kein belegtes Muster).
 
+### Unabhängige Prüfung · Runde 2 · claude
+
+Geprüfte Fassung: `d7244d91d834a2a0845ee4af05d5063e41a922b3` auf
+`t-50-github-link-statuszeile`. Gezielt gegen den in der OUTBOX genannten
+Referenzpunkt geprüft: SVG-Pfad, DOM-Reihenfolge und Trennpunkte im Vergleich
+zu `StockInfo/dashboard/src/components/StatusBar.vue` — genau der Abgleich,
+der in Runde 1 fehlte.
+
+- **Referenzvergleich (Kern dieser Runde):** SVG-`d`-Attribut mit StockInfo
+  zeichengleich verglichen — identisch. DOM-Reihenfolge im `left`-Slot
+  entspricht StockInfo: Trenner(brand) → `NButton`+Icon → Trenner+Kontext;
+  StockPortfolio hängt danach unverändert Trenner+Kursalter und Fehlertext an,
+  in derselben Reihenfolge wie zuvor über die `UxStatusBar`-Props. Erfüllt
+  Mikes Vorgabe „Symbol zwischen powered-by und Depot, mit Punkten wie die
+  anderen Trennungen“.
+- **Architektur eingeordnet:** `context`/`data-age`/`failures` wurden aus den
+  `UxStatusBar`-Props entfernt und im `left`-Slot nachgebaut, weil die
+  Bibliothek ihre eigenen Kontext-Props vor dem Slot rendert (siehe
+  `node_modules/@mmit/ux-foundation/.../UxStatusBar.vue`, Zeile 123) — eine
+  Icon-Position davor ist über Props allein nicht erreichbar. Das ist keine
+  neue lokale Kopie dieses Tickets, sondern genau das bereits in StockInfo
+  etablierte Muster (identische Klassennamen `status__separator(--brand)`,
+  `status__context`, dieselben Farbtoken). Anders als StockInfos eigene
+  Fassung hängt die Farbe hier an der `<svg>`-Klasse, nicht an einer Klasse
+  auf `<NButton>` selbst — dadurch bleibt `componentStyles.spec.ts` im Sinn
+  und nicht nur im Wortlaut erfüllt.
+- **Pflichtprüfungen erneut selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 61/783 grün, deckt sich mit der
+  gemeldeten Zahl; Wächter-Tests darunter bestanden.
+- **Beobachtung, kein Befund:** Der Trennpunkt vor dem Kontext
+  (`.status__separator` ohne Modifikator) hat keine `below(sm)`-Regel und
+  bleibt damit unterhalb der Schmalansicht sichtbar, während `--brand` und
+  `--age` dort ausgeblendet werden. Das weicht vom bisherigen einheitlichen
+  Ausblenden aller Trenner in `UxStatusBar` selbst ab, deckt sich aber exakt
+  mit StockInfos eigener Referenzfassung (dieselbe fehlende Regel dort). Kein
+  StockPortfolio-spezifischer Fehler, kosmetisch, außerhalb des vereinbarten
+  Auftrags „Symbol wie StockInfo“; keine Nacharbeit verlangt.
+- **i18n:** `status.repository` sauber entfernt, keine verwaisten Referenzen
+  in `src/`; `repositoryLabel` bedient weiterhin `aria-label` und `title`.
+- **Lessons-Einordnung Runde 1:** Der im Ticket an den Observer adressierte
+  Befund (fehlender Referenzvergleich) ist noch nicht als Lesson-Datei unter
+  `.agents/lessons/` angelegt — Zuständigkeit liegt beim Observer, hier nur
+  zur Kenntnis genommen, keine eigene Lesson erstellt.
+
+**Verdict: approved.** Keine blockierenden Befunde; eine kosmetische
+Beobachtung ohne Auftragsbezug dokumentiert.
+
 ### Auflösung
 
-Symbol-Nacharbeit und eigene Prüfungen abgeschlossen. Runde 1 bleibt als historisches Urteil zur Produktfassung
-`75cac676c36f15d5041ce15c47e09a968d975670` erhalten. Keine Freigabe der neuen
-Symbolfassung und keine menschliche Abschlussbestätigung vorhanden.
+Symbol-Nacharbeit, eigene Prüfung und unabhängige Prüfung (Runde 2, `claude`,
+approved) sind abgeschlossen. Runde 1 bleibt als historisches Urteil zur
+Produktfassung `75cac676c36f15d5041ce15c47e09a968d975670` erhalten. Mikes
+Abschlussbestätigung steht noch aus; Ticket bleibt bis dahin in Doing.
 
-Korrigierte Produktfassung: `d7244d91d834a2a0845ee4af05d5063e41a922b3`,
-am 2026-09-27 als Runde 2 übergeben. Eigene Testserver nach Prüfung beendet.
+Korrigierte Produktfassung: `d7244d91d834a2a0845ee4af05d5063e41a922b3`.
+Eigene Testserver nach Prüfung beendet.

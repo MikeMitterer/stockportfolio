@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 09:23:49 CEST · claude · T-50 Runde 2 technisch freigegeben (approved): SVG-Pfad, DOM-Reihenfolge und Trennpunkte gegen StockInfo-Referenz verglichen, 61/783 Tests reproduziert; kosmetische Beobachtung ohne Nacharbeit dokumentiert; Owner zurück an codex
+- 2026-09-27 09:21:33 CEST · codex · T-51 als unmittelbaren Folgeauftrag nach T-50 eingeplant: relative Bandabweichung im Rebalancing sichtbar machen. Warte auf die unabhängige Prüfung der Symbolkorrektur von T-50; danach beginnt T-51 ohne erneute Rückfrage.
+- 2026-09-27 09:18:38 CEST · codex · T-50 korrigiert: StockInfo-GitHub-Symbol zwischen Herkunft und Depot mit Trennpunkten. Desktop/mobil geprüft, 783 Tests sowie Lint/Typecheck grün; Runde 2 an claude übergeben.
+- 2026-09-27 09:15:58 CEST · codex · T-50 in Nacharbeit: Ersetze den Textlink durch das StockInfo-GitHub-Symbol zwischen Herkunft und Depot, einschließlich der Trennpunkte. Prüfe die genaue Reihenfolge gegen die Referenz.
+- 2026-09-27 09:15:02 CEST · codex-observer · T-50-Freigabe abgeglichen: unabhängige Pflichtprüfungen und Grenzen der Browsernachweise sind dokumentiert; Mikes Abschluss bleibt offen. T-51 ist erfasst, aber nicht als aktiver Implementierungsauftrag zugeordnet.
 - 2026-09-27 09:10:52 CEST · claude · T-50 Runde 1 technisch freigegeben (approved): Diff, Pflichtprüfungen (61/783 Tests, Lint, Typecheck) und Doku-Abgleich bestätigt; Owner zurück an codex, Mikes Abschlussbestätigung steht aus
 - 2026-09-27 09:07:49 CEST · codex-observer · Erfasst T-51 in Doing: relative Bandabweichung im Rebalancing als sichtbare Zahl wie im Dashboard. T-50 bleibt der aktive Reviewauftrag.
 - 2026-09-27 09:06:13 CEST · codex · T-50 umgesetzt und an claude zur Prüfung übergeben: GitHub-Link in der Statuszeile, DE/EN und mobile Ansicht geprüft. 783 Tests, Lint und Typecheck erfolgreich; vorhandenen StockInfo-Testserver genutzt und danach beendet.
@@ -45,10 +50,5 @@
 - 2026-09-26 13:25:20 CEST · codex · hat Makefile und build.sh auf den StockInfo-Ablauf build, prüfen, push reduziert. Prüft jetzt die finale Commit-Fassung für die Übergabe.
 - 2026-09-26 13:19:11 CEST · codex · prüft das Docker-Image ohne nginx im Browser mit dem wiederverwendbaren Testdepot; bereitet anschließend die T-49-Übergabe vor.
 - 2026-09-26 12:55:33 CEST · codex · T-49 aktiviert: prüft Dockerfile und Build-/Push-Ziele. Übernimmt den zentralen ProjectTools-README-Helfer nach StockInfo T-77 und prüft die 25.000-Byte-Grenze.
-- 2026-09-26 12:29:51 CEST · codex-observer · Nach T-48-Abschluss steht das Board auf idle. Eigene Observer-Schleife wegen fehlender sichtbarer Heartbeats neu gestartet; Ausgangsdurchlauf und eindeutige Rollenzuordnung bestätigt.
-- 2026-09-26 12:14:18 CEST · codex · Schließt T-48 auf Mikes ausdrückliche Abschlussentscheidung. Dokumentiert Runde 1 als technische Freigabe und beendet den noch offenen Kurzreview zum Beschriftungsnachtrag.
-- 2026-09-26 12:12:02 CEST · codex · Deutsche Link-Einstellungen heißen jetzt durchgängig Links. Im Browser geprüft; Beschriftungsnachtrag an Claude für Runde 2 übergeben.
-- 2026-09-26 12:11:59 CEST · codex-observer · T-48: technische Freigabe und offene Abschlussentscheidung abgeglichen; den beauftragten Nachtrag zur deutschen Bezeichnung Links im Board verfolgt. Rollen bleiben eindeutig, derzeit kein Observer-Eingriff nötig.
-- 2026-09-26 12:11:13 CEST · codex · T-48: Vereinheitlicht die deutschen Beschriftungen der Link-Einstellungen auf Links, einschließlich Aktionen und Bestätigungen.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
