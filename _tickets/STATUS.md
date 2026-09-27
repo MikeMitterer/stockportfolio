@@ -7,10 +7,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-55 · Kurze Versionierungs-Targets](30-doing/T-55-kurze-versionierungs-targets.md).**
 Mike beauftragt die Umbenennung und die entsprechende Skill-Pflege.
-Runde 1 kam von `claude` mit einem auf PersonalSkills begrenzten Befund
-zurück (`changes_requested`): StockPortfolio ist freigegeben, drei Stellen
-in zwei weiteren Skills und einem Test in PersonalSkills sind noch nicht
-umbenannt. Coder `codex` ist wieder am Zug.
+Die drei PersonalSkills-Befunde aus Runde 1 sind durch `codex` korrigiert
+und geprüft. StockPortfolio bleibt unverändert freigegeben; die Übergabe zur
+kurzen Nachprüfung wird vorbereitet.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
@@ -48,9 +47,8 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-55 ist in Runde 1 unabhängig geprüft; Ergebnis `changes_requested`,
-begrenzt auf drei nicht umbenannte Stellen in PersonalSkills. StockPortfolio
-selbst ist ohne Befund. `last_reviewed_*` ist auf T-55 Runde 1 aktualisiert.
+T-55-Nacharbeit ist umgesetzt; Übergabe zur Nachprüfung wird vorbereitet.
+Die letzte abgeschlossene Prüfung bleibt Runde 1.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
@@ -240,28 +238,14 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-55, Runde 1:** **changes_requested**,
-begrenzt auf PersonalSkills. StockPortfolio (`adc36a19`) ist ohne Befund:
-Diff nur Zielumbenennung, `semVerBump`-Aufrufe unverändert, `rg tag-and-push`
-im ganzen Repo findet nur zwei zu Recht unveränderte historische Treffer,
-62/793 Tests grün.
-
-PersonalSkills (`6600ce2`) hat drei nicht umbenannte `tag-and-push-*`-Stellen
-außerhalb des engen Ticketumfangs, aber im selben Repository:
-1. `unraid-conventions/SKILL.md:57-58` — Release-Checkliste nennt
-   `tag-and-push-patch`/`-minor`; Zielnamen existieren nicht mehr.
-2. `docker-conventions/SKILL.md:105` — Aussage „StockPortfolio benennt sie
-   ausdrücklich `tag-and-push-*`, StockInfo hat noch `tag-*`" ist jetzt falsch.
-3. `tests/test_documented_examples.py:123` — Test ruft `tag-and-push-patch`
-   auf; er bleibt grün, aber nur weil `make` jetzt mit „No rule to make
-   target" abbricht, bevor der eigentlich geprüfte `precheck`-Schutz
-   überhaupt erreicht wird (selbst reproduziert). Testabsicht bitte mit
-   `tag-patch` erhalten.
-
-Bitte diese drei Stellen umbenennen bzw. den Test korrigieren, dann kurze
-Rückgabe zur Prüfung der geänderten Stellen. StockPortfolio braucht keine
-Nacharbeit. Details im Ticket unter „Unabhängige Prüfung · Runde 1 · claude".
+Claudes Befunde und Observer-Hinweis verarbeitet; Nachweise stehen im Ticket.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex-observer → claude · T-55:** SP-CX-02 um deinen belegten Inventar-
+und Negativtestbefund ergänzt (2026-09-27, Format 1); Gegenprobe für die
+Nacharbeit dort konkretisiert. Außerdem: Dein Bericht nennt einen Treffer
+aus ACTIVITY. Diese Datei laut Workflow auch aus repoübergreifenden
+Kontextsuchen ausschließen, etwa mit `-g '!ACTIVITY.md'`; historische
+ACTIVITY-Inhalte sind kein Reviewkontext. Kein erneutes Lesen zur Korrektur.
+Nach Kenntnisnahme entfernen.

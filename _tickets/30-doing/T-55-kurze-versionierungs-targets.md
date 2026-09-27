@@ -5,12 +5,11 @@ die kurze Form `tag-major`, `tag-minor` und `tag-patch` auch hier und als
 künftige Skill-Vorgabe. Commit, Tag und Push bleiben Bestandteil des Befehls;
 der Name muss den Push nicht zusätzlich aufführen.
 
-**Stand:** Am 2026-09-27 umgesetzt und in Runde 1 durch `claude` geprüft.
-StockPortfolio ist freigegeben; PersonalSkills braucht eine kleine
-Nacharbeit (drei nicht umbenannte Stellen in zwei weiteren Skills und einem
-Test, siehe „Unabhängige Prüfung“). Kein Release ausgeführt.
-**Für dich:** Aktuell kein Handgriff nötig; die PersonalSkills-Nacharbeit
-und der Abschluss stehen noch aus.
+**Stand:** StockPortfolio ist in Runde 1 durch `claude` ohne Befund
+freigegeben. Die drei PersonalSkills-Befunde sind in `772c25c` korrigiert
+und geprüft; die kurze Nachprüfung durch Claude steht aus. Kein Release ausgeführt.
+**Für dich:** Aktuell kein Handgriff nötig; technische Gesamtfreigabe und
+menschlicher Abschluss stehen noch aus.
 
 ## Auftrag
 
@@ -23,7 +22,8 @@ Prüfauftrag von Mike: „Lass das Claude nochmal verifizieren - auch die Skilla
 
 - StockPortfolio: Makefile-Targets und aktuelle README-Befehle umbenennen.
 - PersonalSkills: `makefile-conventions/SKILL.md`, referenzierte
-  `versioning-conventions/SKILL.md` und `templates/versioning.mk` angleichen.
+  `versioning-conventions/SKILL.md` und `templates/versioning.mk` angleichen;
+  zugehörige Verweise in Docker-/Unraid-Skills und der Vorlagentest gehören dazu.
 - Keine Änderung an BashLib, StockInfo oder dem Versionsstand.
 
 ## Verify
@@ -33,7 +33,7 @@ Einzige aktuelle Nachweismatrix. ✅ geprüft · ◑ teilweise · ➖ ausstehend
 | # | Prüfung | Nachweis | AI |
 |---|---|---|:--:|
 | 1 | `make help` und Trockenläufe der drei Targets | Alle drei kurzen Namen sichtbar; `make -n` gibt unveränderte semVerBump-Aufrufe für major/minor/patch aus, ebenso für die Skill-Vorlage | ✅ |
-| 2 | Skills und Vorlage abgleichen | Beide Skills mit quick_validate erfolgreich geprüft; Beispiele und Vorlage konsistent, kein alter Target-Name mehr in den beiden Skills | ✅ |
+| 2 | Skills, Vorlage und Aufrufer abgleichen | Runde-1-Lücke in drei Dateien behoben; repoweites Inventar ohne alte Targets, Docker-/Unraid-Skills validiert, alle 21 PersonalSkills-Tests grün | ✅ |
 | 3 | Doku und Diff prüfen | README-Commands und Release-Anleitung angepasst, docker/README unverändert passend; git diff --check in beiden Repos grün | ✅ |
 | 4 | Projektpflichtprüfungen | 793 Tests in 62 Dateien bestanden, Lint und Typecheck Exit 0 | ✅ |
 
@@ -68,6 +68,7 @@ Projekt-README: Commands und Building and publishing angepasst.
 Docker-README: nennt keine Versionierungs-Targets; Containerbetrieb unverändert.
 Historischer Entwurf unter docs nennt bereits `tag-major/-minor/-patch`.
 Makefile-Skill und Versionierungs-Skill samt Vorlage gemeinsam angepasst.
+Runde-1-Nacharbeit ergänzt Docker- und Unraid-Skill sowie den Vorlagentest.
 Bestehende Symlinks zeigen direkt auf die Quelländerungen; keine zweite Kopie.
 Die PersonalSkills-Übersicht bleibt passend, Skill-Namen unverändert.
 Board-/Lessons-Konventionen bleiben unverändert; offene allgemeine Übernahme
@@ -75,9 +76,12 @@ bleibt in STATUS sichtbar.
 
 ## Lessons-Einordnung
 
-SP-CX-02 / AL-R-02, Format 1: Inventar über Projekt, Skills und Vorlage;
-Nutzerentscheidung an allen aktuellen Befehlsbeispielen nachziehen. Keine neue
-Lesson aus dieser ausdrücklichen Namensentscheidung ableiten.
+SP-CX-02 / AL-R-02, Format 1: Das ursprüngliche Inventar war auf die ausdrücklich
+benannten Dateien begrenzt. Die Observer-Ergänzung vom 2026-09-27 ist vor der
+Nacharbeit gelesen und angewendet: repoweites Inventar aller Aufrufer und
+Verweise, Negativtest prüft nun `precheck` und die konkrete Bibliotheksmeldung.
+Die Gegenprobe mit altem Target scheitert gezielt; die korrigierte Fassung ist
+grün. Konkrete Nachweise unten; vorhandene Lesson erweitert, keine neue ID.
 
 ### Unabhängige Prüfung · Runde 1 · claude
 
@@ -145,12 +149,44 @@ zugehörigen Dateien in demselben Repository.
 (`precheck` blockiert bei fehlender Lib) erhalten, nur der Zielname ändert
 sich. StockPortfolio braucht keine Nacharbeit und keine erneute Prüfung.
 
+### Nacharbeit · codex · 2026-09-27
+
+PersonalSkills `772c25cf1193c244df1c11eafe9eecd4b77942a8` korrigiert die drei
+befundeten Dateien. Unraid nennt die kurzen Targets; Docker verweist auf die
+Versionierungs-Konvention statt die beseitigte Projektabweichung zu behaupten.
+Der Test ruft `tag-patch` auf und verlangt neben einem Fehlerstatus die
+fehlende Bibliothek in stdout sowie `precheck` in stderr.
+
+**Gegenprobe:** Neue Assertions zunächst gegen den alten Target-Aufruf im
+Speicher ausgeführt: rot, weil `No rule to make target` statt `precheck`.
+Nach Korrektur alle 21 PersonalSkills-Tests grün. Der erste Gesamtaufruf mit
+System-Python 3.9 scheiterte beim Import von `test_skill_structure` (Union-
+Typannotation benötigt neueres Python); erneuter Gesamtlauf mit vorhandener
+StockInfo-Umgebung erfolgreich. Keine Umgebung installiert oder verändert.
+StockPortfolio unverändert gegenüber der geprüften Fassung; keine Wiederholung
+seiner bereits bestandenen 793 Tests für diese ausschließlich externe Nacharbeit.
+
+```bash
+cd /Volumes/DevLocal/DevKI/Production/PersonalSkills
+PYTHONDONTWRITEBYTECODE=1 /Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python -m unittest discover -s tests -v  # #2: 21 Tests OK
+rg -n --hidden 'tag-and-push' --glob '!.git/**' --glob '!**/__pycache__/**' --glob '!ACTIVITY.md' .  # #2: keine Treffer
+git diff --check  # #3
+```
+
 ### Auflösung
 
-StockPortfolio-Umsetzung technisch freigegeben und ohne Befund. Die
-PersonalSkills-Fassung braucht eine kleine Nacharbeit (drei Dateien, siehe
-oben) für ein vollständiges Bezeichnerinventar; danach genügt eine
-Kurzprüfung der geänderten Stellen. Produktfassung StockPortfolio:
-`adc36a19708f33c2adccb94e1b22a0fef691a25b`. PersonalSkills-Commit
-`6600ce24b4842c1fd64582ddf001d73549a8ab87` bleibt lokal, unintegriert.
-Kein Release ausgeführt. Menschlicher Abschluss steht aus.
+**Observer-Einordnung · 2026-09-27:** SP-CX-02 um diesen belegten Fall
+erweitert (Format 1, Ergänzung vom 2026-09-27). Die drei übersehenen
+Verbraucher in PersonalSkills `6600ce2` selbst im Quelltext bestätigt.
+Vorbeugung: Inventar auch über Aufrufer und querverweisende Anleitungen;
+Gegenprobe: Beim Negativtest den beabsichtigten `precheck`-Fehler nachweisen,
+nicht nur irgendeinen Fehlerstatus. Der Test-Nachlauf bleibt Claudes
+Nachweis, kein eigener Lauf des Observers. Doku-/Skill-Abgleich: bestehendes
+Lessons-Format verwendet, keine neue Konvention und kein globales Skill-Update.
+Die allgemeine Übernahme bleibt separat offen.
+
+StockPortfolio-Produktfassung `adc36a19708f33c2adccb94e1b22a0fef691a25b`
+ist technisch freigegeben und unverändert. PersonalSkills-Nacharbeit
+`772c25cf1193c244df1c11eafe9eecd4b77942a8` ist geprüft und zur kurzen
+Nachprüfung vorgesehen. Beide Skill-Commits bleiben lokal und unintegriert;
+technische Gesamtfreigabe und menschlicher Abschluss stehen aus.

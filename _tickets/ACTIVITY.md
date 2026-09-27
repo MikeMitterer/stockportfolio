@@ -1,5 +1,10 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:38:35 CEST · codex · hat die drei T-55-Befunde in PersonalSkills 772c25c korrigiert. Der gehärtete Precheck-Test erkennt das falsche Target; alle 21 Skill-Tests und beide ergänzten Skill-Validierungen sind grün. Übergabe zur kurzen Nachprüfung folgt.
+- 2026-09-27 11:38:18 CEST · codex-observer · T-53: sichtet die abgeschlossenen Tickets beider Projekte und bewertet zusätzliche Features für die beiden Videos. StockInfo wird nur als Quelle gelesen; Produktion bleibt pausiert.
+- 2026-09-27 11:36:13 CEST · codex · bearbeitet Claudes T-55-Rückgabe: ergänzt die übersehenen kurzen Tag-Targets in Unraid-/Docker-Skills und korrigiert den Precheck-Test. StockPortfolio ist bereits ohne Befund freigegeben.
+- 2026-09-27 11:36:01 CEST · codex-observer · Hat SP-CX-02 um den T-55-Fall erweitert: Befehlsumbenennungen auch in aufrufenden Skills und Tests nachziehen; Negativtests müssen den beabsichtigten Fehler belegen. Coder und Verifier informiert, ACTIVITY-Lesegrenze erinnert.
+- 2026-09-27 11:35:33 CEST · codex-observer · T-53: ergänzt Feldbearbeitung in StockInfo und den lokalen Depoteditor in StockPortfolio. Hält die Grenze zwischen übernommenen Instrumentdaten und eigenen Depotangaben fest.
 - 2026-09-27 11:34:02 CEST · claude · T-55 Runde 1: changes_requested, begrenzt auf PersonalSkills — drei nicht umbenannte tag-and-push-*-Stellen gefunden (unraid-conventions, docker-conventions, ein Regressionstest der jetzt nur noch zufällig grün ist); StockPortfolio selbst ohne Befund, 62/793 Tests reproduziert; Owner zurück an codex
 - 2026-09-27 11:32:08 CEST · codex-observer · T-53: überarbeitet die Story auf zwei aufeinander aufbauende Videos, StockInfo zuerst und StockPortfolio danach. Prüft Asset-Übernahme samt notwendigem Kursabruf und Cash-Ausnahme.
 - 2026-09-27 11:29:22 CEST · claude · beginnt T-55 Runde 1: prüft kürzere Versionierungs-Targets im Makefile (Fassung adc36a1)
@@ -45,10 +50,5 @@
 - 2026-09-27 10:20:34 CEST · codex · hat das originale Lucide-Symbol trash samt gepinnter Quelle und Lizenzvermerken eingesetzt. Originalpfade abgeglichen, 793 Tests, Lint und Typecheck grün; Runde 8 an claude übergeben.
 - 2026-09-27 10:18:54 CEST · codex · ersetzt auf Mikes Auftrag das eigene Mülleimer-SVG durch die originale Lucide-Geometrie und dokumentiert Quelle sowie Lizenz.
 - 2026-09-27 10:17:20 CEST · claude · T-51 Runde 7 technisch freigegeben (approved): Herkunftserklärung zum Mülleimer-Symbol bewertet (generische Form, keine belegte Übernahme), reiner Doku-Diff gegen Runde 6 bestätigt; Mikes bedingte Abschlussfreigabe greift, Owner zurück an codex zum Abschluss
-- 2026-09-27 10:16:03 CEST · claude · beginnt T-51 Runde 7: prüft codex' Herkunftserklärung zum Mülleimer-Symbol (Fassung c843df6)
-- 2026-09-27 10:15:33 CEST · codex-observer · Hat den vorgeschlagenen Symbolherkunft-Musterbefund zu T-50/T-51 eingeordnet: Zwei bestätigte Fälle sind bisher nicht belegt, daher keine neue Lesson. Claudes Entscheidung zur dokumentierten Herkunftserklärung in T-51 bleibt offen.
-- 2026-09-27 10:15:06 CEST · claude · T-53-Konzept gegengeprüft: Kernaussagen (lokale Speicherung, Backup-Inhalt, Restore-Ablauf) gegen README und Quellcode verifiziert, Machbarkeit lokal geprüft (ffmpeg, Stimmen, Bildschirmzugriff); Konzept freigegeben mit Ergänzung zur Bildschirmaufnahme-Berechtigung
-- 2026-09-27 10:14:47 CEST · codex · hat den einzigen Befund aus T-51 Runde 6 beantwortet und die Herkunftsklärung an claude übergeben. Produktcode unverändert; Abschluss und T-52 folgen nach dem OK.
-- 2026-09-27 10:14:11 CEST · codex · bearbeitet Claudes einzigen T-51-Befund zur Symbolherkunft. Der direkt formulierte SVG-Pfad wird im Ticket dokumentiert; Produktcode und Prüfergebnisse bleiben unverändert.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
