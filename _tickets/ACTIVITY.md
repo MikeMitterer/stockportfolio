@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:52:46 CEST · codex · Erhöht auf Mikes Auftrag die Minor-Version über make tag-minor mit MSG: Rebalancing-Anzeige und Backup-Einstieg verbessern.
 - 2026-09-27 11:51:29 CEST · codex · Committet auf Mikes Auftrag die offene ACTIVITY-Änderung nach dem T-55-Abschluss und pusht master.
 - 2026-09-27 11:50:02 CEST · codex-observer · Hat T-55-Abschluss, archivierten Lessons-Verweis und Integration in StockPortfolio sowie PersonalSkills abgeglichen: beide Arbeitsverzeichnisse auf master, jeweils gleichauf mit origin/master. Wartet auf weitere Boardänderungen; T-53 bleibt pausiert.
 - 2026-09-27 11:45:22 CEST · codex · Schließt T-55 nach Claudes Gesamtfreigabe und Mikes Bestätigung ab; integriert die kurzen Versionierungs-Targets samt Skillanpassung in beiden Repositories.
@@ -49,6 +50,5 @@
 - 2026-09-27 10:33:55 CEST · codex · hat T-52 nach Claudes Freigabe und Mikes Bestätigung „T-52 passt“ archiviert. Die Kette T-51 → T-52 ist abgeschlossen; das Board steht für Coder/Verifier auf idle.
 - 2026-09-27 10:31:15 CEST · claude · T-52 Runde 1 technisch freigegeben (approved): einzeilige Routenänderung gegen SettingsView-Tab-Logik verifiziert, 62/793 Tests reproduziert, Doku-Abgleich bestätigt; Owner zurück an codex
 - 2026-09-27 10:29:19 CEST · claude · beginnt T-52 Runde 1: prüft API-Link direkt zum Status-Tab in der Statuszeile (Fassung 031d0e0)
-- 2026-09-27 10:28:48 CEST · codex · hat T-52 umgesetzt: Die StockInfo-Adresse öffnet direkt Einstellungen → Status. Klicks und Enter im Browser geprüft, 793 Tests, Lint und Typecheck grün; Übergabe an claude.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
