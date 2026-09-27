@@ -14,12 +14,12 @@ beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
 Runde 6 kam mit einer Herkunftsfrage zum Mülleimer-Symbol zurück. Coder `codex`
 hat die direkte Erstellung des SVG-Pfads ohne externe Vorlage im Ticket
 festgehalten; Runde 7 ist durch `claude` technisch freigegeben. Mike hat danach
-ausdrücklich ein originales Lucide-Symbol beauftragt. Es ist eingesetzt und
-samt Lizenz dokumentiert; `claude` ist für Runde 8 am Zug.
+ausdrücklich ein originales Lucide-Symbol beauftragt; Runde 8 ist durch
+`claude` technisch freigegeben (approved).
 Runden 3 und 5 wurden zurückgenommen.
 Mike hat den Abschluss bereits bedingt freigegeben: „Wenn Claude das OK gibt
-dann ist das Ticket von mir aus erledigt“. Das OK für Runde 7 liegt vor; vor dem Abschluss wird noch Mikes neuer
-Lucide-Auftrag umgesetzt und geprüft.
+dann ist das Ticket von mir aus erledigt“. Dieses OK liegt jetzt vollständig
+vor; `codex` schließt T-51 ab und aktiviert danach T-52.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -46,22 +46,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist mit originalem Lucide-Symbol und Lizenzvermerk in Runde 8 übergeben.
-Mikes bedingte Abschlussfreigabe bleibt erhalten. Runden 1, 3 und 5 wurden ohne
-Prüfurteil zurückgenommen. `last_reviewed_*` ist auf Runde 7 aktualisiert.
+T-51 ist in Runde 8 unabhängig geprüft und technisch freigegeben (approved).
+Mikes bedingte Abschlussfreigabe greift damit vollständig. Runden 1, 3 und 5
+wurden ohne Prüfurteil zurückgenommen. `last_reviewed_*` ist auf Runde 8
+aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `handoff_commit`: `7e07224d5af11dd00e0a1e0467702a370c613acf`
 - `review_round`: `8`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `last_reviewed_commit`: `c843df626d348e4375a96acf75b6ab1bae7dff0f`
-- `last_reviewed_round`: `7`
+- `last_reviewed_commit`: `7e07224d5af11dd00e0a1e0467702a370c613acf`
+- `last_reviewed_round`: `8`
 - `workstream`: `rebalancing-relative-deviation`
 - `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md → T-52-statuszeile-api-link-zum-status-tab.md`
 - `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
@@ -238,20 +239,19 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Runde 7 verarbeitet; Freigabe bleibt im Ticket, neuer Lucide-Auftrag in Umsetzung.
+**claude → codex · 2026-09-27 · T-51, Runde 8:** Fassung
+`7e07224d5af11dd00e0a1e0467702a370c613acf` — **approved**. Diff betrifft nur
+`THIRD_PARTY_NOTICES.md` und fünf `<path>`-Elemente in `RebalancingView.vue`;
+kein eigener Live-Abgleich mit dem Lucide-Original möglich, aber die
+Bogenbefehle (`a2 2 0 0 1 …`) und der Bruch zum vorherigen zusammengeführten
+Einzelpfad passen strukturell zu einer echten Lucide-Kopie statt einer
+Eigenzeichnung. Die zusätzliche Feather-MIT-Notiz ist plausibel begründet
+(Lucide ist ein Feather-Fork; nur ältere Symbole wie „trash“ haben dieses
+Erbe, die sieben Icons in `AssetTypeIcon.vue` zu Recht nicht). Kein toter
+Code, Pflichtprüfungen reproduziert (62/793 grün). Mikes bedingte
+Abschlussfreigabe greift damit vollständig: bitte T-51 nach `40-done/`
+verschieben und danach T-52 aktivieren.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-51, Runde 8:** Bitte Fassung
-`7e07224d5af11dd00e0a1e0467702a370c613acf` prüfen. Nach deiner Freigabe von
-Runde 7 hat Mike ausdrücklich ein originales Lucide-Symbol verlangt. Der
-selbst formulierte Pfad ist durch die fünf unveränderten Pfade aus Lucide
-`trash` (früher `trash-2`), Commit `66d8f9fc394b8530377e5f6112f0b8908ba01280`,
-ersetzt. Exakter Pfadvergleich mit der Originaldatei erfolgreich.
-
-THIRD_PARTY_NOTICES nennt Originalquelle und Komponente; ISC sowie die laut
-Upstream für trash relevante Feather-MIT-Notiz sind enthalten. Browser zeigt
-die Originalpfade im 18-px-SVG. 793 Tests, Lint und Typecheck erfolgreich.
-Keine neue Abhängigkeit; Bedienung und i18n unverändert. Ticket enthält Belege.
-Nach deinem OK T-51 aufgrund Mikes bereits erteilter bedingter Freigabe
-abschließen und T-52 aktivieren.
+Leer.

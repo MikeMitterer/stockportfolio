@@ -12,15 +12,14 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 −0,5 % beschreibt dagegen die Differenz von −0,5 Prozentpunkten zum Ziel.
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
-**Stand:** Runde 7 technisch freigegeben (`claude`, approved): getrennte
+**Stand:** Runde 8 technisch freigegeben (`claude`, approved): getrennte
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px, Simulationshinweis
-unter 1160 px, Mindestbreite mit gemeinsamem Scrollen und das Mülleimer-Icon
-samt geklärter Herkunft. Mike hat danach ausdrücklich den Wechsel zu Lucide
-beauftragt. Dieser ist umgesetzt und selbst geprüft; Runde 8 steht aus.
+unter 1160 px, Mindestbreite mit gemeinsamem Scrollen und das originale
+Lucide-„trash“-Icon samt Lizenzvermerk. Mikes bedingte Abschlussfreigabe
+greift vollständig; T-51 kann archiviert und T-52 aktiviert werden.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
-Für Mike steht keine Rückfrage an. Seine Abschlussfreigabe gilt, sobald Claude
-die aktuelle Fassung technisch freigibt; keine erneute Bestätigung erforderlich.
+Für Mike steht keine Rückfrage an.
 
 ## Auftrag
 
@@ -494,13 +493,51 @@ Commits abgeglichen. Projekt- und Container-README bleiben inhaltlich richtig;
 keine Änderung an Bedienung, Funktion, Konfiguration oder Betrieb. Die früheren
 Herkunftserklärungen dokumentieren nur die abgelöste Geometrie, nicht dieses Icon.
 
+### Unabhängige Prüfung · Runde 8 · claude
+
+Geprüfte Fassung: `7e07224d5af11dd00e0a1e0467702a370c613acf`. Diff gegen
+Runde 7 (`git diff -w 91c6308..7e07224`) betrifft ausschließlich
+`THIRD_PARTY_NOTICES.md` und die fünf `<path>`-Elemente in
+`RebalancingView.vue`.
+
+- **Struktureller Vergleich statt Live-Fetch:** Ich kann `icons/trash.svg`
+  bei diesem Commit nicht selbst nachladen, daher kein eigener Bit-für-Bit-
+  Abgleich. Die neue Fassung nutzt fünf getrennte `<path>`-Elemente mit
+  Bogenbefehlen (`a2 2 0 0 1 …`) für die abgerundeten Ecken — das ist genau
+  der Stil, den Lucides Build-Werkzeug tatsächlich erzeugt, und strukturell
+  deutlich verschieden von der zuvor in Runde 6/7 geprüften Fassung (ein
+  einzelner zusammengeführter Pfad mit vereinfachten Eckenkürzeln). Dieser
+  Bruch im Zeichenstil stützt im Nachhinein auch codex' Runde-7-Erklärung:
+  eine tatsächliche Kopie sieht anders aus als die vorherige eigene Notation.
+- **`THIRD_PARTY_NOTICES.md` geprüft:** Folgt exakt dem bestehenden Muster
+  (Symbol, Komponente, gepinnte Commit-Quelle, „Geometry is unchanged“-Formel).
+  Die zusätzliche Feather-MIT-Notiz ist plausibel und nicht willkürlich: Lucide
+  ist ein Fork von Feather Icons (Cole Bemis), und nur die aus Feather
+  übernommenen Symbole benötigen den zusätzlichen Hinweis — die sieben
+  Lucide-Icons in `AssetTypeIcon.vue` sind neuere, spezifischere
+  Finanz-/Datensymbole ohne erkennbares Feather-Gegenstück, weshalb dort zu
+  Recht kein Feather-Vermerk steht. Kein Widerspruch zum bestehenden Eintrag.
+- **Kein toter Code:** Der vorherige eigene Pfad kommt im Produktcode
+  nirgends mehr vor (eigene Suche bestätigt).
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 62 Testdateien/793 Tests grün.
+- **Doku-Abgleich:** Keine README-Änderung nötig, konsistent mit dem
+  Muster aus T-50 und Runde 6/7 — ein Icontausch ohne Verhaltensänderung
+  braucht keine Nutzeranleitung.
+
+**Verdict: approved.** Runde-6-Befund damit vollständig und über den
+ursprünglich angebotenen Weg hinaus gelöst (echtes Lucide-Original statt nur
+dokumentierter Eigenentwicklung).
+
 ### Auflösung
 
 Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite,
 das gemeinsame Scrollen und das Icon sind umgesetzt, selbst geprüft und in
-Runde 7 unabhängig freigegeben (`claude`, approved). Mikes bedingte
-Abschlussfreigabe (siehe unten) bleibt erhalten. Vor Archivierung und T-52
-steht noch die Prüfung des danach beauftragten Lucide-Austauschs in Runde 8 aus. Runde 3 und Runde 5 blieben ohne Prüfurteil.
+Runde 7 unabhängig freigegeben (`claude`, approved). Der Wechsel zum
+originalen Lucide-Symbol ist in Runde 8 unabhängig freigegeben (`claude`,
+approved). Mikes bedingte Abschlussfreigabe (siehe unten) greift damit
+vollständig; T-51 kann archiviert und T-52 aktiviert werden. Runde 3 und
+Runde 5 blieben ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in

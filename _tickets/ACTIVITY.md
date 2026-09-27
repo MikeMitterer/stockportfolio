@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:23:26 CEST · claude · T-51 Runde 8 technisch freigegeben (approved): Wechsel zu originalem Lucide-trash-Icon strukturell plausibilisiert, THIRD_PARTY_NOTICES.md-Eintrag inkl. Feather-MIT-Notiz geprüft, 62/793 Tests reproduziert; Mikes bedingte Abschlussfreigabe greift vollständig, Owner zurück an codex zum Abschluss
+- 2026-09-27 10:21:02 CEST · claude · beginnt T-51 Runde 8: prüft den Wechsel zu einem originalen Lucide-Symbol samt Lizenzvermerk (Fassung 7e07224)
+- 2026-09-27 10:20:34 CEST · codex · hat das originale Lucide-Symbol trash samt gepinnter Quelle und Lizenzvermerken eingesetzt. Originalpfade abgeglichen, 793 Tests, Lint und Typecheck grün; Runde 8 an claude übergeben.
+- 2026-09-27 10:18:54 CEST · codex · ersetzt auf Mikes Auftrag das eigene Mülleimer-SVG durch die originale Lucide-Geometrie und dokumentiert Quelle sowie Lizenz.
 - 2026-09-27 10:17:20 CEST · claude · T-51 Runde 7 technisch freigegeben (approved): Herkunftserklärung zum Mülleimer-Symbol bewertet (generische Form, keine belegte Übernahme), reiner Doku-Diff gegen Runde 6 bestätigt; Mikes bedingte Abschlussfreigabe greift, Owner zurück an codex zum Abschluss
 - 2026-09-27 10:16:03 CEST · claude · beginnt T-51 Runde 7: prüft codex' Herkunftserklärung zum Mülleimer-Symbol (Fassung c843df6)
 - 2026-09-27 10:15:33 CEST · codex-observer · Hat den vorgeschlagenen Symbolherkunft-Musterbefund zu T-50/T-51 eingeordnet: Zwei bestätigte Fälle sind bisher nicht belegt, daher keine neue Lesson. Claudes Entscheidung zur dokumentierten Herkunftserklärung in T-51 bleibt offen.
@@ -46,9 +50,5 @@
 - 2026-09-27 09:00:43 CEST · codex · T-50 aktiviert: Ergänze den GitHub-Link in der Statuszeile nach dem StockInfo-Vorbild. Nutze den vorhandenen Slot von UxStatusBar und übersetzte Beschriftungen.
 - 2026-09-27 08:59:16 CEST · claude · prüft Rollenzuordnung: reviewer=claude bestätigt, Board idle ohne aktives Ticket; startet Fünf-Minuten-Scheduler für die Verifier-Rolle
 - 2026-09-27 08:58:35 CEST · codex-observer · Rollen und Board-Konventionen geprüft: kein aktives Ticket, Owner none. Starte die Beobachtung im Fünf-Minuten-Takt; offene Lessons-Übernahme bleibt sichtbar.
-- 2026-09-27 08:58:16 CEST · codex · Rollenzuordnung geprüft: Coder codex, kein aktiver Auftrag (idle, owner none). Starte den Fünf-Minuten-Scheduler und warte auf eine Aktivierung; die dokumentierte Konventionsübernahme bleibt offen.
-- 2026-09-26 18:39:59 CEST · codex-observer · T-49-Abschluss abgeglichen: Mikes Abschlussentscheidung und selbst erledigter Hub-Push sind dokumentiert; Ablage und STATUS stehen konsistent auf done/idle. Alle eigenen offenen Koordinationshinweise sind verarbeitet, Beobachtung läuft weiter.
-- 2026-09-26 18:39:36 CEST · codex · T-49 ist auf Mikes Entscheidung erledigt; Mike hat auch den Docker-Hub-Push bestätigt. Board und veraltete Veröffentlichungshinweise in den READMEs sind abgeglichen.
-- 2026-09-26 18:38:51 CEST · codex · Schließt T-49 auf Mikes Bestätigung ab, gleicht Ticket und Board ab und nimmt die bisher offenen Board-Dateien in Commit und Push auf. Der Docker-Hub-Push bleibt technisch unbelegt.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
