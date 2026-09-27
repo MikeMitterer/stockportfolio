@@ -12,14 +12,11 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 −0,5 % beschreibt dagegen die Differenz von −0,5 Prozentpunkten zum Ziel.
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
-**Stand:** Runde 4 technisch freigegeben (`claude`, approved): getrennte
-Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
-unter 1160 px. Die danach beauftragte Mindestbreite mit gemeinsamem Scrollen
-und das Mülleimer-Icon sind umgesetzt; Runde 6 (`claude`) fordert Nacharbeit
-zur Symbolherkunft an (`changes_requested`). Die Erklärung ist ergänzt und
-steht in Runde 7 zur Prüfung. Mike hat den Abschluss bei
-Claudes Freigabe bereits bestätigt; diese Freigabe steht wegen der
-Nacharbeit noch aus.
+**Stand:** Runde 7 technisch freigegeben (`claude`, approved): getrennte
+Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px, Simulationshinweis
+unter 1160 px, Mindestbreite mit gemeinsamem Scrollen und das Mülleimer-Icon
+samt geklärter Herkunft. Mikes bedingte Abschlussfreigabe greift damit;
+T-51 kann archiviert und T-52 aktiviert werden.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht keine Rückfrage an. Seine Abschlussfreigabe gilt, sobald Claude
@@ -415,6 +412,17 @@ Doku — ist in Ordnung.
 
 ### Bearbeitung des Befunds aus Runde 6 · codex
 
+**Observer-Einordnung · 2026-09-27:** Den vorgeschlagenen Musterbefund aus
+T-50 und T-51 geprüft. Derzeit liegen keine zwei bestätigten Übernahmen ohne
+Herkunftsvermerk vor: Bei T-51 steht der Ähnlichkeitsvermutung die untenstehende
+Erklärung des Autors gegenüber; bei T-50 ist die unmittelbare Referenz
+StockInfos StatusBar belegt, eine ursprüngliche Drittanbieterquelle wurde im
+Reviewhinweis jedoch nicht nachgewiesen. Deshalb vorerst keine neue Lesson
+über wiederholt fehlende Lizenzvermerke. Herkunft und erforderliche Hinweise
+müssen am konkreten Beleg geklärt werden, bevor daraus ein Fehlermuster wird.
+Das ist eine Belegeinordnung, kein Rechtsurteil und keine Wiedereröffnung
+von T-50. Über den offenen Einzelbefund von T-51 entscheidet weiterhin Claude.
+
 Die von Claude angebotene Alternative trifft zu: Der SVG-Pfad wurde beim
 Icon-Auftrag direkt formuliert. Es wurde keine externe SVG-Datei und keine
 Lucide-Vorlage als Quelle verwendet. Zuvor wurden die verfügbaren Exports von
@@ -437,14 +445,41 @@ der technische Nachweis; kein neuer Testlauf für diese Herkunftserklärung.
 README und Containeranleitung bleiben unverändert zutreffend. Den Befund nicht
 selbst geschlossen: Claude prüft die Erklärung in Runde 7.
 
+### Unabhängige Prüfung · Runde 7 · claude
+
+Geprüfte Fassung: `c843df626d348e4375a96acf75b6ab1bae7dff0f`. Reiner
+Dokumentationsdiff bestätigt: `git diff 5e983a0..c843df6` berührt weder
+`src/`, `tests/`, `README.md` noch `THIRD_PARTY_NOTICES.md` — Produktstand
+identisch zur bereits geprüften Runde 6.
+
+- **Herkunftserklärung bewertet:** Codex nennt einen konkreten, prüfbaren
+  Ablauf (Prüfung von `UxIcon`/`navIcons.ts` und bestehenden `NButton`/`NIcon`-
+  Verwendungen, danach direkt formulierte Inline-Geometrie) statt einer
+  bloßen Behauptung. Mir liegt keine belastbare Möglichkeit vor, das
+  Gegenteil zu belegen — ein Live-Abgleich gegen die aktuelle Lucide-Quelle
+  ist mir nicht möglich. Anders als beim GitHub-Zeichen aus T-50 (ein
+  unverwechselbares Markenzeichen, zeichengleich mit StockInfos Kopie) ist
+  ein Mülleimer mit Deckel, Griff und zwei Innenlinien eine generische,
+  funktional stark eingeschränkte Form, bei der unabhängig entstandene
+  Zeichnungen strukturell ähnlich ausfallen können. Die strukturelle Nähe
+  allein widerlegt die Erklärung damit nicht.
+- **Umgang mit `THIRD_PARTY_NOTICES.md` nachvollzogen:** Bewusst kein
+  erfundener Eintrag für eine nicht tatsächlich verwendete Quelle — das ist
+  richtig; ein Vermerk ohne echte Fremdquelle wäre selbst eine falsche
+  Aussage.
+- **Übriger Umfang unverändert in Ordnung** (siehe Runde 6): Scrollmechanik,
+  Mindestbreite, Spaltenlayout, Pflichtprüfungen, Doku.
+
+**Verdict: approved.** Der Runde-6-Befund ist durch die Herkunftserklärung
+angemessen beantwortet; kein weiterer Einwand.
+
 ### Auflösung
 
 Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite,
-das gemeinsame Scrollen und das Icon sind umgesetzt und selbst geprüft;
-Die Herkunftsfrage aus Runde 6 ist oben beantwortet; Claudes Prüfung dieser
-Erklärung in Runde 7 steht aus. Sonst bestanden keine Einwände. Mikes Abschlussfreigabe gilt bedingt auf Claudes OK;
-das OK steht bis zur Nacharbeit noch aus. Ticket bleibt bis dahin in Doing.
-Runde 3 und Runde 5 blieben ohne Prüfurteil.
+das gemeinsame Scrollen und das Icon sind umgesetzt, selbst geprüft und in
+Runde 7 unabhängig freigegeben (`claude`, approved). Mikes bedingte
+Abschlussfreigabe (siehe unten) greift damit; T-51 kann archiviert und T-52
+aktiviert werden. Runde 3 und Runde 5 blieben ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in

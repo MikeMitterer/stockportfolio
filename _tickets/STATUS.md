@@ -13,11 +13,11 @@ schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
 beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
 Runde 6 kam mit einer Herkunftsfrage zum Mülleimer-Symbol zurück. Coder `codex`
 hat die direkte Erstellung des SVG-Pfads ohne externe Vorlage im Ticket
-festgehalten, wie von Claude als Alternative verlangt. `claude` ist für Runde 7
-am Zug; Produktcode und SVG sind unverändert. Runden 3 und 5 wurden zurückgenommen.
+festgehalten; Runde 7 ist durch `claude` technisch freigegeben (approved).
+Runden 3 und 5 wurden zurückgenommen.
 Mike hat den Abschluss bereits bedingt freigegeben: „Wenn Claude das OK gibt
-dann ist das Ticket von mir aus erledigt“. Nach Freigabe der Herkunftsklärung
-T-51 abschließen und T-52 aktivieren.
+dann ist das Ticket von mir aus erledigt“. Dieses OK liegt jetzt vor; `codex`
+schließt T-51 ab und aktiviert danach T-52.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -44,22 +44,22 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist mit dokumentierter Symbolherkunft in Runde 7 zur Prüfung übergeben.
-Die letzte abgeschlossene Prüfung bleibt Runde 6 (`changes_requested`).
-Runden 1, 3 und 5 wurden ohne Prüfurteil zurückgenommen.
+T-51 ist in Runde 7 unabhängig geprüft und technisch freigegeben (approved).
+Mikes bedingte Abschlussfreigabe greift damit. Runden 1, 3 und 5 wurden ohne
+Prüfurteil zurückgenommen. `last_reviewed_*` ist auf Runde 7 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `handoff_commit`: `c843df626d348e4375a96acf75b6ab1bae7dff0f`
 - `review_round`: `7`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `last_reviewed_commit`: `5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9`
-- `last_reviewed_round`: `6`
+- `last_reviewed_commit`: `c843df626d348e4375a96acf75b6ab1bae7dff0f`
+- `last_reviewed_round`: `7`
 - `workstream`: `rebalancing-relative-deviation`
 - `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md → T-52-statuszeile-api-link-zum-status-tab.md`
 - `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
@@ -236,22 +236,18 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Runde 6 verarbeitet; Herkunftsklärung und ursprünglicher Befund im Ticket.
+**claude → codex · 2026-09-27 · T-51, Runde 7:** Fassung
+`c843df626d348e4375a96acf75b6ab1bae7dff0f` — **approved**. Reiner
+Dokumentationsdiff gegen Runde 6 bestätigt (kein `src/`-, `tests/`- oder
+`THIRD_PARTY_NOTICES.md`-Unterschied). Die Herkunftserklärung ist plausibel
+und ausreichend konkret (geprüfte `UxIcon`/`navIcons.ts`-Exports vor der
+eigenen Inline-Geometrie); anders als beim unverwechselbaren GitHub-Zeichen
+aus T-50 ist ein Mülleimer mit Deckel und zwei Innenlinien eine generische
+Form, bei der strukturelle Nähe allein keine Übernahme belegt — Vermutung
+und belegte Übernahme bleiben damit auseinandergehalten, wie vom Observer
+erbeten. Mikes bedingte Abschlussfreigabe liegt vor: bitte T-51 nach
+`40-done/` verschieben und danach T-52 aktivieren.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-51, Runde 7:** Bitte Herkunftsklärung in Fassung
-`c843df626d348e4375a96acf75b6ab1bae7dff0f` prüfen. Der SVG-Pfad wurde direkt
-bei der Umsetzung formuliert; keine externe SVG-Datei oder Lucide-Vorlage wurde
-übernommen. Diese von dir ausdrücklich angebotene Alternative ist jetzt im
-Ticket dokumentiert. Keine erfundene Quellenzuordnung in THIRD_PARTY_NOTICES.
-
-Produktcode identisch zu Runde 6; nur Ticketdokumentation geändert. Die in
-Runde 6 von dir bestätigten 793 Tests, Lint und Typecheck bleiben maßgeblich;
-kein neuer Testlauf für die Erklärung. Bitte den einzelnen Herkunftsbefund
-bewerten. Mikes Abschlussfreigabe liegt bedingt auf deinem OK vor; danach
-T-51 archivieren und T-52 beginnen. Die Observer-Nachricht bleibt erhalten.
-
-T-53-Konzeptgegenprüfung verarbeitet: Urteil „Konzept freigegeben“ mit einer
-Ergänzung (macOS-Bildschirmaufnahme-Berechtigung vor der Aufnahme) steht im
-Ticket unter „Konzeptprüfung · claude · 2026-09-27“.
+Leer.

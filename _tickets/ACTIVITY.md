@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:17:20 CEST · claude · T-51 Runde 7 technisch freigegeben (approved): Herkunftserklärung zum Mülleimer-Symbol bewertet (generische Form, keine belegte Übernahme), reiner Doku-Diff gegen Runde 6 bestätigt; Mikes bedingte Abschlussfreigabe greift, Owner zurück an codex zum Abschluss
+- 2026-09-27 10:16:03 CEST · claude · beginnt T-51 Runde 7: prüft codex' Herkunftserklärung zum Mülleimer-Symbol (Fassung c843df6)
+- 2026-09-27 10:15:33 CEST · codex-observer · Hat den vorgeschlagenen Symbolherkunft-Musterbefund zu T-50/T-51 eingeordnet: Zwei bestätigte Fälle sind bisher nicht belegt, daher keine neue Lesson. Claudes Entscheidung zur dokumentierten Herkunftserklärung in T-51 bleibt offen.
 - 2026-09-27 10:15:06 CEST · claude · T-53-Konzept gegengeprüft: Kernaussagen (lokale Speicherung, Backup-Inhalt, Restore-Ablauf) gegen README und Quellcode verifiziert, Machbarkeit lokal geprüft (ffmpeg, Stimmen, Bildschirmzugriff); Konzept freigegeben mit Ergänzung zur Bildschirmaufnahme-Berechtigung
 - 2026-09-27 10:14:47 CEST · codex · hat den einzigen Befund aus T-51 Runde 6 beantwortet und die Herkunftsklärung an claude übergeben. Produktcode unverändert; Abschluss und T-52 folgen nach dem OK.
 - 2026-09-27 10:14:11 CEST · codex · bearbeitet Claudes einzigen T-51-Befund zur Symbolherkunft. Der direkt formulierte SVG-Pfad wird im Ticket dokumentiert; Produktcode und Prüfergebnisse bleiben unverändert.
@@ -47,8 +50,5 @@
 - 2026-09-26 18:39:59 CEST · codex-observer · T-49-Abschluss abgeglichen: Mikes Abschlussentscheidung und selbst erledigter Hub-Push sind dokumentiert; Ablage und STATUS stehen konsistent auf done/idle. Alle eigenen offenen Koordinationshinweise sind verarbeitet, Beobachtung läuft weiter.
 - 2026-09-26 18:39:36 CEST · codex · T-49 ist auf Mikes Entscheidung erledigt; Mike hat auch den Docker-Hub-Push bestätigt. Board und veraltete Veröffentlichungshinweise in den READMEs sind abgeglichen.
 - 2026-09-26 18:38:51 CEST · codex · Schließt T-49 auf Mikes Bestätigung ab, gleicht Ticket und Board ab und nimmt die bisher offenen Board-Dateien in Commit und Push auf. Der Docker-Hub-Push bleibt technisch unbelegt.
-- 2026-09-26 18:32:54 CEST · codex · Stellt die normale Unraid-Installation über Apps voran und kennzeichnet wget als Testinstallation. README und zentraler Skill werden anschließend getrennt committet, gemergt und gepusht.
-- 2026-09-26 18:26:14 CEST · codex · README-Abgleich mit unraid-conventions abgeschlossen: zentrale Unraid-Anleitung samt Updates, beide READMEs verlinken sie. Links, Shell-Syntax und Docker-Hub-Vorschau (4.772 Bytes) geprüft.
-- 2026-09-26 18:25:44 CEST · codex · Gleicht die READMEs mit unraid-conventions ab: Unraid-Details zentral in unraid/README.md, kurze Verweise in Projekt- und Docker-README.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
