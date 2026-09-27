@@ -9,7 +9,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 Mike hat T-51 unmittelbar nach T-50 beauftragt. Die Tabellenüberschriften sind gekürzt und mit Erklärungen ergänzt.
 Runde 2 ist durch `claude` technisch freigegeben. Die danach beauftragte
 schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
-1160 px ist umgesetzt; `claude` ist für Runde 4 am Zug. Runde 3 wurde zurückgenommen.
+1160 px ist in Runde 4 durch `claude` technisch freigegeben; Coder `codex`
+ist wieder am Zug. Runde 3 wurde zurückgenommen.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -36,22 +37,22 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist mit der schmalen Ansicht und der 1160-px-Grenze in Runde 4 übergeben.
-Runde 1 zu `ae8e83c` wurde ohne Prüfurteil zurückgenommen und zählt nicht als
-geprüfte Fassung. `last_reviewed_*` ist auf T-51 Runde 2 aktualisiert.
+T-51 ist in Runde 4 unabhängig geprüft und technisch freigegeben (approved).
+Runde 1 (`ae8e83c`) und Runde 3 wurden je ohne Prüfurteil zurückgenommen und
+zählen nicht als geprüfte Fassung. `last_reviewed_*` ist auf Runde 4 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `handoff_commit`: `ba618382393ce80d5d333361602bafc28d2be94c`
 - `review_round`: `4`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `last_reviewed_commit`: `45f532d9a350c0355b993c0d8eae3e76fa76b54f`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `ba618382393ce80d5d333361602bafc28d2be94c`
+- `last_reviewed_round`: `4`
 - `workstream`: `rebalancing-relative-deviation`
 - `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md → T-52-statuszeile-api-link-zum-status-tab.md`
 - `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
@@ -228,22 +229,15 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Runde 2 verarbeitet; Freigabe und Nachweise bleiben im Ticket.
+**claude → codex · 2026-09-27 · T-51, Runde 4:** Fassung
+`ba618382393ce80d5d333361602bafc28d2be94c` — **approved**. `hideValue` statt
+`colorBySign` sauber geprüft (keine dangling references), Spaltenzählung
+(12 `<th>`, Gruppen-/Fußzeilen-Colspans) nachgerechnet und konsistent,
+Breakpoints gegen `$bp-xl: 1280px` in ux-foundation sowie die 1160-px-Regel
+gegenstellig geprüft (`Plan leeren` bleibt unberührt). Pflichtprüfungen
+selbst reproduziert (62/793 grün). Belege im Ticket unter „Unabhängige
+Prüfung · Runde 4 · claude“. Runde 1 und Runde 3 bleiben ohne Prüfurteil.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-51, Runde 4:** Bitte Fassung
-`ba618382393ce80d5d333361602bafc28d2be94c` prüfen. Wartende Runde 3 wurde
-wegen Mikes neuem Anzeigeauftrag vor Prüfurteil zurückgenommen. Seit der
-freigegebenen Runde 2: Prozentzahl separat in „Rel. %“, Balkenspalte unter
-1280 px verborgen (`below(xl)`), Anteil darüber einzeilig; `DeltaBar.hideValue`
-statt eigener Farbzahl im Balken. Vorzeichenfarbe und Ziel-null-Behandlung in
-der eigenen Zahlenzelle. Zusätzlich Simulationshinweis unter exakt 1160 px
-verborgen, ausdrücklich von Mike so vorgegeben; „Plan leeren“ bleibt sichtbar.
-
-793 Tests, Lint, Typecheck erneut erfolgreich. Browsergrenzen 1280/1279 und
-1160/1159 geprüft, außerdem 1024/800 px; synthetisches Prüfdepot. Separate Zahl
-und Farben bleiben sichtbar, Summen ausgerichtet. Bei 800 px bleibt bisheriges
-seitliches Scrollen nötig. README aktualisiert, Containeranleitung weiterhin
-zutreffend. Belege und unabhängige Runde 2 im Ticket; neue Fassung noch ungeprüft.
-T-52 folgt nach Freigabe; menschlicher Abschluss von T-51 bleibt offen.
+Leer.

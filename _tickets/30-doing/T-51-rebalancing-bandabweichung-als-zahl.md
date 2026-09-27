@@ -12,9 +12,9 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 −0,5 % beschreibt dagegen die Differenz von −0,5 Prozentpunkten zum Ziel.
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
-**Stand:** Runde 2 technisch freigegeben. Mikes anschließender Auftrag zur
-schmalen Ansicht ist umgesetzt und selbst geprüft; die neue unabhängige
-Prüfung und Mikes Abschlussbestätigung stehen aus.
+**Stand:** Runde 4 technisch freigegeben (`claude`, approved): getrennte
+Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
+unter 1160 px. Mikes Abschlussbestätigung steht aus.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
@@ -264,8 +264,6 @@ SP-CX-05 gelesen (Autor: codex).
 
 **Verdict: approved.** Keine blockierenden Befunde.
 
-### Auflösung
-
 **Weiterer Nutzerauftrag nach Runde-3-Übergabe:** Der Hinweis „Alles hier ist …“
 wird unter 1160 px ausgeblendet. Die ausdrücklich von Mike vorgegebene Grenze
 ist als lokale Ausnahme zur allgemeinen Breakpoint-Konvention kommentiert.
@@ -275,6 +273,50 @@ Bestehender i18n-Text unverändert. Chrome: bei 1160 px sichtbar, bei 1159 px
 Sichtbarkeit; Containeranleitung weiterhin zutreffend, keine Betriebsänderung.
 Die wartende Runde 3 wurde vor einem Prüfurteil zurückgenommen; neue Übergabe
 in Runde 4 einschließlich der getrennten Prozentzahl.
+
+### Unabhängige Prüfung · Runde 4 · claude
+
+Geprüfte Fassung: `ba618382393ce80d5d333361602bafc28d2be94c` auf
+`t-51-rebalancing-bandabweichung-als-zahl`. Runde 3 wurde vor einem
+Prüfurteil zurückgenommen und ist kein Gegenstand dieser Prüfung; geprüft
+wurde der volle Unterschied seit der freigegebenen Runde 2 (`45f532d`).
+
+- **Diff gelesen (`45f532d..ba61838`):** `DeltaBar.vue` — `colorBySign`
+  entfernt, ersetzt durch allgemeineres `hideValue` (Farblogik verlässt die
+  gemeinsam genutzte Komponente vollständig, da sie nur hier gebraucht wurde).
+  `RebalancingView.vue` — neue eigene Spalte „Rel. %“ mit `percentSigned` und
+  eigenen Farbklassen, Balkenspalte per `reb__band-column`/`below(xl)` unter
+  1280 px ausgeblendet, Simulationshinweis per eigener `@media`-Regel unter
+  1160 px ausgeblendet (kommentiert als Mikes ausdrückliche Ausnahme).
+- **Spaltenzählung nachgerechnet:** 12 tatsächliche `<th>` im Kopf; Gruppen-
+  zeile `colspan="12"` und Fußzeile `colspan="7"` + `colspan="4"` + eine
+  ungespannte Geldzelle ergeben ebenfalls 12 — Layout bleibt konsistent, keine
+  Verschiebung durch die neue Spalte.
+- **Breakpoints gegen die Quelle geprüft:** `$bp-xl: 1280px` in
+  `node_modules/@mmit/ux-foundation/src/styles/_shared.scss` bestätigt die
+  Balken-Ausblendung; die 1160-px-Regel sitzt korrekt nur auf `.reb__note-text`,
+  der benachbarte „Plan leeren“-Button bleibt unberührt sichtbar.
+- **Kein toter Code:** Keine verbleibenden Referenzen auf `colorBySign`/
+  `color-by-sign` im Baum.
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 62 Testdateien/793 Tests grün.
+- **Tests inhaltlich geprüft:** Bestehende Fälle korrekt auf `.reb__relative-value`
+  umgestellt, prüfen zusätzlich ausdrücklich das Fehlen von `.delta__value`
+  (belegt `hide-value` tatsächlich) und den richtigen `td`-Index nach der neuen
+  Spalte.
+- **Doku-Abgleich gegengeprüft:** README beschreibt beide neuen Grenzen
+  (1280 px, 1160 px) zutreffend; `docker/README.md` unverändert, weiterhin
+  richtig begründet.
+- **Frühere Beobachtung (Runde 2, `decimalSigned` ohne eigenen Unit-Test)
+  weiterhin unverändert**, nicht erneut als Befund gezählt.
+
+**Verdict: approved.** Keine Befunde.
+
+### Auflösung
+
+Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 4, `claude`,
+approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
+Ticket bleibt bis dahin in Doing. Runde 3 blieb ohne Prüfurteil.
 
 Runde 2 bleibt technisch freigegeben. Die danach beauftragte schmale Ansicht
 ist umgesetzt und selbst geprüft; Runde 4 und Mikes Abschlussbestätigung

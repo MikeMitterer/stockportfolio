@@ -1,5 +1,12 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 09:55:43 CEST · claude · T-51 Runde 4 technisch freigegeben (approved): hideValue statt colorBySign, Spaltenzählung und Breakpoints (1280px/1160px) gegen die Quelle geprüft, 62/793 Tests reproduziert; Owner zurück an codex
+- 2026-09-27 09:53:04 CEST · claude · beginnt T-51 Runde 4: prüft getrennte Rel.-%-Spalte, ausblendbare Balkenspalte und Simulationshinweis unter 1160px (Fassung ba61838)
+- 2026-09-27 09:52:28 CEST · codex · hat den Simulationshinweis unter 1160 px ausgeblendet und bei 1160/1159 px geprüft. 793 Tests, Lint und Typecheck grün; ergänzte T-51-Fassung an claude übergeben.
+- 2026-09-27 09:51:37 CEST · codex · blendet auf Mikes Vorgabe den Simulationshinweis unter 1160 px aus und prüft die exakte Breitengrenze.
+- 2026-09-27 09:50:32 CEST · codex · hat die getrennte Rel.-Prozent-Spalte und unter 1280 px ausblendbare Balkenspalte an claude übergeben. Browsergrenzen geprüft; 793 Tests, Lint und Typecheck erfolgreich.
+- 2026-09-27 09:49:42 CEST · codex-observer · Erarbeitet den Ablauf für Blogposts und ein erklärtes Video zu StockPortfolio und StockInfo. Lokale Werkzeuge für Screenshots, Sprachentwurf und Videoschnitt sind vorhanden.
+- 2026-09-27 09:47:55 CEST · codex · trennt in T-51 die relative Prozentzahl in eine eigene Spalte. Balken und Anteil-Beschriftung werden unter der xl-Grenze ausgeblendet; die Zahl bleibt sichtbar.
 - 2026-09-27 09:45:31 CEST · claude · T-51 Runde 2 technisch freigegeben (approved): Referenzvergleich gegen Dashboard/PositionsTable.vue, Ziel-0-Sentinel und DELTA-Tooltip-Wiederverwendung geprüft, 62/793 Tests reproduziert; kleine Testlücke bei decimalSigned vermerkt, keine Nacharbeit; Owner zurück an codex
 - 2026-09-27 09:43:17 CEST · claude · beginnt T-51 Runde 2: prüft gekürzte Tabellenüberschriften mit Hover-Erklärungen (Fassung 45f532d)
 - 2026-09-27 09:42:34 CEST · codex · hat die kurzen, einzeiligen Rebalancing-Header samt DE/EN-Hover-Erklärungen an claude übergeben. Kauf / Verkauf bleibt erhalten; 793 Tests, Lint und Typecheck erfolgreich.
@@ -43,12 +50,5 @@
 - 2026-09-26 16:41:26 CEST · codex-observer · T-49: nachgetragene Runde-3-Rückgabe und Runde-4-Freigabe abgeglichen, offene Nachweisanfrage erledigt. Im Ticket präzisiert: erreichbares altes Screenshot-Bild belegt dessen URL, keinen aktuellen Git-Push.
 - 2026-09-26 16:40:43 CEST · claude · T-49 Runden 3+4 technisch freigegeben (nachtragend dokumentiert nach Sitzungsunterbrechung): Marker-Entwertung live selbst getestet (Backup/Restore), zentrale Unraid-Vorlage und README-Vorschaupfad-Vereinheitlichung geprüft, Dashboard-Bild-URL selbst mit HTTP 200 bestätigt; Owner zurück an Codex für die Docker-Hub-Veröffentlichung
 - 2026-09-26 15:05:01 CEST · codex-observer · T-49: Nach 30 Minuten unveränderter Review-Übergabe einmalig einen Fortschrittsstand beim Verifier angefordert. Keine Rollen, Phasen oder Prüfurteile geändert.
-- 2026-09-26 14:30:55 CEST · codex · README-Vorschauen bereinigt und Dashboard-Screenshot ergänzt; Hub-Vorschau 4.734 Bytes, Bild erreichbar. Auf Mikes Auftrag folgen Commit und lokaler Merge; Screenshot-Regel im Docker-Skill committed.
-- 2026-09-26 14:30:13 CEST · codex-observer · T-49: Verifier um schriftliche Zuordnung der Runde-3-Prüfung gebeten. Die gemeldete Nutzerbestätigung und autorisierte Git-Integration bleiben gültig; der begrenzte Runde-4-Diff ersetzt keinen Nachweis zur vorherigen Marker-Korrektur.
-- 2026-09-26 14:27:49 CEST · codex · README-Doppelungen bereinigt: nur docker/README.md als Quelle und docker/preview/README.md als erzeugte Vorschau. 783 Tests und Prüfungen grün; begrenzten Nachtrag an Claude übergeben.
-- 2026-09-26 14:26:07 CEST · codex · Bereinigt auf Mikes Nachtrag die Docker-README-Vorschauen: eine gepflegte Quelle und ein gemeinsamer Ausgabeort; alte Testausgaben unter logs werden entfernt.
-- 2026-09-26 14:21:02 CEST · codex · Mike hat Commit, Merge und Git-Push beauftragt; Docker Hub folgt separat. 783 Tests, Lint und Typecheck erfolgreich; zentrale Unraid-Vorlage separat committed.
-- 2026-09-26 14:16:44 CEST · codex · Unraid-Vorlage im zentralen Templates-Repository abgelegt und auf Mikes Auftrag die lokale XML-Kopie gelöscht. Anleitung und AGENTS zeigen auf die einzige Quelle; XML geprüft, nichts veröffentlicht.
-- 2026-09-26 14:13:31 CEST · codex · Docker-Skill-Abgleich abgeschlossen und als Runde 3 an Claude übergeben: Push-Marker korrigiert, Vorschauen ausgeschlossen, Anleitungen ergänzt. 783 Tests grün; Docker-Hub-Push steht wie geplant noch aus.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
