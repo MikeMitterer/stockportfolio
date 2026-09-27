@@ -5,7 +5,8 @@ Lizenz nutzbar, veränderbar und weitergebbar sein. Mike hat sich nach der
 Abwägung für **EUPL 1.2** entschieden. Die bisherigen Gebührenpflichten für
 Rebranding, Weiterverkauf, Hosting und geänderte Weitergabe entfallen.
 
-**Stand:** EUPL 1.2 umgesetzt und lokal geprüft, einschließlich Docker-Image,
+**Stand:** Abgeschlossen am 2026-09-27 auf Mikes Bestätigung
+„Ticket ist damit erledigt“. EUPL 1.2 umgesetzt und lokal geprüft, einschließlich Docker-Image,
 HTTP-Downloads und Quellarchiv. COMMERCIAL-LICENSE.md ist entfernt.
 Die EUPL-Fassung ist in Runde 3 von `claude` unabhängig geprüft und technisch
 freigegeben, ohne Produktbefund oder angeforderte Nacharbeit. Die Übergabe der eigenen
@@ -53,7 +54,8 @@ und Haftungsausschlüsse der Artikel 7 und 8; stattdessen gelten die gesetzliche
 Regeln. Keine zusätzliche freiwillige Garantie und keine Verpflichtung
 anderer Mitwirkender. Diese Erklärung schränkt die EUPL-Nutzungsrechte nicht ein.
 
-Vor Veröffentlichung gezielt österreichisch rechtlich prüfen lassen:
+Für die spätere rechtliche Prüfung festgehalten (durch den Ticketabschluss
+nicht als rechtlich geprüft oder erledigt bestätigt):
 
 - Einbindung und Wirkung dieser Erklärung, einschließlich Art. 9 EUPL;
   kein vollständiges Rechtsgutachten durch die technische Umsetzung behaupten.
@@ -68,11 +70,16 @@ Vor Veröffentlichung gezielt österreichisch rechtlich prüfen lassen:
 - Österreichisches Recht nach Art. 15 EUPL; zwingende Verbraucherrechte und
   gesetzliche Gerichtsstände dürfen nicht pauschal ausgeschlossen werden.
 
-Die technische EUPL-Umstellung ist umgesetzt und lokal geprüft. Rechtsprüfung,
-Rechtevereinbarung, unabhängiger technischer Review und menschlicher
-Ticketabschluss werden dadurch nicht als erledigt behandelt.
+Die technische EUPL-Umstellung ist unabhängig freigegeben und durch Mike
+abgenommen. Die Rechtevereinbarung und Rechtsprüfung bleiben auf seinen
+Wunsch als persönliche Wiedervorlage erhalten; ihr rechtlicher Abschluss
+ist nicht nachgewiesen und wird durch den Ticketabschluss nicht behauptet.
 
 ### Entscheidungen von Mike · 2026-09-27
+
+- Abschluss: „Ticket ist damit erledigt“.
+- Anschließend: „Setze die minor-Version um eins nach oben“ und „mit make“ —
+  reguläres `make tag-minor` nach Integration der Ticketfassung.
 
 - „Na dann EUPL. Wie soll ich mit den österreichischen Haftungsregeln umgehen?“
 - „Ich bleibe Urheber, MangoLila Rechteinhaber?“ — präzisiert wie oben.
@@ -244,10 +251,13 @@ Technische Umsetzung, eigene Nachweise und unabhängiger Review Runde 3
 sind abgeschlossen. `claude` hat Produktfassung
 `28aba0924ad59f04d0f6340b931fd29b8b5f4905` technisch freigegeben; keine
 Produktnacharbeit. Rückmeldung durch `codex` am 2026-09-27 verarbeitet.
-Rechtevereinbarung und österreichische
-Rechtsprüfung bleiben für Mike offen; weder Veröffentlichung noch Ticketabschluss
-sind damit freigegeben. Fremde Änderungen an ACTIVITY.md bleiben außerhalb
-der Produkt-/Ticketcommits.
+Mike hat am 2026-09-27 mit „Ticket ist damit erledigt“ den Abschluss erklärt.
+Das Ticket ist nach `40-done/` archiviert; Merge und Git-Push erfolgen gemäß
+stehendem Integrationsauftrag. Anschließend ist `make tag-minor` beauftragt.
+Rechtevereinbarung und österreichische Rechtsprüfung bleiben persönliche
+Wiedervorlagen, ohne behauptete rechtliche Freigabe. Ein Docker-Image-Push
+ist nicht Teil dieses Abschlusses. Fremde uncommittete Änderungen an
+ACTIVITY.md bleiben außerhalb der Produkt-/Ticketcommits.
 
 ### Unabhängige Prüfung Runde 3 · Verifier `claude` · 2026-09-27
 

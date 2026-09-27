@@ -197,6 +197,9 @@ T-51 ist [abgeschlossen](40-done/T-51-rebalancing-bandabweichung-als-zahl.md).
 ist ebenfalls abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist nach Claudes Freigabe und Mikes bedingtem Abschluss erledigt.
+[T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md) ist nach Claudes technischer
+Freigabe in Runde 3 und Mikes Bestätigung „Ticket ist damit erledigt“ am
+2026-09-27 abgeschlossen. Rechtliche Wiedervorlagen bleiben im Ticket erhalten.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md)
 ist nach Claudes Gesamtfreigabe in Runde 3 und Mikes Bestätigung am
 2026-09-27 abgeschlossen.

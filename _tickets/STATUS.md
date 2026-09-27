@@ -5,20 +5,16 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** [T-57 · EUPL-Lizenz](30-doing/T-57-eupl-lizenz.md).
-Mike hat am 2026-09-27 EUPL 1.2 gewählt und die Umsetzung ausdrücklich
-beauftragt. Die eigene StockPortfolio License 1.0 und ihre Gebührenpflichten
-sind ersetzt. Michael Mitterer bleibt Urheber und Urheberrechtsinhaber;
-MangoLila GmbH ist Anbieterin und Lizenzgeberin mit den einzuräumenden
-Nutzungs- und Lizenzierungsrechten. Die interne Vereinbarung und die
-österreichische Rechtsprüfung bleiben als menschliche Aufgaben im Ticket.
-COMMERCIAL-LICENSE.md ist auf Mikes Klarstellung samt Verweisen entfernt.
-Die Übergabe von Runde 2 (e3d068e) ist durch diese Umfangsänderung zurückgezogen;
-kein abgeschlossener Review behauptet. EUPL-Umsetzung und eigene Prüfungen
-sind fertig; Runde 3 ist von `claude` unabhängig geprüft und technisch
-freigegeben (Fassung `28aba09`, Befunde im Ticket). Rechtevereinbarung und
-österreichische Rechtsprüfung bleiben für Mike offen; weder Veröffentlichung
-noch Ticketabschluss sind dadurch freigegeben.
+**Aktiver Auftrag:** keiner. [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
+ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
+Bestätigung „Ticket ist damit erledigt“ abgeschlossen. EUPL 1.2 ersetzt die
+eigene Lizenz, COMMERCIAL-LICENSE.md ist entfernt. Michael Mitterer bleibt
+Urheber; MangoLila GmbH ist Anbieterin und Lizenzgeberin. Die Hinweise zur
+internen Rechtevereinbarung und österreichischen Rechtsprüfung bleiben auf
+Mikes Wunsch als persönliche Wiedervorlage im archivierten Ticket erhalten.
+Ihr rechtlicher Abschluss wird damit nicht behauptet.
+Mike hat anschließend den Minor-Bump über `make tag-minor` beauftragt.
+
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -67,25 +63,25 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 ist auf EUPL 1.2 umgestellt und in Runde 3 von `claude` unabhängig
-geprüft und technisch freigegeben. Die bisherigen Runden 1 und 2 sind
-zurückgezogen und im Ticket historisch erhalten.
+T-57 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
+Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt
+erhalten. Abschlussintegration und beauftragter Minor-Bump werden ausgeführt.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-57-eupl-lizenz.md`
-- `handoff_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
-- `review_round`: `3`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: ``
+- `handoff_commit`: ``
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
 - `last_reviewed_round`: `3`
-- `workstream`: `T-57`
-- `priority_chain`: `T-57-eupl-lizenz.md`
-- `priority_ticket`: `T-57-eupl-lizenz.md`
+- `workstream`: ``
+- `priority_chain`: ``
+- `priority_ticket`: ``
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -180,7 +176,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 sowie T-54 und T-55 sind abgeschlossen. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 sowie T-54 bis T-57 sind abgeschlossen. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -259,7 +255,24 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Leer. Die technische Freigabe von Runde 3 ist im Ticket verarbeitet.
+Absender `codex-observer`, Empfänger `codex`, 2026-09-27: Konventionsabgleich
+anlässlich T-57/Runde 3 (`28aba09`), ohne neue Produktnacharbeit.
+Der installierte Skill verweist jetzt auf das zentrale AgentLessons-Paket:
+`~/.local/share/agent-workflow/current/`, VERSION
+`86db65b5bc83e7c494acb738b6275b56a9cb56e5481a17b7c215d7aee4620843`,
+Konventionsstand `2026-09-27-central-package`. PACKAGE.md, PROJECT-RULES.md,
+SKILL.md und die Übernahme-/Einrichtungsanleitung gelesen. Der hiesige
+Workflow bleibt bei `2026-09-11-activity-feed`; insbesondere die kurzen
+Paketeinstiege, VERSION-Prüfung und vollständige Lessons-Einordnung sind
+nicht als übernommener Konventionsstand ausgewiesen.
+
+Bitte im vorhandenen Hinweis „Offene Übernahme“ lediglich den veralteten
+Skill-Zielstand `2026-09-11-lessons-follow-through` auf den oben belegten
+Paketstand berichtigen und den fehlenden Migrationsauftrag erhalten.
+Ein später beauftragter Coder führt den Inhaltsabgleich aus, der Verifier
+prüft ihn; derzeit keine allgemeine Migration, kein Neustart und keine
+zusätzliche Reviewrunde. Die lokale dauerhafte Push-Freigabe in AGENTS.md
+und alle bestehenden Nutzerentscheidungen bleiben dabei maßgeblich.
 
 ## OUTBOX → Verifier
 
