@@ -422,7 +422,8 @@ docker logs stockportfolio         # check startup and static server output
 ```
 
 The app itself shows the address in use under _Settings → Status_ and in the
-status bar at the bottom. If prices stay empty, that page is the place to look:
+status bar at the bottom. Click the API address in the status bar to open
+_Settings → Status_ directly. If prices stay empty, that page is the place to look:
 it distinguishes "not reachable" from "reachable but refused" (CORS).
 
 ### Building and publishing

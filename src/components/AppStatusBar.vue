@@ -118,7 +118,7 @@ const failures = computed(() =>
     :backend-state="apiStatus.state"
     :backend-version="apiStatus.version ?? ''"
     :backend-state-label="t('status.apiDetails', { state: stateLabel[apiStatus.state] })"
-    @backend-click="router.push('/settings')"
+    @backend-click="router.push({ path: '/settings', query: { tab: 'status' } })"
   >
     <template #left>
       <span class="status__separator status__separator--brand" aria-hidden="true">·</span>

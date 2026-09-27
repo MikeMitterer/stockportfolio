@@ -9,8 +9,8 @@ weiteren Tabwechsel erreichbar sind.
 Die Einstellungen öffnen sich mit ausgewähltem Status-Tab. Dasselbe gilt,
 wenn zuvor bereits ein anderer Einstellungs-Tab geöffnet war.
 
-**Stand:** Nach Abschluss von T-51 am 2026-09-27 zur Umsetzung aktiviert.
-Coder `codex` arbeitet auf `t-52-statuszeile-api-link-zum-status-tab`.
+**Stand:** Auf `t-52-statuszeile-api-link-zum-status-tab` umgesetzt und selbst
+geprüft. Unabhängige Prüfung und Mikes Abschlussbestätigung stehen aus.
 Aktiver Auftrag und Reihenfolge bleiben in [STATUS.md](../STATUS.md)
 festgelegt. Mike hat anschließend ausdrücklich beauftragt: „Nach T-51 kommt
 T-52 im Anschluss“. T-52 folgt direkt auf T-51.
@@ -32,7 +32,7 @@ Scope: UI-only in StockPortfolio; Ziel des vorhandenen Links korrigieren.
 Die verkürzte Darstellung der Adresse ist Kontext des Befunds und kein
 Auftrag, sie durch eine vollständige URL zu ersetzen. Kein GitHub-Issue angelegt.
 
-### Ausgangsbefund
+### Ausgangsbefund bei Aufnahme
 
 Quelltext bei Aufnahme geprüft, noch keine Browserprüfung:
 
@@ -42,6 +42,11 @@ Quelltext bei Aufnahme geprüft, noch keine Browserprüfung:
   vorhandener Einstellungs-Tab. Ohne gültigen Tab wird `calc` ausgewählt.
 - Das passende interne Ziel ist `/settings?tab=status`, in der Hash-URL
   `/#/settings?tab=status`. Die vorhandene Tab-Navigation wiederverwenden.
+
+**Umsetzung:** `backend-click` navigiert jetzt mit dem bestehenden Vue-Router
+zu `{ path: '/settings', query: { tab: 'status' } }`. `SettingsView` wählt den
+Tab bereits reaktiv aus dem Queryparameter. Keine weitere Navigation oder
+Tablogik nötig, Darstellung und Beschriftungen bleiben erhalten.
 
 ### Akzeptanzkriterien
 
@@ -54,22 +59,34 @@ Quelltext bei Aufnahme geprüft, noch keine Browserprüfung:
 
 ### Verify
 
-Einzige aktuelle technische Matrix. `➖`: noch kein ausgeführter Nachweis.
+Einzige aktuelle technische Matrix. ✅ ausgeführt und bestätigt.
 
 | # | Prüfung | Erwartetes Ergebnis / Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Im Dashboard die StockInfo-Adresse anklicken | Route enthält `tab=status`; Status-Tab ist sichtbar ausgewählt | ➖ |
-| 2 | Einen anderen Einstellungs-Tab öffnen und den Link betätigen; im Status-Tab wiederholen | Wechsel zu Status beziehungsweise Verbleib dort | ➖ |
-| 3 | Link per Tastatur aktivieren; DE und EN prüfen | Dasselbe Navigationsziel; übrige Statuszeile unverändert bedienbar | ➖ |
-| 4 | `make test`, `make lint`, `make typecheck`; Bezeichnerinventar geänderter Dateien | Pflichtprüfungen erfolgreich; englische Bezeichner | ➖ |
-| 5 | Projekt- und Containeranleitung abgleichen | Aussagen zum API-Status und Einstellungszugriff stimmen mit Umsetzung überein | ➖ |
+| 1 | Im Dashboard die StockInfo-Adresse anklicken | Route enthält `tab=status`; Status-Tab ist sichtbar ausgewählt | ✅ |
+| 2 | Einen anderen Einstellungs-Tab öffnen und den Link betätigen; im Status-Tab wiederholen | Wechsel zu Status beziehungsweise Verbleib dort | ✅ |
+| 3 | Link per Tastatur aktivieren; DE und EN prüfen | Dasselbe Navigationsziel; übrige Statuszeile unverändert bedienbar | ✅ |
+| 4 | `make test`, `make lint`, `make typecheck`; Bezeichnerinventar geänderter Dateien | Pflichtprüfungen erfolgreich; englische Bezeichner | ✅ |
+| 5 | Projekt- und Containeranleitung abgleichen | Aussagen zum API-Status und Einstellungszugriff stimmen mit Umsetzung überein | ✅ |
+
+**Eigene Nachweise · 2026-09-27:** `make test`: 62 Dateien / 793 Tests;
+`make lint` und `make typecheck`: Exit 0. TS-Compiler-API-Inventar von
+`AppStatusBar.vue`: englische Bezeichner; Änderung nur am Routenziel.
+
+Chrome, isolierter Kontext `t52-navigation`, bestehender Dev-Server auf 5175
+und vorhandener StockInfo-Testserver auf 59999. Frischer Browserzustand ohne
+Depotfixture. Tatsächliche Klicks auf die API-Adresse: Dashboard → Status,
+Theme → Status, Status → Status. Jeweils `tab=status` und sichtbarer aktiver
+Tab samt StockInfo-API-Panel bestätigt. Englische Oberfläche: aus Calculation
+den echten Backend-Button fokussiert und Enter gedrückt → Status. GitHub-Link,
+verkürzte Adresse, Version und Erreichbarkeitsstatus bleiben vorhanden.
+Kein Produktivserver und keine echten Marktquotes für diese Navigation nötig.
 
 ### Side-Effects und Abgrenzung
 
 Nur das Navigationsziel des bestehenden Links ändert sich. Kein neuer
 API-Aufruf, keine Änderung an Konfiguration oder Speicherung vorgesehen.
-T-50 bearbeitet ebenfalls `AppStatusBar.vue`; bei Umsetzung dessen aktuelle
-Fassung mit GitHub-Symbol übernehmen und die laufende Reviewfassung stabil lassen.
+Die abgeschlossene T-50-Fassung mit GitHub-Symbol ist unverändert enthalten.
 
 ### Lessons und Doku-Abgleich
 
@@ -88,7 +105,16 @@ Die allgemeine Board-Übernahme auf `2026-09-11-lessons-follow-through`
 bleibt separat offen. Keine Konventionsänderung und keine Skill-Anpassung
 durch dieses Ticket.
 
+**Doku-Abgleich nach Umsetzung:** Datei-/Überschrifteninventar geprüft.
+README, Betriebsabschnitt zur API-Adresse, nennt den direkten Klick zum Status.
+„Layout“ mit adressierbaren Tabs bleibt richtig. `docker/README.md`, „Status and
+logs“, nennt Settings → Status bereits; unverändert zutreffend, keine neue
+Containeranweisung nötig. `docs/`, `unraid/README.md` und zentrale Unraid-Vorlage
+sind nicht betroffen: kein geänderter Vertrag, keine Konfiguration/Installation.
+AL-R-01 durch tatsächliche Browsernavigation angewendet; SP-CX-02 durch
+Abschluss von T-51 samt Board-Einstieg und Aktivierung T-52 berücksichtigt.
+
 ### Auflösung
 
-Ticket aufgenommen. Umsetzung, technische Prüfung und menschlicher
-Abschluss stehen aus.
+Umgesetzt und selbst geprüft. Unabhängige Prüfung und menschlicher Abschluss
+stehen aus; Ticket bleibt in Doing.
