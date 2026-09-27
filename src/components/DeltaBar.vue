@@ -30,6 +30,8 @@ const props = defineProps<{
   narrow?: boolean
   /** Ersetzt die Delta-Zahl rechts, etwa durch den Anteil am Gesamtvermögen. */
   label?: string
+  /** Relative Zahl nach Vorzeichen färben; Bandstatus bleibt an der Füllung. */
+  colorBySign?: boolean
 }>()
 
 const MAX_SCALE = 50 // ±50 % vom Ziel = 100 % Balkenlänge
@@ -81,7 +83,13 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
       <div class="delta__target"></div>
     </div>
 
-    <span class="delta__value tabular-nums">{{ text }}</span>
+    <span
+      class="delta__value tabular-nums"
+      :class="{
+        'delta__value--positive': colorBySign && label === undefined && relativePercent > 0,
+        'delta__value--negative': colorBySign && label === undefined && relativePercent < 0,
+      }"
+    >{{ text }}</span>
   </div>
 </template>
 
@@ -140,6 +148,9 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
     font-size: var(--font-xs);
     text-align: right;
     color: token(--text-secondary);
+
+    &--positive { color: token(--status-ok); }
+    &--negative { color: token(--status-out); }
   }
 }
 </style>

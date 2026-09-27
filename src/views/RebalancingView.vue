@@ -419,7 +419,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     {{ priceOf(row) !== null ? formatMoneyCents(priceOf(row)!) : '—' }}
                   </td>
 
-                  <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
+                  <td class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums">
                     {{ percent(row.current.actualPercent) }}
                   </td>
 
@@ -513,6 +513,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                       :relative-percent="row.relativeDeviationAfter"
                       :suggestion="row.suggestionAfter"
                       :label="row.targetPercent === 0 ? '—' : undefined"
+                      color-by-sign
                       compact
                     />
                     <div class="reb__share-after">
@@ -712,7 +713,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
   &__share-after {
     margin-top: var(--space-1);
-    @include muted(var(--font-xs));
+    @include muted(0.6875rem);
   }
 
   &__table {
@@ -780,6 +781,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     &--center { text-align: center; }
     &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
     &--secondary { color: token(--text-secondary); }
+    &--percent { white-space: nowrap; }
   }
 
   &__symbol {

@@ -32,6 +32,14 @@ Mike, anschließend am 2026-09-27:
 
 > Danach geht es gleich mit T-51 weiter
 
+Weitere Anzeigevorgaben von Mike, 2026-09-27:
+
+> In der IST Spalte bricht das %-Zeichen immer wiedermal in die nächste Zeile um
+
+> Mach den Text "Anteil nachher ... " ein wenig kleiner
+
+> Den %-Wert für die relative Abweichung grün bzw rot je nach + oder -
+
 ## Umsetzung und technische Nachweise
 
 Scope: UI-only in StockPortfolio. Die bestehende Berechnung und die
@@ -64,6 +72,12 @@ steht am Balken „—“ mit einer sichtbaren Erklärung. Die Berechnung bleibt
 mit `percentSigned`. Der vorhandene i18n-Schlüssel für den Tooltip am
 probeweisen Ziel ersetzt dort außerdem den hartkodierten deutschen Text.
 
+Die IST-Prozentzelle bleibt mit `white-space: nowrap` zusammen. „Anteil
+nachher …“ ist von 12 auf 11 Pixel verkleinert. Die relative Zahl ist im
+Rebalancing bei positivem Vorzeichen grün, bei negativem rot, bei null oder
+undefiniertem Ziel neutral. `DeltaBar` bietet dafür `colorBySign`; die
+Balkenfüllung zeigt weiterhin unabhängig davon den Bandstatus.
+
 Die Darstellung verwendet die vorhandenen Werte wieder. Anteil nach
 dem Trade, relative Abweichung und Differenz in Prozentpunkten müssen
 verständlich unterscheidbar bleiben. Der Zahlenwert bezieht sich im
@@ -94,6 +108,12 @@ Tests und Browserprüfung sind unten getrennt beschrieben.
 | 3 | Trade und Ziel ändern, DE/EN | Tests über Commit-Ereignisse; Browser über Eingabefeld/Enter: +10 Stück → +5,0 % und Anteil 10,5 %. Zielwechsel auf 5 % im Test → +110,0 %. Englische Beschriftung und Dezimalpunkt bestätigt | ✅ |
 | 4 | Pflichtprüfungen und Bezeichnerinventar | 2026-09-27, 09:28: 62 Testdateien / 793 Tests grün; Lint und Typecheck Exit 0. TS-Compiler-API-Inventar der fünf geänderten Code-/Testdateien: englische Bezeichner | ✅ |
 | 5 | Doku und Dashboard-Vergleich | README erläutert die drei Werte; Containeranleitung bleibt zutreffend. Browser-Dashboard und Rebalancing vor Trade zeigen beide −5,0 % | ✅ |
+| 6 | Vorzeichenfarbe und kompakte Anzeige | Chrome bei 1440 und 800 px Breite: IST-Werte 9,5 % und 90,5 % jeweils eine Textzeile; Anteil 11 px. Negative Zahl rot, positive grün trotz beiderseits grünem Band. Tests prüfen Vorzeichen innerhalb/außerhalb des Bands sowie neutrale Null/undefiniert und Farbwechsel nach Trade | ✅ |
+
+**Nachprüfung der Anzeigevorgaben:** 2026-09-27, 09:35: `make test` erneut
+62 Dateien / 793 Tests erfolgreich; `make lint` und `make typecheck` Exit 0.
+Die erweiterten Farberwartungen scheiterten vor der Implementierung in sechs
+Fällen, danach sind alle zehn Komponententests erfolgreich.
 
 **Prüfumgebung:** `tests/components/rebalancingDeviation.spec.ts` führt die
 vollständige Ansicht, echte Stores, `computeRebalancing`, `computeTradePlan`,
@@ -137,6 +157,8 @@ Doku-Abgleich zu berücksichtigen.
 **Doku-Abgleich:** Datei- und Überschrifteninventar aus README, Containeranleitung,
 `docs/` und Unraid geprüft. `README.md`, „Rebalancing is a simulation“, ergänzt
 relative Abweichung am Balken, Anteil darunter, Prozentpunkte daneben und Ziel 0.
+Die ergänzte Vorzeichenfarbe und die weiterhin separate Bandfarbe sind ebenfalls
+dort erklärt; Schriftgröße und Umbruch benötigen keine Bedienungsanleitung.
 `docker/README.md`, „Features“, bleibt unverändert: Die vorhandene Zusage zum
 Rebalancing mit Toleranzbändern stimmt weiterhin, die ergänzte Zahl braucht
 keine eigene Container-Anweisung. Die Methoden-Erklärung in `src/i18n/de.ts`

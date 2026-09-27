@@ -78,13 +78,16 @@ describe('Relative Abweichung im Rebalancing', () => {
   })
 
   it.each([
-    [93, '−7,0 %', 'out'], [94, '−6,0 %', 'ok'],
-    [100, '+0,0 %', 'ok'], [105, '+5,0 %', 'ok'],
-    [115, '+15,0 %', 'ok'], [116, '+16,0 %', 'out'],
-  ])('zeigt bei %s Stück Zahl und Bandstatus gemeinsam', async (units, label, state) => {
+    [93, '−7,0 %', 'out', 'negative'], [94, '−6,0 %', 'ok', 'negative'],
+    [100, '+0,0 %', 'ok', 'neutral'], [105, '+5,0 %', 'ok', 'positive'],
+    [115, '+15,0 %', 'ok', 'positive'], [116, '+16,0 %', 'out', 'positive'],
+  ])('zeigt bei %s Stück Vorzeichenfarbe unabhängig vom Bandstatus', async (units, label, state, sign) => {
     const row = await renderPlan(Number(units))
     expect(row.find('.delta__value').text()).toBe(label)
     expect(row.find(`.delta__fill--${state}`).exists()).toBe(true)
+    const value = row.find('.delta__value')
+    expect(value.classes().includes('delta__value--positive')).toBe(sign === 'positive')
+    expect(value.classes().includes('delta__value--negative')).toBe(sign === 'negative')
   })
 
   it('aktualisiert Zahl und Balken nach Trade und probeweisem Zielwechsel', async () => {
@@ -93,6 +96,8 @@ describe('Relative Abweichung im Rebalancing', () => {
     fields[1]!.vm.$emit('commit', 10)
     await flushPromises()
     expect(row.find('.delta__value').text()).toBe('+5,0 %')
+    expect(row.find('.delta__value--positive').exists()).toBe(true)
+    expect(row.find('.delta__value--negative').exists()).toBe(false)
     expect(row.text()).toContain('Anteil nachher: 10,5 %')
     fields[0]!.vm.$emit('commit', 5)
     await flushPromises()
@@ -104,6 +109,7 @@ describe('Relative Abweichung im Rebalancing', () => {
   it('kennzeichnet Ziel null ohne irreführende relative Nullabweichung', async () => {
     const row = await renderPlan(95, 0)
     expect(row.find('.delta__value').text()).toBe('—')
+    expect(row.find('.delta__value--positive, .delta__value--negative').exists()).toBe(false)
     expect(row.text()).toContain('Bei Ziel 0 % nicht definiert')
     expect(row.text()).not.toMatch(/NaN|Infinity/)
     expect(row.find('.delta__fill--out').exists()).toBe(true)

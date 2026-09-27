@@ -231,6 +231,8 @@ The bar and its number show the relative deviation from the target after
 the planned trade, using the same format as the dashboard. The resulting
 portfolio share appears below it; the adjacent column shows the difference
 in percentage points. Relative deviation is undefined when the target is zero.
+In Rebalancing, positive relative values are green and negative values red;
+the bar fill continues to indicate the band status.
 
 ### Explanations inside the app
 
