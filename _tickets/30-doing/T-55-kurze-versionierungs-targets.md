@@ -14,6 +14,8 @@ stehen noch aus.
 Mike: „Push braucht im Namen nicht vorkommen, pass das hier an, vermerke das
 auch gleich bei dem Makefile-Skill damit das in Zukunft klar ist“.
 
+Prüfauftrag von Mike: „Lass das Claude nochmal verifizieren - auch die Skillanpassung“.
+
 ## Umfang und Umsetzung
 
 - StockPortfolio: Makefile-Targets und aktuelle README-Befehle umbenennen.
@@ -79,5 +81,7 @@ Lesson aus dieser ausdrücklichen Namensentscheidung ableiten.
 Umgesetzt und geprüft. PersonalSkills-Commit
 `6600ce24b4842c1fd64582ddf001d73549a8ab87` auf
 `docs/kurze-versionierungs-targets`, lokal und noch nicht integriert/gepusht.
-StockPortfolio-Produktfassung wird nach Commit in STATUS übergeben.
+StockPortfolio-Produktfassung `adc36a19708f33c2adccb94e1b22a0fef691a25b`.
+Beide Fassungen gemeinsam in Runde 1 an `claude` übergeben; seine Prüfung
+soll Projektänderung und Skill-Anpassung getrennt belegen.
 Technische Freigabe und Abschluss stehen aus.

@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:27:41 CEST · codex · hat T-55 an Claude übergeben: StockPortfolio adc36a1 und PersonalSkills 6600ce2. Der ausdrückliche Prüfauftrag umfasst Makefile, README, beide Skills und die Versionierungsvorlage; kein echter Versionsbump oder Release soll ausgeführt werden.
 - 2026-09-27 11:26:50 CEST · codex · hat T-55 umgesetzt und geprüft: kurze tag-Targets in Makefile und README sowie gemeinsame Namensvorgabe in beiden Skills und Vorlage. Trockenläufe, Skill-Validierung, 793 Tests, Lint und Typecheck erfolgreich; bereitet Claudes Review vor.
 - 2026-09-27 11:25:27 CEST · codex-observer · T-53: prüft Claudes neue Vorschläge und den roten Faden der Story. Konkretisiert einfache Rebalancing-Demo, Übergang zur Datenquelle und Backup; Produktion bleibt pausiert.
 - 2026-09-27 11:24:44 CEST · codex · setzt T-55 um: kurze Targets tag-major/minor/patch in StockPortfolio sowie passende Namensvorgabe im Makefile- und Versionierungs-Skill. Commit, Tag und Push bleiben das Verhalten; es wird kein Release ausgeführt.
@@ -49,6 +50,5 @@
 - 2026-09-27 10:11:57 CEST · claude · T-51 Runde 6: changes_requested — neues Mülleimer-Symbol entspricht strukturell Lucide trash-2, THIRD_PARTY_NOTICES.md-Eintrag fehlt; übriger Umfang (Scrollmechanik, Mindestbreite, 62/793 Tests) in Ordnung; Owner zurück an codex
 - 2026-09-27 10:08:16 CEST · codex · hat Mikes Abschlussfreigabe für T-51 unter der Bedingung von Claudes OK festgehalten. Nach Freigabe der aktuellen Fassung folgt ohne weitere Rückfrage der Abschluss und T-52.
 - 2026-09-27 10:07:12 CEST · codex-observer · T-53 ergänzt: Lokale Depotdaten als zentrale Story-Aussage; Backup und Restore mit eigener Browserwechsel-Szene. Aktualisierte Fassung zur Gegenprüfung an Claude gemeldet.
-- 2026-09-27 10:06:59 CEST · claude · beginnt T-51 Runde 6: prüft Mindestbreite, gemeinsames Scrollen und Icon in der Rebalancing-Ansicht (Fassung 5e983a0)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

@@ -198,7 +198,7 @@ ist ebenfalls abgeschlossen.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist nach Claudes Freigabe und Mikes bedingtem Abschluss erledigt.
 [T-55 · Kurze Versionierungs-Targets](30-doing/T-55-kurze-versionierungs-targets.md)
-ist aktiviert; maßgeblich ist STATUS.
+ist zur Prüfung übergeben; maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):
 Depotwahl und FX-Bewertung sind umgesetzt und von Codex im Browser geprüft.

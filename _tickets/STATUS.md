@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-55 · Kurze Versionierungs-Targets](30-doing/T-55-kurze-versionierungs-targets.md).**
 Mike beauftragt die Umbenennung und die entsprechende Skill-Pflege.
-Coder `codex` setzt T-55 um.
+T-55 ist auf Mikes ausdrücklichen Auftrag an `claude` übergeben;
+die Prüfung umfasst auch die Skill-Anpassung in PersonalSkills.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
@@ -45,16 +46,16 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-55 in Umsetzung. Die letzte Prüfung von T-54 bleibt erhalten.
+T-55 wartet auf die unabhängige Prüfung in Runde 1. Die letzte Prüfung von T-54 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-55-kurze-versionierungs-targets.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `adc36a19708f33c2adccb94e1b22a0fef691a25b`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-54-sicherung-im-leeren-depot.md`
 - `last_reviewed_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
@@ -156,7 +157,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 und T-54 sind abgeschlossen; T-55 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 und T-54 sind abgeschlossen; T-55 ist zur Prüfung übergeben. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -235,11 +236,32 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Keine unverarbeitete Nachricht. T-54 abgeschlossen.
+Keine unverarbeitete Nachricht. T-55 wartet auf den Verifier.
 
 ## OUTBOX → Verifier
 
-Beide T-54-Nachrichten (Observer-Hinweis zum Abbruchpfad, codex' Nachtrag)
-verarbeitet: Claude bestätigt im archivierten Ticket, dass die Korrektur
-zutrifft — der Live-Beleg deckte Import, nicht Abbruch ab. Kein neuer
-Prüfschritt, keine neue Reviewrunde.
+**codex → claude · T-55 · Runde 1 · beide Repositories prüfen**
+
+Mike: „Lass das Claude nochmal verifizieren - auch die Skillanpassung“.
+
+- StockPortfolio: `adc36a19708f33c2adccb94e1b22a0fef691a25b`, Branch
+  `t-55-kurze-versionierungs-targets`.
+- PersonalSkills: `6600ce24b4842c1fd64582ddf001d73549a8ab87`, Branch
+  `docs/kurze-versionierungs-targets`, Repository
+  `/Volumes/DevLocal/DevKI/Production/PersonalSkills`.
+
+Bitte beide konkreten Fassungen unabhängig prüfen und getrennt im Ticket
+belegen. PersonalSkills-AGENTS beachten; nur Review, keine Implementierung.
+Kurze Namen `tag-major`, `tag-minor`, `tag-patch` in Makefile und README;
+Makefile-Skill, Versionierungs-Skill und Vorlage müssen übereinstimmen.
+Mikes Entscheidung: Push muss nicht im Namen stehen. Hilfe und Dokumentation
+sollen das tatsächliche Verhalten Commit → Tag → Push weiterhin benennen.
+BashLib-Rezepte, Versionsquellen und StockInfo unverändert.
+
+Eigene Prüfung: `make help`, `make -n` für alle drei Projekt-/Vorlagen-Targets,
+beide Skill-Validatoren erfolgreich (vorhandene StockInfo-Python-Umgebung,
+System-Python ohne PyYAML), Diff-/Begriffsinventar, 793 Tests in 62 Dateien,
+Lint und Typecheck grün. Kopierbare Befehle und Doku-Abgleich im Ticket.
+Keine echten Bump-/Tag-/Push-Targets ausführen; der Auftrag veröffentlicht
+keinen Release. Beide Commits sind lokal; technische Freigabe und Abschluss
+stehen aus. Produkt-/Skillstand bleibt bis zur Reviewrückgabe stabil.
