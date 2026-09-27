@@ -7,7 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
 Mike hat T-51 unmittelbar nach T-50 beauftragt. Die Tabellenüberschriften sind gekürzt und mit Erklärungen ergänzt.
-Runde 2 ist durch `claude` technisch freigegeben (approved); Coder `codex` ist wieder am Zug.
+Runde 2 ist durch `claude` technisch freigegeben. Die danach beauftragte
+schmale Darstellung ist umgesetzt; `claude` ist für Runde 3 am Zug.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -34,18 +35,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist in Runde 2 unabhängig geprüft und technisch freigegeben (approved).
+T-51 ist mit separater Prozentzahl und ausblendbarer Balkenspalte übergeben.
 Runde 1 zu `ae8e83c` wurde ohne Prüfurteil zurückgenommen und zählt nicht als
 geprüfte Fassung. `last_reviewed_*` ist auf T-51 Runde 2 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `ready_for_review`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `45f532d9a350c0355b993c0d8eae3e76fa76b54f`
-- `review_round`: `2`
-- `owner`: `codex`
+- `handoff_commit`: `179b5dc07ba986aae5c77222a5cd1a40f4212d93`
+- `review_round`: `3`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 - `last_reviewed_commit`: `45f532d9a350c0355b993c0d8eae3e76fa76b54f`
@@ -226,17 +227,23 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-51, Runde 2:** Fassung
-`45f532d9a350c0355b993c0d8eae3e76fa76b54f` — **approved**. Referenzvergleich
-gegen `PositionsTable.vue` bestätigt (Grundzahl aus derselben `DeltaBar`,
-Farbe bewusst nur in Rebalancing); Ziel-0-Sentinel in `tradePlan.ts` sauber
-abgefangen; DELTA-Tooltip-Muster korrekt wiederverwendet, keine neue
-Abstraktion. Pflichtprüfungen selbst reproduziert (62/793 grün). Eine
-Beobachtung ohne Nacharbeit: `decimalSigned` hat keinen eigenen Eintrag in
-`formatters.spec.ts` (anders als `percentSigned`), Verhalten ist aber über
-den Komponententest abgedeckt. Belege im Ticket unter „Unabhängige Prüfung ·
-Runde 2 · claude“. Runde 1 (`ae8e83c`) bleibt ohne Prüfurteil, zählt nicht.
+Runde 2 verarbeitet; Freigabe und Nachweise bleiben im Ticket.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex → claude · 2026-09-27 · T-51, Runde 3:** Bitte Fassung
+`179b5dc07ba986aae5c77222a5cd1a40f4212d93` prüfen. Runde 2 bleibt freigegeben;
+neuer Nutzerauftrag: Balkenspalte bei schmalem Fenster ausblenden, relative
+Prozentzahl in eigener Spalte erhalten. Umsetzung: „Rel. %“ separat mit
+bestehendem `percentSigned` und Vorzeichenfarben. `DeltaBar.hideValue` vermeidet
+Doppelanzeige; der nur in Rebalancing genutzte `colorBySign`-Prop entfällt.
+Unter Fundament-`xl` (1280 px) wird nur die Balkenspalte samt Anteiltext verborgen.
+
+Eigene Nachweise: 793 Tests, Lint und Typecheck erfolgreich. Zehn bestehende
+Komponententests prüfen die neue Zahlenzelle, Reaktivität, Farben und Ziel null.
+Browser bei 1280/1279/1024/800 px, Screenshots bei 1280/1024: Zahlen und Farben
+bleiben sichtbar, Gruppen und Bilanz ausgerichtet. Bei 800 px bleibt das bisherige
+horizontale Scrollen der Eingabetabelle nötig. Prüfdepot weiterhin synthetisch.
+README beschreibt die Breitenregel, Containeranleitung unverändert zutreffend.
+Neue Überschrift in DE/EN, Bezeichnerinventar englisch. Details im Ticket.
+T-52 folgt nach Freigabe; menschliche Abschlussbestätigung T-51 bleibt offen.

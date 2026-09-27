@@ -128,14 +128,13 @@ Tests und Browserprüfung sind unten getrennt beschrieben.
 
 | # | Prüfung | Erwartetes Ergebnis / Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Ziel 10 %, Anteil danach 9,5 %, unteres Band 6 % | Komponententest und Chrome: −5,0 % am Balken, Anteil nachher 9,5 %, −0,5 in der Prozentpunktspalte; Dashboard ebenfalls −5,0 % | ✅ |
+| 1 | Ziel 10 %, Anteil danach 9,5 %, unteres Band 6 % | Komponententest und Chrome: −5,0 % neben dem Balken, Anteil nachher 9,5 %, −0,5 in der Prozentpunktspalte; Dashboard ebenfalls −5,0 % | ✅ |
 | 2 | Vorzeichen, Null, Bandgrenzen und Ziel null | Tests: −7/−6/0/+5/+15/+16 % mit zugehörigem Status. Ziel null: erklärter Strich, kein NaN/Infinity; auch im Browser geprüft | ✅ |
 | 3 | Trade und Ziel ändern, DE/EN | Tests über Commit-Ereignisse; Browser über Eingabefeld/Enter: +10 Stück → +5,0 % und Anteil 10,5 %. Zielwechsel auf 5 % im Test → +110,0 %. Englische Beschriftung und Dezimalpunkt bestätigt | ✅ |
 | 4 | Pflichtprüfungen und Bezeichnerinventar | 2026-09-27, 09:28: 62 Testdateien / 793 Tests grün; Lint und Typecheck Exit 0. TS-Compiler-API-Inventar der fünf geänderten Code-/Testdateien: englische Bezeichner | ✅ |
 | 5 | Doku und Dashboard-Vergleich | README erläutert die drei Werte; Containeranleitung bleibt zutreffend. Browser-Dashboard und Rebalancing vor Trade zeigen beide −5,0 % | ✅ |
-| 6 | Vorzeichenfarbe und kompakte Anzeige | Chrome bei 1440 und 800 px Breite: IST-Werte 9,5 % und 90,5 % jeweils eine Textzeile; Anteil 11 px. Negative Zahl rot, positive grün trotz beiderseits grünem Band. Tests prüfen Vorzeichen innerhalb/außerhalb des Bands sowie neutrale Null/undefiniert und Farbwechsel nach Trade | ✅ |
-| 7 | Kurze Header und Hover-Erklärungen | Chrome bei 800 px: „Rel. Abw.“, „Abw. Ziel“, unverändert „Kauf / Verkauf“. Alle drei Popups durch tatsächliches Hover geöffnet, DE/EN-Texte geprüft; DELTA-Muster wiederverwendet | ✅ |
-
+| 6 | Vorzeichenfarbe und kompakte Anzeige | Runde 2: Chrome bei 1440 und 800 px Breite: IST-Werte 9,5 % und 90,5 % jeweils eine Textzeile; Anteil 11 px. Negative Zahl rot, positive grün trotz beiderseits grünem Band. Tests prüfen Vorzeichen innerhalb/außerhalb des Bands sowie neutrale Null/undefiniert und Farbwechsel nach Trade | ✅ |
+| 7 | Kurze Header und Hover-Erklärungen | Runde 2: Chrome bei 800 px: „Rel. Abw.“, „Abw. Ziel“, unverändert „Kauf / Verkauf“. Alle drei Popups durch tatsächliches Hover geöffnet, DE/EN-Texte geprüft; DELTA-Muster wiederverwendet | ✅ |
 | 8 | Getrennte Spalten bei schmalem Fenster | Chrome: 1280 px mit Balken/Anteil, 1279/1024/800 px ohne Balkenspalte; relative Prozentzahl jeweils sichtbar und farbig. Screenshots 1280/1024 bestätigen Ausrichtung von Headern und Bilanz. Bei 800 px bleibt das vorhandene seitliche Scrollen der Eingabetabelle nötig | ✅ |
 
 **Nachprüfung der Anzeigevorgaben:** 2026-09-27, 09:35: `make test` erneut
