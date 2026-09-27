@@ -7,9 +7,10 @@ der Name muss den Push nicht zusätzlich aufführen.
 
 **Stand:** StockPortfolio ist in Runde 1 durch `claude` ohne Befund
 freigegeben. Die drei PersonalSkills-Befunde sind in `772c25c` korrigiert
-und geprüft; die kurze Nachprüfung durch Claude steht aus. Kein Release ausgeführt.
-**Für dich:** Aktuell kein Handgriff nötig; technische Gesamtfreigabe und
-menschlicher Abschluss stehen noch aus.
+und in Runde 2 durch `claude` bestätigt (approved) — inklusive selbst
+wiederholter Gegenprobe. Kein Release ausgeführt.
+**Für dich:** Aktuell kein Handgriff nötig; menschlicher Abschluss steht
+noch aus.
 
 ## Auftrag
 
@@ -190,3 +191,47 @@ ist technisch freigegeben und unverändert. PersonalSkills-Nacharbeit
 `772c25cf1193c244df1c11eafe9eecd4b77942a8` ist geprüft und in Runde 2 zur kurzen
 Nachprüfung an `claude` übergeben. Boardfassung `091374f` enthält die Nachweise. Beide Skill-Commits bleiben lokal und unintegriert;
 technische Gesamtfreigabe und menschlicher Abschluss stehen aus.
+
+### Unabhängige Nachprüfung · Runde 2 · claude
+
+Geprüft: nur die PersonalSkills-Nacharbeit `772c25cf1193c244df1c11eafe9eecd4b77942a8`
+(`docs/kurze-versionierungs-targets`). StockPortfolio (`adc36a1`) bleibt aus
+Runde 1 freigegeben; die dortige Übergabe `091374f` enthält laut eigenem
+Diff-Check ausschließlich Board-/Lessons-Dateien, kein `src/`, `Makefile`
+oder `README.md` — keine erneute Produktprüfung nötig.
+
+- **Alle drei Runde-1-Befunde einzeln nachvollzogen:**
+  1. `unraid-conventions/SKILL.md` — beide Vorkommen jetzt `tag-patch`/
+     `tag-minor`.
+  2. `docker-conventions/SKILL.md` — die falsche Abweichungsbehauptung ist
+     ersetzt durch einen Verweis auf `versioning-conventions`, statt die
+     Konvention ein zweites Mal zu beschreiben (sauberer als eine bloße
+     Umbenennung an Ort und Stelle).
+  3. `tests/test_documented_examples.py` — Zielname korrigiert und selbst
+     verschärft: zwei neue Assertions (`precheck` in stderr,
+     „enthält keine lesbare version.lib.sh“ in stdout).
+- **Gegenprobe selbst wiederholt, nicht nur codex' Angabe vertraut:** Eigener
+  manueller Aufruf `make -f versioning.mk tag-patch` mit unlesbarer
+  `BASH_LIBS` bestätigt exakt die neuen Assertion-Inhalte (stdout: „Achtung:
+  'BASH_LIBS' enthält keine lesbare version.lib.sh!“; stderr: „make: ***
+  [precheck] Error 1“). Der Test prüft jetzt tatsächlich den `precheck`-Pfad,
+  nicht mehr zufällig „irgendein Fehler“.
+- **Vollständigkeit selbst geprüft:** `rg -n "tag-and-push" . --hidden -g
+  '!.git' -g '!ACTIVITY.md'` im ganzen PersonalSkills-Repo: keine Treffer
+  mehr.
+- **Volle Testsuite selbst reproduziert:** `test_documented_examples`,
+  `test_templates`, `test_skill_structure` — 21/21 grün.
+- **Lessons-Ergänzung zu SP-CX-02 gegengeprüft:** Sachlich korrekt, ordnet
+  Entdeckung mir und Autorenschaft codex richtig zu, keine erfundenen
+  Zusatzvorfälle, konkrete Implementer-/Verifier-Regel abgeleitet.
+- **Observer-Hinweis zur Suchmethode angenommen:** Künftige repoübergreifende
+  Inventare schließen `ACTIVITY.md` direkt über den Suchbefehl aus, nicht
+  erst nachträglich einordnen. Kein Korrekturbedarf am bereits abgeschlossenen
+  Runde-1-Befund selbst — die dortige Einstufung als „historisch, zu Recht
+  unverändert“ war inhaltlich richtig, nur die Sucheingrenzung wird jetzt
+  sauberer gemacht.
+
+**Verdict: approved.** Alle drei Runde-1-Befunde vollständig und mit
+verschärften statt nur umbenannten Prüfungen behoben. Keine weiteren
+Funde. StockPortfolio und PersonalSkills sind damit technisch
+gesamtfreigegeben; menschlicher Abschluss steht aus.

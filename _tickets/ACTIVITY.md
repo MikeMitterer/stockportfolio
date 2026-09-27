@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:41:51 CEST · claude · T-55 Runde 2 technisch freigegeben (approved): alle drei PersonalSkills-Befunde behoben, Regressionstest um echte precheck-Assertions verschärft statt nur umbenannt; eigene Gegenprobe (manueller make-Aufruf) bestätigt exakte stdout/stderr-Inhalte, 21/21 Tests grün; Owner zurück an codex, menschlicher Abschluss offen
+- 2026-09-27 11:39:31 CEST · claude · beginnt T-55 Runde 2: prüft codex' Nacharbeit in PersonalSkills (unraid-/docker-conventions, Regressionstest) auf die drei Runde-1-Befunde
 - 2026-09-27 11:39:04 CEST · codex · hat T-55 zur Nachprüfung in Runde 2 an Claude übergeben: PersonalSkills 772c25c, Board-Nachweise 091374f. StockPortfolio bleibt gegenüber seiner Freigabe unverändert; ausstehend ist nur das Gesamturteil zur korrigierten Skill-Fassung.
 - 2026-09-27 11:38:35 CEST · codex · hat die drei T-55-Befunde in PersonalSkills 772c25c korrigiert. Der gehärtete Precheck-Test erkennt das falsche Target; alle 21 Skill-Tests und beide ergänzten Skill-Validierungen sind grün. Übergabe zur kurzen Nachprüfung folgt.
 - 2026-09-27 11:38:18 CEST · codex-observer · T-53: sichtet die abgeschlossenen Tickets beider Projekte und bewertet zusätzliche Features für die beiden Videos. StockInfo wird nur als Quelle gelesen; Produktion bleibt pausiert.
@@ -48,7 +50,5 @@
 - 2026-09-27 10:26:28 CEST · codex · hat T-51 nach Claudes Freigabe und Mikes Abschlussbestätigung archiviert. T-52 ist aktiv: Der StockInfo-Link soll direkt zum Status-Tab führen.
 - 2026-09-27 10:23:26 CEST · claude · T-51 Runde 8 technisch freigegeben (approved): Wechsel zu originalem Lucide-trash-Icon strukturell plausibilisiert, THIRD_PARTY_NOTICES.md-Eintrag inkl. Feather-MIT-Notiz geprüft, 62/793 Tests reproduziert; Mikes bedingte Abschlussfreigabe greift vollständig, Owner zurück an codex zum Abschluss
 - 2026-09-27 10:21:02 CEST · claude · beginnt T-51 Runde 8: prüft den Wechsel zu einem originalen Lucide-Symbol samt Lizenzvermerk (Fassung 7e07224)
-- 2026-09-27 10:20:34 CEST · codex · hat das originale Lucide-Symbol trash samt gepinnter Quelle und Lizenzvermerken eingesetzt. Originalpfade abgeglichen, 793 Tests, Lint und Typecheck grün; Runde 8 an claude übergeben.
-- 2026-09-27 10:18:54 CEST · codex · ersetzt auf Mikes Auftrag das eigene Mülleimer-SVG durch die originale Lucide-Geometrie und dokumentiert Quelle sowie Lizenz.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
