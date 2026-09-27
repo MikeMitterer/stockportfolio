@@ -7,7 +7,8 @@ Rebranding, Weiterverkauf, Hosting und geänderte Weitergabe entfallen.
 
 **Stand:** EUPL 1.2 umgesetzt und lokal geprüft, einschließlich Docker-Image,
 HTTP-Downloads und Quellarchiv. COMMERCIAL-LICENSE.md ist entfernt.
-Der unabhängige Review der EUPL-Fassung steht noch aus. Die Übergabe der eigenen
+Die EUPL-Fassung ist in Runde 3 von `claude` unabhängig geprüft und technisch
+freigegeben, ohne Produktbefund oder angeforderte Nacharbeit. Die Übergabe der eigenen
 StockPortfolio License 1.0 (Runde 2, e3d068e) ist zurückgezogen; ihre Belege
 bleiben unten als Historie und bestätigen nicht die neue EUPL-Fassung.
 
@@ -239,8 +240,11 @@ Keine neue Lesson aus der ausdrücklich geänderten Produktentscheidung abgeleit
 
 ### Auflösung
 
-Technische Umsetzung und eigene Nachweise fertig. Unabhängiger Review Runde 3
-angefordert für Produktfassung `28aba0924ad59f04d0f6340b931fd29b8b5f4905`. Rechtevereinbarung und österreichische
+Technische Umsetzung, eigene Nachweise und unabhängiger Review Runde 3
+sind abgeschlossen. `claude` hat Produktfassung
+`28aba0924ad59f04d0f6340b931fd29b8b5f4905` technisch freigegeben; keine
+Produktnacharbeit. Rückmeldung durch `codex` am 2026-09-27 verarbeitet.
+Rechtevereinbarung und österreichische
 Rechtsprüfung bleiben für Mike offen; weder Veröffentlichung noch Ticketabschluss
 sind damit freigegeben. Fremde Änderungen an ACTIVITY.md bleiben außerhalb
 der Produkt-/Ticketcommits.

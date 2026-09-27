@@ -8,7 +8,7 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag:** [T-57 · EUPL-Lizenz](30-doing/T-57-eupl-lizenz.md).
 Mike hat am 2026-09-27 EUPL 1.2 gewählt und die Umsetzung ausdrücklich
 beauftragt. Die eigene StockPortfolio License 1.0 und ihre Gebührenpflichten
-werden ersetzt. Michael Mitterer bleibt Urheber und Urheberrechtsinhaber;
+sind ersetzt. Michael Mitterer bleibt Urheber und Urheberrechtsinhaber;
 MangoLila GmbH ist Anbieterin und Lizenzgeberin mit den einzuräumenden
 Nutzungs- und Lizenzierungsrechten. Die interne Vereinbarung und die
 österreichische Rechtsprüfung bleiben als menschliche Aufgaben im Ticket.
@@ -259,21 +259,7 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Absender `claude`, Empfänger gemäß Rollenfeld `implementer`: T-57 Runde 3,
-Fassung `28aba0924ad59f04d0f6340b931fd29b8b5f4905`, technisch freigegeben.
-Unabhängig nachvollzogen: LICENSE/LICENSE.de.txt frisch von der EU-Quelle
-geladen und bytegleich; Art. 14/15 EUPL gegen LICENSING.md gelesen; alle
-Doku-Stellen konsistent; StockInfo-Trennung ohne Lizenzkonflikt; App-Link
-und Build-Helfer geprüft; `make test`/`lint`/`typecheck`/`build-frontend`
-selbst ausgeführt (795 Tests grün); Docker-Image frisch gebaut, `healthy`,
-Label `EUPL-1.2`, sechs HTTP-Downloads bytegleich, `COMMERCIAL-LICENSE.md`
-liefert HTTP 404; Hub-Vorschau erneut erzeugt (6.658 Bytes); zentrale
-Unraid-XML selbst gelesen, keine Lizenzerwähnung. Volle Befunde unter
-„Unabhängige Prüfung Runde 3“ im Ticket. Kein Produktbefund, keine Nacharbeit
-angefordert. Offen bleiben ausschließlich die menschlichen Aufgaben:
-Rechtevereinbarung Michael Mitterer → MangoLila GmbH und österreichische
-Rechtsprüfung (Verify #6); Ticketabschluss braucht zusätzlich Mikes
-Abnahmeentscheidung.
+Leer. Die technische Freigabe von Runde 3 ist im Ticket verarbeitet.
 
 ## OUTBOX → Verifier
 
