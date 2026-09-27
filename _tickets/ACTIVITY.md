@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:15:06 CEST · claude · T-53-Konzept gegengeprüft: Kernaussagen (lokale Speicherung, Backup-Inhalt, Restore-Ablauf) gegen README und Quellcode verifiziert, Machbarkeit lokal geprüft (ffmpeg, Stimmen, Bildschirmzugriff); Konzept freigegeben mit Ergänzung zur Bildschirmaufnahme-Berechtigung
+- 2026-09-27 10:14:47 CEST · codex · hat den einzigen Befund aus T-51 Runde 6 beantwortet und die Herkunftsklärung an claude übergeben. Produktcode unverändert; Abschluss und T-52 folgen nach dem OK.
+- 2026-09-27 10:14:11 CEST · codex · bearbeitet Claudes einzigen T-51-Befund zur Symbolherkunft. Der direkt formulierte SVG-Pfad wird im Ticket dokumentiert; Produktcode und Prüfergebnisse bleiben unverändert.
+- 2026-09-27 10:13:46 CEST · claude · beginnt T-53-Konzeptgegenprüfung: Blogposts/Erklärvideo für StockPortfolio und StockInfo (Fassung 838176c)
 - 2026-09-27 10:11:57 CEST · claude · T-51 Runde 6: changes_requested — neues Mülleimer-Symbol entspricht strukturell Lucide trash-2, THIRD_PARTY_NOTICES.md-Eintrag fehlt; übriger Umfang (Scrollmechanik, Mindestbreite, 62/793 Tests) in Ordnung; Owner zurück an codex
 - 2026-09-27 10:08:16 CEST · codex · hat Mikes Abschlussfreigabe für T-51 unter der Bedingung von Claudes OK festgehalten. Nach Freigabe der aktuellen Fassung folgt ohne weitere Rückfrage der Abschluss und T-52.
 - 2026-09-27 10:07:12 CEST · codex-observer · T-53 ergänzt: Lokale Depotdaten als zentrale Story-Aussage; Backup und Restore mit eigener Browserwechsel-Szene. Aktualisierte Fassung zur Gegenprüfung an Claude gemeldet.
@@ -46,9 +50,5 @@
 - 2026-09-26 18:32:54 CEST · codex · Stellt die normale Unraid-Installation über Apps voran und kennzeichnet wget als Testinstallation. README und zentraler Skill werden anschließend getrennt committet, gemergt und gepusht.
 - 2026-09-26 18:26:14 CEST · codex · README-Abgleich mit unraid-conventions abgeschlossen: zentrale Unraid-Anleitung samt Updates, beide READMEs verlinken sie. Links, Shell-Syntax und Docker-Hub-Vorschau (4.772 Bytes) geprüft.
 - 2026-09-26 18:25:44 CEST · codex · Gleicht die READMEs mit unraid-conventions ab: Unraid-Details zentral in unraid/README.md, kurze Verweise in Projekt- und Docker-README.
-- 2026-09-26 18:10:12 CEST · codex-observer · T-49: Widerspruch zwischen archivierter Ticketdatei und weiter aktivem STATUS gemeldet. Coder um konsistenten Abschluss oder Wiederherstellung der aktiven Ablage samt Einordnung des offenen Hub-Pushs gebeten.
-- 2026-09-26 18:07:25 CEST · codex · wget-Installation in README.md und unraid/README.md ergänzt. Download-URL erreichbar, Befehle syntaktisch geprüft; docker/README.md verweist bereits auf die passende Anleitung.
-- 2026-09-26 18:06:50 CEST · codex · Ergänzt die wget-Installation der Unraid-Vorlage nach dem Vorbild der StockInfo-README.
-- 2026-09-26 18:05:56 CEST · codex · unraid/README.md ist vollständig englisch. Befehle und Links unverändert geprüft; Docker-, API- und Backup-Angaben stimmen mit beiden READMEs überein.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

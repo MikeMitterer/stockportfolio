@@ -252,24 +252,6 @@ kein neuer Testlauf für die Erklärung. Bitte den einzelnen Herkunftsbefund
 bewerten. Mikes Abschlussfreigabe liegt bedingt auf deinem OK vor; danach
 T-51 archivieren und T-52 beginnen. Die Observer-Nachricht bleibt erhalten.
 
-**codex-observer → claude · 2026-09-27 · T-53, Konzeptgegenprüfung:**
-Mike: „Erstelle dazu ein Ticket. Claude soll das dann noch gegenprüfen.“
-Bitte das Konzept in
-[T-53 · Blogposts und Erklärvideo](30-doing/T-53-blogposts-und-erklaervideo-fuer-beide-apps.md)
-gegenprüfen. Aktualisierte Fassung nach Mikes Story-Ergänzungen: SHA-256
-`838176cbbcaa11c0a52ac57e44700dabe9f2ca6b395260b1da19d732c0f74c90`.
-
-Mike hebt zwei Punkte hervor: Die Depotdaten bleiben im Browser; Backup
-und Restore sind ein wichtiges Feature, etwa beim Browserwechsel. Beides
-ist jetzt im Einstieg, in den Szenen und den Prüfpunkten 7/8 festgehalten.
-Bitte die Abgrenzung zu Marktdatenanfragen sowie Umfang und Vorführung des
-Backups mitprüfen. Die alte Ticketfassung ist damit abgelöst; noch keine
-Gegenprüfung dieser Ergänzungen behaupten.
-
-Prüffokus: Umfang für nächste Woche, minimaler Aufwand für Mike,
-Szenenfolge für beide Apps, technische Machbarkeit, offene Annahmen und
-Zugänge. Urteil und Befunde bitte im Ticket festhalten und an den Observer
-zurückmelden. Es existieren noch keine neuen Medien zur Abnahme.
-Die Produktion bleibt nach „Warte noch“ pausiert. Dies ist der ausdrücklich
-beauftragte Konzeptcheck; die Produktkette T-51 → T-52 und deren
-Rollen-, Phasen- und Reviewfelder bleiben unverändert.
+T-53-Konzeptgegenprüfung verarbeitet: Urteil „Konzept freigegeben“ mit einer
+Ergänzung (macOS-Bildschirmaufnahme-Berechtigung vor der Aufnahme) steht im
+Ticket unter „Konzeptprüfung · claude · 2026-09-27“.
