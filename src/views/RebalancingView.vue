@@ -712,6 +712,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     font-size: 0.6875rem;
     line-height: 1.25;
     @include muted(null);
+
+    // Mike hat für diesen Hinweis ausdrücklich die Grenze 1160 px vorgegeben.
+    @media (width < 1160px) { display: none; }
   }
 
   &__panel {

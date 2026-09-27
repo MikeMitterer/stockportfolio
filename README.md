@@ -237,6 +237,7 @@ Hover over the dotted column headings for explanations of relative deviation,
 percentage points, and positive or negative trade entries.
 Below 1280 pixels, the bar and its share label are hidden. The _Rel. %_ value
 remains visible in its own column, including its sign colour.
+Below 1160 pixels, the simulation reminder above the table is hidden.
 
 ### Explanations inside the app
 

@@ -266,8 +266,18 @@ SP-CX-05 gelesen (Autor: codex).
 
 ### Auflösung
 
+**Weiterer Nutzerauftrag nach Runde-3-Übergabe:** Der Hinweis „Alles hier ist …“
+wird unter 1160 px ausgeblendet. Die ausdrücklich von Mike vorgegebene Grenze
+ist als lokale Ausnahme zur allgemeinen Breakpoint-Konvention kommentiert.
+Bestehender i18n-Text unverändert. Chrome: bei 1160 px sichtbar, bei 1159 px
+`display: none`; „Plan leeren“ bleibt in beiden Breiten sichtbar. Danach erneut
+793 Tests / 62 Dateien, Lint und Typecheck erfolgreich. README erläutert die
+Sichtbarkeit; Containeranleitung weiterhin zutreffend, keine Betriebsänderung.
+Die wartende Runde 3 wurde vor einem Prüfurteil zurückgenommen; neue Übergabe
+in Runde 4 einschließlich der getrennten Prozentzahl.
+
 Runde 2 bleibt technisch freigegeben. Die danach beauftragte schmale Ansicht
-ist umgesetzt und selbst geprüft; Runde 3 und Mikes Abschlussbestätigung
+ist umgesetzt und selbst geprüft; Runde 4 und Mikes Abschlussbestätigung
 stehen aus. Ticket bleibt in Doing.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
