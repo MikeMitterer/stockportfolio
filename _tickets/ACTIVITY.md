@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:26:50 CEST · codex · hat T-55 umgesetzt und geprüft: kurze tag-Targets in Makefile und README sowie gemeinsame Namensvorgabe in beiden Skills und Vorlage. Trockenläufe, Skill-Validierung, 793 Tests, Lint und Typecheck erfolgreich; bereitet Claudes Review vor.
+- 2026-09-27 11:25:27 CEST · codex-observer · T-53: prüft Claudes neue Vorschläge und den roten Faden der Story. Konkretisiert einfache Rebalancing-Demo, Übergang zur Datenquelle und Backup; Produktion bleibt pausiert.
+- 2026-09-27 11:24:44 CEST · codex · setzt T-55 um: kurze Targets tag-major/minor/patch in StockPortfolio sowie passende Namensvorgabe im Makefile- und Versionierungs-Skill. Commit, Tag und Push bleiben das Verhalten; es wird kein Release ausgeführt.
+- 2026-09-27 11:22:12 CEST · codex · hat die Versionierungs-Targets verglichen: StockPortfolio wurde in T-49 auf tag-and-push-* umbenannt; StockInfo verwendet noch tag-*. Beide rufen denselben semVerBump samt Commit, Tag und Git-Push auf.
 - 2026-09-27 11:17:23 CEST · claude · T-53 erneut geprüft: Datenschutz-/Testdatenvorgaben, vereinfachte Rebalancing-Szene und Werkzeugoptionen (Filmora-Pfad selbst verifiziert) inhaltlich freigegeben; zwei Ergänzungsvorschläge (Metadaten-Check, Datenschutzmaßstab auch für StockInfo-Szene), Produktionsstopp unverändert
 - 2026-09-27 11:16:33 CEST · claude · prüft T-53 erneut auf Mikes Auftrag: neue Datenschutz-/Testdatenvorgaben (kein persönliches Portfolio), vereinfachte Rebalancing-Szene und Werkzeugoptionen (Filmora/HeyGen/ElevenLabs) gegengeprüft
 - 2026-09-27 11:14:20 CEST · codex-observer · T-53: Filmora über native App-Steuerung erreicht; Ansichtswechsel erfolgreich getestet und zurückgestellt. Kein Projekt geöffnet oder bearbeitet; Schnitt und Export noch ungeprüft.
@@ -46,9 +50,5 @@
 - 2026-09-27 10:08:16 CEST · codex · hat Mikes Abschlussfreigabe für T-51 unter der Bedingung von Claudes OK festgehalten. Nach Freigabe der aktuellen Fassung folgt ohne weitere Rückfrage der Abschluss und T-52.
 - 2026-09-27 10:07:12 CEST · codex-observer · T-53 ergänzt: Lokale Depotdaten als zentrale Story-Aussage; Backup und Restore mit eigener Browserwechsel-Szene. Aktualisierte Fassung zur Gegenprüfung an Claude gemeldet.
 - 2026-09-27 10:06:59 CEST · claude · beginnt T-51 Runde 6: prüft Mindestbreite, gemeinsames Scrollen und Icon in der Rebalancing-Ansicht (Fassung 5e983a0)
-- 2026-09-27 10:05:10 CEST · codex · hat Plan leeren um ein dekoratives Mülleimer-Symbol ergänzt. Darstellung bei 889 px geprüft, 793 Tests, Lint und Typecheck grün; Runde 6 an claude übergeben.
-- 2026-09-27 10:04:17 CEST · codex · ergänzt ein Mülleimer-Symbol bei Plan leeren im vorhandenen NButton-Icon-Slot.
-- 2026-09-27 10:03:18 CEST · codex · hat Mindestbreite und gemeinsamen Scrollbereich für Rebalancing-Kopf und Tabelle umgesetzt. Browserprüfung bei 889/800/1440 px, 793 Tests, Lint und Typecheck grün; Runde 5 an claude übergeben.
-- 2026-09-27 10:01:14 CEST · codex · setzt Mikes Entscheidung für Mindestbreite und gemeinsames horizontales Scrollen von Rebalancing-Kopf und Tabelle um.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

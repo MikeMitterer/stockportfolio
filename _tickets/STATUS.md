@@ -5,7 +5,9 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Kein aktiver Coder-/Verifier-Auftrag.**
+**Aktiver Auftrag: [T-55 · Kurze Versionierungs-Targets](30-doing/T-55-kurze-versionierungs-targets.md).**
+Mike beauftragt die Umbenennung und die entsprechende Skill-Pflege.
+Coder `codex` setzt T-55 um.
 [T-54 · Backup im leeren Depot](40-done/T-54-sicherung-im-leeren-depot.md)
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
@@ -43,23 +45,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Kein aktiver Auftrag (`idle`). Die letzte Prüfung von T-54 bleibt erhalten.
+T-55 in Umsetzung. Die letzte Prüfung von T-54 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-55-kurze-versionierungs-targets.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-54-sicherung-im-leeren-depot.md`
 - `last_reviewed_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
 - `last_reviewed_round`: `1`
-- `workstream`: `none`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `workstream`: `T-55`
+- `priority_chain`: `T-55-kurze-versionierungs-targets.md`
+- `priority_ticket`: `T-55-kurze-versionierungs-targets.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -154,7 +156,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 bis T-52 und T-54 sind abgeschlossen; kein aktiver Coder-/Verifier-Auftrag. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 und T-54 sind abgeschlossen; T-55 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.

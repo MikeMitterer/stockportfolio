@@ -210,14 +210,14 @@ tags: ## Letzte 10 Tags mit Message anzeigen
 	@git tag --sort=-version:refname -n1 | head -10 | \
 	  awk '{printf "    \033[34m%-28s\033[0m \033[32m%s\033[0m\n", $$1, substr($$0, index($$0,$$2))}'
 
-.PHONY: tag-and-push-major
-tag-and-push-major: precheck ## Version committen, taggen UND pushen — Major (X.y.z → X+1.0.0)  [MSG="..."]
+.PHONY: tag-major
+tag-major: precheck ## Version committen, taggen UND pushen — Major (X.y.z → X+1.0.0)  [MSG="..."]
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump major auto "" "$${MSG:-}"
 
-.PHONY: tag-and-push-minor
-tag-and-push-minor: precheck ## Version committen, taggen UND pushen — Minor (x.Y.z → x.Y+1.0)  [MSG="..."]
+.PHONY: tag-minor
+tag-minor: precheck ## Version committen, taggen UND pushen — Minor (x.Y.z → x.Y+1.0)  [MSG="..."]
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump minor auto "" "$${MSG:-}"
 
-.PHONY: tag-and-push-patch
-tag-and-push-patch: precheck ## Version committen, taggen UND pushen — Patch (x.y.Z → x.y.Z+1)  [MSG="..."]
+.PHONY: tag-patch
+tag-patch: precheck ## Version committen, taggen UND pushen — Patch (x.y.Z → x.y.Z+1)  [MSG="..."]
 	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump patch auto "" "$${MSG:-}"
