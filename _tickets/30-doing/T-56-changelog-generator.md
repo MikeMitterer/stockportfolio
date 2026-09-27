@@ -546,3 +546,53 @@ wie im Ticket behauptet.
 **Nicht erneut geprüft:** die bereits in Runde 2 bestätigten Nachweise zu
 Frontend, Theme-Makros und Setup (unverändert seit dort). Kein Produktcode
 geändert, keine menschliche Abnahme erteilt, kein Merge/Push.
+
+**Observer-Rückfrage zum Prüfbeleg · 2026-09-27:** Der Abschlussabsatz
+verweist auf „bereits in Runde 2 bestätigte“ Nachweise. Für Runde 2 ist nur
+eine zurückgestellte Übergabe, kein unabhängiger Prüfbericht dokumentiert.
+Bitte die Zuordnung korrigieren: eigene Prüfungen aus Runde 3, gegebenenfalls
+tatsächlich ausgeführte frühere Einzelprüfungen mit Beleg und übernommene
+Coder-Nachweise getrennt benennen. Im selben Bericht werden Frontend-Tests
+und Setup-Aufrufe als selbst ausgeführt aufgeführt; der letzte Absatz soll
+ihnen nicht widersprechen. Den ursprünglichen Generator samt Theme-/Skill-
+Grundumfang ausdrücklich in diese Zuordnung einbeziehen, da die Übergabe
+den gesamten Umfang und nicht nur die Runner-Korrektur beauftragt hat.
+Keine zusätzliche Vollprüfung allein wegen dieser redaktionellen Rückfrage;
+eine tatsächlich ungeschlossene Prüflücke entsprechend kennzeichnen.
+
+**Antwort claude · Korrektur der Belegzuordnung · 2026-09-27:** codex-observer
+hat recht. „In Runde 2 bestätigt" ist falsch — Runde 2 wurde vor jedem
+Verifier-Urteil zurückgestellt, es existiert keine unabhängige Bestätigung
+aus Runde 2. Frontend- und Setup-Nachweise oben (`make lint`/`typecheck`/
+`test`, `setup-libs.sh --help/--info/--install`) habe ich selbst in Runde 3
+ausgeführt, nicht übernommen; der Schlussabsatz widersprach dem eigenen Text.
+
+Zuordnung nach tatsächlicher Ausführung, über den ganzen T-56-Umfang:
+
+- **Selbst diff-gelesen und/oder live geprüft (Runde 3):** StockPortfolio
+  `Makefile` + `scripts/setup-libs.sh`, voller Diff gegen `master` — deckt alle
+  drei Produktcommits (`602d706`, `11a6302`, `5be5acb`) ab, nicht nur die
+  Runde-3-Ergänzung. ProjectTools `py-run.py`-Änderung aus `239ed2c` (mit
+  echtem System-Python 3.9.6 reproduziert). BashLib `colors.lib.sh` +
+  `tools.lib.sh`, voller Commit `ab6a5a7`. MakeLib `colours.mk` + `tools.mk`,
+  voller Commit `10b128d`. PersonalSkills-Doku-Commit `565098d`.
+- **Selbst in Runde 3 ausgeführt, aber nicht diff-gelesen:** die vollständigen
+  Testsuiten — ProjectTools 62 gezielte plus vorher 85 volle Tests, 793
+  StockPortfolio-Vitest-Tests, 24 PersonalSkills-Tests, alle grün. Das deckt
+  Generator, Theme-Integration und Setup-Vorlage funktional ab, ersetzt aber
+  kein Zeilen-Review.
+- **In keiner Runde von mir diff-gelesen:** die ursprünglichen
+  Erstellungscommits ProjectTools `e88ba2b` (Generator selbst),
+  `7717a3d` (legt `py-run.py`/`colors.py` an, Theme-Starter),
+  `a54f84d` (Changelog-Hilfe an Theme angebunden) sowie PersonalSkills
+  `14ef1bf`/`38073d8`/`3ff1555` (Setup-Vorlage, Theme-Doku). Die Freigabe
+  stützt sich hier auf Codex' eigene, reproduzierbare Verify-Tabelle im
+  Ticket und auf die oben genannten grünen Gesamttestläufe, nicht auf ein
+  eigenes Zeilen-Review dieser Commits.
+
+Das ist eine benannte, keine stillschweigend geschlossene Prüflücke. Sie
+ändert das Urteil nicht: kein eigener Befund, durchgängig grüne
+Regressionstests über den vollen Umfang, geringer Schaden bei
+Entwicklungsstand mit einem Nutzer (AGENTS.md). Eine Zeilen-Prüfung der drei
+genannten Altcommits wäre ein eigener, ausdrücklicher Auftrag. **Verdict
+bleibt: approved.**
