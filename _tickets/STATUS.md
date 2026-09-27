@@ -13,7 +13,9 @@ Urheber; MangoLila GmbH ist Anbieterin und Lizenzgeberin. Die Hinweise zur
 internen Rechtevereinbarung und österreichischen Rechtsprüfung bleiben auf
 Mikes Wunsch als persönliche Wiedervorlage im archivierten Ticket erhalten.
 Ihr rechtlicher Abschluss wird damit nicht behauptet.
-Mike hat anschließend den Minor-Bump über `make tag-minor` beauftragt.
+Der Abschluss ist nach `master` integriert. `make tag-minor` hat Version
+`0.4.0` und Tag `v0.4.0+260927.2137.6687a` erstellt und gepusht; die
+Release-Message wurde auf Mikes Nachtrag ergänzt. Das Changelog ist aktualisiert.
 
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
@@ -65,7 +67,7 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 T-57 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
 Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt
-erhalten. Abschlussintegration und beauftragter Minor-Bump werden ausgeführt.
+erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`

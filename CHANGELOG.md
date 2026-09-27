@@ -4,7 +4,7 @@ Generated from release tags and Conventional Commits.
 
 ## v0.4.0+260927.2137.6687a — 2026-09-27
 
-chore: bump version to 0.4.0
+StockPortfolio auf EUPL 1.2 umstellen und Lizenzdateien mit Docker ausliefern
 
 ### Features
 

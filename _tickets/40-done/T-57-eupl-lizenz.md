@@ -252,12 +252,42 @@ sind abgeschlossen. `claude` hat Produktfassung
 `28aba0924ad59f04d0f6340b931fd29b8b5f4905` technisch freigegeben; keine
 Produktnacharbeit. Rückmeldung durch `codex` am 2026-09-27 verarbeitet.
 Mike hat am 2026-09-27 mit „Ticket ist damit erledigt“ den Abschluss erklärt.
-Das Ticket ist nach `40-done/` archiviert; Merge und Git-Push erfolgen gemäß
-stehendem Integrationsauftrag. Anschließend ist `make tag-minor` beauftragt.
+Das Ticket ist nach `40-done/` archiviert und per Fast-forward nach `master`
+integriert. `make tag-minor` hat die Version von `0.3.0` auf `0.4.0` erhöht
+und samt Tag gepusht; Details zur Integration stehen direkt darunter.
 Rechtevereinbarung und österreichische Rechtsprüfung bleiben persönliche
 Wiedervorlagen, ohne behauptete rechtliche Freigabe. Ein Docker-Image-Push
 ist nicht Teil dieses Abschlusses. Fremde uncommittete Änderungen an
 ACTIVITY.md bleiben außerhalb der Produkt-/Ticketcommits.
+
+### Integration und Minor-Version · 2026-09-27
+
+- Abschlusscommit `ef26f12`, Fast-forward nach `master`; Integrationstestlauf
+  dort erfolgreich (63 Testdateien / 795 Tests). Keine Produktänderung gegenüber
+  der geprüften Fassung bis auf den anschließend beauftragten Versionsbump.
+- Mike: „Setze die minor-Version um eins nach oben“, „mit make“, „Mit message“.
+  `make tag-minor` ausgeführt, Versionscommit `6687a529902d280f935f6bb5a9a8abb9109de1ed`,
+  `package.json` und beide Root-Versionen im Lockfile konsistent auf `0.4.0`.
+  EUPL-1.2-Metadaten unverändert.
+- Der erste Sandboxlauf konnte Versionsdateien schreiben, aber weder Commit/Tag
+  noch Push abschließen. Ausschließlich diese eigenen Versionsänderungen wurden
+  auf HEAD zurückgenommen. Erneuter autorisierter Make-Lauf mit den benötigten
+  Rechten vollständig erfolgreich; kein doppelter Minor-Bump.
+- Tag `v0.4.0+260927.2137.6687a` und Branch gepusht. Mikes Message-Nachtrag kam
+  nach dem ersten Push. Deshalb die Annotation desselben Tags mit seiner
+  Freigabe aktualisiert; Versionsnummer und Release-Commit unverändert.
+  Remote-Ersetzung nur mit Lease auf den zuvor geprüften Tag-Objekthash.
+- Release-Message: „StockPortfolio auf EUPL 1.2 umstellen und Lizenzdateien mit Docker ausliefern“.
+  Changelog anschließend mit `make changelog` neu erzeugt. Das normale Minor-
+  Target hatte das Changelog bereits zunächst mit Standardmessage publiziert.
+- Uncommittete ACTIVITY-Änderungen für den sauberen Make-Lauf gezielt gesichert;
+  sie werden anschließend unverändert wiederhergestellt und nicht mitcommittet.
+  Kein Docker-Image veröffentlicht. Die lokale Imageprüfung oben bezog sich
+  auf die EUPL-Fassung vor dem reinen Versionsbump.
+- Doku-Abgleich des Abschlusses: STATUS, Board-README, archiviertes Ticket und
+  Changelog aktualisiert; Projekt- und Docker-README brauchen für den rein
+  numerischen Bump keine Textänderung. Bestehende Lizenz-/Betriebszusagen bleiben
+  gleich. Rechtevereinbarung und Rechtsprüfung bleiben persönliche Wiedervorlagen.
 
 ### Unabhängige Prüfung Runde 3 · Verifier `claude` · 2026-09-27
 
