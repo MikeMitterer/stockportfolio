@@ -227,14 +227,16 @@ resulting allocations and bands. _Cover from_ offers liquid positions when a
 plan is underfunded. **Nothing is booked.** Place orders at your bank, then
 update holdings on the dashboard.
 
-The bar and its number show the relative deviation from the target after
+The bar and the separate _Rel. %_ column show the relative deviation from the target after
 the planned trade, using the same format as the dashboard. The resulting
-portfolio share appears below it; the adjacent column shows the difference
+portfolio share appears below the bar; the _Off target_ column shows the difference
 in percentage points. Relative deviation is undefined when the target is zero.
 In Rebalancing, positive relative values are green and negative values red;
 the bar fill continues to indicate the band status.
 Hover over the dotted column headings for explanations of relative deviation,
 percentage points, and positive or negative trade entries.
+Below 1280 pixels, the bar and its share label are hidden. The _Rel. %_ value
+remains visible in its own column, including its sign colour.
 
 ### Explanations inside the app
 

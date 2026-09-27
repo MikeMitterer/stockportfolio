@@ -12,10 +12,10 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 −0,5 % beschreibt dagegen die Differenz von −0,5 Prozentpunkten zum Ziel.
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
-**Stand:** Umsetzung, eigene technische Prüfung und unabhängige Prüfung
-(Runde 2, `claude`, approved) abgeschlossen auf
-`t-51-rebalancing-bandabweichung-als-zahl`. Mikes Abschlussbestätigung steht
-aus. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
+**Stand:** Runde 2 technisch freigegeben. Mikes anschließender Auftrag zur
+schmalen Ansicht ist umgesetzt und selbst geprüft; die neue unabhängige
+Prüfung und Mikes Abschlussbestätigung stehen aus.
+Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
 Prüfung bleibt seine Abschlussbestätigung offen.
@@ -70,11 +70,12 @@ Quelltext bei Aufnahme gelesen; keine Browserprüfung durchgeführt:
   `relativeDeviationAfter`. Die vorhandene Behandlung eines Zielanteils
   von null berücksichtigen; keine zweite Berechnung in der Ansicht aufbauen.
 
-**Umsetzung:** `DeltaBar` zeigt `relativeDeviationAfter` wieder mit seinem
-unveränderten Standardformat wie im Dashboard. Der Anteil danach steht als
-beschriftete zweite Zeile darunter. Die Nachbarspalte benennt Prozentpunkte
-und verwendet eine Zahl ohne irreführendes Prozentzeichen. Bei Ziel 0 %
-steht am Balken „—“ mit einer sichtbaren Erklärung. Die Berechnung bleibt in
+**Umsetzung:** Die relative Zahl steht in der eigenen Spalte „Rel. %“ mit
+`percentSigned`, demselben Formatierer wie im Dashboard. `DeltaBar` zeigt
+den Balken ohne eigene Zahl (`hideValue`). Der Anteil danach steht unter
+dem Balken. „Abw. Ziel“ zeigt Prozentpunkte ohne Prozentzeichen; das Popup
+erklärt die Einheit. Bei Ziel 0 % steht in „Rel. %“ ein Strich mit Erklärung
+im Titel; die breite Ansicht erklärt dies zusätzlich unter dem Balken. Die Berechnung bleibt in
 `computeTradePlan`; `decimalSigned` teilt die vorhandene Zahlenformatierung
 mit `percentSigned`. Der vorhandene i18n-Schlüssel für den Tooltip am
 probeweisen Ziel ersetzt dort außerdem den hartkodierten deutschen Text.
@@ -82,8 +83,9 @@ probeweisen Ziel ersetzt dort außerdem den hartkodierten deutschen Text.
 Die IST-Prozentzelle bleibt mit `white-space: nowrap` zusammen. „Anteil
 nachher …“ ist von 12 auf 11 Pixel verkleinert. Die relative Zahl ist im
 Rebalancing bei positivem Vorzeichen grün, bei negativem rot, bei null oder
-undefiniertem Ziel neutral. `DeltaBar` bietet dafür `colorBySign`; die
-Balkenfüllung zeigt weiterhin unabhängig davon den Bandstatus.
+undefiniertem Ziel neutral. Die Farbklassen liegen an der eigenen Zahlenzelle;
+der nur hier genutzte `colorBySign`-Prop entfällt. Die Balkenfüllung zeigt
+weiterhin unabhängig davon den Bandstatus.
 
 Die Überschriften heißen jetzt „Rel. Abw.“ und „Abw. Ziel“; ihre Popups
 erklären den Zustand nach dem Handel und unterscheiden Prozent von
@@ -94,6 +96,12 @@ Unterstreichung und Hilfecursor. Texte sind in DE und EN vorhanden.
 Die kurzen Tooltip-Überschriften bleiben mit `white-space: nowrap` einzeilig.
 Chrome bestätigt für DELTA, Kauf / Verkauf, Rel. Abw. und Abw. Ziel bei 800 px
 jeweils genau eine Textzeile. Im Template stehen nur i18n-Schlüssel.
+
+Nach Mikes Hinweis zum dreizeiligen Anteil-Text sind Balken und Prozentzahl
+getrennte Tabellenspalten. Unter der Fundament-Grenze `xl` (1280 px) werden
+Balkenspalte und deren Header ausgeblendet. „Rel. %“ bleibt samt Vorzeichenfarbe
+sichtbar. Oberhalb bleiben Anteiltexte einzeilig. Die Gruppen- und Fußzeilen
+spannen über die zusätzliche Spalte; die Summen bleiben unter „Wert“.
 
 Die Darstellung verwendet die vorhandenen Werte wieder. Anteil nach
 dem Trade, relative Abweichung und Differenz in Prozentpunkten müssen
@@ -107,7 +115,7 @@ Rebalancing auf denselben simulierten Zustand wie der zugehörige Balken.
 - Vorzeichen, Rundung und Prozentformat folgen der Dashboard-Darstellung.
   Beschriftungen erklären den Bezug und sind in DE und EN verfügbar.
 - Änderungen an simulierten Trades oder Zielanteilen aktualisieren Zahl
-  und Balken gemeinsam. Der Anteil nach dem Trade bleibt erkennbar.
+  und Balken gemeinsam. Der Anteil nach dem Trade bleibt in der breiten Ansicht erkennbar.
 - Innerhalb, auf und außerhalb der Bandgrenzen stimmen Zahl, Balken und
   bestehende Bewertung überein. Nullabweichung und Zielanteil null erzeugen
   weder `NaN` noch eine unendliche oder irreführende neue Anzeige.
@@ -127,6 +135,8 @@ Tests und Browserprüfung sind unten getrennt beschrieben.
 | 5 | Doku und Dashboard-Vergleich | README erläutert die drei Werte; Containeranleitung bleibt zutreffend. Browser-Dashboard und Rebalancing vor Trade zeigen beide −5,0 % | ✅ |
 | 6 | Vorzeichenfarbe und kompakte Anzeige | Chrome bei 1440 und 800 px Breite: IST-Werte 9,5 % und 90,5 % jeweils eine Textzeile; Anteil 11 px. Negative Zahl rot, positive grün trotz beiderseits grünem Band. Tests prüfen Vorzeichen innerhalb/außerhalb des Bands sowie neutrale Null/undefiniert und Farbwechsel nach Trade | ✅ |
 | 7 | Kurze Header und Hover-Erklärungen | Chrome bei 800 px: „Rel. Abw.“, „Abw. Ziel“, unverändert „Kauf / Verkauf“. Alle drei Popups durch tatsächliches Hover geöffnet, DE/EN-Texte geprüft; DELTA-Muster wiederverwendet | ✅ |
+
+| 8 | Getrennte Spalten bei schmalem Fenster | Chrome: 1280 px mit Balken/Anteil, 1279/1024/800 px ohne Balkenspalte; relative Prozentzahl jeweils sichtbar und farbig. Screenshots 1280/1024 bestätigen Ausrichtung von Headern und Bilanz. Bei 800 px bleibt das vorhandene seitliche Scrollen der Eingabetabelle nötig | ✅ |
 
 **Nachprüfung der Anzeigevorgaben:** 2026-09-27, 09:35: `make test` erneut
 62 Dateien / 793 Tests erfolgreich; `make lint` und `make typecheck` Exit 0.
@@ -161,6 +171,10 @@ make test
 make lint
 make typecheck
 ```
+
+**Responsive Nachprüfung:** 2026-09-27, 09:48: 793 Tests / 62 Dateien,
+Lint und Typecheck erfolgreich. Bestehende zehn Fälle prüfen jetzt die eigene
+Zahlenzelle und das Fehlen einer zweiten Zahl im Balken.
 
 ### Side-Effects
 
@@ -201,6 +215,10 @@ Zahl verglichen). Keine neue Lesson durch diesen einzelnen Anzeigeauftrag.
 Die allgemeine Übernahme der Board-Konventionen auf
 `2026-09-11-lessons-follow-through` bleibt separat offen. Dieser Auftrag
 ändert keine Board-Konvention und erfordert daher keine Skill-Änderung.
+
+**Doku-Abgleich zur schmalen Ansicht:** README, „Rebalancing is a simulation“,
+beschreibt separate Zahl und Ausblendung unter 1280 px. Containeranleitung
+„Features“ bleibt zutreffend; keine Änderung an Betrieb, Vertrag oder Installation.
 
 ### Unabhängige Prüfung · Runde 2 · claude
 
@@ -249,9 +267,9 @@ SP-CX-05 gelesen (Autor: codex).
 
 ### Auflösung
 
-Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 2, `claude`,
-approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
-Ticket bleibt bis dahin in Doing.
+Runde 2 bleibt technisch freigegeben. Die danach beauftragte schmale Ansicht
+ist umgesetzt und selbst geprüft; Runde 3 und Mikes Abschlussbestätigung
+stehen aus. Ticket bleibt in Doing.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in

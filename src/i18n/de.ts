@@ -428,6 +428,7 @@ export const de = {
       trade: 'Kauf / Verkauf',
       value: 'Wert',
       relativeDeviationAfter: 'Rel. Abw.',
+      relativePercent: 'Rel. %',
       deviation: 'Abw. Ziel',
     },
     shareAfterLabel: 'Anteil nachher: {share}',

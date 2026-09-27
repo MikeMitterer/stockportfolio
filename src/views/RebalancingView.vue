@@ -10,7 +10,7 @@ import { useAppNotification } from '@/composables/useAppNotification'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
-import { decimalSigned, integer, percent } from '@/domain/formatters'
+import { decimalSigned, integer, percent, percentSigned } from '@/domain/formatters'
 import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
 import type { GroupResult } from '@/domain/rebalancing'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
@@ -377,10 +377,18 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                   </NTooltip>
                 </th>
                 <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
-                <th class="reb__th reb__th--left reb__th--w56">
+                <th class="reb__th reb__th--left reb__th--w56 reb__band-column">
                   <NTooltip trigger="hover">
                     <template #trigger>
                       <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
+                    </template>
+                    <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
+                  </NTooltip>
+                </th>
+                <th class="reb__th">
+                  <NTooltip trigger="hover">
+                    <template #trigger>
+                      <span class="reb__hinted">{{ t('rebalancing.columns.relativePercent') }}</span>
                     </template>
                     <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
                   </NTooltip>
@@ -400,7 +408,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
             <tbody>
               <template v-for="entry in groupedRows" :key="entry.group.group">
                 <tr :style="{ backgroundColor: bandColor(entry.group.group) }">
-                  <td colspan="11" class="reb__td reb__td--wide">
+                  <td colspan="12" class="reb__td reb__td--wide">
                     <span class="reb__group">
                       <span
                         class="reb__group-dot"
@@ -526,13 +534,13 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     {{ row.cashFlow === 0 ? '—' : formatMoneySigned(row.cashFlow) }}
                   </td>
 
-                  <td class="reb__td">
+                  <td class="reb__td reb__band-column">
                     <!-- Balken und Zahl beziehen sich auf denselben simulierten Zustand. -->
                     <DeltaBar
                       :relative-percent="row.relativeDeviationAfter"
                       :suggestion="row.suggestionAfter"
                       :label="row.targetPercent === 0 ? '—' : undefined"
-                      color-by-sign
+                      hide-value
                       compact
                     />
                     <div class="reb__share-after">
@@ -541,6 +549,16 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     <div v-if="row.targetPercent === 0" class="reb__share-after">
                       {{ t('rebalancing.relativeUndefined') }}
                     </div>
+                  </td>
+                  <td
+                    class="reb__td reb__td--num reb__relative-value tabular-nums"
+                    :class="{
+                      'reb__relative-value--positive': row.targetPercent !== 0 && row.relativeDeviationAfter > 0,
+                      'reb__relative-value--negative': row.targetPercent !== 0 && row.relativeDeviationAfter < 0,
+                    }"
+                    :title="row.targetPercent === 0 ? t('rebalancing.relativeUndefined') : undefined"
+                  >
+                    {{ row.targetPercent === 0 ? '—' : percentSigned(row.relativeDeviationAfter) }}
                   </td>
 
                   <!--
@@ -579,7 +597,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                 >
                   {{ formatMoneySigned(plan.netCashFlow) }}
                 </td>
-                <td class="reb__foot-note" colspan="3">
+                <td class="reb__foot-note" colspan="4">
                   <template v-if="!planHasEntries">{{ t('rebalancing.footerNothing') }}</template>
                   <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">
                     {{ t('rebalancing.footerBalanced') }}
@@ -732,7 +750,20 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
   &__share-after {
     margin-top: var(--space-1);
+    white-space: nowrap;
     @include muted(0.6875rem);
+  }
+
+  &__band-column {
+    @include below(xl) { display: none; }
+  }
+
+  &__relative-value {
+    white-space: nowrap;
+    color: token(--text-secondary);
+
+    &--positive { color: token(--status-ok); }
+    &--negative { color: token(--status-out); }
   }
 
   &__table {

@@ -70,9 +70,11 @@ async function renderPlan(units = 95, targetPercent = 10) {
 describe('Relative Abweichung im Rebalancing', () => {
   it('trennt relative Abweichung, Anteil danach und Prozentpunkte sichtbar', async () => {
     const row = await renderPlan()
-    expect(row.find('.delta__value').text()).toBe('−5,0 %')
+    expect(row.find('.reb__relative-value').text()).toBe('−5,0 %')
+    expect(row.find('.delta__value').exists()).toBe(false)
+    expect(row.find('.reb__relative-value').element.tagName).toBe('TD')
     expect(row.text()).toContain('Anteil nachher: 9,5 %')
-    expect(row.findAll('td')[9]!.text()).toBe('−0,5')
+    expect(row.findAll('td')[10]!.text()).toBe('−0,5')
     expect(wrapper!.find('thead').text()).toContain('Abw. Ziel')
     expect(row.find('.delta__fill--ok').exists()).toBe(true)
   })
@@ -83,11 +85,11 @@ describe('Relative Abweichung im Rebalancing', () => {
     [115, '+15,0 %', 'ok', 'positive'], [116, '+16,0 %', 'out', 'positive'],
   ])('zeigt bei %s Stück Vorzeichenfarbe unabhängig vom Bandstatus', async (units, label, state, sign) => {
     const row = await renderPlan(Number(units))
-    expect(row.find('.delta__value').text()).toBe(label)
+    expect(row.find('.reb__relative-value').text()).toBe(label)
     expect(row.find(`.delta__fill--${state}`).exists()).toBe(true)
-    const value = row.find('.delta__value')
-    expect(value.classes().includes('delta__value--positive')).toBe(sign === 'positive')
-    expect(value.classes().includes('delta__value--negative')).toBe(sign === 'negative')
+    const value = row.find('.reb__relative-value')
+    expect(value.classes().includes('reb__relative-value--positive')).toBe(sign === 'positive')
+    expect(value.classes().includes('reb__relative-value--negative')).toBe(sign === 'negative')
   })
 
   it('aktualisiert Zahl und Balken nach Trade und probeweisem Zielwechsel', async () => {
@@ -95,21 +97,21 @@ describe('Relative Abweichung im Rebalancing', () => {
     const fields = row.findAllComponents(UxInlineNumber)
     fields[1]!.vm.$emit('commit', 10)
     await flushPromises()
-    expect(row.find('.delta__value').text()).toBe('+5,0 %')
-    expect(row.find('.delta__value--positive').exists()).toBe(true)
-    expect(row.find('.delta__value--negative').exists()).toBe(false)
+    expect(row.find('.reb__relative-value').text()).toBe('+5,0 %')
+    expect(row.find('.reb__relative-value--positive').exists()).toBe(true)
+    expect(row.find('.reb__relative-value--negative').exists()).toBe(false)
     expect(row.text()).toContain('Anteil nachher: 10,5 %')
     fields[0]!.vm.$emit('commit', 5)
     await flushPromises()
-    expect(row.find('.delta__value').text()).toBe('+110,0 %')
+    expect(row.find('.reb__relative-value').text()).toBe('+110,0 %')
     expect(row.find('.delta__fill--out').exists()).toBe(true)
     expect(usePortfolioStore().positions.find(position => position.id === 'asset')!.targetPercent).toBe(10)
   })
 
   it('kennzeichnet Ziel null ohne irreführende relative Nullabweichung', async () => {
     const row = await renderPlan(95, 0)
-    expect(row.find('.delta__value').text()).toBe('—')
-    expect(row.find('.delta__value--positive, .delta__value--negative').exists()).toBe(false)
+    expect(row.find('.reb__relative-value').text()).toBe('—')
+    expect(row.find('.reb__relative-value--positive, .reb__relative-value--negative').exists()).toBe(false)
     expect(row.text()).toContain('Bei Ziel 0 % nicht definiert')
     expect(row.text()).not.toMatch(/NaN|Infinity/)
     expect(row.find('.delta__fill--out').exists()).toBe(true)
@@ -119,7 +121,7 @@ describe('Relative Abweichung im Rebalancing', () => {
     i18n.global.locale.value = 'en'
     setFormatterLocale('en-GB')
     const row = await renderPlan()
-    expect(row.find('.delta__value').text()).toBe('−5.0 %')
+    expect(row.find('.reb__relative-value').text()).toBe('−5.0 %')
     expect(row.text()).toContain('Share after: 9.5 %')
     expect(wrapper!.find('thead').text()).toContain('Off target')
   })

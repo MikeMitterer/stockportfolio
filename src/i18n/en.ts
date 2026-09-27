@@ -414,6 +414,7 @@ export const en: MessageSchema = {
       trade: 'Buy / sell',
       value: 'Value',
       relativeDeviationAfter: 'Rel. dev.',
+      relativePercent: 'Rel. %',
       deviation: 'Off target',
     },
     shareAfterLabel: 'Share after: {share}',
