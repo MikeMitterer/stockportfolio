@@ -73,7 +73,7 @@ describe('Relative Abweichung im Rebalancing', () => {
     expect(row.find('.delta__value').text()).toBe('−5,0 %')
     expect(row.text()).toContain('Anteil nachher: 9,5 %')
     expect(row.findAll('td')[9]!.text()).toBe('−0,5')
-    expect(wrapper!.find('thead').text()).toContain('Prozentpunkte')
+    expect(wrapper!.find('thead').text()).toContain('Abw. Ziel')
     expect(row.find('.delta__fill--ok').exists()).toBe(true)
   })
 
@@ -121,6 +121,6 @@ describe('Relative Abweichung im Rebalancing', () => {
     const row = await renderPlan()
     expect(row.find('.delta__value').text()).toBe('−5.0 %')
     expect(row.text()).toContain('Share after: 9.5 %')
-    expect(wrapper!.find('thead').text()).toContain('percentage points')
+    expect(wrapper!.find('thead').text()).toContain('Off target')
   })
 })

@@ -368,12 +368,31 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     </div>
                   </NTooltip>
                 </th>
-                <th class="reb__th reb__th--w32">{{ t('rebalancing.columns.trade') }}</th>
+                <th class="reb__th reb__th--w32">
+                  <NTooltip trigger="hover">
+                    <template #trigger>
+                      <span class="reb__hinted">{{ t('rebalancing.columns.trade') }}</span>
+                    </template>
+                    <div class="reb__tooltip">{{ t('rebalancing.tradeTooltip') }}</div>
+                  </NTooltip>
+                </th>
                 <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
                 <th class="reb__th reb__th--left reb__th--w56">
-                  {{ t('rebalancing.columns.relativeDeviationAfter') }}
+                  <NTooltip trigger="hover">
+                    <template #trigger>
+                      <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
+                    </template>
+                    <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
+                  </NTooltip>
                 </th>
-                <th class="reb__th">{{ t('rebalancing.columns.deviation') }}</th>
+                <th class="reb__th">
+                  <NTooltip trigger="hover">
+                    <template #trigger>
+                      <span class="reb__hinted">{{ t('rebalancing.columns.deviation') }}</span>
+                    </template>
+                    <div class="reb__tooltip">{{ t('rebalancing.deviationTooltip') }}</div>
+                  </NTooltip>
+                </th>
                 <th class="reb__th reb__th--center reb__th--wide reb__th--w32">{{ t('table.status') }}</th>
               </tr>
             </thead>
@@ -744,6 +763,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
   &__hinted {
     border-bottom: 1px dotted token(--text-muted);
     cursor: help;
+    white-space: nowrap;
   }
 
   &__tooltip {

@@ -40,6 +40,12 @@ Weitere Anzeigevorgaben von Mike, 2026-09-27:
 
 > Den %-Wert für die relative Abweichung grün bzw rot je nach + oder -
 
+Mike beauftragt anschließend kürzere Tabellenüberschriften mit Hover-Erklärungen
+wie bei DELTA. Präzisierungen: „Lass Kauf/Verkauf“ und „Pack aber doch bei Kauf /
+Verkauf die Info dass positive Werte einen Kauf bedeuten und negative Werte einen
+Verkauf bedeuten“.
+Anschließend: „ABW. ZIEL bricht um“ und Hinweis auf die verbindliche i18n-Ablage.
+
 ## Umsetzung und technische Nachweise
 
 Scope: UI-only in StockPortfolio. Die bestehende Berechnung und die
@@ -78,6 +84,16 @@ Rebalancing bei positivem Vorzeichen grün, bei negativem rot, bei null oder
 undefiniertem Ziel neutral. `DeltaBar` bietet dafür `colorBySign`; die
 Balkenfüllung zeigt weiterhin unabhängig davon den Bandstatus.
 
+Die Überschriften heißen jetzt „Rel. Abw.“ und „Abw. Ziel“; ihre Popups
+erklären den Zustand nach dem Handel und unterscheiden Prozent von
+Prozentpunkten anhand von 9,5 % Anteil bei 10 % Ziel. „Kauf / Verkauf“ bleibt
+erhalten und erklärt im Popup die positiven Kauf- und negativen Verkaufswerte.
+Alle drei verwenden das bestehende DELTA-Muster: `NTooltip`, gepunktete
+Unterstreichung und Hilfecursor. Texte sind in DE und EN vorhanden.
+Die kurzen Tooltip-Überschriften bleiben mit `white-space: nowrap` einzeilig.
+Chrome bestätigt für DELTA, Kauf / Verkauf, Rel. Abw. und Abw. Ziel bei 800 px
+jeweils genau eine Textzeile. Im Template stehen nur i18n-Schlüssel.
+
 Die Darstellung verwendet die vorhandenen Werte wieder. Anteil nach
 dem Trade, relative Abweichung und Differenz in Prozentpunkten müssen
 verständlich unterscheidbar bleiben. Der Zahlenwert bezieht sich im
@@ -109,11 +125,16 @@ Tests und Browserprüfung sind unten getrennt beschrieben.
 | 4 | Pflichtprüfungen und Bezeichnerinventar | 2026-09-27, 09:28: 62 Testdateien / 793 Tests grün; Lint und Typecheck Exit 0. TS-Compiler-API-Inventar der fünf geänderten Code-/Testdateien: englische Bezeichner | ✅ |
 | 5 | Doku und Dashboard-Vergleich | README erläutert die drei Werte; Containeranleitung bleibt zutreffend. Browser-Dashboard und Rebalancing vor Trade zeigen beide −5,0 % | ✅ |
 | 6 | Vorzeichenfarbe und kompakte Anzeige | Chrome bei 1440 und 800 px Breite: IST-Werte 9,5 % und 90,5 % jeweils eine Textzeile; Anteil 11 px. Negative Zahl rot, positive grün trotz beiderseits grünem Band. Tests prüfen Vorzeichen innerhalb/außerhalb des Bands sowie neutrale Null/undefiniert und Farbwechsel nach Trade | ✅ |
+| 7 | Kurze Header und Hover-Erklärungen | Chrome bei 800 px: „Rel. Abw.“, „Abw. Ziel“, unverändert „Kauf / Verkauf“. Alle drei Popups durch tatsächliches Hover geöffnet, DE/EN-Texte geprüft; DELTA-Muster wiederverwendet | ✅ |
 
 **Nachprüfung der Anzeigevorgaben:** 2026-09-27, 09:35: `make test` erneut
 62 Dateien / 793 Tests erfolgreich; `make lint` und `make typecheck` Exit 0.
 Die erweiterten Farberwartungen scheiterten vor der Implementierung in sechs
 Fällen, danach sind alle zehn Komponententests erfolgreich.
+
+**Header-Nachprüfung:** 2026-09-27, einschließlich Umbruchsperre: erneut 793 Tests in 62 Dateien
+erfolgreich; Lint und Typecheck Exit 0. Bestehende Header-Erwartungen an die
+kurzen Beschriftungen angepasst. Die fachliche Erklärung steht jetzt im Popup.
 
 **Prüfumgebung:** `tests/components/rebalancingDeviation.spec.ts` führt die
 vollständige Ansicht, echte Stores, `computeRebalancing`, `computeTradePlan`,
@@ -159,6 +180,9 @@ Doku-Abgleich zu berücksichtigen.
 relative Abweichung am Balken, Anteil darunter, Prozentpunkte daneben und Ziel 0.
 Die ergänzte Vorzeichenfarbe und die weiterhin separate Bandfarbe sind ebenfalls
 dort erklärt; Schriftgröße und Umbruch benötigen keine Bedienungsanleitung.
+Die drei Hover-Erklärungen sind im selben README-Abschnitt erwähnt. Der erneute
+Abgleich mit `docker/README.md` erfordert dort keine Änderung: Bedienungshilfe,
+kein geänderter Funktionsumfang oder Betrieb. Neue Katalogschlüssel sind englisch.
 `docker/README.md`, „Features“, bleibt unverändert: Die vorhandene Zusage zum
 Rebalancing mit Toleranzbändern stimmt weiterhin, die ergänzte Zahl braucht
 keine eigene Container-Anweisung. Die Methoden-Erklärung in `src/i18n/de.ts`
@@ -181,3 +205,7 @@ Die allgemeine Übernahme der Board-Konventionen auf
 
 Umsetzung und eigene Verifikation abgeschlossen. Unabhängige Prüfung und
 menschliche Abschlussbestätigung stehen aus; Ticket bleibt in Doing.
+
+Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
+zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wird in
+Runde 2 neu übergeben; die Rücknahme ist keine technische Abnahme.

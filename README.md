@@ -233,6 +233,8 @@ portfolio share appears below it; the adjacent column shows the difference
 in percentage points. Relative deviation is undefined when the target is zero.
 In Rebalancing, positive relative values are green and negative values red;
 the bar fill continues to indicate the band status.
+Hover over the dotted column headings for explanations of relative deviation,
+percentage points, and positive or negative trade entries.
 
 ### Explanations inside the app
 

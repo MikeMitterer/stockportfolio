@@ -413,11 +413,14 @@ export const en: MessageSchema = {
       delta: 'Delta',
       trade: 'Buy / sell',
       value: 'Value',
-      relativeDeviationAfter: 'Relative deviation after',
-      deviation: 'Off target (percentage points)',
+      relativeDeviationAfter: 'Rel. dev.',
+      deviation: 'Off target',
     },
     shareAfterLabel: 'Share after: {share}',
     relativeUndefined: 'Undefined for a 0 % target',
+    tradeTooltip: 'Positive values mean buying, negative values mean selling.',
+    relativeDeviationTooltip: 'Relative deviation from the target after the planned trade. Example: a 9.5 % share against a 10 % target gives −5 % relative deviation. The number is green or red according to its sign; the bar colour indicates the band status.',
+    deviationTooltip: 'Difference from the target after the planned trade, in percentage points. Example: a 9.5 % share minus a 10 % target gives −0.5 percentage points.',
     deltaTooltip:
       'Units to reach the target: positive means buy, negative means sell. Click to put the value into the input.',
     deltaTooltipMore:
