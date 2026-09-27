@@ -116,3 +116,6 @@ Die allgemeine Board-Übernahme auf
 
 Umsetzung und eigene Verifikation abgeschlossen. Keine unabhängige technische
 Freigabe oder menschliche Abschlussbestätigung vorhanden; Ticket bleibt in Doing.
+Produktfassung `75cac676c36f15d5041ce15c47e09a968d975670`, Runde 1 an den
+zugeordneten Verifier übergeben. Eigener Vite- und StockInfo-Testserver nach
+der Browserprüfung beendet. Keine Veröffentlichung erfolgt.
