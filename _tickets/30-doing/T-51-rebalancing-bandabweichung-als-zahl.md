@@ -15,11 +15,11 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 **Stand:** Runde 4 technisch freigegeben (`claude`, approved): getrennte
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
 unter 1160 px. Die danach beauftragte Mindestbreite mit gemeinsamem Scrollen
-ist umgesetzt und selbst geprüft; Runde 6 und Mikes Abschlussbestätigung stehen aus.
+ist umgesetzt und selbst geprüft; Runde 6 steht aus; Mike hat den Abschluss bei Claudes Freigabe bereits bestätigt.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
 
-Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
-Prüfung bleibt seine Abschlussbestätigung offen.
+Für Mike steht keine Rückfrage an. Seine Abschlussfreigabe gilt, sobald Claude
+die aktuelle Fassung technisch freigibt; keine erneute Bestätigung erforderlich.
 
 ## Auftrag
 
@@ -354,10 +354,21 @@ vor Prüfurteil zurückgenommen; Mindestbreite und Icon gehen gemeinsam in Runde
 ### Auflösung
 
 Runde 4 bleibt technisch freigegeben. Die danach beauftragte Mindestbreite
-und das gemeinsame Scrollen sind umgesetzt und selbst geprüft; Runde 6 und
-Mikes Abschlussbestätigung stehen aus. Ticket bleibt in Doing. Runde 3 blieb
+und das gemeinsame Scrollen sind umgesetzt und selbst geprüft; Runde 6 steht
+aus. Mikes Abschlussfreigabe gilt bedingt auf Claudes OK. Ticket bleibt bis
+dahin in Doing. Runde 3 blieb
 ohne Prüfurteil.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag
 zurückgenommen, bevor ein Prüfurteil vorlag. Die ergänzte Fassung wurde in
 Runde 2 neu übergeben und geprüft; die Rücknahme war keine technische Abnahme.
+
+
+### Menschliche Abschlussfreigabe · 2026-09-27
+
+Mike: „Wenn Claude das OK gibt dann ist das Ticket von mir aus erledigt“.
+Die menschliche Abschlussentscheidung ist damit erteilt, unter der Bedingung
+der technischen Freigabe durch Claude für die aktuelle Übergabefassung
+`5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9` (Runde 6). Nach diesem OK T-51
+archivieren und gemäß bestehendem Auftrag unmittelbar T-52 aktivieren.
+Zum Zeitpunkt dieser Eintragung steht das Prüfurteil von Runde 6 noch aus.

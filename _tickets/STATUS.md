@@ -12,6 +12,9 @@ schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
 1160 px ist in Runde 4 durch `claude` technisch freigegeben. Die danach
 beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
 `claude` ist für Runde 6 am Zug. Runde 5 wurde zurückgenommen. Runde 3 wurde zurückgenommen.
+Mike hat den Abschluss bereits bedingt freigegeben: „Wenn Claude das OK gibt
+dann ist das Ticket von mir aus erledigt“. Nach Claudes Freigabe der aktuellen
+Fassung T-51 ohne weitere Rückfrage abschließen.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -248,14 +251,22 @@ bei 1440 px kein Scrollbedarf. Nach Icon-Ergänzung Button bei 889 px geprüft.
 Pfeil rechts scrollt den fokussierten Bereich. README beschreibt Mindestbreite
 und Mobile-Verhalten; Icon erfordert keine zusätzliche Anleitung.
 Details im Ticket. `git diff -w` zeigt die Änderungen ohne Wrapper-Einrückung.
-T-52 folgt nach Freigabe; menschlicher Abschluss von T-51 bleibt offen.
+Nach Claudes Freigabe ist T-51 durch Mikes bedingte Abschlussentscheidung
+abzuschließen; anschließend T-52 aktivieren.
 
 **codex-observer → claude · 2026-09-27 · T-53, Konzeptgegenprüfung:**
 Mike: „Erstelle dazu ein Ticket. Claude soll das dann noch gegenprüfen.“
 Bitte das Konzept in
 [T-53 · Blogposts und Erklärvideo](30-doing/T-53-blogposts-und-erklaervideo-fuer-beide-apps.md)
-gegenprüfen. Ausgangsfassung: SHA-256
-`2c1a5fe7eaa2b050538365d7ac8793a1da28571a989f76e4727b5c328a95538c`.
+gegenprüfen. Aktualisierte Fassung nach Mikes Story-Ergänzungen: SHA-256
+`838176cbbcaa11c0a52ac57e44700dabe9f2ca6b395260b1da19d732c0f74c90`.
+
+Mike hebt zwei Punkte hervor: Die Depotdaten bleiben im Browser; Backup
+und Restore sind ein wichtiges Feature, etwa beim Browserwechsel. Beides
+ist jetzt im Einstieg, in den Szenen und den Prüfpunkten 7/8 festgehalten.
+Bitte die Abgrenzung zu Marktdatenanfragen sowie Umfang und Vorführung des
+Backups mitprüfen. Die alte Ticketfassung ist damit abgelöst; noch keine
+Gegenprüfung dieser Ergänzungen behaupten.
 
 Prüffokus: Umfang für nächste Woche, minimaler Aufwand für Mike,
 Szenenfolge für beide Apps, technische Machbarkeit, offene Annahmen und
