@@ -18,7 +18,10 @@ Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
 Prüfaussage zum Abbruchpfad gemäß Observer-Hinweis begrenzt; kein Produktbefund.
-T-53 bleibt pausiert.
+[T-53 · Medienproduktion](/Volumes/Daten/Projekte/MangoLila_000000_SocialMedia/StockApps/_tickets/30-doing/T-53-blogposts-und-erklaervideo-fuer-beide-apps.md)
+wurde auf Mikes Auftrag am 2026-09-27 mit allen Nachweisen in das eigenständige
+StockApps-Board unter `Daten` übertragen. Die Produktion bleibt dort pausiert;
+hier wird keine zweite Ticketfassung weitergeführt.
 
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
