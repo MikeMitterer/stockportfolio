@@ -2,6 +2,25 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.4.0+260927.2137.6687a — 2026-09-27
+
+chore: bump version to 0.4.0
+
+### Features
+
+- Changelog direkt in Release-Targets einbinden (`602d706`)
+- gemeinsame Themes und Python-Werkzeuge integrieren (`11a6302`)
+- AGPL und kommerzielle Alternative anbieten (`ccbb03d`)
+
+### Other changes
+
+- Theme-Helfer teilen und Changelog direkt veröffentlichen (`5be5acb`)
+
+### Documentation
+
+- transparente Python-Starts und Symlinks dokumentieren (`4abaa5f`)
+- define own-use terms and MangoLila licensing (`e3d068e`)
+
 ## v0.3.0+260927.1152.7bcff — 2026-09-27
 
 Rebalancing-Anzeige und Backup-Einstieg verbessern
