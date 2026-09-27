@@ -21,14 +21,20 @@ StockPortfolio; anschließend die Kursversorgung durch StockInfo.
 
 **Stand:** Das ursprüngliche Konzept ist durch `claude` gegengeprüft und
 freigegeben. Seine sieben Änderungsvorschläge sind durch `codex-observer`
-bewertet (siehe „Einordnung der Gegenprüfung“ unten). Die Zielwoche und der
-gewünschte Umfang bleiben erhalten. **Mike schließt Systemstimmen ausdrücklich
-aus, auch für den Probeclip.** Aufnahmeberechtigungen hängen vom tatsächlich
-gewählten Werkzeug ab.
+bewertet, von `claude` bestätigt (zwei eigene Ungenauigkeiten korrigiert).
+Die danach ergänzten Datenschutz-/Testdatenvorgaben, die vereinfachte
+Rebalancing-Szene und die Werkzeugoptionen (Filmora/HeyGen/ElevenLabs) sind
+von `claude` geprüft und inhaltlich freigegeben, mit zwei nicht blockierenden
+Ergänzungsvorschlägen (Metadaten-Check, Datenschutzmaßstab auch für die
+StockInfo-Szene). Die Zielwoche und der gewünschte Umfang bleiben erhalten.
+**Mike schließt Systemstimmen ausdrücklich aus, auch für den Probeclip; das
+persönliche Portfolio darf unter keinen Umständen gezeigt werden.**
+Aufnahmeberechtigungen hängen vom tatsächlich gewählten Werkzeug ab.
 **Die Produktion bleibt pausiert.** Auf „Klingt gut“ folgte „Warte noch“
 und danach der Auftrag zur Ticketanlage mit Gegenprüfung.
 Noch keine neuen Screenshots, Sprachaufnahmen oder Videos erstellt.
-Weder Konzeptprüfung noch Änderungsvorschläge heben den Produktionsstopp auf.
+Weder Konzeptprüfung noch Änderungsvorschläge noch die jetzige Prüfung
+heben den Produktionsstopp auf.
 
 Für Mike steht jetzt keine Rückfrage an. Vor Wiederaufnahme der Produktion
 ist weiterhin Mikes Startsignal erforderlich. Die bestehende Produktarbeit
@@ -60,6 +66,17 @@ auf einen anderen Browser“.
 Stimmenwahl, Mike, 2026-09-27: „Die Systemstimmen verwenden wird nicht“.
 Verbindliche Vorgabe: keine Systemstimmen, weder für den Probeclip noch für
 das fertige Video. Die Auswahl einer geeigneten KI-Stimme bleibt offen.
+
+Aufnahmevorgaben von Mike, 2026-09-27: ausschließlich Testdaten,
+Standardwährung Euro, unter keinen Umständen sein persönliches Portfolio
+zeigen. Für Folgevideos dieselben Daten wiederverwenden; abweichende Daten
+nur, wenn ein neues Feature sie erfordert. Diese Vorgaben sind verbindlich
+und gelten bereits für den Probeclip.
+
+Rebalancing-Vorgabe von Mike, 2026-09-27: „Rebalancing sollte gezeigt
+werden - nichts kompliziertes einfach einen simulierten verkauf bzw. kauf“.
+Eine einfache Kauf- oder Verkaufssimulation ist damit verbindlicher Teil
+der Vorführung; keine ausführliche Strategie- oder Finanzierungserklärung.
 
 Die Zielgruppe wurde noch nicht beantwortet. Arbeitsannahme für den Entwurf:
 deutschsprachige Privatanleger mit Interesse an selbst betriebenen Tools;
@@ -142,13 +159,56 @@ Synchronisierung zwischen Browsern darstellen. Falls die Probe nur zwei
 isolierte Profile derselben Browser-Engine verwendet, diesen Nachweis nicht
 als bereits durchgeführten Wechsel zwischen unterschiedlichen Browsern ausgeben.
 
+### Verbindliche Aufnahmebasis: feste Testdaten in Euro
+
+- **Ausschließlich künstlich zusammengestellte Depotdaten verwenden.**
+  Mikes persönliches Portfolio weder öffnen noch importieren, kopieren oder
+  als anonymisierte Vorlage verwenden. Das gilt für Screenshots, Videos,
+  Vorschaubilder, Blogbilder, Backup-Dateien und Material für externe
+  KI-Dienste. Nachträgliches Verpixeln ersetzt diese Trennung nicht.
+- **Euro (EUR) ist die Standard- und Basiswährung des Demodepots.**
+  Einstellungen und sichtbare Beträge vor jeder Aufnahmeserie prüfen.
+  Abweichende Instrumentwährungen nur gezielt zeigen, wenn die erklärte
+  Funktion dies benötigt; daraus entsteht kein Wechsel der Standardwährung.
+- **Ein dauerhaft wiederverwendbares Testdatenpaket anlegen.**
+  Festhalten: Instrumente, Stückzahlen, Zielanteile, Verrechnungskonto,
+  Einstellungen, Ausgangswerte und die für die Szenen benötigte Historie.
+  Eine kanonische Fassung mit Versionskennung, Prüfsumme und kurzer
+  Wiederherstellungsanleitung zusammen mit den Medienquellen aufbewahren.
+  Nicht bei jedem Video ein neues zufälliges Beispield­epot erzeugen.
+- **Auch die Marktdaten reproduzierbar halten.** Die für sichtbare Zahlen
+  verwendeten Kurse, Wechselkurse, Historien und Zeitbezüge festhalten und
+  in einer getrennten Demo-Umgebung wiederherstellbar bereitstellen.
+  Unkontrollierte Live-Aktualisierungen dürfen die Aufnahmebasis nicht
+  verändern. Das Depot-Backup allein genügt dafür nicht, weil es keine
+  Kurscaches enthält. Datenstand als Demo kennzeichnen; keine aktuellen
+  Live-Kurse vortäuschen. Den technischen Weg erst nach Wiederaufnahme
+  prüfen und umsetzen, ohne daraus Produktänderungen abzuleiten.
+- **Jede Aufnahme mit demselben Ausgangszustand beginnen.** Eigenes
+  Browserprofil beziehungsweise isolierten Browserkontext und getrennten
+  Speicher verwenden, auch für den Zielbrowser der Restore-Szene. Vor der
+  Aufnahme Datensatzversion, EUR, Depotidentität und sichtbare Umgebung
+  prüfen. Bei unklarer Datenherkunft keine Aufnahme beginnen. Persönliche
+  Tabs, Benachrichtigungen, Dateinamen und Pfade dürfen ebenfalls nicht ins
+  Bild geraten. Vor Weitergabe an externe Dienste und vor Veröffentlichung
+  die konkreten Dateien auf persönliche Inhalte gegenprüfen.
+- **Folgevideos verwenden dieselbe Basis.** Szenenbedingte Änderungen wie
+  Rebalancing gehören zum dokumentierten Ablauf; danach den Ausgangszustand
+  wiederherstellen. Benötigt ein neues Feature andere Daten, eine begründete
+  versionierte Variante mit den nötigen Änderungen anlegen. Die bisherige
+  Basis erhalten und für jedes Medienpaket die verwendete Fassung nennen.
+
+Diese Anforderungen sind festgelegt, aber noch nicht praktisch nachgewiesen:
+Testdatenpaket und Aufnahmeumgebung werden erst nach Mikes Startsignal erstellt.
+
 ## Ablauf nach Wiederaufnahme
 
 1. **Geschichte und Szenenfolge:** Kernaussage und Gliederung ausarbeiten.
    Blogtext, Sprechertext und Bildauswahl müssen dieselbe Erklärung tragen.
-2. **Demo vorbereiten:** Ein nachvollziehbares Beispield­epot in einem
-   getrennten Browserkontext verwenden. Bestände und Kurse als Demodaten
-   kenntlich machen; echte persönliche Depotdaten bleiben unberührt.
+2. **Demo vorbereiten:** Die versionierte Testdatenbasis nach den verbindlichen
+   Aufnahmevorgaben oben in einem getrennten Browserkontext wiederherstellen.
+   EUR, feste Depot- und Marktdaten sowie Ausschluss persönlicher Inhalte
+   vor der Aufnahme prüfen und dokumentieren.
 3. **Fassung festhalten:** Für die finalen Aufnahmen einen stabilen
    Produktstand verwenden, insbesondere nach den laufenden UI-Änderungen.
    Versionen beziehungsweise Commits und Aufnahmedatum dokumentieren.
@@ -171,13 +231,23 @@ als bereits durchgeführten Wechsel zwischen unterschiedlichen Browsern ausgeben
 |---|---|---|
 | 1 · Überblick | Dein Depot bleibt im Browser; Verteilung und Zielanteile verstehen | StockPortfolio-Dashboard mit Beispieldaten und kurzer Einblendung zur lokalen Speicherung |
 | 2 · Abweichung | Relative Abweichung und Toleranzband unterscheiden | Lesbarer Ausschnitt mit Zahl und Balken |
-| 3 · Durchspielen | Einen Kauf und seine Finanzierung simulieren | Rebalancing, „Decken aus“, Verteilung danach |
+| 3 · Durchspielen | Einen einfachen Kauf oder Verkauf simulieren und seine Wirkung sehen | Rebalancing im EUR-Testdepot: Ausgangsverteilung, eine simulierte Transaktion, Verteilung und Abweichung danach |
 | 4 · Datenquelle | StockInfo liefert Kurse; persönliche Depotbestände bleiben in StockPortfolio im Browser | Tatsächlich vorhandene StockInfo-Ansicht mit nachvollziehbarem Bezug; einfache Darstellung des Datenflusses |
 | 5 · Mitnehmen | Lokale Daten per Backup sichern und im anderen Browser wiederherstellen | Export, Importvorschau und wiederhergestelltes Beispield­epot |
 | 6 · Einstieg | Wo beide Apps und ihre Anleitungen zu finden sind | Geprüfte Repository- und Dokumentationslinks |
 
 Die ersten drei Szenen bilden den Probeclip. Die konkrete StockInfo-Szene
 wird erst nach Sichtung der App festgelegt; noch keine dortige Aufnahme behauptet.
+
+**Rebalancing bewusst einfach vorführen:** Eine Position aus dem festen
+EUR-Testdatensatz auswählen, die Ausgangslage kurz zeigen und einen kleinen,
+nachvollziehbaren Kauf oder Verkauf simulieren. Anschließend die dadurch
+veränderte Verteilung beziehungsweise Abweichung zum Ziel zeigen. Im Bild
+und Sprechertext klar als Simulation benennen. Keine echte Order ausführen
+oder eine solche behaupten. Die Erklärung von „Decken aus“ und komplexen
+Finanzierungsvarianten ist für diese Szene nicht erforderlich. Instrument,
+Menge beziehungsweise Betrag und Vorher-/Nachher-Werte im Szenenablauf
+festhalten, damit dieselbe Vorführung später reproduzierbar bleibt.
 
 ### Technik und bekannter Vorbereitungsstand
 
@@ -196,6 +266,51 @@ Anbieter beziehungsweise Sprachmodell, Nutzungsrechte, Zugang und mögliche
 Kosten sind noch offen. Keinen bereits nutzbaren Dienst behaupten.
 Ein Entwurf der Bildfolge ohne Sprache bleibt möglich. Qualität,
 Aussprache der App-Namen und Verständlichkeit am tatsächlichen Audio prüfen.
+
+**Werkzeugoptionen · 2026-09-27:** Mike fragt nach HeyGen und/oder ElevenLabs
+und teilt mit: „Lokal habe ich Filmora als Videoeditor installiert“.
+Filmora ist vorhanden. Auf Mikes Frage „Kannst du Filmora steuern?“ am
+2026-09-27 über die native App-Steuerung unter
+`/Applications/Wondershare Filmora Mac.app` erreicht. Die Startoberfläche
+ist auslesbar; Wechsel von Miniaturbild- zu Listenansicht und zurück durch
+sichtbar geänderte Schaltflächen bestätigt. Kein bestehendes Projekt geöffnet
+oder bearbeitet. Version, Medienimport, Timeline-Bearbeitung und Export dieser
+Installation sind weiterhin ungeprüft. Der Test belegt grundlegenden Zugriff,
+noch keinen vollständig automatisierten Schnitt. Produktion bleibt pausiert.
+
+Empfehlung des Observers, noch keine Anbieterentscheidung durch Mike:
+
+- **ElevenLabs für die Sprecherstimme**, echte App-Aufnahmen und ein
+  automatisiert erzeugter Rohschnitt als Grundlage. Filmora für den
+  abschließenden Schnitt und optionale Änderungen verwenden. Bilder,
+  Szenenclips, getrennte Audiodateien und Untertitel mitliefern, damit die
+  Bearbeitung nicht auf einen fertigen MP4-Film beschränkt ist.
+- **HeyGen als Alternative für die Zusammenstellung des Videos oder einen
+  sichtbaren KI-Präsentator.** Video Agent kann eigene Bilder und Videos
+  einbeziehen und Skript, Sprache, Schnitt und Untertitel zusammenstellen.
+  Die Lesbarkeit und unveränderte Wiedergabe unserer echten UI-Aufnahmen
+  wären am Probeclip zu prüfen. HeyGen nicht auf Avatar-Videos reduzieren.
+- **Die Kombination ist möglich:** HeyGen unterstützt ElevenLabs als
+  externen Stimmenanbieter. Zwei Dienste sind für ein Video mit App-Bildern
+  und Sprecherstimme aber keine Voraussetzung; Filmora ist bereits vorhanden.
+
+Ziel bleibt: Die KI bereitet Medien und Rohschnitt vor; Mike wählt eine
+Stimme und beurteilt den Probeclip. Keine manuelle Schnittaufgabe an Mike
+aus seiner Filmora-Installation ableiten. Einen vollautomatischen nativen
+Filmora-Projektimport erst nach einem erfolgreichen Versuch zusagen;
+der dokumentierte XML-Import allein belegt keine passende Timeline-Übergabe.
+Zugänge, Kostenrahmen und geeignete Nutzungsrechte vor bezahlter Vertonung
+klären. Keine Anmeldung, Bestellung, Vertonung oder Aufnahme erfolgt;
+der Produktionsstopp bleibt bestehen.
+
+Quellen: [ElevenLabs TTS](https://elevenlabs.io/text-to-speech),
+[HeyGen Video Agent](https://help.heygen.com/en/articles/12402907-how-to-get-started-with-video-agent),
+[HeyGen/ElevenLabs-Integration](https://help.heygen.com/en/articles/8310663-how-to-integrate-elevenlabs-other-third-party-voices),
+[Filmora für Mac: Medienimport](https://filmora.wondershare.com/guide-mac/importing.html).
+
+**Doku-Abgleich:** Diese Ergänzung betrifft ausschließlich das Medienkonzept
+in T-53. Keine geänderten Produkt- oder Betriebszusagen; Projekt-README,
+Docker-README und Unraid-Anleitung benötigen keine Anpassung.
 
 Für Screenshots bevorzugt den Seiteninhalt direkt über den Browser erfassen.
 Eine macOS-Freigabe zur Aufnahme des gesamten Bildschirms ist dafür keine
@@ -249,13 +364,16 @@ die Prüfungen der tatsächlichen Medien stehen noch aus.
 | # | Prüfung | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
 | 1 | Claude prüft das Konzept | Urteil vom 2026-09-27 zur Fassung `838176cbbcaa11c0a52ac57e44700dabe9f2ca6b395260b1da19d732c0f74c90`, siehe „Konzeptprüfung“. Keine Medienabnahme; spätere Observer-Einordnung nicht rückwirkend durch dieses Urteil freigegeben | ✅ |
-| 2 | Demo und Aufnahmebasis | Getrennter Kontext, gekennzeichnete Beispieldaten, festgehaltene App-Fassungen und Szenenliste | ➖ |
+| 2 | Demo und Aufnahmebasis | Getrennter Kontext, ausschließlich künstliche Depotdaten, EUR als Standard-/Basiswährung, gekennzeichneter fester Marktdatenstand, festgehaltene App-Fassungen und Szenenliste | ➖ |
 | 3 | Probeclip ansehen und anhören | Abspielbare 30–45 Sekunden; drei verständliche Szenen, lesbare Oberfläche, synchroner Sprechertext; keine Systemstimme | ➖ |
 | 4 | Blogentwürfe und Aussagen abgleichen | Ein oder zwei vollständige Entwürfe; belegte Funktionen beider Apps, passende Bilder und Links | ➖ |
 | 5 | Fertiges Medienpaket prüfen | MP4, Untertitel, Vorschaubild, Originalscreenshots, Sprechertext und nachvollziehbarer Render-Aufruf vorhanden | ➖ |
 | 6 | Unabhängige Gegenprüfung der Medien | Claude benennt geprüfte Dateifassungen und bestätigt oder beanstandet Inhalt sowie Bild-/Tonqualität | ➖ |
 | 7 | Aussage zur lokalen Speicherung prüfen | Blogeinstieg und Probeclip tragen Mikes Kernaussage; Speicher- und Anfragepfade belegen die Abgrenzung zwischen Depotdaten und Marktdatenanfragen; Backup und fehlende automatische Synchronisierung sind im vollständigen Paket erklärt | ➖ |
 | 8 | Backup und Restore beim Browserwechsel vorführen | JSON-Export des Beispield­epots, Vorschau und bestätigter Import in getrenntem Browser; Bestände und Ziele stimmen überein. Verwendete Browser sowie Grenzen des Backups dokumentiert | ➖ |
+| 9 | Persönliche Daten vollständig ausschließen | Vor Aufnahme dokumentierter Abgleich von Demoidentität und Datenherkunft; Claude prüft die konkreten Medien und weiterzugebenden Dateien auf persönliche Depotdaten und sonstige persönliche Bildinhalte. Kein persönliches Portfolio als Quelle, auch nicht verpixelt | ➖ |
+| 10 | Identische Daten für Folgevideos wiederherstellen | Versioniertes Testdatenpaket samt Prüfsumme und Anleitung; erneutes Laden in leerem Demokontext ergibt dieselben Bestände, Ziele, EUR-Einstellung und sichtbaren Berechnungswerte. Kurse/FX/Historien zusätzlich zum Depot-Backup gesichert; Featurevarianten begründet, ursprüngliche Basis erhalten | ➖ |
+| 11 | Einfaches Rebalancing vorführen | Ein simulierter Kauf oder Verkauf im festen EUR-Testdepot; Ausgangslage, Eingabe und Wirkung auf Verteilung/Abweichung lesbar gezeigt. Als Simulation erklärt, keine echte Order; reproduzierbare Transaktion im Szenenablauf dokumentiert | ➖ |
 
 ### Side-Effects und Doku-Abgleich
 
@@ -493,12 +611,67 @@ eigene Aussagen ergänzt. Kein neuer Befund, keine neue Reviewrunde, keine
 Aufhebung des Produktionsstopps. Beide verarbeiteten OUTBOX-Nachrichten
 werden entfernt.
 
+### Claudes Prüfung der Datenschutz-/Werkzeugergänzung · 2026-09-27
+
+Auf Mikes Auftrag „T-53 — check das nochmal durch" die seit der letzten
+Bestätigung hinzugekommenen Abschnitte geprüft: „Verbindliche Aufnahmebasis:
+feste Testdaten in Euro", die vereinfachte Rebalancing-Szene und
+„Werkzeugoptionen" samt Filmora-Test. Produktion weiterhin nicht gestartet;
+nur Konzept und eine Werkzeug-Fähigkeitsprobe geprüft.
+
+- **Datenschutzabschnitt inhaltlich für tragfähig befunden.** Deckt die
+  entscheidenden Fälle ab: kein echtes Portfolio als Quelle (auch nicht als
+  „anonymisierte Vorlage" oder verpixelt), das gilt ausdrücklich auch für
+  Material an externe KI-Dienste; feste, versionierte Testdaten statt
+  wechselnder Zufallsdepots; getrennter Browserkontext auch für den
+  Zielbrowser der Restore-Szene; Verify #9 weist die Endkontrolle
+  ausdrücklich mir zu, nicht nur der Selbstauskunft des Produzenten.
+- **Zwei Ergänzungsvorschläge, keine Blocker:**
+  1. **Metadaten vor Weitergabe/Veröffentlichung prüfen.** Screenshots und
+     Bildschirmaufnahmen können je nach Werkzeug Geräte-, Zeit- oder
+     Pfadangaben in Dateimetadaten tragen, die im Bild selbst unsichtbar
+     bleiben. Vorschlag: Verify #9 um einen expliziten Metadaten-Check
+     ergänzen, bevor Dateien an externe Dienste (ElevenLabs/HeyGen) gehen
+     oder veröffentlicht werden.
+  2. **Denselben Testdaten-Maßstab ausdrücklich auf die StockInfo-Szene (4)
+     ausdehnen.** Der Datenschutzabschnitt ist an StockPortfolios Demodepot
+     formuliert; für die „tatsächlich vorhandene StockInfo-Ansicht" fehlt
+     eine ausdrückliche Zusage, dass dort keine reale Backend-Adresse, kein
+     echter API-Schlüssel und keine sonst aufschlussreiche Konfiguration
+     sichtbar wird. StockInfo kennt zwar keine Bestände, aber Betriebsdetails
+     einer selbst gehosteten Instanz sind ein anderes, ebenfalls
+     schützenswertes Risiko.
+- **Rebalancing-Vereinfachung deckt Mikes Zitat exakt ab:** „nichts
+  kompliziertes einfach einen simulierten Verkauf bzw. Kauf" — Prosa,
+  Szenentabelle (Zeile 3) und Verify #11 stimmen wortgleich überein; „Decken
+  aus" und Finanzierungsvarianten sind ausdrücklich ausgeschlossen.
+- **Filmora-Fähigkeitsprobe nachvollzogen:** `/Applications/Wondershare
+  Filmora Mac.app` existiert tatsächlich (eigene Prüfung). Die Probe bleibt
+  im beauftragten Rahmen — Mike hatte direkt gefragt „Kannst du Filmora
+  steuern?"; laut Beleg wurde kein bestehendes Projekt geöffnet oder
+  bearbeitet, keine Vertonung oder Aufnahme ausgelöst. Das ist eine direkt
+  autorisierte Fähigkeitsprobe, keine eigenmächtige Lockerung des
+  Produktionsstopps.
+- **Werkzeugempfehlung (ElevenLabs/HeyGen/Filmora) plausibel und ausdrücklich
+  als Empfehlung, nicht als getroffene Entscheidung gekennzeichnet;** Zugänge,
+  Kosten und Nutzungsrechte korrekt als offen benannt. Quellenlinks nicht
+  selbst nachgeladen (kein Web-Zugriff in dieser Prüfung), aber als Belege
+  sauber angegeben statt als geprüfte Fakten behauptet.
+
+**Ergebnis:** Ergänzung inhaltlich freigegeben, mit zwei nicht blockierenden
+Vorschlägen (Metadaten-Check, StockInfo-Szene explizit in den
+Datenschutzmaßstab einbeziehen). Kein Befund, der den Produktionsstopp
+oder die bisherigen Freigaben infrage stellt.
+
 ### Auflösung
 
 Konzept durch `claude` geprüft; sieben Vorschläge durch `codex-observer`
 bewertet und technische Ungenauigkeiten im aktuellen Konzept präzisiert;
 `claude` hat die Einordnung anschließend bestätigt und zwei eigene
-Ungenauigkeiten (Stimmenzahl, SP-CX-05-Zuordnung) korrigiert.
+Ungenauigkeiten (Stimmenzahl, SP-CX-05-Zuordnung) korrigiert. Die danach
+ergänzten Datenschutz-/Testdatenvorgaben, die vereinfachte
+Rebalancing-Szene und die Werkzeugoptionen sind von `claude` geprüft und
+inhaltlich freigegeben, mit zwei nicht blockierenden Ergänzungsvorschlägen.
 Zielumfang und Zielwoche nicht eigenmächtig gekürzt. Die Auswahl einer
 geeigneten KI-Sprecherstimme bleibt für die Wiederaufnahme offen;
 Systemstimmen sind auf Mikes ausdrücklichen Wunsch ausgeschlossen.

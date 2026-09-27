@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:17:23 CEST · claude · T-53 erneut geprüft: Datenschutz-/Testdatenvorgaben, vereinfachte Rebalancing-Szene und Werkzeugoptionen (Filmora-Pfad selbst verifiziert) inhaltlich freigegeben; zwei Ergänzungsvorschläge (Metadaten-Check, Datenschutzmaßstab auch für StockInfo-Szene), Produktionsstopp unverändert
+- 2026-09-27 11:16:33 CEST · claude · prüft T-53 erneut auf Mikes Auftrag: neue Datenschutz-/Testdatenvorgaben (kein persönliches Portfolio), vereinfachte Rebalancing-Szene und Werkzeugoptionen (Filmora/HeyGen/ElevenLabs) gegengeprüft
+- 2026-09-27 11:14:20 CEST · codex-observer · T-53: Filmora über native App-Steuerung erreicht; Ansichtswechsel erfolgreich getestet und zurückgestellt. Kein Projekt geöffnet oder bearbeitet; Schnitt und Export noch ungeprüft.
 - 2026-09-27 11:11:10 CEST · claude · bestätigt Observer-Korrektur zu T-54: eigener Live-Beleg deckte nur Import, nicht Abbruch ab; 'vollständig ✅' im Originalbericht war zu weit gefasst, codex' Matrixkorrektur (◑) akzeptiert; kein neuer Prüfschritt
 - 2026-09-27 11:10:11 CEST · codex-observer · T-53: konkretisiert die Rebalancing-Szene auf einen einfachen simulierten Kauf oder Verkauf mit Vorher-Nachher-Vergleich im festen EUR-Testdepot. Produktion bleibt pausiert.
 - 2026-09-27 11:09:32 CEST · codex · schließt T-54 nach Claudes Freigabe und Mikes bedingter Abnahme ab und integriert den geprüften Stand nach master. Der Abbruchtest bleibt als nicht live belegt dokumentiert; fremde T-53-Änderungen bleiben außerhalb des Abschlusscommits.
@@ -47,8 +50,5 @@
 - 2026-09-27 10:04:17 CEST · codex · ergänzt ein Mülleimer-Symbol bei Plan leeren im vorhandenen NButton-Icon-Slot.
 - 2026-09-27 10:03:18 CEST · codex · hat Mindestbreite und gemeinsamen Scrollbereich für Rebalancing-Kopf und Tabelle umgesetzt. Browserprüfung bei 889/800/1440 px, 793 Tests, Lint und Typecheck grün; Runde 5 an claude übergeben.
 - 2026-09-27 10:01:14 CEST · codex · setzt Mikes Entscheidung für Mindestbreite und gemeinsames horizontales Scrollen von Rebalancing-Kopf und Tabelle um.
-- 2026-09-27 09:58:02 CEST · codex-observer · T-53 für Blogposts, Screenshots und Erklärvideo angelegt; Konzeptgegenprüfung an Claude übergeben. Medienproduktion bleibt auf Mikes Wunsch pausiert.
-- 2026-09-27 09:55:43 CEST · claude · T-51 Runde 4 technisch freigegeben (approved): hideValue statt colorBySign, Spaltenzählung und Breakpoints (1280px/1160px) gegen die Quelle geprüft, 62/793 Tests reproduziert; Owner zurück an codex
-- 2026-09-27 09:53:04 CEST · claude · beginnt T-51 Runde 4: prüft getrennte Rel.-%-Spalte, ausblendbare Balkenspalte und Simulationshinweis unter 1160px (Fassung ba61838)
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
