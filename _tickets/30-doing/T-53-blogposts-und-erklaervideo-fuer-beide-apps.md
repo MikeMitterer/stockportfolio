@@ -22,9 +22,9 @@ StockPortfolio; anschließend die Kursversorgung durch StockInfo.
 **Stand:** Das ursprüngliche Konzept ist durch `claude` gegengeprüft und
 freigegeben. Seine sieben Änderungsvorschläge sind durch `codex-observer`
 bewertet (siehe „Einordnung der Gegenprüfung“ unten). Die Zielwoche und der
-gewünschte Umfang bleiben erhalten. Die Systemstimme „Anna“ wird wegen der
-belegten Einschränkung für öffentliche Inhalte nicht für das Medienpaket
-eingeplant. Aufnahmeberechtigungen hängen vom tatsächlich gewählten Werkzeug ab.
+gewünschte Umfang bleiben erhalten. **Mike schließt Systemstimmen ausdrücklich
+aus, auch für den Probeclip.** Aufnahmeberechtigungen hängen vom tatsächlich
+gewählten Werkzeug ab.
 **Die Produktion bleibt pausiert.** Auf „Klingt gut“ folgte „Warte noch“
 und danach der Auftrag zur Ticketanlage mit Gegenprüfung.
 Noch keine neuen Screenshots, Sprachaufnahmen oder Videos erstellt.
@@ -56,6 +56,10 @@ die Daten im Browser bleiben.“
 Weitere Ergänzung von Mike, 2026-09-27:
 „Backup und Restore ist auch ein Feature das wichtig ist - evtl. beim Umzug
 auf einen anderen Browser“.
+
+Stimmenwahl, Mike, 2026-09-27: „Die Systemstimmen verwenden wird nicht“.
+Verbindliche Vorgabe: keine Systemstimmen, weder für den Probeclip noch für
+das fertige Video. Die Auswahl einer geeigneten KI-Stimme bleibt offen.
 
 Die Zielgruppe wurde noch nicht beantwortet. Arbeitsannahme für den Entwurf:
 deutschsprachige Privatanleger mit Interesse an selbst betriebenen Tools;
@@ -177,12 +181,13 @@ wird erst nach Sichtung der App festgelegt; noch keine dortige Aufnahme behaupte
 
 ### Technik und bekannter Vorbereitungsstand
 
-Auf dem Mac sind FFmpeg, Bildschirmaufnahme-Werkzeuge und die lokale
-Sprachausgabe `say` vorhanden; eine deutsche Stimme „Anna“ ist verfügbar.
-Die Verfügbarkeit ist kein Nutzungsnachweis für das Veröffentlichungspaket.
+Auf dem Mac sind FFmpeg und Bildschirmaufnahme-Werkzeuge vorhanden.
+Systemstimmen sind durch Mikes ausdrückliche Entscheidung ausgeschlossen,
+einschließlich lokaler Entwürfe und Hörproben. Die zuvor festgestellte
+Verfügbarkeit von `say` und „Anna“ ist deshalb kein Produktionsweg.
 Apples macOS-Tahoe-Lizenz, Abschnitt 2 F, beschränkt Systemstimmen auf
 persönliche, nichtkommerzielle Nutzung und schließt öffentliche Verwendung
-aus. Deshalb bereits für den vorgesehenen Probeclip eine Stimme mit passenden
+aus. Bereits für den vorgesehenen Probeclip eine andere Stimme mit passenden
 Nutzungsrechten wählen; „intern“ allein belegt keine zulässige Nutzung für
 ein auf Veröffentlichung gerichtetes Projekt.
 [Quelle: Apple, macOS Tahoe SLA, Abschnitt 2 F](https://www.apple.com/legal/sla/docs/macOSTahoe.pdf).
@@ -245,7 +250,7 @@ die Prüfungen der tatsächlichen Medien stehen noch aus.
 |---|---|---|:--:|
 | 1 | Claude prüft das Konzept | Urteil vom 2026-09-27 zur Fassung `838176cbbcaa11c0a52ac57e44700dabe9f2ca6b395260b1da19d732c0f74c90`, siehe „Konzeptprüfung“. Keine Medienabnahme; spätere Observer-Einordnung nicht rückwirkend durch dieses Urteil freigegeben | ✅ |
 | 2 | Demo und Aufnahmebasis | Getrennter Kontext, gekennzeichnete Beispieldaten, festgehaltene App-Fassungen und Szenenliste | ➖ |
-| 3 | Probeclip ansehen und anhören | Abspielbare 30–45 Sekunden; drei verständliche Szenen, lesbare Oberfläche, synchroner Sprechertext | ➖ |
+| 3 | Probeclip ansehen und anhören | Abspielbare 30–45 Sekunden; drei verständliche Szenen, lesbare Oberfläche, synchroner Sprechertext; keine Systemstimme | ➖ |
 | 4 | Blogentwürfe und Aussagen abgleichen | Ein oder zwei vollständige Entwürfe; belegte Funktionen beider Apps, passende Bilder und Links | ➖ |
 | 5 | Fertiges Medienpaket prüfen | MP4, Untertitel, Vorschaubild, Originalscreenshots, Sprechertext und nachvollziehbarer Render-Aufruf vorhanden | ➖ |
 | 6 | Unabhängige Gegenprüfung der Medien | Claude benennt geprüfte Dateifassungen und bestätigt oder beanstandet Inhalt sowie Bild-/Tonqualität | ➖ |
@@ -368,13 +373,18 @@ Vorschläge zur Abstimmung mit codex/Observer, keine Entscheidungen.
 3. **Lizenzfrage bei der macOS-Systemstimme klären, nicht nur die Qualität.**
    „Anna" & Co. sind für die lokale Bedienungshilfe gedacht; ob Apples
    Nutzungsbedingungen die Verwendung der synthetisierten Sprache in einem
-   öffentlich verbreiteten Video erlauben, ist ungeprüft. Für den internen
-   Probeclip unkritisch, vor der Veröffentlichung des fertigen Videos aber
-   zu klären — sonst wiederholt sich hier dieselbe Art Lücke, die bei den
-   SVG-Icons in T-51 mehrere Runden gekostet hat (siehe SP-CX-05 und die
-   Lucide-Herkunftsklärung).
+   öffentlich verbreiteten Video erlauben, war zum Zeitpunkt dieses
+   Vorschlags ungeprüft — inzwischen durch codex-observer mit der
+   tatsächlichen Quelle geklärt (Apple macOS-Tahoe-SLA, Abschnitt 2 F,
+   siehe „Technik und bekannter Vorbereitungsstand“). **Korrektur auf
+   Hinweis des Observers:** Der ursprüngliche Verweis auf SP-CX-05 und die
+   Lucide-Herkunftsklärung aus T-51 war unpassend — SP-CX-05 betrifft den
+   UI-Referenzvergleich, nicht Lizenzfragen, und T-51 belegt nach Runde 7/8
+   gerade keinen Lizenzverstoß, sondern eine sauber abgeschlossene Klärung.
+   Die Stimmenfrage steht für sich, ohne einen unterstellten
+   Wiederholungsbeleg.
 4. **Mehr als eine Stimme im Probeclip gegenprüfen.** `say -v '?'` liefert
-   acht deutsche Stimmen (Anna plus sieben weitere: Eddy, Flo, Grandma,
+   tatsächlich neun deutsche Stimmen (Anna plus acht weitere: Eddy, Flo, Grandma,
    Grandpa, Reed, Rocko, Sandy, Shelley), nicht nur Anna. Vorschlag: zwei
    bis drei Kandidatinnen im selben Probeclip-Text gegenüberstellen, statt
    sich vorab auf eine festzulegen — eine spätere Korrektur allein wegen der
@@ -442,12 +452,56 @@ Keine Änderung an Produktfunktionen oder Betriebszusagen; Projekt-README,
 Docker-README und Unraid-Anleitung bleiben unverändert. Claudes ursprüngliche
 Freigabe wird durch diese Einordnung nicht rückwirkend erweitert.
 
+### Claudes Bestätigung der Einordnung · 2026-09-27
+
+Auf Mikes Auftrag „Schau dir nochmal T-53 an" die Einordnung des Observers
+gegengeprüft, zwei ihrer Kernaussagen selbst nachvollzogen und eigene
+Ungenauigkeiten korrigiert.
+
+- **Stimmenzahl nachgezählt:** `say -v '?' | grep de_DE` liefert selbst
+  ausgeführt tatsächlich neun Einträge (Anna plus acht: Eddy, Flo, Grandma,
+  Grandpa, Reed, Rocko, Sandy, Shelley). Meine ursprüngliche Zahl acht war
+  falsch; oben in Vorschlag 4 korrigiert.
+- **macOS-Fassung bestätigt:** `sw_vers` zeigt `26.6.2` — deckt sich mit der
+  vom Observer genannten Tahoe-Fassung, auf der die SLA-Bewertung beruht.
+- **SP-CX-05-Zuordnung korrigiert:** Der Observer hat recht — die Lesson
+  betrifft den UI-Referenzvergleich aus T-50, nicht Lizenzfragen, und T-51
+  belegt nach Runde 7/8 keinen Lizenzverstoß, sondern eine sauber
+  abgeschlossene Klärung ohne tatsächliche Übernahme. Vorschlag 3 oben ist
+  entsprechend berichtigt; kein unterstellter Wiederholungsbeleg mehr.
+- **Chrome-DevTools-MCP/Claude-in-Chrome-Vermischung akzeptiert:** Meine
+  historische Einschätzung unter „Konzeptprüfung" (oben, als Prüfbeleg
+  erhalten) ging davon aus, dass eine neue Tab-Erstellung über
+  Claude-in-Chrome den dokumentierten Profilfehler löst. Der Observer stellt
+  richtig klar: Der fehlgeschlagene Versuch war bereits eine Tab-Neuanlage
+  über ein anderes Werkzeug (Chrome DevTools MCP), der Fehler lag an der
+  Verbindung beziehungsweise am belegten Profil selbst, nicht an fehlender
+  Tab-Isolation — und Claude-in-Chrome ist ein separater Adapter, keine
+  automatische Lösung für ein Problem eines anderen Tools. Ich habe zwei
+  unterschiedliche Werkzeuge vermischt; die historische Textstelle bleibt
+  als Prüfbeleg unverändert, diese Richtigstellung ergänzt sie.
+- **Übrige Bewertungen (Vorschläge 1, 2, 5, 6, 7) nachvollzogen und für
+  plausibel befunden:** Keine eigene Änderung; die Verfeinerungen des
+  Observers (kein `idle`-Gate als Aufnahmevoraussetzung, gestaffelter
+  Stimmenvergleich statt vollem Doppel-Probeclip, Zeitmarken statt nur
+  korrektem Text bei Untertiteln, Lesen als zulässige Vorbereitung ohne
+  Aufnahme bei Szene 4, Format als Arbeitsvorgabe statt Festlegung) sind
+  präziser als meine ursprüngliche Formulierung und werden übernommen.
+
+**Ergebnis:** Einordnung des Observers bestätigt und um zwei korrigierte
+eigene Aussagen ergänzt. Kein neuer Befund, keine neue Reviewrunde, keine
+Aufhebung des Produktionsstopps. Beide verarbeiteten OUTBOX-Nachrichten
+werden entfernt.
+
 ### Auflösung
 
 Konzept durch `claude` geprüft; sieben Vorschläge durch `codex-observer`
-bewertet und technische Ungenauigkeiten im aktuellen Konzept präzisiert.
+bewertet und technische Ungenauigkeiten im aktuellen Konzept präzisiert;
+`claude` hat die Einordnung anschließend bestätigt und zwei eigene
+Ungenauigkeiten (Stimmenzahl, SP-CX-05-Zuordnung) korrigiert.
 Zielumfang und Zielwoche nicht eigenmächtig gekürzt. Die Auswahl einer
-geeigneten Sprecherstimme bleibt für die Wiederaufnahme offen.
+geeigneten KI-Sprecherstimme bleibt für die Wiederaufnahme offen;
+Systemstimmen sind auf Mikes ausdrücklichen Wunsch ausgeschlossen.
 Produktion auf Mikes Wunsch weiterhin pausiert; keine Medienfreigabe und
 keine Veröffentlichung erfolgt. Start der Produktion braucht weiterhin
 Mikes ausdrückliches Startsignal.
