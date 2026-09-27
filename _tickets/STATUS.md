@@ -10,7 +10,8 @@ Mike hat T-51 unmittelbar nach T-50 beauftragt. Die Tabellenüberschriften sind 
 Runde 2 ist durch `claude` technisch freigegeben. Die danach beauftragte
 schmale Darstellung einschließlich ausgeblendetem Simulationshinweis unter
 1160 px ist in Runde 4 durch `claude` technisch freigegeben. Die danach
-beauftragte Mindestbreite ist umgesetzt; `claude` ist für Runde 5 am Zug. Runde 3 wurde zurückgenommen.
+beauftragte Mindestbreite und das Icon bei „Plan leeren“ sind umgesetzt;
+`claude` ist für Runde 6 am Zug. Runde 5 wurde zurückgenommen. Runde 3 wurde zurückgenommen.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -37,7 +38,7 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist mit Mindestbreite und gemeinsamem Scrollen in Runde 5 übergeben.
+T-51 ist mit Mindestbreite, gemeinsamem Scrollen und Icon in Runde 6 übergeben.
 Runde 1 (`ae8e83c`) und Runde 3 wurden je ohne Prüfurteil zurückgenommen und
 zählen nicht als geprüfte Fassung. `last_reviewed_*` ist auf Runde 4 aktualisiert.
 
@@ -46,8 +47,8 @@ zählen nicht als geprüfte Fassung. `last_reviewed_*` ist auf Runde 4 aktualisi
 - `observer`: `codex-observer`
 - `phase`: `ready_for_review`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `8bc54ae4a8c38b48a6aa35d5686ad7fe372978cd`
-- `review_round`: `5`
+- `handoff_commit`: `5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9`
+- `review_round`: `6`
 - `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
@@ -233,20 +234,21 @@ Runde 4 verarbeitet; Freigabe und Nachweise bleiben im Ticket.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-51, Runde 5:** Bitte Fassung
-`8bc54ae4a8c38b48a6aa35d5686ad7fe372978cd` prüfen. Nach freigegebener Runde 4
-hat Mike Mindestbreite und horizontales Scrollen gewählt. Kopf und Tabelle
-liegen jetzt in einem gemeinsamen, benannten und per Tastatur fokussierbaren
-Scrollbereich; mindestens 890 px, bei breiterem Tabelleninhalt mehr. Kopfzeile
-bleibt zusammen; `Plan leeren` schrumpft nicht. Kein separater Tabellenscroller.
+**codex → claude · T-51, Runde 6:** Bitte Fassung
+`5e983a0bac76a96c8198bb07f0ff4468c5e2c9f9` prüfen. Wartende Runde 5 wurde
+wegen Mikes Icon-Auftrag vor Prüfurteil zurückgenommen. Seit freigegebener
+Runde 4: gemeinsamer, benannter und per Tastatur fokussierbarer Scrollbereich
+für Kopf und Tabelle, Mindestbreite 890 px (bei breitem Inhalt mehr), Kopf
+bleibt einzeilig. Dazu Mülleimer-SVG über den NButton-Icon-Slot, dekorativ;
+Beschriftung weiter aus i18n. Kein weiterer Tabellenscroller.
 
-793 Tests, Lint und Typecheck grün. Chrome 889/800 px: gemeinsames Scrollen,
-Button in derselben Kopfzeile, gesamte Seite ohne horizontalen Überlauf;
-1440 px ohne Scrollbedarf. Pfeil rechts verschiebt den fokussierten Bereich.
-Prüfdepot synthetisch. README in Rebalancing und Mobile angepasst;
-Containeranleitung unverändert zutreffend. Der große Template-Diff ist
-überwiegend die Einrückung des neuen Wrappers; `git diff -w` zeigt den Kern.
-T-52 folgt nach Freigabe, menschlicher Abschluss T-51 bleibt offen.
+793 Tests, Lint und Typecheck erfolgreich. Browser 889/800/1440 px:
+gemeinsames Scrollen, Button bleibt in der Kopfzeile, kein Überlauf der Seite;
+bei 1440 px kein Scrollbedarf. Nach Icon-Ergänzung Button bei 889 px geprüft.
+Pfeil rechts scrollt den fokussierten Bereich. README beschreibt Mindestbreite
+und Mobile-Verhalten; Icon erfordert keine zusätzliche Anleitung.
+Details im Ticket. `git diff -w` zeigt die Änderungen ohne Wrapper-Einrückung.
+T-52 folgt nach Freigabe; menschlicher Abschluss von T-51 bleibt offen.
 
 **codex-observer → claude · 2026-09-27 · T-53, Konzeptgegenprüfung:**
 Mike: „Erstelle dazu ein Ticket. Claude soll das dann noch gegenprüfen.“
