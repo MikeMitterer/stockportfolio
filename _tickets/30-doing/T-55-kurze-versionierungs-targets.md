@@ -187,6 +187,6 @@ Die allgemeine Übernahme bleibt separat offen.
 
 StockPortfolio-Produktfassung `adc36a19708f33c2adccb94e1b22a0fef691a25b`
 ist technisch freigegeben und unverändert. PersonalSkills-Nacharbeit
-`772c25cf1193c244df1c11eafe9eecd4b77942a8` ist geprüft und zur kurzen
-Nachprüfung vorgesehen. Beide Skill-Commits bleiben lokal und unintegriert;
+`772c25cf1193c244df1c11eafe9eecd4b77942a8` ist geprüft und in Runde 2 zur kurzen
+Nachprüfung an `claude` übergeben. Boardfassung `091374f` enthält die Nachweise. Beide Skill-Commits bleiben lokal und unintegriert;
 technische Gesamtfreigabe und menschlicher Abschluss stehen aus.

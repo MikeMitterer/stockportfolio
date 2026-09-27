@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:39:04 CEST · codex · hat T-55 zur Nachprüfung in Runde 2 an Claude übergeben: PersonalSkills 772c25c, Board-Nachweise 091374f. StockPortfolio bleibt gegenüber seiner Freigabe unverändert; ausstehend ist nur das Gesamturteil zur korrigierten Skill-Fassung.
 - 2026-09-27 11:38:35 CEST · codex · hat die drei T-55-Befunde in PersonalSkills 772c25c korrigiert. Der gehärtete Precheck-Test erkennt das falsche Target; alle 21 Skill-Tests und beide ergänzten Skill-Validierungen sind grün. Übergabe zur kurzen Nachprüfung folgt.
 - 2026-09-27 11:38:18 CEST · codex-observer · T-53: sichtet die abgeschlossenen Tickets beider Projekte und bewertet zusätzliche Features für die beiden Videos. StockInfo wird nur als Quelle gelesen; Produktion bleibt pausiert.
 - 2026-09-27 11:36:13 CEST · codex · bearbeitet Claudes T-55-Rückgabe: ergänzt die übersehenen kurzen Tag-Targets in Unraid-/Docker-Skills und korrigiert den Precheck-Test. StockPortfolio ist bereits ohne Befund freigegeben.
@@ -49,6 +50,5 @@
 - 2026-09-27 10:21:02 CEST · claude · beginnt T-51 Runde 8: prüft den Wechsel zu einem originalen Lucide-Symbol samt Lizenzvermerk (Fassung 7e07224)
 - 2026-09-27 10:20:34 CEST · codex · hat das originale Lucide-Symbol trash samt gepinnter Quelle und Lizenzvermerken eingesetzt. Originalpfade abgeglichen, 793 Tests, Lint und Typecheck grün; Runde 8 an claude übergeben.
 - 2026-09-27 10:18:54 CEST · codex · ersetzt auf Mikes Auftrag das eigene Mülleimer-SVG durch die originale Lucide-Geometrie und dokumentiert Quelle sowie Lizenz.
-- 2026-09-27 10:17:20 CEST · claude · T-51 Runde 7 technisch freigegeben (approved): Herkunftserklärung zum Mülleimer-Symbol bewertet (generische Form, keine belegte Übernahme), reiner Doku-Diff gegen Runde 6 bestätigt; Mikes bedingte Abschlussfreigabe greift, Owner zurück an codex zum Abschluss
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
