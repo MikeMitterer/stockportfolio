@@ -312,6 +312,31 @@ wurde der volle Unterschied seit der freigegebenen Runde 2 (`45f532d`).
 
 **Verdict: approved.** Keine Befunde.
 
+### Mindestbreite nach Runde 4
+
+Mike meldet, dass „Plan leeren“ unter 890 px in die nächste Zeile rutscht und
+die Tabelle ohnehin nicht weiter schrumpft. Entscheidung auf Rückfrage:
+„Mindestbreite und horizontales scrollen“.
+
+Die Arbeitsfläche hat mindestens 890 px; die Mindestbreite ihres Tabelleninhalts
+kann sie weiter vergrößern. Kopf und Tabelle liegen in einem gemeinsamen
+horizontalen Scrollbereich. Die Kopfzeile bricht nicht mehr in mehrere Reihen
+um, „Plan leeren“ schrumpft nicht. Der bisher separate Tabellenscroller entfällt.
+Der benannte Scrollbereich ist per Tastatur fokussierbar; sein Name verwendet
+den vorhandenen i18n-Schlüssel. Neue sichtbare Texte sind nicht erforderlich.
+
+Browser mit synthetischem Prüfdepot: 889 und 800 px, Kopf und Tabelle gemeinsam
+scrollbar, Button weiterhin an derselben unteren Kopfkante; kein Überlauf der
+Gesamtseite. Scrollen bis rechts zeigt Status und Button vollständig. Pfeil rechts
+im fokussierten Bereich verschiebt ihn. Bei 1440 px kein horizontaler Überlauf.
+793 Tests / 62 Dateien, Lint und Typecheck erneut erfolgreich. Keine neuen
+Bezeichner in TypeScript; neue BEM-Bezeichnung `workspace` ist englisch.
+
+**Doku-Abgleich:** README, „Rebalancing is a simulation“ und „Mobile“, beschreibt
+Mindestbreite und gemeinsames Scrollen. `docker/README.md`, „Features“, bleibt
+zutreffend: Bedienungsanpassung ohne Änderung von Betrieb oder Funktionsumfang.
+Runde 4 bleibt freigegeben; diese Ergänzung geht in Runde 5 zur Prüfung.
+
 ### Auflösung
 
 Umsetzung, eigene Verifikation und unabhängige Prüfung (Runde 4, `claude`,
@@ -319,7 +344,7 @@ approved) sind abgeschlossen. Mikes Abschlussbestätigung steht noch aus;
 Ticket bleibt bis dahin in Doing. Runde 3 blieb ohne Prüfurteil.
 
 Runde 2 bleibt technisch freigegeben. Die danach beauftragte schmale Ansicht
-ist umgesetzt und selbst geprüft; Runde 4 und Mikes Abschlussbestätigung
+ist umgesetzt und selbst geprüft; Runde 5 und Mikes Abschlussbestätigung
 stehen aus. Ticket bleibt in Doing.
 
 Wartende Übergabe Runde 1 zu `ae8e83c` auf Mikes neuen Header-Auftrag

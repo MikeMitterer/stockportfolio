@@ -222,399 +222,401 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 </script>
 
 <template>
-  <div class="reb">
-    <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
-    <div v-if="!ready" class="reb__loading">
-      <NSpin size="large" />
-    </div>
+  <div class="reb" role="region" :aria-label="t('nav.rebalancing')" tabindex="0">
+    <div class="reb__workspace">
+      <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
+      <div v-if="!ready" class="reb__loading">
+        <NSpin size="large" />
+      </div>
 
-    <NEmpty
-      v-else-if="!hasHoldings"
-      class="reb__empty"
-      :description="t('rebalancing.empty')"
-    />
+      <NEmpty
+        v-else-if="!hasHoldings"
+        class="reb__empty"
+        :description="t('rebalancing.empty')"
+      />
 
-    <template v-else-if="plan && result">
-      <!--
+      <template v-else-if="plan && result">
+        <!--
         Kopf: woher kommt das Geld, wohin geht es.
         Kein abstraktes Budget — jeder eingesetzte Euro muss im Plan aus einem
         Verkauf oder einer Entnahme bei Cash/Geldmarkt stammen.
       -->
-      <section class="reb__summary">
-        <div class="reb__figure">
-          <span class="reb__caption">{{ t('rebalancing.freed') }}</span>
-          <span class="reb__value reb__value--in tabular-nums">
-            {{ formatMoney(plan.proceeds) }}
-          </span>
-          <span class="reb__caption-hint">{{ t('rebalancing.freedHint') }}</span>
-        </div>
+        <section class="reb__summary">
+          <div class="reb__figure">
+            <span class="reb__caption">{{ t('rebalancing.freed') }}</span>
+            <span class="reb__value reb__value--in tabular-nums">
+              {{ formatMoney(plan.proceeds) }}
+            </span>
+            <span class="reb__caption-hint">{{ t('rebalancing.freedHint') }}</span>
+          </div>
 
-        <div class="reb__figure">
-          <span class="reb__caption">{{ t('rebalancing.spent') }}</span>
-          <span class="reb__value reb__value--out tabular-nums">
-            {{ formatMoney(plan.outlay) }}
-          </span>
-          <span class="reb__caption-hint">{{ t('rebalancing.spentHint') }}</span>
-        </div>
+          <div class="reb__figure">
+            <span class="reb__caption">{{ t('rebalancing.spent') }}</span>
+            <span class="reb__value reb__value--out tabular-nums">
+              {{ formatMoney(plan.outlay) }}
+            </span>
+            <span class="reb__caption-hint">{{ t('rebalancing.spentHint') }}</span>
+          </div>
 
-        <div class="reb__figure">
-          <span class="reb__caption">{{ t('rebalancing.balance') }}</span>
-          <span
-            class="reb__value tabular-nums"
-            :class="{ 'reb__value--out': plan.underfunded }"
-          >
-            {{ formatMoneySigned(plan.netCashFlow) }}
-          </span>
-          <span class="reb__caption-hint">
-            <template v-if="!planHasEntries">{{ t('rebalancing.nothingPlanned') }}</template>
-            <template v-else-if="plan.underfunded">{{ t('rebalancing.underfunded') }}</template>
-            <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">{{ t('rebalancing.balanced') }}</template>
-            <template v-else>{{ t('rebalancing.leftOver') }}</template>
-          </span>
-        </div>
+          <div class="reb__figure">
+            <span class="reb__caption">{{ t('rebalancing.balance') }}</span>
+            <span
+              class="reb__value tabular-nums"
+              :class="{ 'reb__value--out': plan.underfunded }"
+            >
+              {{ formatMoneySigned(plan.netCashFlow) }}
+            </span>
+            <span class="reb__caption-hint">
+              <template v-if="!planHasEntries">{{ t('rebalancing.nothingPlanned') }}</template>
+              <template v-else-if="plan.underfunded">{{ t('rebalancing.underfunded') }}</template>
+              <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">{{ t('rebalancing.balanced') }}</template>
+              <template v-else>{{ t('rebalancing.leftOver') }}</template>
+            </span>
+          </div>
 
-        <!--
+          <!--
           Die Deckungsvorschläge gehören zum Plan als Ganzem, nicht in die
           einzelne Zeile: In der Zelle wuchs die Zeile um den Knopf und schrumpfte
           beim Anklicken wieder — die Tabelle sprang bei jeder Eingabe. Hier
           stehen sie neben der Lücke, die sie schließen sollen, und die feste
           Höhe verhindert auch beim Erscheinen jeden Versatz.
         -->
-        <div class="reb__figure reb__figure--cover">
-          <span
-            class="reb__caption reb__caption--hinted"
-          >
-            {{ t('rebalancing.coverFrom') }}
-            <InfoHint :text="t('hints.coverFrom')" anchor="plan" settings-tab="calc" />
-          </span>
-          <div v-if="coverageOptions.length > 0" class="reb__cover-options">
-            <button
-              v-for="option in coverageOptions"
-              :key="option.id"
-              type="button"
-              class="reb__cover-button tabular-nums"
-              :title="t('rebalancing.coverTitle', { label: option.label, units: integer(option.units) })"
-              @click="setTrade(option.id, option.units)"
+          <div class="reb__figure reb__figure--cover">
+            <span
+              class="reb__caption reb__caption--hinted"
             >
-              {{ option.label }} {{ integer(option.units) }}
-            </button>
+              {{ t('rebalancing.coverFrom') }}
+              <InfoHint :text="t('hints.coverFrom')" anchor="plan" settings-tab="calc" />
+            </span>
+            <div v-if="coverageOptions.length > 0" class="reb__cover-options">
+              <button
+                v-for="option in coverageOptions"
+                :key="option.id"
+                type="button"
+                class="reb__cover-button tabular-nums"
+                :title="t('rebalancing.coverTitle', { label: option.label, units: integer(option.units) })"
+                @click="setTrade(option.id, option.units)"
+              >
+                {{ option.label }} {{ integer(option.units) }}
+              </button>
+            </div>
+            <span v-else class="reb__cover-empty">
+              {{ planHasEntries ? t('rebalancing.coverNothing') : t('common.none') }}
+            </span>
+            <span class="reb__caption-hint">{{ t('rebalancing.coverHint') }}</span>
           </div>
-          <span v-else class="reb__cover-empty">
-            {{ planHasEntries ? t('rebalancing.coverNothing') : t('common.none') }}
-          </span>
-          <span class="reb__caption-hint">{{ t('rebalancing.coverHint') }}</span>
-        </div>
 
-        <div class="reb__figure">
-          <span class="reb__caption">
-            {{ t('rebalancing.reserve') }}
-          </span>
-          <span class="reb__value tabular-nums">{{ formatMoney(plan.reserveAvailable) }}</span>
-          <span class="reb__caption-hint">
-            {{ t('rebalancing.reserveHint') }}
-          </span>
-        </div>
+          <div class="reb__figure">
+            <span class="reb__caption">
+              {{ t('rebalancing.reserve') }}
+            </span>
+            <span class="reb__value tabular-nums">{{ formatMoney(plan.reserveAvailable) }}</span>
+            <span class="reb__caption-hint">
+              {{ t('rebalancing.reserveHint') }}
+            </span>
+          </div>
 
-        <div class="reb__note">
-          <!--
+          <div class="reb__note">
+            <!--
             Der Plan bucht bewusst nichts. Er dient dem Durchrechnen; die
             Aufträge gibt der Nutzer bei seiner Bank auf und pflegt die
             Bestände danach im Dashboard nach.
           -->
-          <span class="reb__note-text">
-            {{ t('rebalancing.simulationNote') }}
-          </span>
-          <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
-            {{ t('rebalancing.clearPlan') }}
-          </NButton>
-        </div>
-      </section>
+            <span class="reb__note-text">
+              {{ t('rebalancing.simulationNote') }}
+            </span>
+            <NButton size="small" quaternary :disabled="!planHasEntries" @click="clearPlan">
+              {{ t('rebalancing.clearPlan') }}
+            </NButton>
+          </div>
+        </section>
 
-      <!-- ─── Der Plan ─────────────────────────────────────────────────── -->
-      <section class="reb__panel">
-        <div class="reb__panel-head">
-          <h2 class="reb__panel-title">
-            {{ t('rebalancing.heading') }}
-          </h2>
-          <span class="reb__panel-bands tabular-nums">
-            {{
-              t('rebalancing.bandsLabel', {
-                lower: percent(settingsStore.settings.bands.lowerPercent),
-                upper: percent(settingsStore.settings.bands.upperPercent),
-              })
-            }}
-          </span>
-        </div>
+        <!-- ─── Der Plan ─────────────────────────────────────────────────── -->
+        <section class="reb__panel">
+          <div class="reb__panel-head">
+            <h2 class="reb__panel-title">
+              {{ t('rebalancing.heading') }}
+            </h2>
+            <span class="reb__panel-bands tabular-nums">
+              {{
+                t('rebalancing.bandsLabel', {
+                  lower: percent(settingsStore.settings.bands.lowerPercent),
+                  upper: percent(settingsStore.settings.bands.upperPercent),
+                })
+              }}
+            </span>
+          </div>
 
-        <div class="reb__scroll">
-          <table class="reb__table">
-            <thead>
-              <tr class="reb__head">
-                <th class="reb__th reb__th--left reb__th--wide">{{ t('table.position') }}</th>
-                <th class="reb__th">{{ t('table.units') }}</th>
-                <th class="reb__th">{{ t('table.price') }}</th>
-                <th class="reb__th">{{ t('table.actualPercent') }}</th>
-                <th class="reb__th">{{ t('table.targetPercent') }}</th>
-                <th class="reb__th">
-                  <NTooltip trigger="hover">
-                    <template #trigger>
-                      <span class="reb__hinted">
-                        {{ t('rebalancing.columns.delta') }}
-                      </span>
-                    </template>
-                    <div class="reb__tooltip">
-                      {{ t('rebalancing.deltaTooltip') }}
-                      <div class="reb__tooltip-more">{{ t('rebalancing.deltaTooltipMore') }}</div>
-                    </div>
-                  </NTooltip>
-                </th>
-                <th class="reb__th reb__th--w32">
-                  <NTooltip trigger="hover">
-                    <template #trigger>
-                      <span class="reb__hinted">{{ t('rebalancing.columns.trade') }}</span>
-                    </template>
-                    <div class="reb__tooltip">{{ t('rebalancing.tradeTooltip') }}</div>
-                  </NTooltip>
-                </th>
-                <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
-                <th class="reb__th reb__th--left reb__th--w56 reb__band-column">
-                  <NTooltip trigger="hover">
-                    <template #trigger>
-                      <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
-                    </template>
-                    <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
-                  </NTooltip>
-                </th>
-                <th class="reb__th">
-                  <NTooltip trigger="hover">
-                    <template #trigger>
-                      <span class="reb__hinted">{{ t('rebalancing.columns.relativePercent') }}</span>
-                    </template>
-                    <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
-                  </NTooltip>
-                </th>
-                <th class="reb__th">
-                  <NTooltip trigger="hover">
-                    <template #trigger>
-                      <span class="reb__hinted">{{ t('rebalancing.columns.deviation') }}</span>
-                    </template>
-                    <div class="reb__tooltip">{{ t('rebalancing.deviationTooltip') }}</div>
-                  </NTooltip>
-                </th>
-                <th class="reb__th reb__th--center reb__th--wide reb__th--w32">{{ t('table.status') }}</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <template v-for="entry in groupedRows" :key="entry.group.group">
-                <tr :style="{ backgroundColor: bandColor(entry.group.group) }">
-                  <td colspan="12" class="reb__td reb__td--wide">
-                    <span class="reb__group">
-                      <span
-                        class="reb__group-dot"
-                        :style="{ backgroundColor: assetColor(entry.group.group) }"
-                        aria-hidden="true"
-                      ></span>
-                      {{ t(`groups.${entry.group.group}`) }}
-                    </span>
-                  </td>
+          <div>
+            <table class="reb__table">
+              <thead>
+                <tr class="reb__head">
+                  <th class="reb__th reb__th--left reb__th--wide">{{ t('table.position') }}</th>
+                  <th class="reb__th">{{ t('table.units') }}</th>
+                  <th class="reb__th">{{ t('table.price') }}</th>
+                  <th class="reb__th">{{ t('table.actualPercent') }}</th>
+                  <th class="reb__th">{{ t('table.targetPercent') }}</th>
+                  <th class="reb__th">
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <span class="reb__hinted">
+                          {{ t('rebalancing.columns.delta') }}
+                        </span>
+                      </template>
+                      <div class="reb__tooltip">
+                        {{ t('rebalancing.deltaTooltip') }}
+                        <div class="reb__tooltip-more">{{ t('rebalancing.deltaTooltipMore') }}</div>
+                      </div>
+                    </NTooltip>
+                  </th>
+                  <th class="reb__th reb__th--w32">
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <span class="reb__hinted">{{ t('rebalancing.columns.trade') }}</span>
+                      </template>
+                      <div class="reb__tooltip">{{ t('rebalancing.tradeTooltip') }}</div>
+                    </NTooltip>
+                  </th>
+                  <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
+                  <th class="reb__th reb__th--left reb__th--w56 reb__band-column">
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
+                      </template>
+                      <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
+                    </NTooltip>
+                  </th>
+                  <th class="reb__th">
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <span class="reb__hinted">{{ t('rebalancing.columns.relativePercent') }}</span>
+                      </template>
+                      <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
+                    </NTooltip>
+                  </th>
+                  <th class="reb__th">
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <span class="reb__hinted">{{ t('rebalancing.columns.deviation') }}</span>
+                      </template>
+                      <div class="reb__tooltip">{{ t('rebalancing.deviationTooltip') }}</div>
+                    </NTooltip>
+                  </th>
+                  <th class="reb__th reb__th--center reb__th--wide reb__th--w32">{{ t('table.status') }}</th>
                 </tr>
+              </thead>
 
-                <tr
-                  v-for="row in entry.rows"
-                  :key="row.current.position.id"
-                  class="reb__row"
-                >
-                  <td class="reb__td reb__td--wide">
-                    <div class="reb__symbol">
-                      {{ positionPrimaryLabel(row.current) }}
-                      <span v-if="positionSymbol(row.current) && positionIsin(row.current)" class="reb__isin"><span aria-hidden="true">|</span> {{ positionIsin(row.current) }}</span>
-                    </div>
-                    <div
-                      v-if="row.current.position.group !== 'cash'"
-                      class="reb__name"
-                    >
-                      {{ row.current.position.displayName }}
-                    </div>
-                  </td>
+              <tbody>
+                <template v-for="entry in groupedRows" :key="entry.group.group">
+                  <tr :style="{ backgroundColor: bandColor(entry.group.group) }">
+                    <td colspan="12" class="reb__td reb__td--wide">
+                      <span class="reb__group">
+                        <span
+                          class="reb__group-dot"
+                          :style="{ backgroundColor: assetColor(entry.group.group) }"
+                          aria-hidden="true"
+                        ></span>
+                        {{ t(`groups.${entry.group.group}`) }}
+                      </span>
+                    </td>
+                  </tr>
 
-                  <td class="reb__td reb__td--num tabular-nums">
-                    {{ integer(row.current.position.units) }}
-                  </td>
+                  <tr
+                    v-for="row in entry.rows"
+                    :key="row.current.position.id"
+                    class="reb__row"
+                  >
+                    <td class="reb__td reb__td--wide">
+                      <div class="reb__symbol">
+                        {{ positionPrimaryLabel(row.current) }}
+                        <span v-if="positionSymbol(row.current) && positionIsin(row.current)" class="reb__isin"><span aria-hidden="true">|</span> {{ positionIsin(row.current) }}</span>
+                      </div>
+                      <div
+                        v-if="row.current.position.group !== 'cash'"
+                        class="reb__name"
+                      >
+                        {{ row.current.position.displayName }}
+                      </div>
+                    </td>
 
-                  <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
-                    {{ priceOf(row) !== null ? formatMoneyCents(priceOf(row)!) : '—' }}
-                  </td>
+                    <td class="reb__td reb__td--num tabular-nums">
+                      {{ integer(row.current.position.units) }}
+                    </td>
 
-                  <td class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums">
-                    {{ percent(row.current.actualPercent) }}
-                  </td>
+                    <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
+                      {{ priceOf(row) !== null ? formatMoneyCents(priceOf(row)!) : '—' }}
+                    </td>
 
-                  <!--
+                    <td class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums">
+                      {{ percent(row.current.actualPercent) }}
+                    </td>
+
+                    <!--
                     Ziel probeweise änderbar — nur in dieser Simulation.
                     Wer eine Position als Geldquelle nutzt, obwohl sie auf Ziel
                     steht, ändert damit seine Aufteilung; ohne angepasstes Ziel
                     stünde die Zeile hinterher dauerhaft auf „Kaufen". Der
                     Punkt markiert den Probewert.
                   -->
-                  <td class="reb__td">
-                    <div class="reb__target">
-                      <span
-                        class="reb__override"
-                        :class="{ 'reb__override--on': row.targetOverridden }"
-                        :title="
-                          row.targetOverridden
-                            ? t('rebalancing.targetProbe', {
-                              target: percent(row.current.position.targetPercent),
-                            })
-                            : ''
-                        "
-                        aria-hidden="true"
-                      ></span>
+                    <td class="reb__td">
+                      <div class="reb__target">
+                        <span
+                          class="reb__override"
+                          :class="{ 'reb__override--on': row.targetOverridden }"
+                          :title="
+                            row.targetOverridden
+                              ? t('rebalancing.targetProbe', {
+                                target: percent(row.current.position.targetPercent),
+                              })
+                              : ''
+                          "
+                          aria-hidden="true"
+                        ></span>
+                        <UxInlineNumber
+                          :edit-label="t('common.edit')"
+                          :clear-label="t('common.clear')"
+                          class="reb__grow"
+                          :value="row.targetPercent"
+                          :display="percent(row.targetPercent)"
+                          :precision="2"
+                          :min="0"
+                          :max="100"
+                          @commit="
+                            (targetPercent: number | null) =>
+                              targetPercent !== null &&
+                              setTarget(row.current.position.id, targetPercent)
+                          "
+                        />
+                      </div>
+                    </td>
+
+                    <!-- Delta bis zum Ziel — per Klick übernehmbar -->
+                    <td class="reb__td reb__td--num">
+                      <button
+                        v-if="row.deltaUnits !== 0"
+                        type="button"
+                        class="reb__delta tabular-nums"
+                        :class="row.deltaUnits > 0 ? 'reb__delta--up' : 'reb__delta--down'"
+                        :title="t('rebalancing.adoptDelta')"
+                        @click="setTrade(row.current.position.id, row.deltaUnits)"
+                      >
+                        {{ row.deltaUnits > 0 ? '+' : '' }}{{ integer(row.deltaUnits) }}
+                      </button>
+                      <span v-else class="reb__muted">—</span>
+                    </td>
+
+                    <!-- Die Eingabe -->
+                    <td class="reb__td">
                       <UxInlineNumber
                         :edit-label="t('common.edit')"
                         :clear-label="t('common.clear')"
-                        class="reb__grow"
-                        :value="row.targetPercent"
-                        :display="percent(row.targetPercent)"
-                        :precision="2"
-                        :min="0"
-                        :max="100"
+                        :value="row.tradeUnits"
+                        :display="row.tradeUnits === 0 ? '—' : integer(row.tradeUnits)"
+                        :precision="row.current.position.group === 'cash' ? 2 : 0"
+                        :min="-row.current.position.units"
+                        :empty-value="0"
                         @commit="
-                          (targetPercent: number | null) =>
-                            targetPercent !== null &&
-                            setTarget(row.current.position.id, targetPercent)
+                          (units: number | null) =>
+                            units !== null && setTrade(row.current.position.id, units)
                         "
                       />
-                    </div>
-                  </td>
+                    </td>
 
-                  <!-- Delta bis zum Ziel — per Klick übernehmbar -->
-                  <td class="reb__td reb__td--num">
-                    <button
-                      v-if="row.deltaUnits !== 0"
-                      type="button"
-                      class="reb__delta tabular-nums"
-                      :class="row.deltaUnits > 0 ? 'reb__delta--up' : 'reb__delta--down'"
-                      :title="t('rebalancing.adoptDelta')"
-                      @click="setTrade(row.current.position.id, row.deltaUnits)"
-                    >
-                      {{ row.deltaUnits > 0 ? '+' : '' }}{{ integer(row.deltaUnits) }}
-                    </button>
-                    <span v-else class="reb__muted">—</span>
-                  </td>
-
-                  <!-- Die Eingabe -->
-                  <td class="reb__td">
-                    <UxInlineNumber
-                      :edit-label="t('common.edit')"
-                      :clear-label="t('common.clear')"
-                      :value="row.tradeUnits"
-                      :display="row.tradeUnits === 0 ? '—' : integer(row.tradeUnits)"
-                      :precision="row.current.position.group === 'cash' ? 2 : 0"
-                      :min="-row.current.position.units"
-                      :empty-value="0"
-                      @commit="
-                        (units: number | null) =>
-                          units !== null && setTrade(row.current.position.id, units)
+                    <td
+                      class="reb__td reb__td--num tabular-nums"
+                      :class="
+                        row.cashFlow > 0
+                          ? 'reb__flow--in'
+                          : row.cashFlow < 0
+                            ? 'reb__flow--out'
+                            : 'reb__muted'
                       "
-                    />
-                  </td>
+                    >
+                      {{ row.cashFlow === 0 ? '—' : formatMoneySigned(row.cashFlow) }}
+                    </td>
 
-                  <td
-                    class="reb__td reb__td--num tabular-nums"
-                    :class="
-                      row.cashFlow > 0
-                        ? 'reb__flow--in'
-                        : row.cashFlow < 0
-                          ? 'reb__flow--out'
-                          : 'reb__muted'
-                    "
-                  >
-                    {{ row.cashFlow === 0 ? '—' : formatMoneySigned(row.cashFlow) }}
-                  </td>
+                    <td class="reb__td reb__band-column">
+                      <!-- Balken und Zahl beziehen sich auf denselben simulierten Zustand. -->
+                      <DeltaBar
+                        :relative-percent="row.relativeDeviationAfter"
+                        :suggestion="row.suggestionAfter"
+                        :label="row.targetPercent === 0 ? '—' : undefined"
+                        hide-value
+                        compact
+                      />
+                      <div class="reb__share-after">
+                        {{ t('rebalancing.shareAfterLabel', { share: percent(row.percentAfter) }) }}
+                      </div>
+                      <div v-if="row.targetPercent === 0" class="reb__share-after">
+                        {{ t('rebalancing.relativeUndefined') }}
+                      </div>
+                    </td>
+                    <td
+                      class="reb__td reb__td--num reb__relative-value tabular-nums"
+                      :class="{
+                        'reb__relative-value--positive': row.targetPercent !== 0 && row.relativeDeviationAfter > 0,
+                        'reb__relative-value--negative': row.targetPercent !== 0 && row.relativeDeviationAfter < 0,
+                      }"
+                      :title="row.targetPercent === 0 ? t('rebalancing.relativeUndefined') : undefined"
+                    >
+                      {{ row.targetPercent === 0 ? '—' : percentSigned(row.relativeDeviationAfter) }}
+                    </td>
 
-                  <td class="reb__td reb__band-column">
-                    <!-- Balken und Zahl beziehen sich auf denselben simulierten Zustand. -->
-                    <DeltaBar
-                      :relative-percent="row.relativeDeviationAfter"
-                      :suggestion="row.suggestionAfter"
-                      :label="row.targetPercent === 0 ? '—' : undefined"
-                      hide-value
-                      compact
-                    />
-                    <div class="reb__share-after">
-                      {{ t('rebalancing.shareAfterLabel', { share: percent(row.percentAfter) }) }}
-                    </div>
-                    <div v-if="row.targetPercent === 0" class="reb__share-after">
-                      {{ t('rebalancing.relativeUndefined') }}
-                    </div>
-                  </td>
-                  <td
-                    class="reb__td reb__td--num reb__relative-value tabular-nums"
-                    :class="{
-                      'reb__relative-value--positive': row.targetPercent !== 0 && row.relativeDeviationAfter > 0,
-                      'reb__relative-value--negative': row.targetPercent !== 0 && row.relativeDeviationAfter < 0,
-                    }"
-                    :title="row.targetPercent === 0 ? t('rebalancing.relativeUndefined') : undefined"
-                  >
-                    {{ row.targetPercent === 0 ? '—' : percentSigned(row.relativeDeviationAfter) }}
-                  </td>
-
-                  <!--
+                    <!--
                     Abweichung vom Ziel nach dem Trade. Das Ziel muss nicht
                     exakt getroffen werden — solange der Anteil im Band liegt,
                     ist der Zustand in Ordnung, deshalb hier gedämpft statt rot.
                   -->
-                  <td
-                    class="reb__td reb__td--num tabular-nums"
-                    :class="row.inBandAfter ? 'reb__muted' : 'reb__flow--out'"
-                  >
-                    {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
-                  </td>
+                    <td
+                      class="reb__td reb__td--num tabular-nums"
+                      :class="row.inBandAfter ? 'reb__muted' : 'reb__flow--out'"
+                    >
+                      {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
+                    </td>
 
-                  <td class="reb__td reb__td--wide reb__td--center">
-                    <SuggestionBadge
-                      :suggestion="row.suggestionAfter"
-                      :below-min-trade="row.belowMinTradeAfter"
-                    />
+                    <td class="reb__td reb__td--wide reb__td--center">
+                      <SuggestionBadge
+                        :suggestion="row.suggestionAfter"
+                        :below-min-trade="row.belowMinTradeAfter"
+                      />
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+
+              <!-- Bilanz des Plans -->
+              <tfoot>
+                <tr class="reb__foot">
+                  <td colspan="7" class="reb__foot-label">
+                    {{ t('rebalancing.footerQuestion') }}
+                  </td>
+                  <td
+                    class="reb__foot-value tabular-nums"
+                    :class="
+                      Math.abs(plan.netCashFlow) < 0.005 ? 'reb__flow--in' : ''
+                    "
+                  >
+                    {{ formatMoneySigned(plan.netCashFlow) }}
+                  </td>
+                  <td class="reb__foot-note" colspan="4">
+                    <template v-if="!planHasEntries">{{ t('rebalancing.footerNothing') }}</template>
+                    <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">
+                      {{ t('rebalancing.footerBalanced') }}
+                    </template>
+                    <template v-else-if="plan.netCashFlow < 0">
+                      {{ t('rebalancing.footerShort', { amount: formatMoney(-plan.netCashFlow) }) }}
+                    </template>
+                    <template v-else>
+                      {{ t('rebalancing.footerLeftOver', { amount: formatMoney(plan.netCashFlow) }) }}
+                    </template>
                   </td>
                 </tr>
-              </template>
-            </tbody>
-
-            <!-- Bilanz des Plans -->
-            <tfoot>
-              <tr class="reb__foot">
-                <td colspan="7" class="reb__foot-label">
-                  {{ t('rebalancing.footerQuestion') }}
-                </td>
-                <td
-                  class="reb__foot-value tabular-nums"
-                  :class="
-                    Math.abs(plan.netCashFlow) < 0.005 ? 'reb__flow--in' : ''
-                  "
-                >
-                  {{ formatMoneySigned(plan.netCashFlow) }}
-                </td>
-                <td class="reb__foot-note" colspan="4">
-                  <template v-if="!planHasEntries">{{ t('rebalancing.footerNothing') }}</template>
-                  <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">
-                    {{ t('rebalancing.footerBalanced') }}
-                  </template>
-                  <template v-else-if="plan.netCashFlow < 0">
-                    {{ t('rebalancing.footerShort', { amount: formatMoney(-plan.netCashFlow) }) }}
-                  </template>
-                  <template v-else>
-                    {{ t('rebalancing.footerLeftOver', { amount: formatMoney(plan.netCashFlow) }) }}
-                  </template>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </section>
-    </template>
+              </tfoot>
+            </table>
+          </div>
+        </section>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -624,7 +626,18 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
   @include content-frame;
 
-  @include up(md) { gap: var(--space-6); }
+  // Eingabespalten müssen nebeneinander bleiben; Kopf und Tabelle scrollen gemeinsam.
+  overflow-x: auto;
+
+  &__workspace {
+    display: grid;
+    grid-template-columns: minmax(min-content, 1fr);
+    gap: var(--space-4);
+    // Mike: unter 890 px nicht weiter zusammendrücken, gemeinsam scrollen.
+    min-width: 890px;
+
+    @include up(md) { gap: var(--space-6); }
+  }
 
   &__loading {
     @include row(0);
@@ -638,7 +651,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
   /* Der Kopf fasst den Plan zusammen: was frei wird, was er kostet, was bleibt. */
   &__summary {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: flex-end;
     gap: var(--space-4) var(--space-8);
   }
@@ -705,6 +718,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     @include row(var(--space-3));
 
     margin-left: auto;
+    flex-shrink: 0;
   }
 
   &__note-text {
@@ -743,13 +757,6 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
   }
 
   &__panel-bands { @include muted; }
-
-  /*
-   * Die Stückzahlen brauchen alle Spalten nebeneinander — Kurs gegen Ziel
-   * gegen Delta. Deshalb hier ausnahmsweise seitliches Rollen statt einer
-   * Kartenliste; die Eingabe wäre einzeln untereinander sinnlos.
-   */
-  &__scroll { overflow-x: auto; }
 
   &__share-after {
     margin-top: var(--space-1);

@@ -238,6 +238,10 @@ percentage points, and positive or negative trade entries.
 Below 1280 pixels, the bar and its share label are hidden. The _Rel. %_ value
 remains visible in its own column, including its sign colour.
 Below 1160 pixels, the simulation reminder above the table is hidden.
+The workspace keeps a minimum width of 890 pixels, expanding when table content
+needs more room. On narrower screens, the summary and table scroll horizontally
+together. _Clear plan_ stays on the summary row. The scroll region also supports
+keyboard navigation.
 
 ### Explanations inside the app
 
@@ -342,8 +346,9 @@ Tap a position card or its caret for **Price history**, **Valuation** and
 **Information**, when additional information is available. A compact menu selects
 the section on a narrow screen.
 The card does not offer editing.
-Rebalancing stays on the desktop — entering unit counts in a wide table is not a
-good idea on a phone.
+Rebalancing retains its desktop table layout. On a narrow screen, scroll its
+summary and table together horizontally; a wider window is more practical for
+entering trades.
 
 ## Docker
 
