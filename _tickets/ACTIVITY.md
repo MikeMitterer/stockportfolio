@@ -1,5 +1,12 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:42:23 CEST · codex · sichert die noch uncommitteten Observer-Nachträge zu T-50/T-53, SP-CX-05, STATUS und das Tätigkeitsprotokoll. Abschließend werden master, Remote-Gleichstand und eine saubere Arbeitskopie mit make status geprüft.
+- 2026-09-27 10:41:00 CEST · codex · hat die dauerhafte Regel ergänzt: Nach Commit, Merge und Push zurück auf master wechseln und Gleichstand mit origin/master prüfen. Regel integriert und gepusht; master ist aktiv.
+- 2026-09-27 10:40:22 CEST · codex-observer · Hat in T-53 die falsche Zuordnung von SP-CX-05 zu Lizenzfragen klargestellt und Claude um Korrektur gebeten. Konzeptvorschläge bleiben offen; die Medienproduktion bleibt pausiert.
+- 2026-09-27 10:39:44 CEST · codex-observer · Prüft Claudes Konzepturteil und sieben Vorschläge zu T-53 gegen Mikes Umfang, den Produktionsstopp und die tatsächlich verwendbaren Aufnahmewege.
+- 2026-09-27 10:38:46 CEST · codex · hat die Abschlussregel in AGENTS.md gespeichert und T-50 bis T-52 samt Regel per Fast-forward nach master integriert und zu origin gepusht. master und origin/master stehen auf b8abe48.
+- 2026-09-27 10:38:15 CEST · codex · hält Mikes dauerhafte Freigabe für Commit, Merge nach master und Push nach Ticketabschluss in AGENTS.md fest und integriert die abgeschlossenen Tickets T-50 bis T-52.
+- 2026-09-27 10:36:30 CEST · claude · T-53 um sieben Änderungsvorschläge ergänzt (Umfangsstaffelung, stabile Fassung, Stimmen-Lizenz, Mehrfachstimmen-Test, Untertitel aus Skript, StockInfo-Sichtung entkoppeln, Zielauflösung); zur Abstimmung mit codex/Observer, keine Entscheidung getroffen
 - 2026-09-27 10:35:28 CEST · claude · prüft T-53 erneut auf Mikes Auftrag und erarbeitet konkrete Änderungsvorschläge zum Konzept (Umfang, Zeitplan, Stimme, Lizenz)
 - 2026-09-27 10:35:02 CEST · codex-observer · Hat Abschluss und Archivierung von T-51 und T-52 mit den Reviewurteilen und Nutzerbestätigungen abgeglichen. Wartet im Observer-Scheduler auf Änderungen; T-53 bleibt nach Konzeptprüfung in der Produktion pausiert.
 - 2026-09-27 10:33:55 CEST · codex · hat T-52 nach Claudes Freigabe und Mikes Bestätigung „T-52 passt“ archiviert. Die Kette T-51 → T-52 ist abgeschlossen; das Board steht für Coder/Verifier auf idle.
@@ -43,12 +50,5 @@
 - 2026-09-27 09:36:48 CEST · codex · hat T-51 mit Vorzeichenfarben, kleinerer Anteil-Beschriftung und IST-Wert ohne Umbruch an claude übergeben. 793 Tests, Lint und Typecheck erfolgreich; T-52 folgt nach der technischen Freigabe.
 - 2026-09-27 09:34:34 CEST · codex · ergänzt T-51 um Vorzeichenfarben der relativen Abweichung, kleinere Anteil-Beschriftung und eine umbrechungsfreie IST-Prozentzahl.
 - 2026-09-27 09:28:55 CEST · codex-observer · Hat SP-CX-05 zum fehlenden UI-Referenzvergleich in T-50 dokumentiert und Coder sowie Verifier über die konkrete Gegenprobe informiert. Beobachtet die Umsetzung von T-51; T-52 folgt laut Prioritätskette.
-- 2026-09-27 09:27:15 CEST · codex-observer · Prüft die Funktion „Decken aus“ im Rebalancing und den zugehörigen Einstellungsverweis für Mikes Erklärung.
-- 2026-09-27 09:24:45 CEST · codex · T-50 mit Mikes Bestätigung abgeschlossen und archiviert. T-51 aktiviert: Zeige die relative Bandabweichung neben dem Rebalancing-Balken und halte den Anteil nach dem Trade separat sichtbar.
-- 2026-09-27 09:23:57 CEST · codex-observer · Erfasst T-52 in Doing: Die StockInfo-Adresse in der Statuszeile soll direkt Einstellungen → Status öffnen. Vorhandener Tab-Parameter ist geprüft; Umsetzung noch offen.
-- 2026-09-27 09:23:49 CEST · claude · T-50 Runde 2 technisch freigegeben (approved): SVG-Pfad, DOM-Reihenfolge und Trennpunkte gegen StockInfo-Referenz verglichen, 61/783 Tests reproduziert; kosmetische Beobachtung ohne Nacharbeit dokumentiert; Owner zurück an codex
-- 2026-09-27 09:21:33 CEST · codex · T-51 als unmittelbaren Folgeauftrag nach T-50 eingeplant: relative Bandabweichung im Rebalancing sichtbar machen. Warte auf die unabhängige Prüfung der Symbolkorrektur von T-50; danach beginnt T-51 ohne erneute Rückfrage.
-- 2026-09-27 09:18:38 CEST · codex · T-50 korrigiert: StockInfo-GitHub-Symbol zwischen Herkunft und Depot mit Trennpunkten. Desktop/mobil geprüft, 783 Tests sowie Lint/Typecheck grün; Runde 2 an claude übergeben.
-- 2026-09-27 09:15:58 CEST · codex · T-50 in Nacharbeit: Ersetze den Textlink durch das StockInfo-GitHub-Symbol zwischen Herkunft und Depot, einschließlich der Trennpunkte. Prüfe die genaue Reihenfolge gegen die Referenz.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

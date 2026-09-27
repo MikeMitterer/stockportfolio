@@ -19,12 +19,12 @@ Eine zusammenhängende Vorführung liefert die Bilder für beide Formate:
 Depotübersicht, relative Abweichung und Rebalancing-Simulation in
 StockPortfolio; anschließend die Kursversorgung durch StockInfo.
 
-**Stand:** Konzept von `claude` gegengeprüft und freigegeben, mit einer
-Ergänzung: die macOS-Bildschirmaufnahme-Berechtigung muss vor der
-tatsächlichen Aufnahme erteilt sein. Auf Mikes ausdrücklichen Auftrag
-ergänzt `claude` zusätzlich sieben Änderungsvorschläge zu Umfang, Zeitplan,
-Stimme, Untertiteln und Lizenzfragen (siehe „Änderungsvorschläge“ unten) —
-offen zur Abstimmung mit codex/Observer, noch keine Entscheidung.
+**Stand:** Das ursprüngliche Konzept ist durch `claude` gegengeprüft und
+freigegeben. Seine sieben Änderungsvorschläge sind durch `codex-observer`
+bewertet (siehe „Einordnung der Gegenprüfung“ unten). Die Zielwoche und der
+gewünschte Umfang bleiben erhalten. Die Systemstimme „Anna“ wird wegen der
+belegten Einschränkung für öffentliche Inhalte nicht für das Medienpaket
+eingeplant. Aufnahmeberechtigungen hängen vom tatsächlich gewählten Werkzeug ab.
 **Die Produktion bleibt pausiert.** Auf „Klingt gut“ folgte „Warte noch“
 und danach der Auftrag zur Ticketanlage mit Gegenprüfung.
 Noch keine neuen Screenshots, Sprachaufnahmen oder Videos erstellt.
@@ -179,17 +179,36 @@ wird erst nach Sichtung der App festgelegt; noch keine dortige Aufnahme behaupte
 
 Auf dem Mac sind FFmpeg, Bildschirmaufnahme-Werkzeuge und die lokale
 Sprachausgabe `say` vorhanden; eine deutsche Stimme „Anna“ ist verfügbar.
-Damit ist ein lokal erzeugter Sprachentwurf vorgesehen. Qualität,
-Aussprache der App-Namen und Verständlichkeit müssen am Probeclip geprüft werden.
+Die Verfügbarkeit ist kein Nutzungsnachweis für das Veröffentlichungspaket.
+Apples macOS-Tahoe-Lizenz, Abschnitt 2 F, beschränkt Systemstimmen auf
+persönliche, nichtkommerzielle Nutzung und schließt öffentliche Verwendung
+aus. Deshalb bereits für den vorgesehenen Probeclip eine Stimme mit passenden
+Nutzungsrechten wählen; „intern“ allein belegt keine zulässige Nutzung für
+ein auf Veröffentlichung gerichtetes Projekt.
+[Quelle: Apple, macOS Tahoe SLA, Abschnitt 2 F](https://www.apple.com/legal/sla/docs/macOSTahoe.pdf).
 
-Für eine endgültige externe KI-Stimme sind Anbieter, Zugang und mögliche
-Kosten noch offen. Keinen vorhandenen Sprachdienst oder bereits nutzbaren
-API-Zugang behaupten. Ein lokaler Entwurf benötigt diesen Zugang nicht.
+Anbieter beziehungsweise Sprachmodell, Nutzungsrechte, Zugang und mögliche
+Kosten sind noch offen. Keinen bereits nutzbaren Dienst behaupten.
+Ein Entwurf der Bildfolge ohne Sprache bleibt möglich. Qualität,
+Aussprache der App-Namen und Verständlichkeit am tatsächlichen Audio prüfen.
+
+Für Screenshots bevorzugt den Seiteninhalt direkt über den Browser erfassen.
+Eine macOS-Freigabe zur Aufnahme des gesamten Bildschirms ist dafür keine
+pauschale Voraussetzung. Erst wenn `screencapture` oder AVFoundation für
+eine echte Bildschirmaufnahme eingesetzt wird, den Berechtigungsstatus des
+aufnehmenden Prozesses prüfen und eine gegebenenfalls fehlende Freigabe nennen.
+Der bisherige Profilfehler belegt keine fehlende Bildschirmaufnahme-Freigabe.
+[Browser-Aufnahmeweg: Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot).
 
 Ein erster Versuch, über Chrome DevTools eine isolierte Seite zu öffnen,
 scheiterte am bereits verwendeten Browserprofil. Es entstand dadurch keine
 Demoaufnahme. Beim Wiederanlauf einen eigenen verfügbaren Browserkontext
 verwenden; keine Browserprozesse oder Prüfumgebungen anderer Rollen beenden.
+Der fehlgeschlagene Aufruf war bereits eine Tab-Neuanlage mit isoliertem
+Kontext über Chrome DevTools MCP. Der Fehler entstand beim Start mit einem
+belegten Browserprofil. Ein weiterer neuer Tab allein ist deshalb keine
+belegte Lösung; zuerst die Verbindung beziehungsweise ein eigenes Profil
+klären. Claude-in-Chrome ist ein anderer Adapter.
 
 ## Gegenprüfung durch Claude
 
@@ -218,12 +237,13 @@ Ein Konzepturteil belegt noch keine Prüfung dieser Dateien.
 
 ### Verify
 
-Einzige aktuelle technische Matrix. Alle Prüfungen stehen noch aus.
-`➖`: kein ausgeführter Nachweis.
+Einzige aktuelle technische Matrix. Die Konzeptprüfung ist dokumentiert;
+die Prüfungen der tatsächlichen Medien stehen noch aus.
+`✅`: Konzeptprüfung belegt · `➖`: noch kein ausgeführter Nachweis.
 
 | # | Prüfung | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | Claude prüft das Konzept | Datiertes Urteil mit geprüfter Ticketfassung, Befunden und offenen Entscheidungen | ➖ |
+| 1 | Claude prüft das Konzept | Urteil vom 2026-09-27 zur Fassung `838176cbbcaa11c0a52ac57e44700dabe9f2ca6b395260b1da19d732c0f74c90`, siehe „Konzeptprüfung“. Keine Medienabnahme; spätere Observer-Einordnung nicht rückwirkend durch dieses Urteil freigegeben | ✅ |
 | 2 | Demo und Aufnahmebasis | Getrennter Kontext, gekennzeichnete Beispieldaten, festgehaltene App-Fassungen und Szenenliste | ➖ |
 | 3 | Probeclip ansehen und anhören | Abspielbare 30–45 Sekunden; drei verständliche Szenen, lesbare Oberfläche, synchroner Sprechertext | ➖ |
 | 4 | Blogentwürfe und Aussagen abgleichen | Ein oder zwei vollständige Entwürfe; belegte Funktionen beider Apps, passende Bilder und Links | ➖ |
@@ -266,6 +286,9 @@ Die allgemeine Board-Übernahme auf `2026-09-11-lessons-follow-through`
 bleibt separat offen; dieses Ticket ändert keine Konventionen oder Skills.
 
 ### Konzeptprüfung · claude · 2026-09-27
+
+Historischer Prüfbeleg zur unten genannten Fassung. Die präzisierte
+Einordnung zu Aufnahmeweg, Browserprofil und Stimme folgt anschließend.
 
 Geprüfte Fassung: SHA-256 `838176cbbcaa11c0a52ac57e44700dabe9f2ca6b395260b1da19d732c0f74c90`
 (bestätigt durch eigenen `shasum`-Lauf). Geprüft wurde ausschließlich das
@@ -373,10 +396,58 @@ Vorschläge zur Abstimmung mit codex/Observer, keine Entscheidungen.
 Keiner dieser Punkte ändert das „Konzept freigegeben"-Urteil oben oder hebt
 den Produktionsstopp auf. Zur Abstimmung mit codex/Observer vorgelegt.
 
+**Observer-Hinweis zu Vorschlag 3 · 2026-09-27:** SP-CX-05 dokumentiert den
+fehlenden Vergleich mit einer benannten UI-Referenz in T-50, keinen
+Lizenzbefund. T-51 Runde 7 akzeptiert die Herkunftserklärung zum damaligen
+Symbol; Runde 8 prüft das danach ausdrücklich beauftragte Lucide-Original
+samt Herkunftsvermerk. Daraus wurde kein bestätigtes Muster von
+Lizenzverstößen abgeleitet. Die offene Frage zur Verwendung einer Stimme
+steht daher für sich und benötigt ihre eigene Quelle; der Lessons-Verweis
+belegt sie nicht. Hiermit ist weder eine Nutzung erlaubt noch untersagt
+und keine Produktion gestartet.
+
+### Einordnung der Gegenprüfung · codex-observer · 2026-09-27
+
+Auf Mikes Auftrag „Claude hat was zu T-53 beigetragen - check das“ geprüft.
+Bezug: Claudes Ergänzungen in Commit `6b6f66d`. Keine Produktion gestartet.
+Die ursprünglichen Reviewaussagen oben bleiben als Prüfgeschichte erhalten.
+
+| Vorschlag | Bewertung und Folgerung |
+|---|---|
+| 1 · Umfang staffeln | Die Reihenfolge Probeclip → Rückmeldung → vollständiges Paket passt. Eine verbindliche Verschiebung von StockInfo-Beitrag und Vollvideo aus der Zielwoche ist ohne konkreten Engpass nicht begründet und wird nicht übernommen. Eine spätere nötige Terminänderung ausdrücklich mit Mike klären. |
+| 2 · Fassung festhalten | Beibehalten: beide App-Commits und Demo-Zustand dokumentieren, Aufnahmen aus stabilen getrennten Umgebungen. `STATUS: idle` allein garantiert keine stabile Fassung und ist bei isolierten Aufnahmen keine zusätzliche Startbedingung für andere Produktarbeit. |
+| 3 · Stimme und Nutzungsrechte | Hinweis bestätigt und oben konkretisiert. Hier läuft macOS 26.6.2; die offizielle Tahoe-Lizenz schließt die öffentliche Verwendung der Systemstimmen aus. „Anna“ entfällt als eingeplanter Weg für dieses Medienpaket. Eine passende Stimme vor Vertonung auswählen; keine Kosten oder Dienstzugänge behaupten. |
+| 4 · Stimmenvergleich | Sinnvoll als kurze Vorauswahl von höchstens zwei geeigneten Stimmen am selben 10–15-Sekunden-Text. Kein mehrfach gerenderter vollständiger Probeclip und kein Pflichtvergleich ungeeigneter Systemstimmen. `say -v '?'` listet tatsächlich neun deutsche Einträge; die Zahl acht in der Reviewnotiz ist ein Zählfehler. |
+| 5 · Untertitel | Sprechertext als Textquelle verwenden. Zeitmarken an den tatsächlich erzeugten Audioblöcken ausrichten und anschließend prüfen; ein korrekter Text allein garantiert noch keine synchronen Untertitel. |
+| 6 · StockInfo sichten | Lesen vorhandener Quellen zur beauftragten Konzeptprüfung ist zulässig. Der Produktionsstopp bleibt erhalten: keine neue Demo-Einrichtung, Aufnahme oder Vertonung. Die Bedienvorführung in StockInfo gehört zum Wiederanlauf; keine eigene Lockerung von „Warte noch“ ableiten. |
+| 7 · Format | 1920 × 1080, 16:9 als sinnvolle Arbeitsvorgabe empfohlen. Screenshots bei Bedarf höher auflösen, damit Ausschnitte lesbar bleiben. Ein später ausdrücklich gewünschtes Hochformat wäre ein anderer Zuschnitt; 16:9 garantiert nicht, jedes Kanalformat ohne Neurendern abzudecken. |
+
+**Zusätzliche Präzisierungen:** Die macOS-Aufnahmefreigabe betrifft den
+gewählten Bildschirmaufnahmeweg, nicht jede Form von Browser-Screenshot.
+Der belegte Chrome-DevTools-MCP-Profilkonflikt ist nicht durch einen Verweis
+auf Claude-in-Chrome oder eine weitere Tab-Neuanlage behoben. Beide Punkte
+sind oben in „Technik und bekannter Vorbereitungsstand“ nachgezogen.
+Das sind konzeptionelle Korrekturen; keine erfolgreiche neue Browserverbindung
+oder Aufnahme ist damit behauptet.
+
+**Lessons-Einordnung:** AL-R-01 und AL-R-12 angewendet: Verfügbarkeit,
+Dokumentation und tatsächliche Ausführung getrennt; Reviewvorschläge gegen
+Auftrag und konkrete Werkzeuge geprüft. Einzelne Korrekturen an diesem
+Konzeptreview begründen noch kein neues wiederkehrendes Fehlermuster.
+SP-CX-05 betrifft den UI-Referenzvergleich in T-50 und ist kein Beleg für
+eine frühere Lizenzverletzung bei T-51. Keine zusätzliche Lesson angelegt.
+
+**Doku-Abgleich:** Nur Ticket und Koordinationshinweis betroffen.
+Keine Änderung an Produktfunktionen oder Betriebszusagen; Projekt-README,
+Docker-README und Unraid-Anleitung bleiben unverändert. Claudes ursprüngliche
+Freigabe wird durch diese Einordnung nicht rückwirkend erweitert.
+
 ### Auflösung
 
-Konzept zur Gegenprüfung erfasst und durch `claude` geprüft (siehe oben);
-sieben Änderungsvorschläge ergänzt, offen zur Abstimmung mit codex/Observer.
+Konzept durch `claude` geprüft; sieben Vorschläge durch `codex-observer`
+bewertet und technische Ungenauigkeiten im aktuellen Konzept präzisiert.
+Zielumfang und Zielwoche nicht eigenmächtig gekürzt. Die Auswahl einer
+geeigneten Sprecherstimme bleibt für die Wiederaufnahme offen.
 Produktion auf Mikes Wunsch weiterhin pausiert; keine Medienfreigabe und
 keine Veröffentlichung erfolgt. Start der Produktion braucht weiterhin
 Mikes ausdrückliches Startsignal.

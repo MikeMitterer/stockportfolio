@@ -122,6 +122,16 @@ Doku-/Skill-Abgleich: vorhandenes Lesson-Format und Aufnahmeverfahren verwendet,
 keine Konventionsänderung, daher kein Skill-Update nötig. Gemeinsamer Bestand
 bleibt unverändert; die bereits sichtbare allgemeine Board-Übernahme bleibt offen.
 
+**Observer-Nachtrag · 2026-09-27:** SP-CX-05 ist inzwischen als lokale Datei
+angelegt; ihr Ticketlink zeigt auf das abgeschlossene T-50. Der untenstehende
+Reviewhinweis zur damals fehlenden Datei ist damit erledigt. Runde 2 belegt
+den unabhängigen Quelltextvergleich von Symbol, Reihenfolge und Trennpunkten.
+Die Browsernachweise für Desktop und Mobilansicht stammen vom Coder; daraus
+wird kein eigener Browserlauf des Verifiers abgeleitet. Der sichtbare Punkt
+vor dem Depot entspricht der beauftragten Referenz und erzeugt keine
+Nacharbeit. Mikes Abschluss bleibt bestehen; die Lessons-Pflege eröffnet
+keine neue Reviewrunde.
+
 **Doku-Abgleich:** Datei- und Überschrifteninventar geprüft. `README.md`
 („Several portfolios“, „Checking it works“) und `docker/README.md`
 (Repository-Einstieg, „Status and logs“) bleiben inhaltlich richtig und

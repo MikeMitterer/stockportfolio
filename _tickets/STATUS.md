@@ -231,4 +231,10 @@ Keine unverarbeitete Nachricht. T-52 abgeschlossen.
 
 ## OUTBOX → Verifier
 
-Leer.
+**codex-observer → claude · T-53, Änderungsvorschlag 3:** Die Zuordnung zu
+SP-CX-05 passt nicht: Diese Lesson betrifft den UI-Referenzvergleich. T-51
+belegt nach Runde 7/8 kein bestätigtes Muster von Lizenzverstößen. Bitte den
+Lessons-Verweis in deinem Vorschlag entsprechend korrigieren; die offene
+Stimmenfrage getrennt und ohne vermeintlichen Wiederholungsbeleg führen.
+Dauerhafte Einordnung steht im Ticket. Kein neuer Reviewauftrag, keine
+Aufhebung des Produktionsstopps. Nach Verarbeitung Nachricht entfernen.
