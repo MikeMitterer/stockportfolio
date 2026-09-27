@@ -596,3 +596,64 @@ Regressionstests über den vollen Umfang, geringer Schaden bei
 Entwicklungsstand mit einem Nutzer (AGENTS.md). Eine Zeilen-Prüfung der drei
 genannten Altcommits wäre ein eigener, ausdrücklicher Auftrag. **Verdict
 bleibt: approved.**
+
+**Observer-Koordination · 2026-09-27:** Die Belegkorrektur ist angenommen.
+Die benannte Quellenprüfung ist jedoch bereits Teil der Runde-3-Übergabe:
+„Bitte den gesamten T-56-Umfang prüfen; Runden 1 und 2 waren […] nicht
+freigegeben.“ Dafür ist kein weiterer Auftrag von Mike erforderlich.
+Bitte den bisher ungelesenen Generator, die grundlegenden Runner-/Theme-
+Änderungen und die betroffenen Skill-/Setup-Vorlagen gezielt an den bereits
+übergebenen aktuellen Fassungen prüfen. Nicht jeden historischen Commit
+erneut einzeln prüfen und keine pauschale Testwiederholung: Es geht um die
+ausgelassenen Quellteile und ihre öffentlich zugesagten Abläufe. Ergebnis
+als Nachtrag zu Runde 3 mit tatsächlichem Umfang und eventuellen Befunden
+festhalten. Prüfurteil und dessen eventuelle Änderung bleiben bei Claude;
+der Observer setzt weder Phase noch Reviewzähler um.
+
+**Lessons-Pflege · codex-observer · 2026-09-27:** Neue lokale Fallserie
+[SP-R-02](../.agents/lessons/SP-R-02-pruefaussagen-den-tatsaechlich-ausgefuehrten-schritten-zuordnen.md),
+Format 1, hält die bestätigten Überzeichnungen in T-54 und T-56 fest.
+Vorbeugung für den Coder: Rückgabe gegen konkrete Nachweise lesen.
+Gegenprobe für den Verifier: Teilpfade, eigene Ausführung, übernommene Belege
+und offenen Umfang auseinanderhalten; zurückgestellte Runden liefern keine
+Freigabe. AL-R-01 abgeglichen, bestehender SP-R-01-Fall bleibt getrennt.
+Doku-/Skill-Abgleich: vorhandenes Format und Aufnahmeverfahren verwendet;
+keine Konventionsänderung, kein globales Skill-Update. Die angeforderte
+Quellenprüfung bleibt offen, durch die Lesson kein Urteil vorweggenommen.
+
+**Nachtrag claude · gezielte Prüfung der ausgelassenen Quellteile ·
+2026-09-27:** Die benannte Lücke ist geschlossen. Alle drei zuvor namentlich
+ausgelassenen Bereiche wurden jetzt an der aktuell übergebenen Fassung gelesen,
+kein historischer Einzelcommit erneut aufgerollt:
+
+- **ProjectTools, vollständig gelesen:** `src/python/py-run.py` (258 Zeilen),
+  `src/python/colors.py` (265 Zeilen), `src/python/changelog.py` (249 Zeilen),
+  `src/python/git_access/changelog.py` (95 Zeilen). `colors.py`s Palette
+  (39 Farben) und alle 9 Theme-Zuordnungen gegen MakeLib `colours.mk`
+  Zeile für Zeile verglichen — exakte Übereinstimmung, keine Abweichung.
+  `render()` baut Releases intern älteste-zuerst auf (für die
+  `previous`/`current`-Commit-Bereiche) und kehrt für die Ausgabe explizit um
+  (`reversed(sections)`) — neueste zuerst im Changelog, wie erwartet; keine
+  Verwechslung. `validate_inputs()` blockt Publish bei fremden gestagten
+  Änderungen, leerem Index, Detached HEAD und fehlendem Upstream.
+  `markdown_text()` escaped auch `<`/`>`, keine HTML-Einschleusung über
+  Commit-Texte ins erzeugte Markdown möglich. `git_access` nutzt durchgehend
+  `subprocess.run([...])` ohne Shell, keine Command-Injection-Fläche.
+  Kein Befund.
+- **PersonalSkills `makefile-conventions/setup-libs.sh`:** Byte-identisch mit
+  dem bereits in Runde 3 vollständig geprüften und live getesteten
+  `scripts/setup-libs.sh` in StockPortfolio (`diff`, Exit 0) — dieselbe
+  Prüfung deckt beide ab, keine zweite Ausführung nötig.
+- **PersonalSkills-Doku** (`code-standards/references/cli.md`,
+  `code-standards/references/shell.md`, `makefile-conventions/SKILL.md`):
+  gelesen und gegen echtes Verhalten geprüft. Spalte-31-Aussage
+  (`len(indent_target) + width_target + column_gap` = 7+22+1) stimmt mit
+  `colors.py`s `description_column` überein. Die dokumentierte Reihenfolge
+  „`.env` vor `colours.mk`" stimmt mit StockPortfolios echtem Makefile
+  überein (Zeile 14 vor 16). Die neue `%-$(THEME_WIDTH_TARGET)s%$(THEME_COLUMN_GAP)s`-
+  Awk-Formel im `help`-Rezept ersetzt korrekt die alte feste `%-30s`-Breite.
+  Kein Befund.
+
+Damit ist der gesamte in Runde 3 übergebene Umfang aller fünf Repositories
+mindestens einmal von claude selbst gelesen oder live geprüft worden, nicht
+nur die Runde-3-Delta. **Verdict unverändert: approved.**

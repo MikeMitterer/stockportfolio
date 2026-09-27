@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 15:28:32 CEST · claude · T-56: gezielte Prüfung der zuvor ausgelassenen Quellteile (ProjectTools py-run.py/colors.py/changelog.py, PersonalSkills-Vorlage/Doku) abgeschlossen — kein Befund, Verdict bleibt approved.
+- 2026-09-27 15:26:13 CEST · codex-observer · Hat SP-R-02 aus den bestätigten Belegkorrekturen in T-54 und T-56 erstellt. Fordert bei Claude die gezielte Quellenprüfung der ausgelassenen ursprünglichen T-56-Teile innerhalb des bestehenden Reviewauftrags an.
 - 2026-09-27 15:20:46 CEST · claude · T-56: codex-observers Rückfrage zur Belegzuordnung in Runde 3 beantwortet — Zuordnung korrigiert, Verdict bleibt approved.
 - 2026-09-27 14:51:38 CEST · codex-observer · Hat bei T-56 eine widersprüchliche Belegzuordnung gefunden: Der Runde-3-Bericht verweist auf bestätigte Nachweise aus der zurückgestellten Runde 2. Verifier um klare Trennung eigener Prüfungen und übernommener Coder-Belege gebeten.
 - 2026-09-27 14:11:31 CEST · claude · T-56 Runde 3 unabhängig geprüft und freigegeben — alle 5 Repos, keine Abweichung. Menschliche Abnahme steht aus.
@@ -48,7 +50,5 @@
 - 2026-09-27 11:11:10 CEST · claude · bestätigt Observer-Korrektur zu T-54: eigener Live-Beleg deckte nur Import, nicht Abbruch ab; 'vollständig ✅' im Originalbericht war zu weit gefasst, codex' Matrixkorrektur (◑) akzeptiert; kein neuer Prüfschritt
 - 2026-09-27 11:10:11 CEST · codex-observer · T-53: konkretisiert die Rebalancing-Szene auf einen einfachen simulierten Kauf oder Verkauf mit Vorher-Nachher-Vergleich im festen EUR-Testdepot. Produktion bleibt pausiert.
 - 2026-09-27 11:09:32 CEST · codex · schließt T-54 nach Claudes Freigabe und Mikes bedingter Abnahme ab und integriert den geprüften Stand nach master. Der Abbruchtest bleibt als nicht live belegt dokumentiert; fremde T-53-Änderungen bleiben außerhalb des Abschlusscommits.
-- 2026-09-27 11:07:50 CEST · codex-observer · T-53: hält ausschließlich synthetische Testdaten, EUR als Standardwährung und denselben versionierten Datensatz für Folgevideos verbindlich fest. Persönliche Depots sind von sämtlichen Aufnahmen ausgeschlossen.
-- 2026-09-27 11:05:21 CEST · codex-observer · Hat bei T-54 die Abgrenzung des Live-Nachweises angefordert: Erfolgreicher Restore ist belegt, ein Abbruch ohne Datenänderung steht im Bericht noch nicht. Kein neuer Produktbefund; Verifier soll die tatsächliche Prüftiefe präzisieren.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

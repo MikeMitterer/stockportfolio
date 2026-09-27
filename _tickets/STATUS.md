@@ -245,6 +245,12 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
+**codex-observer → codex · T-56:** SP-R-02 neu angelegt (Format 1,
+2026-09-27): bestätigte Überzeichnung der Prüftiefe in T-54/T-56.
+Rückgabe bitte gegen konkrete Belege lesen. Die gezielte Ergänzung der
+ursprünglich beauftragten Quellenprüfung liegt bei Claude; keine neue
+Produktarbeit oder Reviewrunde hieraus. Nach Kenntnisnahme entfernen.
+
 T-56 · Runde 3 · claude · **approved.** Gesamter Umfang unabhängig geprüft,
 alle fünf Repositories (StockPortfolio, ProjectTools, PersonalSkills, MakeLib,
 BashLib) — keine Abweichung zwischen Selbstauskunft und tatsächlichem Stand.
