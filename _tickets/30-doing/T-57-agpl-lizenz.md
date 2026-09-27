@@ -163,6 +163,61 @@ Runde 2 übergeben: `e3d068e81abc55e0474e445bbf2edfae868bb305`.
 Rechtliche Prüfung der internen Vereinbarung bleibt gesondert offen.
 Kein Ticketabschluss, Merge oder Push behauptet.
 
+## Ergänzende Lizenzanalyse · 2026-09-27 · nach Übergabe Runde 2
+
+Mike beauftragt den Vergleich zweier weiterer Anbieter und ergänzt:
+„Die Vereinbarung die wir ausliefern muss aber natürlich österreichischem Recht entsprechen“.
+Die Produktfassung e3d068e bleibt für den laufenden Review unverändert.
+Die folgenden Empfehlungen sind noch nicht in LICENSE umgesetzt und müssen
+vor einer Veröffentlichungsentscheidung bearbeitet werden.
+
+**Duplicacy / Acrosync:** Geprüft ist ausdrücklich die CLI-Lizenz, nicht die
+anders lizenzierte Weboberfläche. Die [CLI-Lizenz](https://github.com/gilbertchen/duplicacy/blob/master/LICENSE.md)
+erlaubt Änderungen und Weitergabe, bindet aber kommerzielle Nutzung abgeleiteter
+Fassungen an dieselben Lizenzanforderungen. [Unraid-Eintrag der CLI](https://ca.unraid.net/apps/duplicacy-cli-cron-1snret31lkotzv).
+Nutzen für uns: Regeln ausdrücklich auf urheberrechtlich geschützte übernommene
+Teile und abgeleitete Fassungen beziehen; keine Rechte an unabhängig geschriebenem
+Code behaupten. Duplicacys Gebührenpflicht für interne Firmennutzung widerspricht
+Mikes Entscheidung und wird nicht übernommen.
+
+**Emby / Emby LLC:** Die [App-Bedingungen § 3](https://emby.media/terms.html)
+trennen Nutzungsrechte, Fremdkomponenten und freiwilligen Support; sie schränken
+Bearbeitung/Weitergabe stark ein und sehen einen weitgehenden Widerruf vor.
+[Unraid-Eintrag](https://ca.unraid.net/apps/embyserver-10n559a1aloroy).
+Nutzen für uns: freiwilligen Support sauber von gesetzlichen Pflichten trennen.
+Kein beliebiger Widerruf, keine pauschalen Verbote eigener Änderungen übernehmen.
+Beide Beispiele belegen eine Listung mit eigenen App-Bedingungen, keine Prüfung
+unserer Lizenz durch Unraid und keine österreichische Wirksamkeitsbestätigung.
+
+**Konkrete Nachbesserungen am Entwurf:**
+
+1. Software-Begriff um geschützte Teile/abgeleitete Fassungen ergänzen. Eigene
+   Anpassungen bleiben frei; die vereinbarten Grenzen gelten auch bei Einbettung.
+2. Österreichische Rechtswahl ergänzen, mit ausdrücklichem Erhalt zwingenden
+   Verbraucherschutzes nach [Art. 6 Rom I](https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32008R0593).
+   Keine pauschale ausschließliche Gerichtsstandsklausel für Verbraucher.
+3. LICENSE § 6 und Kurzfassung in legal.html neu fassen: pauschaler Ausschluss
+   sämtlicher Gewährleistung und Haftung „soweit zulässig“ ist keine belastbare
+   österreichische Klauselprüfung. [§ 6 KSchG](https://www.ris.bka.gv.at/eli/bgbl/1979/140/P6/NOR40274264)
+   schützt u.a. bei Personenschäden, Vorsatz/grober Fahrlässigkeit und verlangt
+   transparente AGB. [§ 9 KSchG](https://www.ris.bka.gv.at/eli/bgbl/1979/140/P9/NOR40237225)
+   schützt bestehende Verbrauchergewährleistungsrechte. Konservative Grundlage:
+   gesetzliche Haftung/Gewährleistung gelten; keine zusätzliche freiwillige
+   Garantie. Gewünschte weitergehende Einschränkungen anwaltlich gestalten.
+4. Keine freiwillige Support-/Weiterentwicklungszusage; zwingende Pflichten,
+   insbesondere gegebenenfalls Aktualisierungspflichten, davon ausnehmen.
+   Anwendbarkeit des [VGG §§ 1, 3, 7](https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=20011654)
+   hängt vom konkreten Angebot ab; nicht jede Gratis-App fällt darunter und
+   Kostenlosigkeit allein schließt es bei Datenbereitstellung nicht aus.
+5. Begriff „unverändert“ klarstellen: dokumentierte Konfiguration und separate
+   Installationsvorlagen verändern die App nicht. Rebranding-/Hostinggrenzen
+   dadurch nicht erweitern. Gilt auch für StockInfo-API-URL und Unraid-Vorlagen.
+
+Rechtsprüfung muss zusätzlich Einbeziehung der Bedingungen bei Download/Installation
+und interne Rechtekette Michael Mitterer → MangoLila GmbH abdecken. Der jetzige
+App-Link allein beweist keinen wirksamen Vertragsschluss. Kein neuer Produkt-
+oder Testnachweis, keine neue Reviewrunde durch diesen Recherche-Nachtrag.
+
 ## Historie · zurückgezogene AGPL-Fassung
 
 Die folgenden Nachweise und Aussagen beschreiben ausschließlich den früheren

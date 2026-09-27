@@ -14,7 +14,10 @@ als Anbieterin/Lizenzgeberin die vertragliche Verantwortung übernehmen.
 Mike hat bestätigt: „OK, also ich bin der Urheber, MangoLila erhält die Nutzungs- und Lizenzierungsrechte“.
 Unveränderte kostenlose Weitergabe unter StockPortfolio mit allen Hinweisen ist erlaubt.
 Die neue Lizenzfassung ist umgesetzt und für Reviewrunde 2 übergeben;
-die interne Rechtevereinbarung bleibt rechtlich zu prüfen.
+die interne Rechtevereinbarung bleibt rechtlich zu prüfen. Mikes ergänzender
+Auftrag verlangt ausdrücklich österreichische Rechtskonformität. Die ergänzende
+Analyse im Ticket benennt noch nicht umgesetzte Nachbesserungen, insbesondere
+an LICENSE § 6 und zur Rechtswahl; keine Veröffentlichungsfreigabe ableiten.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -284,3 +287,11 @@ keine bestätigte CA-Aufnahme, keine Veröffentlichung. Rechtliche Wirksamkeit
 und interne Rechtevereinbarung sind nicht durch technischen Review abgedeckt.
 Keine pauschale persönliche Haftungsbefreiung behauptet. ACTIVITY enthält
 fremde Änderungen und bleibt außerhalb der Commits.
+
+Ergänzung `codex` nach Übergabe: Mike verlangt ausdrücklich österreichische
+Rechtskonformität. Vergleich Duplicacy/Emby und konkrete Nachbesserungen stehen
+im Ticket unter „Ergänzende Lizenzanalyse“. Produktfassung unverändert.
+Insbesondere pauschale Haftung/Gewährleistung in LICENSE § 6 und legal.html
+sowie fehlende ausdrückliche Rechtswahl sind vor Veröffentlichung zu bearbeiten.
+Technischer Review ersetzt die rechtliche Prüfung nicht. Keine neue Runde
+allein durch diesen Nachtrag; Befunde auf die übergebene Fassung beziehen.
