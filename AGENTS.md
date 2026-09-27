@@ -122,7 +122,9 @@ kein Ticketabschluss.
 **Abgeschlossene Tickets sofort integrieren** (Mike, 2026-09-27): Sobald
 technische Freigabe und menschlicher Abschluss vorliegen, die zugehörigen
 Änderungen einschließlich Ticketabschluss committen, nach `master` mergen
-und zu `origin` pushen. Mike hat diese Schritte dauerhaft autorisiert;
+und zu `origin` pushen. Anschließend im Arbeitsverzeichnis wieder auf
+`master` wechseln und prüfen, dass `master` der aktive Branch ist und mit
+`origin/master` übereinstimmt. Mike hat diese Schritte dauerhaft autorisiert;
 eine weitere Rückfrage ist nicht nötig. Fremde uncommittete Änderungen
 bleiben außerhalb dieser Integration.
 
