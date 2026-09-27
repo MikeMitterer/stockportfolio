@@ -16,7 +16,8 @@ Der Wert −5 % soll unmittelbar sichtbar werden.
 Rel.-%-Spalte, ausblendbare Balkenspalte unter 1280 px und Simulationshinweis
 unter 1160 px. Die danach beauftragte Mindestbreite mit gemeinsamem Scrollen
 und das Mülleimer-Icon sind umgesetzt; Runde 6 (`claude`) fordert Nacharbeit
-zur Symbolherkunft an (`changes_requested`). Mike hat den Abschluss bei
+zur Symbolherkunft an (`changes_requested`). Die Erklärung ist ergänzt und
+steht in Runde 7 zur Prüfung. Mike hat den Abschluss bei
 Claudes Freigabe bereits bestätigt; diese Freigabe steht wegen der
 Nacharbeit noch aus.
 Branch `t-51-rebalancing-bandabweichung-als-zahl`. T-50 ist abgeschlossen; anschließend folgt T-52 nach der Reihenfolge in STATUS.
