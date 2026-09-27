@@ -10,11 +10,10 @@ Die Einstellungen öffnen sich mit ausgewähltem Status-Tab. Dasselbe gilt,
 wenn zuvor bereits ein anderer Einstellungs-Tab geöffnet war.
 
 **Stand:** Auf `t-52-statuszeile-api-link-zum-status-tab` umgesetzt, selbst
-geprüft und in Runde 1 unabhängig freigegeben (`claude`, approved). Mikes
-Abschlussbestätigung steht noch aus.
-Aktiver Auftrag und Reihenfolge bleiben in [STATUS.md](../STATUS.md)
-festgelegt. Mike hat anschließend ausdrücklich beauftragt: „Nach T-51 kommt
-T-52 im Anschluss“. T-52 folgt direkt auf T-51.
+geprüft und in Runde 1 unabhängig freigegeben (`claude`, approved).
+Mike hat am 2026-09-27 mit „T-52 passt“ abgeschlossen. Das Ticket ist archiviert.
+Die Reihenfolge folgte Mikes Auftrag: „Nach T-51 kommt T-52 im Anschluss“.
+Der aktuelle Board-Zustand steht in [STATUS.md](../STATUS.md).
 
 Für Mike steht keine Rückfrage an; das Ticket ist abgeschlossen.
 
