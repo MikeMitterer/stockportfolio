@@ -1,8 +1,8 @@
 # Building the supplied source
 
 Copyright © 2026 Michael Mitterer. Provider and licensor: MangoLila GmbH.
-StockPortfolio's own application code uses the StockPortfolio License 1.0;
-see LICENSE. Third-party components retain their own licenses.
+StockPortfolio's own application code is licensed under EUPL 1.2 only;
+see LICENSE and LICENSING.md. Third-party components retain their own licenses.
 
 Every production build includes `stockportfolio-source.tgz`, created from the
 same working files as the browser bundle. The archive contains the application,
@@ -35,9 +35,7 @@ contain the separate StockInfo service. License files and the source archive
 are available next to `legal.html` in the built site and at `/app/public` in
 the container. The source archive is generated only for production builds.
 
-The source archive is supplied for inspection and permitted own modifications.
-It does not grant additional redistribution or hosting rights. Own use and
-internal modifications are free; redistribution of modified versions, rebranded
-offerings, resale and hosting for third parties require a separate paid written
-agreement with MangoLila GmbH. Unchanged copies may be passed on free of charge
-under the StockPortfolio name with all notices. See LICENSE for the terms.
+The EUPL permits commercial use, modifications, redistribution and hosting
+without an additional paid license. When distributing or communicating the
+software, comply with its source-code, notice and copyleft requirements,
+including the rules for covered network services. See LICENSE for the terms.

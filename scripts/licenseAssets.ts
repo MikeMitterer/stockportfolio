@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 /** Lizenztexte und aktueller Quellstand für denselben Produktionsbuild. */
 export function createLegalAssets(root: string): { fileName: string; source: Buffer }[] {
-  const assets = ['LICENSE', 'COMMERCIAL-LICENSE.md', 'THIRD_PARTY_NOTICES.md'].map((file) => ({
+  const assets = ['LICENSE', 'LICENSE.de.txt', 'LICENSING.md', 'THIRD_PARTY_NOTICES.md'].map((file) => ({
     fileName: file === 'LICENSE' ? 'LICENSE.txt' : file,
     source: readFileSync(join(root, file)),
   }))

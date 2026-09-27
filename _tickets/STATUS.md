@@ -5,19 +5,17 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** [T-57 · Nutzungslizenz](30-doing/T-57-agpl-lizenz.md).
-Mike hat die AGPL-Fassung am 2026-09-27 nach der Klärung zum Rebranding
-abgelehnt. Das Nutzungsziel ist bestätigt: eigene Nutzung und Anpassungen auch in Firmen
-kostenlos; Rebranding als Angebot, Weiterverkauf und Hosting für Dritte nur
-mit kostenpflichtiger Vereinbarung. Mikes gewünschte Aufteilung: persönliches Copyright; MangoLila GmbH soll
-als Anbieterin/Lizenzgeberin die vertragliche Verantwortung übernehmen.
-Mike hat bestätigt: „OK, also ich bin der Urheber, MangoLila erhält die Nutzungs- und Lizenzierungsrechte“.
-Unveränderte kostenlose Weitergabe unter StockPortfolio mit allen Hinweisen ist erlaubt.
-Die neue Lizenzfassung ist umgesetzt und für Reviewrunde 2 übergeben;
-die interne Rechtevereinbarung bleibt rechtlich zu prüfen. Mikes ergänzender
-Auftrag verlangt ausdrücklich österreichische Rechtskonformität. Die ergänzende
-Analyse im Ticket benennt noch nicht umgesetzte Nachbesserungen, insbesondere
-an LICENSE § 6 und zur Rechtswahl; keine Veröffentlichungsfreigabe ableiten.
+**Aktiver Auftrag:** [T-57 · EUPL-Lizenz](30-doing/T-57-eupl-lizenz.md).
+Mike hat am 2026-09-27 EUPL 1.2 gewählt und die Umsetzung ausdrücklich
+beauftragt. Die eigene StockPortfolio License 1.0 und ihre Gebührenpflichten
+werden ersetzt. Michael Mitterer bleibt Urheber und Urheberrechtsinhaber;
+MangoLila GmbH ist Anbieterin und Lizenzgeberin mit den einzuräumenden
+Nutzungs- und Lizenzierungsrechten. Die interne Vereinbarung und die
+österreichische Rechtsprüfung bleiben als menschliche Aufgaben im Ticket.
+COMMERCIAL-LICENSE.md ist auf Mikes Klarstellung samt Verweisen entfernt.
+Die Übergabe von Runde 2 (e3d068e) ist durch diese Umfangsänderung zurückgezogen;
+kein abgeschlossener Review behauptet. EUPL-Umsetzung und eigene Prüfungen
+sind fertig; codex bereitet die neue Übergabe vor.
 [T-56 · Changelog-Generator](40-done/T-56-changelog-generator.md) ist am
 2026-09-27 nach Claudes technischer Freigabe in Runde 3 einschließlich der
 nachgeholten Quellenprüfung und Mikes Bestätigung „T-56 sollte durch sein
@@ -66,26 +64,25 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 ist in Runde 2 zur unabhängigen Prüfung übergeben
-(persönliches Copyright, MangoLila GmbH als Anbieterin/Lizenzgeberin). Runde 1
-wurde vor Reviewbeginn zurückgezogen; ihre Nachweise stehen im Ticket.
-Die letzte abgeschlossene Prüfung bleibt in `last_reviewed_*` erhalten.
+T-57 wird auf EUPL 1.2 umgestellt. Die bisherigen Runden 1 und 2 sind
+zurückgezogen und im Ticket historisch erhalten. Die letzte abgeschlossene
+Prüfung bleibt in `last_reviewed_*` unverändert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-57-agpl-lizenz.md`
-- `handoff_commit`: `e3d068e81abc55e0474e445bbf2edfae868bb305`
+- `phase`: `implementing`
+- `ticket`: `T-57-eupl-lizenz.md`
+- `handoff_commit`: ``
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-56-changelog-generator.md`
 - `last_reviewed_commit`: `4abaa5f503a07ac5ce940695a40cfa7e2bf3166f`
 - `last_reviewed_round`: `3`
 - `workstream`: `T-57`
-- `priority_chain`: `T-57-agpl-lizenz.md`
-- `priority_ticket`: `T-57-agpl-lizenz.md`
+- `priority_chain`: `T-57-eupl-lizenz.md`
+- `priority_ticket`: `T-57-eupl-lizenz.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -263,35 +260,5 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Absender `codex`, Empfänger gemäß Rollenfeld `reviewer`: T-57, Runde 2,
-Fassung `e3d068e81abc55e0474e445bbf2edfae868bb305`.
-
-Die zurückgezogene AGPL-Fassung ist durch StockPortfolio License 1.0 ersetzt:
-Michael Mitterer als Urheber/Copyright-Inhaber, MangoLila GmbH als Anbieterin
-und Lizenzgeberin. Eigene Nutzung einschließlich interner Firmenanpassungen
-kostenlos; unveränderte kostenlose Weitergabe mit Hinweisen erlaubt.
-Angebote unter eigener Marke, Weiterverkauf, Hosting für Dritte und geänderte
-Weitergabe brauchen eine gesonderte kostenpflichtige Vereinbarung.
-Unraid-Katalogeinträge und Vorlagen für Original-Images ausdrücklich erlaubt;
-MIT des separaten Template-Repos gilt nicht für die App.
-
-Bitte den gesamten T-57-Umfang seit master prüfen, einschließlich des bereits
-in Runde 1 bereitgestellten Build-Helfers und App-Links. Aktuelle Belege im
-Ticket: 63 Testdateien/795 Tests, lint/typecheck/Frontend-Build erfolgreich,
-Docker linux/amd64 healthy, fünf HTTP-Artefakte 200, Dokumente und 121 Dateien
-im heruntergeladenen Archiv bytegleich. Hub-Vorschau 6.459 Bytes.
-
-Grenzen: keine neue Browserprüfung nach den reinen Textänderungen; frühere
-Browser- und Neubauprüfungen als historisch gekennzeichnet. Kein Live-Unraid,
-keine bestätigte CA-Aufnahme, keine Veröffentlichung. Rechtliche Wirksamkeit
-und interne Rechtevereinbarung sind nicht durch technischen Review abgedeckt.
-Keine pauschale persönliche Haftungsbefreiung behauptet. ACTIVITY enthält
-fremde Änderungen und bleibt außerhalb der Commits.
-
-Ergänzung `codex` nach Übergabe: Mike verlangt ausdrücklich österreichische
-Rechtskonformität. Vergleich Duplicacy/Emby und konkrete Nachbesserungen stehen
-im Ticket unter „Ergänzende Lizenzanalyse“. Produktfassung unverändert.
-Insbesondere pauschale Haftung/Gewährleistung in LICENSE § 6 und legal.html
-sowie fehlende ausdrückliche Rechtswahl sind vor Veröffentlichung zu bearbeiten.
-Technischer Review ersetzt die rechtliche Prüfung nicht. Keine neue Runde
-allein durch diesen Nachtrag; Befunde auf die übergebene Fassung beziehen.
+Leer. Runde 2 wurde auf Mikes EUPL-Entscheidung zurückgezogen; die nächste
+Übergabe erfolgt erst mit fertiger EUPL-Fassung und aktuellen Nachweisen.

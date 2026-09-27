@@ -30,11 +30,11 @@ describe('Lizenzartefakte', () => {
     writeFileSync(join(root, 'private.txt'), 'must-not-be-published')
     mkdirSync(join(root, 'dist'))
     writeFileSync(join(root, 'dist', 'stale.js'), 'old build')
-    for (const file of ['LICENSE', 'COMMERCIAL-LICENSE.md', 'THIRD_PARTY_NOTICES.md']) {
+    for (const file of ['LICENSE', 'LICENSE.de.txt', 'LICENSING.md', 'THIRD_PARTY_NOTICES.md']) {
       writeFileSync(join(root, file), `Original ${file}\n`)
     }
     const assets = createLegalAssets(root)
-    for (const file of ['LICENSE', 'COMMERCIAL-LICENSE.md', 'THIRD_PARTY_NOTICES.md']) {
+    for (const file of ['LICENSE', 'LICENSE.de.txt', 'LICENSING.md', 'THIRD_PARTY_NOTICES.md']) {
       const outputName = file === 'LICENSE' ? 'LICENSE.txt' : file
       expect(assets.find((asset) => asset.fileName === outputName)?.source)
         .toEqual(readFileSync(join(root, file)))

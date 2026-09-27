@@ -129,15 +129,18 @@ unchanged, for example `8088:80` becomes `8088:8080`.
 
 Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
 
-The **[StockPortfolio License 1.0](../LICENSE)** permits free personal and
-internal business use, including your own modifications. Unchanged copies may
-be passed on free of charge under the StockPortfolio name, with all copyright,
-license and third-party notices.
+The **[EUPL 1.2](../LICENSE)** permits personal and commercial use,
+modifications, redistribution, sale and hosting without an additional paid
+license. Modified versions may be offered under another name. Preserve the
+required notices, identify changes and comply with the license's source-code
+and copyleft requirements, including for covered network services.
+StockPortfolio is licensed under version 1.2 only.
 
-Rebranded offerings, resale, hosting for third parties (even free of charge)
-and distribution of modified versions require a **separate paid written
-agreement with MangoLila GmbH**. Internal branding for your own use remains
-free. This is a source-available license, not an open-source license.
+[Provider and consumer declaration](../LICENSING.md): MangoLila GmbH does not
+rely on the warranty and liability exclusions in EUPL Articles 7 and 8 when
+dealing with consumers. Statutory rules apply; no additional voluntary
+guarantee is provided. The official [German license text](../LICENSE.de.txt)
+is included alongside the English version.
 
 Open **License & source** in the app's status bar, or `/legal.html` on your
 instance. Production builds include license documents and
@@ -147,8 +150,7 @@ build instructions in SOURCE.md.
 
 Third-party components keep their own licenses; see
 [third-party notices](../THIRD_PARTY_NOTICES.md). StockInfo is a separate service
-with its own license. For [commercial agreements](../COMMERCIAL-LICENSE.md),
-contact **office@MangoLila.at**.
+with its own license. Contact **office@MangoLila.at**.
 
 ## Unraid and support
 

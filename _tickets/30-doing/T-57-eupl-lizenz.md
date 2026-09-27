@@ -1,4 +1,260 @@
-# T-57 · Nutzungslizenz für StockPortfolio
+# T-57 · EUPL-Lizenz für StockPortfolio
+
+**Warum dieses Ticket:** StockPortfolio soll unter einer OSI-anerkannten
+Lizenz nutzbar, veränderbar und weitergebbar sein. Mike hat sich nach der
+Abwägung für **EUPL 1.2** entschieden. Die bisherigen Gebührenpflichten für
+Rebranding, Weiterverkauf, Hosting und geänderte Weitergabe entfallen.
+
+**Stand:** EUPL 1.2 umgesetzt und lokal geprüft, einschließlich Docker-Image,
+HTTP-Downloads und Quellarchiv. COMMERCIAL-LICENSE.md ist entfernt.
+Der unabhängige Review der EUPL-Fassung steht noch aus. Die Übergabe der eigenen
+StockPortfolio License 1.0 (Runde 2, e3d068e) ist zurückgezogen; ihre Belege
+bleiben unten als Historie und bestätigen nicht die neue EUPL-Fassung.
+
+## Für dich
+
+### Rechteaufteilung und interne Vereinbarung später klären
+
+Michael Mitterer bleibt **Urheber und Urheberrechtsinhaber**. MangoLila GmbH
+soll die **Nutzungs- und Lizenzierungsrechte** erhalten und nach außen als
+Anbieterin und Lizenzgeberin auftreten. „MangoLila ist Rechteinhaberin“ allein
+ist zu ungenau: Gemeint sind die eingeräumten Nutzungsrechte, nicht eine
+Übertragung der Urheberschaft.
+
+Nach [§ 23 UrhG](https://www.ris.bka.gv.at/eli/bgbl/1936/111/P23/NOR12024424)
+ist das Urheberrecht unter Lebenden grundsätzlich nicht übertragbar.
+[§ 24 UrhG](https://www.ris.bka.gv.at/eli/bgbl/1936/111/P24/NOR40041612)
+unterscheidet die nicht ausschließliche **Werknutzungsbewilligung** vom
+**ausschließlichen Werknutzungsrecht**. Ausschließlichkeit ist noch nicht
+beschlossen und wird durch die öffentliche Anbieterangabe nicht behauptet.
+
+Für die spätere Vereinbarung zwischen dir und MangoLila ausdrücklich festlegen:
+
+- Welche Nutzungs- und Verwertungsrechte MangoLila erhält, für welche Bestandteile,
+  in welchem Gebiet und für welche Dauer; bestehende Fremdrechte ausnehmen.
+- Ob diese Rechte ausschließlich sind und welche eigenen Rechte du dir vorbehältst.
+- Dass MangoLila Lizenzen an Dritte vergeben darf, ausdrücklich unter EUPL und
+  bei Bedarf unter gesondert vereinbarten kommerziellen Bedingungen.
+- Ob künftige Beiträge, Versionen und Änderungen umfasst sind; Rechte Dritter
+  müssen für eine alternative Lizenzierung ebenfalls ausreichen.
+
+Die Rechtevereinbarung ist **noch nicht als abgeschlossen nachgewiesen**.
+Die Repositorytexte ersetzen sie nicht. Art. 6 EUPL setzt entsprechende
+Rechte der Lizenzgeberin voraus. Eine GmbH-Anbieterangabe allein garantiert
+keine vollständige Befreiung von persönlicher gesetzlicher Haftung.
+
+### Österreichische Haftung und Gewährleistung nachgehen
+
+Die offiziellen EUPL-Texte bleiben unverändert. Eine gesonderte Erklärung
+in LICENSING.md setzt den besprochenen konservativen Ansatz um:
+MangoLila beruft sich gegenüber Verbrauchern nicht auf die Gewährleistungs-
+und Haftungsausschlüsse der Artikel 7 und 8; stattdessen gelten die gesetzlichen
+Regeln. Keine zusätzliche freiwillige Garantie und keine Verpflichtung
+anderer Mitwirkender. Diese Erklärung schränkt die EUPL-Nutzungsrechte nicht ein.
+
+Vor Veröffentlichung gezielt österreichisch rechtlich prüfen lassen:
+
+- Einbindung und Wirkung dieser Erklärung, einschließlich Art. 9 EUPL;
+  kein vollständiges Rechtsgutachten durch die technische Umsetzung behaupten.
+- [§ 6 Abs. 1 Z 9 und Abs. 3 KSchG](https://ris.bka.gv.at/Dokumente/Bundesnormen/NOR40274264/NOR40274264.html):
+  insbesondere Personenschäden, Vorsatz, grobe Fahrlässigkeit und Transparenz.
+- Anwendbarkeit von Gewährleistungs- und Aktualisierungspflichten bei der
+  tatsächlichen Auslieferung einschließlich StockInfo-Anbindung. Die Ausnahme
+  für kostenlose freie und quelloffene Software in
+  [§ 1 Abs. 2 Z 7 VGG](https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=20011654)
+  hängt auch von der Datenverarbeitung ab; daraus folgt keine allgemeine
+  Haftungsfreiheit. Bezahltes Hosting wäre gesondert zu beurteilen.
+- Österreichisches Recht nach Art. 15 EUPL; zwingende Verbraucherrechte und
+  gesetzliche Gerichtsstände dürfen nicht pauschal ausgeschlossen werden.
+
+Die technische EUPL-Umstellung ist umgesetzt und lokal geprüft. Rechtsprüfung,
+Rechtevereinbarung, unabhängiger technischer Review und menschlicher
+Ticketabschluss werden dadurch nicht als erledigt behandelt.
+
+### Entscheidungen von Mike · 2026-09-27
+
+- „Na dann EUPL. Wie soll ich mit den österreichischen Haftungsregeln umgehen?“
+- „Ich bleibe Urheber, MangoLila Rechteinhaber?“ — präzisiert wie oben.
+- „Vermerke die lezten Absätze auch in dem Ticket damit ich dem später nachgehen kann. Bei Gelegenheit benenne auch das Ticket um auf eupl und dann setze das so um“.
+- „Es gibt dann also keine kommerzielle Lizenz mehr?“ — EUPL erlaubt selbst
+  kommerzielle Nutzung; keine zusätzliche Gebührenpflicht. Individuelle spätere
+  Vereinbarungen bleiben möglich, werden hier aber nicht als fertige Lizenz angeboten.
+- „Das File commerical-licence.md fällt weg - oder?“ — COMMERCIAL-LICENSE.md
+  ist einschließlich Links, Build-Auslieferung und Archivmanifest entfernt.
+- „Du checkst dass das auch bei Docker usw. berücksichtigt wird.“ — lokaler
+  Image-Build, Label, HTTP-Downloads, Quellarchiv und Hub-Vorschau geprüft.
+
+## Umsetzung und technische Nachweise
+
+### Umsetzungsplan
+
+- [x] Offizielle EUPL 1.2 in Englisch und Deutsch unverändert übernehmen;
+  Lizenzgewährung, Copyright, Anbieterin und Verbraucherklärung separat halten.
+- [x] Paket-/Docker-Metadaten, Downloadliste, Archivmanifest, vorhandene
+  Artefakttests und aktuelle Dokumentation gemeinsam umstellen.
+- [x] Tests, lint, typecheck, Produktionsbuild, Quellarchiv und HTTP-Auslieferung
+  sowie echte Docker-Hub-Vorschau prüfen; Befunde hier nachtragen.
+- [ ] Fertige Produktfassung committen und als Runde 3 unabhängig übergeben.
+
+### Verify
+
+✅ bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · ➖ noch nicht geprüft.
+
+| # | Handgriff | Nachweis | AI |
+|---|---|---|:--:|
+| 1 | Lizenztexte, Rechteaufteilung und erlaubte Nutzungen abgleichen | EN/DE bytegleich zur EU-Quelle; persönliche Urheberschaft, MangoLila als Lizenzgeberin und Verbraucherklärung konsistent; EUPL-1.2 only | ✅ |
+| 2 | Frontend und Quellarchiv einschließlich neuer Lizenzdateien prüfen | Produktionsbuild erfolgreich; 122 Manifestdateien bytegleich, keine Symlinks; alle lokalen Legal-Downloads vorhanden | ✅ |
+| 3 | Containerlabel und HTTP-Downloads prüfen | linux/amd64 healthy; Label EUPL-1.2; sechs HTTP-Antworten 200; fünf Dokumente und 122 Archivdateien bytegleich; kommerzielle Datei fehlt im Image und Archiv | ✅ |
+| 4 | make test, make lint und make typecheck ausführen | 63 Testdateien / 795 Tests erfolgreich, lint und typecheck Exit 0 | ✅ |
+| 5 | Beide READMEs, Unraid, Links und Hub-Vorschau abgleichen | Gemeinsame Aussagen konsistent; Hub-Vorschau 6.658 Bytes; keine alte Lizenzpflicht in aktuellen Produkttexten; zentrale XML unverändert passend | ✅ |
+| 6 | Interne Rechtevereinbarung und österreichische Rechtsprüfung | Menschliche Aufgabe, nicht technisch bestätigt | ➖ |
+
+### Prüfnachweise · EUPL-Fassung · 2026-09-27
+
+**Lizenzquellen:** Die über die [offizielle EU-Seite](https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
+verlinkten Originaldateien sind unverändert übernommen. Der gewählte Umfang
+ist EUPL 1.2 **only**, in LICENSING.md ausdrücklich angegeben; kein automatischer
+Wechsel auf künftige Fassungen. Die Kompatibilitätsregel aus Artikel 5 bleibt
+unberührt. npm und Docker nennen entsprechend `EUPL-1.2`.
+
+- [Englisch](https://interoperable-europe.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt):
+  LICENSE, 13.827 Bytes, SHA-256 `6fc9e709ccbfe0d77fbffa2427a983282be2eb88e47b1cdb49f21a83b4d1e665`.
+- [Deutsch](https://interoperable-europe.ec.europa.eu/sites/default/files/inline-files/EUPL%20v1_2%20DE.txt):
+  LICENSE.de.txt, 15.282 Bytes, SHA-256 `208705beb6df6c418b821f73b2cf192d9d5c6837a1a59391a261c7abe2fb0dce`.
+
+`make test`, `make lint`, `make typecheck` und `make build-frontend` erfolgreich.
+63 Testdateien / 795 Tests. Bestehende Vue-Injection-/Routerwarnungen im Testlauf;
+keine fehlgeschlagenen Tests. Bekannte Buildwarnung: vendor-ui-Chunk über 500 kB.
+`git diff --cached --check` meldet ausschließlich die unverändert aus der
+EU-Originaldatei übernommenen CRLF-Zeilen und Leerzeichen in LICENSE.de.txt.
+Bytegleichheit hat hier Vorrang; keine globale Whitespace-Regel abgeschaltet.
+Der Check für alle übrigen Änderungen ist sauber.
+Der Docker-Build meldet beim unveränderten Abhängigkeitsbestand fünf npm-Funde
+(3 moderate, 2 high); kein Dependency-Audit oder Fix im Lizenzauftrag behauptet.
+
+Build-Helfer und vorhandener Artefakttest verwenden die neue Dokumentliste:
+LICENSE.txt, LICENSE.de.txt, LICENSING.md und THIRD_PARTY_NOTICES.md.
+Die App-Seite legal.html verlinkt alle vier und stockportfolio-source.tgz.
+Keine neue Testmechanik für den Lizenzwechsel; vorhandene Inhalts-/Archivprüfung
+angepasst. Das TS-Compiler-API-Inventar der Deklarationen in beiden geänderten
+TS-Dateien enthält ausschließlich englische Bezeichner.
+
+Lokales Quellarchiv: 122 reguläre Dateien, 268.180 Bytes. Exakte Gleichheit mit
+der expliziten Paketdateiliste und den Arbeitsdateien geprüft; keine Symlinks
+oder zusätzliche Metadaten. Die vier Lizenzdokumente und legal.html sind zum
+Quellstand bytegleich, alle lokalen Downloadziele vorhanden. Die entfernte
+kommerzielle Datei ist weder im Produktionsverzeichnis noch im Archiv vorhanden.
+
+Docker-Image `stockportfolio-t57-eupl:local`, Plattform linux/amd64,
+Manifest-Liste `sha256:f505ef41b48fe08c64d76a0d087cdd36083bd1047ba0618931e65fd59f8fd171`.
+Temporärer Container `stockportfolio-t57-eupl-check` auf localhost:60933:
+healthy, OCI-Lizenzlabel EUPL-1.2. Sechs HTTP-Downloads mit Status 200:
+legal.html (2.076 Bytes, Weiterleitung nach /legal), LICENSE.txt (13.827),
+LICENSE.de.txt (15.282), LICENSING.md (3.535), THIRD_PARTY_NOTICES.md (3.156),
+stockportfolio-source.tgz (255.747). Die fünf Dokumente und alle 122 Dateien
+im heruntergeladenen Archiv sind zum Arbeitsstand bytegleich. Verschiedene
+komprimierte Archivgrößen auf macOS und Linux ändern diese Inhaltsgleichheit
+nicht. Die fehlende kommerzielle Datei zusätzlich direkt im Image geprüft;
+ein HTTP-200 allein wäre wegen möglicher SPA-Fallbacks kein Abwesenheitsbeleg.
+
+Der Container lief mit absichtlich unerreichbarer API-Adresse und prüfte nur
+die statische Auslieferung, keine Kurse oder Live-StockInfo. Danach gestoppt;
+`--rm` räumt genau diesen Testcontainer auf. Kein Image-Push, keine Hub-Publikation,
+kein Live-Unraid und keine CA-Aufnahme behauptet. Kein neuer Browser-Layouttest:
+App-Navigation und Styles unverändert, geändert sind statische Lizenztexte.
+
+### Nachprüfen
+
+Im Projektroot; die Docker-Befehle erstellen nur einen lokalen Testcontainer.
+Port 60933 muss frei sein, andernfalls einen anderen Port wählen.
+
+```bash
+# #1: Hashes mit den oben verlinkten EU-Originaldateien vergleichen
+shasum -a 256 LICENSE LICENSE.de.txt
+# #2 und #4: vorhandene Tests und Produktionsausgabe
+make test
+make lint
+make typecheck
+make build-frontend
+cmp LICENSE dist/LICENSE.txt
+cmp LICENSE.de.txt dist/LICENSE.de.txt
+cmp LICENSING.md dist/LICENSING.md
+cmp THIRD_PARTY_NOTICES.md dist/THIRD_PARTY_NOTICES.md
+cmp public/legal.html dist/legal.html
+tar -tzf dist/stockportfolio-source.tgz
+# #3: Image bauen, Label und Downloads prüfen
+docker build --platform linux/amd64 -f docker/Dockerfile -t stockportfolio-t57-eupl:local .
+docker run --rm -d --platform linux/amd64 --name stockportfolio-t57-eupl-check \
+  -p 127.0.0.1:60933:8080 -e STOCKINFO_API_URL=http://127.0.0.1:9 stockportfolio-t57-eupl:local
+docker inspect --format '{{index .Config.Labels "org.opencontainers.image.licenses"}} {{.State.Health.Status}}' stockportfolio-t57-eupl-check
+curl -fsSL http://127.0.0.1:60933/LICENSE.txt -o /tmp/t57-eupl-license-http.txt
+cmp LICENSE /tmp/t57-eupl-license-http.txt
+curl -fsSL http://127.0.0.1:60933/stockportfolio-source.tgz -o /tmp/t57-eupl-source-http.tgz
+tar -tzf /tmp/t57-eupl-source-http.tgz
+docker stop stockportfolio-t57-eupl-check
+# #5: tatsächliche Docker-Hub-Konvertierung, keine Veröffentlichung
+./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master --output docker/logs/dockerhub-readme.md
+```
+
+### Doku-Abgleich
+
+Datei- und Überschrifteninventar für Projekt-/Docker-README, unraid/README.md,
+SOURCE.md, neue LICENSING.md, public/legal.html, docs/ und Ticketboard erstellt.
+
+- README.md / License und docker/README.md / License and source: gleicher
+  Rechteumfang, Copyright und Anbieterin, Verbraucherklärung und Downloads.
+  Entwickler-Bauanleitung bleibt im Projekt-README; Containerpfade und Betrieb
+  bleiben in der Docker-Anleitung. Hub-Vorschau 6.658 von maximal 25.000 Bytes.
+- LICENSE / LICENSE.de.txt bleiben offizielle unveränderte Texte. LICENSING.md
+  bündelt konkrete Lizenzgewährung, Anbieterangaben und separate Erklärung.
+  SOURCE.md erklärt den Neubau und verweist auf EUPL-Pflichten.
+- public/legal.html und scripts/licenseAssets.ts / package.json: alte kommerzielle
+  Seite vollständig entfernt, neue Dokumente ausgeliefert und im Quellarchiv.
+  Paket-Lockfile und Docker-Label konsistent; privater Runtime-Wrapper hat keine
+  eigene abweichende Lizenz und bleibt Teil der Projektlizenz.
+- unraid/README.md / License: App selbst unter OSI-anerkannter EUPL; MIT des
+  separaten Template-Repos bleibt getrennt. Keine CA-Zusage aus der Lizenz ableiten.
+- Zentrale Vorlage `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
+  gelesen: keine abweichende Lizenzzusage, keine betroffenen Ports/Variablen oder
+  Installationsfelder. Unverändert; kein Schreibauftrag dort abgeleitet.
+  In diesem Template-Root liegt keine AGENTS.md. Kein fremdes Repository geändert.
+- Historische Specs, docs/stockinfo-integration-proposal.md und frühere
+  Ticketabschnitte enthalten keine zu ersetzende aktuelle EUPL-Zusage. Alte
+  Lizenzvergleiche bleiben historische Recherche. Kein verbliebener Verweis
+  auf den alten Ticket-Dateinamen in aktuellen Boarddateien.
+- Skill-Abgleich: keine Änderung von Board-/Lessons-Konventionen, daher kein
+  Skill-Edit nötig. Installiertes Workflow-Paket `86db65b5bc83e7c494acb738b6275b56a9cb56e5481a17b7c215d7aee4620843`
+  gelesen; die in STATUS bereits offene allgemeine Konventionsübernahme bleibt
+  außerhalb dieses Lizenzauftrags. Keine vollständige Boardmigration behauptet.
+
+### Vorbeugung und Lessons
+
+Lokales Codex-Inventar SP-CX-01 bis SP-CX-05 und einschlägige gemeinsame
+AL-R-01/02/06/12 gelesen. Angewendet: SP-CX-02 (Fassung mit Ergänzung T-55 vom
+2026-09-27) für alle aktuellen Lizenzzusagen; AL-R-02 für Datei-/Downloadinventar;
+AL-R-01 für Trennung von technischen und juristischen Nachweisen; AL-R-06 für
+Rücknahme der überholten Runde und erneute Übergabe erst nach Produktcommit;
+AL-R-12 für Prüfung gegen EU-Originaltexte und österreichische Primärquellen.
+Keine neue Lesson aus der ausdrücklich geänderten Produktentscheidung abgeleitet.
+
+### Auflösung
+
+Technische Umsetzung und eigene Nachweise fertig. Unabhängiger Review Runde 3
+wird nach dem Produktcommit angefordert. Rechtevereinbarung und österreichische
+Rechtsprüfung bleiben für Mike offen; weder Veröffentlichung noch Ticketabschluss
+sind damit freigegeben. Fremde Änderungen an ACTIVITY.md bleiben außerhalb
+der Produkt-/Ticketcommits.
+
+## Historie · zurückgezogene eigene Lizenz, Runde 2
+
+Die folgenden Texte und die darin enthaltene Verify-Matrix sind der
+**abgelöste Snapshot** der eigenen Lizenzfassung e3d068e, einschließlich der
+anschließenden Recherche. Sie sind keine aktuellen Produktzusagen oder
+Prüfnachweise der EUPL-Fassung. Die aktuelle Matrix steht oben. Runde 2 wurde
+vor dokumentiertem Reviewabschluss auf Mikes neue Lizenzentscheidung hin
+zurückgezogen. Originalrückmeldungen und Belege bleiben erhalten.
+
+# Frühere Nutzungslizenz für StockPortfolio
 
 **Warum dieses Ticket:** StockPortfolio braucht klare Nutzungsbedingungen für
 GitHub und Container. Die zunächst übernommene AGPL passt nicht zum bestätigten

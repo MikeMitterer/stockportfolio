@@ -49,7 +49,7 @@
     "vitest": "^3.1.4",
     "vue-tsc": "^2.2.10"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "EUPL-1.2",
   "files": [
     "src",
     "public",
@@ -59,7 +59,8 @@
     "vite.config.ts",
     "tsconfig.json",
     "LICENSE",
-    "COMMERCIAL-LICENSE.md",
+    "LICENSE.de.txt",
+    "LICENSING.md",
     "THIRD_PARTY_NOTICES.md",
     "SOURCE.md",
     "README.md",

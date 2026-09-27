@@ -10,17 +10,16 @@ on [Docker Hub](https://hub.docker.com/r/mangolila/stockportfolio).
 
 ## License
 
-Personal and internal business use on your own Unraid server is free under the
-[StockPortfolio License 1.0](../LICENSE), including your own modifications.
-Listing the unchanged app in Community Applications and providing a template
-that points to its official image are explicitly permitted, even though Unraid
-itself is a paid platform. Hosting the application for third parties, resale
-and rebranded offerings require a separate agreement with MangoLila GmbH.
+StockPortfolio's application code is licensed under **[EUPL 1.2](../LICENSE)**
+(version 1.2 only), an OSI-approved open-source license. Personal and commercial
+use, modifications, redistribution, sale and hosting are permitted without an
+additional paid license, subject to the EUPL's notice, source-code and copyleft
+requirements. See the [provider and consumer declaration](../LICENSING.md).
 
 The separate [template repository](https://github.com/MikeMitterer/unraid-templates)
-is MIT-licensed. That license covers the templates; StockPortfolio's application
-code has its own terms. Catalog acceptance and operation on a real Unraid server
-have not been verified for this license revision.
+is MIT-licensed; its license covers the templates. Community Applications
+acceptance and operation on a real Unraid server have not been verified for
+this revision. The application's OSI license alone is not a catalog acceptance.
 
 ## Installing through Unraid Apps
 
