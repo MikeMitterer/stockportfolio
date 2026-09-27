@@ -5,19 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: [T-50 · GitHub-Link in der Statuszeile](30-doing/T-50-github-link-statuszeile.md).**
-Mike hat am 2026-09-27 die Übernahme der offenen Frage direkt nach Doing und
-den sofortigen Implementierungsbeginn beauftragt. Nach Runde 1 hat Mike die
-Darstellung korrigiert: GitHub-Symbol zwischen Herkunft und Depot, mit
-Trennpunkten wie bei StockInfo. Die Korrektur ist umgesetzt, selbst geprüft
-und in Runde 2 unabhängig geprüft (`claude`, approved). Mikes
-Abschlussbestätigung steht noch aus.
+**Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
+Mike hat T-51 unmittelbar nach T-50 beauftragt. Coder `codex` ist am Zug.
 
-**Direkt anschließend: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
-Mike: „Danach geht es gleich mit T-51 weiter“ (2026-09-27). Nach der technischen
-Freigabe von T-50 aktiviert `codex` unmittelbar T-51. Etwaige Review-Nacharbeit
-an T-50 hat vorher Vorrang. Mikes Abschlussbestätigung zu T-50 bleibt davon
-getrennt; diese Reihenfolge allein schließt T-50 nicht ab.
+[T-50 · GitHub-Link in der Statuszeile](40-done/T-50-github-link-statuszeile.md)
+ist in Runde 2 durch `claude` technisch freigegeben und auf Mikes Bestätigung
+vom 2026-09-27 abgeschlossen: „T-50 ist erledigt“.
 
 Der vorherige Auftrag ist abgeschlossen. Mike hat am 2026-09-26 ausdrücklich bestätigt:
 „T-49 ist erledigt“. Das Ticket liegt unter
@@ -38,25 +31,24 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-50 ist in Runde 2 unabhängig geprüft und technisch freigegeben (approved):
-die korrigierte Symbolfassung wurde gezielt gegen die StockInfo-Referenz
-geprüft. `last_reviewed_*` ist auf Runde 2 aktualisiert.
+T-51 ist zur Umsetzung aktiviert. Die letzte unabhängige Prüfung von T-50
+bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-50-github-link-statuszeile.md`
-- `handoff_commit`: `d7244d91d834a2a0845ee4af05d5063e41a922b3`
-- `review_round`: `2`
+- `phase`: `implementing`
+- `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-50-github-link-statuszeile.md`
 - `last_reviewed_commit`: `d7244d91d834a2a0845ee4af05d5063e41a922b3`
 - `last_reviewed_round`: `2`
-- `workstream`: `statusbar-repository-link`
-- `priority_chain`: `T-50-github-link-statuszeile.md → T-51-rebalancing-bandabweichung-als-zahl.md`
-- `priority_ticket`: `T-50-github-link-statuszeile.md`
+- `workstream`: `rebalancing-relative-deviation`
+- `priority_chain`: `T-51-rebalancing-bandabweichung-als-zahl.md`
+- `priority_ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -151,7 +143,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 ist abgeschlossen; T-51 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.

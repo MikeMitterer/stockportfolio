@@ -191,7 +191,8 @@ ist durch Mike abgeschlossen. [T-49](40-done/T-49-dockerhub-veroeffentlichung.md
 ist am 2026-09-26 auf Mikes ausdrückliche Entscheidung abgeschlossen. Der
 Docker-Hub-Push ist durch Mike als erledigt bestätigt; die technischen
 Prüfnachweise bleiben im Ticket getrennt ausgewiesen.
-Aktiv ist [T-50 · GitHub-Link in der Statuszeile](30-doing/T-50-github-link-statuszeile.md);
+[T-50 · GitHub-Link in der Statuszeile](40-done/T-50-github-link-statuszeile.md) ist abgeschlossen.
+Aktiv ist [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md);
 maßgeblich ist STATUS.
 
 [T-38 · Basiswährung außer EUR](40-done/T-38-basiswaehrung-und-devisenkurse.md):

@@ -13,10 +13,10 @@ von 9,5 % beträgt die relative Abweichung −5 %. Bei einem unteren Band von
 Der Wert −5 % soll unmittelbar sichtbar werden.
 
 **Stand:** Auf Mikes ausdrücklichen Auftrag vom 2026-09-27 unter `30-doing/`
-angelegt. Noch nicht umgesetzt oder technisch geprüft. Der aktive Auftrag
+angelegt und nach Mikes Abschluss von T-50 zur Umsetzung aktiviert.
+Implementierung läuft auf `t-51-rebalancing-bandabweichung-als-zahl`. Der aktive Auftrag
 und die Reihenfolge stehen ausschließlich in [STATUS.md](../STATUS.md);
-T-51 folgt auf Mikes Auftrag unmittelbar nach der technischen Freigabe von
-T-50. Die laufende Übergabe von T-50 wird nicht unterbrochen.
+T-50 ist in Runde 2 freigegeben und durch Mike abgeschlossen.
 
 Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
 Prüfung bleibt seine Abschlussbestätigung offen.

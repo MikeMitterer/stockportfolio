@@ -3,13 +3,13 @@
 In der Statuszeile fehlt ein direkter Weg zum GitHub-Repository von
 StockPortfolio. Der Link soll wie bei StockInfo aus der App erreichbar sein.
 
-**Stand:** Nacharbeit auf Mikes Rückmeldung vom 2026-09-27. Die bisherige
+**Stand:** Abgeschlossen auf Mikes Bestätigung vom 2026-09-27. Die bisherige
 Textlink-Fassung war in Runde 1 technisch freigegeben, entsprach aber nicht
 der gewünschten Darstellung von StockInfo. Symbol, Position und Trennpunkte
 sind korrigiert, durch den Coder geprüft und in Runde 2 unabhängig geprüft
 (`claude`, approved).
 
-Mikes Abschlussbestätigung bleibt offen.
+Mike bestätigt: „T-50 ist erledigt“. Keine weitere Aufgabe für Mike.
 
 ## Auftrag
 
@@ -109,6 +109,18 @@ Mikes Vorgabe nicht vollständig. Der Observer soll die Lessons-Einordnung
 für die Autorenschaft codex und die Review-Gegenprobe prüfen. Konkrete
 Vorbeugung für diese Nacharbeit: DOM-Reihenfolge, identischer SVG-Pfad und
 sichtbare Trennpunkte direkt mit StockInfo vergleichen; Beleg in Verify #1/#2.
+
+**Observer-Einordnung · 2026-09-27:** Lokale Lessons inventarisiert und mit
+AL-R-01/02/12 abgeglichen. Neue lokale Fall-Lesson
+[SP-CX-05](../.agents/lessons/SP-CX-05-benannte-ui-referenz-vor-fertigmeldung-abgleichen.md),
+Formatfassung 1, Erstfassung vom 2026-09-27: Aufnahme wegen der belegten
+unvollständigen Fertigmeldung, kein zweiter Vorfall behauptet. Produktautor
+codex; Review-Gegenprobe für claude separat beschrieben. Die Coder-Belege von
+Runde 2 decken Symbol, Reihenfolge, Trennpunkte und Mobilansicht ab; unabhängige
+Übernahme dieser Gegenprobe steht bei der Einordnung noch aus.
+Doku-/Skill-Abgleich: vorhandenes Lesson-Format und Aufnahmeverfahren verwendet,
+keine Konventionsänderung, daher kein Skill-Update nötig. Gemeinsamer Bestand
+bleibt unverändert; die bereits sichtbare allgemeine Board-Übernahme bleibt offen.
 
 **Doku-Abgleich:** Datei- und Überschrifteninventar geprüft. `README.md`
 („Several portfolios“, „Checking it works“) und `docker/README.md`
@@ -210,8 +222,7 @@ Beobachtung ohne Auftragsbezug dokumentiert.
 
 Symbol-Nacharbeit, eigene Prüfung und unabhängige Prüfung (Runde 2, `claude`,
 approved) sind abgeschlossen. Runde 1 bleibt als historisches Urteil zur
-Produktfassung `75cac676c36f15d5041ce15c47e09a968d975670` erhalten. Mikes
-Abschlussbestätigung steht noch aus; Ticket bleibt bis dahin in Doing.
+Produktfassung `75cac676c36f15d5041ce15c47e09a968d975670` erhalten. Mike bestätigt am 2026-09-27: „T-50 ist erledigt“. Ticket nach `40-done/` verschoben.
 
 Korrigierte Produktfassung: `d7244d91d834a2a0845ee4af05d5063e41a922b3`.
 Eigene Testserver nach Prüfung beendet.
