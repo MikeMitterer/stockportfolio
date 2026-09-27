@@ -16,8 +16,7 @@ Aktiver Auftrag und Reihenfolge bleiben in [STATUS.md](../STATUS.md)
 festgelegt. Mike hat anschließend ausdrücklich beauftragt: „Nach T-51 kommt
 T-52 im Anschluss“. T-52 folgt direkt auf T-51.
 
-Für Mike steht jetzt keine Rückfrage an. Nach Umsetzung und technischer
-Prüfung bleibt seine Abschlussbestätigung offen.
+Für Mike steht keine Rückfrage an; das Ticket ist abgeschlossen.
 
 ## Auftrag
 
@@ -143,5 +142,8 @@ Geprüfte Fassung: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7` auf
 ### Auflösung
 
 Umgesetzt, selbst geprüft und in Runde 1 unabhängig freigegeben (`claude`,
-approved). Mikes Abschlussbestätigung steht noch aus; Ticket bleibt bis
-dahin in Doing.
+approved). Mike bestätigt am 2026-09-27: „T-52 passt“. Damit abgeschlossen
+und nach `40-done/` archiviert.
+
+
+**Menschlicher Abschluss · 2026-09-27:** Mike: „T-52 passt“.

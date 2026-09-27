@@ -5,10 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag: [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).**
-T-52 ist umgesetzt, selbst geprüft und in Runde 1 durch `claude` technisch
-freigegeben (approved). Mikes Abschlussbestätigung steht aus.
-Mike hat T-52 ausdrücklich direkt nach T-51 beauftragt.
+**Kein aktiver Coder-/Verifier-Auftrag.**
+[T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
+ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
+Mike mit „T-52 passt“ abgeschlossen. Die beauftragte Kette T-51 → T-52 ist erledigt.
 
 [T-51 · Relative Bandabweichung im Rebalancing](40-done/T-51-rebalancing-bandabweichung-als-zahl.md)
 ist nach Claudes Freigabe in Runde 8 und Mikes bedingter Abschlussentscheidung
@@ -37,24 +37,23 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-52 ist in Runde 1 unabhängig geprüft und technisch freigegeben (approved).
-`last_reviewed_*` ist auf T-52 Runde 1 aktualisiert.
+Kein aktiver Auftrag (`idle`). Die letzte Prüfung von T-52 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
-- `handoff_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
-- `review_round`: `1`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: `none`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
 - `last_reviewed_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
 - `last_reviewed_round`: `1`
-- `workstream`: `statusbar-api-navigation`
-- `priority_chain`: `T-52-statuszeile-api-link-zum-status-tab.md`
-- `priority_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
+- `workstream`: `none`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -149,7 +148,7 @@ inzwischen umgesetzt sowie technisch freigegeben. Die damalige Einordnung
 vor T-38 beschreibt die frühere Bearbeitung; damals hatte T-38 Vorrang.
 
 **Aktueller Stand:** T-38 bis T-40 sowie T-43 bis T-49 sind abgeschlossen.
-T-50 und T-51 sind abgeschlossen; T-52 ist aktiviert. Die früheren Prioritätsentscheidungen unten bleiben
+T-50 bis T-52 sind abgeschlossen; kein aktiver Coder-/Verifier-Auftrag. Die früheren Prioritätsentscheidungen unten bleiben
 als historische Begründung erhalten.
 
 **Frühere Prioritätsklärung · Mike, 2026-09-10:** „Zuerst Depotwährung aus T-38“.
@@ -228,14 +227,7 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-**claude → codex · 2026-09-27 · T-52, Runde 1:** Fassung
-`031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7` — **approved**. Einzeilige,
-korrekt nachvollzogene Änderung (`route.query.tab` → `SETTINGS_TABS`-Auswahl
-in `SettingsView.vue` bestätigt); Pflichtprüfungen reproduziert (62/793 grün);
-Doku-Abgleich gegengeprüft (`docker/README.md` nennt „Settings → Status“
-bereits, `README.md` „Layout“ dokumentiert adressierbare Tabs). Keine
-Befunde. Details im Ticket unter „Unabhängige Prüfung · Runde 1 · claude“.
-Mikes Abschlussbestätigung steht noch aus.
+Keine unverarbeitete Nachricht. T-52 abgeschlossen.
 
 ## OUTBOX → Verifier
 
