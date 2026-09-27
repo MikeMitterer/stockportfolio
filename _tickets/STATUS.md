@@ -8,9 +8,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag: [T-56 · Changelog-Generator](30-doing/T-56-changelog-generator.md).**
 Mike beauftragt Python nach code-standards und die direkte Make-Anbindung.
 Mike hat die offene Prüfung am 2026-09-27 für die Theme-Vereinheitlichung
-ausdrücklich zurückgestellt. Codex ergänzt MakeLib, BashLib und ProjectTools
-um gemeinsame Themes und Layout-Einstellungen; vorhandene Schnittstellen bleiben.
-Die frühere Prüffassung und ihre Nachweise bleiben im Ticket erhalten.
+ausdrücklich zurückgestellt. Die gemeinsame Theme-Ausgabe, der Python-Starter
+und die Anpassungen von Setup, Changelog und Skills sind umgesetzt. Codex
+übergibt die vollständige Fassung einschließlich der zentralen `printTheme*`-Helfer
+und direkten Changelog-Anbindung in Runde 2 an Claude. Technische Freigabe
+und Ticketabschluss stehen aus. Die frühere Prüffassung bleibt im Ticket erhalten.
 [T-55 · Kurze Versionierungs-Targets](40-done/T-55-kurze-versionierungs-targets.md)
 ist am 2026-09-27 nach Claudes technischer Gesamtfreigabe in Runde 2 und
 Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
@@ -51,18 +53,18 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-56 wird auf Mikes Auftrag um die Theme-Vereinheitlichung ergänzt. Runde 1
-ist zurückgestellt, keine technische Freigabe erteilt. Die letzte unabhängige Prüfung von T-55
-bleibt in `last_reviewed_*` erhalten.
+T-56 steht mit der erweiterten Fassung zur unabhängigen Prüfung in Runde 2.
+Runde 1 wurde zurückgestellt, ohne technische Freigabe. Die letzte abgeschlossene
+Prüfung von T-55 bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-56-changelog-generator.md`
-- `handoff_commit`: `602d706b1475b48eadf53438bd393508f5795763`
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `5be5acbe21a20a395fa68357c75126b27f8cd44f`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-55-kurze-versionierungs-targets.md`
 - `last_reviewed_commit`: `091374f62e9e9e5cdebf160d232c5021058ca882`
@@ -247,5 +249,29 @@ Leer.
 
 ## OUTBOX → Verifier
 
-Leer. Mike hat die offene Prüfung für die Theme-Ergänzung zurückgestellt.
-Die nächste Übergabe referenziert neue Fassungen aller betroffenen Repositories.
+T-56 · Runde 2 · vollständige erweiterte Fassung zur unabhängigen Prüfung.
+
+- StockPortfolio: `5be5acbe21a20a395fa68357c75126b27f8cd44f` auf `t-56-changelog-generator`.
+- MakeLib: `10b128d00e514495232d94a95ca9893a32e1dfb7` auf `feat/cli-themes`.
+- BashLib: `ab6a5a77949f31b285dc987b66cadba249a6db15` auf `feat/cli-themes`.
+- ProjectTools: `a54f84d4196d4a72dece1d07fcf9564333726ae5` auf `feat/changelog-generator`.
+- PersonalSkills: `38073d8af066c68f532ff1b571b910663e582b70` auf `docs/shared-cli-themes`.
+
+Bitte ursprünglichen Changelog-Generator und Make-Anbindung zusammen mit den
+Theme-Ergänzungen prüfen: drei eigenständige kompatible Farbdateien, Layout,
+`py-run.sh` einschließlich Liste und Paket-Bootstrap, direkter Stdlib-Python-Start,
+Setup-Script und Skill-Vorlage. Die drei `printTheme*`-Helfer liegen zentral in
+`tools.lib.sh`, Einbindung einzeilig. Auf Mikes jüngste Entscheidung entfällt
+`changelog-publish`; `tag-*` ruft Python direkt mit `--publish` auf.
+
+Belege und Doku-Abgleich im Ticket: 793 Vitest-Tests, Lint/Typecheck;
+57 Python-Tests plus 13 Bootstrap-Tests; 10 Generator-Tests auch unter Python 3.9;
+24 Skill-Tests und 17 Vorlagentests gegen das Projekt-Script; reale Theme-/PTY-
+Ausgaben, Ruff und gezielter ShellCheck. In `tools.lib.sh` bleiben 20 bestehende
+ShellCheck-Diagnosen unverändert. Docker-README-Vorschau 5.052 Bytes; dessen
+Container-Aussagen bleiben mit dem Projekt-README vereinbar. Keine neuen Releases.
+
+Fremde BashLib-Änderung `src/docker.lib.sh` und unversionierte ProjectTools-
+`AGENTS.md` sind nicht enthalten. MakeLibs zwei vorbestehende lokale Commits
+sind im Ticket abgegrenzt. Allgemeine Board-Übernahme weiterhin offen.
+Noch kein Merge/Push; technische Freigabe und Ticketabschluss stehen aus.
