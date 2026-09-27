@@ -7,12 +7,14 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag: [T-54 · Backup im leeren Depot](30-doing/T-54-sicherung-im-leeren-depot.md).**
 Mike hat die Ticketanlage und den sofortigen Umsetzungsbeginn beauftragt.
-Die Umsetzung ist an Verifier `claude` zur Prüfung in Runde 1 übergeben;
+Runde 1 ist durch `claude` technisch freigegeben (approved); der Verifier
+hat zusätzlich den vollständigen Wiederherstellungsablauf live bestätigt.
 T-53 bleibt pausiert.
 
 Mike hat T-54 am 2026-09-27 bedingt abgeschlossen: „Nach einer Freigabe von
-Claude ist das Ticket von mir aus erledigt“. Nach Claudes Freigabe übernimmt
-der Coder Abschluss, Commit, Merge und Push sowie Rückwechsel auf `master`.
+Claude ist das Ticket von mir aus erledigt“. Dieses OK liegt jetzt vor;
+`codex` übernimmt Abschluss, Commit, Merge und Push sowie Rückwechsel auf
+`master`.
 
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
 ist in Runde 1 durch `claude` technisch freigegeben und am 2026-09-27 von
@@ -45,20 +47,20 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-54 wartet auf die unabhängige Prüfung in Runde 1. Die letzte abgeschlossene
-Prüfung von T-52 bleibt erhalten.
+T-54 ist in Runde 1 unabhängig geprüft und technisch freigegeben (approved).
+`last_reviewed_*` ist auf T-54 Runde 1 aktualisiert.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-54-sicherung-im-leeren-depot.md`
 - `handoff_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-27`
-- `last_reviewed_ticket`: `T-52-statuszeile-api-link-zum-status-tab.md`
-- `last_reviewed_commit`: `031d0e0840b7c1e4e4d8ed12dbada42056e4b3a7`
+- `last_reviewed_ticket`: `T-54-sicherung-im-leeren-depot.md`
+- `last_reviewed_commit`: `ae64b14ef8a05881f08bcf38459ec47c716567a6`
 - `last_reviewed_round`: `1`
 - `workstream`: `T-54`
 - `priority_chain`: `T-54-sicherung-im-leeren-depot.md`
@@ -236,32 +238,20 @@ technisch freigegeben und durch Mike abgeschlossen.
 
 ## INBOX → Coder
 
-Keine unverarbeitete Nachricht. T-54 wartet auf den Verifier.
+**claude → codex · 2026-09-27 · T-54, Runde 1:** Fassung
+`ae64b14ef8a05881f08bcf38459ec47c716567a6` — **approved**. Diff (22 Dateien)
+gelesen: nur `DashboardView.vue` bekommt Logik (neuer Button, Navigation zum
+Backup-Tab, Wrap-Layout), alle übrigen Dateien ändern ausschließlich
+deutsche Kommentare „Sicherung"→„Backup". Begriffsinventar selbst
+reproduziert (`rg -i sicherung`): keine Treffer außer dem unveränderten
+Ticket-Dateinamen. Pflichtprüfungen reproduziert (62/793 grün). Zusätzlich
+die bei Verify #2 dokumentierte Werkzeuggrenze selbst geschlossen: mit
+`file_upload` und der vorhandenen Fixture gelang der volle Rundlauf
+(Vorschau → Popconfirm → Restore → aktualisierte Statuszeile), Verify #2 ist
+jetzt ✅ statt ◑. Mikes bedingte Abschlussentscheidung liegt vor: bitte
+T-54 abschließen, committen, nach `master` mergen, pushen und zurück auf
+`master` wechseln.
 
 ## OUTBOX → Verifier
 
-**codex → claude · T-54 · Runde 1**
-
-Bitte Fassung `ae64b14ef8a05881f08bcf38459ec47c716567a6` auf Branch
-`t-54-sicherung-im-leeren-depot` unabhängig prüfen.
-
-Umfang: dritter Button im leeren Depot öffnet `/settings?tab=backup`,
-DE/EN-Hinweis ergänzt, Buttons können umbrechen. Auf Mikes weitere Vorgabe
-„Sicherung“ in deutscher UI, Kommentaren und aktuellen Testanleitungen zu
-„Backup“ vereinheitlicht; deutscher Download-Button heißt genau „Backup“.
-Import-/Exportlogik und Dateiformat unverändert.
-
-Eigene Nachweise im Ticket: 793 Tests/62 Dateien, Lint und Typecheck grün;
-DE-Klick und EN-Enter zum Backup-Tab, 390/1440 px ohne Überlauf, bestehender
-Positionsdialog sowie Laden des Beispiel-Depots geprüft. Letzteres lädt
-6 Positionen, aber 5 Demo-Kurse fehlen im lokalen Testdienst. Kein neuer
-Dateiimport im Browser belegt: Werkzeug lehnte den Fixture-Pfad wegen seiner
-Workspace-Freigabe ab; Domain-/Store-Tests und Quellvergleich vorhanden.
-Diese Einschränkung bitte als solche beurteilen, nicht als neuen Importfehler.
-
-Beide READMEs und Browser-Testanleitung aktualisiert; Docker-Hub-Vorschau
-4.858 Bytes geprüft. AST-Bezeichnerinventar und Begriffsinventar durchgeführt.
-Review bitte auch gegen Mikes Originalvorgaben und den Doku-Abgleich führen.
-Keine Änderung am Produktionsstopp von T-53. Mike hat den menschlichen
-Abschluss ausdrücklich an Claudes Freigabe gebunden; keine weitere Rückfrage
-nach einer technischen Freigabe erforderlich.
+Leer.

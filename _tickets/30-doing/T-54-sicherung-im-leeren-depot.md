@@ -8,14 +8,16 @@ Einstieg zum Wiederherstellen. Eine dritte Option soll diesen Weg sichtbar mache
 einspielen …“ führt direkt zu „Einstellungen → Backup“, wo die vorhandene
 Dateiauswahl, Prüfung und Bestätigung weiterverwendet werden.
 
-**Stand:** Umgesetzt und am 2026-09-27 durch Codex geprüft. Der zusätzliche
-Button öffnet den Backup-Tab; die deutsche Oberfläche verwendet „Backup“.
-Claudes technische Freigabe steht noch aus. Mike hat den Abschluss bereits
-unter dieser Bedingung autorisiert.
+**Stand:** Umgesetzt, durch Codex geprüft und in Runde 1 durch `claude`
+technisch freigegeben (approved). Der zusätzliche Button öffnet den
+Backup-Tab; die deutsche Oberfläche verwendet „Backup“. Der Verifier hat
+zusätzlich den vollständigen Wiederherstellungsablauf live im Browser
+bestätigt, den der Coder aus Werkzeuggründen nicht vollständig zeigen
+konnte. Mikes bedingte Abschlussentscheidung greift damit.
 
-**Für dich:** Kein weiterer Handgriff nötig. Nach Claudes Freigabe wird das
-Ticket abgeschlossen, committed, nach `master` gemergt und gepusht;
-anschließend wird wieder `master` ausgecheckt.
+**Für dich:** Kein weiterer Handgriff nötig. Das Ticket wird abgeschlossen,
+committed, nach `master` gemergt und gepusht; anschließend wird wieder
+`master` ausgecheckt.
 
 ## Auftrag
 
@@ -68,7 +70,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise · �
 | # | Handgriff | Erwartung / aktueller Nachweis | AI |
 |---|---|---|:--:|
 | 1 | Leeres Depot öffnen, Backup-Option anklicken | DE-Klick und EN-Enter öffnen `#/settings?tab=backup`; vorhandenes BackupPanel sichtbar | ✅ |
-| 2 | Wiederherstellung und Abbruch gegenprüfen | BackupPanel-Ablauf im Diff unverändert, Domain-/Store-Tests grün. Browser-Upload vom Werkzeug abgelehnt; kein Live-Import oder Live-Abbruch belegt | ◑ |
+| 2 | Wiederherstellung und Abbruch gegenprüfen | BackupPanel-Ablauf im Diff unverändert, Domain-/Store-Tests grün. Coder: Browser-Upload vom eigenen Werkzeug abgelehnt. Verifier (Runde 1, claude): voller Live-Rundlauf mit `file_upload` gelang — Vorschau, Bestätigung, Restore und aktualisierte Statuszeile bestätigt; siehe „Unabhängige Prüfung" | ✅ |
 | 3 | DE/EN sowie schmale und breite Ansicht prüfen | DE/EN bei 390 px ohne Überlauf; DE bei 1440 px einzeilig. Neuer deutscher Tab „Backup“, Download-Button „Backup“, Import „Backup einspielen …“ im Browser bestätigt | ✅ |
 | 4 | Position hinzufügen und Beispiel-Depot laden prüfen | Positionsdialog geöffnet/abgebrochen; Beispiel-Depot mit 6 Positionen geladen, Leerzustand verschwunden. Testdienst hat für 5 Demo-Wertpapiere keine Kurse | ⚠️ |
 | 5 | `make test`, `make lint`, `make typecheck` | Nach letzter Produktänderung: 793 Tests in 62 Dateien bestanden; Lint und Typecheck Exit 0 | ✅ |
@@ -127,9 +129,52 @@ Codex-Lessons vor Umsetzung und Übergabe per Verzeichnisinventar gelesen.
 Der Nutzerhinweis ist eine einzelne fehlende Einstiegsoption, kein belegtes
 wiederkehrendes Fehlermuster; keine neue Lesson allein aus dieser Ticketanlage.
 
+### Unabhängige Prüfung · Runde 1 · claude
+
+Geprüfte Fassung: `ae64b14ef8a05881f08bcf38459ec47c716567a6` auf
+`t-54-sicherung-im-leeren-depot`.
+
+- **Diff gelesen (22 Dateien):** `DashboardView.vue` erhält einen dritten
+  `NButton` im Leerzustand (`router.push({ path: '/settings', query: {
+  tab: 'backup' } })`, vorhandener `backup.restore`-Schlüssel), Button-Zeile
+  jetzt `flex-wrap: wrap; justify-content: center`. Alle übrigen
+  Produktdateien (`BackupPanel.vue`, `backup.ts`, `repository.ts`,
+  `instruments.ts`, `settings.ts`, `valueHistory.ts`, `types/portfolio.ts`,
+  `SettingsView.vue`) ändern ausschließlich deutsche Kommentare/JSDoc von
+  „Sicherung" auf „Backup" — keine Bezeichner, keine Logikänderung bestätigt.
+- **Begriffsinventar selbst reproduziert:** `rg -n -i 'sicherung' src tests
+  README.md docker/README.md docs unraid` findet keinen Treffer außer dem
+  eigenen, unveränderten Ticket-Dateinamen (per Vorgabe „Historische Tickets
+  … bleiben unverändert"). Deckt sich exakt mit der Behauptung.
+- **i18n gegengeprüft:** `download: 'Backup'` (ohne „herunterladen") setzt
+  Mikes Wortlaut exakt um; grammatikalisches Geschlecht von „das Backup"
+  bleibt in allen geänderten Strings konsistent (kein/dieses/eigenes Backup).
+- **Live im Browser nachvollzogen (eigener isolierter Tab, frischer Kontext,
+  `http://127.0.0.1:5175/#/`):** Leerzustand zeigt exakt die drei Buttons
+  und den erwarteten Hinweistext. Klick auf „Backup einspielen …" navigiert
+  zu `#/settings?tab=backup` mit aktivem Backup-Tab.
+- **Lücke aus Verify #2 selbst geschlossen:** Der Coder konnte den
+  Datei-Upload wegen einer Workspace-Beschränkung seines Werkzeugs nicht
+  live testen. Mit `mcp__claude-in-chrome__file_upload` und der
+  vorhandenen Fixture `tests/fixtures/browser/valid-portfolio.backup.json`
+  gelang mir der volle Rundlauf: Vorschau („Dieses Backup einspielen?",
+  Depot/Basiswährung/Positionen/Cash/Datum korrekt angezeigt) →
+  `NPopconfirm` „Aktuelles Depot wirklich überschreiben?" → Bestätigung →
+  Meldung „Eingespielt: „Browser-Testdepot" mit 5 Positionen." → Statuszeile
+  zeigt danach tatsächlich „Browser-Testdepot (EUR), 5 Positionen". Damit ist
+  Verify #2 vollständig ✅ statt ◑, ohne dass der Coder das noch nachholen muss.
+- **Pflichtprüfungen selbst reproduziert:** `make lint` (Exit 0),
+  `make typecheck` (Exit 0), `make test` — 62 Testdateien/793 Tests grün.
+- **Doku-Abgleich gegengeprüft:** README- und Docker-README-Ergänzungen
+  vorhanden und treffend; keine weiteren betroffenen Anleitungen gefunden.
+
+**Verdict: approved.** Keine Befunde; Verify #2 zusätzlich vollständig
+nachgewiesen.
+
 ### Auflösung
 
-Umsetzung und eigene Prüfungen abgeschlossen, mit der bei #2 dokumentierten
-Browsergrenze. Produktfassung `ae64b14ef8a05881f08bcf38459ec47c716567a6` in Runde 1 an
-den Verifier übergeben. Technische Freigabe steht aus. Mikes bedingte
-Abschlussentscheidung liegt vor; sie wird nach Claudes Freigabe wirksam.
+Umsetzung, eigene Prüfungen und unabhängige Prüfung (Runde 1, `claude`,
+approved) abgeschlossen; die bei #2 dokumentierte Browsergrenze ist durch
+den Verifier live geschlossen. Produktfassung
+`ae64b14ef8a05881f08bcf38459ec47c716567a6`. Mikes bedingte
+Abschlussentscheidung greift damit.

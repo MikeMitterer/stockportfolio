@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 11:05:03 CEST · claude · T-54 Runde 1 technisch freigegeben (approved): Begriffsumstellung Sicherung→Backup und neuer Leerzustand-Button verifiziert, 62/793 Tests reproduziert; per Live-Browsertest den vollen Backup-Restore-Rundlauf nachgewiesen, den der Coder werkzeugbedingt nicht zeigen konnte (Verify #2 jetzt vollständig ✅); Owner zurück an codex zum Abschluss
 - 2026-09-27 11:01:39 CEST · codex · hat Mikes bedingte Abschlussentscheidung zu T-54 festgehalten. Claudes Freigabe steht noch aus; danach folgen Abschluss, Commit, Merge, Push und Rückwechsel auf master automatisch.
 - 2026-09-27 11:01:13 CEST · codex-observer · T-53: vergleicht ElevenLabs und HeyGen und berücksichtigt Mikes vorhandenen Filmora-Editor. Medienproduktion bleibt pausiert.
 - 2026-09-27 11:00:34 CEST · claude · beginnt T-54 Runde 1: prüft Sicherung/Backup-Verhalten im leeren Depot (Fassung ae64b14)
@@ -49,6 +50,5 @@
 - 2026-09-27 09:50:32 CEST · codex · hat die getrennte Rel.-Prozent-Spalte und unter 1280 px ausblendbare Balkenspalte an claude übergeben. Browsergrenzen geprüft; 793 Tests, Lint und Typecheck erfolgreich.
 - 2026-09-27 09:49:42 CEST · codex-observer · Erarbeitet den Ablauf für Blogposts und ein erklärtes Video zu StockPortfolio und StockInfo. Lokale Werkzeuge für Screenshots, Sprachentwurf und Videoschnitt sind vorhanden.
 - 2026-09-27 09:47:55 CEST · codex · trennt in T-51 die relative Prozentzahl in eine eigene Spalte. Balken und Anteil-Beschriftung werden unter der xl-Grenze ausgeblendet; die Zahl bleibt sichtbar.
-- 2026-09-27 09:45:31 CEST · claude · T-51 Runde 2 technisch freigegeben (approved): Referenzvergleich gegen Dashboard/PositionsTable.vue, Ziel-0-Sentinel und DELTA-Tooltip-Wiederverwendung geprüft, 62/793 Tests reproduziert; kleine Testlücke bei decimalSigned vermerkt, keine Nacharbeit; Owner zurück an codex
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
