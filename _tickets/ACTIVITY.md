@@ -1,5 +1,8 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-27 10:35:28 CEST · claude · prüft T-53 erneut auf Mikes Auftrag und erarbeitet konkrete Änderungsvorschläge zum Konzept (Umfang, Zeitplan, Stimme, Lizenz)
+- 2026-09-27 10:35:02 CEST · codex-observer · Hat Abschluss und Archivierung von T-51 und T-52 mit den Reviewurteilen und Nutzerbestätigungen abgeglichen. Wartet im Observer-Scheduler auf Änderungen; T-53 bleibt nach Konzeptprüfung in der Produktion pausiert.
+- 2026-09-27 10:33:55 CEST · codex · hat T-52 nach Claudes Freigabe und Mikes Bestätigung „T-52 passt“ archiviert. Die Kette T-51 → T-52 ist abgeschlossen; das Board steht für Coder/Verifier auf idle.
 - 2026-09-27 10:31:15 CEST · claude · T-52 Runde 1 technisch freigegeben (approved): einzeilige Routenänderung gegen SettingsView-Tab-Logik verifiziert, 62/793 Tests reproduziert, Doku-Abgleich bestätigt; Owner zurück an codex
 - 2026-09-27 10:29:19 CEST · claude · beginnt T-52 Runde 1: prüft API-Link direkt zum Status-Tab in der Statuszeile (Fassung 031d0e0)
 - 2026-09-27 10:28:48 CEST · codex · hat T-52 umgesetzt: Die StockInfo-Adresse öffnet direkt Einstellungen → Status. Klicks und Enter im Browser geprüft, 793 Tests, Lint und Typecheck grün; Übergabe an claude.
@@ -47,8 +50,5 @@
 - 2026-09-27 09:21:33 CEST · codex · T-51 als unmittelbaren Folgeauftrag nach T-50 eingeplant: relative Bandabweichung im Rebalancing sichtbar machen. Warte auf die unabhängige Prüfung der Symbolkorrektur von T-50; danach beginnt T-51 ohne erneute Rückfrage.
 - 2026-09-27 09:18:38 CEST · codex · T-50 korrigiert: StockInfo-GitHub-Symbol zwischen Herkunft und Depot mit Trennpunkten. Desktop/mobil geprüft, 783 Tests sowie Lint/Typecheck grün; Runde 2 an claude übergeben.
 - 2026-09-27 09:15:58 CEST · codex · T-50 in Nacharbeit: Ersetze den Textlink durch das StockInfo-GitHub-Symbol zwischen Herkunft und Depot, einschließlich der Trennpunkte. Prüfe die genaue Reihenfolge gegen die Referenz.
-- 2026-09-27 09:15:02 CEST · codex-observer · T-50-Freigabe abgeglichen: unabhängige Pflichtprüfungen und Grenzen der Browsernachweise sind dokumentiert; Mikes Abschluss bleibt offen. T-51 ist erfasst, aber nicht als aktiver Implementierungsauftrag zugeordnet.
-- 2026-09-27 09:10:52 CEST · claude · T-50 Runde 1 technisch freigegeben (approved): Diff, Pflichtprüfungen (61/783 Tests, Lint, Typecheck) und Doku-Abgleich bestätigt; Owner zurück an codex, Mikes Abschlussbestätigung steht aus
-- 2026-09-27 09:07:49 CEST · codex-observer · Erfasst T-51 in Doing: relative Bandabweichung im Rebalancing als sichtbare Zahl wie im Dashboard. T-50 bleibt der aktive Reviewauftrag.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

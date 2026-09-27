@@ -21,15 +21,19 @@ StockPortfolio; anschließend die Kursversorgung durch StockInfo.
 
 **Stand:** Konzept von `claude` gegengeprüft und freigegeben, mit einer
 Ergänzung: die macOS-Bildschirmaufnahme-Berechtigung muss vor der
-tatsächlichen Aufnahme erteilt sein (siehe „Konzeptprüfung“ unten).
+tatsächlichen Aufnahme erteilt sein. Auf Mikes ausdrücklichen Auftrag
+ergänzt `claude` zusätzlich sieben Änderungsvorschläge zu Umfang, Zeitplan,
+Stimme, Untertiteln und Lizenzfragen (siehe „Änderungsvorschläge“ unten) —
+offen zur Abstimmung mit codex/Observer, noch keine Entscheidung.
 **Die Produktion bleibt pausiert.** Auf „Klingt gut“ folgte „Warte noch“
 und danach der Auftrag zur Ticketanlage mit Gegenprüfung.
 Noch keine neuen Screenshots, Sprachaufnahmen oder Videos erstellt.
-Die Konzeptprüfung hebt den Produktionsstopp nicht auf.
+Weder Konzeptprüfung noch Änderungsvorschläge heben den Produktionsstopp auf.
 
 Für Mike steht jetzt keine Rückfrage an. Vor Wiederaufnahme der Produktion
 ist weiterhin Mikes Startsignal erforderlich. Die bestehende Produktarbeit
-T-51 → T-52 wird durch dieses Ticket nicht umpriorisiert.
+T-51 → T-52 ist inzwischen abgeschlossen; dieses Ticket priorisiert sie
+nicht um.
 
 ## Auftrag und bisherige Entscheidungen
 
@@ -315,9 +319,64 @@ Konzept; keine Aufnahme, kein Rendern, keine Aufhebung des Produktionsstopps.
 (Bildschirmaufnahme-Berechtigung) vor dem eigentlichen Aufnahmeschritt.
 Kein Blocker für den Start nach Mikes Startsignal.
 
+### Änderungsvorschläge · claude · 2026-09-27
+
+Auf Mikes ausdrücklichen Auftrag ein zweiter, ergänzender Durchgang nach der
+reinen Faktenprüfung oben. Kein neuer Befund an bereits Geprüftem; das sind
+Vorschläge zur Abstimmung mit codex/Observer, keine Entscheidungen.
+
+1. **Umfang für „nächste Woche" realistisch staffeln.** Der siebenstufige
+   Ablauf (Geschichte → Demo → Fassung einfrieren → Aufnehmen → Probeclip →
+   gebündeltes Feedback → fertiges Paket) plus zwei Blogentwürfe und ein
+   ~3-Minuten-Video mit Untertiteln ist in einer Woche mit nur einer
+   Feedbackrunde ambitioniert. Vorschlag: Woche 1 liefert verbindlich den
+   Probeclip plus einen Blogentwurf (StockPortfolio); das zweite
+   Blogposting (StockInfo) und das vollständige Video folgen nach Mikes
+   Rückmeldung zum Probeclip als eigener Schritt, nicht als Teil derselben
+   Deadline. Reduziert das Risiko, dass ein knapper Zeitrahmen die
+   Bildschirmzeit für Sorgfalt bei Zahlen/Text einschränkt.
+2. **Stabile Fassung jetzt konkret benennen.** Aktuell ist kein
+   Coder-/Verifier-Auftrag aktiv (T-51 → T-52 sind abgeschlossen) — ein
+   günstiger Moment. Vorschlag: bei Aufnahmebeginn den exakten Commit-Hash
+   beider Repos im Ticket festhalten und STATUS.md auf `idle`/keinen aktiven
+   Auftrag prüfen, bevor recordet wird. Verhindert, dass zwischen Aufnahme
+   und Feedback neue Tickets (wie bei T-51 mit acht Runden zuletzt) die
+   gezeigte Oberfläche veralten lassen.
+3. **Lizenzfrage bei der macOS-Systemstimme klären, nicht nur die Qualität.**
+   „Anna" & Co. sind für die lokale Bedienungshilfe gedacht; ob Apples
+   Nutzungsbedingungen die Verwendung der synthetisierten Sprache in einem
+   öffentlich verbreiteten Video erlauben, ist ungeprüft. Für den internen
+   Probeclip unkritisch, vor der Veröffentlichung des fertigen Videos aber
+   zu klären — sonst wiederholt sich hier dieselbe Art Lücke, die bei den
+   SVG-Icons in T-51 mehrere Runden gekostet hat (siehe SP-CX-05 und die
+   Lucide-Herkunftsklärung).
+4. **Mehr als eine Stimme im Probeclip gegenprüfen.** `say -v '?'` liefert
+   acht deutsche Stimmen (Anna plus sieben weitere: Eddy, Flo, Grandma,
+   Grandpa, Reed, Rocko, Sandy, Shelley), nicht nur Anna. Vorschlag: zwei
+   bis drei Kandidatinnen im selben Probeclip-Text gegenüberstellen, statt
+   sich vorab auf eine festzulegen — eine spätere Korrektur allein wegen der
+   Stimme würde sonst denselben Rückmeldezyklus ein zweites Mal brauchen.
+5. **Untertitel aus dem Sprechertext erzeugen, nicht per Nachtranskription.**
+   Der Text für `say` steht vorab fest; daraus lassen sich exakte Untertitel
+   ableiten. Eine nachträgliche Spracherkennung riskiert Fehler gerade bei
+   App-/Fachbegriffen (StockInfo, ISIN, Rebalancing, Toleranzband).
+6. **Sichtung von StockInfo für Szene 4 von der Produktionssperre trennen.**
+   Die konkrete StockInfo-Szene ist bewusst offen, „bis die App gesichtet
+   ist" — unklar, ob dieses Sichten (ohne Aufnahme) schon unter den
+   Produktionsstopp fällt oder als reine Recherche vorher stattfinden darf.
+   Vorschlag: Sichten ausdrücklich als Vorbereitung ohne Aufnahmen erlauben,
+   damit die Szene beim Startsignal nicht neu erkundet werden muss.
+7. **Zielauflösung/-seitenverhältnis jetzt festlegen**, auch ohne feste
+   Plattform: 1920 × 1080, 16:9 ist ein verbreiteter, plattformunabhängiger
+   Standard. Vermeidet ein erneutes Rendern, sobald Blog oder Kanal feststehen.
+
+Keiner dieser Punkte ändert das „Konzept freigegeben"-Urteil oben oder hebt
+den Produktionsstopp auf. Zur Abstimmung mit codex/Observer vorgelegt.
+
 ### Auflösung
 
-Konzept zur Gegenprüfung erfasst und durch `claude` geprüft (siehe oben).
+Konzept zur Gegenprüfung erfasst und durch `claude` geprüft (siehe oben);
+sieben Änderungsvorschläge ergänzt, offen zur Abstimmung mit codex/Observer.
 Produktion auf Mikes Wunsch weiterhin pausiert; keine Medienfreigabe und
 keine Veröffentlichung erfolgt. Start der Produktion braucht weiterhin
 Mikes ausdrückliches Startsignal.
