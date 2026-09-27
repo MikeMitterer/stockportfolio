@@ -6,8 +6,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **Aktiver Auftrag: [T-51 · Relative Bandabweichung im Rebalancing](30-doing/T-51-rebalancing-bandabweichung-als-zahl.md).**
-Mike hat T-51 unmittelbar nach T-50 beauftragt. Umsetzung und Eigenprüfung
-sind abgeschlossen; Verifier `claude` ist für Runde 1 am Zug.
+Mike hat T-51 unmittelbar nach T-50 beauftragt. Die Tabellenüberschriften sind gekürzt und mit Erklärungen ergänzt.
+Verifier `claude` ist für die neue Übergabe in Runde 2 am Zug.
 Danach folgt auf Mikes Auftrag „Nach T-51 kommt T-52 im Anschluss“
 [T-52 · API-Link direkt zum Status-Tab](30-doing/T-52-statuszeile-api-link-zum-status-tab.md).
 
@@ -34,7 +34,8 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-51 ist zur unabhängigen Prüfung übergeben. Die letzte Prüfung von T-50
+T-51 ist mit den ergänzten Headern in Runde 2 zur Prüfung übergeben.
+Runde 1 zu `ae8e83c` wurde ohne Prüfurteil zurückgenommen. Die letzte Prüfung von T-50
 bleibt in `last_reviewed_*` erhalten.
 
 - `implementer`: `codex`
@@ -42,8 +43,8 @@ bleibt in `last_reviewed_*` erhalten.
 - `observer`: `codex-observer`
 - `phase`: `ready_for_review`
 - `ticket`: `T-51-rebalancing-bandabweichung-als-zahl.md`
-- `handoff_commit`: `ae8e83c8174cbaf112f3565073e1a1128eea0a54`
-- `review_round`: `1`
+- `handoff_commit`: `45f532d9a350c0355b993c0d8eae3e76fa76b54f`
+- `review_round`: `2`
 - `owner`: `claude`
 - `updated_at`: `2026-09-27`
 - `last_reviewed_ticket`: `T-50-github-link-statuszeile.md`
@@ -229,21 +230,22 @@ Keine unverarbeitete Nachricht.
 
 ## OUTBOX → Verifier
 
-**codex → claude · 2026-09-27 · T-51, Runde 1:** Bitte Fassung
-`ae8e83c8174cbaf112f3565073e1a1128eea0a54` unabhängig prüfen. Relative
-Bandabweichung wie im Dashboard als Zahl, Anteil darunter, Prozentpunkte
-daneben, Ziel null ausdrücklich undefiniert. Mikes Nachträge sind enthalten:
-IST-Prozentwert ohne Umbruch, Anteil-Beschriftung 11 px, relative Zahl nach
-Vorzeichen grün/rot unabhängig von der Bandfarbe. Null bleibt neutral.
+**codex → claude · 2026-09-27 · T-51, Runde 2:** Bitte Fassung
+`45f532d9a350c0355b993c0d8eae3e76fa76b54f` unabhängig prüfen. Runde 1
+wurde vor Prüfurteil wegen neuer Nutzerwünsche zurückgenommen. Gesamtumfang:
+relative Zahl am Balken, Anteil darunter, Prozentpunkte daneben, erklärtes
+Ziel null, Vorzeichenfarben, kleinere Anteil-Beschriftung und IST ohne Umbruch.
 
-Eigene Belege: 793 Tests / 62 Dateien, Lint und Typecheck erfolgreich;
-zehn Komponententests mit echten Stores/Rechnung, injizierter Cache-Hydrierung
-und fake-indexeddb. Chrome mit synthetischem Depotzustand und vorhandenem
-StockInfo-Testserver: Dashboard-Vergleich, Trade-Eingabe, Ziel null, DE/EN;
-Nachträge bei 1440 und 800 px geprüft. Details und Grenzen im Ticket.
-README erklärt die Werte und Farben; Containeranleitung bleibt zutreffend.
-SP-CX-05 gelesen und Referenzvergleich durchgeführt. Nach Freigabe folgt T-52;
-Mikes Abschlussbestätigung für T-51 bleibt separat offen.
+Neu: „Rel. Abw.“ und „Abw. Ziel“ mit Erklärungen nach dem DELTA-Muster;
+„Kauf / Verkauf“ auf Mikes Korrektur erhalten, mit Popup für positive Kauf-
+und negative Verkaufswerte. Alle vier Tooltip-Header bleiben einzeilig.
+Alle Texte in DE/EN-Katalogen. Chrome bei 800 px: Popups tatsächlich per
+Hover geöffnet, Übersetzungen und einzeilige Header geprüft. 793 Tests,
+Lint und Typecheck auch nach der letzten Umbruchsänderung erfolgreich.
+
+Belege, synthetischer Browserzustand, Dashboard-Vergleich und Doku-Abgleich
+im Ticket. README ergänzt; Containeranleitung weiterhin zutreffend. SP-CX-05
+angewendet. Anschließend folgt T-52; menschlicher Abschluss T-51 bleibt offen.
 
 **codex-observer → claude · 2026-09-27 · T-50 / SP-CX-05:** Die lokale
 Fall-Lesson ist angelegt (Format 1, 2026-09-27); der Hinweis aus Runde 2 auf
