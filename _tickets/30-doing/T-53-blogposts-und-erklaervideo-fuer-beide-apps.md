@@ -1,8 +1,10 @@
-# T-53 · StockPortfolio und StockInfo mit Blogposts und Video vorstellen
+# T-53 · StockInfo und StockPortfolio mit Blogposts und zwei Videos vorstellen
 
 Mike möchte StockPortfolio und StockInfo in der Woche ab dem 28. September
 2026 in einem oder zwei Blogposts vorstellen, möglichst mit einem erklärten
-Video. **Die KI soll Vorbereitung, Aufnahmen, Texte und Schnitt übernehmen.**
+Video. Auf Mikes jüngsten Vorschlag wird das Konzept auf zwei aufeinander
+aufbauende Videos ausgerichtet: StockInfo zuerst, danach StockPortfolio.
+**Die KI soll Vorbereitung, Aufnahmen, Texte und Schnitt übernehmen.**
 Mikes Arbeit soll sich auf wenige gebündelte Rückmeldungen beschränken.
 
 **Zentrale Aussage der Story: Deine Depotdaten bleiben in deinem Browser.**
@@ -15,9 +17,12 @@ verständlich werden, einschließlich des Probeclips.
 Wer den Browser wechselt, kann sein Depot als Datei mitnehmen. Das ergänzt
 die lokale Datenhaltung um einen konkreten, leicht erklärbaren Nutzen.
 
-Eine zusammenhängende Vorführung liefert die Bilder für beide Formate:
-Depotübersicht, relative Abweichung und Rebalancing-Simulation in
-StockPortfolio; anschließend die Kursversorgung durch StockInfo.
+**StockInfo ist die Datenbasis für StockPortfolio.** Wertpapiere werden aus
+dem von StockInfo gelieferten Instrumentbestand ausgewählt; beim Hinzufügen
+muss außerdem ein eindeutiger gültiger Kursabruf gelingen. Bestände und Ziele
+ergänzt der Nutzer lokal in StockPortfolio. Das Verrechnungskonto ist die
+Ausnahme: Es wird lokal angelegt und braucht keinen StockInfo-Kurs.
+Dasselbe Demo-Instrument verbindet beide Videos sichtbar miteinander.
 
 **Stand:** Das ursprüngliche Konzept ist durch `claude` gegengeprüft und
 freigegeben. Seine sieben Änderungsvorschläge sind durch `codex-observer`
@@ -26,7 +31,13 @@ Die danach ergänzten Datenschutz-/Testdatenvorgaben, die vereinfachte
 Rebalancing-Szene und die Werkzeugoptionen (Filmora/HeyGen/ElevenLabs) sind
 von `claude` geprüft und inhaltlich freigegeben, mit zwei nicht blockierenden
 Ergänzungsvorschlägen (Metadaten-Check, Datenschutzmaßstab auch für die
-StockInfo-Szene). Die Zielwoche und der gewünschte Umfang bleiben erhalten.
+StockInfo-Szene). Beide sind durch `codex-observer` unten konkretisiert und
+in die Aufnahmevorgaben übernommen. Der Story-Abgleich ergänzt den Übergang
+von der unverbindlichen Simulation zum Backup des tatsächlichen Demobestands.
+Die Zielwoche und der gewünschte Umfang bleiben erhalten.
+Die neue Aufteilung in zwei Videos ersetzt den bisherigen gemeinsamen
+Drei-Minuten-Film als Konzept. Claudes frühere Urteile betreffen die jeweils
+damals vorliegende Fassung; die neue Aufteilung ist noch nicht gegengeprüft.
 **Mike schließt Systemstimmen ausdrücklich aus, auch für den Probeclip; das
 persönliche Portfolio darf unter keinen Umständen gezeigt werden.**
 Aufnahmeberechtigungen hängen vom tatsächlich gewählten Werkzeug ab.
@@ -78,6 +89,18 @@ werden - nichts kompliziertes einfach einen simulierten verkauf bzw. kauf“.
 Eine einfache Kauf- oder Verkaufssimulation ist damit verbindlicher Teil
 der Vorführung; keine ausführliche Strategie- oder Finanzierungserklärung.
 
+Neue Story-Richtung von Mike, 2026-09-27: StockInfo als Basis für StockPortfolio
+und die Übernahme der dort verfügbaren Assets deutlich zeigen. Sein Vorschlag:
+zwei Videos, zuerst StockInfo und darauf aufbauend StockPortfolio. Der Observer
+empfiehlt diese Aufteilung und arbeitet sie hier als aktuellen Konzeptvorschlag
+aus. Daraus folgt keine Aufhebung des Produktionsstopps.
+
+Editor-Vorgabe von Mike, 2026-09-27: In StockInfo zeigen, dass bestimmte
+Felder durch den Nutzer gepflegt werden können. StockPortfolio übernimmt
+diese Daten ohne lokale Bearbeitung dieser Quellfelder. Dort zusätzlich
+den Editor für die eigenen Depotangaben vorführen. „Fix übernommen“ meint
+hier schreibgeschützt, nicht dauerhaft unveränderlich trotz Kurs-/Datenabruf.
+
 Die Zielgruppe wurde noch nicht beantwortet. Arbeitsannahme für den Entwurf:
 deutschsprachige Privatanleger mit Interesse an selbst betriebenen Tools;
 ein vertiefender StockInfo-Beitrag kann Entwickler und Selfhosting-Nutzer
@@ -90,16 +113,19 @@ StockInfo bleibt ein eigenständiges Repository; dort sind für diesen
 Kommunikationsauftrag keine Produktänderungen vorgesehen. Rollen und
 aktiver Produktauftrag stehen weiterhin ausschließlich in STATUS.md.
 
-- Ein oder zwei veröffentlichungsfertige Blogentwürfe. Empfehlung:
-  StockPortfolio anhand einer praktischen Aufgabe vorstellen; StockInfo
-  anschließend als eigenständig nutzbaren Kursdienst erklären.
+- Ein oder zwei veröffentlichungsfertige Blogentwürfe. Empfehlung: zwei
+  aufeinander verweisende Beiträge in derselben Reihenfolge wie die Videos,
+  zuerst StockInfo als Instrument- und Kursbasis, dann StockPortfolio als
+  darauf aufbauende Depotanwendung. Ein gemeinsamer Beitrag bleibt möglich.
 - Eine Serie echter, hochauflösender Screenshots mit Bildunterschriften
   und Alternativtexten. Gleiche Sprache, Theme und Fenstergröße verwenden.
 - Zuerst ein Probeclip von 30–45 Sekunden mit drei Szenen, Sprechertext und
   vorläufiger deutscher Stimme. Er dient der Beurteilung von Tempo,
   Bildgestaltung und Erklärungstiefe.
-- Nach Rückmeldung zum Probeclip ein gemeinsames Erklärvideo von ungefähr
-  drei Minuten als MP4, mit Untertiteln, Sprechertext und Vorschaubild.
+- Nach Rückmeldung zum Probeclip zwei Erklärvideos als MP4, jeweils mit
+  Untertiteln, Sprechertext und Vorschaubild: StockInfo etwa zwei bis drei
+  Minuten, StockPortfolio etwa drei bis dreieinhalb Minuten einschließlich
+  Editor. Die Laufzeiten sind Richtwerte.
 - Die verwendeten Originalbilder und die Render-Anleitung mitliefern,
   damit spätere Korrekturen nicht die gesamte Produktion wiederholen müssen.
 
@@ -149,7 +175,12 @@ Die Vorführung erfolgt ausschließlich mit dem Beispield­epot:
 3. Die Datei auswählen, die angezeigte Vorschau prüfen und die
    Wiederherstellung ausdrücklich bestätigen.
 4. Das übernommene Depot mit seinen Beständen und Zielanteilen zeigen.
-   Marktdaten bei Bedarf neu laden.
+   Marktdaten bei Bedarf aus derselben festgehaltenen Demoquelle neu laden.
+
+Vor dieser Szene die Rebalancing-Simulation löschen und zum unveränderten
+Demodepot zurückkehren. Die simulierte Transaktion wird weder gebucht noch
+als neuer Bestand gesichert. Der wiederhergestellte Bestand muss zum
+Ausgangsdepot passen; eine simulierte Nachher-Verteilung ist kein Backup-Inhalt.
 
 Das Backup enthält das aktive Depot, Einstellungen, die Auswahl ausgeblendeter
 Instrumente und gespeicherte Tageswerte. Es sichert nicht automatisch alle
@@ -192,6 +223,18 @@ als bereits durchgeführten Wechsel zwischen unterschiedlichen Browsern ausgeben
   Tabs, Benachrichtigungen, Dateinamen und Pfade dürfen ebenfalls nicht ins
   Bild geraten. Vor Weitergabe an externe Dienste und vor Veröffentlichung
   die konkreten Dateien auf persönliche Inhalte gegenprüfen.
+- **Dateimetadaten und StockInfo einbeziehen.** Bei den tatsächlich
+  weitergegebenen Bildern, Videos, Audio-, Untertitel- und Projektdateien
+  auch eingebettete Metadaten, Dateinamen und verknüpfte Pfade auf private
+  Namen, Geräte- oder Speicherangaben prüfen und solche Angaben entfernen.
+  Vorhandene KI-Herkunftsmarkierungen dabei erhalten; kein pauschales Löschen
+  sämtlicher Metadaten. Nach dem Filmora-/Render-Export erneut prüfen.
+  Bewusst veröffentlichte Angaben zum Demo-Datenstand bleiben möglich.
+  StockInfo nur in einer getrennten Demo-Instanz mit denselben festgelegten
+  Instrumenten und Kursdaten zeigen. Keine private Betriebsinstanz,
+  API-Schlüssel, Zugangsdaten, internen Hostnamen oder private Konfiguration
+  aufnehmen. Eine neutrale lokale Demo-Adresse und öffentliche Projektlinks
+  sind zulässig; ein pauschales Verbot jeder sichtbaren Adresse ist nicht nötig.
 - **Folgevideos verwenden dieselbe Basis.** Szenenbedingte Änderungen wie
   Rebalancing gehören zum dokumentierten Ablauf; danach den Ausgangszustand
   wiederherstellen. Benötigt ein neues Feature andere Daten, eine begründete
@@ -221,23 +264,76 @@ Testdatenpaket und Aufnahmeumgebung werden erst nach Mikes Startsignal erstellt.
 6. **Rückmeldung bündeln:** Mike erhält einen abspielbaren Clip statt
    einzelner Rückfragen zu jeder Szene. Rückmeldung auf Stimme, Tempo und
    Bildgestaltung konzentrieren; keine eigene Sprachaufnahme voraussetzen.
-7. **Paket fertigstellen:** Blogentwürfe und vollständiges Video aus dem
+7. **Paket fertigstellen:** Blogentwürfe und beide vollständigen Videos aus dem
    geprüften Material erzeugen. Dateien auf Wiedergabe, Bildqualität,
    Lautstärke und Synchronität prüfen und zur Gegenprüfung übergeben.
 
-### Vorgeschlagene Szenen
+### Roter Faden und vorgeschlagene Szenen
 
-| Szene | Aussage | Geplantes Bild |
-|---|---|---|
-| 1 · Überblick | Dein Depot bleibt im Browser; Verteilung und Zielanteile verstehen | StockPortfolio-Dashboard mit Beispieldaten und kurzer Einblendung zur lokalen Speicherung |
-| 2 · Abweichung | Relative Abweichung und Toleranzband unterscheiden | Lesbarer Ausschnitt mit Zahl und Balken |
-| 3 · Durchspielen | Einen einfachen Kauf oder Verkauf simulieren und seine Wirkung sehen | Rebalancing im EUR-Testdepot: Ausgangsverteilung, eine simulierte Transaktion, Verteilung und Abweichung danach |
-| 4 · Datenquelle | StockInfo liefert Kurse; persönliche Depotbestände bleiben in StockPortfolio im Browser | Tatsächlich vorhandene StockInfo-Ansicht mit nachvollziehbarem Bezug; einfache Darstellung des Datenflusses |
-| 5 · Mitnehmen | Lokale Daten per Backup sichern und im anderen Browser wiederherstellen | Export, Importvorschau und wiederhergestelltes Beispield­epot |
-| 6 · Einstieg | Wo beide Apps und ihre Anleitungen zu finden sind | Geprüfte Repository- und Dokumentationslinks |
+**Teil 1: StockInfo – die Instrumente und Kurse als Grundlage.**
+Die Leitfrage lautet: Woher kommen die Wertpapierdaten, mit denen wir später
+unser Depot betrachten? Etwa zwei bis drei Minuten, mit eigenem Nutzen und
+einem klaren Übergang zu StockPortfolio.
 
-Die ersten drei Szenen bilden den Probeclip. Die konkrete StockInfo-Szene
-wird erst nach Sichtung der App festgelegt; noch keine dortige Aufnahme behauptet.
+| Szene | Aussage und geplantes Bild |
+|---|---|
+| 1 · Aufgabe | StockInfo stellt Instrumente und Marktdaten bereit. Die eigene Instrumentübersicht mit festgelegten Demodaten zeigen. |
+| 2 · Beispielinstrument | Ein Instrument auswählen und Kurs, Währung und Datenstand verständlich zeigen; bei passender Demo kurz die Historie. |
+| 3 · Feld pflegen | Die Detailbearbeitung öffnen und ein tatsächlich manuell pflegbares Feld mit einem festgelegten Testwert ergänzen oder ändern. Speichern und den wirksamen Wert samt Herkunft zeigen. |
+| 4 · Bereitstellen | StockInfo macht diese Daten für andere Anwendungen verfügbar. Dasselbe Instrument samt gepflegtem Feld bleibt als Bezug sichtbar; keine technische API-Tour nötig. |
+| 5 · Übergang | Dieses Instrument verwenden wir im nächsten Video in StockPortfolio. StockInfo liefert die Wertpapierbasis; Stückzahlen und persönliche Ziele gehören erst ins lokale Depot. Links zu Anleitung und Teil 2. |
+
+Für die Feldszene einen Fall wählen, in dem der manuelle Wert tatsächlich
+wirksam wird, etwa ein zulässiges Detailfeld ohne gelieferten Quellenwert.
+StockInfo-README: Quellenwerte haben Vorrang, manuelle Werte füllen Lücken
+und bleiben bei Überdeckung gespeichert. Deshalb weder freie Bearbeitbarkeit
+aller Felder noch einen pauschalen Vorrang manueller Eingaben behaupten.
+Konkretes Feld und Eingabe anhand der festgehaltenen App-Fassung prüfen.
+Vor- und Nachzustand gehören zum versionierten Testdatenpaket; Teil 2 nutzt
+genau den Nachzustand dieses Feldes.
+
+**Teil 2: StockPortfolio – aus diesen Daten wird mein lokales Depot.**
+Ungefähr drei bis dreieinhalb Minuten einschließlich Editor. Mit einer kurzen Einordnung von StockInfo beginnen,
+damit auch direkt einsteigende Zuschauer folgen können; Teil 1 verlinken.
+
+| Szene / Richtzeit | Aussage und geplantes Bild |
+|---|---|
+| 1 · Grundlage / 0:00–0:20 | StockPortfolio nutzt StockInfo. Dasselbe Demo-Instrument aus Teil 1 wiedererkennen; Depotdaten bleiben im Browser. |
+| 2 · Übernehmen / 0:20–0:55 | Im Dialog ein von StockInfo verfügbares Wertpapier auswählen, gültigen Kursabruf abwarten und Testbestand/Zielanteil hinzufügen. Keine frei erfundene Wertpapierposition ohne StockInfo anbieten. |
+| 3 · Daten und Editor / 0:55–1:20 | Unter Informationen denselben in StockInfo gepflegten Wert schreibgeschützt zeigen. Danach Positionseditor öffnen: eigene Depotangaben wie Stückzahl, Zielanteil, Gruppe oder Notiz sind lokal bearbeitbar. Eine vorbereitete Testnotiz speichern. |
+| 4 · Verstehen / 1:20–1:40 | Das feste EUR-Testdepot zeigen; eine Position liegt neben ihrem Ziel. Zahl und Band kurz erklären. |
+| 5 · Durchspielen / 1:40–2:25 | Einen einfachen Kauf oder Verkauf simulieren, Verteilung und Abweichung vergleichen. Plan löschen; tatsächlicher Depotbestand bleibt unverändert. |
+| 6 · Mitnehmen / 2:25–3:10 | Dieses Demodepot exportieren und in einem getrennten leeren Browser nach Vorschau und Bestätigung wiederherstellen. Dieselben Bestände und Ziele zeigen. |
+| 7 · Einstieg / 3:10–3:25 | Projekt und Anleitung verlinken; StockInfo ist Voraussetzung und Teil 1 erklärt die Grundlage. |
+
+Der Positionseditor bearbeitet echte lokale Depotangaben; er ist von der
+anschließenden unverbindlichen Rebalancing-Simulation zu unterscheiden.
+Übernommene Instrumentkennungen und Detailwerte werden dort nicht editiert.
+Eine lokale Anzeigenbezeichnung ist keine Änderung der StockInfo-Stammdaten.
+Beim erneuten Abruf können aktualisierte StockInfo-Werte übernommen werden;
+keine Live-Synchronisierung oder dauerhaft eingefrorene Daten versprechen.
+
+Für die Hinzufügen-Szene einen dokumentierten Vorzustand der festen Testbasis
+verwenden, in dem genau das gezeigte Instrument noch fehlt. Nach dem Hinzufügen
+und der anschließenden Editor-Szene muss das kanonische Demodepot erreicht sein. Damit bleiben die späteren
+Rebalancing- und Backup-Szenen sowie Folgevideos reproduzierbar. Keine
+ungeplanten Änderungen an der Testbasis und keine neuen Zufallsdaten.
+Für den Editor zusätzlich die noch fehlende Testnotiz als festen Vorzustand
+dokumentieren; nach Speichern entspricht auch sie der kanonischen Testbasis.
+
+Ein gemeinsamer Probeclip von 30–45 Sekunden testet die Verbindung und die
+Gestaltung beider Filme: Instrument in StockInfo → Auswahl in StockPortfolio
+→ kurzer Blick auf die Simulation im EUR-Testdepot. Die Einblendung zur
+lokalen Datenhaltung bleibt enthalten. Das ist ein gekürzter Ausschnitt,
+keine vollständige Drei-Szenen-Anleitung und kein zusätzlicher Vollfilm.
+Die Laufzeiten sind Richtwerte; tatsächliche Bedienwege und Lesbarkeit erst
+an den Aufnahmen prüfen. Der konkrete StockInfo-Ausschnitt bleibt bis zur
+Demo-Sichtung offen, keine dortige Bedienung oder Aufnahme behauptet.
+
+Für die Blogbeiträge dieselbe Reihenfolge und gegenseitige Verweise verwenden.
+Bei einem gemeinsamen Beitrag folgt auf StockInfo die darauf aufbauende
+Depotvorführung. Beide Filme bleiben bei ihrem jeweiligen Nutzen; ausführliche
+Installation, Finanzierungsvarianten und Formeln gehören in die Anleitungen.
 
 **Rebalancing bewusst einfach vorführen:** Eine Position aus dem festen
 EUR-Testdatensatz auswählen, die Ausgangslage kurz zeigen und einen kleinen,
@@ -248,6 +344,71 @@ oder eine solche behaupten. Die Erklärung von „Decken aus“ und komplexen
 Finanzierungsvarianten ist für diese Szene nicht erforderlich. Instrument,
 Menge beziehungsweise Betrag und Vorher-/Nachher-Werte im Szenenablauf
 festhalten, damit dieselbe Vorführung später reproduzierbar bleibt.
+
+### Feature-Sichtung der Done-Tickets · codex-observer · 2026-09-27
+
+Auf Mikes Auftrag das Inventar und die Zweckbeschreibungen von 45 Ticketdateien
+in StockPortfolio und 77 in StockInfo unter `40-done/` gesichtet; relevante
+Funktionskandidaten anhand ihrer Umsetzungs-/Prüfabschnitte und der aktuellen
+Anleitungen vertieft. Keine erneute Produktabnahme oder vollständige Wiederholung
+aller historischen Reviews. StockInfo ausschließlich gelesen, dort keine Rolle
+übernommen und keine Datei geändert. Die folgenden Ergänzungen sind priorisierte
+Empfehlungen für die Story, keine Aufnahme- oder Produktionsfreigabe.
+
+**Für die ersten Videos besonders geeignet:**
+
+| App / Feature | Nutzen und konkrete Szene | Ticketbezug |
+|---|---|---|
+| StockInfo: Instrument aufnehmen und Handelsplatz erkennen | Bisher beginnt Teil 1 bei einem vorhandenen Instrument. Besser die Aufnahme per ISIN oder Symbol zeigen, Handelsplatz und Kurswährung benennen und anschließend genau dieses Instrument an StockPortfolio weiterreichen. Bei abweichender Börse gibt es eine Entscheidung vor dem Speichern; einen solchen Sonderfall nur zeigen, wenn er die kurze Demo verständlicher macht. | StockInfo T-21, T-54, T-65, T-67 |
+| StockInfo: Kursverlauf mit Zeitraum und Veränderung | Die bisher optionale Historie als kurze Kernszene vorsehen: Instrument auswählen, einen Zeitraum und einen Datenpunkt zeigen. Das vermittelt mehr Nutzen als eine reine Kurstabelle. | StockInfo T-08; README „Dashboard“ |
+| StockInfo: Datenherkunft und Erweiterbarkeit | Bei der bereits geplanten Feldpflege Quelle beziehungsweise manuellen Ursprung zeigen. In einem Satz erwähnen: Plugins können Quellen, Felder und unterstützte Handelsplätze ergänzen. Kein Plugin-Installationskurs im Einstiegsfilm. | StockInfo T-23, T-26, T-30/T-64/T-67; StockPortfolio T-40 |
+| StockPortfolio: Gruppen und Positionschart | In der Übersichts-/Detailszene Aktien, ETFs, Anleihen, Geldmarkt und Cash erkennbar trennen; Gruppensummen kurz zeigen. Beim Öffnen der Position den Kursverlauf mit Zeitraumwahl zeigen, dann zu Informationen und Editor wechseln. | StockPortfolio T-08, T-23, T-43/T-46, T-44 |
+
+**Kurze Zusatzszenen oder Blogvertiefung:**
+
+| Feature | Empfehlung und Grenze | Ticketbezug |
+|---|---|---|
+| Mehrere getrennte Depots | Kurz zeigen oder erwähnen: etwa „Demo Hauptdepot“ und „Demo Sparplan“, mit erkennbarem aktivem Depotnamen. Keine persönlichen Namen oder Daten. Beide Zustände fest im Testpaket halten; das Backup enthält jeweils nur das aktive Depot. | StockPortfolio T-21; README „Several portfolios“ |
+| Fremdwährungskurse in EUR bewerten | Ein USD-notiertes Testinstrument mit Originalkurs und umgerechnetem EUR-Wert wäre ein guter zusätzlicher Beleg für die Zusammenarbeit. Standard-/Basiswährung bleibt EUR; kein Währungswechsel für die Demo. StockInfo liefert den Devisenkurs. Nur aufnehmen, wenn passende feste Testdaten und genügend Erklärzeit vorhanden sind. | StockInfo T-01/T-06/T-10; StockPortfolio T-38 |
+| Datenbank-Backup in StockInfo | Als Betriebsfunktion kurz nennen oder im Blog zeigen. Vom Browser-Backup in StockPortfolio ausdrücklich unterscheiden: getrennte Daten und getrennte Sicherungen. Kein zusätzlicher vollständiger Restore-Ablauf im kurzen StockInfo-Video nötig. | StockInfo T-47/T-50/T-51; StockPortfolio T-20/T-54 |
+| Kursalter und Aktualisieren | Im Bild einen Datenstand zeigen; der erneute Abruf ist vorhanden. Feste Demoquelle verwenden, damit derselbe Datensatz erhalten bleibt; keine Echtzeitversorgung versprechen. | StockInfo T-43; StockPortfolio T-30 bis T-34 |
+
+**Für spätere Vertiefung aufbewahren:** Depotwert-Verlauf, Quellenkonfiguration
+und YAML-Fallback, Plugin-Entwicklung, Devisenrechner, externe Verweise sowie
+Sicherheitspuffer und Investitionsreserve. Mobile Ansicht, Sprache und Themes
+eignen sich bei Bedarf als kurze Schlussmontage; sie sollen die fachliche
+Story nicht verdrängen. Keine zusätzliche komplexe Rebalancing-Erklärung.
+
+Wichtige Grenzen aus dem Abgleich:
+
+- StockPortfolio T-26/T-29: gespeicherte Tageswerte und gerechneten Rückblick
+  auseinanderhalten. Rückblick bewertet den heutigen Bestand mit früheren
+  Kursen; weder persönliche historische Rendite noch Transaktionsbuchhaltung
+  behaupten. Bei benötigten historischen FX ist der Rückblick laut heutigem
+  README ausgeblendet. Daher für den Einstieg den einfacheren Positionschart
+  bevorzugen; dieser bleibt in der Kurswährung.
+- StockPortfolio T-22 ist durch T-38 überholt: Fremdwährungspositionen werden
+  heute bei gültigen FX-Kursen umgerechnet, nicht grundsätzlich ausgeschlossen.
+  T-21s alte Aussage über gemeinsam geltende Geldschwellen ist ebenfalls
+  überholt: Basiswährung, Sicherheitspuffer und Mindesthandelsgröße gelten
+  laut aktuellem README je Depot.
+- StockInfo T-19 wurde mit verworfenem Korrekturweg abgeschlossen. Kein
+  nachträgliches Umstellen des Handelsplatzes am bestehenden Asset vorführen.
+  T-64 verweist für den ergänzten Plugin-Hinweis auf T-67; keine zweite Funktion
+  aus dem Ticketzuschnitt ableiten. Done ist kein Nachweis jedes ursprünglichen
+  Wunsches. Einige archivierte Kopftexte nennen noch damalige offene Arbeit.
+- Dynamische Zusatzfelder sind Anzeigedaten; ihre Übernahme erweitert nicht
+  automatisch Bewertung oder Rebalancing-Formeln. Keine weltweite vollständige
+  Marktabdeckung allein aus der Plugin-Erweiterbarkeit versprechen.
+
+**Doku-Abgleich:** Projekt- und Docker-README beider Apps gelesen bzw. gezielt
+gegen die Kandidaten abgeglichen. Maßgeblich sind die aktuellen Abschnitte
+„Position information“, „Price history“, „Value history“, „Portfolio base
+currency“, „Several portfolios“ sowie StockInfos Funktions-/Dashboard- und
+Quellenbeschreibung. Quellen und konkrete Aufnahmebelege vor Produktion
+erneut an den festgehaltenen Fassungen abgleichen. Die Empfehlungen ändern
+keine Produktzusagen; keine README-, Rollen- oder Konventionsänderung nötig.
+Keine bisherige Medienprüfung wird dadurch als ausgeführt markiert.
 
 ### Technik und bekannter Vorbereitungsstand
 
@@ -330,6 +491,47 @@ belegten Browserprofil. Ein weiterer neuer Tab allein ist deshalb keine
 belegte Lösung; zuerst die Verbindung beziehungsweise ein eigenes Profil
 klären. Claude-in-Chrome ist ein anderer Adapter.
 
+### KI-Kennzeichnung: Recherche vom 2026-09-27
+
+Auf Mikes Auftrag anhand offizieller EU-Quellen recherchiert. Artikel 50
+gilt seit 2. August 2026; keine pauschale sichtbare Kennzeichnungspflicht
+für jeden KI-unterstützten Inhalt. Anbieterpflichten zur maschinenlesbaren
+Markierung und Offenlegungspflichten beim Veröffentlichen unterscheiden.
+Die begrenzte Übergangsfrist für bestimmte ältere Systeme bei der
+Anbietermarkierung verschiebt unsere mögliche Offenlegungspflicht nicht.
+[EU-Kommission: Überblick](https://digital-strategy.ec.europa.eu/en/policies/guidelines-ai-transparency-obligations).
+
+Einordnung für dieses Paket, noch keine rechtliche Einzelfallfreigabe:
+Echte App-Aufnahmen werden durch automatisierten Schnitt nicht zu Deepfakes.
+Bei KI-Stimme oder Avatar die konkrete Wirkung prüfen: Entsteht der falsche
+Eindruck einer echten menschlichen Aufnahme? Der Anbietername allein
+entscheidet das nicht. Für fotorealistische Personenabbilder und geklonte
+Stimmen ist die Kennzeichnung besonders relevant.
+[RTR: Avatare und digitale Zwillinge](https://www.rtr.at/rtr/service/ki-servicestelle/faq/FAQ.de.html).
+
+Vorgeschlagene Umsetzung: Zu Beginn sichtbar und gut lesbar „Sprecherstimme
+KI-generiert. App-Aufnahmen mit Testdaten.“ Bei Avatar entsprechend
+„Avatar und Sprecherstimme KI-generiert.“ Bei reinem Audio den Hinweis
+hörbar geben. Bei einschlägiger Pflicht genügt ein versteckter Hinweis in
+der Beschreibung oder nur am Ende nicht.
+[Artikel 50 Abs. 4–5](https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50).
+
+Für Blogtexte greift eine besondere Pflicht bei Information über Themen
+öffentlichen Interesses; menschliche inhaltliche Prüfung oder redaktionelle
+Kontrolle plus redaktionelle Verantwortung können die Textausnahme begründen.
+Claude/Codex-Prüfung allein ist keine menschliche Prüfung. Freiwilliger
+Hinweis empfohlen: „Mit KI-Unterstützung erstellt.“ „Von Mike inhaltlich
+geprüft“ erst nach tatsächlicher Prüfung ergänzen. Rein persönliche,
+nichtberufliche Nutzung ist gesondert ausgenommen; diese Einordnung für
+Mikes Veröffentlichung ist nicht festgestellt.
+[EU-Kommission: FAQ](https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act).
+
+Endgültige Stimme/Avatar und Veröffentlichungskanal fehlen noch. Vor
+Veröffentlichung konkrete Kennzeichnung und zusätzliche Plattformregeln
+prüfen. Hinweise bleiben Gestaltungsvorschläge; keine Medienproduktion
+oder Veröffentlichung durch diese Recherche freigegeben. Doku-Abgleich:
+nur dieses Medienkonzept betroffen, keine Produktanleitung anzupassen.
+
 ## Gegenprüfung durch Claude
 
 **Jetzt zu prüfen ist das Konzept dieses Tickets, noch kein Medienprodukt.**
@@ -367,13 +569,16 @@ die Prüfungen der tatsächlichen Medien stehen noch aus.
 | 2 | Demo und Aufnahmebasis | Getrennter Kontext, ausschließlich künstliche Depotdaten, EUR als Standard-/Basiswährung, gekennzeichneter fester Marktdatenstand, festgehaltene App-Fassungen und Szenenliste | ➖ |
 | 3 | Probeclip ansehen und anhören | Abspielbare 30–45 Sekunden; drei verständliche Szenen, lesbare Oberfläche, synchroner Sprechertext; keine Systemstimme | ➖ |
 | 4 | Blogentwürfe und Aussagen abgleichen | Ein oder zwei vollständige Entwürfe; belegte Funktionen beider Apps, passende Bilder und Links | ➖ |
-| 5 | Fertiges Medienpaket prüfen | MP4, Untertitel, Vorschaubild, Originalscreenshots, Sprechertext und nachvollziehbarer Render-Aufruf vorhanden | ➖ |
+| 5 | Fertiges Medienpaket prüfen | Zwei MP4-Videos in Reihenfolge StockInfo → StockPortfolio, jeweils Untertitel, Vorschaubild, Originalscreenshots, Sprechertext und nachvollziehbarer Render-Ablauf vorhanden | ➖ |
 | 6 | Unabhängige Gegenprüfung der Medien | Claude benennt geprüfte Dateifassungen und bestätigt oder beanstandet Inhalt sowie Bild-/Tonqualität | ➖ |
 | 7 | Aussage zur lokalen Speicherung prüfen | Blogeinstieg und Probeclip tragen Mikes Kernaussage; Speicher- und Anfragepfade belegen die Abgrenzung zwischen Depotdaten und Marktdatenanfragen; Backup und fehlende automatische Synchronisierung sind im vollständigen Paket erklärt | ➖ |
 | 8 | Backup und Restore beim Browserwechsel vorführen | JSON-Export des Beispield­epots, Vorschau und bestätigter Import in getrenntem Browser; Bestände und Ziele stimmen überein. Verwendete Browser sowie Grenzen des Backups dokumentiert | ➖ |
-| 9 | Persönliche Daten vollständig ausschließen | Vor Aufnahme dokumentierter Abgleich von Demoidentität und Datenherkunft; Claude prüft die konkreten Medien und weiterzugebenden Dateien auf persönliche Depotdaten und sonstige persönliche Bildinhalte. Kein persönliches Portfolio als Quelle, auch nicht verpixelt | ➖ |
+| 9 | Persönliche Daten vollständig ausschließen | Vor Aufnahme dokumentierter Abgleich von Demoidentität und Datenherkunft beider Apps; Claude prüft konkrete Medien, Metadaten, Dateinamen und verknüpfte Pfade vor Weitergabe/Veröffentlichung. Keine persönlichen Depotdaten, privaten Betriebsdetails oder Zugangsdaten; kein persönliches Portfolio als Quelle, auch nicht verpixelt | ➖ |
 | 10 | Identische Daten für Folgevideos wiederherstellen | Versioniertes Testdatenpaket samt Prüfsumme und Anleitung; erneutes Laden in leerem Demokontext ergibt dieselben Bestände, Ziele, EUR-Einstellung und sichtbaren Berechnungswerte. Kurse/FX/Historien zusätzlich zum Depot-Backup gesichert; Featurevarianten begründet, ursprüngliche Basis erhalten | ➖ |
 | 11 | Einfaches Rebalancing vorführen | Ein simulierter Kauf oder Verkauf im festen EUR-Testdepot; Ausgangslage, Eingabe und Wirkung auf Verteilung/Abweichung lesbar gezeigt. Als Simulation erklärt, keine echte Order; reproduzierbare Transaktion im Szenenablauf dokumentiert | ➖ |
+| 12 | Durchgehende Story und konsistente Zustände | Teil 1 zeigt StockInfo als Grundlage; Teil 2 zeigt die tatsächliche Wertpapierauswahl daraus samt gültigem Kursabruf. Cash-Ausnahme korrekt abgegrenzt. Dokumentierter Vorzustand führt zum kanonischen EUR-Testdepot; identisches Instrument und Kurs in beiden Filmen. Simulation ändert keine Bestände; Backup/Restore passen dazu. Ein Probeclip, zwei verständliche Vollvideos | ➖ |
+| 13 | KI-Kennzeichnung am konkreten Veröffentlichungsstand | Stimme/Avatar und Textnutzung rechtlich eingeordnet; nötiger Hinweis bei erster Wahrnehmung klar und zugänglich. Menschliche Redaktion nicht durch KI-Review ersetzt oder vorweg behauptet. KI-Herkunftsmarkierungen nach Export geprüft; Regeln des gewählten Kanals abgeglichen | ➖ |
+| 14 | Feldpflege und Depoteditor unterscheiden | Teil 1: zulässiges StockInfo-Feld bearbeiten und wirksamen manuellen Wert mit Herkunft zeigen; Quellenvorrang beachten. Teil 2: denselben Wert schreibgeschützt anzeigen, danach lokalen Positionseditor öffnen und Testnotiz speichern. Feldwert und Notiz passen zur festen Testbasis; Editor-Speicherung klar von Rebalancing-Simulation getrennt | ➖ |
 
 ### Side-Effects und Doku-Abgleich
 
@@ -663,7 +868,82 @@ Vorschlägen (Metadaten-Check, StockInfo-Szene explizit in den
 Datenschutzmaßstab einbeziehen). Kein Befund, der den Produktionsstopp
 oder die bisherigen Freigaben infrage stellt.
 
+### Story-Abgleich und Einordnung der neuen Hinweise · codex-observer · 2026-09-27
+
+Auf Mikes Auftrag Claudes jüngsten Abschnitt zur Datenschutz-/Werkzeugergänzung
+und das aktuelle Gesamtkonzept gelesen. **Die Story ist schlüssig, benötigt
+aber klare Übergänge statt einer Aufzählung von Funktionen.** Deshalb die
+Szenenfolge oben um Anlass, durchgehendes Instrument, Zeitvorschlag und den
+Rückweg aus der Simulation ergänzt. Noch kein Sprechertext produziert.
+
+Claudes beide Vorschläge übernommen: Metadaten ausdrücklich prüfen und
+denselben Schutz auf die StockInfo-Demo anwenden. Den Adressschutz auf private
+Betriebsdetails und Zugangsdaten präzisiert; neutrale Demo-Adressen und
+öffentliche Projektlinks dürfen sichtbar sein. Keine tatsächlich gefundenen
+privaten Daten oder bereits durchgeführte Medienprüfung behauptet.
+
+**Fachlicher Abgleich:** `README.md`, „Rebalancing is a simulation“, und
+`src/views/RebalancingView.vue` (`trades`, `targets`, `clearPlan`) bestätigen:
+Die Simulation verändert keine echten Depotbestände. Das Backup darf deshalb
+nicht plötzlich den simulierten Nachher-Bestand zeigen. Die Restore-Szene
+lädt Marktdaten ausschließlich aus derselben Demoquelle nach. Das schließt
+eine bisher offen gebliebene Verbindung zwischen Simulation, Backup und
+reproduzierbaren Zahlen, ohne Produktcode zu ändern.
+
+StockInfos `README.md`, Einleitung und „What can it do?“, belegen eine eigene
+Instrumentübersicht und Kursdarstellung. Szene 4 nutzt diese für denselben
+Demowert, anstatt die zweite App nur als Namen im Datenfluss zu erwähnen.
+Konkrete Bedienung und Bildausschnitt bleiben bis zur Wiederaufnahme offen.
+Die kurze Erklärung der Abweichung führt direkt zur Simulation; Details zu
+Formeln, Finanzierung und Installation überladen den Einstiegsfilm nicht.
+
+**Doku-Abgleich:** StockPortfolio-README („Rebalancing is a simulation“,
+„Where the data lives“) und Docker-README („Features“, „Data and backups“)
+passen zu diesen Aussagen. StockInfo-README nur als Quelle gelesen.
+Anpassung ausschließlich in T-53; keine neuen Produkt- oder Betriebszusagen,
+keine README-/Unraid- oder Konventionsänderung nötig. Bestehende Reviewurteile
+bleiben historisch erhalten; die jetzige Präzisierung ist ein Observer-Abgleich,
+keine zusätzliche unabhängige Medienfreigabe. Keine neue Lesson aus dieser
+einzelnen Konzeptpräzisierung abgeleitet.
+
+### Konzeptänderung: StockInfo zuerst, zwei Videos · codex-observer · 2026-09-27
+
+Mikes Vorschlag als aktuelle Story-Richtung ausgearbeitet. StockInfo war in
+der bisherigen Fassung erst nach der Depot-Simulation sichtbar; das erklärte
+seine Rolle als Voraussetzung und Herkunft der auswählbaren Wertpapiere zu
+spät. Zwei Videos lösen diesen Zusammenhang in der passenden Reihenfolge auf.
+Die frühere Szenenfolge im historischen Story-Abgleich oben ist damit ersetzt.
+
+**Fachlicher/Doku-Abgleich:** `AddPositionDialog.vue` wählt aus den verfügbaren
+Instrumenten und ruft vor Aufnahme `validateInstrument` auf. Das Projekt-README
+erklärt unter „Valid prices before adding a position“ den nötigen Kursabruf;
+unter den Angaben zum Cash-Konto die lokale Ausnahme ohne Kursanforderung.
+Das Docker-README benennt die bereitgestellte StockInfo-Instanz als Voraussetzung.
+Deshalb die Aussage im Film auf Wertpapiere präzisieren. Keine Änderung am
+Produkt oder an beiden READMEs nötig. Der Datenaufbau für die Aufnahme des
+Hinzufügens ist als reproduzierbarer Vorzustand festgelegt, noch nicht erstellt.
+Claudes unabhängige Prüfung der neuen Videoaufteilung bleibt offen.
+
+### Ergänzung: Feldpflege und Positionseditor · codex-observer · 2026-09-27
+
+Mikes Vorgabe in beide Szenenfolgen und Verify #14 aufgenommen. Ein gemeinsam
+sichtbarer manueller Detailwert verbindet jetzt die Videos zusätzlich zur
+Instrumentidentität. Der lokale Editor wird ausdrücklich als Bearbeitung
+eigener Depotangaben gezeigt, nicht als Editor der StockInfo-Quellfelder.
+
+**Doku-Abgleich:** StockInfo-README „Fill the gaps yourself“ beschreibt den
+Quellenvorrang. StockPortfolio-README „Position information“ erläutert die
+übernommenen Werte und Herkunft; `PositionDrilldown.vue` belegt editierbare
+Stückzahl, Zielanteil, Anzeigename, Gruppe, Aktivierung und Notiz.
+Projekt- und Docker-README benötigen keine Änderung: ergänzt wird die
+Medienvorführung vorhandener Funktionen. Kein Produktcode geändert;
+Feldwahl, Aufnahme und tatsächliche Übernahme bleiben noch nachzuweisen.
+
 ### Auflösung
+
+Aktueller Konzeptvorschlag: zwei aufeinander aufbauende Videos, StockInfo
+zuerst, dann StockPortfolio mit sichtbarer Wertpapierübernahme. Die folgenden
+Prüfzusammenfassungen betreffen die davor geprüften Konzeptstände.
 
 Konzept durch `claude` geprüft; sieben Vorschläge durch `codex-observer`
 bewertet und technische Ungenauigkeiten im aktuellen Konzept präzisiert;
@@ -672,6 +952,9 @@ Ungenauigkeiten (Stimmenzahl, SP-CX-05-Zuordnung) korrigiert. Die danach
 ergänzten Datenschutz-/Testdatenvorgaben, die vereinfachte
 Rebalancing-Szene und die Werkzeugoptionen sind von `claude` geprüft und
 inhaltlich freigegeben, mit zwei nicht blockierenden Ergänzungsvorschlägen.
+Der Observer hat beide Vorschläge konkretisiert übernommen und die Story
+auf einen durchgehenden Demofall samt konsistentem Simulation-/Backup-Übergang
+ausgerichtet. Die neuen tatsächlichen Mediennachweise bleiben offen.
 Zielumfang und Zielwoche nicht eigenmächtig gekürzt. Die Auswahl einer
 geeigneten KI-Sprecherstimme bleibt für die Wiederaufnahme offen;
 Systemstimmen sind auf Mikes ausdrücklichen Wunsch ausgeschlossen.
