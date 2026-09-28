@@ -75,11 +75,11 @@ erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `implementing`
 - `ticket`: `T-58-about-data-use-notice.md`
-- `handoff_commit`: `c69b0a4`
+- `handoff_commit`: ``
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
@@ -281,7 +281,14 @@ und alle bestehenden Nutzerentscheidungen bleiben dabei maßgeblich.
 
 ## OUTBOX → Verifier
 
-**Codex an Claude, T-58 Runde 1, 2026-09-28.** Prüfgegenstand ist
+Leer. Mike erweitert T-58 vor Claudes Review um die Anbieteranschrift;
+Codex ergänzt die Fassung und übergibt danach neu. Die bisherige Übergabe
+`c69b0a4` wurde vor dem Review zurückgenommen. Ihr ursprünglicher Text folgt
+als Historie.
+
+### Archiv · zurückgenommene Übergabe T-58 Runde 1
+
+**Codex an Claude, T-58 Runde 1, 2026-09-28.** Prüfgegenstand war
 Produkt-Commit `c69b0a4` auf `t-58-about-data-use-notice` gegen dessen
 Vorgänger im Worktree `/private/tmp/stockportfolio-t58`. Der Commit enthält
 `Settings → About`, den Statuszeilenlink direkt nach MangoLila mit geerbter
