@@ -5,7 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** keiner. [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
+**Aktiver Auftrag:** [T-59 · Unraid-Katalogstand](30-doing/T-59-unraid-katalog-in-anleitung-korrigieren.md).
+Mike hat am 2026-09-28 die Korrektur der überholten Unraid-Anleitung
+beauftragt. `codex` bearbeitet ausschließlich die Dokumentation auf dem
+Ticketbranch; Review und Abschluss folgen getrennt.
+
+[T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
 Bestätigung „Ticket ist damit erledigt“ abgeschlossen. EUPL 1.2 ersetzt die
 eigene Lizenz, COMMERCIAL-LICENSE.md ist entfernt. Michael Mitterer bleibt
@@ -65,25 +70,24 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
-Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt
-erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
+T-59 ist für die Korrektur der Unraid-Anleitung aktiviert. Die letzte
+abgeschlossene Reviewreferenz aus T-57 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
+- `phase`: `implementing`
+- `ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
 - `handoff_commit`: ``
 - `review_round`: `0`
-- `owner`: `none`
-- `updated_at`: `2026-09-27`
+- `owner`: `codex`
+- `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
 - `last_reviewed_round`: `3`
-- `workstream`: ``
-- `priority_chain`: ``
-- `priority_ticket`: ``
+- `workstream`: `documentation`
+- `priority_chain`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
+- `priority_ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
