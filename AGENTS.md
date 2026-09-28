@@ -104,7 +104,7 @@ Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
 `30-doing/`; Backlog, Done, Iced und Rejected erzeugen keinen Auftrag.
 
 - [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
-- [`_tickets/ACTIVITY.md`](_tickets/ACTIVITY.md) — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
+- [`_tickets/ACTIVITY.md`](_tickets/ACTIVITY.md) — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Die Datei bleibt lokal und wird nicht in Git versioniert (Mike, 2026-09-28). Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 - [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
 - [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
 - [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
@@ -196,6 +196,16 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 `make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Vor einer
 Übergabe laufen mindestens `make test`, `make lint` und `make typecheck`; das
 Ergebnis gehört als Beleg ins Ticket.
+
+Für Browserprüfungen mit echter StockInfo-API gibt es
+`scripts/stockinfo-test-server.py`. Es verwendet eine temporäre Datenbank und
+lokale Testkurse. Mit StockInfos Python-Umgebung starten, etwa
+`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://127.0.0.1:5175`.
+Die `--origin` muss zur Frontend-Adresse passen. Beenden mit
+`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stop`.
+Bei einem anderen Port `--port PORT` beim Start und Stop angeben.
+Der Modul-Docstring beschreibt weitere Optionen. In einem Worktree außerhalb
+des gemeinsamen Elternverzeichnisses absolute Pfade verwenden.
 
 [↑ Übersicht](#übersicht)
 

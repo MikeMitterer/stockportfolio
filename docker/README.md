@@ -21,6 +21,8 @@ reusable browser test portfolio with sample quotes, in English._
 - Value positions in your portfolio's base currency, with currency conversion.
 - View price history, asset information and your own position notes.
 - Plan rebalancing trades using tolerance bands or a schedule.
+- Read the short note below both tables: buy and sell figures are calculated
+  guides, not recommendations to trade.
 - Use the responsive interface in English or German, with light and dark themes.
 - Export and restore portfolios and settings as JSON backups.
 
@@ -142,11 +144,20 @@ dealing with consumers. Statutory rules apply; no additional voluntary
 guarantee is provided. The official [German license text](../LICENSE.de.txt)
 is included alongside the English version.
 
-Open **License & source** in the app's status bar, or `/legal.html` on your
-instance. Production builds include license documents and
-`/stockportfolio-source.tgz`, made from the same working files as the app.
+Open **Settings → About** in the app for the license documents, consumer
+declaration and a link to `/legal.html` on your instance. Production builds
+include license documents and `/stockportfolio-source.tgz`, made from the same
+working files as the app.
 These files are stored under `/app/public` in the image. The archive includes
 build instructions in SOURCE.md.
+
+The **About StockPortfolio** link in the status bar opens
+**Settings → About**, a tab about data and calculation limits. It links to the
+English or German EUPL according to the selected UI language, the consumer
+declaration and the license page with the source archive.
+It shows MangoLila GmbH's address, website and theme-matched logo, and links
+to MangoLila's separate notice for website financial content. On narrow
+screens, a section selector replaces the Settings tab row.
 
 Third-party components keep their own licenses; see
 [third-party notices](../THIRD_PARTY_NOTICES.md). StockInfo is a separate service

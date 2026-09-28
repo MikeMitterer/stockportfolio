@@ -10,6 +10,8 @@ dieselbe Board-Struktur wie StockInfo und der Skill `task-verification-workflow`
 **Was gerade passiert:** [ACTIVITY.md](ACTIVITY.md) zeigt kurze
 Tätigkeitsmeldungen, neueste oben. Coder, Verifier und Observer schreiben sie über `agent-activity` nach dem
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit); das gilt für alle Tickets.
+Die Datei bleibt lokal und wird auf Mikes Beschluss vom 2026-09-28 nicht in
+Git versioniert. Der Helfer legt sie bei Bedarf an.
 
 ## Übersicht
 

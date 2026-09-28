@@ -29,6 +29,7 @@ const { t } = useI18n()
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
 const router = useRouter()
+const aboutHref = computed(() => router.resolve({ path: '/settings', query: { tab: 'about' } }).href)
 
 const apiStatus = useApiStatusStore()
 const portfolioStore = usePortfolioStore()
@@ -122,6 +123,8 @@ const failures = computed(() =>
   >
     <template #left>
       <span class="status__separator status__separator--brand" aria-hidden="true">·</span>
+      <a class="status__about" :href="aboutHref">{{ t('status.aboutLabel') }}</a>
+      <span class="status__separator" aria-hidden="true">·</span>
       <NButton
         text
         tag="a"
@@ -149,16 +152,19 @@ const failures = computed(() =>
       <span v-if="dataAge" class="status__separator status__separator--age" aria-hidden="true">·</span>
       <span v-if="dataAge">{{ dataAge }}</span>
       <span v-if="failures" class="status__failures">{{ failures }}</span>
-      <span class="status__separator" aria-hidden="true">·</span>
-      <NButton text tag="a" href="./legal.html" target="_blank" rel="noopener noreferrer">
-        {{ t('status.licenseLabel') }}
-      </NButton>
     </template>
   </UxStatusBar>
 </template>
 
 <style scoped lang="scss">
 .status {
+  &__about {
+    color: token(--text-bar-accent);
+    font: inherit;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
   &__repository-icon {
     inline-size: var(--font-base);
     block-size: var(--font-base);
