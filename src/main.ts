@@ -4,6 +4,7 @@ import App from '@/App.vue'
 import { router } from '@/router'
 import { i18n } from '@/i18n'
 import { readStoredLocale } from '@/stores/locale'
+import { applyTheme, readStoredTheme } from '@/stores/theme'
 import { LOCALES } from '@/stores/locale'
 import { setFormatterLocale } from '@/domain/formatters'
 import { apiBaseUrl, MissingApiUrlError, StockInfoClient, STOCK_INFO_CLIENT } from '@/api/client'
@@ -64,6 +65,10 @@ app.mount('#app')
 function showStartupError(): void {
   const root = document.querySelector('#app')
   if (!root) return
+
+  // App.vue initialisiert das Theme erst beim Mounten. Dieser Fehlerpfad
+  // bricht vorher ab; ohne Theme fehlen Text- und Flächenfarben der Tokens.
+  applyTheme(readStoredTheme())
 
   const box = document.createElement('div')
   box.setAttribute(

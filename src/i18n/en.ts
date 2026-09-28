@@ -7,6 +7,7 @@
 import type { MessageSchema } from './de'
 
 export const en: MessageSchema = {
+  tradeNotice: 'Buy and sell figures are calculated guides based on your portfolio data and targets, not recommendations to trade. Check the data, prices and costs yourself before placing an order.',
   fx: {
     baseCurrency: 'Base currency', invalidCurrency: 'Choose a valid base currency.',
     changeTitle: 'Change base currency',
@@ -245,6 +246,7 @@ export const en: MessageSchema = {
   },
 
   settings: {
+    sectionLabel: 'Settings section',
     tabs: {
       calc: 'Calculation',
       theme: 'Theme',
@@ -253,6 +255,7 @@ export const en: MessageSchema = {
       notifications: 'Messages',
       data: 'Data',
       backup: 'Backup',
+      about: 'About',
       status: 'Status',
     },
     triggerHeading: 'Trigger',
@@ -651,7 +654,7 @@ export const en: MessageSchema = {
   },
 
   status: {
-    licenseLabel: 'License & source',
+    aboutLabel: 'About StockPortfolio',
     poweredBy: 'powered by',
     repositoryLabel: 'StockPortfolio on GitHub (opens a new tab)',
     quotes: 'Prices',
@@ -662,5 +665,21 @@ export const en: MessageSchema = {
     apiChecking: 'API being checked',
     apiOnline: 'API reachable',
     apiOffline: 'API unreachable',
+  },
+  about: {
+    title: 'About StockPortfolio',
+    providerName: 'MangoLila GmbH',
+    providerStreet: 'Dorfstrasse 112',
+    providerCity: '6363 Westendorf',
+    providerCountry: 'Austria',
+    websiteLink: 'MangoLila website',
+    intro: 'StockPortfolio gets quotes from StockInfo and calculates values from your holdings, target shares and settings.',
+    data: 'Data may be missing, outdated or incorrect. Displayed prices are not binding trading prices.',
+    use: 'Buy and sell figures follow your targets and rules. They are guides, not personal recommendations to trade. Check data, prices and costs against the relevant sources before placing an order.',
+    legal: 'The software is licensed under EUPL 1.2. MangoLila’s consumer declaration explains the applicable warranty and liability rules.',
+    licenseLink: 'EUPL 1.2 (English)',
+    licensingLink: 'Licensing and consumer declaration',
+    sourceLink: 'License page and source archive',
+    financialContentLink: 'MangoLila: Financial content disclaimer (German)',
   },
 }

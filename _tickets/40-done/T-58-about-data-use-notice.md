@@ -6,20 +6,19 @@ direkt in der App erreichbar sein. Die About-Seite soll außerdem MangoLila GmbH
 als Anbieterin mit Logo, Anschrift und Website zeigen.
 
 **Stand am 2026-09-28:** Die erweiterte About-Seite und die Hinweise unter den
-Dashboard- und Rebalancing-Tabellen liegen auf dem Branch
-`t-58-about-data-use-notice` im Worktree `/private/tmp/stockportfolio-t58`.
+Dashboard- und Rebalancing-Tabellen wurden auf dem Branch
+`t-58-about-data-use-notice` im Worktree `/private/tmp/stockportfolio-t58`
+entwickelt und nach Freigabe und Mikes Abschlussentscheidung integriert.
 Die erste Fassung steht in `c69b0a4`; Anbieteranschrift, Original-Logos,
 Website-Link und mobile Bereichswahl wurden in `0a2c190` ergänzt. Mikes
 Platzierungswünsche stehen in `2450abf`, die Linkdarstellung in `d8e8e57`
 und die lesbare Fehlseite ohne API-Adresse in `c8e0ea3`.
-Der Haupt-Checkout von StockPortfolio enthält T-58 noch nicht. Die frühere
-Reviewübergabe wurde vor
-Claudes Prüfung zurückgenommen; es gibt weiterhin keine technische Freigabe.
+Die frühere Reviewübergabe wurde vor Claudes Prüfung zurückgenommen; die
+ergänzte Fassung `c8e0ea3` wurde in Runde 1 technisch freigegeben.
 
-**Nächster Schritt:** Claude prüft die übergebene Fassung unabhängig.
-Mike muss für die technische Umsetzung derzeit nichts
-weiteres liefern. Die rechtliche Prüfung des endgültigen öffentlichen
-Wortlauts bleibt seine gesonderte Entscheidung.
+**Abschluss:** Mike bestätigt am 2026-09-28: „Von mir aus ist das Ticket
+durch.“ Die rechtliche Prüfung des endgültigen öffentlichen Wortlauts
+bleibt seine gesonderte Entscheidung.
 
 ## Vorlage aus StockInfo
 
@@ -260,9 +259,29 @@ Observer-Hinweis zum gemeinsamen Regelpaket ist bereits im STATUS als
 „Offene Übernahme“ mit Stand `2026-09-27-central-package` sichtbar; eine
 allgemeine Migration bleibt ohne Auftrag aus. Die drei INBOX-Nachrichten
 von Observer und Verifier sind damit verarbeitet. Die freigegebene
-Produktfassung `c8e0ea3` bleibt unverändert; Mikes Abschlussentscheidung
-steht aus.
+Produktfassung `c8e0ea3` blieb unverändert; Mikes Abschlussentscheidung
+stand zu diesem Zeitpunkt noch aus.
 
 ## Menschliche Antwort
 
-Offen.
+Mike, 2026-09-28: „Von mir aus ist das Ticket durch.“ T-58 ist damit nach
+Claudes technischer Freigabe in Runde 1 abgeschlossen. Die rechtliche
+Prüfung des öffentlichen Wortlauts ist dadurch nicht behauptet.
+
+## Abschlussintegration
+
+Der freigegebene Produktstand wurde mit dem archivierten Ticket in einem
+sauberen Integrations-Worktree auf `master` vorbereitet. `make lint`,
+`make typecheck` und `make build-frontend` bestanden. `make test` erreichte
+799/802; die zwei alten `apiBaseUrl`-Erwartungen und der macOS-Bash-3.2-Fall
+im GHCR-Test bleiben dieselben dokumentierten Vorbestandsfehler.
+
+**Doku-Abgleich:** `README.md`, `docker/README.md` und `unraid/README.md`
+beschreiben Anbieterbereich, Datenhinweise und Lizenzzugang wie in der
+freigegebenen Fassung. Auf Mikes weiteren Beschluss wird `_tickets/ACTIVITY.md`
+aus Git genommen: `.gitignore`, `AGENTS.md`, Board-`README.md`, Workflow und
+STATUS dokumentieren die lokale Ausnahme. Der globale Helfer schreibt die
+Datei weiterhin; ihr lokaler Inhalt bleibt erhalten. Das installierte
+`task-verification-workflow`-Paket wird auf Mikes weiteren Auftrag im
+zuständigen AgentLessons-Board für künftige Projekte ergänzt. Dieser
+projektübergreifende Schritt hat eine eigene Rollen- und Reviewkette.

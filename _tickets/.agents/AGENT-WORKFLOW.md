@@ -51,6 +51,9 @@ Grenze. Ohne andere Vereinbarung gilt 50.
 **Agenten schreiben ACTIVITY, lesen sie aber nicht als Kontext oder Auftrag.**
 Die Datei dient ausschließlich dem Nutzer. Nur der Helfer liest intern die
 bisherigen Einträge, um sie beim Schreiben zu erhalten und zu begrenzen.
+Auf Mikes Beschluss vom 2026-09-28 bleibt `ACTIVITY.md` in diesem Projekt
+lokal und ist über `.gitignore` von Git ausgenommen. Der globale Helfer
+schreibt sie weiterhin wie bisher.
 Kein manuelles Lesen-Ändern-Schreiben neben dem Helfer, sonst greift seine
 Sperre nicht. Fehlt er oder scheitert der Aufruf, den Fehler im Chat melden
 und die zentrale Einrichtung nachholen; keine Projektkopie als Ersatz bauen.

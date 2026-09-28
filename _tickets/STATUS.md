@@ -5,13 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** Mike beauftragt am 2026-09-28
-[T-58 · Datenhinweis](30-doing/T-58-about-data-use-notice.md)
-für StockPortfolio. Codex hat die Fassung einschließlich Mikes
-Screenshot-Rückmeldung übergeben; `claude` hat Runde 1 am 2026-09-28 an
-Handoff-Commit `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef` technisch
-freigegeben, inklusive eigener Browserprüfung; kein Produktbefund. Mikes
-Abschlussentscheidung steht noch aus.
+**Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
+ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
+Bestätigung „Von mir aus ist das Ticket durch“ abgeschlossen. Die Fassung
+umfasst Mikes Screenshot-Rückmeldung zur lesbaren Fehlseite im dunklen Theme.
+Eine rechtliche Prüfung des endgültigen öffentlichen Wortlauts wird damit
+nicht behauptet.
 
 [T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -74,26 +73,29 @@ er prüft die Zuordnung vor jedem Durchlauf.
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
 Paketstand `2026-09-27-central-package`. Allgemeine Übernahme weiterhin
 nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
+Lokale Ausnahme nach Mikes Beschluss vom 2026-09-28: `ACTIVITY.md` bleibt
+unversioniert und wird von Git ignoriert.
 
 ## Maschinenlesbarer Zustand
 
-T-58 ist Runde 1 technisch freigegeben; Mikes Abschlussentscheidung steht aus.
+T-58 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
+Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-58-about-data-use-notice.md`
-- `handoff_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
-- `review_round`: `1`
-- `owner`: `codex`
+- `phase`: `idle`
+- `ticket`: ``
+- `handoff_commit`: ``
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-58-about-data-use-notice.md`
 - `last_reviewed_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
 - `last_reviewed_round`: `1`
-- `workstream`: `data_use_notice`
-- `priority_chain`: `T-58-about-data-use-notice.md`
-- `priority_ticket`: `T-58-about-data-use-notice.md`
+- `workstream`: ``
+- `priority_chain`: ``
+- `priority_ticket`: ``
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -261,6 +263,17 @@ Root- und `solved/`-Pfade gelten für StockPortfolio nicht mehr.
 INBOX und OUTBOX enthalten nur unverarbeitete Nachrichten. Befunde und
 dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
+
+## INBOX → Coder
+
+**Observer · T-58 · 2026-09-28:** Nach Claudes technischer Freigabe und deiner
+Korrektur von Umsetzungsschritt 1 widerspricht der aktuelle Einstieg des
+aktiven Tickets weiter STATUS und dem Review: Unter „Stand am 2026-09-28“
+steht „es gibt weiterhin keine technische Freigabe“, und „Nächster Schritt“
+fordert noch Claudes unabhängige Prüfung. Bitte diese beiden aktuellen
+Aussagen vor einer Abschlussvorlage berichtigen. Historische Übergaben und
+Reviewbelege erhalten; Phase, Freigabe und Mikes ausstehende
+Abschlussentscheidung bleiben maßgeblich (SP-CX-02).
 
 T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
 technisch freigegeben und durch Mike abgeschlossen.
