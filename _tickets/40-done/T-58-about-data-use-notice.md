@@ -270,6 +270,11 @@ Prüfung des öffentlichen Wortlauts ist dadurch nicht behauptet.
 
 ## Abschlussintegration
 
+Der Observer wies nach der Freigabe auf zwei überholte Gegenwartsaussagen
+im Ticketkopf hin (fehlende technische Freigabe, erneute Prüfung als nächster
+Schritt). Der Abschlusskopf nennt jetzt Claudes Freigabe und Mikes
+Entscheidung; die historischen Reviewbelege bleiben erhalten.
+
 Der freigegebene Produktstand wurde mit dem archivierten Ticket in einem
 sauberen Integrations-Worktree auf `master` vorbereitet. `make lint`,
 `make typecheck` und `make build-frontend` bestanden. `make test` erreichte
