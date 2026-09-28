@@ -1017,6 +1017,14 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
     gap: var(--space-6);
 
     @include up(md) { grid-template-columns: minmax(0, 1fr) 17rem; }
+
+    a {
+      color: token(--accent);
+      text-decoration: none;
+
+      &:hover { opacity: 0.8; }
+      &:focus-visible { outline: 2px solid token(--accent); outline-offset: 2px; }
+    }
   }
 
   &__about-content {
