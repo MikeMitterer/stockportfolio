@@ -18,6 +18,7 @@ Git versioniert. Der Helfer legt sie bei Bedarf an.
 - [Ablage](#ablage)
 - [Von der Aufnahme bis zum Abschluss](#von-der-aufnahme-bis-zum-abschluss)
 - [Nachweise und Agentenregeln](#nachweise-und-agentenregeln)
+- [Aktive Kette: private Depots auf dem StockPortfolio-Server](#aktive-kette-private-depots-auf-dem-stockportfolio-server)
 - [Roadmap (MVP-Reihenfolge)](#roadmap-mvp-reihenfolge)
 - [Offen](#offen)
 - [Neu erfasste Integrationsbewertung](#neu-erfasste-integrationsbewertung)
@@ -103,6 +104,28 @@ Wiedereinstieg. Eine technische Abnahme bleibt Aufgabe des Verifiers.
 
 [QUESTIONS.md](QUESTIONS.md) sammelt kurzfristige Fragen. Erledigte Einträge
 nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
+
+[↑ Übersicht](#übersicht)
+
+## Aktive Kette: private Depots auf dem StockPortfolio-Server
+
+Mike hat die serverseitige Synchronisation mit getrennten privaten
+Benutzerkonten und SSE am 2026-09-28 beauftragt. Die drei Tickets liegen auf
+seinen Wunsch in `30-doing/`. **Nur T-60 ist derzeit aktiv**; verbindlich ist
+die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
+
+1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+   liefert App und eigene API im StockPortfolio-Container sowie Setup,
+   Anmeldung und Admin-Verwaltung.
+2. [T-61 · Private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+   macht den Server zur Datenquelle und übernimmt vorhandene Browserdaten
+   ausdrücklich in das richtige Konto.
+3. [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+   meldet gespeicherte Änderungen an andere Browser desselben Kontos, die
+   daraufhin per REST neu laden.
+
+StockInfo bleibt für Kurse und Instrumente zuständig; diese Kette ändert dort
+nichts. Die beschriebenen Funktionen sind noch nicht verfügbar.
 
 [↑ Übersicht](#übersicht)
 

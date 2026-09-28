@@ -5,6 +5,15 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
+**Aktiver Auftrag:** [T-60 · StockPortfolio-Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+ist am 2026-09-28 auf Mikes Auftrag in `30-doing/` aktiviert. Dieselbe
+beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
+Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`;
+nur T-60 ist jetzt der aktive Coder-Auftrag. T-61 folgt nach T-60, T-62 nach
+T-61. Es gibt noch keine Produktumsetzung oder technische Freigabe für diese
+Kette. StockInfo wird nicht geändert.
+
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
 Bestätigung „Von mir aus ist das Ticket durch“ abgeschlossen. Die Fassung
@@ -78,24 +87,25 @@ unversioniert und wird von Git ignoriert.
 
 ## Maschinenlesbarer Zustand
 
-T-58 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
-Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt erhalten.
+T-60 ist der aktive Coder-Auftrag. T-61 und T-62 stehen in derselben
+Prioritätskette, sind aber noch nicht zur Produktumsetzung aktiviert.
+Die letzte abgeschlossene Reviewreferenz aus T-58 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
+- `phase`: `implementing`
+- `ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
 - `handoff_commit`: ``
 - `review_round`: `0`
-- `owner`: `none`
+- `owner`: `codex`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-58-about-data-use-notice.md`
 - `last_reviewed_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
 - `last_reviewed_round`: `1`
-- `workstream`: ``
-- `priority_chain`: ``
-- `priority_ticket`: ``
+- `workstream`: `stockportfolio-server-sync`
+- `priority_chain`: `T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
