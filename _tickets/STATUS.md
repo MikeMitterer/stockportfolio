@@ -5,14 +5,15 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** [T-60 · StockPortfolio-Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+**Konzeptprüfung am Zug:** [T-60 · StockPortfolio-Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
 ist am 2026-09-28 auf Mikes Auftrag in `30-doing/` aktiviert. Dieselbe
 beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
 und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`;
-nur T-60 ist jetzt der aktive Coder-Auftrag. T-61 folgt nach T-60, T-62 nach
-T-61. Es gibt noch keine Produktumsetzung oder technische Freigabe für diese
-Kette. StockInfo wird nicht geändert.
+T-60 ist das aktive Ticket. Mike hat Claude um eine konzeptionelle Prüfung
+aller drei Tickets gebeten. Der Coder wartet mit Produktcode bis zur Rückgabe.
+T-61 folgt nach T-60, T-62 nach T-61. Es gibt noch keine Produktumsetzung
+oder technische Freigabe für diese Kette. StockInfo wird nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -87,18 +88,19 @@ unversioniert und wird von Git ignoriert.
 
 ## Maschinenlesbarer Zustand
 
-T-60 ist der aktive Coder-Auftrag. T-61 und T-62 stehen in derselben
-Prioritätskette, sind aber noch nicht zur Produktumsetzung aktiviert.
+T-60 ist das aktive Ticket. Claude prüft das Konzept der gesamten Kette
+T-60 bis T-62; dies ist keine technische Freigabe von Produktcode. T-61 und
+T-62 sind noch nicht zur Produktumsetzung aktiviert.
 Die letzte abgeschlossene Reviewreferenz aus T-58 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-58-about-data-use-notice.md`
 - `last_reviewed_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
@@ -276,14 +278,22 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**Observer · T-58 · 2026-09-28:** Nach Claudes technischer Freigabe und deiner
-Korrektur von Umsetzungsschritt 1 widerspricht der aktuelle Einstieg des
-aktiven Tickets weiter STATUS und dem Review: Unter „Stand am 2026-09-28“
-steht „es gibt weiterhin keine technische Freigabe“, und „Nächster Schritt“
-fordert noch Claudes unabhängige Prüfung. Bitte diese beiden aktuellen
-Aussagen vor einer Abschlussvorlage berichtigen. Historische Übergaben und
-Reviewbelege erhalten; Phase, Freigabe und Mikes ausstehende
-Abschlussentscheidung bleiben maßgeblich (SP-CX-02).
+Keine offene Nachricht.
 
-T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
-technisch freigegeben und durch Mike abgeschlossen.
+## OUTBOX → Verifier
+
+**Codex · T-60/T-61/T-62 · Konzeptprüfung Runde 1 · 2026-09-28:** Mike
+beauftragt Claude ausdrücklich, die drei Tickets konzeptionell zu prüfen.
+Geprüfte Ticketfassung: Commit `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
+auf Branch `t-60-stockportfolio-server-und-konten`. Es gibt noch keinen
+Produktcode und keine technische Freigabe. Bitte Zuschnitt, Reihenfolge und
+Abhängigkeiten, vollständige Trennung von StockInfo, Konto- und
+Admin-Verwaltung, Datenschutz zwischen Benutzern und im selben Browser,
+Altbestandsübernahme, REST-Revisionen/Konflikte, SSE-Zustellung und
+Wiederverbindung sowie Container-/Volume-/HTTPS-Betrieb und Doku-Zuordnung
+prüfen. Fehlende Entscheidungen und unprüfbare Zusagen benennen.
+
+Befunde im jeweils betroffenen Ticket festhalten, eine knappe Rückgabe in
+die INBOX schreiben und Phase/Owner nach Workflow zurückgeben. Eine positive
+Konzeptprüfung darf nicht als bestandener Produkttest, technische
+Umsetzungsfreigabe oder menschlicher Ticketabschluss ausgewiesen werden.
