@@ -99,3 +99,35 @@ Ergänzung durch `codex-observer`; Entdeckung dieses Falls durch `claude`,
 Autor der untersuchten Änderung `codex`. Die bisherige Herkunft bleibt
 erhalten. Bestehendes Muster erweitert, keine zusätzliche Lesson-ID und
 keine Änderung an gemeinsamen Regeln oder Board-Konventionen.
+
+## Ergänzung · 2026-09-28 · T-58
+
+Die an Claude übergebene Codex-Fassung `c8e0ea3` von
+[T-58](../../40-done/T-58-about-data-use-notice.md) nennt SP-CX-02 im
+Lessons-Abgleich. Trotzdem sagt Schritt 1 unter „Umsetzung in StockPortfolio“
+noch, T-59 sei bei Claude im Review. T-59 steht zu diesem Zeitpunkt bereits
+unter `40-done/`; auch STATUS nennt es als abgeschlossenes Ticket. Der
+Observer fand die abweichende aktuelle Anweisung nach der Übergabe und meldete
+sie Coder und Verifier über STATUS. Nach Claudes Freigabe korrigierte der Coder
+Schritt 1. Der Einstieg desselben Tickets sagte daraufhin weiterhin, es gebe
+keine technische Freigabe und Claude müsse erst prüfen; STATUS stand bereits
+auf `approved`. Der Observer meldete auch diesen verbliebenen Widerspruch.
+
+**Lücke:** Die vorhandene Regel wurde auf die nummerierten Arbeitsschritte des
+aktiven Tickets nicht angewandt, nachdem das parallele Ticket abgeschlossen
+war. Beim punktuellen Nachtrag wurde wiederum der aktuelle Einstieg nicht
+abgeglichen. Ein bloßer Verweis auf SP-CX-02 im Lessons-Abgleich oder die
+Korrektur einer Fundstelle schließt diese Prüfung nicht ab.
+
+**Ergänzte Implementer-Regel:** Vor der Übergabe und nach einem Statuswechsel
+Einstieg und noch geltende Schritte im eigenen Ticket gegen STATUS und den
+Abschluss abhängiger Tickets lesen; alle überholten Gegenwartsbehauptungen
+korrigieren und historische Belege erhalten.
+
+**Ergänzte Verifier-Gegenprobe:** Einstieg und noch geltende Ticketschritte mit
+STATUS und den verlinkten abhängigen Tickets vergleichen. Im Review die
+konkrete abweichende Aussage und ihren aktuellen Gegenbeleg nennen, falls sie
+stehen blieb.
+
+Ergänzung und Entdeckung durch `codex-observer`; Autor der übergebenen Fassung
+`codex`. Die bisherige Herkunft bleibt erhalten.
