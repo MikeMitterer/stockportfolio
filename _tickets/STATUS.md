@@ -6,9 +6,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **Aktiver Auftrag:** Mike beauftragt am 2026-09-28
-[T-58 · Datenhinweis](20-ready/T-58-about-data-use-notice.md)
-für StockPortfolio. Das Ticket liegt als nächster Auftrag in `20-ready/`;
-Codex aktiviert es vor dem Produktedit. [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
+[T-58 · Datenhinweis](30-doing/T-58-about-data-use-notice.md)
+für StockPortfolio. Codex setzt um; Claude prüft anschließend unabhängig.
+[T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
 Bestätigung „Ticket ist damit erledigt“ abgeschlossen. EUPL 1.2 ersetzt die
 eigene Lizenz, COMMERCIAL-LICENSE.md ist entfernt. Michael Mitterer bleibt
@@ -75,16 +75,16 @@ erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
+- `phase`: `implementing`
+- `ticket`: `T-58-about-data-use-notice.md`
 - `handoff_commit`: ``
 - `review_round`: `0`
-- `owner`: `none`
-- `updated_at`: `2026-09-27`
+- `owner`: `codex`
+- `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
 - `last_reviewed_round`: `3`
-- `workstream`: ``
+- `workstream`: `data_use_notice`
 - `priority_chain`: `T-58-about-data-use-notice.md`
 - `priority_ticket`: `T-58-about-data-use-notice.md`
 
