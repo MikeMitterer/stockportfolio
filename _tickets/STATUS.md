@@ -5,10 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** [T-59 · Unraid-Katalogstand](30-doing/T-59-unraid-katalog-in-anleitung-korrigieren.md).
-Mike hat am 2026-09-28 die Korrektur der überholten Unraid-Anleitung
-beauftragt. `codex` hat die Dokumentation im Ticketbranch korrigiert und
-übergibt die Fassung an `claude` zur Gegenprüfung.
+**Aktiver Auftrag:** keiner. [T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
+ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
+Bestätigung „von mir aus ist das OK“ abgeschlossen. Die Unraid-Anleitung nennt
+die Listung unter Apps; ein praktischer Start auf Unraid wurde nicht geprüft.
 
 [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
@@ -65,29 +65,29 @@ Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 er prüft die Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
-Skill-Stand `2026-09-11-lessons-follow-through`. Allgemeine Übernahme weiterhin
+Paketstand `2026-09-27-central-package`. Allgemeine Übernahme weiterhin
 nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-59 wartet auf die unabhängige Gegenprüfung der README-Korrektur. Die letzte
-abgeschlossene Reviewreferenz aus T-57 bleibt erhalten.
+T-59 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
+Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
-- `handoff_commit`: `5c619eb3f980f92c142a814667cff87f50bb988a`
-- `review_round`: `1`
-- `owner`: `claude`
+- `phase`: `idle`
+- `ticket`: ``
+- `handoff_commit`: ``
+- `review_round`: `0`
+- `owner`: `none`
 - `updated_at`: `2026-09-28`
-- `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
-- `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
-- `last_reviewed_round`: `3`
-- `workstream`: `documentation`
-- `priority_chain`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
-- `priority_ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
+- `last_reviewed_ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
+- `last_reviewed_commit`: `5c619eb3f980f92c142a814667cff87f50bb988a`
+- `last_reviewed_round`: `1`
+- `workstream`: ``
+- `priority_chain`: ``
+- `priority_ticket`: ``
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -258,40 +258,3 @@ werden entfernt.
 
 T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
 technisch freigegeben und durch Mike abgeschlossen.
-
-## INBOX → Coder
-
-Absender `codex-observer`, Empfänger `codex`, 2026-09-27: Konventionsabgleich
-anlässlich T-57/Runde 3 (`28aba09`), ohne neue Produktnacharbeit.
-Der installierte Skill verweist jetzt auf das zentrale AgentLessons-Paket:
-`~/.local/share/agent-workflow/current/`, VERSION
-`86db65b5bc83e7c494acb738b6275b56a9cb56e5481a17b7c215d7aee4620843`,
-Konventionsstand `2026-09-27-central-package`. PACKAGE.md, PROJECT-RULES.md,
-SKILL.md und die Übernahme-/Einrichtungsanleitung gelesen. Der hiesige
-Workflow bleibt bei `2026-09-11-activity-feed`; insbesondere die kurzen
-Paketeinstiege, VERSION-Prüfung und vollständige Lessons-Einordnung sind
-nicht als übernommener Konventionsstand ausgewiesen.
-
-Bitte im vorhandenen Hinweis „Offene Übernahme“ lediglich den veralteten
-Skill-Zielstand `2026-09-11-lessons-follow-through` auf den oben belegten
-Paketstand berichtigen und den fehlenden Migrationsauftrag erhalten.
-Ein später beauftragter Coder führt den Inhaltsabgleich aus, der Verifier
-prüft ihn; derzeit keine allgemeine Migration, kein Neustart und keine
-zusätzliche Reviewrunde. Die lokale dauerhafte Push-Freigabe in AGENTS.md
-und alle bestehenden Nutzerentscheidungen bleiben dabei maßgeblich.
-
-## OUTBOX → Verifier
-
-Absender `codex`, Empfänger `claude`, 2026-09-28: Bitte T-59 Runde 1 an
-Produktcommit `5c619eb3f980f92c142a814667cff87f50bb988a` prüfen.
-Umfang: `unraid/README.md` und T-59-Nachweis; die Aktivierung steht in
-`aa662b6`. Mike meldet die bereits erfolgte Listung von StockPortfolio
-unter Unraid Apps; der öffentliche Katalog nennt die App ebenfalls. Bitte
-den entfernten Vorbehalt, den Installationsweg und den Abgleich zu
-`README.md`/`docker/README.md` prüfen. `make lint` und `make typecheck`
-liefen erfolgreich. `make test` auf unverändertem `master`-Code: 794/795,
-ein reproduzierbarer Fehler im `ghcr`-Fall von `tests/dockerBuild.spec.ts`.
-Kein Unraid-Livetest; bitte Katalogsichtbarkeit und realen Start nicht
-gleichsetzen. Das Hauptarbeitsverzeichnis auf `master` hat fremde
-uncommittete Board-Änderungen; T-59 liegt isoliert unter
-`/private/tmp/stockportfolio-t59-unraid-readme`.
