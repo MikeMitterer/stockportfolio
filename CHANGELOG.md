@@ -2,6 +2,25 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.5.0+260928.1401.98d5d — 2026-09-28
+
+About mit Anbieterangaben und Datenhinweisen ergänzen; Startmeldung im dunklen Theme lesbar machen
+
+### Documentation
+
+- Verfügbarkeit in Community Applications nennen (`5c619eb`)
+
+### Features
+
+- add About and trade notices (`c69b0a4`)
+- Anbieterbereich und mobile Bereichswahl ergänzen (`0a2c190`)
+
+### Fixes
+
+- Hinweise und Lizenzzugang richtig platzieren (`2450abf`)
+- Links farblich vom Text abheben (`d8e8e57`)
+- Fehlseite im gewählten Theme lesbar machen (`c8e0ea3`)
+
 ## v0.4.0+260927.2137.6687a — 2026-09-27
 
 StockPortfolio auf EUPL 1.2 umstellen und Lizenzdateien mit Docker ausliefern
