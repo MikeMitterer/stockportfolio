@@ -10,13 +10,14 @@ Dashboard- und Rebalancing-Tabellen liegen auf dem Branch
 `t-58-about-data-use-notice` im Worktree `/private/tmp/stockportfolio-t58`.
 Die erste Fassung steht in `c69b0a4`; Anbieteranschrift, Original-Logos,
 Website-Link und mobile Bereichswahl wurden in `0a2c190` ergänzt. Mikes
-Platzierungswünsche stehen in `2450abf`, die Linkdarstellung in `d8e8e57`.
+Platzierungswünsche stehen in `2450abf`, die Linkdarstellung in `d8e8e57`
+und die lesbare Fehlseite ohne API-Adresse in `c8e0ea3`.
 Der Haupt-Checkout von StockPortfolio enthält T-58 noch nicht. Die frühere
 Reviewübergabe wurde vor
 Claudes Prüfung zurückgenommen; es gibt weiterhin keine technische Freigabe.
 
-**Nächster Schritt:** Codex übergibt die fertige Fassung an Claude zur
-unabhängigen Prüfung. Mike muss für die technische Umsetzung derzeit nichts
+**Nächster Schritt:** Claude prüft die übergebene Fassung unabhängig.
+Mike muss für die technische Umsetzung derzeit nichts
 weiteres liefern. Die rechtliche Prüfung des endgültigen öffentlichen
 Wortlauts bleibt seine gesonderte Entscheidung.
 
@@ -72,6 +73,9 @@ für **StockInfo**, nicht für StockPortfolio.
    außerhalb und unterhalb der Dashboard- und Rebalancing-Tabelle.
    Root-, Docker- und Unraid-README inhaltlich abgleichen und die
    Docker-Hub-Vorschau prüfen.
+6. Mikes Screenshot aus dem dunklen Modus prüfen: Ohne konfigurierte
+   StockInfo-Adresse muss die frühe Fehlseite mit lesbarem Text im gewählten
+   Theme erscheinen. Die Pflicht zur expliziten Adresse bleibt erhalten.
 
 MangoLilas [Hinweis zu Finanzinhalten](https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/)
 bezieht sich auf Website und Publikationen. Er ersetzt weder die Lizenz noch
@@ -88,6 +92,7 @@ Haftungsausschluss.
 | 4 | Dashboard und Rebalancing prüfen | Hinweis zu berechneten Kauf-/Verkaufswerten jeweils außerhalb unterhalb des Tabellenbereichs | ➖ |
 | 5 | Lizenz- und Quellcodezugang prüfen | `legal.html`, EUPL-Texte und Quellarchiv sind über About erreichbar; kein Lizenzlink in der Statuszeile | ➖ |
 | 6 | Tests, Build und Dokumentation prüfen | Projektprüfungen und Docker-Hub-Vorschau bestehen; drei READMEs beschreiben den aktuellen Stand | ➖ |
+| 7 | Fehlseite ohne API-Adresse im dunklen und hellen Theme prüfen | Überschrift, Erklärung und Konfigurationshinweis sind lesbar; es gibt weiterhin keinen stillen Start ohne Adresse | ➖ |
 
 ## Coder-Prüfung · 2026-09-28
 
@@ -130,8 +135,19 @@ Haftungsausschluss.
   196/186/177; im hellen Theme: 40/118/210 gegenüber 87/83/74.
   Unterstreichung ist auf Mikes Wunsch entfernt; Tastaturfokus hat einen
   sichtbaren Akzentrahmen. Alle Linktexte bleiben in `de.ts`/`en.ts`.
-- `make test` ohne konfigurierte API-Adresse: 797/800. Mit synthetischer
-  Adresse: 798/800. Die zwei älteren `apiBaseUrl`-Tests erwarten eine feste
+- Mikes Screenshot auf Port 5175 zeigte schwarze Schrift auf dunkler
+  Fehlseite ohne API-Adresse. Ursache: `App.vue` setzt das Theme erst beim
+  Mounten; `main.ts` bricht vorher ab. Der Fehlerpfad wendet jetzt das
+  gespeicherte beziehungsweise systemseitige Theme an. Rot-/Grün-Test
+  `tests/startupError.spec.ts` (2/2) belegt `data-theme` und
+  `color-scheme` für MangoLila und Paper. Browser ohne API-Adresse auf
+  Port 5177: dunkler Hintergrund RGB 24/23/22, heller Text 248/245/242,
+  Überschrift und Erklärung lesbar. Die API-Adresse bleibt Pflicht.
+- Nach dem Screenshot-Fix: gezielte Start-, About- und Sprachtests 12/12;
+  `make lint`, `make typecheck` und `make build-frontend` bestanden erneut.
+  `make test` ohne konfigurierte API-Adresse: 799/802. Vor dem Fix waren es
+  797/800; mit synthetischer Adresse damals 798/800. Die zwei älteren
+  `apiBaseUrl`-Tests erwarten eine feste
   Produktionsadresse, obwohl `AGENTS.md` und `src/api/client.ts` ohne
   Adresse ausdrücklich `MissingApiUrlError` festlegen. Der GHCR-Test
   scheitert weiterhin unabhängig an Bash 3.2. Diese drei Bestandsfehler
@@ -141,7 +157,9 @@ Haftungsausschluss.
   `docker/README.md` (Lizenz und About) und `unraid/README.md` (Lizenz
   und About) stimmen bei Anbieterangaben, mobiler Bereichswahl und
   Datenhinweisen überein. Die Docker-Hub-Vorschau bestand Link- und
-  Größenprüfung. `AGENTS.md` benötigt für diese Änderung keinen Nachtrag.
+  Größenprüfung. Der Screenshot-Fix ändert die Pflicht zur expliziten
+  API-Adresse nicht; deren Konfiguration ist in den Anleitungen bereits
+  beschrieben. `AGENTS.md` benötigt für diese Änderung keinen Nachtrag.
 - Lessons-Abgleich: SP-CX-02 (aktuelle Aussagen in Ticket und Anleitungen)
   und SP-CX-05 (benannte StockInfo-Referenz samt Logo, Anordnung und
   Mobilansicht) wurden in Umsetzung und Browserprüfung berücksichtigt.

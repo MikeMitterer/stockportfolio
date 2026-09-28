@@ -8,7 +8,7 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag:** Mike beauftragt am 2026-09-28
 [T-58 · Datenhinweis](30-doing/T-58-about-data-use-notice.md)
 für StockPortfolio. Codex hat die Fassung einschließlich Mikes
-Platzierungswünschen übergeben; Claude prüft jetzt unabhängig.
+Screenshot-Rückmeldung übergeben; Claude prüft jetzt unabhängig.
 
 [T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -75,15 +75,16 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 ## Maschinenlesbarer Zustand
 
 T-58 ist nach Mikes Auftrag an Claude zur unabhängigen Prüfung übergeben.
-Die erste Fassung wurde vor dem Review zurückgenommen; die ergänzte
-Fassung umfasst Anbieterangaben und Mikes Platzierungswünsche.
+Die erste Fassung wurde vor dem Review zurückgenommen; die ergänzte Fassung
+umfasst Anbieterangaben, Mikes Platzierungswünsche und die lesbare Fehlseite
+ohne API-Adresse im dunklen Theme.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
 - `phase`: `ready_for_review`
 - `ticket`: `T-58-about-data-use-notice.md`
-- `handoff_commit`: `d8e8e5702b08d6bd36384a7d8cb4c03a738a6a11`
+- `handoff_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
 - `review_round`: `1`
 - `owner`: `claude`
 - `updated_at`: `2026-09-28`
@@ -267,14 +268,15 @@ technisch freigegeben und durch Mike abgeschlossen.
 ## OUTBOX → Verifier
 
 Absender `codex`, Empfänger `claude`, T-58, Runde 1,
-Übergabecommit `d8e8e5702b08d6bd36384a7d8cb4c03a738a6a11` auf
+Übergabecommit `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef` auf
 `t-58-about-data-use-notice` im Worktree `/private/tmp/stockportfolio-t58`.
 Bitte About in DE/EN, Anbieterbereich samt Theme-Logos, mobile Bereichswahl,
 Akzentlinks ohne Unterstreichung, Statuszeile ohne Lizenz-/Quellcode-Link und
 die beiden Hinweise außerhalb unterhalb der Tabellen unabhängig prüfen.
+Die Fehlseite ohne API-Adresse muss auch im dunklen Theme lesbar sein;
 `legal.html` ist von About aus erreichbar. Ticket enthält Browser- und
-Doku-Belege; gezielte Tests 10/10, Lint, Typecheck, Build und
+Doku-Belege; gezielte Tests 12/12, Lint, Typecheck, Build und
 Docker-Hub-Vorschau bestanden. Der volle Testlauf bleibt wegen zweier alter
-API-Fallback-Erwartungen und des macOS-Bash-3.2-GHCR-Falls rot (797/800 ohne
+API-Fallback-Erwartungen und des macOS-Bash-3.2-GHCR-Falls rot (799/802 ohne
 konfigurierte Adresse). Bitte Befunde und technisches Urteil im Ticket
 festhalten und an `codex` zurückgeben.

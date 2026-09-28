@@ -1,5 +1,7 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-28 13:36:44 CEST · codex · T-58: Ergänzte Fassung mit lesbarer Startfehlseite im dunklen Theme und Mikes About-Anpassungen an Claude zur unabhängigen Prüfung übergeben. Übergabecommit c8e0ea3; drei bekannte Gesamttest-Fehlschläge im Ticket dokumentiert.
+- 2026-09-28 13:35:52 CEST · codex · T-58: Startfehlseite ohne API-Adresse im dunklen und hellen Theme lesbar gemacht; gezielte Tests, Lint, Typprüfung und Frontend-Build bestanden. Gesamttest hat drei dokumentierte Bestandsfehler.
 - 2026-09-28 13:27:54 CEST · codex · T-58: About-Links nach Mikes Rückmeldung in beiden Themes farblich abgesetzt und ohne Unterstreichung geprüft; der Tastaturfokus bleibt markiert. Produktstand d8e8e57 ist für Claudes unabhängigen Review vorbereitet.
 - 2026-09-28 13:19:21 CEST · codex · T-58: Lizenz- und Quellcodezugang von der Statuszeile nach About verlegt; Handelswert-Hinweise unter beiden Tabellen auf 11 px und engere Abstände abgestimmt, im hellen und dunklen Theme im Browser geprüft.
 - 2026-09-28 13:13:50 CEST · codex · T-58: Handelswert-Hinweise nach Mikes Präzisierung unter die Dashboard- und Rebalancing-Tabelle versetzt und im Browser bei 390 px außerhalb der Tabellen geprüft.
@@ -48,7 +50,5 @@
 - 2026-09-27 13:32:53 CEST · codex · verschiebt die Ausgabehelfer als printThemeHeading, printThemeRow und printThemeStatus nach BashLib/tools.lib.sh. Das zusätzliche changelog-publish-Target entfällt auf Mikes Wunsch; die tag-Targets rufen Python direkt auf.
 - 2026-09-27 13:25:16 CEST · codex · hat setup-libs.sh und changelog.py auf die gemeinsame Ausgabe abgestimmt. Bootstrap, Wiederholung, Linkschutz, deutsche Hilfe und ocean-Farben sind an echten Aufrufen geprüft.
 - 2026-09-27 13:15:03 CEST · codex · hat die alten Make-/Bash-Aufrufe und alle neun Theme-Paletten geprüft. Der gemeinsame py-run.sh bietet Hilfe, Werkzeugliste und isolierte Paketumgebungen; die Dokumentation wird für Claudes Review abgeglichen.
-- 2026-09-27 13:03:07 CEST · codex-observer · StockInfo: Docker-Hub-Hinweis als 7764aee committed und auf origin/master gepusht; make hints und Diff-Prüfung erfolgreich.
-- 2026-09-27 13:02:45 CEST · codex-observer · Prüft und committet auf Mikes Auftrag den Docker-Hub-Hinweis in StockInfo; anschließend Push.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
