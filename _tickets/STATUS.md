@@ -5,7 +5,10 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** keiner. [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
+**Aktiver Auftrag:** Mike beauftragt am 2026-09-28
+[T-58 · Datenhinweis](20-ready/T-58-about-data-use-notice.md)
+für StockPortfolio. Das Ticket liegt als nächster Auftrag in `20-ready/`;
+Codex aktiviert es vor dem Produktedit. [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
 Bestätigung „Ticket ist damit erledigt“ abgeschlossen. EUPL 1.2 ersetzt die
 eigene Lizenz, COMMERCIAL-LICENSE.md ist entfernt. Michael Mitterer bleibt
@@ -82,8 +85,8 @@ erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
 - `last_reviewed_round`: `3`
 - `workstream`: ``
-- `priority_chain`: ``
-- `priority_ticket`: ``
+- `priority_chain`: `T-58-about-data-use-notice.md`
+- `priority_ticket`: `T-58-about-data-use-notice.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
