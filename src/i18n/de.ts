@@ -1,5 +1,6 @@
 /** Deutscher Message-Katalog. Source of Truth für Key-Struktur. */
 export const de = {
+  tradeNotice: 'Kauf- und Verkaufswerte sind rechnerische Orientierungshilfen auf Basis deiner Depotdaten und Ziele, keine Empfehlung zum Handeln. Prüfe Daten, Kurse und Kosten selbst, bevor du eine Order aufgibst.',
   fx: {
     baseCurrency: 'Basiswährung', invalidCurrency: 'Bitte eine gültige Basiswährung wählen.',
     changeTitle: 'Basiswährung ändern',
@@ -262,6 +263,7 @@ export const de = {
       notifications: 'Meldungen',
       data: 'Daten',
       backup: 'Backup',
+      about: 'About',
       status: 'Status',
     },
     triggerHeading: 'Auslöser',
@@ -664,6 +666,7 @@ export const de = {
 
   status: {
     licenseLabel: 'Lizenz & Quellcode',
+    aboutLabel: 'Über StockPortfolio',
     poweredBy: 'powered by',
     repositoryLabel: 'StockPortfolio auf GitHub (öffnet einen neuen Tab)',
     quotes: 'Kurse',
@@ -674,6 +677,16 @@ export const de = {
     apiChecking: 'API wird geprüft',
     apiOnline: 'API erreichbar',
     apiOffline: 'API nicht erreichbar',
+  },
+  about: {
+    title: 'Über StockPortfolio',
+    intro: 'StockPortfolio übernimmt Kurse aus StockInfo und berechnet Werte aus deinen Beständen, Zielanteilen und Einstellungen.',
+    data: 'Daten können fehlen, veraltet oder fehlerhaft sein. Angezeigte Kurse sind keine verbindlichen Handelskurse.',
+    use: 'Kauf- und Verkaufswerte folgen deinen Zielwerten und Regeln. Sie dienen zur Orientierung und sind keine persönliche Empfehlung zum Handeln. Prüfe Daten, Kurse und Kosten vor einer Order bei den maßgeblichen Quellen.',
+    legal: 'Die Software steht unter der EUPL 1.2. MangoLilas Erklärung für Verbraucher erläutert die geltenden Regeln zu Gewährleistung und Haftung.',
+    licenseLink: 'EUPL 1.2 (Deutsch)',
+    licensingLink: 'Lizenz- und Verbraucherklärung',
+    financialContentLink: 'MangoLila: Hinweise zu Finanzinhalten',
   },
 } as const
 

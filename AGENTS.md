@@ -197,6 +197,16 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 Übergabe laufen mindestens `make test`, `make lint` und `make typecheck`; das
 Ergebnis gehört als Beleg ins Ticket.
 
+Für Browserprüfungen mit echter StockInfo-API gibt es
+`scripts/stockinfo-test-server.py`. Es verwendet eine temporäre Datenbank und
+lokale Testkurse. Mit StockInfos Python-Umgebung starten, etwa
+`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://127.0.0.1:5175`.
+Die `--origin` muss zur Frontend-Adresse passen. Beenden mit
+`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stop`.
+Bei einem anderen Port `--port PORT` beim Start und Stop angeben.
+Der Modul-Docstring beschreibt weitere Optionen. In einem Worktree außerhalb
+des gemeinsamen Elternverzeichnisses absolute Pfade verwenden.
+
 [↑ Übersicht](#übersicht)
 
 ## Oberfläche und Theme kommen aus ux-foundation

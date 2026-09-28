@@ -56,6 +56,7 @@ const SETTINGS_TABS = [
   'backup',
   'notifications',
   'language',
+  'about',
   'status',
 ]
 const settingsStore = useSettingsStore()
@@ -648,6 +649,37 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
               {{ t('settings.languageHint') }}
             </span>
           </div>
+        </NCard>
+      </NTabPane>
+
+      <NTabPane name="about" :tab="t('settings.tabs.about')">
+        <NCard :bordered="false" class="settings__card settings__card--full">
+          <template #header>{{ t('about.title') }}</template>
+          <p>{{ t('about.intro') }}</p>
+          <p>{{ t('about.data') }}</p>
+          <p>{{ t('about.use') }}</p>
+          <p>{{ t('about.legal') }}</p>
+          <ul>
+            <li>
+              <a
+                :href="localeStore.current === 'de' ? './LICENSE.de.txt' : './LICENSE.txt'"
+                target="_blank"
+                rel="noopener noreferrer"
+              >{{ t('about.licenseLink') }}</a>
+            </li>
+            <li>
+              <a href="./LICENSING.md" target="_blank" rel="noopener noreferrer">
+                {{ t('about.licensingLink') }}
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >{{ t('about.financialContentLink') }}</a>
+            </li>
+          </ul>
         </NCard>
       </NTabPane>
 

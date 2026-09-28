@@ -22,6 +22,7 @@ import { nextDueDate, usesBands } from '@/domain/schedule'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
 import PositionCardList from '@/components/PositionCardList.vue'
+import TradeNotice from '@/components/TradeNotice.vue'
 import { safeStorage, useIsCompact } from '@mmit/ux-foundation'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
@@ -643,6 +644,7 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
             @remove="onRemove"
             @refresh="onRefreshOne"
           />
+          <TradeNotice />
         </section>
       </div>
     </template>

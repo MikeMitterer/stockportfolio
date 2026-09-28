@@ -37,6 +37,8 @@ small trade suggestions without hiding the deviation. The limit can be a fixed
 amount in the portfolio currency or a percentage; its default is zero (off).
 Changing units converts the current value. Buffer and minimum trade settings
 are saved with the active portfolio.
+The note below the dashboard table and Rebalancing table explains that buy and
+sell figures are calculated guides, not recommendations to trade.
 
 ### Portfolio base currency
 
@@ -587,6 +589,11 @@ is included alongside the English version.
 Every production build includes the license documents and a source archive
 made from the same working files. Open **License & source** in the status bar
 or `/legal.html` to access them. In the container they are under `/app/public`.
+**About** in Settings is also linked as **About StockPortfolio** from the
+status bar. It explains the limits of displayed prices, portfolio calculations and trade
+suggestions, and links to the EUPL in the selected language and the consumer
+declaration. It also links to MangoLila's separate notice for financial
+content on its website and in publications.
 [SOURCE.md](SOURCE.md) explains how to rebuild the archive. Building requires
 `tar` as well as Node.js and npm; the Docker build image provides them.
 

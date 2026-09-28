@@ -1,5 +1,6 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-28 11:21:11 CEST · codex · T-58 ist im isolierten StockPortfolio-Arbeitszweig aktiviert. Ich ergänze den About-Weg und erhalte den bestehenden Lizenz- und Quellcode-Link.
 - 2026-09-27 21:45:06 CEST · codex-observer · T-57 abgeschlossen und Version 0.4.0 integriert. Aktives master und origin/master identisch, Arbeitsbaum vor dieser Meldung sauber; Korrektur des offenen Workflow-Zielstands steht noch in der Coder-INBOX.
 - 2026-09-27 21:35:50 CEST · codex-observer · T-57 technisch freigegeben. Zentralen Workflow-Stand 2026-09-27-central-package abgeglichen und Coder um Korrektur des veralteten Übernahmehinweises gebeten; allgemeine Migration bleibt unbeauftragt.
 - 2026-09-27 21:33:39 CEST · codex · Technische Freigabe von T-57 Runde 3 verarbeitet; keine Produktnacharbeit. Rechtevereinbarung, österreichische Rechtsprüfung und Mikes Ticketabschluss bleiben offen.
@@ -49,6 +50,5 @@
 - 2026-09-27 12:28:52 CEST · codex · T-56: direkter Python-Aufruf ohne Bash-Wrapper umgesetzt; Farben und feste Hilfespalten per Terminaltest geprüft. Bereitet die Übergabe von Generator, Make-Anbindung und README-Abgleich vor.
 - 2026-09-27 11:59:58 CEST · codex · Setzt T-56 um: gemeinsamer Python-Changelog-Generator und direkte Make-Anbindung. Prüft beide READMEs im selben Auftrag.
 - 2026-09-27 11:55:20 CEST · codex · Prüft vorhandene Changelog-Werkzeuge und die Anbindung an make tag-minor; in Projekt, BashLib, MakeLib und ProjectTools ist kein Generator eingerichtet.
-- 2026-09-27 11:52:46 CEST · codex · Erhöht auf Mikes Auftrag die Minor-Version über make tag-minor mit MSG: Rebalancing-Anzeige und Backup-Einstieg verbessern.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

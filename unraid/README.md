@@ -15,6 +15,12 @@ StockPortfolio's application code is licensed under **[EUPL 1.2](../LICENSE)**
 use, modifications, redistribution, sale and hosting are permitted without an
 additional paid license, subject to the EUPL's notice, source-code and copyleft
 requirements. See the [provider and consumer declaration](../LICENSING.md).
+In the app, **Settings → About** explains the limits of
+displayed data and calculations. The status bar links to it and to the
+existing license and source page.
+About also links to MangoLila's separate notice for website financial content.
+The dashboard and Rebalancing tables also carry a short note about the
+calculated buy and sell figures.
 
 The separate [template repository](https://github.com/MikeMitterer/unraid-templates)
 is MIT-licensed; its license covers the templates. Community Applications

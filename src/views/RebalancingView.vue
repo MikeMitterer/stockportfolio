@@ -8,6 +8,7 @@ import InfoHint from '@/components/InfoHint.vue'
 import { UxInlineNumber } from '@mmit/ux-foundation'
 import { useAppNotification } from '@/composables/useAppNotification'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
+import TradeNotice from '@/components/TradeNotice.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
 import { decimalSigned, integer, percent, percentSigned } from '@/domain/formatters'
@@ -626,6 +627,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
               </tfoot>
             </table>
           </div>
+          <TradeNotice />
         </section>
       </template>
     </div>
