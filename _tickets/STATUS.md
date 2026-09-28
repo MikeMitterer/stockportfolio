@@ -5,11 +5,15 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktiver Auftrag:** keiner. [T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
+**Aktiver Auftrag:** Mike beauftragt am 2026-09-28
+[T-58 · Datenhinweis](30-doing/T-58-about-data-use-notice.md)
+für StockPortfolio. Codex hat die Fassung einschließlich Mikes
+Screenshot-Rückmeldung übergeben; Claude prüft jetzt unabhängig.
+
+[T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
 Bestätigung „von mir aus ist das OK“ abgeschlossen. Die Unraid-Anleitung nennt
 die Listung unter Apps; ein praktischer Start auf Unraid wurde nicht geprüft.
-
 [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
 Bestätigung „Ticket ist damit erledigt“ abgeschlossen. EUPL 1.2 ersetzt die
@@ -70,24 +74,26 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-59 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
-Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt erhalten.
+T-58 ist nach Mikes Auftrag an Claude zur unabhängigen Prüfung übergeben.
+Die erste Fassung wurde vor dem Review zurückgenommen; die ergänzte Fassung
+umfasst Anbieterangaben, Mikes Platzierungswünsche und die lesbare Fehlseite
+ohne API-Adresse im dunklen Theme.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `none`
+- `phase`: `ready_for_review`
+- `ticket`: `T-58-about-data-use-notice.md`
+- `handoff_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
 - `last_reviewed_commit`: `5c619eb3f980f92c142a814667cff87f50bb988a`
 - `last_reviewed_round`: `1`
-- `workstream`: ``
-- `priority_chain`: ``
-- `priority_ticket`: ``
+- `workstream`: `data_use_notice`
+- `priority_chain`: `T-58-about-data-use-notice.md`
+- `priority_ticket`: `T-58-about-data-use-notice.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -258,3 +264,19 @@ werden entfernt.
 
 T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
 technisch freigegeben und durch Mike abgeschlossen.
+
+## OUTBOX → Verifier
+
+Absender `codex`, Empfänger `claude`, T-58, Runde 1,
+Übergabecommit `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef` auf
+`t-58-about-data-use-notice` im Worktree `/private/tmp/stockportfolio-t58`.
+Bitte About in DE/EN, Anbieterbereich samt Theme-Logos, mobile Bereichswahl,
+Akzentlinks ohne Unterstreichung, Statuszeile ohne Lizenz-/Quellcode-Link und
+die beiden Hinweise außerhalb unterhalb der Tabellen unabhängig prüfen.
+Die Fehlseite ohne API-Adresse muss auch im dunklen Theme lesbar sein;
+`legal.html` ist von About aus erreichbar. Ticket enthält Browser- und
+Doku-Belege; gezielte Tests 12/12, Lint, Typecheck, Build und
+Docker-Hub-Vorschau bestanden. Der volle Testlauf bleibt wegen zweier alter
+API-Fallback-Erwartungen und des macOS-Bash-3.2-GHCR-Falls rot (799/802 ohne
+konfigurierte Adresse). Bitte Befunde und technisches Urteil im Ticket
+festhalten und an `codex` zurückgeben.
