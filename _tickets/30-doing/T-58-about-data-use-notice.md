@@ -51,8 +51,8 @@ für **StockInfo**, nicht für StockPortfolio.
 ## Umsetzung in StockPortfolio
 
 1. Den vorhandenen Worktree und die Rolle aus dem **StockPortfolio**-`STATUS.md`
-   prüfen. Der Haupt-Checkout hat derzeit T-59 bei Claude im Review. Dessen
-   geprüfte Fassung und die dortigen uncommitteten Statusdateien erhalten.
+   prüfen. T-59 ist abgeschlossen und auf `master` integriert. Dessen
+   Änderungen und fremde uncommittete Dateien im Haupt-Checkout erhalten.
 2. Die bestehende About-Seite in `src/views/SettingsView.vue` um die Anschrift
    **MangoLila GmbH, Dorfstraße 112, 6363 Westendorf, Österreich** und den
    Link `https://www.mangolila.at/` ergänzen. Die Anschrift gehört auf About,
@@ -86,13 +86,13 @@ Haftungsausschluss.
 
 | # | Prüfung | Erwartetes Ergebnis | AI |
 |---|---|---|:--:|
-| 1 | About in DE und EN direkt laden | Datenhinweise, sprachrichtige EUPL und Verbraucherklärung sind erreichbar | ➖ |
-| 2 | Anbieterbereich in dunklem und hellem Theme prüfen | Richtiges Original-Logo, vollständige Anschrift und Website-Link auf About; keine Anschrift in der Statuszeile | ➖ |
-| 3 | Desktop- und 390-px-Ansicht prüfen | Senkrechte Trennung nur auf breiter Ansicht; mobil kein waagrechter Strich, kein Überlauf und aktive Bereichswahl sichtbar | ➖ |
-| 4 | Dashboard und Rebalancing prüfen | Hinweis zu berechneten Kauf-/Verkaufswerten jeweils außerhalb unterhalb des Tabellenbereichs | ➖ |
-| 5 | Lizenz- und Quellcodezugang prüfen | `legal.html`, EUPL-Texte und Quellarchiv sind über About erreichbar; kein Lizenzlink in der Statuszeile | ➖ |
-| 6 | Tests, Build und Dokumentation prüfen | Projektprüfungen und Docker-Hub-Vorschau bestehen; drei READMEs beschreiben den aktuellen Stand | ➖ |
-| 7 | Fehlseite ohne API-Adresse im dunklen und hellen Theme prüfen | Überschrift, Erklärung und Konfigurationshinweis sind lesbar; es gibt weiterhin keinen stillen Start ohne Adresse | ➖ |
+| 1 | About in DE und EN direkt laden | Datenhinweise, sprachrichtige EUPL und Verbraucherklärung sind erreichbar | ✅ |
+| 2 | Anbieterbereich in dunklem und hellem Theme prüfen | Richtiges Original-Logo, vollständige Anschrift und Website-Link auf About; keine Anschrift in der Statuszeile | ✅ |
+| 3 | Desktop- und 390-px-Ansicht prüfen | Senkrechte Trennung nur auf breiter Ansicht; mobil kein waagrechter Strich, kein Überlauf und aktive Bereichswahl sichtbar | ✅ |
+| 4 | Dashboard und Rebalancing prüfen | Hinweis zu berechneten Kauf-/Verkaufswerten jeweils außerhalb unterhalb des Tabellenbereichs | ✅ |
+| 5 | Lizenz- und Quellcodezugang prüfen | `legal.html`, EUPL-Texte und Quellarchiv sind über About erreichbar; kein Lizenzlink in der Statuszeile | ✅ |
+| 6 | Tests, Build und Dokumentation prüfen | Projektprüfungen und Docker-Hub-Vorschau bestehen; drei READMEs beschreiben den aktuellen Stand | ✅ |
+| 7 | Fehlseite ohne API-Adresse im dunklen und hellen Theme prüfen | Überschrift, Erklärung und Konfigurationshinweis sind lesbar; es gibt weiterhin keinen stillen Start ohne Adresse | ✅ |
 
 ## Coder-Prüfung · 2026-09-28
 
@@ -163,3 +163,106 @@ Haftungsausschluss.
 - Lessons-Abgleich: SP-CX-02 (aktuelle Aussagen in Ticket und Anleitungen)
   und SP-CX-05 (benannte StockInfo-Referenz samt Logo, Anordnung und
   Mobilansicht) wurden in Umsetzung und Browserprüfung berücksichtigt.
+
+## Unabhängige Prüfung Runde 1
+
+`claude`, 2026-09-28, an Handoff-Commit `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
+(Worktree `/private/tmp/stockportfolio-t58`, Branch `t-58-about-data-use-notice`).
+
+**Diff gelesen:** `git diff 0a9f30a..eaa562a --stat` und vollständig je Datei
+selbst ausgeführt: `src/main.ts`, `src/components/AppStatusBar.vue`,
+`src/components/TradeNotice.vue`, `src/i18n/de.ts`/`en.ts`,
+`src/views/DashboardView.vue`, `src/views/RebalancingView.vue`,
+`src/views/SettingsView.vue`, `README.md`, `docker/README.md`,
+`unraid/README.md`, beide Logo-PNGs, beide neuen Testdateien.
+
+**Eigene Prüfschritte:**
+- `npx eslint src/ tests/ --max-warnings=0` selbst ausgeführt: sauber.
+- `npx vue-tsc --noEmit` selbst ausgeführt: sauber.
+- `npx vitest run` selbst ausgeführt: **800/802**, zwei Fehlschläge in
+  `tests/api/client.spec.ts` (`apiBaseUrl`, erwarten eine feste
+  Produktionsadresse — widerspricht `MissingApiUrlError` in
+  `src/api/client.ts` und [AGENTS.md](../../AGENTS.md#stockportfolio-hängt-an-stockinfo);
+  vorbestehend, nicht T-58). Abweichend vom Coder-Nachweis (799/802 mit
+  zusätzlichem GHCR-Fehlschlag in `tests/dockerBuild.spec.ts`) bestand dieser
+  Test bei mir (19/19) — `spawnSync('bash', …)` löst über `PATH` auf, meine
+  Shell hat Homebrew-Bash 5.3.9 zuerst, `/bin/bash` ist weiterhin 3.2.57.
+  Umgebungsabhängige Vorbestandslücke, keine T-58-Regression; berührt nicht
+  den geprüften Umfang.
+- `make build-frontend` selbst ausgeführt: erfolgreich; `dist/` enthält
+  `mangolila-logo-dark.png`/`-light.png`, `LICENSE.txt`, `LICENSE.de.txt`,
+  `LICENSING.md`, `legal.html`.
+- `cmp` beider Logo-PNGs gegen StockInfos Originale unter
+  `/Volumes/DevLocal/DevWeb/Production/StockInfo/dashboard/public/`: **bytegleich**.
+  `file`: beide 200 × 57 px RGBA. Keine Nachbearbeitung, kein Kasten.
+- `:deep(.n-tabs-nav)`/`:deep(.n-tabs-wrapper)` in `SettingsView.vue` gegen
+  den Wächter `tests/componentStyles.spec.ts` geprüft: Der Test erkennt nur
+  `class="…"` direkt an `<N…>`-Elementen, keine `:deep()`-Selektoren auf
+  Bibliotheks-eigene Klassen; das Muster ist im Code bereits etabliert
+  (`PositionsTable.vue`, `SettingsView.vue` vor T-58). Keine neue
+  Regelverletzung, kein Befund.
+- Docker-Hub-Vorschau des Coders **nicht** selbst wiederholt; hier auf
+  Coder-Nachweis übernommen (SP-R-02: klar als übernommen gekennzeichnet).
+
+**Eigene Browserprüfung** (Dev-Server im Worktree, Port 5178; `public/config.js`
+für die Dauer der Prüfung testweise auf `http://localhost:9` gesetzt und danach
+zurückgesetzt — Worktree ist wieder sauber, `git status` bestätigt):
+- Startfehlseite ohne gesetzte Adresse: dunkler Hintergrund, heller lesbarer
+  Text, roter Rahmen — Fix wirkt. Helles Theme nicht zusätzlich live geprüft;
+  dafür `tests/startupError.spec.ts` (2/2, dunkel **und** hell) selbst
+  ausgeführt und grün.
+- About-Reiter direkt über `/#/settings?tab=about` geladen (DE): Anbieterblock
+  rechts mit Logo, „MangoLila GmbH“, „Dorfstraße 112“, „6363 Westendorf“,
+  „Österreich“, Website-Link; Statuszeile zeigt „About StockPortfolio“
+  unmittelbar nach „powered by MangoLila“, kein Lizenzlink mehr.
+  Theme auf „Paper“ (hell) gewechselt: Logo wechselt sichtbar auf die helle
+  Fassung (schwarzer Schriftzug), Layout bleibt lesbar. Englische Fassung
+  nicht zusätzlich live nachgeklickt; dafür deckt
+  `tests/components/aboutNotice.spec.ts` (5/5) DE, EN und den Logo-/Theme-
+  Wechsel automatisiert ab.
+- Fensterbreite auf ~390 px verkleinert (tatsächlicher Viewport laut
+  Overlay 518 px durch Browser-Chrome; klar unter dem `md`-Breakpoint):
+  Native Tabs-Zeile verschwindet, kompakte Bereichswahl („About“) erscheint,
+  Anbieterblock steht ohne waagrechten Trennstrich unterhalb des Inhalts,
+  kein horizontaler Überlauf.
+- Beispiel-Depot geladen (Kurse nicht erreichbar, `localhost:9`): Auf
+  Dashboard erscheint der Kauf-/Verkaufshinweis sichtbar unterhalb der
+  Depotgruppen-/Positionstabelle, außerhalb ihres Rahmens. Auf Rebalancing
+  erscheint derselbe Hinweis unterhalb der Verkaufen-/Kaufen-Tabelle. Exakte
+  Pixelabstände (Coder: 4 px) nicht selbst nachgemessen — visuell außerhalb
+  und unterhalb bestätigt, keine Abweichung erkennbar.
+
+**Dokumentationsbefund (SP-CX-02, auf Hinweis von `codex-observer`):** Oben
+unter „Umsetzung in StockPortfolio“, Schritt 1, steht noch „Der Haupt-Checkout
+hat derzeit T-59 bei Claude im Review.“ T-59 ist seit dieser Session
+abgeschlossen und liegt unter `40-done/`. Die Aussage ist überholt und gehört
+bei der nächsten Bearbeitung berichtigt; keine Produktänderung dadurch nötig.
+
+**Nicht wiederholt:** Docker-Hub-Vorschau-Prüfung und exakte Pixelmessung der
+Abstände (Coder-Nachweis übernommen, siehe oben).
+
+**Lessons:** SP-CX-02 angewandt — Ticket, drei READMEs und Code stimmen in
+Aussagen zu Statuszeile, About und mobiler Bereichswahl überein. SP-CX-05
+angewandt — StockInfo-Referenz (Logo, Anordnung, Mobilansicht) mit der
+StockPortfolio-Fassung live verglichen, keine Abweichung. SP-R-02 beachtet:
+Diese Zeilen trennen selbst Ausgeführtes (Diff, Lint, Typecheck, Tests, Build,
+Byte-Vergleich, Browser) von übernommenen Coder-Nachweisen (Docker-Hub-
+Vorschau, Pixelmaße).
+
+**Ergebnis:** Technisch freigegeben. Kein Produktbefund. Die abweichende
+`dockerBuild`-Testzahl ist dokumentiert, aber nicht blockierend. Mikes
+Abschlussentscheidung bleibt offen.
+
+## Coder-Rückgabe nach Runde 1
+
+Der überholte T-59-Status in Umsetzungsschritt 1 ist berichtigt. Der
+Observer-Hinweis zum gemeinsamen Regelpaket ist bereits im STATUS als
+„Offene Übernahme“ mit Stand `2026-09-27-central-package` sichtbar; eine
+allgemeine Migration bleibt ohne Auftrag aus. Die drei INBOX-Nachrichten
+von Observer und Verifier sind damit verarbeitet. Die freigegebene
+Produktfassung `c8e0ea3` bleibt unverändert; Mikes Abschlussentscheidung
+steht aus.
+
+## Menschliche Antwort
+
+Offen.

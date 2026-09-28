@@ -8,7 +8,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag:** Mike beauftragt am 2026-09-28
 [T-58 · Datenhinweis](30-doing/T-58-about-data-use-notice.md)
 für StockPortfolio. Codex hat die Fassung einschließlich Mikes
-Screenshot-Rückmeldung übergeben; Claude prüft jetzt unabhängig.
+Screenshot-Rückmeldung übergeben; `claude` hat Runde 1 am 2026-09-28 an
+Handoff-Commit `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef` technisch
+freigegeben, inklusive eigener Browserprüfung; kein Produktbefund. Mikes
+Abschlussentscheidung steht noch aus.
 
 [T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -74,22 +77,19 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-58 ist nach Mikes Auftrag an Claude zur unabhängigen Prüfung übergeben.
-Die erste Fassung wurde vor dem Review zurückgenommen; die ergänzte Fassung
-umfasst Anbieterangaben, Mikes Platzierungswünsche und die lesbare Fehlseite
-ohne API-Adresse im dunklen Theme.
+T-58 ist Runde 1 technisch freigegeben; Mikes Abschlussentscheidung steht aus.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-58-about-data-use-notice.md`
 - `handoff_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-28`
-- `last_reviewed_ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
-- `last_reviewed_commit`: `5c619eb3f980f92c142a814667cff87f50bb988a`
+- `last_reviewed_ticket`: `T-58-about-data-use-notice.md`
+- `last_reviewed_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
 - `last_reviewed_round`: `1`
 - `workstream`: `data_use_notice`
 - `priority_chain`: `T-58-about-data-use-notice.md`
@@ -264,19 +264,3 @@ werden entfernt.
 
 T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
 technisch freigegeben und durch Mike abgeschlossen.
-
-## OUTBOX → Verifier
-
-Absender `codex`, Empfänger `claude`, T-58, Runde 1,
-Übergabecommit `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef` auf
-`t-58-about-data-use-notice` im Worktree `/private/tmp/stockportfolio-t58`.
-Bitte About in DE/EN, Anbieterbereich samt Theme-Logos, mobile Bereichswahl,
-Akzentlinks ohne Unterstreichung, Statuszeile ohne Lizenz-/Quellcode-Link und
-die beiden Hinweise außerhalb unterhalb der Tabellen unabhängig prüfen.
-Die Fehlseite ohne API-Adresse muss auch im dunklen Theme lesbar sein;
-`legal.html` ist von About aus erreichbar. Ticket enthält Browser- und
-Doku-Belege; gezielte Tests 12/12, Lint, Typecheck, Build und
-Docker-Hub-Vorschau bestanden. Der volle Testlauf bleibt wegen zweier alter
-API-Fallback-Erwartungen und des macOS-Bash-3.2-GHCR-Falls rot (799/802 ohne
-konfigurierte Adresse). Bitte Befunde und technisches Urteil im Ticket
-festhalten und an `codex` zurückgeben.
