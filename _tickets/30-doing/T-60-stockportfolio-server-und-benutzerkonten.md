@@ -123,3 +123,71 @@ eigene Laufzeit-API. Bestehende Installationen brauchen beim Update einen
 Einrichtungsweg und ein Volume. HTTPS und Zugriffsschutz der Instanz sind für
 Sitzungscookies zu berücksichtigen. Die bisherigen Browser-Depots bleiben bis
 T-61 lokal; ihre Übernahme gehört nicht in dieses Ticket.
+
+## Konzeptprüfung Runde 1
+
+`claude`, 2026-09-28, an Handoff-Commit `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
+(Branch `t-60-stockportfolio-server-und-konten`). Mike hat ausdrücklich eine
+**konzeptionelle** Prüfung der Kette T-60–T-62 angefordert, keinen Produkttest.
+`git diff --name-only master...t-60-stockportfolio-server-und-konten` zeigt
+ausschließlich Ticket- und Board-Dateien (T-60–T-62, `README.md`, `STATUS.md`);
+die Zusage „noch kein Produktcode“ ist damit selbst geprüft bestätigt. Diese
+Prüfung ersetzt keine technische Freigabe von Produktcode und keinen
+menschlichen Ticketabschluss (Codex-Auftrag in der ehemaligen OUTBOX).
+
+**Zuschnitt, Reihenfolge, Abhängigkeiten:** Die Kette T-60 → T-61 → T-62 ist
+folgerichtig: Sitzungen/Konten vor kontogebundenen Daten vor Live-Hinweis auf
+deren Änderung. Jedes Ticket grenzt seinen Umfang gegen die Nachbarn ab und
+behauptet nicht deren Fertigstellung. Einstieg, Stand und STATUS beschreiben
+durchgängig dieselbe Zuordnung; kein Widerspruch gefunden (SP-CX-02-Gegenprobe).
+T-62 prüft Sitzungen über denselben Mechanismus wie T-61 statt eigener Logik —
+keine doppelt entstehende Validierung über die Kette.
+
+**Vollständige Trennung von StockInfo:** In allen drei Tickets ausdrücklich
+und mehrfach festgehalten; T-61 grenzt zusätzlich Marktdaten-Caches
+(Kurs/FX/Verlauf) bewusst von den neuen privaten Server-Stammdaten ab. Kein
+Befund.
+
+**Architekturwechsel gegen AGENTS.md:** Der Kern von AGENTS.md nennt
+StockPortfolio eine „Vue-3-App ohne eigenes Backend“; T-60 hebt das bewusst
+auf. Das ist eine von Mike im Gespräch beauftragte Richtungsentscheidung,
+keine Unstimmigkeit der Tickets. Alle drei Doku-Abgleich-Abschnitte benennen
+die nötige AGENTS.md-Korrektur bereits konkret — hier nur diese Einordnung,
+kein zusätzlicher Nachtrag nötig.
+
+**Konto- und Admin-Verwaltung — offene Entscheidung:** Keines der drei
+Tickets nennt einen Schutz gegen wiederholte Fehlanmeldungen
+(Rate-Limit/Lockout). Bei einer über Unraid potenziell erreichbaren Instanz
+mit Passwort-Login ist das vor dem ersten Produktedit in der angekündigten
+Architektur-Spezifikation mitzuentscheiden.
+
+**Sitzungscookies — bereits als offen benannt:** Das Ticket verschiebt
+Sitzungsablauf, Revisionsgrenzen und Container-Start selbst ausdrücklich in
+eine noch zu schreibende, prüfbare Spezifikation. Empfehlung dafür: konkrete
+Cookie-Flags (`Secure`/`HttpOnly`/`SameSite`) und das Verhalten bei reinem
+HTTP-Betrieb (lokal/Dev ohne TLS) dort explizit festlegen.
+
+**Sitzung statt Token — Gegenprobe auf Mikes Nachfrage:** Serverseitige
+Sitzung mit geschütztem Cookie ist hier die richtige Wahl gegenüber einem
+selbsttragenden Token (z. B. JWT), nicht nur eine unbegründete Vorgabe.
+Ausschlaggebend: sofortiger Widerruf bei Logout/Deaktivierung/Passwort-Reset
+ist mit einer Sitzungszeile trivial, mit einem signierten Token dagegen nur
+über eine zusätzliche Sperrliste möglich — genau das verlangen die
+Akzeptanzkriterien. Ein `HttpOnly`-Cookie ist für eingeschleustes JavaScript
+unerreichbar; ein Token in `localStorage` wäre es nicht. T-62 profitiert
+zusätzlich vom automatischen Cookie-Versand bei `EventSource`, das keine
+eigenen Header setzen kann. Ein-Container-Betrieb mit SQLite braucht keine
+zustandslose Mehrknoten-Skalierung, und es gibt keinen Client außer dem
+eigenen Browser — die üblichen Vorteile von Tokens entfallen hier also.
+**Die Sitzungswahl bringt aber CSRF-Exposition mit**, die Tokens nicht hätten:
+Cookies werden vom Browser automatisch mitgeschickt. Das ist in der
+Spezifikation zusammen mit den Cookie-Flags mitzuentscheiden, etwa über
+`SameSite=Lax`/`Strict` und/oder einen expliziten CSRF-Schutz für
+zustandsändernde Routen.
+
+**Kleine offene Frage:** Darf ein Admin sein eigenes, nicht-letztes Konto
+deaktivieren oder sich selbst die eigene aktive Sitzung entziehen? Nicht
+spezifiziert; vermutlich unkritisch, aber für die Spezifikation nennenswert.
+
+Befunde zu T-61 und T-62 stehen in den jeweiligen Tickets; das Gesamturteil
+über die Kette steht dort in T-62 am Ende der Prüfung.

@@ -101,3 +101,70 @@ Jeder offene Browser hält eine dauerhafte Verbindung zum StockPortfolio-Server.
 Ein vorgeschalteter Proxy muss sie durchreichen; bei Verbindungsabbruch lädt
 die App nach dem Wiederverbinden neu. Die SSE-Nachricht ersetzt weder
 Versionsprüfung noch die Datenbank-Sicherung.
+
+## Konzeptprüfung Runde 1
+
+`claude`, 2026-09-28, an Handoff-Commit `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`.
+Teil derselben Kettenprüfung wie
+[T-60](T-60-stockportfolio-server-und-benutzerkonten.md#konzeptprüfung-runde-1).
+Kein Produktcode vorhanden, keine technische Freigabe.
+
+**SSE-Zustellung:** Sauber auf „Hinweis, kein zweiter Speicherweg“ begrenzt —
+das Ereignis enthält nur Ressourcentyp, Kennung und Revision, keinen
+Positions-, Passwort- oder Sitzungsinhalt; der eigentliche Datentransfer
+bleibt REST mit den T-61-Revisionen. Die Sitzungsprüfung wird von T-61
+übernommen statt neu erfunden. Kein Befund.
+
+**Wiederverbindung — offene Entscheidung:** Punkt 3 verlangt, dass ein
+SSE-Ausfall nicht „dauerhaft unbemerkt zu einem veralteten Stand“ führt, und
+verlässt sich dafür auf Öffnen/Wiederverbinden/Tab-Sichtbarkeit als Auslöser
+für einen REST-Abgleich. Nicht benannt ist ein **Keep-Alive/Heartbeat** der
+SSE-Verbindung selbst: Reverse-Proxies (z. B. nginx in Standardkonfiguration)
+schließen idle gehaltene Verbindungen häufig nach kurzer Zeit, ohne dass
+Browser oder App das sofort bemerken, solange der Tab nicht sichtbar
+wechselt. Die Side-Effects benennen den Proxy als Betriebsvoraussetzung,
+aber nicht diese konkrete Gefahr. Für die Spezifikation empfehlenswert:
+periodische serverseitige Keep-Alive-Events oder eine vergleichbare
+Absicherung, statt sich allein auf Sichtbarkeits-/Öffnen-Ereignisse zu
+verlassen.
+
+**Trennung/Datenschutz im Stream:** Ein Konto erhält nur eigene Ereignisse;
+Logout, Deaktivierung und abgelaufene Sitzung beenden den Strom. Mit
+Prüfpunkt B (Handgriff mit fremdem Konto C) menschlich testbar angelegt.
+Kein Befund.
+
+### Gesamturteil zur Kette T-60–T-62
+
+Der Zuschnitt ist tragfähig, die Reihenfolge stimmt, StockInfo bleibt sauber
+getrennt, und die sicherheitsrelevanten Kernentscheidungen (Sitzungen statt
+Tokens, serverseitige Eigentümerprüfung, Revisionen/Konflikte,
+ereignisarmer Datentransport über SSE) sind konzeptionell richtig gewählt.
+Vor dem ersten Produktedit sollte die in T-60 angekündigte
+Architektur-Spezifikation zusätzlich zu den dort bereits genannten Punkten
+folgende offene Entscheidungen mitregeln: Login-Rate-Limit
+([T-60](T-60-stockportfolio-server-und-benutzerkonten.md#konzeptprüfung-runde-1)),
+Cookie-Flags/HTTP-Verhalten (T-60), Selbstdeaktivierung eines Admins (T-60),
+Schutz gegen mehrfache Altbestandsübernahme
+([T-61](T-61-benutzergebundene-depotdaten-per-rest.md#konzeptprüfung-runde-1)),
+konkrete Reichweite der Cache-Bereinigung beim Logout/Kontowechsel (T-61) und
+SSE-Keep-Alive gegen Proxy-Timeouts (oben). Keiner dieser Punkte stellt den
+gewählten Ansatz infrage; alle sind vor der Umsetzung entscheidbar.
+
+Dies ist eine konzeptionelle Einschätzung ohne Codeprüfung — kein bestandener
+Produkttest, keine technische Umsetzungsfreigabe und kein menschlicher
+Ticketabschluss. Rückgabe an den Coder über STATUS-INBOX.
+
+### Observer · Lessons-Einordnung zur Konzeptprüfung
+
+Die offenen Entscheidungen zu Anmeldung, Browserdaten, Altbestandsübernahme
+und SSE sowie der fehlende menschliche Export-/Restore-Prüfpunkt in T-61 sind
+konkrete Lücken dieser ersten Konzeptfassung. Es gibt dazu weder zwei
+unabhängige belegte Fehlervorfälle noch eine falsche Behauptung über bereits
+geprüftes Produktverhalten; sie bleiben deshalb Einzelfälle in den betroffenen
+Tickets und erzeugen keine neue Lesson. Die vorhandene Gegenprobe
+[SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md)
+wurde im Review für die Übereinstimmung von Ticket und STATUS angewendet.
+[SP-R-02](../.agents/lessons/SP-R-02-pruefaussagen-den-tatsaechlich-ausgefuehrten-schritten-zuordnen.md)
+ist ebenfalls erfüllt: Claudes Urteil grenzt Konzept, Codeprüfung und
+Produkttest ausdrücklich voneinander ab. Fassung der beiden Lessons: Stand
+2026-09-28; kein Lessons-Nachtrag nötig.

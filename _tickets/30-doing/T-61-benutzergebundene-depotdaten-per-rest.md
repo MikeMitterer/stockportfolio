@@ -14,6 +14,13 @@ Instrumentauswahl und Tageswerte direkt in IndexedDB. Das bestehende Backup
 enthält nur das aktive Depot. T-60 schafft Server und Konten; dieses Ticket
 ist danach an der Reihe. Produktcode für diese Aufgabe ist noch nicht geändert.
 
+**Mikes Präzisierung vom 2026-09-28:** Der Datenaustausch mit dem eigenen Server
+muss sicher und verständlich bedienbar sein. Für vorhandene Browserdepots
+braucht es den unten beschriebenen ausdrücklichen Übernahmeweg. Nutzer müssen
+ihre Daten weiterhin selbst exportieren und per Restore wiederherstellen können.
+Diese Prüfung gehört zunächst zu T-61; ein Folgeticket braucht einen konkret
+abgrenzbaren Rest und soll die Kette nicht unnötig erweitern.
+
 **Für dich:** Jetzt ist kein Handgriff nötig. Für die spätere Abnahme braucht
 es einen Test mit zwei Browsern und zwei getrennten Testkonten.
 
@@ -30,6 +37,7 @@ Depots in der Testinstanz verwenden.
 | A · Gerätewechsel | [1](#pruefpunkt-1) | Mit demselben Testkonto in zwei Browsern anmelden, Depot ändern und im zweiten Browser neu öffnen | Ist derselbe Stand sichtbar? | |
 | B · Privatsphäre | [2](#pruefpunkt-2) | Zweites Testkonto im selben Browser anmelden und eine fremde Depot-ID direkt aufrufen | Sind fremde Depots unsichtbar? | |
 | C · Altbestand | [3](#pruefpunkt-3) | Mit eigens angelegtem lokalem Testdepot am ersten Browser anmelden und die einmalige Übernahme ausführen | Ist die Zuordnung zum richtigen Konto verständlich und sicher? | |
+| D · Backup/Restore | [5](#pruefpunkt-5) | Im Testkonto A ein Depot exportieren und wiederherstellen, dann zu Testkonto B wechseln | Hat nur A den wiederhergestellten Stand, während B unverändert bleibt? | |
 
 ## Umsetzung und technische Nachweise
 
@@ -96,7 +104,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ➖ |
 | 3 | <a id="pruefpunkt-3"></a>Altbestand und leeren zweiten Browser durchspielen | Nur bestätigter Import schreibt; leerer Browser überschreibt nichts | ➖ |
 | 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ➖ |
-| 5 | Abmelden, Konto wechseln, Backup und Restore prüfen | Keine private Altanzeige; Restore schreibt nur in das angemeldete Konto | ➖ |
+| 5 | <a id="pruefpunkt-5"></a>Abmelden, Konto wechseln, Backup und Restore prüfen | Keine private Altanzeige; Restore schreibt nur in das angemeldete Konto | ➖ |
 | 6 | `make test`, `make lint`, `make typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
 
 ### Doku-Abgleich
@@ -117,3 +125,66 @@ Browserdaten werden beim Übergang nicht automatisch zu Serverdaten. Wer die
 StockPortfolio-Datenbank im Volume braucht eine eigene Sicherung; ein Backup
 des Docker-Images reicht nicht. Ein gemeinsam genutzter Browser benötigt
 saubere Abmeldung und Trennung der lokalen Caches.
+
+## Konzeptprüfung Runde 1
+
+`claude`, 2026-09-28, an Handoff-Commit `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`.
+Teil derselben Kettenprüfung wie
+[T-60](T-60-stockportfolio-server-und-benutzerkonten.md#konzeptprüfung-runde-1);
+dort auch Zuschnitt/Reihenfolge und der Architekturwechsel gegen AGENTS.md
+eingeordnet. Kein Produktcode vorhanden, keine technische Freigabe.
+
+**REST-Revisionen/Konflikte:** Klar entschieden — serverseitige Revision,
+Ablehnung veralteter Schreibstände mit sichtbarem Konflikt statt stillem
+Überschreiben, atomare Schreibvorgänge. Kein Befund.
+
+**Datenschutz zwischen Benutzern:** Eigentümerprüfung auf jeder Route
+einschließlich angegebener Depot-IDs, mit expliziten Negativtests (403/404)
+in der Verify-Matrix. Kein Befund.
+
+**Datenschutz im selben Browser — offene Entscheidung:** Punkt 6 verlangt,
+dass nach Logout/Kontowechsel „keine privaten Daten des vorigen Nutzers…
+zugänglich“ bleiben; die Side-Effects benennen „saubere Abmeldung und
+Trennung der lokalen Caches“ als nötig, ohne zu entscheiden, *was* das
+konkret umfasst. Die App hält private Daten heute in IndexedDB. Ob dieser
+Speicher beim Logout/Kontowechsel aktiv geleert wird oder nur die
+Oberfläche keine fremden Daten mehr zeigt — während Rohdaten im
+Browser-Speicher verbleiben und über Entwicklertools einsehbar wären — ist
+nicht festgelegt. Für ein gemeinsam genutztes Gerät ist das ein reales
+Datenschutzrisiko und sollte in der Spezifikation konkret entschieden werden.
+
+**Altbestandsübernahme:** Einmalig, ausdrücklich, mit Vorschau von
+Quelle/Ziel/Wirkung, kein automatisches Zusammenführen unterschiedlicher
+Altbestände — gut spezifiziert und mit eigenem menschlichem Prüfpunkt (C)
+versehen. **Offene Frage:** Ist die Übernahme gegen Mehrfachausführung
+abgesichert (zweiter Browser mit eigenem Altbestand, oder ein versehentlicher
+zweiter Übernahmeversuch am selben Browser)? Das Ticket entscheidet nur den
+Fall „ein Altbestand, eine Übernahme“; ein Schutz gegen doppelte oder
+duplizierte Depots bei mehrfacher Übernahme ist nicht benannt.
+
+Befunde zu T-62 und das Gesamturteil über die Kette stehen dort.
+
+## Ergänzung zur Observer-Anfrage · Export/Restore-Zusage
+
+Der Observer fragt an, ob die in diesem Ticket genannten Zusagen zu
+Altbestand, Backup und Restore einschließlich Benutzerprüfung tatsächlich
+abnehmbar sind (Mikes Präzisierung oben: sicherer, verständlicher
+Datenaustausch, weiterhin eigener Export und Restore der Nutzer).
+
+Inhaltlich ist das eindeutig entschieden: Export bleibt ein Depot pro Datei,
+Restore schreibt nur ins angemeldete Konto (Akzeptanzkriterien, Punkt 6).
+Technisch ist das über Verify #5 abgedeckt. **Es fehlt aber ein eigener
+menschlicher Prüfpunkt dafür** — die Tabelle „Für dich“ kennt nur A
+(Gerätewechsel), B (Privatsphäre) und C (Altbestand), keinen für
+Backup/Restore, obwohl Mike diesen Punkt ausdrücklich als wichtig benennt.
+
+**Empfehlung:** einen vierten Prüfpunkt D · Backup/Restore in der Tabelle
+„Für dich“ ergänzen — Handgriff: Export im angemeldeten Konto ziehen,
+abmelden beziehungsweise Konto wechseln, mit dem Export-File wiederherstellen
+und prüfen, dass nur das eigene Konto betroffen ist. Kein zusätzliches
+Folgeticket nötig; die Ergänzung passt in den bestehenden Umfang dieses
+Tickets und hält den Zuschnitt der Kette eng, wie vom Observer gewünscht.
+
+**Coder-Nacharbeit · 2026-09-28:** Prüfpunkt D ist oben ergänzt und auf Verify
+#5 bezogen. Die Empfehlung der Konzeptprüfung ist damit im Ticket enthalten;
+der Produktnachweis und Mikes Urteil bleiben offen.

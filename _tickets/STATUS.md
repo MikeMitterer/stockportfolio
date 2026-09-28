@@ -5,15 +5,19 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Konzeptprüfung am Zug:** [T-60 · StockPortfolio-Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+**Konzeptprüfung abgeschlossen:** [T-60 · StockPortfolio-Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
 ist am 2026-09-28 auf Mikes Auftrag in `30-doing/` aktiviert. Dieselbe
 beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
 und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`;
-T-60 ist das aktive Ticket. Mike hat Claude um eine konzeptionelle Prüfung
-aller drei Tickets gebeten. Der Coder wartet mit Produktcode bis zur Rückgabe.
-T-61 folgt nach T-60, T-62 nach T-61. Es gibt noch keine Produktumsetzung
-oder technische Freigabe für diese Kette. StockInfo wird nicht geändert.
+T-60 bleibt das aktive Ticket. Claude hat die von Mike beauftragte
+konzeptionelle Prüfung aller drei Tickets am 2026-09-28 abgeschlossen und
+Befunde in jedem der drei Tickets festgehalten; keiner davon stellt den
+gewählten Ansatz infrage. Der Coder ist wieder am Zug und hält vor dem ersten
+Produktedit die angekündigte prüfbare Architektur-Spezifikation fest, in die
+die genannten offenen Entscheidungen einfließen. T-61 folgt nach T-60, T-62
+nach T-61. Es gibt weiterhin keine Produktumsetzung oder technische Freigabe
+für diese Kette. StockInfo wird nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -81,29 +85,32 @@ Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 er prüft die Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
-Paketstand `2026-09-27-central-package`. Allgemeine Übernahme weiterhin
-nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
-Lokale Ausnahme nach Mikes Beschluss vom 2026-09-28: `ACTIVITY.md` bleibt
-unversioniert und wird von Git ignoriert.
+installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+(Konventionsstand `2026-09-28-activity-local`). `ACTIVITY.md` bleibt nach
+Mikes Beschluss vom 2026-09-28 lokal und wird bereits über die Root-`.gitignore`
+ignoriert; die Paketvorlage sieht dafür eine noch fehlende
+`_tickets/.gitignore` vor. Die allgemeine Übernahme ist nicht beauftragt und
+bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-60 ist das aktive Ticket. Claude prüft das Konzept der gesamten Kette
-T-60 bis T-62; dies ist keine technische Freigabe von Produktcode. T-61 und
-T-62 sind noch nicht zur Produktumsetzung aktiviert.
-Die letzte abgeschlossene Reviewreferenz aus T-58 bleibt erhalten.
+T-60 ist das aktive Ticket. Claude hat das Konzept der gesamten Kette T-60
+bis T-62 geprüft und `approved`; das ist eine konzeptionelle Freigabe, keine
+technische Freigabe von Produktcode. T-61 und T-62 sind noch nicht zur
+Produktumsetzung aktiviert. Die vorherige Reviewreferenz aus T-58 ist durch
+diese abgeschlossene Konzeptprüfung ersetzt.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `implementing`
 - `ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
-- `handoff_commit`: `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
+- `handoff_commit`: ``
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-28`
-- `last_reviewed_ticket`: `T-58-about-data-use-notice.md`
-- `last_reviewed_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
+- `last_reviewed_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
+- `last_reviewed_commit`: `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
@@ -279,21 +286,3 @@ werden entfernt.
 ## INBOX → Coder
 
 Keine offene Nachricht.
-
-## OUTBOX → Verifier
-
-**Codex · T-60/T-61/T-62 · Konzeptprüfung Runde 1 · 2026-09-28:** Mike
-beauftragt Claude ausdrücklich, die drei Tickets konzeptionell zu prüfen.
-Geprüfte Ticketfassung: Commit `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
-auf Branch `t-60-stockportfolio-server-und-konten`. Es gibt noch keinen
-Produktcode und keine technische Freigabe. Bitte Zuschnitt, Reihenfolge und
-Abhängigkeiten, vollständige Trennung von StockInfo, Konto- und
-Admin-Verwaltung, Datenschutz zwischen Benutzern und im selben Browser,
-Altbestandsübernahme, REST-Revisionen/Konflikte, SSE-Zustellung und
-Wiederverbindung sowie Container-/Volume-/HTTPS-Betrieb und Doku-Zuordnung
-prüfen. Fehlende Entscheidungen und unprüfbare Zusagen benennen.
-
-Befunde im jeweils betroffenen Ticket festhalten, eine knappe Rückgabe in
-die INBOX schreiben und Phase/Owner nach Workflow zurückgeben. Eine positive
-Konzeptprüfung darf nicht als bestandener Produkttest, technische
-Umsetzungsfreigabe oder menschlicher Ticketabschluss ausgewiesen werden.
