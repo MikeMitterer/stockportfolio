@@ -384,6 +384,8 @@ The card does not offer editing.
 Rebalancing retains its desktop table layout. On a narrow screen, scroll its
 summary and table together horizontally; a wider window is more practical for
 entering trades.
+Settings uses a section selector below 768 px, so About and the other sections
+remain reachable without scrolling through a wide row of tabs.
 
 ## Docker
 
@@ -589,11 +591,13 @@ is included alongside the English version.
 Every production build includes the license documents and a source archive
 made from the same working files. Open **License & source** in the status bar
 or `/legal.html` to access them. In the container they are under `/app/public`.
-**About** in Settings is also linked as **About StockPortfolio** from the
-status bar. It explains the limits of displayed prices, portfolio calculations and trade
-suggestions, and links to the EUPL in the selected language and the consumer
-declaration. It also links to MangoLila's separate notice for financial
-content on its website and in publications.
+**About StockPortfolio** in the status bar, immediately after the MangoLila
+credit, opens **Settings → About**. It explains the limits of displayed prices,
+portfolio calculations and trade suggestions. The page shows MangoLila GmbH's
+address, website and logo, using the light or dark logo for the current theme.
+It links to the EUPL in the selected language, the consumer declaration and
+MangoLila's separate notice for financial content on its website and in
+publications.
 [SOURCE.md](SOURCE.md) explains how to rebuild the archive. Building requires
 `tar` as well as Node.js and npm; the Docker build image provides them.
 

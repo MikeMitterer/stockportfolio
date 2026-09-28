@@ -154,7 +154,9 @@ The separate **About StockPortfolio** link in the status bar opens
 **Settings → About**, a tab about data and calculation limits. It links to the
 English or German EUPL
 according to the selected UI language and to the consumer declaration.
-It also links to MangoLila's separate notice for website financial content.
+It shows MangoLila GmbH's address, website and theme-matched logo, and links
+to MangoLila's separate notice for website financial content. On narrow
+screens, a section selector replaces the Settings tab row.
 
 Third-party components keep their own licenses; see
 [third-party notices](../THIRD_PARTY_NOTICES.md). StockInfo is a separate service

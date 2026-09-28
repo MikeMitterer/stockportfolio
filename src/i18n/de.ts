@@ -255,6 +255,7 @@ export const de = {
   },
 
   settings: {
+    sectionLabel: 'Bereich der Einstellungen',
     tabs: {
       calc: 'Berechnung',
       theme: 'Theme',
@@ -680,6 +681,11 @@ export const de = {
   },
   about: {
     title: 'Über StockPortfolio',
+    providerName: 'MangoLila GmbH',
+    providerStreet: 'Dorfstraße 112',
+    providerCity: '6363 Westendorf',
+    providerCountry: 'Österreich',
+    websiteLink: 'Website von MangoLila',
     intro: 'StockPortfolio übernimmt Kurse aus StockInfo und berechnet Werte aus deinen Beständen, Zielanteilen und Einstellungen.',
     data: 'Daten können fehlen, veraltet oder fehlerhaft sein. Angezeigte Kurse sind keine verbindlichen Handelskurse.',
     use: 'Kauf- und Verkaufswerte folgen deinen Zielwerten und Regeln. Sie dienen zur Orientierung und sind keine persönliche Empfehlung zum Handeln. Prüfe Daten, Kurse und Kosten vor einer Order bei den maßgeblichen Quellen.',

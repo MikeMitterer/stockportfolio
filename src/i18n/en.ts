@@ -246,6 +246,7 @@ export const en: MessageSchema = {
   },
 
   settings: {
+    sectionLabel: 'Settings section',
     tabs: {
       calc: 'Calculation',
       theme: 'Theme',
@@ -668,6 +669,11 @@ export const en: MessageSchema = {
   },
   about: {
     title: 'About StockPortfolio',
+    providerName: 'MangoLila GmbH',
+    providerStreet: 'Dorfstrasse 112',
+    providerCity: '6363 Westendorf',
+    providerCountry: 'Austria',
+    websiteLink: 'MangoLila website',
     intro: 'StockPortfolio gets quotes from StockInfo and calculates values from your holdings, target shares and settings.',
     data: 'Data may be missing, outdated or incorrect. Displayed prices are not binding trading prices.',
     use: 'Buy and sell figures follow your targets and rules. They are guides, not personal recommendations to trade. Check data, prices and costs against the relevant sources before placing an order.',

@@ -11,6 +11,7 @@ import {
   NSwitch,
   NRadio,
   NRadioGroup,
+  NSelect,
   NSpace,
   NTabPane,
   NTabs,
@@ -59,6 +60,10 @@ const SETTINGS_TABS = [
   'about',
   'status',
 ]
+const tabOptions = computed(() => SETTINGS_TABS.map((value) => ({
+  label: t(`settings.tabs.${value}`),
+  value,
+})))
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
@@ -164,6 +169,12 @@ function setTab(name: string): void {
   void router.replace({ path: '/settings', query: { tab: name } })
 }
 
+function setTabFromSelection(value: string | number | null): void {
+  if (typeof value === 'string' && SETTINGS_TABS.includes(value)) setTab(value)
+}
+
+const logoUrl = computed(() => `${import.meta.env.BASE_URL}mangolila-logo-${themeStore.isDark ? 'dark' : 'light'}.png`)
+
 async function setLowerBand(value: number | null): Promise<void> {
   if (value === null) return
   await settingsStore.setBands({ ...settingsStore.settings.bands, lowerPercent: value })
@@ -228,6 +239,16 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 <template>
   <div class="settings">
     <h1 class="settings__title">{{ t('views.settingsTitle') }}</h1>
+
+    <NSelect
+      class="settings__mobile-tabs"
+      size="large"
+      :theme-overrides="{ peers: { InternalSelection: { heightLarge: '44px' } } }"
+      :value="activeTab"
+      :options="tabOptions"
+      :aria-label="t('settings.sectionLabel')"
+      @update:value="setTabFromSelection"
+    />
 
     <!--
       Gegliedert statt gestapelt: Rechenvorgaben, Aussehen und Verweise haben
@@ -655,31 +676,47 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
       <NTabPane name="about" :tab="t('settings.tabs.about')">
         <NCard :bordered="false" class="settings__card settings__card--full">
           <template #header>{{ t('about.title') }}</template>
-          <p>{{ t('about.intro') }}</p>
-          <p>{{ t('about.data') }}</p>
-          <p>{{ t('about.use') }}</p>
-          <p>{{ t('about.legal') }}</p>
-          <ul>
-            <li>
-              <a
-                :href="localeStore.current === 'de' ? './LICENSE.de.txt' : './LICENSE.txt'"
-                target="_blank"
-                rel="noopener noreferrer"
-              >{{ t('about.licenseLink') }}</a>
-            </li>
-            <li>
-              <a href="./LICENSING.md" target="_blank" rel="noopener noreferrer">
-                {{ t('about.licensingLink') }}
+          <div class="settings__about-layout">
+            <div class="settings__about-content">
+              <p>{{ t('about.intro') }}</p>
+              <p>{{ t('about.data') }}</p>
+              <p>{{ t('about.use') }}</p>
+              <p>{{ t('about.legal') }}</p>
+              <ul>
+                <li>
+                  <a
+                    :href="localeStore.current === 'de' ? './LICENSE.de.txt' : './LICENSE.txt'"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >{{ t('about.licenseLink') }}</a>
+                </li>
+                <li>
+                  <a href="./LICENSING.md" target="_blank" rel="noopener noreferrer">
+                    {{ t('about.licensingLink') }}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >{{ t('about.financialContentLink') }}</a>
+                </li>
+              </ul>
+            </div>
+            <div class="settings__provider">
+              <img :src="logoUrl" alt="" width="200" height="57" />
+              <address class="settings__provider-address">
+                <strong>{{ t('about.providerName') }}</strong><br />
+                {{ t('about.providerStreet') }}<br />
+                {{ t('about.providerCity') }}<br />
+                {{ t('about.providerCountry') }}
+              </address>
+              <a href="https://www.mangolila.at/" target="_blank" rel="noopener noreferrer">
+                {{ t('about.websiteLink') }}
               </a>
-            </li>
-            <li>
-              <a
-                href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >{{ t('about.financialContentLink') }}</a>
-            </li>
-          </ul>
+            </div>
+          </div>
         </NCard>
       </NTabPane>
 
@@ -790,6 +827,13 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 <style scoped lang="scss">
 .settings {
   @include content-frame(var(--space-8));
+
+  &__mobile-tabs { display: none; }
+
+  @include below(md) {
+    &__mobile-tabs { display: block; margin-bottom: var(--space-4); }
+    :deep(.n-tabs-nav) { display: none; }
+  }
 
   &__title {
     margin-bottom: var(--space-4);
@@ -961,6 +1005,41 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
     margin-top: var(--space-4);
     line-height: 1.625;
+  }
+
+  &__about-layout {
+    display: grid;
+    gap: var(--space-6);
+
+    @include up(md) { grid-template-columns: minmax(0, 1fr) 17rem; }
+  }
+
+  &__about-content {
+    min-width: 0;
+
+    p { margin: 0 0 var(--space-3); }
+    ul { margin: 0; padding-inline-start: var(--space-6); }
+    li + li { margin-top: var(--space-2); }
+  }
+
+  &__provider {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+
+    img { display: block; max-width: 100%; height: auto; }
+
+    @include up(md) {
+      border-inline-start: 1px solid token(--border-default);
+      padding-inline-start: var(--space-6);
+    }
+  }
+
+  &__provider-address {
+    font-style: normal;
+    font-size: var(--font-sm);
+    line-height: 1.6;
   }
 }
 

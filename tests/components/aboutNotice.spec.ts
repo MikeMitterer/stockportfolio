@@ -2,10 +2,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { createMemoryHistory, createRouter, type Router } from 'vue-router'
+import { NSelect } from 'naive-ui'
 
 import AppStatusBar from '@/components/AppStatusBar.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import { useLocaleStore } from '@/stores/locale'
+import { useThemeStore } from '@/stores/theme'
 import { STOCK_INFO_CLIENT } from '@/api/client'
 
 beforeEach(() => {
@@ -74,5 +76,46 @@ describe('Hinweise zu Daten und Nutzung', () => {
     expect(wrapper.text()).toContain('Data may be missing, outdated or incorrect')
     expect(wrapper.find('a[href="./LICENSE.txt"]').exists()).toBe(true)
     expect(wrapper.find('a[href="./LICENSE.de.txt"]').exists()).toBe(false)
+  })
+
+  it('zeigt Anbieteranschrift und das zum Theme passende Original-Logo', async () => {
+    const router = testRouter()
+    await router.push('/settings?tab=about')
+    const themeStore = useThemeStore()
+    themeStore.setTheme('mangolila')
+    const wrapper = mount(SettingsView, {
+      global: { plugins: [router], provide: { [STOCK_INFO_CLIENT as symbol]: null } },
+    })
+    activeWrapper = wrapper
+    await flushPromises()
+
+    const provider = wrapper.get('address')
+    expect(provider.text()).toContain('MangoLila GmbH')
+    expect(provider.text()).toContain('Dorfstraße 112')
+    expect(provider.text()).toContain('6363 Westendorf')
+    expect(provider.text()).toContain('Österreich')
+    expect(wrapper.get('a[href="https://www.mangolila.at/"]').text()).toBeTruthy()
+    expect(wrapper.find('img[src="/mangolila-logo-dark.png"]').exists()).toBe(true)
+
+    themeStore.setTheme('paper')
+    await flushPromises()
+    expect(wrapper.find('img[src="/mangolila-logo-light.png"]').exists()).toBe(true)
+  })
+
+  it('hält bei kompakter Bereichswahl den About-Reiter in der Adresse aktiv', async () => {
+    const router = testRouter()
+    await router.push('/settings?tab=about')
+    const wrapper = mount(SettingsView, {
+      global: { plugins: [router], provide: { [STOCK_INFO_CLIENT as symbol]: null } },
+    })
+    activeWrapper = wrapper
+    await flushPromises()
+
+    const selection = wrapper.getComponent(NSelect)
+    expect(selection.props('value')).toBe('about')
+    selection.vm.$emit('update:value', 'theme')
+    await flushPromises()
+    expect(router.currentRoute.value.query.tab).toBe('theme')
+    expect(selection.props('value')).toBe('theme')
   })
 })
