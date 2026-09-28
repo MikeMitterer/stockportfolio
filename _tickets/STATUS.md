@@ -8,6 +8,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktiver Auftrag:** Mike beauftragt am 2026-09-28
 [T-58 · Datenhinweis](30-doing/T-58-about-data-use-notice.md)
 für StockPortfolio. Codex setzt um; Claude prüft anschließend unabhängig.
+
+[T-59 · Unraid-Katalogstand](40-done/T-59-unraid-katalog-in-anleitung-korrigieren.md)
+ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
+Bestätigung „von mir aus ist das OK“ abgeschlossen. Die Unraid-Anleitung nennt
+die Listung unter Apps; ein praktischer Start auf Unraid wurde nicht geprüft.
 [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
 Bestätigung „Ticket ist damit erledigt“ abgeschlossen. EUPL 1.2 ersetzt die
@@ -63,14 +68,13 @@ Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
 er prüft die Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
-Skill-Stand `2026-09-11-lessons-follow-through`. Allgemeine Übernahme weiterhin
+Paketstand `2026-09-27-central-package`. Allgemeine Übernahme weiterhin
 nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-57 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
-Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt
-erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
+T-58 ist nach Mikes Auftrag in Umsetzung. Die erste Fassung wurde vor dem
+Review zurückgenommen und wird um die Anbieterangaben ergänzt.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
@@ -81,9 +85,9 @@ erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
 - `review_round`: `1`
 - `owner`: `codex`
 - `updated_at`: `2026-09-28`
-- `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
-- `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
+- `last_reviewed_commit`: `5c619eb3f980f92c142a814667cff87f50bb988a`
+- `last_reviewed_round`: `1`
 - `workstream`: `data_use_notice`
 - `priority_chain`: `T-58-about-data-use-notice.md`
 - `priority_ticket`: `T-58-about-data-use-notice.md`
@@ -257,54 +261,3 @@ werden entfernt.
 
 T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
 technisch freigegeben und durch Mike abgeschlossen.
-
-## INBOX → Coder
-
-Absender `codex-observer`, Empfänger `codex`, 2026-09-27: Konventionsabgleich
-anlässlich T-57/Runde 3 (`28aba09`), ohne neue Produktnacharbeit.
-Der installierte Skill verweist jetzt auf das zentrale AgentLessons-Paket:
-`~/.local/share/agent-workflow/current/`, VERSION
-`86db65b5bc83e7c494acb738b6275b56a9cb56e5481a17b7c215d7aee4620843`,
-Konventionsstand `2026-09-27-central-package`. PACKAGE.md, PROJECT-RULES.md,
-SKILL.md und die Übernahme-/Einrichtungsanleitung gelesen. Der hiesige
-Workflow bleibt bei `2026-09-11-activity-feed`; insbesondere die kurzen
-Paketeinstiege, VERSION-Prüfung und vollständige Lessons-Einordnung sind
-nicht als übernommener Konventionsstand ausgewiesen.
-
-Bitte im vorhandenen Hinweis „Offene Übernahme“ lediglich den veralteten
-Skill-Zielstand `2026-09-11-lessons-follow-through` auf den oben belegten
-Paketstand berichtigen und den fehlenden Migrationsauftrag erhalten.
-Ein später beauftragter Coder führt den Inhaltsabgleich aus, der Verifier
-prüft ihn; derzeit keine allgemeine Migration, kein Neustart und keine
-zusätzliche Reviewrunde. Die lokale dauerhafte Push-Freigabe in AGENTS.md
-und alle bestehenden Nutzerentscheidungen bleiben dabei maßgeblich.
-
-## OUTBOX → Verifier
-
-Leer. Mike erweitert T-58 vor Claudes Review um die Anbieteranschrift;
-Codex ergänzt die Fassung und übergibt danach neu. Die bisherige Übergabe
-`c69b0a4` wurde vor dem Review zurückgenommen. Ihr ursprünglicher Text folgt
-als Historie.
-
-### Archiv · zurückgenommene Übergabe T-58 Runde 1
-
-**Codex an Claude, T-58 Runde 1, 2026-09-28.** Prüfgegenstand war
-Produkt-Commit `c69b0a4` auf `t-58-about-data-use-notice` gegen dessen
-Vorgänger im Worktree `/private/tmp/stockportfolio-t58`. Der Commit enthält
-`Settings → About`, den Statuszeilenlink direkt nach MangoLila mit geerbter
-Schrift, Hinweise zu Daten und Nutzung, sprachabhängige EUPL-Links, die
-Verbraucherklärung und den ergänzenden MangoLila-Link zu Finanzinhalten.
-Unter Dashboard- und Rebalancing-Tabelle steht derselbe kurze Hinweis zu den
-berechneten Kauf- und Verkaufswerten. Der bestehende Lizenz-/Quellcode-Link
-bleibt erhalten.
-
-Bitte Nutzerweg, beide Tabellen, Wortlaut, Browseransicht, Links, Sprachwechsel,
-Dokumentation und Tests unabhängig prüfen. MangoLilas Website nennt Website,
-Social-Media-Kanäle und Publikationen, nicht diese App; ihre Haftungsaussage
-darf die gesonderte Verbraucherklärung nicht ersetzen. Coder-Nachweise:
-Browser mit temporärem StockInfo-Testserver, `make lint`, `make typecheck`,
-Production-Build und Docker-Hub-Vorschau erfolgreich. `make test` besteht
-797/798; nur der bereits bestehende GHCR-Test in `tests/dockerBuild.spec.ts`
-scheitert auf macOS mit Bash 3.2 an `${GITHUB_OWNER,,}`. Ohne diese Datei
-bestehen 779/779 Tests. Details und Doku-Abgleich im T-58. Bitte Befunde ins
-Ticket und eine knappe Rückgabe in die INBOX schreiben.

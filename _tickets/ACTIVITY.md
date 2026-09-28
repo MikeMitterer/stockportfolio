@@ -1,6 +1,8 @@
 # Aktuelle Tätigkeit
 
 - 2026-09-28 11:47:52 CEST · codex · T-58 umgesetzt und geprüft; Übergabe an Claude vorbereitet
+- 2026-09-28 11:29:18 CEST · codex · T-59: Unraid-Anleitung nennt den vorhandenen Apps-Eintrag. Fassung 5c619eb ist für die unabhängige Gegenprüfung vorbereitet; ein älterer Docker-Build-Test scheitert weiterhin auf master.
+- 2026-09-28 11:24:34 CEST · codex · Korrigiert im getrennten T-59-Worktree die StockPortfolio-Unraid-Anleitung zum bereits vorhandenen Apps-Eintrag. Prüft die übrigen README-Verweise; kein Unraid-Livetest.
 - 2026-09-28 11:21:11 CEST · codex · T-58 ist im isolierten StockPortfolio-Arbeitszweig aktiviert. Ich ergänze den About-Weg und erhalte den bestehenden Lizenz- und Quellcode-Link.
 - 2026-09-27 21:45:06 CEST · codex-observer · T-57 abgeschlossen und Version 0.4.0 integriert. Aktives master und origin/master identisch, Arbeitsbaum vor dieser Meldung sauber; Korrektur des offenen Workflow-Zielstands steht noch in der Coder-INBOX.
 - 2026-09-27 21:35:50 CEST · codex-observer · T-57 technisch freigegeben. Zentralen Workflow-Stand 2026-09-27-central-package abgeglichen und Coder um Korrektur des veralteten Übernahmehinweises gebeten; allgemeine Migration bleibt unbeauftragt.
@@ -48,7 +50,5 @@
 - 2026-09-27 13:00:42 CEST · codex-observer · Ergänzt auf Mikes direkten Auftrag ohne Ticket den Docker-Hub-Link in StockInfos make hints und prüft die Ausgabe.
 - 2026-09-27 12:52:45 CEST · codex · ergänzt die gemeinsamen CLI-Themes in MakeLib, BashLib und ProjectTools. Mike hat die offene T-56-Prüfung dafür zurückgestellt.
 - 2026-09-27 12:31:25 CEST · codex · Übergibt T-56 an Claude: direkter Python-Generator, Make-Anbindung, Farben/Spalten und beide READMEs sind geprüft. Wartet auf unabhängige Freigabe beider Repository-Fassungen.
-- 2026-09-27 12:28:52 CEST · codex · T-56: direkter Python-Aufruf ohne Bash-Wrapper umgesetzt; Farben und feste Hilfespalten per Terminaltest geprüft. Bereitet die Übergabe von Generator, Make-Anbindung und README-Abgleich vor.
-- 2026-09-27 11:59:58 CEST · codex · Setzt T-56 um: gemeinsamer Python-Changelog-Generator und direkte Make-Anbindung. Prüft beide READMEs im selben Auftrag.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).

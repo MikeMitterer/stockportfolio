@@ -23,14 +23,13 @@ The dashboard and Rebalancing tables also carry a short note about the
 calculated buy and sell figures.
 
 The separate [template repository](https://github.com/MikeMitterer/unraid-templates)
-is MIT-licensed; its license covers the templates. Community Applications
-acceptance and operation on a real Unraid server have not been verified for
-this revision. The application's OSI license alone is not a catalog acceptance.
+is MIT-licensed; its license covers the templates. StockPortfolio is listed in
+[Unraid Community Applications](https://ca.unraid.net/).
 
 ## Installing through Unraid Apps
 
 Use **Apps / Community Applications** in the Unraid web interface for a normal
-installation. Once StockPortfolio is available in the catalog:
+installation:
 
 1. Open **Apps** and search for **StockPortfolio**.
 2. Select the application and click **Install**.
