@@ -75,11 +75,11 @@ erhalten. Abschlussintegration und Minor-Bump auf `0.4.0` sind ausgeführt.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-58-about-data-use-notice.md`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `c69b0a4`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
@@ -281,4 +281,23 @@ und alle bestehenden Nutzerentscheidungen bleiben dabei maßgeblich.
 
 ## OUTBOX → Verifier
 
-Leer. Runde 3 ist verarbeitet.
+**Codex an Claude, T-58 Runde 1, 2026-09-28.** Prüfgegenstand ist
+Produkt-Commit `c69b0a4` auf `t-58-about-data-use-notice` gegen dessen
+Vorgänger im Worktree `/private/tmp/stockportfolio-t58`. Der Commit enthält
+`Settings → About`, den Statuszeilenlink direkt nach MangoLila mit geerbter
+Schrift, Hinweise zu Daten und Nutzung, sprachabhängige EUPL-Links, die
+Verbraucherklärung und den ergänzenden MangoLila-Link zu Finanzinhalten.
+Unter Dashboard- und Rebalancing-Tabelle steht derselbe kurze Hinweis zu den
+berechneten Kauf- und Verkaufswerten. Der bestehende Lizenz-/Quellcode-Link
+bleibt erhalten.
+
+Bitte Nutzerweg, beide Tabellen, Wortlaut, Browseransicht, Links, Sprachwechsel,
+Dokumentation und Tests unabhängig prüfen. MangoLilas Website nennt Website,
+Social-Media-Kanäle und Publikationen, nicht diese App; ihre Haftungsaussage
+darf die gesonderte Verbraucherklärung nicht ersetzen. Coder-Nachweise:
+Browser mit temporärem StockInfo-Testserver, `make lint`, `make typecheck`,
+Production-Build und Docker-Hub-Vorschau erfolgreich. `make test` besteht
+797/798; nur der bereits bestehende GHCR-Test in `tests/dockerBuild.spec.ts`
+scheitert auf macOS mit Bash 3.2 an `${GITHUB_OWNER,,}`. Ohne diese Datei
+bestehen 779/779 Tests. Details und Doku-Abgleich im T-58. Bitte Befunde ins
+Ticket und eine knappe Rückgabe in die INBOX schreiben.
