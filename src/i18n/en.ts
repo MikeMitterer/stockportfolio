@@ -654,7 +654,6 @@ export const en: MessageSchema = {
   },
 
   status: {
-    licenseLabel: 'License & source',
     aboutLabel: 'About StockPortfolio',
     poweredBy: 'powered by',
     repositoryLabel: 'StockPortfolio on GitHub (opens a new tab)',
@@ -680,6 +679,7 @@ export const en: MessageSchema = {
     legal: 'The software is licensed under EUPL 1.2. MangoLila’s consumer declaration explains the applicable warranty and liability rules.',
     licenseLink: 'EUPL 1.2 (English)',
     licensingLink: 'Licensing and consumer declaration',
+    sourceLink: 'License page and source archive',
     financialContentLink: 'MangoLila: Financial content disclaimer (German)',
   },
 }

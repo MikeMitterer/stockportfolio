@@ -144,16 +144,17 @@ dealing with consumers. Statutory rules apply; no additional voluntary
 guarantee is provided. The official [German license text](../LICENSE.de.txt)
 is included alongside the English version.
 
-Open **License & source** in the app's status bar, or `/legal.html` on your
-instance. Production builds include license documents and
-`/stockportfolio-source.tgz`, made from the same working files as the app.
+Open **Settings → About** in the app for the license documents, consumer
+declaration and a link to `/legal.html` on your instance. Production builds
+include license documents and `/stockportfolio-source.tgz`, made from the same
+working files as the app.
 These files are stored under `/app/public` in the image. The archive includes
 build instructions in SOURCE.md.
 
-The separate **About StockPortfolio** link in the status bar opens
+The **About StockPortfolio** link in the status bar opens
 **Settings → About**, a tab about data and calculation limits. It links to the
-English or German EUPL
-according to the selected UI language and to the consumer declaration.
+English or German EUPL according to the selected UI language, the consumer
+declaration and the license page with the source archive.
 It shows MangoLila GmbH's address, website and theme-matched logo, and links
 to MangoLila's separate notice for website financial content. On narrow
 screens, a section selector replaces the Settings tab row.

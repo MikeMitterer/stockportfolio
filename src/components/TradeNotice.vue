@@ -10,9 +10,9 @@ const { t } = useI18n()
 
 <style scoped lang="scss">
 .trade-notice {
-  margin: var(--space-2) 0 0;
-  color: token(--text-secondary);
-  font-size: var(--font-xs);
-  line-height: 1.5;
+  margin: var(--space-1) 0 0;
+  color: token(--text-muted);
+  font-size: 0.6875rem;
+  line-height: 1.45;
 }
 </style>

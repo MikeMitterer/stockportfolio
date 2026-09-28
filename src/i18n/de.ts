@@ -666,7 +666,6 @@ export const de = {
   },
 
   status: {
-    licenseLabel: 'Lizenz & Quellcode',
     aboutLabel: 'Über StockPortfolio',
     poweredBy: 'powered by',
     repositoryLabel: 'StockPortfolio auf GitHub (öffnet einen neuen Tab)',
@@ -692,6 +691,7 @@ export const de = {
     legal: 'Die Software steht unter der EUPL 1.2. MangoLilas Erklärung für Verbraucher erläutert die geltenden Regeln zu Gewährleistung und Haftung.',
     licenseLink: 'EUPL 1.2 (Deutsch)',
     licensingLink: 'Lizenz- und Verbraucherklärung',
+    sourceLink: 'Lizenzseite und Quellarchiv',
     financialContentLink: 'MangoLila: Hinweise zu Finanzinhalten',
   },
 } as const

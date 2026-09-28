@@ -223,8 +223,8 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 </script>
 
 <template>
-  <div class="reb" role="region" :aria-label="t('nav.rebalancing')" tabindex="0">
-    <div class="reb__workspace">
+  <div class="reb">
+    <div class="reb__workspace" role="region" :aria-label="t('nav.rebalancing')" tabindex="0">
       <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
       <div v-if="!ready" class="reb__loading">
         <NSpin size="large" />
@@ -627,28 +627,26 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
               </tfoot>
             </table>
           </div>
-          <TradeNotice />
         </section>
       </template>
     </div>
+    <TradeNotice v-if="ready && hasHoldings && plan && result" />
   </div>
 </template>
 
 <style scoped lang="scss">
 .reb {
-  @include stack(var(--space-4));
+  @include stack(0);
 
   @include content-frame;
 
-  // Eingabespalten müssen nebeneinander bleiben; Kopf und Tabelle scrollen gemeinsam.
-  overflow-x: auto;
-
   &__workspace {
     display: grid;
-    grid-template-columns: minmax(min-content, 1fr);
+    grid-template-columns: minmax(890px, 1fr);
     gap: var(--space-4);
     // Mike: unter 890 px nicht weiter zusammendrücken, gemeinsam scrollen.
-    min-width: 890px;
+    min-width: 0;
+    overflow-x: auto;
 
     @include up(md) { gap: var(--space-6); }
   }

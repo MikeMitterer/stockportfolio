@@ -644,8 +644,8 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
             @remove="onRemove"
             @refresh="onRefreshOne"
           />
-          <TradeNotice />
         </section>
+        <TradeNotice />
       </div>
     </template>
 

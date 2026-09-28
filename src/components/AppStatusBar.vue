@@ -152,10 +152,6 @@ const failures = computed(() =>
       <span v-if="dataAge" class="status__separator status__separator--age" aria-hidden="true">·</span>
       <span v-if="dataAge">{{ dataAge }}</span>
       <span v-if="failures" class="status__failures">{{ failures }}</span>
-      <span class="status__separator" aria-hidden="true">·</span>
-      <NButton text tag="a" href="./legal.html" target="_blank" rel="noopener noreferrer">
-        {{ t('status.licenseLabel') }}
-      </NButton>
     </template>
   </UxStatusBar>
 </template>

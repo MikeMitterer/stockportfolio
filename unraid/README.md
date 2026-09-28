@@ -18,8 +18,8 @@ requirements. See the [provider and consumer declaration](../LICENSING.md).
 In the app, **Settings → About** explains the limits of
 displayed data and calculations. It shows MangoLila GmbH's address, website
 and a logo matched to the selected theme. The status bar links to About
-immediately after the MangoLila credit and also links to the existing license
-and source page. On narrow screens, a section selector replaces the Settings
+immediately after the MangoLila credit. About links to the license page and
+source archive. On narrow screens, a section selector replaces the Settings
 tab row.
 About also links to MangoLila's separate notice for website financial content.
 The dashboard and Rebalancing tables also carry a short note about the

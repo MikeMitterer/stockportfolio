@@ -696,6 +696,11 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
                   </a>
                 </li>
                 <li>
+                  <a href="./legal.html" target="_blank" rel="noopener noreferrer">
+                    {{ t('about.sourceLink') }}
+                  </a>
+                </li>
+                <li>
                   <a
                     href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"
                     target="_blank"
