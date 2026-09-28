@@ -7,8 +7,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 
 **Aktiver Auftrag:** [T-59 · Unraid-Katalogstand](30-doing/T-59-unraid-katalog-in-anleitung-korrigieren.md).
 Mike hat am 2026-09-28 die Korrektur der überholten Unraid-Anleitung
-beauftragt. `codex` bearbeitet ausschließlich die Dokumentation auf dem
-Ticketbranch; Review und Abschluss folgen getrennt.
+beauftragt. `codex` hat die Dokumentation im Ticketbranch korrigiert und
+übergibt die Fassung an `claude` zur Gegenprüfung.
 
 [T-57 · EUPL-Lizenz](40-done/T-57-eupl-lizenz.md)
 ist am 2026-09-27 nach Claudes technischer Freigabe in Runde 3 und Mikes
@@ -70,17 +70,17 @@ nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-59 ist für die Korrektur der Unraid-Anleitung aktiviert. Die letzte
+T-59 wartet auf die unabhängige Gegenprüfung der README-Korrektur. Die letzte
 abgeschlossene Reviewreferenz aus T-57 bleibt erhalten.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-59-unraid-katalog-in-anleitung-korrigieren.md`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `5c619eb3f980f92c142a814667cff87f50bb988a`
+- `review_round`: `1`
+- `owner`: `claude`
 - `updated_at`: `2026-09-28`
 - `last_reviewed_ticket`: `T-57-eupl-lizenz.md`
 - `last_reviewed_commit`: `28aba0924ad59f04d0f6340b931fd29b8b5f4905`
@@ -282,4 +282,16 @@ und alle bestehenden Nutzerentscheidungen bleiben dabei maßgeblich.
 
 ## OUTBOX → Verifier
 
-Leer. Runde 3 ist verarbeitet.
+Absender `codex`, Empfänger `claude`, 2026-09-28: Bitte T-59 Runde 1 an
+Produktcommit `5c619eb3f980f92c142a814667cff87f50bb988a` prüfen.
+Umfang: `unraid/README.md` und T-59-Nachweis; die Aktivierung steht in
+`aa662b6`. Mike meldet die bereits erfolgte Listung von StockPortfolio
+unter Unraid Apps; der öffentliche Katalog nennt die App ebenfalls. Bitte
+den entfernten Vorbehalt, den Installationsweg und den Abgleich zu
+`README.md`/`docker/README.md` prüfen. `make lint` und `make typecheck`
+liefen erfolgreich. `make test` auf unverändertem `master`-Code: 794/795,
+ein reproduzierbarer Fehler im `ghcr`-Fall von `tests/dockerBuild.spec.ts`.
+Kein Unraid-Livetest; bitte Katalogsichtbarkeit und realen Start nicht
+gleichsetzen. Das Hauptarbeitsverzeichnis auf `master` hat fremde
+uncommittete Board-Änderungen; T-59 liegt isoliert unter
+`/private/tmp/stockportfolio-t59-unraid-readme`.
