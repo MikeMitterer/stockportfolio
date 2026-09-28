@@ -1,5 +1,9 @@
 # Aktuelle Tätigkeit
 
+- 2026-09-28 13:27:54 CEST · codex · T-58: About-Links nach Mikes Rückmeldung in beiden Themes farblich abgesetzt und ohne Unterstreichung geprüft; der Tastaturfokus bleibt markiert. Produktstand d8e8e57 ist für Claudes unabhängigen Review vorbereitet.
+- 2026-09-28 13:19:21 CEST · codex · T-58: Lizenz- und Quellcodezugang von der Statuszeile nach About verlegt; Handelswert-Hinweise unter beiden Tabellen auf 11 px und engere Abstände abgestimmt, im hellen und dunklen Theme im Browser geprüft.
+- 2026-09-28 13:13:50 CEST · codex · T-58: Handelswert-Hinweise nach Mikes Präzisierung unter die Dashboard- und Rebalancing-Tabelle versetzt und im Browser bei 390 px außerhalb der Tabellen geprüft.
+- 2026-09-28 13:04:26 CEST · codex · ergänzt T-58 um Anbieteradresse, Original-Logos und mobile Bereichsauswahl; prüft About und Statuszeile im Browser.
 - 2026-09-28 11:47:52 CEST · codex · T-58 umgesetzt und geprüft; Übergabe an Claude vorbereitet
 - 2026-09-28 11:29:18 CEST · codex · T-59: Unraid-Anleitung nennt den vorhandenen Apps-Eintrag. Fassung 5c619eb ist für die unabhängige Gegenprüfung vorbereitet; ein älterer Docker-Build-Test scheitert weiterhin auf master.
 - 2026-09-28 11:24:34 CEST · codex · Korrigiert im getrennten T-59-Worktree die StockPortfolio-Unraid-Anleitung zum bereits vorhandenen Apps-Eintrag. Prüft die übrigen README-Verweise; kein Unraid-Livetest.
@@ -46,9 +50,5 @@
 - 2026-09-27 13:15:03 CEST · codex · hat die alten Make-/Bash-Aufrufe und alle neun Theme-Paletten geprüft. Der gemeinsame py-run.sh bietet Hilfe, Werkzeugliste und isolierte Paketumgebungen; die Dokumentation wird für Claudes Review abgeglichen.
 - 2026-09-27 13:03:07 CEST · codex-observer · StockInfo: Docker-Hub-Hinweis als 7764aee committed und auf origin/master gepusht; make hints und Diff-Prüfung erfolgreich.
 - 2026-09-27 13:02:45 CEST · codex-observer · Prüft und committet auf Mikes Auftrag den Docker-Hub-Hinweis in StockInfo; anschließend Push.
-- 2026-09-27 13:02:02 CEST · codex-observer · Docker-Hub-Link in StockInfos make hints ergänzt; Abschlussprüfung der Ausgabe und des Einzeilen-Diffs läuft.
-- 2026-09-27 13:00:42 CEST · codex-observer · Ergänzt auf Mikes direkten Auftrag ohne Ticket den Docker-Hub-Link in StockInfos make hints und prüft die Ausgabe.
-- 2026-09-27 12:52:45 CEST · codex · ergänzt die gemeinsamen CLI-Themes in MakeLib, BashLib und ProjectTools. Mike hat die offene T-56-Prüfung dafür zurückgestellt.
-- 2026-09-27 12:31:25 CEST · codex · Übergibt T-56 an Claude: direkter Python-Generator, Make-Anbindung, Farben/Spalten und beide READMEs sind geprüft. Wartet auf unabhängige Freigabe beider Repository-Fassungen.
 
 Nur zur Information für den Nutzer; Rollen und Aufträge stehen in [STATUS.md](STATUS.md).
