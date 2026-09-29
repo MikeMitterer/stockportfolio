@@ -109,10 +109,9 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 T-63 ist technisch freigegeben; seine menschliche Abschlussentscheidung steht
 aus. T-60 ist technisch freigegeben, aber seine menschliche Prüfung steht aus.
-Claude hat
-das Konzept der gesamten Kette T-60
-bis T-62 geprüft; T-61 und T-62 sind noch nicht zur Produktumsetzung
-aktiviert. Die letzte technische Reviewreferenz bleibt T-60 Runde 3.
+Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
+T-62 sind noch nicht zur Produktumsetzung aktiviert. Die letzte technische
+Reviewreferenz ist T-63 Runde 1.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
