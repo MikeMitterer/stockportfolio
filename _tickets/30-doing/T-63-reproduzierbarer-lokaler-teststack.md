@@ -39,9 +39,10 @@ führt erneut zur Suche im Produktcode oder zu einem unnötigen Docker-Start.
   künftige Startweg muss diesen Vorrang selbst korrekt setzen und prüfen.
 
 **Für dich:** Mike hat dieses Ticket am 2026-09-29 vorgezogen, weil er die
-menschliche T-60-Prüfung erst später vornehmen kann. T-63 ist jetzt der aktive
-Coder-Auftrag. T-60 bleibt in `30-doing/` technisch freigegeben, aber mit
-offener menschlicher Prüfung; dafür läuft aktuell keine Testinstanz.
+menschliche T-60-Prüfung erst später vornehmen kann. T-63 ist in Runde 1
+technisch freigegeben; seine menschliche Abschlussentscheidung steht noch aus.
+T-60 bleibt in `30-doing/` technisch freigegeben, aber mit offener menschlicher
+Prüfung; dafür läuft aktuell keine Testinstanz.
 
 ## Ziel und Grenze
 
@@ -93,7 +94,7 @@ Ticket in dessen eigenem Board; hier wird dort kein Produktcode geändert.
 | # | Gegenprobe | Erwarteter Beleg | AI | Human |
 |---|---|---|:--:|:--:|
 | 1 | Frischen lokalen Stack starten | `/health`, `/healthz`, Setup-Status, Testkurs und CORS passen zu den angezeigten Adressen | ✅ | |
-| 2 | Browser auf der ausgegebenen Vite-Adresse öffnen | Setup/Login und StockInfo-Testkurs laufen ohne Docker; kein Beispiel-Endpunkt im Netzwerkprotokoll | 🔶 | |
+| 2 | Browser auf der ausgegebenen Vite-Adresse öffnen | Setup/Login und StockInfo-Testkurs laufen ohne Docker; kein Beispiel-Endpunkt im Netzwerkprotokoll | ✅ | |
 | 3 | Zweiten Start, Portkonflikt und Stop prüfen | Kein fremder Prozess wird beendet; eigene Prozesse und temporäre Daten werden gezielt behandelt | ✅ | |
 | 4 | Dokumentations- und Bezeichnerabgleich | Root-README, AGENTS und Docker-README stimmen; neue Codebezeichner sind englisch | ✅ | |
 
@@ -170,3 +171,66 @@ installierten Stand `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f7546
 als `needs_review` gekennzeichnet; ihre fachliche Neubewertung wird hier
 nicht behauptet. `task-verification-workflow` wurde mit der lokalen
 Übernahmeanleitung abgeglichen; keine Board-Konvention wurde in T-63 geändert.
+
+## Technische Prüfung Runde 1
+
+`claude`, 2026-09-29, an Handoff-Commit `493c35c64122beac401ddfe2e1fece324f98718e`
+(Branch `t-60-stockportfolio-server-und-konten`). Unabhängige technische
+Prüfung gegen T-63 und die Projektregeln.
+
+**Code gelesen:** `scripts/local_test_stack.py` vollständig,
+`scripts/stockinfo-test-server.py` im Diff gegen den Vorstand.
+Prozessidentität (`ps`-Fingerabdruck aus Status, Startzeit, Kommando) wird bei
+`stop_children`/`require_owned_processes` gegen den bei Start erfassten Wert
+geprüft, bevor eine Prozessgruppe beendet wird — schützt gezielt gegen
+PID-Wiederverwendung. `remove_data` löscht nur Verzeichnisse unter dem
+System-Temp mit dem Präfix `stockportfolio-t63-`; kein Risiko eines
+Fehlgriffs auf fremde Pfade. `demo-accounts.json` und die State-Datei
+entstehen mit Modus `0600`.
+
+**Lücke aus der OUTBOX-Nachricht selbst geschlossen:** Codex hatte Verify #2
+als Teilbeleg markiert, weil die Anmeldung über die sichtbare Vue-Maske samt
+Kursanzeige nicht durchgespielt wurde. Ich habe den Stack selbst gestartet
+(`--stack --demo-accounts`), alle Endpunkt-/CORS-Prüfungen liefen grün, und
+per Browser-Automatisierung tatsächlich über die Login-Maske angemeldet: Das
+Dashboard rendert danach reale Positionen mit Live-Kursen aus dem lokalen
+StockInfo-Testserver (u. a. EUNL.DE zu € 128,70 — exakt der von `check_stack()`
+geprüfte Testkurs), die Statuszeile zeigt den wirksamen Endpunkt
+`127.0.0.1:8899` mit grünem Verbindungsindikator. Verify #2 ist damit
+vollständig erfüllt, nicht mehr nur teilweise. (Nebenbefund: Die
+Browser-Automatisierung selbst brauchte mehrere Anläufe wegen eines
+Erweiterungs-Konflikts in dieser Sitzung — kein Produktfehler, nur ein
+Tooling-Stolperstein bei der Prüfung.)
+
+**Selbst nachvollzogen:** `make test` (803 Frontend- + 7 API-Tests), `make
+lint`, `make typecheck` — alle grün. `python3 -m py_compile` auf beide
+geänderten Skripte, `git diff --check` und `msgfmt --check-format` auf den
+neuen `.po`-Katalog — alle ohne Befund. CLI-Ausgabe in Deutsch (Standard bei
+`LANG=de_AT.UTF-8`) und explizit mit `LANGUAGE=en` auf Englisch geprüft —
+beide korrekt. Zweiter `--stack`-Stop lief sauber: `--stack --stop` beendete
+alle drei Prozesse, das temporäre Verzeichnis war danach vollständig entfernt,
+keine verwaisten Prozesse zurückgeblieben.
+
+**Dokumentation geprüft:** `README.md` und `AGENTS.md` beschreiben exakt den
+getesteten Startweg; die Erklärung, warum der neue Weg die frühere
+`.env`-Vorrang-Falle aus T-60 vermeidet („the script sets Vite's StockInfo URL
+directly and checks the URL actually served to the browser“), ist technisch
+zutreffend — bestätigt durch die eigene Live-Probe. `docker/README.md` bleibt
+unverändert und weiterhin sachlich richtig, da dort ausschließlich
+Containerbetrieb beschrieben wird.
+
+**Kein Befund.** Akzeptanzkriterien, Verify-Matrix (jetzt alle Zeilen
+vollständig, keine Einschränkung mehr) und Doku-Abgleich sind erfüllt.
+
+**Urteil:** `approved`. Menschliche Prüfung ist für dieses Ticket nicht
+vorgesehen; T-60s aufgeschobene menschliche Prüfung bleibt davon unabhängig
+weiterhin offen.
+
+**Coder-Abgleich nach Review:** Die geprüfte Fassung `493c35c` liegt laut
+`git branch --contains` auf `t-63-reproduzierbarer-lokaler-teststack`; die
+Branchangabe `t-60-stockportfolio-server-und-konten` im Reviewkopf ist ein
+redaktioneller Fehler. Das Urteil bezieht sich eindeutig auf den genannten
+Handoff-Commit und bleibt unverändert. Die Aussage „Menschliche Prüfung ist
+nicht vorgesehen“ betrifft eine zusätzliche praktische Human-Gegenprobe.
+Die menschliche Abschlussentscheidung nach dem Board-Workflow ist damit
+nicht ersetzt und steht noch aus.

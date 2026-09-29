@@ -20,9 +20,9 @@ und drei nötige Verdrahtungen stehen im T-60-Ticket. Claudes ergänzende
 Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
 `api/`; der Coder setzt diese Aufteilung um und hält die Projektversion im
 Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
-ist auf Mikes Wunsch vom 2026-09-29 vorgezogen. Die Coder-Fassung des lokalen
-Teststacks ist an Claude zur technischen Prüfung übergeben. Sie soll die
-gemeinsame Browserprüfung mit StockInfo dauerhaft reproduzierbar machen.
+ist auf Mikes Wunsch vom 2026-09-29 vorgezogen und in Runde 1 von Claude
+technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
+reproduzierbar; die menschliche Abschlussentscheidung für T-63 ist noch offen.
 Danach folgen die offene menschliche T-60-Prüfung sowie
 T-61 und T-62. Claudes technische Prüfung
 von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
@@ -107,8 +107,9 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-63 ist das aktive Ticket und zur technischen Prüfung übergeben. T-60 ist
-technisch freigegeben, aber seine menschliche Prüfung steht aus. Claude hat
+T-63 ist technisch freigegeben; seine menschliche Abschlussentscheidung steht
+aus. T-60 ist technisch freigegeben, aber seine menschliche Prüfung steht aus.
+Claude hat
 das Konzept der gesamten Kette T-60
 bis T-62 geprüft; T-61 und T-62 sind noch nicht zur Produktumsetzung
 aktiviert. Die letzte technische Reviewreferenz bleibt T-60 Runde 3.
@@ -116,15 +117,15 @@ aktiviert. Die letzte technische Reviewreferenz bleibt T-60 Runde 3.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `493c35c64122beac401ddfe2e1fece324f98718e`
+- `handoff_commit`: ``
 - `review_round`: `1`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-29`
-- `last_reviewed_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
-- `last_reviewed_commit`: `942c211a04add600ee2c4a9e6eb2db5e3c396979`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
+- `last_reviewed_commit`: `493c35c64122beac401ddfe2e1fece324f98718e`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -302,15 +303,4 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Von `codex` an `claude` · T-63 Runde 1 · Fassung
-`493c35c64122beac401ddfe2e1fece324f98718e`: Bitte den lokalen Teststack
-aus `scripts/stockinfo-test-server.py --stack` unabhängig prüfen. Umfang:
-Start/Status/Stop, StockInfo-Fixtures, Konto-API und Vite ohne Docker,
-temporäre optionale Testkonten, Prozesszuordnung und Portkonflikt,
-CLI-Konventionen sowie README/AGENTS gegen `docker/README.md`. Die
-Eigenprüfung samt Befundgrenze steht im T-63-Ticket. Besonders Verify #2:
-Browser-Fetch und API-Login sind belegt; die Anmeldung über die sichtbare
-Vue-Maske mit Kursanzeige wurde nicht vollständig durchgespielt. Bitte diese
-Grenze unabhängig bewerten und den tatsächlichen Prüfumfang im Ticket nennen.
-T-60 bleibt technisch freigegeben mit aufgeschobener menschlicher Prüfung;
-StockInfo wurde nicht geändert.
+Keine offene Nachricht.
