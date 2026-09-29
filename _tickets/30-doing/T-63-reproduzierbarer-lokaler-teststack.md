@@ -71,20 +71,20 @@ Ticket in dessen eigenem Board; hier wird dort kein Produktcode geändert.
 
 ## Akzeptanzkriterien
 
-- [ ] Ein Startbefehl bringt StockInfo-Fixtures, Konto-API und Vite ohne
+- [x] Ein Startbefehl bringt StockInfo-Fixtures, Konto-API und Vite ohne
   Docker hoch und zeigt die drei Adressen samt zugehöriger Herkunft an.
-- [ ] Die Browser-App erreicht den bekannten StockInfo-Testkurs. Die
+- [x] Die Browser-App erreicht den bekannten StockInfo-Testkurs. Die
   Anmeldung funktioniert über die lokale Konto-API auch dann, wenn der
   StockInfo-Testserver danach gestoppt wird.
-- [ ] Start und Stop erkennen eigene Prozesse zuverlässig. Ein zweiter Start
+- [x] Start und Stop erkennen eigene Prozesse zuverlässig. Ein zweiter Start
   ersetzt keinen laufenden Prozess; ein fremder Portbesitzer wird nicht
   beendet. Temporäre Daten bleiben getrennt von echten Depot- und
   StockInfo-Datenbanken.
-- [ ] Portabweichungen und fehlende Abhängigkeiten werden vor oder beim Start
+- [x] Portabweichungen und fehlende Abhängigkeiten werden vor oder beim Start
   mit einem konkreten Hinweis gemeldet. Der notwendige `ps`-Zugriff des
   vorhandenen Scripts wird für eingeschränkte Agentenlaufzeiten ausdrücklich
   dokumentiert; die Lösung umgeht keine Freigabegrenze.
-- [ ] `README.md` und `AGENTS.md` beschreiben den gültigen lokalen Startweg.
+- [x] `README.md` und `AGENTS.md` beschreiben den gültigen lokalen Startweg.
   `docker/README.md` wird inhaltlich gegengeprüft; Container-Anweisungen
   bleiben dort von diesem Entwicklungsweg getrennt.
 
@@ -92,13 +92,81 @@ Ticket in dessen eigenem Board; hier wird dort kein Produktcode geändert.
 
 | # | Gegenprobe | Erwarteter Beleg | AI | Human |
 |---|---|---|:--:|:--:|
-| 1 | Frischen lokalen Stack starten | `/health`, `/healthz`, Setup-Status, Testkurs und CORS passen zu den angezeigten Adressen | ➖ | |
-| 2 | Browser auf der ausgegebenen Vite-Adresse öffnen | Setup/Login und StockInfo-Testkurs laufen ohne Docker; kein Beispiel-Endpunkt im Netzwerkprotokoll | ➖ | |
-| 3 | Zweiten Start, Portkonflikt und Stop prüfen | Kein fremder Prozess wird beendet; eigene Prozesse und temporäre Daten werden gezielt behandelt | ➖ | |
-| 4 | Dokumentations- und Bezeichnerabgleich | Root-README, AGENTS und Docker-README stimmen; neue Codebezeichner sind englisch | ➖ | |
+| 1 | Frischen lokalen Stack starten | `/health`, `/healthz`, Setup-Status, Testkurs und CORS passen zu den angezeigten Adressen | ✅ | |
+| 2 | Browser auf der ausgegebenen Vite-Adresse öffnen | Setup/Login und StockInfo-Testkurs laufen ohne Docker; kein Beispiel-Endpunkt im Netzwerkprotokoll | 🔶 | |
+| 3 | Zweiten Start, Portkonflikt und Stop prüfen | Kein fremder Prozess wird beendet; eigene Prozesse und temporäre Daten werden gezielt behandelt | ✅ | |
+| 4 | Dokumentations- und Bezeichnerabgleich | Root-README, AGENTS und Docker-README stimmen; neue Codebezeichner sind englisch | ✅ | |
 
 **Doku-Abgleich bei Einplanung:** Nur der Auftrag wurde beschrieben;
 Produktverhalten und Startbefehle sind noch nicht geändert. Deshalb ist jetzt
 keine Anleitung angepasst. Bei Umsetzung sind `README.md` (Setup/Commands),
 `AGENTS.md` (lokaler Dienststart) und `docker/README.md` (Abgrenzung der
 Containerprüfung) inhaltlich abzugleichen.
+
+## Umsetzung und Eigenprüfung · 2026-09-29
+
+`scripts/stockinfo-test-server.py` hat einen Shebang und verwaltet mit
+`--stack` den vorhandenen StockInfo-Testserver, die eigene API und Vite. Die
+zusätzliche Logik liegt in `scripts/local_test_stack.py`; CLI-Texte der neuen
+Funktion liegen im gettext-Katalog unter `scripts/locale/`. Der bestehende
+StockInfo-only-Weg bleibt verfügbar. `--stack --status` nennt Prozesse, Ports,
+Herkunft und wirksamen Endpunkt; `--stack --stop` beendet nur registrierte
+Prozessgruppen mit unveränderter Identität und löscht die isolierten Kontodaten.
+StockInfo-Quoten und Historie stammen weiterhin aus dem vorhandenen Script.
+`--demo-accounts` legt optional einen synthetischen Admin und Benutzer über die
+echte Konto-API an; zufällige Zugangsdaten stehen nur in einer temporären Datei
+mit Modus 0600. Ohne diese Option ist die API im frischen Setup-Zustand.
+
+**Belege zur Matrix:**
+
+1. Frischer Start mit und ohne `--demo-accounts`: 5175/8080/8899 laufen;
+   `--stack --status` prüft StockInfo `/health`, Kurs
+   `/quote/IE00B4L5Y983` mit Preis 128,7 und CORS-Herkunft 5175, API
+   `/healthz` und `/api/setup/status`, Vites kompilierten Client sowie
+   `config.js`. Ohne Testkonten meldet Setup `required=true`, mit ihnen
+   `required=false`.
+2. Browser auf `http://127.0.0.1:5175`: Login-Felder sichtbar,
+   `/api/setup/status` über Vite-Proxy mit HTTP 200; der Browser-Fetch auf
+   den lokalen StockInfo-Testkurs liefert HTTP 200 und 128,7. Der direkte
+   StockInfo-Aufruf der Browser-Seite nutzt 8899 und die richtige Herkunft.
+   Nach `--stop` **ohne** `--stack` blieb die Anmeldung beider Testkonten
+   über den Vite-Proxy mit HTTP 200 möglich, während StockInfo gestoppt war.
+   **Teilbeleg:** Eine vollständige Anmeldung durch die sichtbare Vue-Maske
+   samt Kursanzeige in der Depotansicht wurde nicht durchgespielt; daher
+   Verify-Zeile 2 nur teilweise markiert. Der Verifier kann dies mit
+   `--demo-accounts` ergänzen.
+3. Zweiter `--stack`-Start bricht mit „already registered“ ab. Ein belegter
+   lokaler Test-Socket löst „Port ... is already in use; no process was stopped“
+   aus. Falsches `--origin` und fehlende StockInfo-`.venv` werden konkret
+   zurückgewiesen. Nach gezieltem StockInfo-Stopp zeigte `--stack --status`
+   StockInfo `stopped`, API/Vite `running`; `--stack --stop` beendete die
+   übrigen eigenen Prozesse. Beide temporären Laufverzeichnisse waren danach
+   entfernt; Status meldete keinen registrierten Stack. Ein fremder
+   Portbesitzer wurde in dieser Probe nicht tatsächlich gestartet oder
+   beendet; die Gegenprobe belegte die frühe Portabweisung.
+4. `make test`: 65 Frontend-Dateien/803 Tests und 3 API-Dateien/7 Tests grün;
+   `make lint`, `make typecheck`, Python-Syntax und `git diff --check` grün.
+   Neue Python-Bezeichner sind englisch. Shebang durch direkten Statusaufruf
+   geprüft. `msgfmt --check-format` grün, deutsche CLI-Ausgabe mit
+   `LANGUAGE=de` geprüft.
+
+**Doku-Abgleich:** `README.md` → Setup beschreibt Start, Status, Stop,
+temporäre Testkonten und Portwahl. `AGENTS.md` → „Bauen und prüfen“ nennt
+denselben Startweg und die unveränderten Make-/Umgebungsdateien. Die
+Überschriften und Aussagen in `docker/README.md` → „Quick start“, „Docker
+Compose“, „Configuration“, „Status and logs“ betreffen Containerbetrieb und
+bleiben sachlich richtig; dort ist kein lokaler Entwickler-Stack zu ergänzen.
+`Makefile`, `.env`, `.local-data` und das StockInfo-Repository wurden nicht
+geändert. Die offene Board-Konventionsübernahme (`_tickets/.gitignore`) bleibt
+gemäß STATUS außerhalb dieses Produktauftrags sichtbar.
+
+**Lessons-Abgleich:** SP-CX-01/AL-R-08 begrenzen die Lösung auf das vorhandene
+Script und einen Python-Helfer ohne Docker oder neues Make-Target.
+SP-CX-04 hält den wiederverwendeten Helfer dauerhaft unter `scripts/`.
+AL-R-03 führt zur Identitäts- und Portprüfung vor dem Cleanup; AL-R-10 zum
+Frischstart mit leerer temporärer API-Datenbank. SP-CX-02 gleicht gültige
+Startbefehle in README und AGENTS ab. Die gemeinsamen Regeln sind im
+installierten Stand `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+als `needs_review` gekennzeichnet; ihre fachliche Neubewertung wird hier
+nicht behauptet. `task-verification-workflow` wurde mit der lokalen
+Übernahmeanleitung abgeglichen; keine Board-Konvention wurde in T-63 geändert.

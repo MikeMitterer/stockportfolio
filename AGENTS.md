@@ -204,19 +204,30 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 Übergabe laufen mindestens `make test`, `make lint` und `make typecheck`; das
 Ergebnis gehört als Beleg ins Ticket.
 
-Für Browserprüfungen mit echter StockInfo-API gibt es
-`scripts/stockinfo-test-server.py`. Es verwendet eine temporäre Datenbank und
-lokale Testkurse. Mit StockInfos Python-Umgebung starten, etwa
-`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://localhost:5175`.
-Danach die Konto-API mit `make dev-api` und Vite mit
-`make dev VITE_STOCKINFO_API_URL=http://127.0.0.1:8899` starten. Die
-Make-Zuweisung ist nötig, weil das Makefile `.env` einbindet; eine davor
-gesetzte Shell-Variable kann vom `.env`-Wert überstimmt werden. Die
-`--origin` muss zur Browser-Adresse passen. Beenden mit
-`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stop`.
-Bei einem anderen Port `--port PORT` beim Start und Stop angeben.
-Der Modul-Docstring beschreibt weitere Optionen. In einem Worktree außerhalb
-des gemeinsamen Elternverzeichnisses absolute Pfade verwenden.
+Für reproduzierbare Browserprüfungen startet
+`scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
+temporären Kursen, die eigene Konto-API und Vite gemeinsam. Mit StockInfos
+Python-Umgebung aus diesem Repository aufrufen:
+
+```bash
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stockinfo-root ../StockInfo
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+```
+
+Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
+Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale
+synthetische Konten entstehen mit `--demo-accounts` nur im temporären
+Testverzeichnis. Ohne diese Option steht der einmalige Setup-Code im dortigen
+API-Log. Stop entfernt eigene Prozesse und Testdaten; `.env`, `.local-data`,
+Makefiles und StockInfo-Dateien bleiben unverändert. Die Portbelegung wird vor
+dem Start geprüft, fremde Prozesse werden nicht beendet. `ps` dient zur
+Identitätsprüfung und benötigt in eingeschränkten Agentenlaufzeiten die
+entsprechende Freigabe; sie wird nicht umgangen. `--port PORT` ändert beim Start
+nur den StockInfo-Testport; Status und Stop lesen den registrierten Port. Für
+Worktrees außerhalb des gemeinsamen Elternverzeichnisses absolute Pfade für
+Python und `--stockinfo-root` verwenden. Ohne `--stack` bleibt der bisherige
+StockInfo-only-Start verfügbar. Details stehen in `README.md` (**Setup**).
 
 [↑ Übersicht](#übersicht)
 

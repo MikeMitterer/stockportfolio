@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
 
 Start mit StockInfos Python-Umgebung aus einem leeren temporären Arbeitsordner.
@@ -6,11 +7,14 @@ unverändert. Nur externe Quellen und der produktive Start-Scheduler werden
 für die reproduzierbare Browserprüfung ersetzt. Fehlantworten werden getrennt
 über eine ausdrücklich bezeichnete Test-Middleware eingespeist.
 
-Start: StockInfos Python, --stockinfo-root PFAD, optional --port (Vorgabe 8899).
-Stop:  python scripts/stockinfo-test-server.py --stop [--port 8899]
-Port, PID, Prozessstart und Scriptpfad werden im temporären Benutzerverzeichnis
-vermerkt. --stop beendet ausschließlich den damit identifizierten eigenen
-Prozess über SIGTERM; ein fremder Portbesitzer wird niemals gesucht oder beendet.
+StockInfo-only: StockInfos Python, --stockinfo-root PFAD und optional --port.
+Ganzer Stack: zusätzlich --stack; --demo-accounts legt auf Wunsch zwei
+synthetische Konten an. --stack --status prüft Prozesse, Endpunkte, Kurs und
+CORS; --stack --stop entfernt eigene Prozesse und temporäre Kontodaten. Ohne
+--stack beendet --stop nur den StockInfo-Testserver, während Konto-API und Vite
+weiterlaufen können. Port, PID, Prozessstart und Scriptpfad werden im
+temporären Benutzerverzeichnis vermerkt. Ein fremder Portbesitzer wird niemals
+gesucht oder beendet. Das Script benötigt ps für die Prozessidentität.
 """
 
 from __future__ import annotations
@@ -22,6 +26,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import os
 import signal
+import shutil
 import subprocess
 from pathlib import Path
 import sys
@@ -29,18 +34,33 @@ import tempfile
 import time
 from typing import Any
 
+from local_test_stack import run_stack_cli, translate
+
 sys.dont_write_bytecode = True
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--stockinfo-root", type=Path)
 parser.add_argument("--stop", action="store_true", help="Den eigenen Server auf --port sauber beenden")
+parser.add_argument("--status", action="store_true", help=translate("Check the local test environment"))
+parser.add_argument("--stack", action="store_true", help=translate("Manage StockInfo, the account API, and Vite together"))
+parser.add_argument("--demo-accounts", action="store_true", help=translate("Create synthetic accounts in the temporary stack"))
 parser.add_argument("--port", type=int, default=8899)
-parser.add_argument("--origin", default="http://127.0.0.1:5189", help="Erlaubte Browser-Herkunft, auch für isolierte Containerproben")
+parser.add_argument("--origin", help="Erlaubte Browser-Herkunft, auch für isolierte Containerproben")
 parser.add_argument("--detail-fixtures", type=Path)
 parser.add_argument("--demo-details", action="store_true", help="Lesbare Quellen und Notiz für wiederholbare Browserproben")
 args = parser.parse_args()
 if not 1 <= args.port <= 65535:
     parser.error("--port muss zwischen 1 und 65535 liegen")
+if args.stop and args.status:
+    parser.error("--stop und --status schließen sich aus")
+if args.demo_accounts and not args.stack:
+    parser.error("--demo-accounts benötigt --stack")
 script_path = Path(__file__).resolve()
+if args.stack:
+    try:
+        sys.exit(run_stack_cli(args, script_path))
+    except RuntimeError as error:
+        parser.error(str(error))
+origin = args.origin or "http://127.0.0.1:5189"
 state_path = Path(tempfile.gettempdir()) / f"stockportfolio-test-server-{args.port}.json"
 
 
@@ -74,6 +94,12 @@ def read_owned_state() -> dict[str, Any] | None:
 
 
 existing_state = read_owned_state()
+if args.status:
+    if not existing_state:
+        print(f"Kein eigener Testserver auf Port {args.port} registriert.")
+        sys.exit(1)
+    print(f"StockInfo-Testserver: http://127.0.0.1:{args.port} (PID {existing_state['pid']})")
+    sys.exit(0)
 if args.stop:
     if not existing_state:
         print(f"Kein eigener Testserver auf Port {args.port} registriert.")
@@ -98,7 +124,7 @@ stockinfo_root = args.stockinfo_root.resolve()
 detail_fixtures = args.detail_fixtures.resolve() if args.detail_fixtures else None
 data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t39-server-"))
 os.environ["DATABASE_PATH"] = str(data_dir / "stockinfo.db")
-os.environ["CORS_ORIGINS"] = json.dumps([args.origin])
+os.environ["CORS_ORIGINS"] = json.dumps([origin])
 os.chdir(data_dir)
 sys.path.insert(0, str(stockinfo_root))
 
@@ -257,9 +283,9 @@ async def test_faults(request: Request, call_next: Callable[[Request], Awaitable
         if changes.get("mode") not in {"normal", "invalid-quote", "invalid-catalog", "unknown-identity", "fields-down", "fx-stale", "fx-missing", "fx-invalid", "types-empty", "types-incomplete", "types-future", "types-down"}:
             return JSONResponse({"error": "unknown test mode"}, status_code=400)
         state.update({key: changes[key] for key in ("mode", "symbol") if key in changes})
-        return JSONResponse(state, headers={"Access-Control-Allow-Origin": args.origin})
+        return JSONResponse(state, headers={"Access-Control-Allow-Origin": origin})
     if request.url.path == "/instrument-types" and state["mode"].startswith("types-"):
-        headers = {"Access-Control-Allow-Origin": args.origin, "Cache-Control": "no-store"}
+        headers = {"Access-Control-Allow-Origin": origin, "Cache-Control": "no-store"}
         if state["mode"] == "types-down":
             return JSONResponse({"detail": "Typkatalog im Testszenario nicht verfügbar"}, status_code=503, headers=headers)
         if detail_fixtures is None:
@@ -271,10 +297,10 @@ async def test_faults(request: Request, call_next: Callable[[Request], Awaitable
         return JSONResponse(fixture["response"]["body"], headers=headers)
     if request.url.path == "/fx" and state["mode"] == "fx-missing":
         return JSONResponse({"code": "fx_source_unavailable"}, status_code=502,
-                            headers={"Access-Control-Allow-Origin": args.origin})
+                            headers={"Access-Control-Allow-Origin": origin})
     if request.url.path == "/fields" and state["mode"] == "fields-down":
         return JSONResponse({"code": "t40_test_fields_unavailable"}, status_code=503,
-                            headers={"Access-Control-Allow-Origin": args.origin})
+                            headers={"Access-Control-Allow-Origin": origin})
     response = await call_next(request)
     if request.url.path == "/fx" and response.status_code == 200 and state["mode"] in {"fx-stale", "fx-invalid"}:
         body = json.loads(b"".join([chunk async for chunk in response.body_iterator]))
@@ -282,7 +308,7 @@ async def test_faults(request: Request, call_next: Callable[[Request], Awaitable
             body["rate"] = 0
         else:
             body.update(stale=True, cached=True, quote_time="2026-09-01T10:00:00Z")
-        return JSONResponse(body, headers={"Access-Control-Allow-Origin": args.origin})
+        return JSONResponse(body, headers={"Access-Control-Allow-Origin": origin})
     if response.status_code != 200 or state["mode"] == "normal":
         return response
     is_quote = request.url.path.startswith(("/quote", "/refresh"))
@@ -314,3 +340,4 @@ try:
 finally:
     if state_path.exists() and json.loads(state_path.read_text()).get("pid") == os.getpid():
         state_path.unlink()
+    shutil.rmtree(data_dir)

@@ -301,14 +301,33 @@ locations; later commands can use the links under `.libs/`. For frontend-only
 development, `npm install` plus `npm ci --prefix api` works without these
 shared tools. The API keeps its own lockfile under `api/`.
 
-For browser checks with local StockInfo test prices, start its existing test
-server from this repository with
-`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://localhost:5175`.
-Then start `make dev-api` and
-`make dev VITE_STOCKINFO_API_URL=http://127.0.0.1:8899` in separate terminals.
-The Make assignment overrides a StockInfo URL in `.env`. Stop the test server
-with `../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stop`.
-The account API uses its own local SQLite data under `.local-data/`.
+For browser checks with local StockInfo prices and an isolated account API,
+start the complete test stack with StockInfo's Python environment:
+
+```bash
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stockinfo-root ../StockInfo
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+```
+
+The start command returns after the three processes are ready. It prints Vite
+(`127.0.0.1:5175`), the account API (`127.0.0.1:8080`), StockInfo fixtures
+(`127.0.0.1:8899`), and the path to the one-time setup code in the isolated
+API log. Add `--demo-accounts` to create a synthetic admin and user instead;
+their generated credentials are stored only in the printed temporary file.
+The stop command removes these test accounts and temporary databases. It does
+not use Docker, change `.env` or `.local-data`, or call a Make target. The
+script sets Vite's StockInfo URL directly and checks the URL actually served
+to the browser, so a value in `.env` cannot silently replace the fixture URL.
+
+Ports 5175 and 8080 are fixed to match Vite's proxy; use `--port PORT` when
+starting to change only the StockInfo fixture port. Status and stop read the
+registered port. A port conflict or missing
+dependency stops startup with an error and leaves other processes alone. The
+script checks process identity with `ps`; restricted agent environments must
+allow that read rather than bypass it. In a worktree outside the sibling layout,
+pass absolute paths for the StockInfo Python executable and `--stockinfo-root`.
+The original StockInfo-only command remains available without `--stack`.
 
 ## Commands
 

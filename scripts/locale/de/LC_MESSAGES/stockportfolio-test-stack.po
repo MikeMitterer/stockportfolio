@@ -1,0 +1,58 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: de\n"
+
+msgid "Frontend: {origin}"
+msgstr "Frontend: {origin}"
+
+msgid "Account API: {url}"
+msgstr "Konto-API: {url}"
+
+msgid "StockInfo fixtures: {url}"
+msgstr "StockInfo-Testdaten: {url}"
+
+msgid "Browser origin / API origin: {origin}"
+msgstr "Browser-Herkunft / API-Herkunft: {origin}"
+
+msgid "Effective StockInfo endpoint: {url}"
+msgstr "Wirksamer StockInfo-Endpunkt: {url}"
+
+msgid "Synthetic account credentials: {path}"
+msgstr "Zugangsdaten für Testkonten: {path}"
+
+msgid "One-time setup code: {path}"
+msgstr "Einmaliger Setup-Code: {path}"
+
+msgid "Temporary files: {path}"
+msgstr "Temporäre Dateien: {path}"
+
+msgid "running"
+msgstr "läuft"
+
+msgid "stopped"
+msgstr "beendet"
+
+msgid "{name}: {state} (PID {pid})"
+msgstr "{name}: {state} (PID {pid})"
+
+msgid "No local test stack is registered"
+msgstr "Es ist kein lokaler Teststack registriert."
+
+msgid "All local endpoints and CORS checks passed"
+msgstr "Alle lokalen Endpunkte und CORS-Prüfungen sind erfolgreich."
+
+msgid "Own local test stack stopped; temporary account data removed"
+msgstr "Eigener lokaler Teststack beendet; temporäre Kontodaten entfernt."
+
+msgid "Stack is not ready: {error}"
+msgstr "Der Teststack ist nicht bereit: {error}"
+
+msgid "Check the local test environment"
+msgstr "Die lokale Testumgebung prüfen"
+
+msgid "Manage StockInfo, the account API, and Vite together"
+msgstr "StockInfo, Konto-API und Vite gemeinsam verwalten"
+
+msgid "Create synthetic accounts in the temporary stack"
+msgstr "Synthetische Konten im temporären Stack anlegen"
