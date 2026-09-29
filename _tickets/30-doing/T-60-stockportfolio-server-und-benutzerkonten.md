@@ -108,9 +108,10 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 Manifest und Lockfile. `make test` bestand mit 803 Frontend- und 6 API-Tests;
 `make lint`, `make typecheck` und `make build-frontend` bestanden. Das
 Docker-Image wurde mit `docker build -f docker/Dockerfile -t
-stockportfolio:t60-local .` gebaut. `make build` selbst verweigerte nur den
-Build im noch uncommitteten Arbeitsbaum, wie seine bestehende Schutzprüfung
-vorsieht. Im isolierten Container lieferten `/`, `/healthz` und
+stockportfolio:t60-local .` gebaut; nach Produktcommit `7b4cbbe` bestand
+auch der reguläre Aufruf `make build`. Zuvor verweigerte dessen bestehende
+Schutzprüfung den Build im uncommitteten Arbeitsbaum. Im isolierten Container
+lieferten `/`, `/healthz` und
 `/api/setup/status` erwartete Antworten; Setup, Login und Sitzung funktionierten.
 Nach Neuerstellung mit demselben Volume blieb das Konto erhalten; ohne dieses
 Volume meldete `/api/setup/status` wieder `required: true`. Container und
@@ -153,7 +154,8 @@ Konto-API, `/data`, Browser-Depots bis T-61, StockInfo-Adresse und erstem
 Admin-Setup überein. `unraid/README.md` (**Configuration**, **Updating**,
 **Data, API and verification**) nennt dieselben Grenzen. Die zentrale Vorlage
 im getrennten Templates-Repository ergänzt `/data`, Public Origin, Secure
-Cookies, Setup und den neuen Icon-Pfad; Review-Commit `746a6a4` auf Branch
+Cookies, Setup und den neuen Icon-Pfad; Review-Commit
+`746a6a49e3a81dd557c4184db21e2beb0e0b087d` auf Branch
 `t-60-stockportfolio-template`, noch nicht veröffentlicht. `AGENTS.md`
 (**StockPortfolio hängt an StockInfo**, **Bauen und prüfen**) und `SOURCE.md`
 (Build aus beiden Paket-Lockfiles) wurden nachgeführt. Die Docker-Hub-Vorschau

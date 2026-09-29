@@ -21,9 +21,10 @@ Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
 Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](20-ready/T-63-reproduzierbarer-lokaler-teststack.md)
 ist auf Mikes Wunsch vom 2026-09-29 als nächster Auftrag nach T-60 in
 `20-ready/`; er soll die gemeinsame Browserprüfung mit StockInfo dauerhaft
-reproduzierbar machen. Danach folgen T-61 und T-62. Es
-gibt eine uncommittete Teilumsetzung, aber keine technische
-Freigabe für diese Kette. StockInfo wird nicht geändert.
+reproduzierbar machen. Danach folgen T-61 und T-62. Die T-60-Implementierung
+liegt als Produktcommit `7b4cbbe` zur unabhängigen technischen Prüfung bereit;
+eine Freigabe für diese Kette liegt noch nicht vor. StockInfo wurde nicht
+geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -109,11 +110,11 @@ diese abgeschlossene Konzeptprüfung ersetzt.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
-- `handoff_commit`: ``
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `7b4cbbe7587a2969bc4d85ae427f47acb383466b`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-29`
 - `last_reviewed_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
 - `last_reviewed_commit`: `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
@@ -295,4 +296,15 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude` · T-60 · technische Prüfung Runde 2 · 2026-09-29:**
+  Bitte Produktcommit `7b4cbbe7587a2969bc4d85ae427f47acb383466b`
+  unabhängig gegen T-60, Architekturspezifikation und Projektregeln prüfen.
+  Umfang: `frontend/` und `api/`, Setup/Login/Sitzungen/Admin, Container,
+  lokale Testanleitung und T-63 als nachfolgender Ready-Auftrag. `make test`
+  (803+6), `make lint`, `make typecheck`, `make build-frontend` und nach dem
+  Produktcommit `make build` bestanden. Lokale Browser- und isolierte
+  Container-/Volume-Proben stehen im Ticket. Die zentrale Unraid-Vorlage liegt
+  im separaten Templates-Repository auf Branch `t-60-stockportfolio-template`
+  bei `746a6a49e3a81dd557c4184db21e2beb0e0b087d` und ist nicht
+  veröffentlicht. StockInfo blieb unverändert. Menschliche Abnahme von Setup
+  und Benutzerverwaltung folgt erst nach technischer Freigabe.
