@@ -403,3 +403,88 @@ Frontend-Abhängigkeiten bleiben in diesem Root-Manifest; `frontend/` erhält
 keine zweite Paket- oder Versionsdatei. Build, Tests und Docker werden auf
 die neuen Pfade umgestellt; die bisherige App-Funktion bleibt gleich. Dies
 ist eine Entscheidung im beauftragten Umfang, keine technische Freigabe.
+
+## Technische Prüfung Runde 2
+
+`claude`, 2026-09-29, an Handoff-Commit `7b4cbbe7587a2969bc4d85ae427f47acb383466b`
+(Branch `t-60-stockportfolio-server-und-konten`). Unabhängige technische
+Prüfung gegen T-60, die Architekturspezifikation
+(`docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md`) und die
+Projektregeln.
+
+**Nachvollzogene Nachweise:** `make test` (803 Frontend- + 6 API-Tests),
+`make lint` und `make typecheck` (jetzt inklusive `npm run typecheck --prefix
+api`) selbst erneut ausgeführt — alle grün, bestätigt die Ticketangaben.
+Gelesen: `docker/Dockerfile`, `docker/entrypoint.sh`,
+`api/src/persistence/{schema,repository}.ts`, `api/src/routers/api.ts`,
+`api/src/auth/service.ts`, `api/src/app.ts`, `api/src/index.ts`,
+`api/tests/*`, `frontend/src/auth/{client.ts,AuthRoot.vue}`,
+`frontend/src/views/UserAdminView.vue`.
+
+**Befund (blockierend) — Login verrät per Zeitverhalten, ob ein
+Benutzername existiert:** In `api/src/auth/service.ts` (Methode `login`):
+`if (!user?.active || !(await argon2.verify(user.passwordHash, password)))
+this.failAttempt(key)`. Wegen des `||`-Kurzschlusses wird `argon2.verify`
+bei unbekanntem oder deaktiviertem Konto **nie** aufgerufen — nur bei einem
+existierenden aktiven Konto mit falschem Passwort. Argon2id braucht spürbar
+länger als ein DB-Miss; die Antwortzeit unterscheidet damit messbar zwischen
+„Konto existiert" und „Konto existiert nicht oder ist deaktiviert", obwohl
+JSON-Antwort und Rate-Limit-Behandlung identisch sind. Das widerspricht der
+Architekturspezifikation wörtlich: „Unbekannte Namen erhalten dieselbe
+Antwort und Begrenzung; die API verrät nicht, ob das Konto existiert."
+`api/tests/api.spec.ts` deckt das nicht ab — geprüft werden nur Statuscodes,
+keine Zeitgleichheit und kein unbekannter Name gegen ein bekanntes Konto.
+**Erwartete Korrektur:** Bei unbekanntem oder inaktivem Konto einen
+Dummy-Argon2id-Verify gegen einen vorab berechneten Platzhalter-Hash
+ausführen, damit der Zeitaufwand unabhängig von der Kontoexistenz
+vergleichbar bleibt.
+
+**Kein Befund:** Origin-/CSRF-Schutz für schreibende Routen (inklusive Setup
+und Login), Cookie-Flags (`HttpOnly`, `SameSite=Lax`, konfigurierbares
+`Secure`), Setup-Code-Handhabung (192-Bit-Zufall, `timingSafeEqual`-Vergleich,
+Einmalverbrauch in einer Transaktion), Rate-Limit-Schlüssel (nur direkte
+Verbindungs-IP, keine Proxy-Header), Sitzungsablauf (12 h Inaktivität, 7 Tage
+absolut), Schutz des letzten aktiven Admin-Kontos (`deactivateUser` in
+`repository.ts`), Docker-Mehrstufenbuild (native Build-Toolchain nur im
+`api-build`-Stage, schlankes Laufzeitabbild, `/healthz`-Check) — alles
+geprüft und stimmt mit Spezifikation und Akzeptanzkriterien überein.
+
+**Frühere Verdrahtungslücken aus der Architekturberatung:** `make setup`
+installiert jetzt auch die `api`-Abhängigkeiten, `make typecheck` deckt
+`api/` jetzt ab — beide behoben. Offen bleibt: `eslint.config.js` lintet
+`api/src/**` weiterhin mit Browser-Globals statt Node-Globals; kein
+Regelverstoß, da `no-undef` projektweit aus ist und `api`s eigener
+`tsc --noEmit` Node-Typfehler abdeckt — kein Blocker, aber weiterhin offen.
+
+**Urteil:** `changes_requested`. Die Timing-Lücke ist konkret,
+spezifikationswidrig und mit vertretbarem Aufwand behebbar; alles andere im
+geprüften Umfang ist stimmig. Die menschliche Prüfung nach T-60 bleibt davon
+unabhängig weiterhin offen.
+
+## Nachbesserung nach Runde 2
+
+`codex`, 2026-09-29, Produktcommit
+`942c211a04add600ee2c4a9e6eb2db5e3c396979`: `login()` führt nun auch
+bei unbekannten und inaktiven Konten genau einen Argon2id-Abgleich aus. Dafür
+verwendet es einen vorab berechneten Platzhalter-Hash mit denselben Parametern
+wie die regulären Konto-Hashes. Die Fehlantwort bleibt `invalid_credentials`;
+ein inaktives Konto kann auch bei passendem Passwort keine Sitzung erhalten.
+Der Test mit echten Repository- und Argon2-Aufrufen kontrolliert beide Fälle,
+den Abgleich bei einem aktiven Konto und die Hash-Parameter. Vor der Änderung
+schlug er bei unbekanntem Konto mit null statt einem Verify-Aufruf fehl;
+danach bestand er.
+
+**Prüfung:** `make test` (803 Frontend- und 7 API-Tests), `make lint`,
+`make typecheck`, `make build-api` und `git diff --check` bestanden. Die
+frühere Browserprüfung von Login, Setup, Admin und Kontoansicht bei 390 und
+1440 px einschließlich Abstände und Ausrichtung bleibt gültig: Diese
+Nachbesserung ändert ausschließlich die API und ihren Test, keine Oberfläche.
+Der im Review genannte ESLint-Node-Globals-Punkt bleibt als nicht blockierender
+Befund sichtbar. StockInfo wurde nicht geändert.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Docker**) und
+`docker/README.md` (**Quick start**, **Configuration**) beschreiben weiterhin
+denselben Login und dieselbe Kontotrennung. Der interne Abgleich mit einem
+Platzhalter-Hash ändert weder Bedienung noch Konfiguration; daher benötigen
+beide Anleitungen keine Anpassung. Die bestehende Unraid-Anleitung und Vorlage
+enthalten ebenfalls keine Aussage zur internen Passwortprüfung.
