@@ -87,8 +87,10 @@ T-60 behauptet noch keine Trennung oder Synchronisation dieser lokalen Daten.
 ## Oberfläche
 
 Die App prüft beim Start Setup-Status und Sitzung. Setup, Login und erzwungener
-Passwortwechsel erscheinen ohne StockInfo-Verbindung. Nach Anmeldung öffnet
-sie die bestehende App. Unter **Einstellungen → Benutzerverwaltung** führt
+Passwortwechsel erscheinen ohne StockInfo-Verbindung. Bis T-61 öffnet die
+bestehende App nur für den ersten Admin mit seinem lokalen Browserbestand;
+andere Konten sehen einen klaren Hinweis auf die noch ausstehende
+Depotfreigabe. Unter **Einstellungen → Benutzerverwaltung** führt
 ein Link zu `/#/admin/users`; nur Admins sehen ihn. Die Seite erlaubt Anlegen,
 Deaktivieren und Passwort-Reset. Alle neuen sichtbaren Texte stehen in den
 DE/EN-Katalogen. Formulare, Fehler und Dialoge funktionieren per Tastatur
@@ -112,3 +114,30 @@ und bei 390 px Breite. Ein versteckter Link ersetzt keine API-Prüfung.
 Die technische Freigabe von T-60 und Mikes Prüfung der Testinstanz sind
 getrennte Schritte. Die offenen T-61- und T-62-Tickets erhalten durch diese
 Umsetzung keine Produktfreigabe.
+
+## Verbindliche Grenzen für T-61 und T-62
+
+Diese Entscheidungen schließen die Punkte aus der Konzeptprüfung der Kette,
+ohne T-61 oder T-62 jetzt als Produktauftrag zu aktivieren.
+
+- T-61 bindet die einmalige Altbestandsübernahme an das angemeldete Konto.
+  Die API speichert in derselben Transaktion wie die importierten Depots einen
+  dauerhaften Übernahmemarker pro Konto. Ein zweiter Importversuch, auch aus
+  einem anderen Browser mit anderem lokalen Bestand, endet mit `409` und
+  schreibt nichts. Die Vorschau zeigt diesen Zustand vor der Bestätigung.
+  Weitere einzelne Depots können später über den regulären Export und Restore
+  übernommen werden; sie sind kein zweiter pauschaler Altbestandsimport.
+- T-61 löscht beim Logout und vor dem Wechsel zu einem anderen Konto alle
+  privaten IndexedDB-Daten und die lokalen Kurs-, FX- und Verlaufscaches der
+  App sowie private Pinia-Zustände. Das gilt auch für Rohdaten, die sonst über
+  Entwicklertools erreichbar blieben. Bis T-61 werden vorhandene lokale
+  Browser-Depots nicht als zwischen Konten sicher getrennt behauptet. T-60
+  zeigt diese Altbestände deshalb nur dem ersten eingerichteten Admin; andere
+  Konten erhalten bis T-61 eine klare Noch-nicht-verfügbar-Ansicht.
+- T-62 sendet alle 15 Sekunden einen SSE-Kommentar als Keep-Alive. Im selben
+  Takt prüft der Server die Sitzung erneut und beendet den Stream nach
+  Logout, Deaktivierung oder Ablauf. Beim Wiederverbinden und Sichtbarwerden
+  des Tabs lädt der Client den aktuellen Stand per REST; ein verpasstes
+  Ereignis bleibt dadurch kein dauerhafter Datenstand. Proxies müssen
+  Streaming ohne Pufferung und ein Idle-Timeout oberhalb des Keep-Alive-
+  Intervalls erlauben.

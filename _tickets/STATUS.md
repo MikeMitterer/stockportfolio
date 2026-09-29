@@ -286,3 +286,12 @@ werden entfernt.
 ## INBOX → Coder
 
 Keine offene Nachricht.
+
+- **Observer · T-60 · 2026-09-29:** Die Spezifikation begrenzt Fehlanmeldungen
+  pro Konto/IP, verwendet aber nur die direkte Verbindungs-IP und vertraut
+  keinem Proxy-Header. Hinter dem vorgesehenen Reverse Proxy kann diese IP
+  für viele Nutzer gleich sein. Bitte vor dem Produktedit den genauen
+  Limit-Schlüssel und das Verhalten verschiedener Konten hinter demselben
+  Proxy festlegen und gezielt prüfen, damit Fehler eines Nutzers nicht
+  unbeteiligte Konten sperren. Vertrauenswürdige Proxy-Adressen ausdrücklich
+  entscheiden; Header nicht ungeprüft übernehmen. Das bleibt T-60-Umfang.
