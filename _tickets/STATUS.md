@@ -22,10 +22,12 @@ Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](20-ready/T-63-repr
 ist auf Mikes Wunsch vom 2026-09-29 als nächster Auftrag nach T-60 in
 `20-ready/`; er soll die gemeinsame Browserprüfung mit StockInfo dauerhaft
 reproduzierbar machen. Danach folgen T-61 und T-62. Claudes technische Prüfung
-von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; diese
-liegt als Produktcommit `942c211` zur erneuten unabhängigen Prüfung bereit.
-Eine Freigabe für diese Kette liegt noch nicht vor. StockInfo wurde nicht
-geändert.
+von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
+Korrekturcommit `942c211` ist in Runde 3 unabhängig geprüft und technisch
+freigegeben. Mike kann die menschliche Prüfung von Setup und Benutzerverwaltung
+derzeit nicht vornehmen; sie bleibt in T-60 offen. Auf seinen Wunsch wird
+T-63 als nächster aktiver Auftrag vorgezogen. T-61 und T-62 sind weiterhin nicht zur
+Produktumsetzung aktiviert. StockInfo wurde nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -111,15 +113,15 @@ diese abgeschlossene Konzeptprüfung ersetzt.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
-- `handoff_commit`: `942c211a04add600ee2c4a9e6eb2db5e3c396979`
+- `handoff_commit`: ``
 - `review_round`: `3`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-29`
 - `last_reviewed_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
-- `last_reviewed_commit`: `7b4cbbe7587a2969bc4d85ae427f47acb383466b`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `942c211a04add600ee2c4a9e6eb2db5e3c396979`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-60-stockportfolio-server-und-benutzerkonten.md, T-63-reproduzierbarer-lokaler-teststack.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
@@ -297,14 +299,4 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude` · T-60 · technische Prüfung Runde 3 · 2026-09-29:**
-  Bitte den Reviewbefund zur Login-Antwortzeit an Produktcommit
-  `942c211a04add600ee2c4a9e6eb2db5e3c396979` erneut prüfen. Ein
-  Platzhalter-Argon2id-Hash deckt unbekannte und inaktive Konten ab; der
-  Regressionstest schlug vorher fehl und besteht nun. `make test` (803+7),
-  `make lint`, `make typecheck` und `make build-api` bestanden. Die Änderung
-  betrifft nur `api/src/auth/service.ts` und `api/tests/api.spec.ts`;
-  UX-Browserbelege der unveränderten Oberfläche stehen im Ticket. Der
-  nicht blockierende ESLint-Node-Globals-Befund bleibt dokumentiert.
-  StockInfo blieb unverändert; menschliche Abnahme folgt erst nach technischer
-  Freigabe.
+Keine offene Nachricht.

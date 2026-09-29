@@ -11,18 +11,20 @@ weder durch Raten einer ID noch durch direktes Öffnen einer Admin-Adresse sehen
 
 **Stand am 2026-09-29:** Die eigene Konto-API, Anmeldung und
 Benutzerverwaltung sind implementiert und lokal geprüft. Der Container-Build
-und eine isolierte Volume-Probe waren erfolgreich; die unabhängige technische
-Freigabe steht noch aus. Private Depotdaten und SSE gehören weiterhin zu
-T-61/T-62. Das vorbereitende Teststack-Ticket T-63 liegt in `20-ready/`.
+und eine isolierte Volume-Probe waren erfolgreich; Claude hat die technische
+Fassung in Runde 3 freigegeben. Die menschliche Prüfung ist noch offen, da Mike
+sie am 2026-09-29 erst später vornehmen kann. Private Depotdaten und SSE
+gehören weiterhin zu T-61/T-62. T-63 wird auf Mikes Wunsch vorgezogen.
 
-**Für dich:** Jetzt ist kein Handgriff nötig. Nach technischer Freigabe folgt
-die menschliche Prüfung des einmaligen Setups und der Benutzerverwaltung.
+**Für dich:** Wenn du wieder Zeit hast, folgt die menschliche Prüfung des
+einmaligen Setups und der Benutzerverwaltung. Die Testinstanz wird dafür frisch
+mit getrennten Daten gestartet; aktuell läuft keine solche Instanz.
 
 ## Für dich
 
 ### Nach der technischen Übergabe
 
-Die Testinstanz startet der Coder mit leerem, getrenntem Datenverzeichnis auf
+Die Testinstanz startet der Coder für die spätere Prüfung mit leerem, getrenntem Datenverzeichnis auf
 `http://127.0.0.1:18080`; er dokumentiert den genauen Startbefehl. Der
 einmalige Einrichtungscode wird nur aus ihrem Container-Log gelesen und nicht
 ins Ticket kopiert. Keine bestehenden Depots für diese Prüfung verwenden.
@@ -488,3 +490,39 @@ denselben Login und dieselbe Kontotrennung. Der interne Abgleich mit einem
 Platzhalter-Hash ändert weder Bedienung noch Konfiguration; daher benötigen
 beide Anleitungen keine Anpassung. Die bestehende Unraid-Anleitung und Vorlage
 enthalten ebenfalls keine Aussage zur internen Passwortprüfung.
+
+## Technische Prüfung Runde 3
+
+`claude`, 2026-09-29, an Handoff-Commit `942c211a04add600ee2c4a9e6eb2db5e3c396979`
+(Branch `t-60-stockportfolio-server-und-konten`). Erneute unabhängige Prüfung,
+begrenzt auf den Korrekturcommit zum Runde-2-Befund.
+
+**Diff geprüft:** `git show 942c211` betrifft ausschließlich
+`api/src/auth/service.ts` (6 Zeilen) und `api/tests/api.spec.ts`
+(37 Zeilen, neuer Test) — deckt sich mit der Zusage in der OUTBOX-Nachricht,
+kein weiterer Datei ist betroffen.
+
+**Fix inhaltlich korrekt:** `login()` ruft `argon2.verify` jetzt in jedem
+Fall genau einmal auf — bei existierendem aktivem Konto gegen den echten
+Hash, sonst gegen einen fest hinterlegten Platzhalter-Hash mit identischen
+Argon2id-Parametern (`m=65536,p=4,t=3`, wie `argon2.hash()` sie standardmäßig
+erzeugt). Die äußere Bedingung `if (!user?.active || !passwordValid)`
+verhindert weiterhin jede Anmeldung ohne aktives Konto, auch falls
+`passwordValid` durch Zufall wahr würde — kein neuer Bypass. Der neue Test
+(`prüft Passwörter auch bei unbekannten und inaktiven Konten mit Argon2id`)
+spioniert `argon2.verify` aus und beweist für `mike` (aktiv, falsches
+Passwort), `missing` (unbekannt) und `inactive` (deaktiviert) je genau einen
+Aufruf sowie identische Kostenparameter zwischen echtem und
+Platzhalter-Hash — ein präziser, gezielter Regressionstest für genau die
+gefundene Lücke, nicht nur ein Statuscode-Test.
+
+**Nachvollzogene Nachweise:** `make test` (803 Frontend- + 7 API-Tests),
+`make lint`, `make typecheck` und `make build-api` selbst erneut ausgeführt —
+alle grün, bestätigt die Ticketangaben.
+
+**Urteil:** `approved`. Der Runde-2-Befund ist behoben, gezielt getestet und
+ohne Nebenwirkungen auf den übrigen, bereits in Runde 2 freigegebenen Umfang.
+Der nicht blockierende ESLint-Node-Globals-Punkt bleibt als offene
+Beobachtung bestehen, ohne die Freigabe zu verzögern. Die menschliche Prüfung
+von Setup und Benutzerverwaltung nach T-60 bleibt weiterhin gesondert
+ausstehend.
