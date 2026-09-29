@@ -4,6 +4,8 @@ import type { AccountRepository, UserRecord } from '../persistence/repository.js
 
 const idleLimitMs = 12 * 60 * 60_000
 const absoluteLimitMs = 7 * 24 * 60 * 60_000
+// Gleiche Argon2id-Parameter wie bei echten Konten, damit unbekannte Namen keinen kürzeren Login-Pfad haben.
+const placeholderPasswordHash = '$argon2id$v=19$m=65536,p=4,t=3$I2q0ZM23ZTSD1i05A5Gxuw$kVyn3VeN0V2F2B2rwTwUX465a4odogCqqZOBLu2+XbM'
 
 export class ServiceError extends Error {
   constructor(public readonly status: number, public readonly code: string, public readonly retryAfter?: number) {
@@ -107,7 +109,9 @@ export class AccountService {
     const key = this.rateKey('login', normalized, address)
     this.checkLimit(key)
     const user = this.repository.findUserByName(normalized)
-    if (!user?.active || !(await argon2.verify(user.passwordHash, password))) this.failAttempt(key)
+    const passwordHash = user?.active ? user.passwordHash : placeholderPasswordHash
+    const passwordValid = await argon2.verify(passwordHash, password)
+    if (!user?.active || !passwordValid) this.failAttempt(key)
     this.repository.clearFailures(key)
     return { user: publicUser(user), token: this.issueSession(user.id) }
   }

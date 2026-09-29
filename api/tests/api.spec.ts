@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import argon2 from 'argon2'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -20,7 +21,7 @@ function createFixture() {
   let currentTime = 100_000
   const service = new AccountService(repository, hashSetupCode('setup-code'), () => currentTime)
   const app = createApiRouter(service, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1' })
-  return { app, repository, advance: (milliseconds: number) => { currentTime += milliseconds } }
+  return { app, repository, service, advance: (milliseconds: number) => { currentTime += milliseconds } }
 }
 
 function jsonRequest(body: unknown, cookie?: string, requestOrigin = origin) {
@@ -111,5 +112,37 @@ describe('eigene Konto-API', () => {
     const other = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'other', password: 'other-password-123' }))
     expect(other.status).toBe(200)
     repository.close()
+  })
+
+  it('prüft Passwörter auch bei unbekannten und inaktiven Konten mit Argon2id', async () => {
+    const { service, repository } = createFixture()
+    await service.setup('setup-code', 'mike', 'test-password-123', '10.0.0.1')
+    const inactive = await service.createUser('inactive', 'inactive-password-123', 'user')
+    service.deactivateUser(inactive.id)
+    const verify = vi.spyOn(argon2, 'verify')
+    const hashes = new Map<string, string>()
+
+    try {
+      for (const username of ['mike', 'missing', 'inactive']) {
+        verify.mockClear()
+        await expect(service.login(username, 'wrong-password', '10.0.0.1')).rejects.toMatchObject({
+          status: 401,
+          code: 'invalid_credentials',
+        })
+        expect(verify, username).toHaveBeenCalledTimes(1)
+        hashes.set(username, verify.mock.calls[0]?.[0] ?? '')
+      }
+
+      const activeHash = repository.findUserByName('mike')?.passwordHash ?? ''
+      expect(hashes.get('mike')).toBe(activeHash)
+      for (const username of ['missing', 'inactive']) {
+        const fallbackHash = hashes.get(username) ?? ''
+        expect(fallbackHash).not.toBe(activeHash)
+        expect(fallbackHash.split('$').slice(0, 4)).toEqual(activeHash.split('$').slice(0, 4))
+      }
+    } finally {
+      verify.mockRestore()
+      repository.close()
+    }
   })
 })
