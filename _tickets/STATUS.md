@@ -9,8 +9,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 ist am 2026-09-28 auf Mikes Auftrag in `30-doing/` aktiviert. Dieselbe
 beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
 und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
-Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`;
-T-60 bleibt das aktive Ticket. Claude hat die von Mike beauftragte
+Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`.
+T-60 ist technisch freigegeben; seine menschliche Prüfung steht noch aus.
+Claude hat die von Mike beauftragte
 konzeptionelle Prüfung aller drei Tickets am 2026-09-28 abgeschlossen und
 Befunde in jedem der drei Tickets festgehalten; keiner davon stellt den
 gewählten Ansatz infrage. Die Architektur-Spezifikation liegt vor. Claude hat
@@ -18,15 +19,16 @@ auf Mikes Nachfrage das eigenständige `server/`-Paket empfohlen; Begründung
 und drei nötige Verdrahtungen stehen im T-60-Ticket. Claudes ergänzende
 Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
 `api/`; der Coder setzt diese Aufteilung um und hält die Projektversion im
-Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](20-ready/T-63-reproduzierbarer-lokaler-teststack.md)
-ist auf Mikes Wunsch vom 2026-09-29 als nächster Auftrag nach T-60 in
-`20-ready/`; er soll die gemeinsame Browserprüfung mit StockInfo dauerhaft
-reproduzierbar machen. Danach folgen T-61 und T-62. Claudes technische Prüfung
+Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+ist auf Mikes Wunsch vom 2026-09-29 vorgezogen und jetzt der aktive
+Coder-Auftrag. Er soll die gemeinsame Browserprüfung mit StockInfo dauerhaft
+reproduzierbar machen. Danach folgen die offene menschliche T-60-Prüfung sowie
+T-61 und T-62. Claudes technische Prüfung
 von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
 Korrekturcommit `942c211` ist in Runde 3 unabhängig geprüft und technisch
 freigegeben. Mike kann die menschliche Prüfung von Setup und Benutzerverwaltung
 derzeit nicht vornehmen; sie bleibt in T-60 offen. Auf seinen Wunsch wird
-T-63 als nächster aktiver Auftrag vorgezogen. T-61 und T-62 sind weiterhin nicht zur
+T-63 als aktiver Auftrag vorgezogen. T-61 und T-62 sind weiterhin nicht zur
 Produktumsetzung aktiviert. StockInfo wurde nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
@@ -104,27 +106,26 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-60 ist das aktive Ticket. Claude hat das Konzept der gesamten Kette T-60
-bis T-62 geprüft und `approved`; das ist eine konzeptionelle Freigabe, keine
-technische Freigabe von Produktcode. T-61 und T-62 sind noch nicht zur
-Produktumsetzung aktiviert. Die vorherige Reviewreferenz aus T-58 ist durch
-diese abgeschlossene Konzeptprüfung ersetzt.
+T-63 ist das aktive Ticket. T-60 ist technisch freigegeben, aber seine
+menschliche Prüfung steht aus. Claude hat das Konzept der gesamten Kette T-60
+bis T-62 geprüft; T-61 und T-62 sind noch nicht zur Produktumsetzung
+aktiviert. Die letzte technische Reviewreferenz bleibt T-60 Runde 3.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
+- `phase`: `implementing`
+- `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: ``
-- `review_round`: `3`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-29`
 - `last_reviewed_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
 - `last_reviewed_commit`: `942c211a04add600ee2c4a9e6eb2db5e3c396979`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-60-stockportfolio-server-und-benutzerkonten.md, T-63-reproduzierbarer-lokaler-teststack.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
-- `priority_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
+- `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich

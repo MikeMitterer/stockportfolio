@@ -38,10 +38,10 @@ führt erneut zur Suche im Produktcode oder zu einem unnötigen Docker-Start.
   `make dev VITE_STOCKINFO_API_URL=http://127.0.0.1:8899` wirkte. Der
   künftige Startweg muss diesen Vorrang selbst korrekt setzen und prüfen.
 
-**Für dich:** Dieses Ticket ist auf Mikes Wunsch vom 2026-09-29 für die Arbeit
-nach T-60 eingeplant. Es startet noch keine Umsetzung; T-60 bleibt der aktive
-Auftrag. Die laufende T-60-Prüfung verwendet die vorhandenen lokalen
-Startwege; dieses Ticket soll deren künftige Wiederholung absichern.
+**Für dich:** Mike hat dieses Ticket am 2026-09-29 vorgezogen, weil er die
+menschliche T-60-Prüfung erst später vornehmen kann. T-63 ist jetzt der aktive
+Coder-Auftrag. T-60 bleibt in `30-doing/` technisch freigegeben, aber mit
+offener menschlicher Prüfung; dafür läuft aktuell keine Testinstanz.
 
 ## Ziel und Grenze
 
