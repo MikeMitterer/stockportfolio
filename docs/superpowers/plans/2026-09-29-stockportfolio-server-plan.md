@@ -5,8 +5,14 @@ Auftrag: `_tickets/30-doing/T-60-stockportfolio-server-und-benutzerkonten.md`
 
 ## 1. Serverkern und Datenbank
 
-- Node/TypeScript-Server im Ordner `server/` mit Drizzle-Schema und
-  SQLite-Repository unter `server/src/persistence/` anlegen.
+- Node/TypeScript-Server im Ordner `api/` mit Drizzle-Schema und
+  SQLite-Repository unter `api/src/persistence/` anlegen.
+- Laufzeitabhängigkeiten in `api/package.json` und seiner Lockdatei pflegen;
+  `npm ci --prefix api` für die lokale Einrichtung und den Container nutzen.
+  Servertests bleiben unter `api/tests/`; die Root-Prüfbefehle rufen sie auf.
+- Bestehende Vue-Quellen, Tests, öffentliche Dateien und Vite-Konfiguration
+  nach `frontend/` verschieben. Das Root-`package.json` bleibt die einzige
+  Projektversionsquelle und trägt die Frontend-Abhängigkeiten.
 - Den Container von `serve` auf diesen Server umstellen; statische Dateien,
   `/api` und `/healthz` auf Port 8080 bereitstellen.
 - Mit isolierten Tests Start, Schema, Setup-Sperre und Volume-Erhalt prüfen.

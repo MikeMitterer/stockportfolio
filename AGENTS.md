@@ -5,9 +5,11 @@ Instanz und jede Laufzeit. `AGENTS.md` ist der übliche projektweite Einstieg;
 `CLAUDE.md` verweist nur hierher und enthält keine eigenen Regeln. Eine zweite
 Regelkopie liefe beim ersten Nachtrag auseinander.
 
-StockPortfolio ist eine Vue-3-App **ohne eigenes Backend**. Kurse, Instrumente
-und Historie kommen vollständig aus StockInfo. Wer das übersieht, sucht Fehler
-im falschen Repository.
+StockPortfolio besteht aus der Vue-3-App unter `frontend/` und der eigenen
+Konto-API unter `api/`. Kurse, Instrumente und Historie kommen weiterhin
+vollständig aus StockInfo. Die eigene API verwaltet Konten und Sitzungen;
+Depotdaten folgen erst mit T-61. Wer diese Zuständigkeiten vermischt, sucht
+Fehler im falschen Repository.
 
 ## Übersicht
 
@@ -44,10 +46,12 @@ von StockInfo: dessen `AGENTS.md`, dessen Board und die Rollen aus dessen
 bleiben getrennt; eine Änderung am Dienst gehört nicht in einen Commit dieses
 Projekts.
 
-- **`src/api/client.ts` ist die einzige Stelle mit `fetch`.**
-  Neue Endpunkte kommen dort dazu, mit Typ in `src/api/types.ts` und Mapper in
-  `src/api/mappers.ts`. Der Client bekommt `fetch` injiziert; kein Test ruft
-  den echten Dienst.
+- **`frontend/src/api/client.ts` bündelt alle StockInfo-Aufrufe.**
+  Neue StockInfo-Endpunkte kommen dort dazu, mit Typ in
+  `frontend/src/api/types.ts` und Mapper in `frontend/src/api/mappers.ts`.
+  Der Client bekommt `fetch` injiziert; kein Test ruft den echten Dienst.
+  Die eigene Konto-API verwendet getrennt davon
+  `frontend/src/auth/client.ts` und eingehende Routen unter `api/src/routers/`.
 
 - **Die Basisadresse hat keine Rückfallebene.**
   Zur Laufzeit gilt `config.js` — im Container aus `STOCKINFO_API_URL`
@@ -65,8 +69,8 @@ Projekts.
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
   dasselbe. Damit lassen sich Mapper prüfen, ohne StockInfo zu starten.
   StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
-  `src/api/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
-  unter `tests/fixtures/stockinfo/`. Die Bewertung steht in
+  `frontend/src/api/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
+  unter `frontend/tests/fixtures/stockinfo/`. Die Bewertung steht in
   [T-37](_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
   Generation und Währung in
   [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
@@ -83,6 +87,7 @@ den Dev-Server:
 ```bash
 make dev          # in StockInfo: Backend auf http://localhost:8000, Swagger unter /docs
 make dev          # in StockPortfolio: Vite auf http://localhost:5175
+make dev-api      # in StockPortfolio: eigene Konto-API auf http://localhost:8080
 ```
 
 Die gehostete Instanz steht unter `https://stockinfo.int.mikemitterer.at`; sie
@@ -161,7 +166,7 @@ Vollständige Konventionen samt Namensschema je Sprache: Skill `code-standards`.
 
 ## Wächter-Tests prüfen das Muster, nicht die Fundstelle
 
-Vier Tests unter `tests/` durchsuchen den gesamten `src/`-Baum statisch:
+Vier Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Baum statisch:
 
 | Test | Riegel |
 |---|---|
@@ -185,10 +190,12 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 
 ```bash
 make dev        # Vite-Dev-Server, Port 5175
-make test       # Vitest, einmalig
-make lint       # ESLint über src/ und tests/
-make typecheck  # vue-tsc --noEmit
+make dev-api    # eigene Konto-API, Port 8080
+make test       # Frontend- und API-Tests, einmalig
+make lint       # ESLint über Frontend und API
+make typecheck  # vue-tsc und API-TypeScript
 make build-frontend # typecheck + Production-Build nach dist/
+make build-api  # API-TypeScript nach api/dist/
 make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
@@ -200,8 +207,12 @@ Ergebnis gehört als Beleg ins Ticket.
 Für Browserprüfungen mit echter StockInfo-API gibt es
 `scripts/stockinfo-test-server.py`. Es verwendet eine temporäre Datenbank und
 lokale Testkurse. Mit StockInfos Python-Umgebung starten, etwa
-`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://127.0.0.1:5175`.
-Die `--origin` muss zur Frontend-Adresse passen. Beenden mit
+`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://localhost:5175`.
+Danach die Konto-API mit `make dev-api` und Vite mit
+`make dev VITE_STOCKINFO_API_URL=http://127.0.0.1:8899` starten. Die
+Make-Zuweisung ist nötig, weil das Makefile `.env` einbindet; eine davor
+gesetzte Shell-Variable kann vom `.env`-Wert überstimmt werden. Die
+`--origin` muss zur Browser-Adresse passen. Beenden mit
 `../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stop`.
 Bei einem anderen Port `--port PORT` beim Start und Stop angeben.
 Der Modul-Docstring beschreibt weitere Optionen. In einem Worktree außerhalb

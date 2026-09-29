@@ -66,9 +66,14 @@ Depots in der Testinstanz verwenden.
    einem gewählten Konto zugeordnet werden. Die App zeigt Quelle, Ziel und
    Wirkung vorher an. Ein leerer neuer Browser lädt den Serverstand und
    überschreibt ihn nicht. Unterschiedliche Altbestände verschiedener Browser
-   werden niemals automatisch zusammengeführt.
+   werden niemals automatisch zusammengeführt. Ein dauerhafter
+   Übernahmemarker wird mit den importierten Depots in derselben Transaktion
+   gespeichert. Ein zweiter pauschaler Importversuch für dasselbe Konto,
+   auch aus einem anderen Browser, erhält `409` und schreibt nichts.
 6. Nach Logout oder Kontowechsel bleiben keine privaten Daten des vorigen
-   Nutzers in der App oder einem geteilten Browsercache zugänglich. Der
+   Nutzers in der App oder einem geteilten Browsercache zugänglich. Private
+   IndexedDB-Daten, lokale Kurs-, FX- und Verlaufscaches sowie private
+   Pinia-Zustände werden beim Logout und vor dem Kontowechsel gelöscht. Der
    bestehende Backup-/Restore-Weg arbeitet mit den serverseitigen Daten des
    angemeldeten Kontos; der Export bleibt ein Depot pro Datei.
 7. T-62 übernimmt die zeitnahe Benachrichtigung geöffneter Browser. Dieses
@@ -102,9 +107,9 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 |---|---|---|:--:|
 | 1 | <a id="pruefpunkt-1"></a>Im Browser A speichern, Browser B mit demselben Konto neu laden | Depot, Einstellungen, Auswahl und Tageswerte stimmen überein | ➖ |
 | 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ➖ |
-| 3 | <a id="pruefpunkt-3"></a>Altbestand und leeren zweiten Browser durchspielen | Nur bestätigter Import schreibt; leerer Browser überschreibt nichts | ➖ |
+| 3 | <a id="pruefpunkt-3"></a>Altbestand, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch erhält `409` ohne Änderung | ➖ |
 | 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ➖ |
-| 5 | <a id="pruefpunkt-5"></a>Abmelden, Konto wechseln, Backup und Restore prüfen | Keine private Altanzeige; Restore schreibt nur in das angemeldete Konto | ➖ |
+| 5 | <a id="pruefpunkt-5"></a>Abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Keine privaten Rohdaten des vorigen Kontos; Restore schreibt nur in das angemeldete Konto | ➖ |
 | 6 | `make test`, `make lint`, `make typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
 
 ### Doku-Abgleich
@@ -125,6 +130,11 @@ Browserdaten werden beim Übergang nicht automatisch zu Serverdaten. Wer die
 StockPortfolio-Datenbank im Volume braucht eine eigene Sicherung; ein Backup
 des Docker-Images reicht nicht. Ein gemeinsam genutzter Browser benötigt
 saubere Abmeldung und Trennung der lokalen Caches.
+
+Die verbindlichen Entscheidungen zu Übernahmemarker und Cache-Bereinigung
+stehen in der [T-60-Architekturspezifikation](../../docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md#verbindliche-grenzen-für-t-61-und-t-62).
+Die Konzeptprüfung unten dokumentiert den älteren offenen Stand; für T-61
+liegt noch kein Produktnachweis vor.
 
 ## Konzeptprüfung Runde 1
 

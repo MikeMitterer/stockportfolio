@@ -50,8 +50,10 @@ Geräten können denselben Testbenutzer öffnen. Keine echten Depots verwenden.
    verpassten Verbindung wird der maßgebliche Stand über REST geprüft.
    Ausfall der SSE-Verbindung darf nicht dauerhaft unbemerkt zu einem
    veralteten Stand führen; der Zustand oder ein Ersatzabruf macht das klar.
+   Alle 15 Sekunden sendet der Server einen SSE-Kommentar als Keep-Alive.
 4. Der Ereignisstrom prüft die Sitzung wie jede private API. Logout,
-   Deaktivierung und abgelaufene Sitzung schließen den Strom. Ein Nutzer
+   Deaktivierung und abgelaufene Sitzung schließen den Strom. Die
+   Sitzungsprüfung erfolgt auch bei jedem Keep-Alive. Ein Nutzer
    erhält keine Ereignisse oder Kennungen eines anderen Nutzers.
 5. Gleichzeitige Bearbeitungen bleiben durch die T-61-Revisionen geschützt.
    Ein Ereignis hebt einen sichtbaren Konflikt nicht stillschweigend auf.
@@ -82,8 +84,8 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 |---|---|---|:--:|
 | 1 | <a id="pruefpunkt-1"></a>In Browser A schreiben, Browser B offen lassen | Ereignis nach Commit; B lädt gezielt per REST und zeigt den neuen Wert | ➖ |
 | 2 | <a id="pruefpunkt-2"></a>Mit anderem Konto C mithören und A ändern | C bekommt weder Ereignis noch fremde Kennung oder Daten | ➖ |
-| 3 | SSE trennen, währenddessen ändern, wieder verbinden | B lädt den neuesten Stand; verpasste Ereignisse gehen nicht als Zustand verloren | ➖ |
-| 4 | Schreibkonflikt, Logout und Sitzungsablauf prüfen | Konflikt sichtbar; privater Stream endet oder weist Zugriff ab | ➖ |
+| 3 | SSE trennen, währenddessen ändern, wieder verbinden und Keep-Alive hinter dem Proxy prüfen | B lädt den neuesten Stand; verpasste Ereignisse gehen nicht als Zustand verloren; Verbindung bleibt auch ohne Nutzereignisse offen | ➖ |
+| 4 | Schreibkonflikt, Logout und Sitzungsablauf während offenem Stream prüfen | Konflikt sichtbar; privater Stream endet oder weist spätestens beim nächsten Keep-Alive Zugriff ab | ➖ |
 | 5 | `make test`, `make lint`, `make typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
 
 ### Doku-Abgleich
@@ -101,6 +103,12 @@ Jeder offene Browser hält eine dauerhafte Verbindung zum StockPortfolio-Server.
 Ein vorgeschalteter Proxy muss sie durchreichen; bei Verbindungsabbruch lädt
 die App nach dem Wiederverbinden neu. Die SSE-Nachricht ersetzt weder
 Versionsprüfung noch die Datenbank-Sicherung.
+
+Das Keep-Alive-Intervall und die Sitzungsprüfung sind in der
+[T-60-Architekturspezifikation](../../docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md#verbindliche-grenzen-für-t-61-und-t-62)
+entschieden. Der Proxy muss Streaming ohne Pufferung und ein längeres
+Idle-Timeout erlauben. Die Konzeptprüfung unten hält den früher offenen
+Stand fest; für T-62 liegt noch kein Produktnachweis vor.
 
 ## Konzeptprüfung Runde 1
 

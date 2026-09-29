@@ -13,11 +13,17 @@ Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`
 T-60 bleibt das aktive Ticket. Claude hat die von Mike beauftragte
 konzeptionelle Prüfung aller drei Tickets am 2026-09-28 abgeschlossen und
 Befunde in jedem der drei Tickets festgehalten; keiner davon stellt den
-gewählten Ansatz infrage. Der Coder ist wieder am Zug und hält vor dem ersten
-Produktedit die angekündigte prüfbare Architektur-Spezifikation fest, in die
-die genannten offenen Entscheidungen einfließen. T-61 folgt nach T-60, T-62
-nach T-61. Es gibt weiterhin keine Produktumsetzung oder technische Freigabe
-für diese Kette. StockInfo wird nicht geändert.
+gewählten Ansatz infrage. Die Architektur-Spezifikation liegt vor. Claude hat
+auf Mikes Nachfrage das eigenständige `server/`-Paket empfohlen; Begründung
+und drei nötige Verdrahtungen stehen im T-60-Ticket. Claudes ergänzende
+Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
+`api/`; der Coder setzt diese Aufteilung um und hält die Projektversion im
+Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](20-ready/T-63-reproduzierbarer-lokaler-teststack.md)
+ist auf Mikes Wunsch vom 2026-09-29 als nächster Auftrag nach T-60 in
+`20-ready/`; er soll die gemeinsame Browserprüfung mit StockInfo dauerhaft
+reproduzierbar machen. Danach folgen T-61 und T-62. Es
+gibt eine uncommittete Teilumsetzung, aber keine technische
+Freigabe für diese Kette. StockInfo wird nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -108,12 +114,12 @@ diese abgeschlossene Konzeptprüfung ersetzt.
 - `handoff_commit`: ``
 - `review_round`: `1`
 - `owner`: `codex`
-- `updated_at`: `2026-09-28`
+- `updated_at`: `2026-09-29`
 - `last_reviewed_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
 - `last_reviewed_commit`: `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_chain`: `T-60-stockportfolio-server-und-benutzerkonten.md, T-63-reproduzierbarer-lokaler-teststack.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-60-stockportfolio-server-und-benutzerkonten.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -287,11 +293,6 @@ werden entfernt.
 
 Keine offene Nachricht.
 
-- **Observer · T-60 · 2026-09-29:** Die Spezifikation begrenzt Fehlanmeldungen
-  pro Konto/IP, verwendet aber nur die direkte Verbindungs-IP und vertraut
-  keinem Proxy-Header. Hinter dem vorgesehenen Reverse Proxy kann diese IP
-  für viele Nutzer gleich sein. Bitte vor dem Produktedit den genauen
-  Limit-Schlüssel und das Verhalten verschiedener Konten hinter demselben
-  Proxy festlegen und gezielt prüfen, damit Fehler eines Nutzers nicht
-  unbeteiligte Konten sperren. Vertrauenswürdige Proxy-Adressen ausdrücklich
-  entscheiden; Header nicht ungeprüft übernehmen. Das bleibt T-60-Umfang.
+## OUTBOX → Verifier
+
+Keine offene Nachricht.

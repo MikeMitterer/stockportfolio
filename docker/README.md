@@ -33,16 +33,20 @@ Replace the example API URL with your StockInfo address:
 ```bash
 docker run -d --name stockportfolio \
   -p 8080:8080 \
+  --mount type=volume,source=stockportfolio-data,target=/data \
   -e STOCKINFO_API_URL=https://stockinfo.example.com \
   --restart unless-stopped \
   mangolila/stockportfolio:latest
 ```
 
-Open `http://localhost:8080`, or use your Docker host's address.
+Read the one-time setup code with `docker logs stockportfolio`, then open
+`http://localhost:8080` and create the first admin account. The setup page
+closes after that account is created. There are no default credentials or
+public self-registration.
 
 The port mapping above accepts connections on the Docker host's network
-interfaces. The web interface has no built-in login; access control belongs
-in your network or reverse proxy. To allow access only from the Docker host,
+interfaces. The web interface has a login; still protect the host through
+your network or reverse proxy. To allow access only from the Docker host,
 use `-p 127.0.0.1:8080:8080` instead.
 
 **The browser connects directly to StockInfo.** The API address must be
@@ -51,9 +55,10 @@ StockInfo must allow the web app's origin through CORS. For example, when
 opening the app at `http://nas:8080`, allow that exact origin in StockInfo.
 An HTTPS web address requires an HTTPS API.
 
-There is no built-in public API. Without an API address, the app shows a
-configuration error. The active address and connection status are visible
-under **Settings → Status**.
+The container also serves its own account API at `/api/*`. It is separate from
+StockInfo. Without a StockInfo address, setup and login still work, while the
+portfolio view shows a configuration error. The active StockInfo address and
+connection status are visible under **Settings → Status**.
 
 ## Docker Compose
 
@@ -63,10 +68,14 @@ services:
     image: mangolila/stockportfolio:latest
     ports:
       - "8080:8080"
+    volumes:
+      - stockportfolio-data:/data
     environment:
       STOCKINFO_API_URL: https://stockinfo.example.com
       TZ: Europe/Vienna
     restart: unless-stopped
+volumes:
+  stockportfolio-data:
 ```
 
 Start with `docker compose up -d`.
@@ -77,11 +86,14 @@ Start with `docker compose up -d`.
 |---|---|
 | Container port `8080/tcp` | Web interface; map it to your preferred host port. |
 | `STOCKINFO_API_URL` | Your StockInfo API URL, reachable from the browser. Set it when starting the container. |
+| `/data` volume | Persistent SQLite accounts and sessions. Reuse it when recreating the container. |
+| `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port. Required behind a reverse proxy. |
+| `STOCKPORTFOLIO_SECURE_COOKIES` | Set to `true` when the browser uses HTTPS. Local HTTP testing uses `false`. |
 | `TZ` | Container log timezone; defaults to `UTC`. The interface uses the browser's timezone. |
 
 Restart the container after changing its environment variables.
 The image runs as user `node` (UID/GID 1000), without privileged mode.
-Its healthcheck verifies that the web page is served; it does not test StockInfo.
+Its healthcheck calls the local `/healthz` endpoint; it does not test StockInfo.
 The default build targets `linux/amd64`.
 
 ## Status and logs
@@ -96,9 +108,9 @@ connection errors, also check **Settings → Status** in the web interface.
 
 ## Data and backups
 
-**Portfolio data and settings live in the browser.** The container needs no
-database or appdata volume. Backing up the Docker host does not back up your
-portfolio.
+**Accounts and sessions live in SQLite under `/data`; portfolio data and
+settings still live in the browser.** Back up both the Docker volume and the
+browser export. Backing up only the host does not back up your portfolio.
 
 Use **Settings → Backup** to download a JSON backup or restore one. Downloads
 are saved by your browser, normally in its Downloads folder. Other devices,
@@ -106,7 +118,9 @@ browser profiles and web addresses have separate storage.
 In an empty portfolio, **Restore backup …** opens **Settings → Backup** directly.
 
 Keep the same web address and host port when updating. Clearing the browser's
-site data removes the locally stored portfolio.
+site data removes the locally stored portfolio. Until T-61 adds server-side
+portfolio storage, only the first admin can open the existing local portfolio;
+other accounts see a notice that portfolio access is pending.
 
 ## Updating
 
@@ -121,7 +135,8 @@ docker compose up -d
 ```
 
 For `docker run`, pull the new image and recreate the container with the same
-environment and host port.
+environment, host port and `/data` volume. Without that volume, setup starts
+again with an independent empty account database.
 
 **Upgrading from an older image:** the container port changed from `80` to
 `8080`. Update the container side of the mapping while keeping the host port

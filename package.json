@@ -8,16 +8,16 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview --port 4175",
-    "typecheck": "vue-tsc --noEmit",
+    "dev": "vite --config frontend/vite.config.ts",
+    "build": "vue-tsc --project frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
+    "preview": "vite preview --config frontend/vite.config.ts --port 4175",
+    "typecheck": "vue-tsc --project frontend/tsconfig.json --noEmit && npm run typecheck --prefix api",
     "lint": "eslint . --ext .vue,.ts,.tsx --cache",
     "lint:fix": "eslint . --ext .vue,.ts,.tsx --fix",
-    "format": "prettier --write \"src/**/*.{vue,ts,tsx,css,json}\"",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "format": "prettier --write \"frontend/src/**/*.{vue,ts,tsx,css,json}\"",
+    "test": "vitest run --config frontend/vitest.config.ts && npm run test --prefix api",
+    "test:watch": "vitest --config frontend/vitest.config.ts",
+    "test:coverage": "vitest run --config frontend/vitest.config.ts --coverage"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -51,13 +51,18 @@
   },
   "license": "EUPL-1.2",
   "files": [
-    "src",
-    "public",
+    "frontend/src",
+    "frontend/public",
+    "api/src",
+    "api/drizzle",
+    "api/package.json",
+    "api/package-lock.json",
+    "api/tsconfig.json",
     "scripts/licenseAssets.ts",
     "package-lock.json",
-    "index.html",
-    "vite.config.ts",
-    "tsconfig.json",
+    "frontend/index.html",
+    "frontend/vite.config.ts",
+    "frontend/tsconfig.json",
     "LICENSE",
     "LICENSE.de.txt",
     "LICENSING.md",
@@ -66,9 +71,6 @@
     "README.md",
     "docker/Dockerfile",
     "docker/entrypoint.sh",
-    "docker/runtime/package.json",
-    "docker/runtime/package-lock.json",
-    "docker/runtime/serve.json",
     ".dockerignore"
   ]
 }

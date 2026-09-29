@@ -91,7 +91,7 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Setup$(RESET)"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Symlinks" ""  "make setup"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "2. Env" ""       "cp .env.example .env"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Deps" ""      "npm install"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Deps" ""      "npm install && npm ci --prefix api"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "4. Start" ""     "make dev"
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Docker$(RESET)"
@@ -115,6 +115,7 @@ precheck: ## Benötigte Bibliotheksdateien prüfen
 setup: ## Symlinks (.libs/) + Deps installieren
 	@./scripts/setup-libs.sh --install
 	@npm install --no-audit --no-fund
+	@npm ci --prefix api --no-audit --no-fund
 
 # ─── Status ──────────────────────────────────────────────────────────────────
 
@@ -132,16 +133,24 @@ status: ## Git-Status des Repos + offene Blocker-Issues
 dev: ## Vite Dev-Server starten (Port 5175)
 	@npm run dev
 
+.PHONY: dev-api
+dev-api: ## Eigene API lokal starten (Port 8080)
+	@STOCKPORTFOLIO_DATA_DIR="$(WORKSPACE)/.local-data" STOCKPORTFOLIO_PUBLIC_ORIGIN="http://localhost:5175" npm run dev --prefix api
+
 .PHONY: build-frontend
 build-frontend: ## Production-Build (typecheck + vite build → dist/)
 	@npm run build
+
+.PHONY: build-api
+build-api: ## Eigene API nach api/dist/ übersetzen
+	@npm run build --prefix api
 
 .PHONY: preview
 preview: ## Preview des Prod-Builds (Port 4175)
 	@npm run preview
 
 .PHONY: lint
-lint: ## ESLint über src/, tests/
+lint: ## ESLint über Frontend und API
 	@npm run lint
 
 .PHONY: format
@@ -166,7 +175,7 @@ coverage: ## Vitest mit Coverage-Report
 
 .PHONY: clean
 clean: ## dist/, coverage/, .vite/ löschen
-	@rm -rf dist coverage .vite .eslintcache
+	@rm -rf dist api/dist coverage .vite .eslintcache
 	@echo "$(GREEN)✓$(RESET) aufgeräumt"
 
 # ─── Docker ──────────────────────────────────────────────────────────────────

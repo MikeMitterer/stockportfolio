@@ -6,8 +6,9 @@ see LICENSE and LICENSING.md. Third-party components retain their own licenses.
 
 Every production build includes `stockportfolio-source.tgz`, created from the
 same working files as the browser bundle. The archive contains the application,
-build configuration, dependency lockfiles, license documents and container
-runtime files. It excludes local configuration, portfolio data, Git history,
+both build configurations, both dependency lockfiles, API database migrations,
+license documents and container build files. It excludes local configuration,
+portfolio data, Git history,
 installed dependencies and previous build output. The `files` list in
 `package.json` defines its contents; include new build inputs there when needed.
 
@@ -17,6 +18,8 @@ used in Docker), npm and tar installed, run:
 ```sh
 npm ci
 npm run build
+npm ci --prefix api
+npm run build --prefix api
 ```
 
 Dependencies are downloaded from the registries recorded in the lockfile and

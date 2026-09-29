@@ -11,11 +11,17 @@ T-60 behauptet noch keine Trennung oder Synchronisation dieser lokalen Daten.
 
 ## Aufbau
 
-- `server/src/routers/` enthält die eingehenden HTTP-Routen. `server/src/auth/`
+- `api/src/routers/` enthält die eingehenden HTTP-Routen. `api/src/auth/`
   enthält Passwortprüfung, Sitzungslogik und die gemeinsame Autorisierung.
-  `server/src/persistence/` enthält allein Drizzle, SQLite-Schema, Migrationen und
+  `api/src/persistence/` enthält allein Drizzle, SQLite-Schema, Migrationen und
   Repositories. Router erhalten Repository-Schnittstellen; SQL und ORM-Typen
   verlassen den Persistenzordner nicht.
+- `api/package.json` und seine Lockdatei deklarieren Build-, Test- und
+  Laufzeitpakete des Servers. Serverquellen, Drizzle-Migrationen und Tests
+  liegen vollständig unter `api/`. Der Container installiert daraus nur
+  Produktionsabhängigkeiten. Das bestehende Frontend zieht mit Quellen,
+  Tests und Vite-Konfiguration nach `frontend/`; sein Root-`package.json`
+  bleibt zugleich die einzige Quelle der Projektversion.
 - Node 22 betreibt den Server im bestehenden Container. Er bedient `/api/*`,
   `/healthz`, statische Dateien und die Weiterleitung von `/admin/users` nach
   `/#/admin/users`. Vite bleibt Frontend-Build und Dev-Server; in der lokalen
@@ -72,12 +78,16 @@ T-60 behauptet noch keine Trennung oder Synchronisation dieser lokalen Daten.
   ermittelt. Hinter einem Reverse Proxy ist sie ausdrücklich zu setzen. Das
   ist zusätzlich zu `SameSite=Lax` der CSRF-Schutz. Fehlende oder fremde
   Herkunft wird abgewiesen. Setup und Login sind ebenso geschützt.
-- Fehlanmeldungen und falsche Einrichtungscodes werden pro Konto/IP begrenzt:
-  Nach fünf Fehlschlägen in 15 Minuten antwortet die API für 15 Minuten mit
-  `429` und `Retry-After`. Die Grenze verrät nicht, ob ein Konto existiert.
-  Die IP ist die direkte Verbindungsadresse; Proxy-Header werden nicht blind
-  übernommen. Die Zähler sind in SQLite gespeichert, damit ein Neustart die
-  Sperre nicht aufhebt.
+- Fehlanmeldungen werden nach normalisiertem Benutzernamen **und** direkter
+  Verbindungs-IP begrenzt. Fünf Fehlschläge für genau dieses Paar in 15 Minuten
+  sperren es für 15 Minuten (`429` mit `Retry-After`). Andere Konten derselben
+  IP bleiben benutzbar, auch wenn ein Reverse Proxy alle Verbindungen mit
+  derselben IP an den Server weitergibt. Unbekannte Namen erhalten dieselbe
+  Antwort und Begrenzung; die API verrät nicht, ob das Konto existiert.
+  Falsche Einrichtungscodes haben einen eigenen Schlüssel für die direkte IP.
+  Es werden keine Proxy-Adressen als vertrauenswürdig konfiguriert und keine
+  `X-Forwarded-*`-Header für das Limit ausgewertet. Die Zähler liegen in SQLite,
+  damit ein Neustart die Sperre nicht aufhebt.
 - `GET /api/auth/session` gibt nur Identität, Rolle und
   `mustChangePassword` des eigenen Kontos aus. Alle `/api/admin/*`-Routen
   prüfen serverseitig die aktuelle aktive Admin-Rolle. Normale Nutzer
@@ -98,8 +108,9 @@ und bei 390 px Breite. Ein versteckter Link ersetzt keine API-Prüfung.
 
 ## Prüfschritte und Übergabe
 
-1. Servertests für Erst-Setup, einmalige Nutzung, Login, Rate-Limit,
-   Passwortwechsel, Sitzungsablauf und Widerruf mit temporärer SQLite-Datei.
+1. Servertests für Erst-Setup, einmalige Nutzung, Login, Rate-Limit mit zwei
+   Konten an derselben IP, Passwortwechsel, Sitzungsablauf und Widerruf mit
+   temporärer SQLite-Datei.
 2. API-Gegenproben mit zwei synthetischen Konten: 401/403, fremder Origin,
    fehlendes JSON, letztes aktives Admin-Konto, direkte Admin-URL.
 3. Frontendtests für Auth-Gate und Admin-Aktionen; kein echter StockInfo-Aufruf.

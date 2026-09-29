@@ -252,15 +252,18 @@ or _The Method_ reference page.
 
 ## Where the data lives
 
-**Only in the browser** (IndexedDB), on the device you work on. No server stores
-portfolio data — the StockInfo API only delivers prices and master data and
-learns nothing about holdings.
+Portfolio data still lives in the browser (IndexedDB), on the device you work
+on. The new StockPortfolio API stores accounts and sessions in SQLite under
+`/data`; it does not yet store portfolios. StockInfo only delivers prices and
+master data and learns nothing about holdings.
 
 That has consequences worth knowing:
 
 - A different browser or device shows an empty portfolio.
 - "Clear site data" in the browser deletes the portfolio too.
-- A container update costs nothing — the data was never in the container.
+- Container updates keep accounts only when the same `/data` volume is mounted.
+- Until the server-side portfolio work in T-61, only the first admin can open
+  the existing browser portfolio. Other accounts see a pending-access notice.
 
 _Settings → Backup_ offers backup and restore: a JSON file with the
 portfolio, the settings and the list of hidden assets. Prices are not included —
@@ -286,15 +289,26 @@ selection.
 ## Setup
 
 ```bash
-make setup                 # .libs/ symlinks + npm install
+make setup                 # .libs/ symlinks + frontend and API dependencies
 cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
-make dev                   # http://localhost:5175
+make dev-api               # own API on http://localhost:8080
+make dev                   # Vue app on http://localhost:5175
 ```
 
 `make setup` links existing BashLib, MakeLib and ProjectTools repositories.
 For the first setup, set `BASH_LIBS`, `DEV_MAKE` and `PROJECT_TOOLS` to their
 locations; later commands can use the links under `.libs/`. For frontend-only
-development, `npm install` works without these shared tools.
+development, `npm install` plus `npm ci --prefix api` works without these
+shared tools. The API keeps its own lockfile under `api/`.
+
+For browser checks with local StockInfo test prices, start its existing test
+server from this repository with
+`../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stockinfo-root ../StockInfo --origin http://localhost:5175`.
+Then start `make dev-api` and
+`make dev VITE_STOCKINFO_API_URL=http://127.0.0.1:8899` in separate terminals.
+The Make assignment overrides a StockInfo URL in `.env`. Stop the test server
+with `../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --stop`.
+The account API uses its own local SQLite data under `.local-data/`.
 
 ## Commands
 
@@ -303,10 +317,12 @@ development, `npm install` works without these shared tools.
 | Command                        | Purpose                                     |
 | ------------------------------ | ------------------------------------------- |
 | `make dev`                     | Vite dev server (port 5175)                 |
+| `make dev-api`                 | Account API (port 8080, local SQLite data) |
 | `make build-frontend`          | Typecheck + production build into `dist/`   |
+| `make build-api`               | Compile the API into `api/dist/`            |
 | `make preview`                 | Preview of the production build (port 4175) |
-| `make test`                    | Vitest, single run                          |
-| `make lint` / `make typecheck` | ESLint / `vue-tsc --noEmit`                 |
+| `make test`                    | Frontend and API tests, single run          |
+| `make lint` / `make typecheck` | ESLint / frontend and API typechecks       |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
 | `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |
@@ -346,8 +362,12 @@ install packages.
 
 ## Layout
 
-`src/api/` owns HTTP access, `src/db/` IndexedDB, `src/stores/` application state,
-`src/domain/` calculations, and `src/components/` and `src/views/` presentation.
+`frontend/src/api/` owns StockInfo requests, `frontend/src/auth/` calls the
+StockPortfolio account API, `frontend/src/db/` owns IndexedDB, and
+`frontend/src/stores/` holds application state. The account service lives under
+`api/`, with HTTP routes in `api/src/routers/` and SQLite access in
+`api/src/persistence/`. The root `package.json` remains the project version
+source and holds frontend dependencies.
 The router uses hash URLs (`/#/rebalancing`); settings tabs are addressable as
 `/#/settings?tab=calc`. The server needs no application-route rewrites.
 
@@ -360,7 +380,7 @@ mistake: an English label above a number in German format.
 Without an explicit choice the browser's language decides; anything other than
 German gets English. The choice is stored in the browser.
 
-Visible text lives in the message catalogue ([`src/i18n/`](src/i18n/)), without
+Visible text lives in the message catalogue ([`frontend/src/i18n/`](frontend/src/i18n/)), without
 exception. An ESLint rule turns a hard-coded string in a template into an error,
 and the typecheck reports every key missing in one of the languages.
 
@@ -391,20 +411,22 @@ remain reachable without scrolling through a wide row of tabs.
 
 The Docker Hub image name is
 [`mangolila/stockportfolio`](https://hub.docker.com/r/mangolila/stockportfolio).
-It contains the finished bundle and a static Node server (`serve`) — no nginx,
-no application API, database or volumes.
+It contains the finished Vue bundle and the StockPortfolio account API on one
+Node server. Accounts and sessions need a persistent `/data` volume.
 
 ### Run it
 
 ```bash
 docker run -d --name stockportfolio \
     -p 8080:8080 \
+    --mount type=volume,source=stockportfolio-data,target=/data \
     -e STOCKINFO_API_URL=https://stockinfo.example.com \
     --restart unless-stopped \
     mangolila/stockportfolio:latest
 ```
 
-Then open <http://localhost:8080>. `STOCKINFO_API_URL` is the address of **your
+Then read the one-time setup code from `docker logs stockportfolio` and open
+<http://localhost:8080> to create the first admin account. `STOCKINFO_API_URL` is the address of **your
 own** [StockInfo](https://github.com/MikeMitterer/stockinfo) instance — the app
 has no public backend to fall back on. See [API address](#api-address) below.
 
@@ -414,11 +436,12 @@ browser's computer; Docker's internal service names are usually unsuitable.
 StockInfo must allow the web app's origin through CORS. An HTTPS page needs
 an HTTPS API to avoid mixed-content blocking.
 
-The web interface has no built-in login. Control access through your network
-or reverse proxy; [the container guide](docker/README.md#quick-start) also shows
-how to bind the published port to localhost only.
+The web interface has a login. For access through an HTTPS reverse proxy, set
+`STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
+`STOCKPORTFOLIO_SECURE_COOKIES=true`. Keep the service behind an appropriate
+network or proxy boundary as well.
 
-The container listens on **8080** and the static server runs without root. Older images
+The container listens on **8080** and the API runs without root. Older images
 used port 80: update an existing port mapping when switching to this version.
 Keep the host address/port stable so the browser retains the same storage origin.
 
@@ -431,9 +454,13 @@ services:
     container_name: stockportfolio
     ports:
       - '8080:8080'
+    volumes:
+      - stockportfolio-data:/data
     environment:
       STOCKINFO_API_URL: https://stockinfo.example.com
     restart: unless-stopped
+volumes:
+  stockportfolio-data:
 ```
 
 ```bash
@@ -448,14 +475,14 @@ docker rm -f stockportfolio
 # then run the command above again — or: docker compose up -d
 ```
 
-Nothing is lost in the process. Portfolios live in the browser, not in the
-container, so an update is a plain pull & restart.
+Reuse the same `/data` volume so accounts survive recreation. Portfolios still
+live in the browser until T-61. Keep the browser address stable to retain them.
 
 ### Checking it works
 
 ```bash
 docker ps                          # STATUS should say "healthy" after a few seconds
-docker logs stockportfolio         # check startup and static server output
+docker logs stockportfolio         # first-start setup code and API output
 ```
 
 The app itself shows the address in use under _Settings → Status_ and in the

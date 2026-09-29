@@ -110,17 +110,21 @@ nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
 ## Aktive Kette: private Depots auf dem StockPortfolio-Server
 
 Mike hat die serverseitige Synchronisation mit getrennten privaten
-Benutzerkonten und SSE am 2026-09-28 beauftragt. Die drei Tickets liegen auf
-seinen Wunsch in `30-doing/`. **Nur T-60 ist derzeit aktiv**; verbindlich ist
+Benutzerkonten und SSE am 2026-09-28 beauftragt. Die drei Produkttickets liegen
+auf seinen Wunsch in `30-doing/`. T-63 ist danach als Teststack-Auftrag in
+`20-ready/` eingeplant. **Nur T-60 ist derzeit aktiv**; verbindlich ist
 die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
 
 1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
    liefert App und eigene API im StockPortfolio-Container sowie Setup,
    Anmeldung und Admin-Verwaltung.
-2. [T-61 · Private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+2. [T-63 · Lokaler Teststack](20-ready/T-63-reproduzierbarer-lokaler-teststack.md)
+   verbindet StockInfos vorhandene Testkurse, die Konto-API und Vite
+   reproduzierbar ohne Docker.
+3. [T-61 · Private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
    macht den Server zur Datenquelle und übernimmt vorhandene Browserdaten
    ausdrücklich in das richtige Konto.
-3. [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+4. [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
    meldet gespeicherte Änderungen an andere Browser desselben Kontos, die
    daraufhin per REST neu laden.
 

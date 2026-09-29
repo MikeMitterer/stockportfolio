@@ -35,9 +35,9 @@ const browserGlobals = {
 
 export default [
   {
-    // public/ wird unverändert ausgeliefert und nicht übersetzt — config.js
+    // frontend/public/ wird unverändert ausgeliefert und nicht übersetzt — config.js
     // ist bewusst eine schlichte Browser-Datei ohne Modul-Kontext.
-    ignores: ['dist/**', 'node_modules/**', '.vite/**', 'coverage/**', 'public/**'],
+    ignores: ['dist/**', 'api/dist/**', 'node_modules/**', 'api/node_modules/**', '.vite/**', 'coverage/**', 'frontend/public/**'],
   },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
@@ -86,7 +86,7 @@ export default [
      * `allowlist` deckt ab, was keine Sprache hat: Satzzeichen, Einheiten,
      * Währungszeichen.
      */
-    files: ['src/**/*.vue'],
+    files: ['frontend/src/**/*.vue'],
     rules: {
       'vue/no-bare-strings-in-template': [
         'error',
