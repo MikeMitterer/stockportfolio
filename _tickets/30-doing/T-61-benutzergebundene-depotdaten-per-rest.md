@@ -480,3 +480,50 @@ ursprünglichen Hinweis „stiller Rückfall auf IndexedDB“ als Befund eingest
 **Urteil:** `changes_requested` für `0ad4a6a`. Außer den Befunden 1 und 2
 ist die Konzeptregel aus Runde 2 vollständig und nachprüfbar umgesetzt. Die
 Nachprüfung beschränkt sich auf beide Befunde und ihre Tests.
+
+## Nacharbeit zu Runde 3 · 2026-09-30
+
+Die drei globalen `occupied`-Abfragen in `saveResource`, `importLegacy` und
+`restoreBackup` sind entfernt. Der Primärschlüssel
+`(owner_id, kind, resource_id)` und die Besitzerfilter trennen identische
+Depot-IDs. Ein zuerst roter API-Test belegt den gleichen Restore in zwei
+Konten und eine anschließende Änderung nur in B. Der Altimport-Test belegt
+dieselbe ID bei einem zweiten Admin ohne Eingriff in dessen Daten. Die frühere
+Eigenprüfung mit `404` auf `PUT` bezog sich auf die Runde-3-Fassung: Jetzt
+kann B unter dieser ID ein **eigenes** Depot anlegen; A bleibt unverändert.
+Die aktuellen Kriterien oben sind entsprechend präzisiert.
+
+Auf Mikes Frage zum Store-Weg wurden die Zugriffe inventarisiert. Der normale
+Depotfluss ging bereits über die Pinia-Stores. Der atomare Backup-Restore aus
+`BackupPanel` und der Altbestand aus `AuthRoot` griffen noch direkt auf den
+Datenclient beziehungsweise IndexedDB zu. Diese Aktionen liegen jetzt in
+`useBackupStore` und `useLegacyStore`; die Komponenten bedienen sie nur.
+Die vier Repository-Fabriken in `frontend/src/data/repository.ts` werfen ohne
+aktiven Datenclient immer einen Fehler. Es gibt auch im Testmodus keinen
+Rückfall im Produktcode. `db/legacy.ts` liest den Altbestand ausdrücklich
+für den Setup-Dialog. Die betroffenen Store- und Komponententests stellen
+lokale Repositories einzeln per Vitest-Mock bereit. Ein eigener Test belegt
+den Fehler aller vier Fabriken ohne Datenclient und einen REST-Aufruf mit
+aktivem Client.
+
+**Prüfung:** `make test` bestand mit 811 Frontend- und 14 API-Tests. Beide
+Lints, beide Typechecks, beide Builds und `git diff --check` bestanden.
+Der Frontend-Build meldet weiter den bereits bekannten großen Vendor-Chunk.
+Der Datenweg wurde über Imports in `frontend/src/` geprüft: Komponenten und
+Auth-Ansichten rufen private REST-Routen oder alte Repositories nicht mehr
+direkt auf. Ein zusätzlicher Browserlauf fand für diese API- und
+Strukturkorrektur nicht statt.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Data, API and
+verification**) und `AGENTS.md` (**StockPortfolio hängt an StockInfo**)
+beschreiben die Trennung nach Konto und den Datenweg über Stores und
+Konto-API. Keine Datei verspricht global eindeutige Depot-IDs; daher ist
+dort keine Textänderung nötig. Die Unraid-Vorlage beschreibt nur den
+Speicherort; `5cb8440` bleibt gültig. Board- und Lessons-Konventionen sind
+unberührt.
+
+**Lessons-Abgleich:** SP-CX-02 auf aktuelle Kriterien und Doku angewandt;
+Claudes Runde-3-Belege bleiben auf `0ad4a6a` bezogen. Der neue Store-Einstieg
+vor der Anmeldung hält nur die Altbestandsvorschau und aktiviert keine
+private Konto-Datenhaltung vor erfolgreicher Anmeldung.
