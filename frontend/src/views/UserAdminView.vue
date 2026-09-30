@@ -175,15 +175,18 @@ onMounted(() => { void loadUsers() })
     justify-content: space-between;
     align-items: start;
     gap: var(--space-4);
-    h1 { margin: 0; font-family: var(--font-display); }
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
     p { margin: var(--space-2) 0 0; color: rgb(var(--text-secondary)); }
   }
 
   &__card {
+    @include card-surface;
     padding: var(--space-6);
-    border: 1px solid rgb(var(--border-default));
-    border-radius: var(--radius-lg);
-    background: rgb(var(--surface-card));
     box-shadow: var(--shadow-sm);
   }
   &__card-title { margin: 0; font-family: var(--font-display); font-size: 1.25rem; }
@@ -193,12 +196,10 @@ onMounted(() => { void loadUsers() })
   &__form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); align-items: start; gap: var(--space-4); }
   &__section-title { margin: 0 0 var(--space-4); font-family: var(--font-display); font-size: 1.25rem; }
   &__list {
+    @include card-surface;
     margin: 0;
     padding: 0;
     list-style: none;
-    border: 1px solid rgb(var(--border-default));
-    border-radius: var(--radius-lg);
-    background: rgb(var(--surface-card));
     box-shadow: var(--shadow-sm);
   }
   &__account { padding: var(--space-4) var(--space-6); }

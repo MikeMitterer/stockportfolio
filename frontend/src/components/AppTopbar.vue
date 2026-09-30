@@ -55,6 +55,7 @@ const isActive = (name: string): boolean => route.name === name
     :brand-lead="t('app.brandLead')"
     :brand-accent="t('app.brandAccent')"
     :href="dashboardHref"
+    :aria-label="t('nav.dashboard')"
   >
     <template #badge>
       <!--
@@ -100,7 +101,7 @@ const isActive = (name: string): boolean => route.name === name
       <UxNavItem
         v-for="item in navItems"
         :key="item.name"
-        :class="{ 'topbar__rebalancing': item.name === 'rebalancing' }"
+        :class="{ 'topbar__dashboard': item.name === 'dashboard' }"
         :icon="item.icon"
         :label="item.label"
         :active="isActive(item.name)"
@@ -164,7 +165,7 @@ const isActive = (name: string): boolean => route.name === name
               </svg>
             </NIcon>
           </template>
-          {{ authenticatedUser?.username ?? '' }}
+          <span class="topbar__account-name">{{ authenticatedUser?.username ?? '' }}</span>
         </NButton>
       </NDropdown>
     </template>
@@ -212,12 +213,14 @@ const isActive = (name: string): boolean => route.name === name
   @include up(lg) { display: inline; }
 }
 
-// Mobil bleibt der Rebalancing-Einstieg als Wort erreichbar; das Symbol entfällt.
-.topbar__rebalancing {
-  @include below(md) {
-    :deep(svg) { display: none; }
-    :deep(.ux-navitem__label) { display: inline; }
-  }
+// Auf schmalen Schirmen bleibt das Konto über Symbol und zugänglichen Namen erreichbar.
+.topbar__account-name {
+  @include below(md) { display: none; }
+}
+
+// Auf Telefonen führt die Plakette zur Übersicht; ihr zweiter Menüpunkt entfällt.
+.topbar__dashboard {
+  @include below(sm) { display: none; }
 }
 
 /* Die Kontoverwaltung gehört nur zu dieser App und führt direkt zur Liste. */

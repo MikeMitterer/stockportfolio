@@ -100,8 +100,8 @@ Die App prüft beim Start Setup-Status und Sitzung. Setup, Login und erzwungener
 Passwortwechsel erscheinen ohne StockInfo-Verbindung. Bis T-61 öffnet die
 bestehende App nur für den ersten Admin mit seinem lokalen Browserbestand;
 andere Konten sehen einen klaren Hinweis auf die noch ausstehende
-Depotfreigabe. Unter **Einstellungen → Benutzerverwaltung** führt
-ein Link zu `/#/admin/users`; nur Admins sehen ihn. Die Seite erlaubt Anlegen,
+Depotfreigabe. Das **Personen-Icon in der Kopfzeile** führt
+zu `/#/admin/users`; nur Admins sehen es. Die Seite erlaubt Anlegen,
 Deaktivieren und Passwort-Reset. Alle neuen sichtbaren Texte stehen in den
 DE/EN-Katalogen. Formulare, Fehler und Dialoge funktionieren per Tastatur
 und bei 390 px Breite. Ein versteckter Link ersetzt keine API-Prüfung.

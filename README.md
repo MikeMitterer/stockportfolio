@@ -274,6 +274,9 @@ Admins open **User management** directly from the people icon in the top bar.
 The account list keeps actions for other accounts behind each row; an admin's
 own row has no reset or deactivate action.
 The top-right account button shows your username and opens the sign-out action.
+On narrow screens it shows only the account icon; its accessible name retains
+the username. The logo opens the dashboard, while the other navigation icons
+remain available.
 An empty portfolio also offers **Restore backup …**, which opens the Backup tab
 directly, alongside adding a position or loading a sample portfolio.
 

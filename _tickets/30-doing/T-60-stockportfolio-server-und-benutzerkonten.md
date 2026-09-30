@@ -51,8 +51,8 @@ ins Ticket kopiert. Keine bestehenden Depots für diese Prüfung verwenden.
    Einrichtungscode im Container-Log. Nur damit kann die Einrichtungsseite
    das erste Admin-Konto anlegen. Danach ist die Einrichtung gesperrt.
    Es gibt keine öffentliche Selbstregistrierung.
-3. Der Admin gelangt nach Anmeldung über **Einstellungen → Benutzerverwaltung**
-   und die bestehende Hash-Navigation `/#/admin/users` zur Benutzerseite.
+3. Der Admin gelangt nach Anmeldung über das **Personen-Icon in der Kopfzeile**
+   und die Hash-Navigation `/#/admin/users` zur Benutzerseite.
    Die direkte Eingabe von `/admin/users` leitet dorthin. Er kann Konten anlegen,
    deaktivieren und Passwörter zurücksetzen. Ein temporäres Passwort verlangt
    beim nächsten Login eine Änderung. Das letzte aktive Admin-Konto darf
@@ -645,3 +645,45 @@ Frontend- und API-Lint sowie beide Typechecks bestanden.
 Lessons-Abgleich: SP-CX-05 wurde durch den Browservergleich mit dem
 beauftragten Goldenen-Schnitt-Verhältnis geprüft; SP-R-03 durch den
 bereits dokumentierten Vergleich mit den benachbarten Hauptansichten.
+
+## Nacharbeit zu Claudes Runde 4 · 2026-09-30
+
+- Die Kopfzeile bleibt bei 390 px bedienbar: Der Konto-Knopf zeigt dort nur
+  das Symbol; sein zugänglicher Name enthält weiter den Benutzernamen.
+  Die Plakette führt zur Übersicht, deren doppelter Menüpunkt entfällt auf
+  Telefonbreite. Rebalancing, Assets, Einstellungen und Benutzerverwaltung
+  bleiben als benannte Symbole sichtbar. Der direkte Verwaltungszugang bleibt
+  Admins vorbehalten.
+- Die Überschrift der Benutzerverwaltung verwendet wie Einstellungen
+  `1.5rem` und Gewicht `600`. Karten und Kontoliste verwenden nun den
+  gemeinsamen `card-surface`-Mixin statt eigener Rahmen- und Hintergrundwerte.
+- Die aktuelle Zugangsangabe in Kriterium 3 und der Architektur-Spezifikation
+  nennt das Personen-Icon statt des entfernten Einstellungsreiters.
+
+**Gegenprobe:** Bei 390 px war die Navigation 169 px breit und brauchte
+169 px Inhalt; die Aktionsgruppe begann erst bei x=274, der letzte
+Navigationslink endete bei x=233. Die vier sichtbaren Menüs hatten Symbole
+von 15–16 px Breite und zugängliche Namen. Das Logo war als „Dashboard“
+benannt. Ein Klick auf das Personen-Icon öffnete `/#/admin/users`.
+Einstellungen und Benutzerverwaltung hatten jeweils 24 px Schriftgröße,
+Gewicht 600 und eine Überschriftenoberkante bei 88 px. Der normale Nutzer
+gelangte nach dem Passwortwechsel zum Hinweis „Depotzugriff folgt“ unter
+`/#/` und hat vor T-61 keine App-Navigation.
+
+`make test` bestand mit 806 Frontend- und 8 API-Tests; beide Lints, beide
+Typechecks und der Frontend-Build bestanden. Der Build meldet weiterhin den
+großen `vendor-ui`-Chunk. Der isolierte Browserstack und seine temporären
+Kontodaten wurden anschließend gestoppt und entfernt.
+Die Vorschau der geänderten Docker-Hub-Anleitung bestand einschließlich
+Größenprüfung.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**) und
+`docker/README.md` (**Configuration**) nennen übereinstimmend die kompakte
+Kopfzeile. Die aktuelle Zugangsbeschreibung der Architektur-Spezifikation
+und Kriterium 3 dieses Tickets sind berichtigt. `AGENTS.md`,
+`unraid/README.md` und die Unraid-Vorlage enthalten keine entgegenstehende
+mobile Navigationsanweisung und brauchen dafür keine Änderung.
+
+Mike hat am 2026-09-30 erklärt, T-60 sei nach diesen Anpassungen für ihn
+erledigt. Die technische Nachprüfung der Korrekturen durch Claude steht noch
+aus; bis zu ihrer Freigabe bleibt das Ticket in `30-doing/`.

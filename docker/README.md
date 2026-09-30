@@ -63,6 +63,9 @@ connection status are visible on the separate **Status** page, opened from the
 API entry in the bottom status bar. Admins reach **User management** directly
 from the people icon in the top bar. The account button at the top right shows
 the username and opens the sign-out action.
+On narrow screens it shows only the account icon; its accessible name retains
+the username. The logo opens the dashboard, while the other navigation icons
+remain available.
 
 ## Docker Compose
 
