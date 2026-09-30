@@ -130,7 +130,7 @@ Vor Claudes Freigabe erfolgen weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
 - `review_round`: `4`
