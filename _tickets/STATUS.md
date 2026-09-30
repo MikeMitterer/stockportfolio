@@ -128,21 +128,23 @@ funktioniert, aber die Anleitungen schreiben die Installation in StockInfos
 `.venv` vor, die StockInfo-T-82 erst klären soll.
 Runde 8 (`e4db84b`, Variante a) ist durch Mikes Entscheidung für eine eigene
 `.venv` in StockPortfolio (Variante c) überholt und zurückgegeben.
-Der Doku-Befund ist auf dem T-63-Branch mit `e4db84b` korrigiert: Die
-Anleitungen versprechen für StockInfos unveränderte `.venv` schlichte Hilfe;
-der reguläre Paketbezug bleibt StockInfo-T-82 vorbehalten. Runde 8 prüft
-diesen einzelnen Befund erneut. Produktcode wurde dabei nicht geändert.
+Variante (c) liegt mit `ca9c74b` und `d7e1607` auf dem T-63-Branch:
+StockPortfolios eigene `.venv` trägt das ProjectTools-Paket aus der allgemeinen
+`requirements.txt`; `make clean` behält sie. Der StockInfo-Kindprozess nutzt
+weiter dessen unveränderte `.venv`. Runde 9 prüft diese Fassung. Der volle
+Stack wurde für die Umstellung nicht erneut gestartet; die Prüffassung nennt
+den letzten Live-Nachweis und die neuen Preflight- und Theme-Proben.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `reviewing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
-- `review_round`: `8`
-- `owner`: `codex`
+- `handoff_commit`: `70c25a6117d9339cddd8fd18ba459565b614315b`
+- `review_round`: `9`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
@@ -321,6 +323,12 @@ werden entfernt.
 ## INBOX → Coder
 
 - **Von `claude` im Auftrag von Mike an `codex`, T-63 Runde 7 / Befund 1, Entscheidung Variante (c) (Mike, 2026-09-30):** Mike: „Weshalb das .venv in StockInfo wenn der Aufruf aus StockPortfolio erfolgt? Dann wäre wohl naheliegend das .venv hier zu verwenden“, danach „Ja, trag Variante (c) in die INBOX ein“. Damit ersetzt (c) die Varianten (a) und (b) aus meiner Runde 7. Umsetzung: (1) Die CLI (Hilfe, `--stack --run/--status/--stop`, Theme) läuft in einer eigenen `.venv` von StockPortfolio, die nur Python 3.11+ und `projecttools` braucht; die Einrichtung etwa über `make setup` mit `pip install -e .libs/ProjectTools`. (2) Der StockInfo-Kindprozess startet wie bisher mit `<stockinfo-root>/.venv/bin/python` (`local_test_stack.py:67/:89`); in StockInfos `.venv` wird nichts installiert. (3) README.md und AGENTS.md nennen den Aufruf mit der eigenen `.venv`, entfernen die Installationsanweisung für StockInfos `.venv` und nennen die Grenze: Der Einzelserver `--run` ohne `--stack` läuft weiter direkt in StockInfos `.venv` (Import von `app` im selben Prozess, `stockinfo-test-server.py:187`) und bleibt ohne Theme. (4) Prüfen, dass `--stack` aus der eigenen `.venv` ohne StockInfo-Abhängigkeiten startet, und dass ein fehlendes StockInfo-`.venv` weiterhin konkret gemeldet wird. (5) `.venv` in `.gitignore` sowie in `make clean` oder dem Setup berücksichtigen, sofern noch nicht vorhanden. (6) StockInfo-T-82 wird für diesen Zweck überflüssig. Hier wird es nicht geändert; die Einordnung erfolgt als Konsumentenhinweis im StockInfo-Board, wenn Mike das beauftragt. Die parallel übergebene Runde 8 (`e4db84b`, Variante a) ist geprüft und nur wegen dieser Entscheidung mit `changes_requested` zurückgegeben (Ticket auf dem T-63-Branch, Commit `1dc750e`). Danach Übergabe als T-63 Runde 9.
+
+- **Von `claude-observer` im Auftrag von Mike an `codex`, T-63 Variante (c), Lebenszyklus der `.venv` (Mike, 2026-09-30):** Mike: „Nein make clean soll sie nicht entfernen. make setup erstellt die .venv“. Erwartete Handlung: `make setup` legt die StockPortfolio-`.venv` an und installiert `projecttools` dort. `make clean` lässt sie unberührt, auch bei wiederholtem Lauf. Die `.venv` steht in `.gitignore`. `README.md` und `AGENTS.md` beschreiben beides gleich. Keine neue Reviewrunde durch diese Nachricht.
+
+- **Von `claude-observer` im Auftrag von Mike an `codex`, T-63 Variante (c), Umsetzungsdetails der `.venv` (Mike, 2026-09-30):** Mikes Entscheidungen zu den Hinweisen des Observers: (1) „requirements.txt kann im ProjectRoot liegen“: Die Python-Abhängigkeit (`projecttools` aus `./.libs/ProjectTools`) steht in `requirements.txt` im Projekt-Root. `make setup` installiert per `.venv/bin/python -m pip install -r requirements.txt`, keine zweite Paketliste im Makefile. (2) „JA“: `make setup` prüft die unterstützte Python-Version, bevor es die `.venv` anlegt. `PYTHON_BOOTSTRAP` mit gezielter Version ist dafür passend. (3) „Dein Vorschlag passt. Variante 1“: Der dokumentierte Aufruf lautet `.venv/bin/python scripts/stockinfo-test-server.py …`. Kein neues Root-Target; `README.md` und `AGENTS.md` nennen denselben Aufruf. (4) „ja, klar“: Wiederholtes `make setup` legt eine vorhandene `.venv` nicht neu an und installiert nur Fehlendes. Zusätzlich gilt weiter Mikes frühere Vorgabe: `make clean` lässt `.venv` stehen. Die aktuelle Arbeitsfassung im T-63-Worktree löscht sie noch (`clean` enthält `.venv`). Keine neue Reviewrunde durch diese Nachricht.
+
+- **Von `claude-observer` an `codex`, T-63 vor Übergabe Runde 9, Fassung `ca9c74b`/`0f03f50`:** Gegen Mikes Vorgaben aus den beiden Nachrichten oben geprüft. **Nicht erfüllt:** `make clean` löscht weiter `.venv` (`Makefile`, Ziel `clean`: `rm -rf … .venv`, Hilfetext „… und lokale Python-venv löschen“). Mike hat ausdrücklich das Gegenteil entschieden. **Teilweise:** `make setup` wählt mit `PYTHON_BOOTSTRAP ?= python3.11` die Version, prüft aber keine bereits vorhandene `.venv` auf eine unterstützte Version (Mikes Punkt 2). **Erfüllt:** Die Abhängigkeitsdatei liegt im Root, allerdings als `requirements-test-stack.txt` statt `requirements.txt`; das ist mit „kann im ProjectRoot liegen“ vereinbar, der Name sollte aber im Ticket begründet sein. Aufruf über `.venv/bin/python` in `README.md` und `AGENTS.md`, `.venv/` in `.gitignore`. Erwartete Handlung: `.venv` aus `clean` samt Hilfetext entfernen, die Versionsprüfung ergänzen, dann übergeben. Keine neue Reviewrunde durch diese Nachricht.
 
 ## OUTBOX → Verifier
 
