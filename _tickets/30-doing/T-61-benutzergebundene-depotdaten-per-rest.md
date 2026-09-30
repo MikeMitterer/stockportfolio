@@ -620,3 +620,40 @@ mehr, und die neuen Store-Tests decken Serverweg, fehlenden Client sowie
 Altbestandsvorschau, Import, Verwerfen und Export ab. Die Nachprüfung kann
 sich auf diese Fassung seit `2880d1d` beschränken. T-60/T-63 bleiben bis zu
 Mikes ausdrücklicher T-63-Entscheidung ohne Merge und Push.
+
+## Technische Prüfung Runde 5
+
+`claude`, 2026-09-30, an Handoff-Commit `238723a1b9ff169a9eac2a54d65632e4d0282724`
+(Diff seit `2880d1d`). Geprüft habe ich Befund 3 aus Runde 4 in einem
+eigenen, abgetrennten Worktree. Angewandt habe ich SP-R-04 (Scout Rule).
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 3 · lokaler Zweig | Diff von `stores/backup.ts` und `BackupPanel.vue` gelesen | **Behoben.** `restore` wirft ohne Client „PrivateDataClient fehlt“ und läuft sonst nur über `client.restoreBackup`. Der Rückgabewert `'server' \| 'local'` und der lokale Zweig in `BackupPanel` sind entfernt |
+| Befund 3 · Tests | `tests/stores/backup.spec.ts` und `tests/stores/legacy.spec.ts` gelesen | **Behoben.** Backup: Restore nur per `POST /api/data/restore` mit `same-origin`; ohne Client ein Fehler und kein `fetch`. Legacy: `inspect`, `exportAt` samt Grenzindex, Import mit lokalem Leeren erst nach Erfolg, **fehlgeschlagener Import behält den Altbestand**, Verwerfen leert alle vier Tabellen |
+| Tests, Lint, Typen | Frontend- und API-Tests, Frontend-Lint mit `--no-cache`, Typprüfung, `git diff --check` | 72 / 817 Frontend- und 14 API-Tests grün, alles Exit 0. API-Code unverändert |
+| Reste der Entfernung | Aufrufer per `git grep` auf `238723a` gesucht | siehe Befund 4 |
+
+**Befund (blockierend, nach SP-R-04):**
+
+4. **Die Entfernung des lokalen Zweigs hinterlässt toten Code.** Diese
+   Stellen hatten nur den alten lokalen Restore als Nutzer:
+   - `instrumentsStore.replaceAllowlist` (`stores/instruments.ts:105`),
+     `settingsStore.replaceAll` (`stores/settings.ts:167`) und
+     `valueHistoryStore.replaceAll` (`stores/valueHistory.ts:101`) haben
+     keinen Aufrufer mehr.
+   - `portfolioStore.replacePortfolio` (`stores/portfolio.ts:355`) wird nur
+     noch von `tests/stores/portfolio.spec.ts` aufgerufen.
+   - Der Übersetzungsschlüssel `backup.restored` (`i18n/de.ts:490`,
+   `i18n/en.ts:477`) hat keinen Nutzer mehr.
+   Die vier Methoden sind Ersetzungswege am atomaren Server-Restore vorbei
+   (`/api/data/restore`, eine Transaktion mit Revisionsprüfung). Ein künftiger
+   Aufrufer bekäme damit wieder ein nicht atomares Restore in mehreren
+   Einzelschreibvorgängen. Das ist derselbe Befundtyp wie 2 und 3.
+   **Erwartet:** Die vier Methoden, ihre Tests in `portfolio.spec.ts` und der
+   verwaiste Schlüssel entfallen. Ein Inventar belegt, dass nach der Änderung
+   kein Aufrufer mehr existiert: `git grep` auf die vier Namen und
+   `backup.restored`.
+
+**Urteil:** `changes_requested` für `238723a`. Befund 3 ist behoben. Die
+Nachprüfung beschränkt sich auf Befund 4.

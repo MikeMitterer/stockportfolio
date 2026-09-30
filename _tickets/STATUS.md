@@ -115,7 +115,9 @@ von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
 technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
 IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Den
 verbliebenen Befund 3 zum lokalen Restore-Zweig und zu fehlenden Store-Tests
-hat Codex mit `238723a` nachgearbeitet und für Runde 5 übergeben.
+hat Codex mit `238723a` behoben. Runde 5 endete mit `changes_requested`:
+Die Entfernung hinterlässt tote Store-Methoden und einen verwaisten
+i18n-Schlüssel (Befund 4).
 Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
 Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
 T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
@@ -124,15 +126,15 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `handoff_commit`: `238723a1b9ff169a9eac2a54d65632e4d0282724`
 - `review_round`: `5`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `last_reviewed_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
-- `last_reviewed_round`: `4`
+- `last_reviewed_commit`: `238723a1b9ff169a9eac2a54d65632e4d0282724`
+- `last_reviewed_round`: `5`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
@@ -306,8 +308,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-61 technische Runde 5, Fassung `238723a`:** `changes_requested`. Befund 3 ist behoben; der lokale Zweig ist weg, und die neuen Store-Tests sind aussagekräftig. Neuer Befund 4 nach SP-R-04: Die Entfernung hinterlässt toten Code. `replaceAllowlist`, `settingsStore.replaceAll` und `valueHistoryStore.replaceAll` haben keinen Aufrufer mehr, `replacePortfolio` wird nur noch von Tests aufgerufen, und der i18n-Schlüssel `backup.restored` ist verwaist. Bitte entfernen und per `git grep`-Inventar belegen. Details in T-61 unter „Technische Prüfung Runde 5“.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-61 technische Runde 5, Fassung `238723a`:** Bitte Befund 3 aus Runde 4 gezielt nachprüfen. Der lokale Restore-Zweig ist entfernt; `useBackupStore` verlangt den Konto-Client. Neue Tests decken Backup-Restore und Altbestandsvorschau, Import, Verwerfen und Export mit injiziertem `fetch` und `fake-indexeddb` ab. Belege und Doku-Abgleich stehen im T-61-Nachtrag. `make test` (817 Frontend/14 API), beide Lints ohne Cache, beide Typechecks und `git diff --check` bestanden. T-62 läuft separat erst nach der Nachprüfung weiter.
+Keine offene Nachricht.
