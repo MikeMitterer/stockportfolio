@@ -269,6 +269,10 @@ _Settings → Backup_ offers backup and restore: a JSON file with the
 portfolio, the settings and the list of hidden assets. Prices are not included —
 the app fetches those anyway. On restore the file is checked and its contents are
 shown first; nothing is overwritten without confirmation.
+Admins open **User management** directly from the people icon in the top bar.
+The account list keeps actions for other accounts behind each row; an admin's
+own row has no reset or deactivate action.
+The top-right account button shows your username and opens the sign-out action.
 An empty portfolio also offers **Restore backup …**, which opens the Backup tab
 directly, alongside adding a position or loading a sample portfolio.
 
@@ -307,6 +311,11 @@ the repository root, use
 `STOCKPORTFOLIO_DATA_DIR="$PWD/.local-data" STOCKPORTFOLIO_PUBLIC_ORIGIN=http://localhost:5175 npm run dev --prefix api`.
 With `make dev`, the API stores local accounts under `.local-data` unless
 `STOCKPORTFOLIO_DATA_DIR` is set.
+Until an admin exists, each API start prints a new code after
+`StockPortfolio setup code:` in the `make dev` terminal output. The setup page
+closes after the first admin account is created. New passwords need 12 to 1024
+characters, including an
+uppercase letter, a number and a special character.
 StockInfo is a separate service; `make dev` does not start it.
 
 For browser checks with local StockInfo prices and an isolated account API,
@@ -353,8 +362,8 @@ without `--stack`.
 | `make changelog`              | Regenerate `CHANGELOG.md` without committing |
 
 The root Makefile covers whole-project workflows. Its Development group contains
-only `make dev`; `make test` and `make clean` cover both packages. Run lint and
-typechecks per package with `npm --prefix frontend run lint`,
+`make dev`, `make test` and `make clean`; the latter two cover both packages.
+Run lint and typechecks per package with `npm --prefix frontend run lint`,
 `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, and
 `npm --prefix api run typecheck`. Package builds and preview remain npm scripts.
 
@@ -513,9 +522,9 @@ docker ps                          # STATUS should say "healthy" after a few sec
 docker logs stockportfolio         # first-start setup code and API output
 ```
 
-The app itself shows the address in use under _Settings → Status_ and in the
+The app itself shows the address in use on the separate _Status_ page and in the
 status bar at the bottom. Click the API address in the status bar to open
-_Settings → Status_ directly. If prices stay empty, that page is the place to look:
+_Status_ directly. If prices stay empty, that page is the place to look:
 it distinguishes "not reachable" from "reachable but refused" (CORS).
 
 ### Building and publishing

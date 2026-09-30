@@ -54,7 +54,12 @@ function normalizeUsername(username: string): string {
 }
 
 function validatePassword(password: string): void {
-  if (password.length < 12 || password.length > 1024) {
+  if (
+    password.length < 12 || password.length > 1024 ||
+    !/\p{Lu}/u.test(password) ||
+    !/\p{Nd}/u.test(password) ||
+    !/[\p{P}\p{S}]/u.test(password)
+  ) {
     throw new ServiceError(400, 'invalid_password')
   }
 }

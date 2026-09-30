@@ -32,7 +32,7 @@ ins Ticket kopiert. Keine bestehenden Depots für diese Prüfung verwenden.
 | Frage | Prüfpunkt # | Handgriff | Dein Urteil | Human |
 |---|---|---|---|---|
 | A · Erstes Admin-Konto | [1](#pruefpunkt-1) | Einrichtungsseite öffnen, mit dem einmaligen Code Admin-Konto anlegen, abmelden und erneut anmelden | Ist der Einstieg ohne Terminalarbeit nach dem Start verständlich? | |
-| B · Benutzerverwaltung | [2](#pruefpunkt-2) | Als Admin **Einstellungen → Benutzerverwaltung** öffnen, Testkonto anlegen und deaktivieren | Sind Zugang und Aktionen klar benannt? | |
+| B · Benutzerverwaltung | [2](#pruefpunkt-2) | Als Admin das Personen-Icon in der Kopfzeile öffnen, Testkonto anlegen und deaktivieren | Sind Zugang und Aktionen klar benannt? | |
 
 ## Umsetzung und technische Nachweise
 
@@ -544,3 +544,68 @@ und deckt diesen Nachtrag nicht ab. Die erneute technische Prüfung des
 geänderten Entwicklungs- und Buildwegs ist im aktiven
 [T-63](T-63-reproduzierbarer-lokaler-teststack.md) erfasst. Mikes
 menschliche T-60-Abnahme steht weiterhin aus.
+
+## Abnahme Mike · 2026-09-30
+
+Mikes Abnahmepunkte zu Anmeldeseite, Kontenverwaltung und Konto-API setzt
+Codex ohne eigenes Ticket direkt um. Ablauf, Übergabe und Integration regelt
+[T-63 · Abnahmeablauf](T-63-reproduzierbarer-lokaler-teststack.md#abnahmeablauf--mike-2026-09-30).
+Die erneute technische Prüfung von T-60 umfasst den Paketumbau und diese
+Punkte.
+
+Abnahmepunkte:
+
+- Die Anmeldeseite zeigt das Logo in der ersten Überschrift und verwendet
+  Token aus `ux-foundation` für Karte, Abstände, Farben und Rundungen.
+  Anmeldung, Ersteinrichtung und Passwortwechsel haben dieselbe Gestaltung.
+- Der Einrichtungscode hat Abstand zum Einleitungstext und ein Fragezeichen
+  mit Herkunft und Einmaligkeit des Codes. Nach dem ersten Admin gibt es für
+  dieselbe Datenbank keinen erneuten Einrichtungsdialog; die API meldet den
+  Code nur beim Start ohne Admin. Sichtbare Texte stehen in DE/EN-i18n.
+- Die Benutzerverwaltung verwendet für die Kontoanlage dieselbe Kartengestaltung.
+  Beim Anlegen und Zurücksetzen erklärt ein Fragezeichen das temporäre Passwort.
+- Der Admin gelangt über ein eigenes Personen-Icon in der Kopfzeile direkt
+  zur Benutzerverwaltung. Der leere Zwischenreiter unter Einstellungen und
+  der Zurück-Button auf der Benutzerseite entfallen. Konten stehen in einer
+  kompakten Liste; das Reset-Feld öffnet sich erst bei Bedarf. Das eigene
+  Admin-Konto zeigt keine Reset- oder Deaktivieren-Aktion, andere Admin-Konten
+  können verwaltet werden. Die API schützt weiterhin den letzten aktiven Admin.
+- Alle Felder zum Festlegen eines Passworts zeigen die Kriterien an.
+  Die Konto-API verlangt 12 bis 1024 Zeichen, mindestens einen Großbuchstaben,
+  eine Zahl und ein Sonderzeichen bei Setup, Kontoanlage, Änderung und Reset.
+  Bestehende Passwörter bleiben beim Login gültig. DE/EN-Fehlertexte nennen
+  dieselben Kriterien.
+- Der Menüpunkt „Benutzerverwaltung“ erscheint nur für Admins; die API weist
+  Kontoaufrufe anderer Rollen mit 403 zurück. Oben rechts ersetzt ein
+  Konto-Icon mit Benutzername den Abmelden-Knopf. „Abmelden“ steht im Menü.
+- Die Benutzerverwaltung erhält denselben oberen Inhaltsabstand wie
+  Einstellungen und Status. Alle regulären Routen verwenden dafür den
+  gemeinsamen `content-frame`; ein Test prüft die Routenliste auf Auslassungen.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Setup**, **Docker**)
+und `docker/README.md` (**Quick start**, **Configuration**) erklären Code,
+einmalige Einrichtung, Passwortregeln und den direkten Zugang zur
+Benutzerverwaltung sowie das Konto-Menü übereinstimmend. `AGENTS.md` beschreibt
+weiterhin den unveränderten Entwicklungsablauf. `unraid/README.md` und die
+Unraid-Vorlage
+enthalten keine Passwortvorgaben; dort ist für diese Kontoänderung keine
+Anpassung nötig.
+
+**Eigenprüfung:** `make test` bestand mit 805 Frontend- und 8 API-Tests.
+`npm --prefix frontend run lint`, `npm --prefix api run lint` und beide
+`typecheck`-Befehle bestanden. `npm --prefix frontend run build` baute die
+Produktionsansicht. Die Docker-Hub-README-Vorschau wurde mit dem gemeinsamen
+ProjectTools-Helfer erfolgreich erzeugt und auf die Größenbegrenzung geprüft.
+Im Browser waren Logo, Einrichtungscode-Hilfe und Passwortkriterien auf der
+Einrichtungsseite sichtbar. Die Benutzerverwaltung zeigte bei bestehender
+Admin-Sitzung die kompakte Kontoliste, den direkten Kopfzeilen-Einstieg und
+die Hinweise zu temporären Passwörtern. Das eigene Admin-Konto hatte keine
+Aktionen; ein anderes Konto zeigte Reset und Deaktivierung. Die Formularfelder
+wurden nach Sichtprüfung auf eine Linie gebracht. Mikes eigenes Urteil zur
+Oberfläche steht noch aus.
+Der Vergleich im Browser zeigte die Überschrift der Benutzerverwaltung nach
+der Korrektur auf derselben Oberkante wie bei Einstellungen. Der neue
+Routenwächter war vor der Korrektur bei `UserAdminView` rot und danach grün.
+Ein Komponententest prüft Admin-Zugang und Benutzername für beide Rollen; das
+Konto-Menü zeigte im Browser „Abmelden“ erst nach dem Öffnen. `git diff --check`
+war unauffällig. Der erneute Build und die Docker-Hub-Vorschau bestanden.

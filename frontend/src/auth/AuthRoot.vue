@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NCard, NConfigProvider, NFormItem, NInput, NSpace, darkTheme, deDE, enUS } from 'naive-ui'
-import { THEMES } from '@mmit/ux-foundation'
+import { NButton, NConfigProvider, NFormItem, NInput, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
+import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
 import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
 import { readStoredTheme } from '@/stores/theme'
 import AuthenticatedApp from './AuthenticatedApp.vue'
@@ -23,6 +23,7 @@ const password = ref('')
 const newPassword = ref('')
 const baseUrl = ref('')
 const isDark = THEMES[readStoredTheme()].isDark
+const naiveOverrides = ref<GlobalThemeOverrides>({})
 
 provide(AUTH_CLIENT, client)
 provide(AUTH_USER, user)
@@ -128,68 +129,136 @@ async function logout(): Promise<void> {
   }
 }
 
-onMounted(() => { void initialize() })
+onMounted(() => {
+  naiveOverrides.value = buildNaiveOverrides()
+  void initialize()
+})
 </script>
 
 <template>
-  <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null">
+  <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
     <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
     <main v-else class="auth-page" :class="{ 'auth-page--pending': view === 'pending' }">
-      <NCard class="auth-panel" :title="t('app.title')">
+      <section class="auth-panel">
+        <header class="auth-panel__header">
+          <h1 class="auth-panel__brand">
+            <img class="auth-panel__logo" src="/favicon.svg" alt="" aria-hidden="true" width="48" height="48">
+            <span>{{ t('app.brandLead') }}<span class="auth-panel__brand-accent">{{ t('app.brandAccent') }}</span></span>
+          </h1>
+          <p class="auth-panel__subtitle">{{ t('app.subtitle') }}</p>
+        </header>
         <p v-if="view === 'loading'" role="status">{{ t('auth.loading') }}</p>
         <template v-else-if="view === 'setup'">
-          <h1>{{ t('auth.setupTitle') }}</h1>
-          <p>{{ t('auth.setupHint') }}</p>
-          <form @submit.prevent="submitSetup">
-            <NFormItem :label="t('auth.setupCode')"><NInput v-model:value="setupCode" :input-props="{ 'aria-label': t('auth.setupCode') }" autocomplete="one-time-code" /></NFormItem>
+          <h2 class="auth-panel__title">{{ t('auth.setupTitle') }}</h2>
+          <p class="auth-panel__intro">{{ t('auth.setupHint') }}</p>
+          <form class="auth-panel__form" @submit.prevent="submitSetup">
+            <NFormItem>
+              <template #label>
+                <span class="auth-panel__field-label">{{ t('auth.setupCode') }} <UxInfoHint :text="t('auth.setupCodeHelp')" /></span>
+              </template>
+              <NInput v-model:value="setupCode" :input-props="{ 'aria-label': t('auth.setupCode') }" autocomplete="one-time-code" />
+            </NFormItem>
             <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
-            <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="new-password" /></NFormItem>
+            <div class="auth-panel__password-field">
+              <NFormItem :label="t('auth.password')" :show-feedback="false"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password'), 'aria-describedby': 'auth-password-requirements' }" type="password" show-password-on="click" autocomplete="new-password" /></NFormItem>
+              <p id="auth-password-requirements" class="auth-panel__field-hint">{{ t('auth.passwordRequirements') }}</p>
+            </div>
             <NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.createAdmin') }}</NButton>
           </form>
         </template>
         <template v-else-if="view === 'login'">
-          <h1>{{ t('auth.loginTitle') }}</h1>
-          <form @submit.prevent="submitLogin">
+          <h2 class="auth-panel__title">{{ t('auth.loginTitle') }}</h2>
+          <form class="auth-panel__form" @submit.prevent="submitLogin">
             <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
             <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="current-password" /></NFormItem>
             <NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.login') }}</NButton>
           </form>
         </template>
         <template v-else-if="view === 'change'">
-          <h1>{{ t('auth.changeTitle') }}</h1>
-          <p>{{ t('auth.changeHint') }}</p>
-          <form @submit.prevent="submitPassword">
-            <NFormItem :label="t('auth.newPassword')"><NInput v-model:value="newPassword" :input-props="{ 'aria-label': t('auth.newPassword') }" type="password" show-password-on="click" autocomplete="new-password" /></NFormItem>
+          <h2 class="auth-panel__title">{{ t('auth.changeTitle') }}</h2>
+          <p class="auth-panel__intro">{{ t('auth.changeHint') }}</p>
+          <form class="auth-panel__form" @submit.prevent="submitPassword">
+            <div class="auth-panel__password-field">
+              <NFormItem :label="t('auth.newPassword')" :show-feedback="false"><NInput v-model:value="newPassword" :input-props="{ 'aria-label': t('auth.newPassword'), 'aria-describedby': 'auth-password-requirements' }" type="password" show-password-on="click" autocomplete="new-password" /></NFormItem>
+              <p id="auth-password-requirements" class="auth-panel__field-hint">{{ t('auth.passwordRequirements') }}</p>
+            </div>
             <NSpace><NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.changePassword') }}</NButton><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></NSpace>
           </form>
         </template>
         <template v-else-if="view === 'pending'">
-          <h1>{{ t('auth.pendingTitle') }}</h1>
+          <h2 class="auth-panel__title">{{ t('auth.pendingTitle') }}</h2>
           <p>{{ t('auth.pendingHint') }}</p>
           <div class="auth-actions"><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></div>
         </template>
         <template v-else-if="view === 'missingStockInfo'">
-          <h1>{{ t('startup.noApiUrlTitle') }}</h1>
+          <h2 class="auth-panel__title">{{ t('startup.noApiUrlTitle') }}</h2>
           <p>{{ t('startup.noApiUrlBody') }}</p>
           <div class="auth-actions"><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></div>
         </template>
         <template v-else>
-          <h1>{{ t('auth.unavailableTitle') }}</h1>
+          <h2 class="auth-panel__title">{{ t('auth.unavailableTitle') }}</h2>
           <p>{{ t('auth.unavailableHint') }}</p>
           <div class="auth-actions"><NButton @click="initialize">{{ t('auth.retry') }}</NButton></div>
         </template>
         <p v-if="errorMessage" role="alert" class="auth-error">{{ errorMessage }}</p>
-      </NCard>
+      </section>
     </main>
   </NConfigProvider>
 </template>
 
 <style scoped lang="scss">
-.auth-page { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
-.auth-page--pending { padding-bottom: calc(1rem + 8vh); }
-.auth-panel { width: min(100%, 32rem); }
-.auth-panel h1 { font-size: 1.4rem; margin: 0 0 1rem; }
-.auth-panel p { line-height: 1.5; }
-.auth-actions { margin-top: 1.25rem; }
-.auth-error { color: var(--n-color-error, #c93737); margin-top: 1rem; }
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  background: radial-gradient(circle at 50% 0, rgb(var(--brand-from) / 0.12), transparent 55%),
+    rgb(var(--surface-page));
+}
+
+.auth-page--pending { padding-bottom: calc(var(--space-6) + 8vh); }
+
+.auth-panel {
+  width: min(100%, 30rem);
+  padding: clamp(var(--space-6), 5vw, var(--space-8));
+  border: 1px solid rgb(var(--border-default));
+  border-radius: var(--radius-lg);
+  background: rgb(var(--surface-card));
+  box-shadow: var(--shadow-lg);
+
+  &__header { margin-bottom: var(--space-8); }
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+  }
+  &__brand-accent { color: rgb(var(--brand-word)); }
+  &__logo { flex: none; width: 3rem; height: 3rem; }
+  &__subtitle {
+    margin: var(--space-2) 0 0 calc(3rem + var(--space-3));
+    color: rgb(var(--text-muted));
+    font-size: 0.8125rem;
+  }
+  &__title {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.3;
+  }
+  &__intro { margin: 0; color: rgb(var(--text-secondary)); }
+  &__form { margin-top: var(--space-6); }
+  &__field-label { display: inline-flex; align-items: center; gap: var(--space-2); }
+  &__password-field { margin-bottom: var(--space-4); }
+  &__field-hint { margin: 0; color: rgb(var(--text-secondary)); font-size: 0.8125rem; }
+  p { line-height: 1.5; }
+}
+
+.auth-actions { margin-top: var(--space-6); }
+.auth-error { color: rgb(var(--status-out)); margin-top: var(--space-4); }
 </style>

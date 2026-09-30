@@ -39,10 +39,11 @@ docker run -d --name stockportfolio \
   mangolila/stockportfolio:latest
 ```
 
-Read the one-time setup code with `docker logs stockportfolio`, then open
+Read the latest setup code with `docker logs stockportfolio`, then open
 `http://localhost:8080` and create the first admin account. The setup page
 closes after that account is created. There are no default credentials or
-public self-registration.
+public self-registration. New passwords need 12 to 1024 characters, including
+an uppercase letter, a number and a special character.
 
 The port mapping above accepts connections on the Docker host's network
 interfaces. The web interface has a login; still protect the host through
@@ -58,7 +59,10 @@ An HTTPS web address requires an HTTPS API.
 The container also serves its own account API at `/api/*`. It is separate from
 StockInfo. Without a StockInfo address, setup and login still work, while the
 portfolio view shows a configuration error. The active StockInfo address and
-connection status are visible under **Settings → Status**.
+connection status are visible on the separate **Status** page, opened from the
+API entry in the bottom status bar. Admins reach **User management** directly
+from the people icon in the top bar. The account button at the top right shows
+the username and opens the sign-out action.
 
 ## Docker Compose
 
@@ -104,7 +108,7 @@ docker logs --tail 100 stockportfolio
 ```
 
 The container should become `healthy` after startup. For missing quotes or API
-connection errors, also check **Settings → Status** in the web interface.
+connection errors, also check **Status** from the bottom status bar.
 
 ## Data and backups
 

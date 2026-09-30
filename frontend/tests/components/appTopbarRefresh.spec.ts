@@ -7,9 +7,12 @@
  */
 
 import { mount } from '@vue/test-utils'
+import { ref } from 'vue'
 import { createMemoryHistory, createRouter, type Router } from 'vue-router'
 import { describe, expect, it } from 'vitest'
 
+import { AUTH_LOGOUT, AUTH_USER } from '@/auth/context'
+import type { PortfolioUser } from '@/auth/client'
 import AppTopbar from '@/components/AppTopbar.vue'
 
 /** Die Kopfzeile löst Adressen für ihre Menüpunkte auf und braucht dafür Routen. */
@@ -22,22 +25,31 @@ function attrappenRouter(): Router {
       { path: '/rebalancing', name: 'rebalancing', component: leer },
       { path: '/instruments', name: 'instruments', component: leer },
       { path: '/settings', name: 'settings', component: leer },
+      { path: '/admin/users', name: 'admin-users', component: leer },
     ],
   })
 }
 
-async function topbar(refreshing: boolean) {
+async function topbar(refreshing: boolean, role: PortfolioUser['role'] = 'user') {
   const router = attrappenRouter()
   await router.push('/')
   await router.isReady()
 
   return mount(AppTopbar, {
-    global: { plugins: [router] },
+    global: {
+      plugins: [router],
+      provide: {
+        [AUTH_USER as symbol]: ref<PortfolioUser>({
+          id: 'user-1', username: 'mike', role, active: true, mustChangePassword: false,
+        }),
+        [AUTH_LOGOUT as symbol]: async () => {},
+      },
+    },
     props: { refreshing },
   })
 }
 
-/** In der rechten Gruppe steht genau ein Knopf: Aktualisieren. */
+/** Aktualisieren steht vor dem Konto-Menü. */
 function aktualisieren(wrapper: Awaited<ReturnType<typeof topbar>>) {
   return wrapper.find('button')
 }
@@ -58,5 +70,17 @@ describe('Kopfzeile — Aktualisieren', () => {
     await knopf.trigger('click')
 
     expect(wrapper.emitted('refresh')).toHaveLength(1)
+  })
+})
+
+describe('Kopfzeile — Konto', () => {
+  it('zeigt den Namen und den direkten Verwaltungszugang nur für Admins', async () => {
+    const userTopbar = await topbar(false)
+    expect(userTopbar.get('button[aria-label*="mike"]').text()).toContain('mike')
+    expect(userTopbar.find('a[href="/admin/users"]').exists()).toBe(false)
+
+    const adminTopbar = await topbar(false, 'admin')
+    expect(adminTopbar.get('button[aria-label*="mike"]').text()).toContain('mike')
+    expect(adminTopbar.get('a[href="/admin/users"]').text()).toBeTruthy()
   })
 })

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NButton, NIcon } from 'naive-ui'
-import { useRoute, useRouter } from 'vue-router'
+import { NButton, NDropdown, NIcon } from 'naive-ui'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { UxNavItem, UxTopbar, type NavIconName } from '@mmit/ux-foundation'
-import { AUTH_LOGOUT } from '@/auth/context'
+import { AUTH_LOGOUT, AUTH_USER } from '@/auth/context'
 
 defineProps<{
   lastRefreshLabel?: string
@@ -20,14 +20,20 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const logout = inject(AUTH_LOGOUT)
+const authenticatedUser = inject(AUTH_USER)
+const isAdmin = computed(() => authenticatedUser?.value?.role === 'admin')
+const accountOptions = computed(() => [{ label: t('auth.logout'), key: 'logout' }])
+
+function selectAccountOption(key: string): void {
+  if (key === 'logout') void logout?.()
+}
 
 /** Verweis auf die Startansicht — UxTopbar erwartet eine Adresse, kein Ziel-Objekt. */
 const dashboardHref = computed(() => router.resolve({ name: 'dashboard' }).href)
 
 /*
- * Die Symbole stehen im Fundament, nicht hier. Sie sind über alle Apps
- * dieselben — das ist der Punkt, an dem eine Sammlung zusammenwächst oder
- * auseinanderfällt.
+ * Die gemeinsamen Navigationssymbole stehen im Fundament. Das Personen-Icon
+ * für die hiesige Kontoverwaltung bleibt direkt am app-spezifischen Link.
  */
 const navItems = computed<{ name: string; label: string; icon: NavIconName }[]>(() => [
   { name: 'dashboard', label: t('nav.dashboard'), icon: 'dashboard' },
@@ -101,6 +107,19 @@ const isActive = (name: string): boolean => route.name === name
         :href="router.resolve({ name: item.name }).href"
         @select="router.push({ name: item.name })"
       />
+      <RouterLink
+        v-if="isAdmin"
+        class="topbar__admin"
+        :class="{ 'topbar__admin--active': isActive('admin-users') }"
+        :to="{ name: 'admin-users' }"
+        :aria-label="t('nav.users')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5" />
+        </svg>
+        <span>{{ t('nav.users') }}</span>
+      </RouterLink>
     </template>
 
     <template #actions>
@@ -135,7 +154,19 @@ const isActive = (name: string): boolean => route.name === name
         </template>
         <span class="topbar__refresh-label">{{ t('actions.refresh') }}</span>
       </NButton>
-      <NButton size="small" secondary @click="logout?.()">{{ t('auth.logout') }}</NButton>
+      <NDropdown trigger="click" :options="accountOptions" @select="selectAccountOption">
+        <NButton size="small" secondary :aria-label="t('auth.accountMenu', { username: authenticatedUser?.username ?? '' })">
+          <template #icon>
+            <NIcon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="3" />
+                <path d="M5 20a7 7 0 0 1 14 0" />
+              </svg>
+            </NIcon>
+          </template>
+          {{ authenticatedUser?.username ?? '' }}
+        </NButton>
+      </NDropdown>
     </template>
   </UxTopbar>
 </template>
@@ -187,5 +218,30 @@ const isActive = (name: string): boolean => route.name === name
     :deep(svg) { display: none; }
     :deep(.ux-navitem__label) { display: inline; }
   }
+}
+
+/* Die Kontoverwaltung gehört nur zu dieser App und führt direkt zur Liste. */
+.topbar__admin {
+  position: relative;
+  @include row(0.375rem);
+  padding: 0.375rem var(--space-3);
+  border-radius: var(--radius-sm);
+  color: token(--text-bar-secondary);
+  font-size: var(--font-sm);
+  text-decoration: none;
+  svg { width: 1rem; height: 1rem; }
+  &:hover { background: token(--surface-bar-raised, 0.12); color: token(--text-bar); }
+  &--active { color: token(--text-bar); }
+  &--active::after {
+    position: absolute;
+    right: var(--space-2);
+    bottom: -4px;
+    left: var(--space-2);
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: token(--accent);
+    content: '';
+  }
+  @include below(md) { span { display: none; } }
 }
 </style>

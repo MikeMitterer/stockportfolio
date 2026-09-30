@@ -31,9 +31,10 @@ describe('Start ohne StockInfo-Adresse', () => {
     storage.setItem('stockportfolio.locale', 'de')
 
     await import('@/main')
-    await vi.waitFor(() => expect(document.querySelector('#app h1')?.textContent).toBe('Keine API-Adresse gesetzt'))
+    await vi.waitFor(() => expect(document.querySelector('#app h2')?.textContent).toBe('Keine API-Adresse gesetzt'))
 
-    expect(document.querySelector('#app h1')?.textContent).toBe('Keine API-Adresse gesetzt')
+    expect(document.querySelector('#app h1')?.textContent).toBe('StockPortfolio')
+    expect(document.querySelector('#app h2')?.textContent).toBe('Keine API-Adresse gesetzt')
     expect(document.documentElement.dataset.theme).toBe(theme)
     expect(document.documentElement.style.colorScheme).toBe(scheme)
   })
