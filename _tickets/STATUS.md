@@ -30,10 +30,10 @@ Mike nimmt T-63 und T-60 jetzt gemeinsam ab; danach folgen T-61 und T-62.
 Claudes technische Prüfung
 von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
 Korrekturcommit `942c211` ist in Runde 3 unabhängig geprüft und technisch
-freigegeben. Mikes Prüfung von Setup und Benutzerverwaltung läuft; die
-Abnahmepunkte werden direkt in T-60 und T-63 erfasst. T-63 bleibt während
-dieser gemeinsamen Abnahme das aktive Ticket. T-61 und T-62 sind weiterhin nicht zur
-Produktumsetzung aktiviert. StockInfo wurde nicht geändert.
+freigegeben. Mike hat die T-60-Abnahme nach den Runde-4-Korrekturen erklärt.
+T-63 bleibt bis zur erneuten technischen Freigabe das aktive Ticket. Mike hat
+T-61 und T-62 anschließend ohne weiteren Warteschritt zur Umsetzung
+freigegeben. StockInfo wurde nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -115,27 +115,29 @@ umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
 und dem Testskript. Mike hat vor seiner Abnahme die Korrektur der fünf
 Review-Hinweise beauftragt; diese Fassung `a8c7402` ist in Runde 3 technisch
 freigegeben.
-Die menschliche Abschlussentscheidung steht aus.
+Die technische Freigabe der Runde-5-Nacharbeit steht aus. Mike hat die
+T-60-Abnahme nach den Anpassungen erklärt und die anschließende Umsetzung
+von T-61 und T-62 beauftragt.
 T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
 Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
-Prüfung steht aus.
+Prüfung ist nach Mikes Rückmeldung abgeschlossen; die erneute technische
+Freigabe steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
-T-62 sind noch nicht zur Produktumsetzung aktiviert. Mike nimmt T-60 und
-T-63 gemeinsam ab. Codex hat die Abnahmepunkte umgesetzt; Mike beauftragte
-danach die gemeinsame Übergabe an Claude. T-63 Runde 4 prüft die Fassung
-`1d534ce` seit `a8c7402` und ausdrücklich erneut T-60 samt Paketumbau.
-Die letzte abgeschlossene technische Reviewreferenz ist T-63 Runde 4
-(`changes_requested`); die letzte Freigabe bleibt Runde 3 für `a8c7402`.
+T-62 sind nun zur Umsetzung freigegeben und folgen nach dieser Nachprüfung.
+T-63 Runde 5 prüft die Korrekturfassung `91b84da` nach Runde 4 und
+ausdrücklich erneut T-60 samt Paketumbau. Die letzte abgeschlossene
+technische Reviewreferenz ist T-63 Runde 4 (`changes_requested`);
+die letzte Freigabe bleibt Runde 3 für `a8c7402`.
 Vor Claudes Freigabe erfolgen weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
-- `review_round`: `4`
-- `owner`: `codex`
+- `handoff_commit`: `91b84da306663d10f40ddffa91f59e8f5aacdefb`
+- `review_round`: `5`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
@@ -313,8 +315,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 Runde 4 und T-60, Fassung `1d534ce`:** `changes_requested`. Zwei Befunde: (1) Bei 390 px verdecken „Aktualisieren“ und der breitere Konto-Knopf die Navigationseinträge Assets, Einstellungen und Benutzerverwaltung; die Navigation hat 139 px Platz, braucht aber 217 px. (2) Das h1 der Benutzerverwaltung nutzt die Browser-Vorgabe von 2em statt 1.5rem/600 wie Einstellungen, Assets und Status. Dazu vier nicht blockierende Hinweise. Messwerte und Erwartung stehen im T-63-Ticket unter „Technische Prüfung Runde 4“. Alles Übrige in beiden Tickets habe ich ohne Befund geprüft.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 Runde 5, Fassung `91b84da` nach `1d534ce`:** Bitte die zwei Runde-4-Befunde gezielt nachprüfen: Navigation bei 390 px für Admin und Kontoansichten normaler Nutzer sowie Titelgröße der Benutzerverwaltung. Die aktuelle Doku zu Personen-Icon und kompaktem Konto-Knopf und den übernommenen `card-surface`-Mixin ebenfalls abgleichen. T-60 einschließlich Paketumbau bleibt Teil des gemeinsamen Prüfauftrags; Mikes T-60-Abnahme ist nach der Korrektur erklärt. Gegenproben, Tests und Grenzen stehen in den neuen Nachträgen von T-60 und T-63. Bis zur Freigabe kein Merge und kein Push.

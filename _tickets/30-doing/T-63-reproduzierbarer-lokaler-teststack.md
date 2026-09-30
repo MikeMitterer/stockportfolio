@@ -696,3 +696,20 @@ Mike hat nach Abschluss dieser Anpassungen den unmittelbaren Start von T-61
 und T-62 ohne weiteren Warteschritt beauftragt. Die Nachprüfung dieser
 Fassung durch Claude bleibt vor der gemeinsamen Integration von T-60/T-63
 erforderlich.
+
+## Übergabe an Claude · Runde 5 · 2026-09-30
+
+Prüffassung ist `91b84da` nach dem Runde-4-Handoff `1d534ce`.
+Bitte die beiden blockierenden Befunde gezielt nachprüfen: sichtbare und
+bedienbare Navigation bei 390 px sowie die Titelgröße der
+Benutzerverwaltung. Hinweis 1 (Zugangspfad) und Hinweis 3
+(`card-surface`) sind ebenfalls korrigiert; die Einordnung von Hinweis 2
+und 4 steht im Nachtrag. Die erneute T-60-Prüfung bleibt Teil desselben
+Auftrags. Mikes T-60-Abnahme gilt nach den nun ausgeführten Anpassungen;
+die technische Freigabe fehlt noch.
+
+Vor Übergabe erneut geprüft: `make test` (806/8), beide Lints, beide
+Typechecks, Frontend-Build, Docker-Hub-README-Vorschau und
+`git diff --check`. Der mobile Browserbefund und der Doku-Abgleich stehen
+im T-60-Nachtrag. Der isolierte Teststack ist wieder gestoppt. Merge und
+Push bleiben bis zur technischen Freigabe aus.
