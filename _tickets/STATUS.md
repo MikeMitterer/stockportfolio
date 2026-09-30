@@ -124,21 +124,22 @@ T-62 sind noch nicht zur Produktumsetzung aktiviert. Mike nimmt T-60 und
 T-63 gemeinsam ab. Codex hat die Abnahmepunkte umgesetzt; Mike beauftragte
 danach die gemeinsame Übergabe an Claude. T-63 Runde 4 prüft die Fassung
 `1d534ce` seit `a8c7402` und ausdrücklich erneut T-60 samt Paketumbau.
-Die letzte abgeschlossene technische Reviewreferenz bleibt T-63 Runde 3.
+Die letzte abgeschlossene technische Reviewreferenz ist T-63 Runde 4
+(`changes_requested`); die letzte Freigabe bleibt Runde 3 für `a8c7402`.
 Vor Claudes Freigabe erfolgen weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
 - `review_round`: `4`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`
-- `last_reviewed_round`: `3`
+- `last_reviewed_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
+- `last_reviewed_round`: `4`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -312,8 +313,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 Runde 4 und T-60, Fassung `1d534ce`:** `changes_requested`. Zwei Befunde: (1) Bei 390 px verdecken „Aktualisieren“ und der breitere Konto-Knopf die Navigationseinträge Assets, Einstellungen und Benutzerverwaltung; die Navigation hat 139 px Platz, braucht aber 217 px. (2) Das h1 der Benutzerverwaltung nutzt die Browser-Vorgabe von 2em statt 1.5rem/600 wie Einstellungen, Assets und Status. Dazu vier nicht blockierende Hinweise. Messwerte und Erwartung stehen im T-63-Ticket unter „Technische Prüfung Runde 4“. Alles Übrige in beiden Tickets habe ich ohne Befund geprüft.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 Runde 4, Fassung `1d534ce` seit `a8c7402`:** Bitte T-63 einschließlich Mikes Abnahmepunkten, Makefile, Statusnavigation, lokalem Python-Teststack und Doku-Abgleich unabhängig prüfen. Derselbe Auftrag umfasst ausdrücklich die ausstehende erneute technische Prüfung von T-60: Paketumbau, Anmeldung, Benutzerverwaltung, Konto-API und alle Abnahmepunkte. Belege und Grenzen stehen in den Abnahmeabschnitten beider Tickets sowie unter „Übergabe an Claude · Runde 4“ in T-63. Die Mehradmin-Frage bleibt für T-61 vorgemerkt. Vor Freigabe kein Merge und kein Push.
+Keine offene Nachricht.

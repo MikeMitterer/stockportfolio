@@ -583,3 +583,88 @@ gestoppt. Das Login-Panel lag bei 900 px Höhe mit seiner Mitte auf 38,2 %.
 `git diff --check` war unauffällig. Doku-Abgleich steht in beiden
 Abnahmeabschnitten; für den lokalen Teststack brauchte `docker/README.md`
 keine Änderung. Vor Claudes Freigabe erfolgen weder Merge noch Push.
+
+## Technische Prüfung Runde 4 · mit erneuter T-60-Prüfung
+
+`claude`, 2026-09-30, an Handoff-Commit `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
+(Diff seit `a8c7402`, 32 Dateien). Derselbe Auftrag umfasst die erneute
+technische Prüfung von
+[T-60](T-60-stockportfolio-server-und-benutzerkonten.md): Paketumbau und
+Mikes Abnahmepunkte. Gelesen: Codex-Lessons SP-CX-01, SP-CX-02 und SP-CX-05
+sowie meine Lessons SP-R-02 und SP-R-03. Nach SP-R-03 habe ich jede geänderte
+Ansicht selbst mit ihren Nachbaransichten verglichen und eigene Screenshots gemacht.
+
+**Werkzeug:** Die Chrome-Erweiterung war nicht verbunden. Den Browserdurchlauf
+habe ich deshalb mit `playwright-core` und dem lokal vorhandenen Chromium im
+Scratchpad ausgeführt. Er lief gegen den isolierten Teststack mit
+`--stack --run --demo-accounts`. Die synthetischen Zugangsdaten las das Skript
+direkt aus der temporären Datei; sie wurden nicht ausgegeben.
+
+| Prüfpunkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Tests, Lint, Typen | `make test`, beide Lint-Läufe mit `--no-cache`, beide Typprüfungen, `git diff --check a8c7402 1d534ce` | 67 Dateien / 806 Frontend-Tests, 3 / 8 API-Tests; alles Exit 0 |
+| Makefile | `make help` | „Entwicklung“ zeigt `dev`, `test`, `clean`; `AGENTS.md` und `README.md` beschreiben dasselbe |
+| Passwortregel (API) | `validatePassword` und neuer Test gelesen | 12–1024 Zeichen, `\p{Lu}`, `\p{Nd}`, `[\p{P}\p{S}]`; gilt für Setup, Kontoanlage, Reset und Wechsel. Der Login prüft keine Regel, bestehende Passwörter bleiben also gültig |
+| Setup-Code | `api/src/index.ts` gelesen | Der Code wird nur ausgegeben, solange kein Admin existiert; die README-Aussage „each API start prints a new code“ stimmt |
+| Rahmen-Wächter | Regex des Tests `pageFrame.spec.ts` gegen `7b4cbbe`, `a8c7402`, `1d534ce` angewendet | `UserAdminView` ist in den alten Fassungen „MISSING“, in `1d534ce` mit Rahmen: der Test unterscheidet richtig und falsch |
+| Oberkante der Seiten | h1-Position bei 1440 und 390 px gemessen | Benutzerverwaltung, Einstellungen und Status: h1 bei 88 px, Kopfzeile endet bei 56 px, also übereinstimmend |
+| Anmeldedialog | Mittelpunkt des Panels gemessen | 0,382 bei 1440 × 900 und bei 390 × 844; die Unterzeile „Tolerance-Band Rebalancing“ fehlt |
+| Admin-Ansicht | Screenshots und DOM | Das eigene Konto hat keine Aktionen, das andere Konto hat „Passwort zurücksetzen“ und „Deaktivieren“; Passwortkriterien und Fragezeichen-Hilfe sind sichtbar |
+| Konto-Menü | geöffnet | Enthält nur „Abmelden“; nach dem Abmelden steht die Adresse auf `/#/`. Nach 0, 500 und 2000 ms gemessen; eine erste Messung mit `/#/admin/users` war ein Artefakt meines Skripts nach vorherigem Laden von `/admin/users` |
+| Normaler Nutzer | Anmeldung ab `/#/rebalancing`, erzwungener Wechsel | Zuerst „Passwort ändern“ unter `/#/`, danach „Depotzugriff folgt“ unter `/#/`; kein Personen-Icon; `GET /api/admin/users` liefert 403 |
+| Status-Route | Screenshot `/#/status`, Reiter der Einstellungen | Eigene Seite mit Rahmen; die Einstellungen haben keinen Status- oder Benutzerreiter mehr, „About“ steht rechts |
+| Teststack-CLI | Katalogabgleich per Skript, `msgfmt --check-format`, `.mo` neu erzeugt und verglichen | Alle 72 Meldungen aus `translate(...)` stehen im deutschen Katalog, die `.mo`-Datei ist aktuell. Die Demo-Passwörter (`Aa1!` + Zufall) erfüllen die Regel; der Stack mit Demo-Konten lief, und `--stop` gab alle Ports frei |
+| Doku | Diffs von `README.md`, `docker/README.md`, `unraid/README.md`, `AGENTS.md` gelesen; nach „Settings → Status“ und „Einstellungen → Benutzer…“ gesucht | Beide READMEs stimmen bei Passwortregel, Status-Seite, Personen-Icon und Kontenzugriff überein. Reste siehe Hinweis 1 |
+| Paketumbau (T-60) | in T-63 Runden 2 und 3 geprüft | Gilt unverändert; dieser Diff berührt Paketstruktur und Build nicht |
+
+**Befunde (blockierend):**
+
+1. **Die Kopfzeile verdeckt bei 390 px Navigationseinträge.** Gemessen auf
+   `/#/settings` als Admin: Die Navigation hat 139 px Platz, braucht aber 217 px
+   (`scrollWidth`), und `overflow-x` ist `visible`. Dadurch liegen „Assets“
+   (x 185–209), „Einstellungen“ (213–237) und das neue Personen-Icon
+   (241–265) unter „Aktualisieren“ (203–247) und dem Konto-Knopf
+   „test-admin“ (259–374). Im Screenshot sieht man bei 390 px nur „Rebalancing“
+   und den aktiven Unterstrich unter dem Aktualisieren-Knopf. Auf dem Handy
+   sind Einstellungen und Benutzerverwaltung damit nicht erreichbar.
+   Ursache sind die neuen Elemente dieser Runde: Der Konto-Knopf zeigt jetzt
+   den Benutzernamen (115 px), und das Personen-Icon kommt als weiterer
+   Eintrag dazu. Rechnerisch passte die Navigation mit dem früheren
+   „Abmelden“-Knopf gerade noch. Diesen Vergleich habe ich nicht mit einem
+   Screenshot von `a8c7402` belegt. T-60 verlangt die Bedienung bei 390 px.
+   **Erwartet:** Bei schmaler Breite sind alle Navigationseinträge bedienbar,
+   etwa indem der Konto-Knopf dort nur das Symbol zeigt. Beleg ist ein
+   Screenshot oder eine Messung bei 390 px für Admin und normalen Nutzer.
+2. **Die Überschrift der Benutzerverwaltung ist größer als bei den Nachbarn
+   (SP-R-03).** Einstellungen (`settings__title`), Assets (`instruments__title`)
+   und Status verwenden `font-size: 1.5rem; font-weight: 600`. Das h1 in
+   `UserAdminView.vue` hat keine Größe und erscheint mit der Browser-Vorgabe
+   von 2em in Fett. Im Vergleich bei 1440 px ist das deutlich sichtbar.
+   **Erwartet:** dieselbe Titelgestaltung wie bei den Nachbaransichten.
+
+**Hinweise (nicht blockierend):**
+
+1. **Zwei veraltete Pfadangaben.** `docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md:103`
+   und T-60, Akzeptanzkriterium 3 (Zeile 54), nennen noch „Einstellungen →
+   Benutzerverwaltung“. Der Zugang ist jetzt das Personen-Icon in der
+   Kopfzeile (SP-CX-02). Die Abweichung „nur erster Admin“ ist dagegen
+   ausdrücklich vermerkt und für T-61 zurückgestellt.
+2. **Die Kopfzeile baut einen eigenen Nav-Eintrag.** `.topbar__admin` stellt
+   die Optik von `UxNavItem` nach, samt aktivem Unterstrich, weil das
+   Fundament kein Personensymbol hat. Nach `AGENTS.md` gehört ein gemeinsames
+   Symbol ins Fundament. Sonst laufen die beiden Stile beim nächsten Update
+   auseinander.
+3. **Die Karten sind nachgebaut.** `StatusView` und `UserAdminView` schreiben
+   Rahmen, Radius und Hintergrund selbst. `ux-foundation` bietet dafür
+   `@include card-surface`.
+4. **Der direkte Pfad `/admin/users` funktioniert nur über die API.** Die API
+   leitet mit 302 auf `/#/admin/users` weiter (geprüft auf :8080). Unter Vite
+   landet der Pfad auf dem Dashboard. Das ist älterer Stand und betrifft nur
+   die Entwicklung.
+
+**Urteil:** `changes_requested` für `1d534ce`. Das gilt ebenso für die
+erneute T-60-Prüfung, weil Befund 1 T-60s Anforderung an 390 px betrifft. Alle
+übrigen Abnahmepunkte, die API-Passwortregel, der Rahmen-Wächter, die
+Statusroute, die Teststack-CLI und die Doku habe ich selbst geprüft; sie
+sind ohne Befund. Eine Nachprüfung beschränkt sich auf die beiden Befunde
+und die Hinweise, soweit Codex sie aufgreift.
