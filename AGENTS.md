@@ -214,6 +214,11 @@ Python-Umgebung aus diesem Repository aufrufen:
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 ```
 
+Für das gemeinsame `MAKE_THEME`-Theme `mmit-projecttools` über den
+`.libs/ProjectTools`-Link in StockInfos Python-Umgebung installieren:
+`../StockInfo/.venv/bin/python -m pip install -e ./.libs/ProjectTools`.
+Ohne Paket bleibt die CLI mit schlichter Ausgabe nutzbar.
+
 Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
 Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale
 synthetische Konten entstehen mit `--demo-accounts` nur im temporären

@@ -335,6 +335,21 @@ start the complete test stack with StockInfo's Python environment:
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 ```
 
+The test server uses the shared ProjectTools theme when `mmit-projecttools`
+is installed in the Python environment that runs it. After `make setup` has
+linked `.libs/ProjectTools`, install that package into StockInfo's existing
+environment and select a theme, for example:
+
+```bash
+../StockInfo/.venv/bin/python -m pip install -e ./.libs/ProjectTools
+MAKE_THEME=ocean ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --help
+```
+
+The script imports `projecttools.ui.colors` as a package; it does not use a
+machine-specific source path. Without the package, help and status remain
+available without color. `NO_COLOR`, redirected output and `TERM=dumb` also
+disable ANSI colors.
+
 The start command returns after the three processes are ready. It prints Vite
 (`127.0.0.1:5175`), the account API (`127.0.0.1:8080`), StockInfo fixtures
 (`127.0.0.1:8899`), and the path to the one-time setup code in the isolated
