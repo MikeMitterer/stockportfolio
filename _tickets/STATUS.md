@@ -5,24 +5,22 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**T-60 und T-63 technisch freigegeben:** [Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
-sowie [lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
-hat Claude in Runde 6 geprüft. Mike hat T-60 für sich abgeschlossen. Seine
-ausdrückliche T-63-Abschlussentscheidung steht noch aus; deshalb bleiben
-beide Tickets in `30-doing/` und werden noch nicht gemeinsam integriert.
-Der Teststack verbindet StockInfos vorhandene Testkurse, Konto-API und Vite.
-StockInfo wurde nicht geändert.
+**Aktuelle Arbeit:** [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+auf dem eigenen Branch `t-62-sse-benachrichtigung-fuer-depots`. Es ist das
+letzte Ticket der Kette T-60 → T-63 → T-61 → T-62.
 
-**Aktuelle Arbeit:** [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
-mit Mikes neuem Theme-Abnahmepunkt in der technischen Nachprüfung; danach
-[T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
-Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
-Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
-Produktnachweise stehen noch aus. Die Mehradmin-Regel und die Sichtbarkeit des
-alten Browserbestands sind in T-61 Konzept Runde 2 von Claude entschieden:
-jedes Konto hat eigene Daten, die Altbestandsvorschau gehört nur dem
-serverseitig markierten Setup-Konto.
-Die Architektur-Spezifikation liegt unter
+**Technisch freigegeben, Abnahme durch Mike am Ende:**
+[T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+(von Mike abgenommen), [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+(Runde 13) und [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+(Runde 6). Mike prüft T-61 und T-63 erst, wenn T-62 fertig ist: „T-61 teste
+ich wenn t-62 auch fertig ist“, „Auch T-63 nehme ich erst ganz am Ende ab“.
+Bis dahin bleiben alle vier Tickets in `30-doing/`; Merge nach `master` und
+Push folgen erst danach. StockInfo wurde nicht geändert.
+
+Die Mehradmin-Regel ist in T-61 Konzept Runde 2 entschieden: Jedes Konto hat
+eigene Daten, die Vorschau des alten Browserbestands gehört nur dem
+serverseitig markierten Setup-Konto. Die Architektur-Spezifikation liegt unter
 `docs/superpowers/specs/`. Die Projektstruktur bleibt bei `frontend/` und
 `api/`, je mit eigenem Manifest; die Version steht in `frontend/package.json`.
 
@@ -87,9 +85,9 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
-`codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
-er prüft die Zuordnung vor jedem Durchlauf.
+Rollen sind zugeordnet: Coder `codex`, Verifier `claude`, Observer
+`claude-observer` (seit 2026-09-30, zuvor `codex-observer`). Jede Instanz
+prüft ihre Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
 installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
@@ -101,56 +99,13 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-63 ist in Runde 2 für Commit `6459dca` technisch freigegeben. Diese Fassung
-umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
-und dem Testskript. Mike hat vor seiner Abnahme die Korrektur der fünf
-Review-Hinweise beauftragt; diese Fassung `a8c7402` ist in Runde 3 technisch
-freigegeben.
-T-63 ist in Runde 6 für `26b59ed` technisch freigegeben; dieselbe Prüfung
-gibt T-60 samt Paketumbau technisch erneut frei. Mike hat die T-60-Abnahme
-erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
-Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
-Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
-T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
-von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
-technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
-IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Den
-verbliebenen Befund 3 zum lokalen Restore-Zweig und zu fehlenden Store-Tests
-hat Codex mit `238723a` behoben. Die aufruflosen Store-Methoden und den
-verwaisten i18n-Schlüssel aus Runde 5 hat Codex mit `094802b` entfernt. Claude hat
-T-61 in Runde 6 technisch freigegeben; Mikes Prüfpunkte A bis D stehen aus.
-Mike hält T-63 weiter in Abnahme. Die Hilfe mit Beispielen untereinander
-liegt als `1c7f37c` auf dem T-63-Branch. Der neue Theme-Abnahmepunkt ist
-dort mit `bd4faec` umgesetzt. ProjectTools-`master` enthält das paketierte
-Python-Modul lokal als `f8cd8ec`; es erfolgte kein Push.
-Claudes Runde 7 für `bd4faec` endete mit `changes_requested`: Das Theme
-funktioniert, aber die Anleitungen schreiben die Installation in StockInfos
-`.venv` vor, die StockInfo-T-82 erst klären soll.
-Runde 8 (`e4db84b`, Variante a) ist durch Mikes Entscheidung für eine eigene
-`.venv` in StockPortfolio (Variante c) überholt und zurückgegeben.
-Variante (c) liegt mit `ca9c74b` und `d7e1607` auf dem T-63-Branch:
-StockPortfolios eigene `.venv` trägt das ProjectTools-Paket aus der allgemeinen
-`requirements.txt`; `make clean` behält sie. Der StockInfo-Kindprozess nutzt
-weiter dessen unveränderte `.venv`. Runde 9 prüft diese Fassung. Der volle
-Stack wurde für die Umstellung nicht erneut gestartet; die Prüffassung nennt
-den letzten Live-Nachweis und die neuen Preflight- und Theme-Proben.
-Claudes Runde 9 bestätigte die eigene `.venv` live, fand aber Restdateien
-nach dem Stopp und einen falschen Portkonflikt bei `TIME_WAIT`. Die Korrekturen
-`44f61a6` und `05ccd7b` sind nach Einzelserver- und doppeltem Stack-Lauf
-in Runde 10 als wirksam bestätigt. Runde 10 endete mit `changes_requested`:
-`SIG_IGN` konnte ein frühes SIGTERM verwerfen (Befund 3). `4d5e81f`
-setzt einen beendenden Handler; eine gezielte Frühstart-Gegenprobe und normale
-Stopps bestanden. Auf Mikes Auftrag wurden 47 verwaiste Testverzeichnisse und
-vier Zustandsdateien nach Prozess- und Portprüfung entfernt. Runde 11 liegt
-Claude zur Nachprüfung vor. Runde 11 bestätigte Signalstopp und Bereinigung,
-fand aber unlesbare Zustandsdateien bei Abbruch während des Schreibens.
-`637da2f` und `18c60f4` sichern die Ablage von Einzelserver und Stack atomar
-und prüfen den gesamten Start-/Stoppweg. Runde 12 bestätigte den Lebenszyklus,
-fand aber Exit 0 ohne Meldung bei abgebrochenem Stack-Start. `f28417c`
-liefert Exit 143 und eine übersetzte Meldung. Claude hat Runde 13 technisch
-freigegeben. Mike prüft T-63 erst am Ende der Kette nach T-61/T-62.
-T-62 ist jetzt auf seinem eigenen Branch zur Umsetzung aktiviert. Für
-T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
+Aktiv ist T-62 (Umsetzung). Die letzte abgeschlossene technische Prüfung
+ist T-63 Runde 13 (`3359aaa`, `approved`). Technisch freigegeben sind außerdem
+T-61 in Runde 6 (`094802b`) und T-60 mit T-63 Runde 6. Die Prüfgeschichte
+aller Runden steht in den jeweiligen Tickets. Für T-60, T-61 und T-63 erfolgen
+bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
+ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
+kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
