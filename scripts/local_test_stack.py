@@ -52,6 +52,7 @@ def process_identity(pid: int) -> str:
 def require_free_port(port: int) -> None:
     with socket.socket() as probe:
         try:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind(("127.0.0.1", port))
         except OSError as error:
             raise RuntimeError(translate("Port {port} is already in use; no process was stopped").format(
