@@ -1352,3 +1352,50 @@ Die von Mike verlangte einmalige Bereinigung alter Testdaten ist dort
 ebenfalls belegt.
 Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
 bleiben offen.
+
+## Technische Prüfung Runde 11
+
+`claude`, 2026-09-30, an Handoff-Commit `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
+(Diff seit `e596e1b`, nur `scripts/stockinfo-test-server.py` und dieses
+Ticket). Geprüft habe ich Befund 3 aus Runde 10 und das von Mike beauftragte
+Aufräumen, in einem eigenen, abgetrennten Worktree mit frischer `.venv`.
+Angewandt habe ich SP-R-04 und SP-R-05: ein Inventar über alle Präfixe
+`stockportfolio-t39-server-*`, `stockportfolio-test-server-*.json` und
+`stockportfolio-t63-*` vor und nach jedem Lauf.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Altlasten | Inventar vor meinem ersten Lauf | 0 / 0 / 0; Codex' Bereinigung der verwaisten Verzeichnisse und der vier Zustandsdateien ist wirksam |
+| Befund 3 · Code | Diff gelesen | **Behoben.** `exit_on_termination` löst `SystemExit(0)` aus und wird vor dem Anlegen der Zustandsdatei gesetzt; `uvicorn` ersetzt ihn während des Laufs und stellt ihn danach wieder her |
+| Früher Stopp | Einzelserver gestartet, SIGTERM an die PID, sobald die Zustandsdatei erschien | Prozess beendet, Inventar 0 / 0 / 0. **Grenze:** Das Log zeigt, dass `uvicorn` beim Signal schon lief. Das Fenster vor `uvicorn`s Handler hat meine Probe nicht getroffen; dass der Handler vorher gesetzt wird, belegt der Code |
+| Normaler Stopp, Stack | Einzelserver mit `-t`; Stack zweimal mit sofortigem Neustart | Alle Läufe erfolgreich, Inventar jeweils 0 / 0 / 0, keine Ports belegt |
+| Lint | `ruff check`, `py_compile`, `git diff --stat -- frontend api` | Sauber; Frontend und API unverändert |
+
+**Befund (blockierend, nach SP-R-04):**
+
+4. **Eine halb geschriebene Zustandsdatei verhindert Aufräumen und
+   Neustart.** Der Handler steht jetzt vor `state_path.open("x")`. Kommt
+   SIGTERM nach dem Anlegen, aber vor dem Ende von `json.dump`, bleibt eine
+   leere oder unvollständige Datei. Im `finally` wirft `json.loads` dann
+   `JSONDecodeError`. Weil `shutil.rmtree(data_dir)` im selben `try` steht,
+   bleibt auch das Datenverzeichnis liegen. Beim nächsten Start liest
+   `read_owned_state` (Zeile 140) die Datei ungeschützt mit `json.loads` und
+   bricht mit Traceback ab, bis jemand sie von Hand löscht. Das Fenster ist
+   sehr kurz. Die Folge wäre aber genau die Blockade, die Befund 1 aus
+   Runde 9 beseitigen sollte.
+   **Erwartet:**
+   - Die Zustandsdatei entsteht atomar, etwa als vollständige temporäre
+     Datei, die exklusiv an ihren Zielnamen gebunden wird (`os.link`).
+   - Das `finally` entfernt die eigene Datei auch dann, wenn ihr Inhalt
+     unlesbar ist, zum Beispiel über ein Merkmal „von diesem Prozess
+     angelegt“.
+   - `shutil.rmtree(data_dir)` läuft in einem eigenen `finally`.
+   - `read_owned_state` meldet eine unlesbare Datei konkret, statt mit
+     Traceback abzubrechen.
+
+   Ein kleiner Test oder eine Gegenprobe mit leerer Zustandsdatei belegt
+   Aufräumen und klare Meldung.
+
+**Urteil:** `changes_requested` für `f2fafac`. Befund 3 aus Runde 10 und die
+Bereinigung der Altlasten sind wirksam. Die Nachprüfung beschränkt sich auf
+Befund 4.
