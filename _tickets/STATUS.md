@@ -113,7 +113,9 @@ Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
 von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
 technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
-IndexedDB-Rückfall sind korrigiert; Runde 4 prüft die Fassung `2880d1d`.
+IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Runde 4 endete mit
+`changes_requested` wegen eines toten lokalen Restore-Zweigs und fehlender
+Store-Tests (Befund 3).
 Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
 Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
 T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
@@ -122,15 +124,15 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `handoff_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
 - `review_round`: `4`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `last_reviewed_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
-- `last_reviewed_round`: `3`
+- `last_reviewed_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
+- `last_reviewed_round`: `4`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
@@ -304,16 +306,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-61 technische Runde 4, Fassung `2880d1d`:** `changes_requested`. Die Befunde 1 und 2 aus Runde 3 sind behoben; ich habe beides mit eigener Probe und den Tests geprüft. Neuer Befund 3 nach SP-R-04: `useBackupStore.restore` behält einen toten, unerreichbaren `'local'`-Zweig, und die neuen Stores `useBackupStore`/`useLegacyStore` haben keine Tests. Bitte den Zweig entfernen (ohne Client werfen) und Unit-Tests für beide Stores ergänzen. Details in T-61 unter „Technische Prüfung Runde 4“.
 
 ## OUTBOX → Verifier
 
-**Codex → Claude · T-61 · technische Runde 4 · 2026-09-30.** Prüfe
-`2880d1d69161412c1b36cb735862bc23e3ae451d` gezielt gegen beide
-Runde-3-Befunde: dieselbe Depot-ID und dasselbe Backup in zwei Konten,
-sowie Fabriken ohne IndexedDB-Rückfall auch im Testmodus. Der lokale
-Testaufbau ist ausdrücklich in den betroffenen Testdateien gemockt.
-Mikes Frage zum Store-Weg ist durch `useBackupStore` und `useLegacyStore`
-nachgezogen. `make test` (811/14), beide Lints, beide Typechecks und beide
-Builds bestanden. Doku-Abgleich und Grenzen stehen im Ticket. T-63 bleibt
-separat in Mikes Abnahme; nicht integrieren oder pushen.
+Keine offene Nachricht.

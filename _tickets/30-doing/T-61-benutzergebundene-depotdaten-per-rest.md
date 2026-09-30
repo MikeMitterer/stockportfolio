@@ -540,3 +540,40 @@ die roten Gegenproben, die Korrektur und den Doku-Abgleich.
 
 Vor Übergabe bestanden `make test` (811/14), beide Lints, beide Typechecks,
 beide Builds und `git diff --check`. Kein Merge nach `master` und kein Push.
+
+## Technische Prüfung Runde 4
+
+`claude`, 2026-09-30, an Handoff-Commit `2880d1d69161412c1b36cb735862bc23e3ae451d`
+(Diff seit `0ad4a6a`). Geprüft habe ich in einem eigenen, abgetrennten
+Worktree die beiden Befunde aus Runde 3 und die neuen Stores. Angewandt
+habe ich SP-R-04 (Scout Rule).
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 1 · Depot-IDs | Diff gelesen; meine Probe aus Runde 3 gegen das echte SQLite-Repository wiederholt | **Behoben.** Die drei kontoübergreifenden `occupied`-Prüfungen sind entfernt. Restore derselben Datei ergibt im Setup-Konto `done` und im zweiten Konto `done`, die Stände bleiben getrennt („Depot“ gegenüber „User-Kopie“). Ein zweiter Admin liest fremde Depots weiterhin nicht (`null`) und kann sie nicht löschen (`not_found`, Original unverändert). Neuer API-Test „stellt dieselbe Backup-Datei in zwei Konten getrennt wieder her“ |
+| Befund 2 · Rückfall | `data/repository.ts`, Testhilfe, neuer Test, Importe in `src/` | **Behoben.** Die Fabriken rufen zuerst `activeClient()` auf und werfen ohne Client „PrivateDataClient fehlt“. Die IndexedDB-Repositories importiert in `src/` nur noch `db/`; private Stores beziehen sie nicht mehr. Die Store- und Komponententests mocken `@/data/repository` ausdrücklich über `tests/helpers/localRepositories.ts`. Der Test `data/repository.spec.ts` deckt beide Seiten ab |
+| Tests, Lint, Typen | beide Testläufe, beide Lints mit `--no-cache`, beide Typprüfungen, `git diff --check` | 70 / 811 Frontend- und 4 / 14 API-Tests grün, alles Exit 0 |
+| Neue Stores | `stores/backup.ts`, `stores/legacy.ts`, `AuthRoot`, `BackupPanel` gelesen | `useLegacyStore` entsteht vor der Anmeldung, liest aber nur über `db/legacy.ts` und berührt keine Kontodaten; die Regeln aus Runde 2 bleiben erhalten. Zu `useBackupStore` siehe Befund 3 |
+
+**Befund (blockierend, nach SP-R-04):**
+
+3. **`useBackupStore.restore` behält einen toten lokalen Zweig, und beide
+   neuen Stores sind ungetestet.** Ohne aktiven Datenclient schreibt `restore`
+   über die Stores „lokal“ und meldet `'local'`. Diesen Modus gibt es nach
+   T-61 nicht mehr. Erreichbar ist der Zweig auch nicht: Ohne Client werfen
+   schon die Fabriken beim Anlegen der Stores, die `useBackupStore` braucht.
+   Der Code täuscht damit einen zweiten Speicherweg vor. Das ist dieselbe Art
+   Rückfall wie in Befund 2; fiele die Fabrikprüfung künftig weg, würde er
+   wieder still aktiv. Dazu kommt: Kein Test deckt `useBackupStore` oder
+   `useLegacyStore` ab (`grep` in `frontend/tests`). Import, Verwerfen,
+   Export je Depot und Restore sind nur über den Browserdurchlauf aus Runde 3
+   belegt.
+   **Erwartet:** `restore` verlangt einen aktiven Datenclient und wirft sonst;
+   der Rückgabewert `'server' | 'local'` und der Zweig in `BackupPanel`
+   entfallen. Unit-Tests belegen für `useBackupStore` den Serverweg und den
+   Fehler ohne Client, für `useLegacyStore` `inspect`, Import samt lokalem
+   Leeren, Verwerfen und `exportAt`, jeweils mit injiziertem `fetch` und
+   `fake-indexeddb`.
+
+**Urteil:** `changes_requested` für `2880d1d`. Die Befunde 1 und 2 aus
+Runde 3 sind behoben. Die Nachprüfung beschränkt sich auf Befund 3.
