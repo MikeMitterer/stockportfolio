@@ -113,8 +113,10 @@ precheck: ## Benötigte Bibliotheksdateien prüfen
 .PHONY: setup
 setup: ## Symlinks, Python-venv und npm-Abhängigkeiten einrichten
 	@./scripts/setup-libs.sh --install
-	@$(PYTHON_BOOTSTRAP) -m venv .venv
-	@./.venv/bin/python -m pip install -r requirements-test-stack.txt
+	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
+	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
+	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
+	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -r requirements.txt
 	@npm ci --prefix frontend --no-audit --no-fund
 	@npm ci --prefix api --no-audit --no-fund
 
@@ -144,10 +146,10 @@ test: ## Frontend- und API-Tests einmalig ausführen
 	@npm run test --prefix api
 
 .PHONY: clean
-clean: ## Build-, Test-, Cache-Dateien und lokale Python-venv löschen
+clean: ## Build-, Test- und Cache-Dateien löschen; Python-venv behalten
 	@npm --prefix frontend run clean
 	@npm --prefix api run clean
-	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo .venv
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__
 	@echo "$(GREEN)✓$(RESET) aufgeräumt"
 
 # ─── Docker ──────────────────────────────────────────────────────────────────

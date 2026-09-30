@@ -305,12 +305,13 @@ make dev                   # Vue app on :5175 and account API on :8080
 
 `make setup` links existing BashLib, MakeLib and ProjectTools repositories,
 creates StockPortfolio's `.venv` with Python 3.11+, and installs the local
-ProjectTools Python package there from `requirements-test-stack.txt`.
-`PYTHON_BOOTSTRAP` selects the Python
-interpreter if `python3.11` is unavailable. `make clean` removes this venv.
+ProjectTools Python package there from `requirements.txt`. `PYTHON_BOOTSTRAP`
+selects the interpreter if `python3.11` is unavailable. Setup checks the
+version before creating a venv; later runs reuse the venv and install the
+package only when its UI module is missing. `make clean` keeps the venv.
 For the first setup, set `BASH_LIBS`, `DEV_MAKE` and `PROJECT_TOOLS` to their
-locations; later commands can use the links under `.libs/`. For manual
-dependency installation, `npm ci --prefix frontend` plus
+locations; later commands can use the links under `.libs/`. To install only
+the frontend and API dependencies manually, use `npm ci --prefix frontend` plus
 `npm ci --prefix api` works
 without these shared tools. Each subproject keeps its own package lockfile.
 `make dev` uses Overmind and tmux to run both servers in one terminal. Install
@@ -335,9 +336,9 @@ run `make setup`, then start the complete test stack with StockPortfolio's
 Python environment:
 
 ```bash
-.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
-.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
-.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+.venv/bin/python scripts/stockinfo-test-server.py --stack --status
+.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 ```
 
 The local venv provides `projecttools.ui.colors` for themed help and status.
@@ -367,7 +368,7 @@ pass an absolute path for `--stockinfo-root`. For the StockInfo-only server,
 continue to use StockInfo's Python environment directly:
 
 ```bash
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --run --stockinfo-root ../StockInfo
+../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run --stockinfo-root ../StockInfo
 ```
 
 That single-server mode imports StockInfo in the same process and uses plain
@@ -381,7 +382,7 @@ help with the current StockInfo environment.
 | ------------------------------ | ------------------------------------------- |
 | `make dev`                     | Vite and account API (ports 5175/8080)     |
 | `make test`                    | Frontend and API tests, single run          |
-| `make clean`                   | Remove generated files and the local Python venv |
+| `make clean`                   | Remove generated files; keep the local Python venv |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
 | `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |

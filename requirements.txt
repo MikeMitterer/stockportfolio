@@ -1,0 +1,2 @@
+# Python-Abhängigkeiten von StockPortfolio.
+-e ./.libs/ProjectTools
