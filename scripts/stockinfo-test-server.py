@@ -2,13 +2,14 @@
 #------------------------------------------------------------------------------
 # stockinfo-test-server.py — StockInfo-Testkurse und lokalen Browserstack starten
 #
-# Verwendet StockInfos Python-Umgebung und temporäre Daten. Mit --stack werden
-# zusätzlich die StockPortfolio-Konto-API und Vite verwaltet.
+# Der Stack läuft mit StockPortfolios Python-Umgebung und temporären Daten;
+# sein StockInfo-Kindprozess verwendet StockInfos Python-Umgebung. Ohne
+# --stack benötigt der Einzelserver direkt StockInfos Python-Umgebung.
 #
 # Verwendung:
-#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run
-#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
-#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+#   .venv/bin/python -B scripts/stockinfo-test-server.py --stack --run
+#   .venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
+#   .venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 #
 # Optionen:
 #   -r | --run              Testserver beziehungsweise Stack starten
@@ -25,13 +26,14 @@
 #------------------------------------------------------------------------------
 """Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
 
-Start mit StockInfos Python-Umgebung aus einem leeren temporären Arbeitsordner.
+Der Stack startet mit StockPortfolios Python-Umgebung. Sein StockInfo-
+Kindprozess nutzt StockInfos Python-Umgebung und einen temporären Arbeitsordner.
 Die App-Routen, QuoteService, CachedQuoteService und SQLite-Persistenz bleiben
 unverändert. Nur externe Quellen und der produktive Start-Scheduler werden
 für die reproduzierbare Browserprüfung ersetzt. Fehlantworten werden getrennt
 über eine ausdrücklich bezeichnete Test-Middleware eingespeist.
 
-StockInfo-only: StockInfos Python, --stockinfo-root PFAD und optional --port.
+StockInfo-only: direkt StockInfos Python, --stockinfo-root PFAD und optional --port.
 Ganzer Stack: zusätzlich --stack; --demo-accounts legt auf Wunsch zwei
 synthetische Konten an. --stack --status prüft Prozesse, Endpunkte, Kurs und
 CORS; --stack --stop entfernt eigene Prozesse und temporäre Kontodaten. Ohne

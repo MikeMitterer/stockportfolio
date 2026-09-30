@@ -3,7 +3,8 @@
 # setup-libs.sh — BashLib, MakeLib und ProjectTools unter .libs/ verlinken
 #
 # Farben und Abstände kommen aus BashLib/colors.lib.sh, abgestimmt mit
-# MakeLib/colours.mk und ProjectTools/colors.py. Vor dem ersten Setup bleibt
+# MakeLib/colours.mk und ProjectTools/src/python/projecttools/ui/colors.py.
+# Vor dem ersten Setup bleibt
 # ohne Bibliothek eine kurze Starthilfe verfügbar. Keine Bibliotheken oder Pakete kopieren.
 #
 # Verwendung:
@@ -45,7 +46,7 @@ readonly CLI_FILES=(
     "BashLib/src/colors.lib.sh"
     "BashLib/src/tools.lib.sh"
     "MakeLib/colours.mk"
-    "ProjectTools/src/python/colors.py"
+    "ProjectTools/src/python/projecttools/ui/colors.py"
     "ProjectTools/src/bash/py-run.sh"
     "ProjectTools/src/python/changelog.py"
 )

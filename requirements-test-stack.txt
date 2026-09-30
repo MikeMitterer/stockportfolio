@@ -1,0 +1,2 @@
+# Lokaler CLI-Helfer für den reproduzierbaren Browserstack.
+-e ./.libs/ProjectTools

@@ -298,12 +298,16 @@ selection.
 ## Setup
 
 ```bash
-make setup                 # .libs/ symlinks + frontend and API dependencies
+make setup                 # .libs/ links, local Python venv, frontend and API dependencies
 cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
 make dev                   # Vue app on :5175 and account API on :8080
 ```
 
-`make setup` links existing BashLib, MakeLib and ProjectTools repositories.
+`make setup` links existing BashLib, MakeLib and ProjectTools repositories,
+creates StockPortfolio's `.venv` with Python 3.11+, and installs the local
+ProjectTools Python package there from `requirements-test-stack.txt`.
+`PYTHON_BOOTSTRAP` selects the Python
+interpreter if `python3.11` is unavailable. `make clean` removes this venv.
 For the first setup, set `BASH_LIBS`, `DEV_MAKE` and `PROJECT_TOOLS` to their
 locations; later commands can use the links under `.libs/`. For manual
 dependency installation, `npm ci --prefix frontend` plus
@@ -327,23 +331,20 @@ account API is running on port 8080. Vite alone serves the page but cannot
 handle login requests; `make dev` starts both servers.
 
 For browser checks with local StockInfo prices and an isolated account API,
-start the complete test stack with StockInfo's Python environment:
+run `make setup`, then start the complete test stack with StockPortfolio's
+Python environment:
 
 ```bash
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
+.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 ```
 
-The test server uses the shared ProjectTools theme through the installed
-`projecttools.ui.colors` package when it is importable in the Python
-environment running the script. Select a theme with `MAKE_THEME=ocean`.
-The supported way to provide this package to StockInfo's Python environment
-is still being decided in StockInfo T-82; the local test stack does not alter
-that environment. Until then, the documented commands above show plain help
-and status. `NO_COLOR`, redirected output and `TERM=dumb` also disable ANSI
-colors when the package is available. The script uses no machine-specific
-ProjectTools source path.
+The local venv provides `projecttools.ui.colors` for themed help and status.
+Select a theme with `MAKE_THEME=ocean`. `NO_COLOR`, redirected output and
+`TERM=dumb` disable ANSI colors. The script uses no machine-specific
+ProjectTools source path. The StockInfo child process still uses
+`../StockInfo/.venv/bin/python`; `make setup` does not change that environment.
 
 The start command returns after the three processes are ready. It prints Vite
 (`127.0.0.1:5175`), the account API (`127.0.0.1:8080`), StockInfo fixtures
@@ -362,9 +363,15 @@ registered port. A port conflict or missing
 dependency stops startup with an error and leaves other processes alone. The
 script checks process identity with `ps`; restricted agent environments must
 allow that read rather than bypass it. In a worktree outside the sibling layout,
-pass absolute paths for the StockInfo Python executable and `--stockinfo-root`.
-For the StockInfo-only server, use `--run --stockinfo-root ../StockInfo`
-without `--stack`.
+pass an absolute path for `--stockinfo-root`. For the StockInfo-only server,
+continue to use StockInfo's Python environment directly:
+
+```bash
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --run --stockinfo-root ../StockInfo
+```
+
+That single-server mode imports StockInfo in the same process and uses plain
+help with the current StockInfo environment.
 
 ## Commands
 
@@ -374,7 +381,7 @@ without `--stack`.
 | ------------------------------ | ------------------------------------------- |
 | `make dev`                     | Vite and account API (ports 5175/8080)     |
 | `make test`                    | Frontend and API tests, single run          |
-| `make clean`                   | Remove generated files from both packages  |
+| `make clean`                   | Remove generated files and the local Python venv |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
 | `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |
