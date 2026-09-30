@@ -14,9 +14,9 @@ Instrumentauswahl und Tageswerte direkt in IndexedDB. Das bestehende Backup
 enthält nur das aktive Depot. T-60 schafft Server und Konten; dieses Ticket
 ist danach an der Reihe. Produktcode für diese Aufgabe ist noch nicht geändert.
 
-**Stand am 2026-09-30:** Die Umsetzung auf dem T-61-Branch ist abgeschlossen
-und wartet auf die unabhängige technische Prüfung. Der Stand vom 2026-09-28
-beschreibt den Ausgangspunkt.
+**Stand am 2026-09-30:** Nach Claudes technischer Runde 3 ist die
+kontoübergreifende ID-Sperre entfernt; die Nachprüfung dieser Korrektur steht
+aus. Der Stand vom 2026-09-28 beschreibt den Ausgangspunkt.
 
 **Mikes Präzisierung vom 2026-09-28:** Der Datenaustausch mit dem eigenen Server
 muss sicher und verständlich bedienbar sein. Für vorhandene Browserdepots
@@ -89,8 +89,9 @@ Depots in der Testinstanz verwenden.
 
 - [ ] Gleicher Nutzer sieht auf zwei Browsern dieselben Depots und Einstellungen
   nach Neuladen; verschiedene Nutzer sehen getrennte Daten.
-- [ ] Lesen, Schreiben und Löschen fremder Depot-IDs wird serverseitig
-  verweigert, auch bei direktem API-Aufruf.
+- [ ] Ein Konto kann fremde Depotdaten weder lesen, ändern noch löschen,
+  auch bei direktem API-Aufruf. Dieselbe Depot-ID darf in zwei Konten
+  vorkommen; jeder Zugriff bleibt auf das eigene Konto begrenzt.
 - [ ] Veraltete Revisionen führen zu sichtbarem Konflikt statt Datenverlust.
 - [ ] Nur das Setup-Konto sieht und importiert den Altbestand nach ausdrücklicher
   Bestätigung; weitere Konten sehen weder Daten noch Metadaten. Der Import
@@ -112,7 +113,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
 | 1 | <a id="pruefpunkt-1"></a>Im Browser A speichern, Browser B mit demselben Konto neu laden | Depot, Einstellungen, Auswahl und Tageswerte stimmen überein | ◑ |
-| 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ✅ |
+| 2 | <a id="pruefpunkt-2"></a>Mit Konto B dieselbe ID wie in A lesen, schreiben, löschen und ein Backup wiederherstellen | Vor dem eigenen Anlegen `404` beim Lesen; spätere Änderungen betreffen nur B. Derselbe Restore gelingt in A und B | ✅ |
 | 3 | <a id="pruefpunkt-3"></a>Altbestand mit Setup- und zweitem Admin-Konto, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur Setup-Konto sieht die Vorschau; fremder Import `403`; bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch `409`. Nach gesetztem Marker Export je altem Depot statt Pauschalimport | ◑ |
 | 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ◑ |
 | 5 | <a id="pruefpunkt-5"></a>Vor und nach dem Altimport abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Besitzerloser Altbestand übersteht Logout vor Import; danach entfernt. Keine neuen privaten Browserkopien des vorigen Kontos; Restore schreibt nur ins angemeldete Konto. Deaktiviertes Setup-Konto kann von anderem Admin reaktiviert werden | ◑ |
@@ -442,20 +443,40 @@ SP-CX-05 sowie meine Lessons SP-R-02 und SP-R-03.
    Ein API-Test belegt denselben Restore in zwei Konten und dass A dabei
    unverändert bleibt.
 
-**Hinweise, nicht blockierend:**
+**Hinweis, nicht blockierend:**
 
-1. **Stiller Rückfall auf IndexedDB.** `create…Repository()` liefert IndexedDB,
-   wenn kein Datenclient aktiv ist. Heute führt kein Pfad dorthin, weil kein
-   Store vor der Anmeldung entsteht. Ein künftiger früher Store-Zugriff würde
-   Kontodaten aber still in den besitzerlosen Altbestand schreiben. Ein Fehler
-   statt des Rückfalls wäre sicherer.
-2. **Eine verwaiste Zustandsdatei hat meinen Start blockiert.** Beim Start
+1. **Eine verwaiste Zustandsdatei hat meinen Start blockiert.** Beim Start
    aus dem Worktree lag `stockportfolio-test-server-8899.json` aus einem Lauf
    des Hauptverzeichnisses um 15:29 herum, zu einem nicht mehr laufenden
    Prozess. Das Skript des Hauptverzeichnisses hat sie mit `-t` als verwaist
    erkannt und entfernt. Aus einem anderen Pfad meldet das Skript nur „gehört
    nicht zu diesem Testserver“. Das betrifft T-63 und nicht diese Fassung.
 
-**Urteil:** `changes_requested` für `0ad4a6a`. Außer Befund 1 ist die
-Konzeptregel aus Runde 2 vollständig und nachprüfbar umgesetzt. Die
-Nachprüfung beschränkt sich auf Befund 1 und seinen Test.
+**Nachtrag 2026-09-30 · Befund 2 auf Mikes Entscheidung:** Mike hat den
+ursprünglichen Hinweis „stiller Rückfall auf IndexedDB“ als Befund eingestuft:
+„Wenn ein potentieller Fehler erkannt wird muss er gelöst werden.“
+
+2. **Die Repository-Fabriken fallen still auf IndexedDB zurück.**
+   `createPortfolioRepository`, `createSettingsRepository`,
+   `createAllowlistRepository` und `createValueSnapshotRepository` in
+   `frontend/src/data/repository.ts` liefern die IndexedDB-Repositories, wenn
+   `privateDataClient()` `null` ist. Die Stores wählen ihr Repository einmal
+   beim Anlegen. Heute entsteht kein Store vor der Anmeldung, also greift der
+   Rückfall nicht. Würde künftig vor dem Login ein Store angelegt, etwa auf der
+   Anmeldeseite, schriebe er nach der Anmeldung alle Änderungen still in die
+   Tabellen des besitzerlosen Altbestands. Die Folgen: Die Änderung fehlt auf
+   anderen Geräten, erscheint später dem Setup-Konto als Altbestand zur
+   Übernahme und bleibt nach dem Abmelden im Browser lesbar. Das widerspricht
+   Kriterium 4 und den Regeln 2 und 4 aus Runde 2.
+   **Erwartet:** Ohne aktiven Datenclient werfen die Fabriken einen Fehler
+   statt zurückzufallen. Den Altbestand greift nur noch `db/legacy.ts`
+   direkt an. Ein Test belegt, dass eine Fabrik ohne aktiven Datenclient
+   wirft und mit aktivem Client das Server-Repository liefert. Sieben
+   Testdateien in `frontend/tests` legen Stores ohne aktiven Datenclient an
+   und laufen heute über genau diesen Rückfall. Sie brauchen einen
+   ausdrücklichen Testaufbau, etwa einen `PrivateDataClient` mit injiziertem
+   `fetch`. Der Rückfall darf nicht als Testhilfe im Produktcode bleiben.
+
+**Urteil:** `changes_requested` für `0ad4a6a`. Außer den Befunden 1 und 2
+ist die Konzeptregel aus Runde 2 vollständig und nachprüfbar umgesetzt. Die
+Nachprüfung beschränkt sich auf beide Befunde und ihre Tests.

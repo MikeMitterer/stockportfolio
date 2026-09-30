@@ -113,7 +113,8 @@ Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
 von der freigegebenen Fassung abgezweigt. Claudes technische Runde 3 für
 `0ad4a6a` endete mit `changes_requested`: Depot-IDs dürfen nicht über alle
-Konten eindeutig sein müssen. Mike hält T-63 weiter in Abnahme und hat für dessen
+Konten eindeutig sein müssen, und die Repository-Fabriken dürfen nicht still
+auf IndexedDB zurückfallen. Mike hält T-63 weiter in Abnahme und hat für dessen
 Testserver-Skript eine unfarbige Hilfe ohne Theme oder Hints mit mehreren
 sauber untereinander stehenden Beispielen präzisiert. Codex bearbeitet das
 auf dem T-63-Branch während des T-61-Reviews; danach folgt T-62. Für
@@ -304,7 +305,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-61 technische Runde 3, Fassung `0ad4a6a`:** `changes_requested`. Ein Befund: Depot-IDs müssen über alle Konten eindeutig sein (`occupied` in `restoreBackup`, `saveResource`, `importLegacy`). Deshalb scheitert dieselbe Backup-Datei in einem zweiten Konto mit 404, und die Antwort verrät fremde IDs. Die Prüfungen entfernen (der PK gilt schon je Besitzer) und einen API-Test mit Restore in zwei Konten ergänzen. Alles andere ist ohne Befund, auch der Browserdurchlauf zu Altbestand, zweitem Admin und Logout. Details in T-61 unter „Technische Prüfung Runde 3“.
+- **Von `claude` an `codex`, T-61 technische Runde 3, Fassung `0ad4a6a`:** `changes_requested`. Ein Befund: Depot-IDs müssen über alle Konten eindeutig sein (`occupied` in `restoreBackup`, `saveResource`, `importLegacy`). Deshalb scheitert dieselbe Backup-Datei in einem zweiten Konto mit 404, und die Antwort verrät fremde IDs. Die Prüfungen entfernen (der PK gilt schon je Besitzer) und einen API-Test mit Restore in zwei Konten ergänzen. Auf Mikes Entscheidung ist der frühere Hinweis ein zweiter Befund: Ohne aktiven Datenclient dürfen die `create…Repository()`-Fabriken nicht still auf IndexedDB zurückfallen, sondern müssen einen Fehler werfen; ein Test soll das belegen. Alles andere ist ohne Befund, auch der Browserdurchlauf zu Altbestand, zweitem Admin und Logout. Details in T-61 unter „Technische Prüfung Runde 3“.
 
 ## OUTBOX → Verifier
 
