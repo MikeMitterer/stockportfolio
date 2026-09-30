@@ -99,7 +99,7 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 | Repository | `mangolila/stockportfolio:latest` |
 | WebUI Port | Default host port 8088, container port **8080** |
 | StockInfo API | Required: your StockInfo instance's URL, reachable from the **browser** |
-| App data | Map `/mnt/user/appdata/stockportfolio` to container path `/data` for accounts and sessions. |
+| App data | Map `/mnt/user/appdata/stockportfolio` to container path `/data` for accounts and private portfolios. Back up this directory. |
 | Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy. |
 | Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
 | Timezone | Container log timezone; defaults to UTC |
@@ -112,11 +112,10 @@ uses separate browser storage, which is initially empty.
 ## Updating
 
 For an existing container, choose **Docker → stockportfolio → Force Update**.
-Keep its settings and the same web address and host port so the browser
-continues to use the same stored portfolio. Export a backup under
-**Settings → Backup** before updating.
-Keep the same `/data` mapping to retain accounts. Without it, the container
-starts a new, independent setup.
+Keep its settings and the same `/data` mapping so accounts and portfolios
+survive. Export a backup under **Settings → Backup** before updating. Without
+the volume, the container starts a new, independent setup. The browser address
+still identifies its preferences and any old local portfolios awaiting import.
 
 An image update does not require downloading the template again. Do not
 overwrite `my-stockportfolio.xml`, which contains your saved container settings.
@@ -137,13 +136,22 @@ docker run -d --name stockportfolio \
 
 ## Data, API and verification
 
-**Map `/data`:** Accounts and sessions are stored there in SQLite. On first
+**Map and back up `/data`:** Accounts, sessions, portfolios, settings, asset
+selection and recorded daily values are stored there in SQLite. On first
 start, read the one-time setup code from the container log and create the first
-admin account in the browser. Portfolios and settings still live in browser
-IndexedDB until T-61. Clearing browser data removes them, and a different
-device has separate storage. Export backups under **Settings → Backup** and
-back up the mapped appdata directory separately. Other accounts cannot open
-portfolios yet; they see a pending-access notice.
+admin account in the browser. Each account, including another admin, has a
+private portfolio. The same account loads its server data in a second browser.
+Export individual portfolios under **Settings → Backup** as an additional
+file backup. If the account API is unavailable, changes cannot be saved.
+
+Only the original setup account may preview and import old IndexedDB depots
+from a browser profile, once and after confirmation. Until import or explicit
+discard, those data remain readable through that browser's developer tools
+even after sign-out. Another account sees no old names or values. After the
+one-time import, export further old depots individually and restore their
+files in the app. An account database created before the setup-account marker
+cannot establish this entitlement; reset a disposable test database and repeat
+setup while keeping the old browser data.
 
 At startup, the API address from `STOCKINFO_API_URL` is written to `config.js`.
 It must be reachable from the browser; `localhost` refers to the browser's

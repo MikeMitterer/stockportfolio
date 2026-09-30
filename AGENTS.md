@@ -7,8 +7,8 @@ Regelkopie liefe beim ersten Nachtrag auseinander.
 
 StockPortfolio besteht aus der Vue-3-App unter `frontend/` und der eigenen
 Konto-API unter `api/`. Kurse, Instrumente und Historie kommen weiterhin
-vollständig aus StockInfo. Die eigene API verwaltet Konten und Sitzungen;
-Depotdaten folgen erst mit T-61. Wer diese Zuständigkeiten vermischt, sucht
+vollständig aus StockInfo. Die eigene API verwaltet Konten, Sitzungen und
+private Depotdaten je Konto. Wer diese Zuständigkeiten vermischt, sucht
 Fehler im falschen Repository.
 
 ## Übersicht
@@ -28,7 +28,7 @@ Fehler im falschen Repository.
 `/Volumes/DevLocal/DevWeb/Production/StockInfo`. Eigener Commit-Baum, eigenes
 Ticket-Board, eigene Agenteninstanzen.
 
-Alles, was die App anzeigt und rechnet, stammt von dort: `/instruments`,
+Alle Markt- und Instrumentdaten stammen von dort: `/instruments`,
 `/quote/{isin}`, `/quote/.../daily`, `/refresh/...` und `/health`. Ohne
 erreichbaren Dienst bleibt die Oberfläche leer. Eine leere Kurstabelle ist
 deshalb zuerst ein Verdacht gegen Adresse oder Dienst, nicht gegen die Rechnung.
@@ -257,7 +257,8 @@ Was sich einfach übernehmen lässt, wird übernommen; der Rest darf neu angeleg
 werden. Keine Kompatibilitätsschichten oder aufwendige Datenüberführung allein
 zum Erhalten alter Entwicklungsstände. Persistenter Browserzustand darf zur
 Vereinfachung neuer Entwicklungen zurückgesetzt werden; neben localStorage
-liegen Depotdaten insbesondere in IndexedDB. Ein erforderlicher Reset wird als
+liegt der besitzerlose Altbestand noch in IndexedDB; neue private Depotdaten
+liegen in der SQLite-Datenbank der Konto-API. Ein erforderlicher Reset wird als
 solcher beschrieben, statt eine verlustfreie Migration zu behaupten.
 
 Keine Zusatzarbeit für hypothetische Verbreitung. Aktuelle

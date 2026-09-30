@@ -252,24 +252,42 @@ or _The Method_ reference page.
 
 ## Where the data lives
 
-Portfolio data still lives in the browser (IndexedDB), on the device you work
-on. The new StockPortfolio API stores accounts and sessions in SQLite under
-`/data`; it does not yet store portfolios. StockInfo only delivers prices and
-master data and learns nothing about holdings.
+The StockPortfolio API stores accounts, sessions, portfolios, settings, asset
+selection and recorded daily values in SQLite under `/data`. Each account has
+its own data, including additional admin accounts. An admin can manage accounts
+but cannot open another account's portfolios. StockInfo only delivers prices
+and master data and learns nothing about holdings.
 
 That has consequences worth knowing:
 
-- A different browser or device shows an empty portfolio.
-- "Clear site data" in the browser deletes the portfolio too.
-- Container updates keep accounts only when the same `/data` volume is mounted.
-- Until the server-side portfolio work in T-61, admin accounts in the same
-  browser profile can open the same local portfolio. Regular user accounts see
-  a pending-access notice and cannot yet open the dashboard or import a backup.
+- The same account loads its portfolios on another browser or device after login.
+- A new account, including an additional admin, starts with an empty portfolio.
+- Clearing browser site data removes market caches and browser preferences,
+  but server portfolios remain. Keep and back up the same `/data` volume when
+  updating the container.
+- If the server is unavailable, changes cannot be saved. Concurrent changes
+  from another browser produce a conflict instead of silently overwriting data.
+
+Existing IndexedDB portfolios from before accounts are **not imported
+automatically**. Only the original setup account can preview them in the old
+browser profile and import them once, with confirmation. Until import or
+explicit discard, they remain readable through that browser profile's
+developer tools, even after sign-out. Other accounts do not see their names or
+contents. After the one-time import, further old browser profiles offer a file
+export for each portfolio; restore those files through the regular backup flow.
+
+An account database created before the setup-account marker was introduced
+cannot prove which admin owns that old browser data. For a disposable local
+test installation, remove its **StockPortfolio API database**, restart setup,
+and sign in with the newly created setup account in the browser containing the
+old data. Preserve or export the browser data first. Do not reset a database
+containing data you need.
 
 _Settings → Backup_ offers backup and restore: a JSON file with the
 portfolio, the settings and the list of hidden assets. Prices are not included —
 the app fetches those anyway. On restore the file is checked and its contents are
-shown first; nothing is overwritten without confirmation.
+shown first; nothing is overwritten without confirmation. The server applies
+the confirmed restore as one transaction for that account.
 Admins open **User management** directly from the people icon in the top bar.
 The account list keeps actions for other accounts behind each row; an admin's
 own row has no reset or deactivate action.
@@ -409,7 +427,8 @@ install packages.
 ## Layout
 
 `frontend/src/api/` owns StockInfo requests, `frontend/src/auth/` calls the
-StockPortfolio account API, `frontend/src/db/` owns IndexedDB, and
+StockPortfolio account API, `frontend/src/data/` owns private REST access,
+`frontend/src/db/` owns legacy IndexedDB data and market caches, and
 `frontend/src/stores/` holds application state. The account service lives under
 `api/`, with HTTP routes in `api/src/routers/` and SQLite access in
 `api/src/persistence/`. `frontend/package.json` is the project version source
@@ -521,8 +540,9 @@ docker rm -f stockportfolio
 # then run the command above again — or: docker compose up -d
 ```
 
-Reuse the same `/data` volume so accounts survive recreation. Portfolios still
-live in the browser until T-61. Keep the browser address stable to retain them.
+Reuse and back up the same `/data` volume so accounts and portfolios survive
+recreation. Keep the browser address stable for its preferences and any old
+IndexedDB portfolios awaiting import.
 
 ### Checking it works
 

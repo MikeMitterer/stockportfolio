@@ -116,20 +116,30 @@ connection errors, also check **Status** from the bottom status bar.
 
 ## Data and backups
 
-**Accounts and sessions live in SQLite under `/data`; portfolio data and
-settings still live in the browser.** Back up both the Docker volume and the
-browser export. Backing up only the host does not back up your portfolio.
+**Accounts, sessions, portfolios, settings, asset selection and recorded daily
+values live in SQLite under `/data`.** Back up the Docker volume. Each account,
+including each admin, sees only its own portfolios. An admin can manage
+accounts without access to other accounts' portfolios.
 
 Use **Settings → Backup** to download a JSON backup or restore one. Downloads
-are saved by your browser, normally in its Downloads folder. Other devices,
-browser profiles and web addresses have separate storage.
+are saved by your browser, normally in its Downloads folder. A second browser
+loads the same server data after login with the same account. A restored file
+is applied in one server transaction after confirmation.
 In an empty portfolio, **Restore backup …** opens **Settings → Backup** directly.
 
-Keep the same web address and host port when updating. Clearing the browser's
-site data removes the locally stored portfolio. Until T-61 adds server-side
-portfolio storage, admin accounts in the same browser profile can open the
-same local portfolio. Regular user accounts see a pending-access notice and
-cannot yet open the dashboard or import a backup.
+Keep the same `/data` mapping when updating. If the account API is unavailable,
+portfolio changes cannot be saved. Clearing browser site data removes market
+caches and preferences, but server portfolios remain.
+
+Old IndexedDB portfolios are imported only after the original setup account
+confirms the preview in that browser profile. Before import or explicit
+discard, those old portfolios remain readable through browser developer tools
+even after sign-out. Other accounts cannot see their contents or names. The
+bulk import runs once; further old browsers can export one portfolio per file
+for the regular restore flow. An existing account database made before the
+setup-account marker cannot prove entitlement to old browser data. For a
+disposable test installation, reset only the StockPortfolio API database and
+create a new setup account while preserving the browser's old data.
 
 ## Updating
 
