@@ -253,28 +253,6 @@ describe('AllowlistRepository — je Depot', () => {
     expect(await repository.count('depot-b')).toBe(1)
   })
 
-  it('ersetzt die Liste eines Depots, ohne andere anzufassen', async () => {
-    const repository = new AllowlistRepository()
-    await repository.setEnabled('depot-a', 'alt', false)
-    await repository.setEnabled('depot-b', 'fremd', false)
-
-    await repository.replaceAll('depot-a', new Map([['neu', false]]))
-
-    const a = await repository.loadAll('depot-a')
-    expect(a.has('alt')).toBe(false)
-    expect(a.get('neu')).toBe(false)
-    expect((await repository.loadAll('depot-b')).get('fremd')).toBe(false)
-  })
-
-  it('leert die Liste, wenn das Backup keine enthält', async () => {
-    const repository = new AllowlistRepository()
-    await repository.setEnabled('depot-a', 'alt', false)
-
-    await repository.replaceAll('depot-a', new Map())
-
-    expect(await repository.count('depot-a')).toBe(0)
-  })
-
   it('räumt die Whitelist eines gelöschten Depots weg', async () => {
     // Ohne das bliebe sie für immer liegen — sichtbar nie wieder, weil es
     // das Depot nicht mehr gibt.

@@ -458,7 +458,7 @@ export const en: MessageSchema = {
 
   backup: {
     heading: 'Backup and restore',
-    intro: 'Portfolio and settings live in this browser only. A backup is the only way to move them to another device or to get them back after the site data has been cleared. Prices are not included — the app fetches those anyway.',
+    intro: 'Your portfolio and settings are stored in your account on the server. The backup file is an additional copy for you to keep. Prices are not included — the app fetches those anyway.',
     download: 'Download backup',
     restore: 'Restore backup …',
     confirmHeading: 'Restore this backup?',
@@ -474,7 +474,6 @@ export const en: MessageSchema = {
     replaceNow: 'Replace now',
     confirmReplace: 'Really overwrite the current portfolio?',
     saved: 'Saved: {file}',
-    restored: 'Restored: “{name}” with {positions}.',
     exportFailed: 'The backup could not be created: {reason}',
     importFailed: 'Restoring failed: {reason}',
   },

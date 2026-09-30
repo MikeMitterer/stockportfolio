@@ -154,28 +154,11 @@ export const useSettingsStore = defineStore('settings', () => {
     await patch({ activePortfolioId: portfolioId })
   }
 
-  /**
-   * Ersetzt die Einstellungen vollständig — für das Einspielen eines Backups.
-   *
-   * Läuft durch `withDefaults`, damit eine ältere Datei nicht daran scheitert,
-   * dass inzwischen ein Feld hinzugekommen ist. Die Kennung des aktiven Depots
-   * kommt aus dem Backup mit, weil sie sonst auf ein Depot zeigt, das es
-   * nach dem Einspielen nicht mehr gibt.
-   *
-   * @param next Eingelesene Einstellungen, möglicherweise unvollständig.
-   */
-  async function replaceAll(next: Partial<Settings>): Promise<void> {
-    settings.value = withDefaults(next)
-    await repository.save(settings.value)
-    consola.info('settings: Einstellungen ersetzt')
-  }
-
   return {
     settings,
     loaded,
     load,
     patch,
-    replaceAll,
     setBands,
     setActivePortfolio,
     setLinks,

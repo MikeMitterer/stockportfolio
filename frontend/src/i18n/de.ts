@@ -470,7 +470,7 @@ export const de = {
   backup: {
     heading: 'Backup und Wiederherstellung',
     intro:
-      'Depot und Einstellungen liegen ausschließlich in diesem Browser. Ein Backup ist die einzige Möglichkeit, sie auf ein anderes Gerät zu holen oder nach einem gelöschten Website-Speicher zurückzubekommen. Kurse sind nicht enthalten — die holt die App ohnehin neu.',
+      'Depot und Einstellungen liegen in deinem Konto auf dem Server. Die Backup-Datei ist eine zusätzliche Sicherung, die du selbst aufbewahrst. Kurse sind nicht enthalten — die holt die App ohnehin neu.',
     download: 'Backup',
     restore: 'Backup einspielen …',
     confirmHeading: 'Dieses Backup einspielen?',
@@ -487,7 +487,6 @@ export const de = {
     replaceNow: 'Jetzt ersetzen',
     confirmReplace: 'Aktuelles Depot wirklich überschreiben?',
     saved: 'Backup erstellt: {file}',
-    restored: 'Eingespielt: „{name}" mit {positions}.',
     exportFailed: 'Das Backup konnte nicht erstellt werden: {reason}',
     importFailed: 'Das Einspielen ist fehlgeschlagen: {reason}',
   },

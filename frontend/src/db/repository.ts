@@ -157,30 +157,6 @@ export class AllowlistRepository {
   }
 
   /**
-   * Ersetzt die Whitelist eines Depots vollständig — für Backups.
-   *
-   * Erst die Einträge dieses Depots löschen, dann schreiben: Ein
-   * Zusammenführen ließe Einträge stehen, die im Backup bewusst nicht
-   * mehr vorkommen. Andere Depots bleiben unberührt.
-   *
-   * @param portfolioId Kennung des Depots.
-   * @param entries     Neue Whitelist (Key → freigegeben).
-   */
-  async replaceAll(portfolioId: string, entries: Map<string, boolean>): Promise<void> {
-    const db = await getDb()
-    const tx = db.transaction('instrumentAllowlist', 'readwrite')
-    const index = tx.store.index('byPortfolio')
-
-    for (const key of await index.getAllKeys(portfolioId)) {
-      await tx.store.delete(key)
-    }
-    for (const [key, enabled] of entries) {
-      await tx.store.put({ id: allowlistId(portfolioId, key), portfolioId, key, enabled })
-    }
-    await tx.done
-  }
-
-  /**
    * Entfernt die Whitelist eines Depots — beim Löschen des Depots.
    *
    * Ohne das blieben die Einträge für immer liegen; sichtbar wären sie nie
