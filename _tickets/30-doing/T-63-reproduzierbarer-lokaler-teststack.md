@@ -1492,3 +1492,53 @@ Signalbehandlung, Zustandsablage, Bereitschaft, normaler Stopp und Aufräumen
 nach Fehlern. Die Tabelle oben ist die Grundlage; Claude soll auch andere
 Abbruchzeitpunkte als Befund 4 prüfen. Diese Erweiterung ersetzt den engeren
 Übergabetext unmittelbar nach Runde 11.
+
+## Technische Prüfung Runde 12
+
+`claude`, 2026-09-30, an Handoff-Commit `66fe49498d3b7ddad3c461fc27dc64757dca3170`
+(Diff seit `f2fafac`, nur `scripts/` und dieses Ticket). Auf Codex' Bitte habe
+ich den gesamten Start- und Stoppweg von Einzelserver und Stack geprüft, in
+einem eigenen, abgetrennten Worktree mit frischer `.venv`. Angewandt habe ich
+SP-R-04 und SP-R-05. Das Inventar umfasste **alle** `stockportfolio-*`-Einträge
+im System-Temp, also auch die Temp-Dateien von `OwnedStateFile.publish`, und
+zusätzlich die Ports 5175, 8080 und 8899.
+
+**Code gelesen:** `test_state.py`, der Signal- und Aufräumweg in
+`stockinfo-test-server.py` und `start_children`, `stop_children` und
+`run_stack_cli` in `local_test_stack.py`.
+- `publish` schreibt vollständiges JSON in eine Temp-Datei, merkt sich die
+  Inode vor `os.link` und bindet dann exklusiv.
+- `remove` löscht nur die Datei mit dieser Inode, also nie eine fremde.
+- Der Einzelserver fängt SIGTERM vor `mkdtemp` ab und räumt über `atexit` auf.
+- `stop_children` sammelt Fehler, statt beim ersten abzubrechen.
+
+| Probe | Eigener Schritt | Ergebnis |
+|---|---|---|
+| a · SIGTERM während des Imports | SIGTERM, sobald `stockportfolio-t39-server-*` existiert, noch ohne Zustandsdatei | Exit 0, Inventar 0 |
+| b · SIGTERM vor `uvicorn`s Handler | SIGTERM, sobald die Zustandsdatei existiert; das Log zeigt 0 × „Uvicorn running“ | Exit 0, Inventar 0; **genau das Fenster, das meine Probe in Runde 11 verfehlt hatte** |
+| c · unlesbarer Zustand | leere Einzel-Zustandsdatei und kaputtes JSON in der Stack-Zustandsdatei | Klare Meldung, Exit 2, kein Traceback |
+| d · normaler Einzelstopp | `/health` 200, danach `-t` | Inventar 0 |
+| e · Stack | zweimal `--stack --run --demo-accounts`, jeweils sofort `--stack --stop` und Neustart | Beide erfolgreich, Inventar 0, Ports frei |
+| f · SIGTERM an die Stack-CLI mitten im Start | SIGTERM, sobald 8899 lauscht | Alle Kinder beendet, Inventar 0, Ports frei, keine verwaisten Prozesse. **Aber:** Exit 0 und leere Ausgabe (siehe Befund 5) |
+| Katalog, Lint | `msgfmt`, `.mo` neu erzeugt und verglichen, alle `translate(...)` gegen den Katalog, `ruff check`, `py_compile` | Katalog aktuell, keine fehlende Übersetzung, Ruff sauber; Frontend und API unverändert |
+
+**Befund 4 aus Runde 11: behoben.**
+
+**Befund (blockierend, nach SP-R-04):**
+
+5. **Ein abgebrochener Stack-Start meldet Erfolg.** `check_cancelled` löst
+   `SystemExit(0)` aus. Bei Probe f endete `--stack --run` nach SIGTERM mit
+   Exit 0 und ohne jede Ausgabe, obwohl der Stack nicht läuft und alles
+   wieder abgebaut wurde. Ein Skript oder Agent, der den Exit-Code prüft,
+   hält den Start damit für gelungen und prüft gegen einen nicht laufenden
+   Stack. Beim Einzelserver ist Exit 0 nach SIGTERM richtig, denn dort ist
+   es das normale Beenden. Der Stack-Start ist dagegen ein Befehl, der
+   einen Zustand herstellen soll.
+   **Erwartet:** Ein abgebrochener Stack-Start endet mit einem Fehlercode,
+   etwa 143 (128 + SIGTERM), und einer kurzen übersetzten Meldung
+   „Start abgebrochen; eigene Prozesse und Daten entfernt“. Probe f belegt
+   Code und Meldung.
+
+**Urteil:** `changes_requested` für `66fe494`. Der Lebenszyklus ist sonst
+vollständig und robust, auch in den Fenstern, die früher Reste hinterließen.
+Die Nachprüfung beschränkt sich auf Befund 5.
