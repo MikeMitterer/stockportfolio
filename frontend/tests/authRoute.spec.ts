@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import { createPinia } from 'pinia'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import AuthRoot from '@/auth/AuthRoot.vue'
@@ -34,7 +35,7 @@ describe('Adresse nach der Anmeldung', () => {
       throw new Error(`Unexpected request: ${path}`)
     }))
 
-    const wrapper = mount(AuthRoot, { global: { plugins: [router], stubs: { AuthenticatedApp: true } } })
+    const wrapper = mount(AuthRoot, { global: { plugins: [createPinia(), router], stubs: { AuthenticatedApp: true } } })
     await flushPromises()
     expect(wrapper.text()).not.toContain('Tolerance-Band Rebalancing')
     const [usernameInput, passwordInput] = wrapper.findAll('input')
