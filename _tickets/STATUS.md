@@ -18,7 +18,9 @@ und danach [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fue
 Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
 Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
 Produktnachweise stehen noch aus. Die Mehradmin-Regel und die Sichtbarkeit des
-alten Browserbestands liegen Claude vor der Umsetzung zur Entscheidung vor.
+alten Browserbestands sind in T-61 Konzept Runde 2 von Claude entschieden:
+jedes Konto hat eigene Daten, die Altbestandsvorschau gehört nur dem
+serverseitig markierten Setup-Konto.
 Die Architektur-Spezifikation liegt unter
 `docs/superpowers/specs/`. Die Projektstruktur bleibt bei `frontend/` und
 `api/`, je mit eigenem Manifest; die Version steht in `frontend/package.json`.
@@ -115,9 +117,9 @@ erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `44bcb726f851fae53d40184d5956e42ce5527518`
+- `handoff_commit`: `none`
 - `review_round`: `2`
 - `owner`: `codex`
 - `updated_at`: `2026-09-30`
@@ -297,7 +299,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-61 Konzept Runde 2, Fassung `44bcb72`:** Konzept freigegeben: Jedes Konto, auch jedes Admin-Konto, hat einen eigenen privaten Serverbestand. Verbindliche Altbestandsregel: Vorschau und Import nur für das Setup-Konto, markiert per Serverfeld aus `setup()`; alle anderen sehen nichts, der Server antwortet 403 bzw. 409. Der besitzerlose Altbestand übersteht Logout bis zur Übernahme oder zum Verwerfen. Bei gesetztem Marker Export je Depot statt Pauschalimport. Details in T-61 unter „Konzeptprüfung Runde 2“; bitte in die Spezifikation übernehmen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 

@@ -62,18 +62,19 @@ Depots in der Testinstanz verwenden.
 4. Beim Start lädt die App den Serverstand. Ein nicht erreichbarer Server
    verhindert Depotänderungen und wird sichtbar erklärt. Lokale IndexedDB ist
    nicht mehr die maßgebliche Quelle für private Daten.
-5. Vorhandene Browserdepots können **einmalig und ausdrücklich** nach Login
-   einem gewählten Konto zugeordnet werden. Die App zeigt Quelle, Ziel und
+5. Vorhandene Browserdepots können **einmalig und ausdrücklich** durch das
+   serverseitig markierte Setup-Konto übernommen werden. Die App zeigt Quelle, Ziel und
    Wirkung vorher an. Ein leerer neuer Browser lädt den Serverstand und
    überschreibt ihn nicht. Unterschiedliche Altbestände verschiedener Browser
    werden niemals automatisch zusammengeführt. Ein dauerhafter
    Übernahmemarker wird mit den importierten Depots in derselben Transaktion
    gespeichert. Ein zweiter pauschaler Importversuch für dasselbe Konto,
    auch aus einem anderen Browser, erhält `409` und schreibt nichts.
-6. Nach Logout oder Kontowechsel bleiben keine privaten Daten des vorigen
-   Nutzers in der App oder einem geteilten Browsercache zugänglich. Private
-   IndexedDB-Daten, lokale Kurs-, FX- und Verlaufscaches sowie private
-   Pinia-Zustände werden beim Logout und vor dem Kontowechsel gelöscht. Der
+6. Nach Logout oder Kontowechsel bleiben keine nach T-61 entstandenen privaten
+   Daten des vorigen Nutzers in der App oder einem geteilten Browsercache zugänglich.
+   Lokale Kurs-, FX- und Verlaufscaches sowie private Pinia-Zustände werden
+   bereinigt. Der noch besitzerlose Altbestand bleibt bis zur Übernahme oder zum
+   ausdrücklichen Verwerfen im Browserprofil erhalten. Der
    bestehende Backup-/Restore-Weg arbeitet mit den serverseitigen Daten des
    angemeldeten Kontos; der Export bleibt ein Depot pro Datei.
 7. T-62 übernimmt die zeitnahe Benachrichtigung geöffneter Browser. Dieses
@@ -87,8 +88,9 @@ Depots in der Testinstanz verwenden.
 - [ ] Lesen, Schreiben und Löschen fremder Depot-IDs wird serverseitig
   verweigert, auch bei direktem API-Aufruf.
 - [ ] Veraltete Revisionen führen zu sichtbarem Konflikt statt Datenverlust.
-- [ ] Browserdaten werden nur nach expliziter Zuordnung und ohne automatische
-  Überschreibung bestehender Serverdaten übernommen.
+- [ ] Nur das Setup-Konto sieht und importiert den Altbestand nach ausdrücklicher
+  Bestätigung; weitere Konten sehen weder Daten noch Metadaten. Der Import
+  überschreibt keine bestehenden Serverdaten.
 - [ ] Offline, Logout und Kontowechsel zeigen keinen fremden oder scheinbar
   gespeicherten privaten Stand.
 - [ ] Backup, Restore, Löschen und Tageswerte funktionieren je Benutzerkonto;
@@ -107,9 +109,9 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 |---|---|---|:--:|
 | 1 | <a id="pruefpunkt-1"></a>Im Browser A speichern, Browser B mit demselben Konto neu laden | Depot, Einstellungen, Auswahl und Tageswerte stimmen überein | ➖ |
 | 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ➖ |
-| 3 | <a id="pruefpunkt-3"></a>Altbestand, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch erhält `409` ohne Änderung | ➖ |
+| 3 | <a id="pruefpunkt-3"></a>Altbestand mit Setup- und zweitem Admin-Konto, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur Setup-Konto sieht die Vorschau; fremder Import `403`; bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch `409`. Nach gesetztem Marker Export je altem Depot statt Pauschalimport | ➖ |
 | 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ➖ |
-| 5 | <a id="pruefpunkt-5"></a>Abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Keine privaten Rohdaten des vorigen Kontos; Restore schreibt nur in das angemeldete Konto | ➖ |
+| 5 | <a id="pruefpunkt-5"></a>Vor und nach dem Altimport abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Besitzerloser Altbestand übersteht Logout vor Import; danach entfernt. Keine neuen privaten Browserkopien des vorigen Kontos; Restore schreibt nur ins angemeldete Konto. Deaktiviertes Setup-Konto kann von anderem Admin reaktiviert werden | ➖ |
 | 6 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
 
 ### Doku-Abgleich

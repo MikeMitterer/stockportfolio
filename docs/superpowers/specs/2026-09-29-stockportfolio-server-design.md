@@ -133,20 +133,35 @@ Umsetzung keine Produktfreigabe.
 Diese Entscheidungen schließen die Punkte aus der Konzeptprüfung der Kette,
 ohne T-61 oder T-62 jetzt als Produktauftrag zu aktivieren.
 
-- T-61 bindet die einmalige Altbestandsübernahme an das angemeldete Konto.
-  Die API speichert in derselben Transaktion wie die importierten Depots einen
-  dauerhaften Übernahmemarker pro Konto. Ein zweiter Importversuch, auch aus
-  einem anderen Browser mit anderem lokalen Bestand, endet mit `409` und
-  schreibt nichts. Die Vorschau zeigt diesen Zustand vor der Bestätigung.
-  Weitere einzelne Depots können später über den regulären Export und Restore
-  übernommen werden; sie sind kein zweiter pauschaler Altbestandsimport.
-- T-61 löscht beim Logout und vor dem Wechsel zu einem anderen Konto alle
-  privaten IndexedDB-Daten und die lokalen Kurs-, FX- und Verlaufscaches der
-  App sowie private Pinia-Zustände. Das gilt auch für Rohdaten, die sonst über
-  Entwicklertools erreichbar blieben. Bis T-61 werden vorhandene lokale
-  Browser-Depots nicht als zwischen Konten sicher getrennt behauptet. T-60
-  zeigt diese Altbestände deshalb nur dem ersten eingerichteten Admin; andere
-  Konten erhalten bis T-61 eine klare Noch-nicht-verfügbar-Ansicht.
+- T-61 speichert alle Depotdaten getrennt je Konto, auch für mehrere Admins.
+  `admin` erlaubt zusätzlich Kontenverwaltung, aber keinen Zugriff auf fremde
+  Depots. Ein weiteres Admin-Konto beginnt mit leerem Serverbestand. Die
+  heutige T-60-Übergangslage, in der alle Admins eines Browserprofils denselben
+  lokalen Bestand öffnen können, endet mit T-61.
+- T-61 bindet die Vorschau und einmalige Übernahme des besitzerlosen
+  Browserbestands ausschließlich an das bei `setup()` erstellte Konto. Der
+  Server hält diese Berechtigung als eigenes Feld aus derselben
+  Setup-Transaktion fest; Rolle, Alter des Kontos oder Browserzustand sind
+  kein Ersatz. Die Sitzungsantwort nennt Berechtigung und Importstatus. Alle
+  anderen Konten sehen weder Vorschau noch Metadaten des Altbestands; der
+  Import-Endpunkt antwortet für sie mit `403` ohne Änderung.
+- Der Import schreibt die Depots und einen dauerhaften Übernahmemarker in
+  **einer** Transaktion. Ein zweiter Pauschalimport, auch aus einem anderen
+  Browser, endet mit `409` ohne Änderung. Die Vorschau zeigt Quelle,
+  Setup-Zielkonto und Wirkung vor der Bestätigung. Nach dem Import entfernt
+  die App die lokale Kopie. Bei gesetztem Marker kann das Setup-Konto aus
+  weiteren alten Browsern einzelne Depots als Datei exportieren und sie über
+  den regulären Restore einspielen. Auch ein ausdrückliches Verwerfen entfernt
+  den lokalen Altbestand. Ist das Setup-Konto deaktiviert, bleibt der
+  Altbestand liegen; ein anderer Admin kann es reaktivieren, die Berechtigung
+  wandert nicht.
+- T-61 löscht beim Logout und vor einem Kontowechsel alle nach T-61 unter
+  einem Konto angelegten privaten Browserdaten, lokale Kurs-, FX- und
+  Verlaufscaches sowie private Pinia-Zustände. Der noch nicht übernommene
+  **besitzerlose Altbestand** bleibt davon ausgenommen, bis das Setup-Konto
+  ihn importiert oder verwirft. Er bleibt außerhalb der App über
+  Browserwerkzeuge des Profils lesbar; diese Grenze wird dokumentiert. Die
+  App selbst zeigt ihn bis dahin ausschließlich dem Setup-Konto.
 - T-62 sendet alle 15 Sekunden einen SSE-Kommentar als Keep-Alive. Im selben
   Takt prüft der Server die Sitzung erneut und beendet den Stream nach
   Logout, Deaktivierung oder Ablauf. Beim Wiederverbinden und Sichtbarwerden
