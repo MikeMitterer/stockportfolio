@@ -351,7 +351,7 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
 
     def check_cancelled() -> None:
         if termination_requested:
-            raise SystemExit(0)
+            raise SystemExit(143)
 
     previous_sigterm = signal.getsignal(signal.SIGTERM)
     try:
@@ -376,13 +376,15 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
         print_message(translate("All local endpoints and CORS checks passed"), "SUCCESS")
         check_cancelled()
         return 0
-    except (Exception, KeyboardInterrupt, SystemExit):
+    except (Exception, KeyboardInterrupt, SystemExit) as error:
         stop_children(children)
         try:
             owned_state.remove()
         finally:
             if data_dir is not None:
                 remove_data(data_dir)
+        if isinstance(error, SystemExit) and termination_requested:
+            print_message(translate("Local test stack start cancelled; own processes and data removed"), "WARNING", sys.stderr)
         raise
     finally:
         signal.signal(signal.SIGTERM, previous_sigterm)
