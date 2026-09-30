@@ -149,7 +149,7 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
 - `review_round`: `11`
