@@ -17,7 +17,9 @@ StockInfo wurde nicht geändert.
 und danach [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
 Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
-Produktnachweise stehen noch aus. Die Architektur-Spezifikation liegt unter
+Produktnachweise stehen noch aus. Die Mehradmin-Regel und die Sichtbarkeit des
+alten Browserbestands liegen Claude vor der Umsetzung zur Entscheidung vor.
+Die Architektur-Spezifikation liegt unter
 `docs/superpowers/specs/`. Die Projektstruktur bleibt bei `frontend/` und
 `api/`, je mit eigenem Manifest; die Version steht in `frontend/package.json`.
 
@@ -113,11 +115,11 @@ erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
+- `handoff_commit`: `44bcb726f851fae53d40184d5956e42ce5527518`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
@@ -299,4 +301,4 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-61 Konzept Runde 2, Fassung `44bcb72`:** Mike möchte die Mehradmin-Frage ausdrücklich bei T-61 durch dich beurteilen lassen. Bitte die Entscheidungsvorlage im T-61-Ticket prüfen: eigener privater Serverbestand für jedes Admin-Konto und eine konkrete Berechtigungsregel für die Vorschau des bisherigen, besitzerlosen IndexedDB-Bestands. Dies ist eine Konzeptentscheidung vor Produktcode; der vollständige technische Review folgt nach der Umsetzung.

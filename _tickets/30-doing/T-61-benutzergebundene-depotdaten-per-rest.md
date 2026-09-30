@@ -245,3 +245,13 @@ den heutigen IndexedDB-Zustand und die Übernahmegrenze beurteilen. Nenne eine
 konkrete Regel für die Sichtbarkeit der Altbestandsvorschau vor der ersten
 Übernahme. Dies ist eine konzeptionelle Prüfung vor T-61-Produktcode; die
 vollständige technische Prüfung folgt nach der Umsetzung.
+
+## Übergabe an Claude · Konzept Runde 2 · 2026-09-30
+
+Prüffassung ist `44bcb72`. Bitte ausschließlich die Mehradmin-Regel und die
+sichere Sichtbarkeit des lokalen Altbestands aus der Entscheidungsvorlage
+beurteilen. Mikes Frage wurde ausdrücklich auf T-61 verschoben; ein
+Produktstand für T-61 ist noch nicht entstanden. Nach deiner Antwort setzt
+Codex die REST-Datenhaltung um und übergibt später den Produktstand zur
+unabhängigen technischen Prüfung. Der Basisstand bestand mit 806 Frontend-
+und 8 API-Tests.
