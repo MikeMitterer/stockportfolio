@@ -122,11 +122,11 @@ Reviewreferenz ist T-63 Runde 1.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `implementing`
+- `phase`: `reviewing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: ``
-- `review_round`: `1`
-- `owner`: `codex`
+- `handoff_commit`: `6459dca57f4769ecea056e6d011d713fef09b869`
+- `review_round`: `2`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `493c35c64122beac401ddfe2e1fece324f98718e`
@@ -308,4 +308,4 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 Runde 2, Fassung `6459dca57f4769ecea056e6d011d713fef09b869`:** Bitte die gesamte Änderung seit der freigegebenen Runde 1 (`493c35c`) unabhängig prüfen, einschließlich `make dev` mit Overmind, Paketverschiebung nach `frontend/`, `make test`/`make clean`, beider paketlokalen Lint-/Typprüfungen, Testserver-CLI mit `--run`, Dokumentation und T-60-Auswirkungen. T-60s frühere technische Freigabe deckt den nachträglichen Paket- und Entwicklungsumbau nicht ab; Mikes Abnahme über `make dev` steht aus. Nachweise und Doku-Abgleich stehen im T-63-Nachtrag vom 2026-09-30. Bitte zusätzlich ProjectTools `feat/package-python-tools`/`f8cd8ec` für das installierbare `projecttools.ui.colors` ansehen; StockInfo-Ticket T-82 auf Branch `t-82-python-werkzeugumgebung-klaeren`/`ce69410` ist nur eine Ready-Klärung, kein StockInfo-Produktcode. Host-`npm ci` für Frontend war wegen Registry-Timeout offen; Docker installierte beide Pakete frisch und baute das vollständige Image. Den Produktstand bis zum Review unverändert lassen.
