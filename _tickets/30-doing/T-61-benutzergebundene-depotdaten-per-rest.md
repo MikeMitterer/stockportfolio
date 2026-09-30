@@ -211,3 +211,13 @@ lassen. Dort sind kontogebundene Depotdaten, Altbestandsübernahme und die
 Trennung lokaler Caches ohnehin Teil des Auftrags. Bis zu dieser Prüfung
 bleibt das laufende T-60-Verhalten unverändert; hier wird keine Umsetzung
 oder vorgezogene technische Freigabe für T-61 behauptet.
+
+## Aktivierung · 2026-09-30
+
+Mike hat den Beginn von T-61 und anschließend T-62 nach den Abnahmekorrekturen
+ohne weiteren Warteschritt beauftragt. T-61 läuft auf
+`t-61-benutzergebundene-depotdaten-per-rest`, abgezweigt vom technisch
+freigegebenen T-60/T-63-Stand. T-60 und T-63 bleiben bis zu Mikes ausdrücklicher
+T-63-Abschlussentscheidung in `30-doing/`; kein gemeinsamer Merge oder Push.
+Die Mehradmin-Frage oben wird vor der betroffenen Produktentscheidung in die
+Claude-Prüfung gegeben. Produktnachweise für T-61 stehen noch aus.

@@ -13,7 +13,7 @@ beide Tickets in `30-doing/` und werden noch nicht gemeinsam integriert.
 Der Teststack verbindet StockInfos vorhandene Testkurse, Konto-API und Vite.
 StockInfo wurde nicht geändert.
 
-**Nächste Arbeit:** [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+**Aktuelle Arbeit:** [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
 und danach [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
 Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
@@ -106,24 +106,25 @@ gibt T-60 samt Paketumbau technisch erneut frei. Mike hat die T-60-Abnahme
 erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
 Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
 Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
-T-61 beginnt auf einem neuen Branch, der von dieser freigegebenen Fassung
-abzweigt. Merge und Push folgen erst mit der gemeinsamen Integration.
+T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
+von der freigegebenen Fassung abgezweigt. T-62 folgt nach T-61. Für T-60/T-63
+erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `blocked`
-- `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
-- `review_round`: `6`
-- `owner`: `none`
+- `phase`: `implementing`
+- `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
 - `last_reviewed_round`: `6`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
-- `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
+- `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich

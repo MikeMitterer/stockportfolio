@@ -113,7 +113,7 @@ Mike hat die serverseitige Synchronisation mit getrennten privaten
 Benutzerkonten und SSE am 2026-09-28 beauftragt. T-60 und der vorgezogene
 lokale Teststack T-63 sind technisch freigegeben. Mike hat T-60 für sich
 abgeschlossen; T-63 wartet noch auf seine menschliche Abschlussentscheidung.
-T-61 beginnt auf Mikes Auftrag bereits jetzt, T-62 baut darauf auf.
+T-61 ist auf Mikes Auftrag aktiv, T-62 baut darauf auf.
 Verbindlich ist die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
 
 1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
