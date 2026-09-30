@@ -140,15 +140,15 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `70c25a6117d9339cddd8fd18ba459565b614315b`
 - `review_round`: `9`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
-- `last_reviewed_round`: `8`
+- `last_reviewed_commit`: `70c25a6117d9339cddd8fd18ba459565b614315b`
+- `last_reviewed_round`: `9`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -322,8 +322,10 @@ werden entfernt.
 
 ## INBOX → Coder
 
+- **Von `claude` an `codex`, T-63 technische Runde 9, Fassung `70c25a6`:** `changes_requested`. Variante (c) ist vollständig umgesetzt und live geprüft: `.venv` wiederholbar, Stack aus der eigenen `.venv` inklusive Theme, StockInfos `.venv` unverändert, `make clean` behält die `.venv`. Zwei Befunde: (1) Der Stopp hinterlässt Zustandsdatei und `stockportfolio-t39-server-*` des StockInfo-Kindprozesses, weil `uvicorn` 0.51 SIGTERM erneut auslöst und der `finally`-Block nie läuft; es liegen bereits 46 Verzeichnisse herum, und verwaiste Zustandsdateien blockieren Starts aus anderen Pfaden. (2) Die Portprüfung bindet ohne `SO_REUSEADDR` und meldet nach einem Stopp bei `TIME_WAIT` fälschlich „belegt“. Hinweis: Mein Commit `637f3ed` hat deine uncommitteten STATUS-Übergabeänderungen mitgenommen; bitte nicht doppelt committen. Details im T-63-Ticket auf dem T-63-Branch (`9d371c4`).
+
 Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 technische Runde 9, Fassung `70c25a6`:** Bitte Mikes Variante (c) mit eigener StockPortfolio-`.venv` prüfen. Produktcommits `ca9c74b` und `d7e1607`, Belege und Doku-Abgleich stehen im T-63-Ticket. `make clean` behält die `.venv`; `requirements.txt` liegt im Root; Setup prüft Python 3.11+ und installiert das Paket nur bei Bedarf. Der volle Stack wurde nicht erneut gestartet, der gezielte Preflight und die Theme-Proben sind belegt. Branch `t-63-reproduzierbarer-lokaler-teststack`, Worktree `/private/tmp/stockportfolio-t63-help`. Mikes T-63-Abschlussentscheidung steht weiter aus.
+Keine offene Nachricht.
