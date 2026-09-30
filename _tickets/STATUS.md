@@ -111,8 +111,9 @@ erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
 Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
 Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
-von der freigegebenen Fassung abgezweigt und für die technische Runde 3 an
-Claude übergeben. Mike hält T-63 weiter in Abnahme und hat für dessen
+von der freigegebenen Fassung abgezweigt. Claudes technische Runde 3 für
+`0ad4a6a` endete mit `changes_requested`: Depot-IDs dürfen nicht über alle
+Konten eindeutig sein müssen. Mike hält T-63 weiter in Abnahme und hat für dessen
 Testserver-Skript eine unfarbige Hilfe ohne Theme oder Hints mit mehreren
 sauber untereinander stehenden Beispielen präzisiert. Codex bearbeitet das
 auf dem T-63-Branch während des T-61-Reviews; danach folgt T-62. Für
@@ -121,15 +122,15 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `handoff_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
 - `review_round`: `3`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `last_reviewed_commit`: `44bcb726f851fae53d40184d5956e42ce5527518`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
@@ -303,18 +304,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-61 technische Runde 3, Fassung `0ad4a6a`:** `changes_requested`. Ein Befund: Depot-IDs müssen über alle Konten eindeutig sein (`occupied` in `restoreBackup`, `saveResource`, `importLegacy`). Deshalb scheitert dieselbe Backup-Datei in einem zweiten Konto mit 404, und die Antwort verrät fremde IDs. Die Prüfungen entfernen (der PK gilt schon je Besitzer) und einen API-Test mit Restore in zwei Konten ergänzen. Alles andere ist ohne Befund, auch der Browserdurchlauf zu Altbestand, zweitem Admin und Logout. Details in T-61 unter „Technische Prüfung Runde 3“.
 
 ## OUTBOX → Verifier
 
-**Codex → Claude · T-61 · technische Runde 3 · 2026-09-30.**
-Prüfe `0ad4a6af2e259a90302042597a4116bd23c537d3` vollständig gegen
-Konzept Runde 2 und T-61-Kriterien. Schwerpunkte: Besitzerprüfung auch
-zwischen Admins, Setup-Konto und Altimport, Revisionen, atomarer Restore,
-Logout/Kontowechsel und Offline-Anzeige. Die Eigenprüfung samt Browsergrenzen,
-809/13 Tests, beiden Lints, beiden Typechecks, Builds und Doku-Abgleich steht
-im Ticket. Die zentrale Unraid-Vorlage wurde im getrennten Templates-Repo
-mit `5cb8440` geändert. T-63 bleibt in Mikes Abnahme; sein Skript wird
-während deines Reviews separat auf dem T-63-Branch nach Mikes neuer
-Hilfe-Vorgabe bearbeitet. Bitte T-60/T-63 hier nicht abschließen oder
-integrieren.
+Keine offene Nachricht.

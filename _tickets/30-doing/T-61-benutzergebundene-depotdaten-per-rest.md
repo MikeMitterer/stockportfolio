@@ -402,3 +402,60 @@ sowie die Doku. Die Eigenprüfung und ihre Grenzen stehen im Abschnitt zuvor.
 Die T-60/T-63-Freigabe bleibt unberührt; Mike hält T-63 weiter in Abnahme.
 Keine Integration und kein Push. Die zentrale Unraid-Vorlage liegt mit
 `5cb8440` im getrennten Templates-Repository und ist noch nicht gepusht.
+
+## Technische Prüfung Runde 3
+
+`claude`, 2026-09-30, an Handoff-Commit `0ad4a6af2e259a90302042597a4116bd23c537d3`
+(Diff seit `26b59ed`, 42 Dateien). Geprüft habe ich in einem eigenen,
+abgetrennten Worktree auf genau dieser Fassung, gegen meine Konzeptregel aus
+Runde 2 und die T-61-Kriterien. Gelesen: Codex-Lessons SP-CX-01, SP-CX-02 und
+SP-CX-05 sowie meine Lessons SP-R-02 und SP-R-03.
+
+| Prüfpunkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Tests, Lint, Typen | `npm run test` für beide Pakete, beide Lints mit `--no-cache`, beide Typprüfungen, `git diff --check` | 69 / 809 Frontend- und 4 / 13 API-Tests grün, alles Exit 0 |
+| Schema, Migration | `0001`/`0002` und `schema.ts` gelesen | `is_setup_account` und `legacy_imported` am Konto; `private_resources` mit PK (Besitzer, Art, ID) und `ON DELETE CASCADE`. Das Setup-Konto wird in derselben Transaktion wie `createFirstAdmin` markiert |
+| Besitzerprüfung | Router und Repository gelesen; eigene Probe gegen das echte SQLite-Repository | Jede `/api/data`-Route nimmt den Besitzer aus der Sitzung. Die Herkunftsprüfung gilt für alle schreibenden `/api/*`-Routen, und `mustChangePassword` sperrt den Datenzugriff (403). Die Probe mit zwei Admins: `findResource` gibt `null`, fremdes `save` und `delete` geben `not_found` |
+| Revisionen | Repository und `PrivateDataClient` gelesen | Depot und Einstellungen schreiben mit der zuletzt gelesenen Revision, bei veraltetem Stand kommt `409`. Auswahl und Tageswerte lesen vor dem Schreiben frisch (`update`) und ändern nur den eigenen Schlüssel. Schreiben je Ressource ist serialisiert. Löschen eines Depots entfernt Auswahl und Tageswerte in derselben Transaktion |
+| Restore | Repository gelesen, Probe | Eine Transaktion mit Revisionsprüfung aller vier Teile und des ersetzten Depots. Eigener Restore liefert `done`. Befund 1 betrifft denselben Restore in einem zweiten Konto |
+| Altbestand, Regeln 1–6 | Probe und eigener Browserdurchlauf (`playwright-core`, isolierter Stack mit synthetischen Konten, ein Browserprofil mit synthetischem IndexedDB-Depot „Altdepot-Probe“) | Normaler Nutzer: App ohne Vorschau, Import `403`. Zweiter Admin (per API angelegt, im selben Browserprofil): ohne Vorschau, Import `403`. Nach jeder Abmeldung, auch des Setup-Kontos nach „Später entscheiden“, ist der Altbestand weiter lokal vorhanden. Das Setup-Konto sieht Quelle, Ziel, Anzahl und Wirkung. Nach dem Import ist er lokal leer und auf dem Server; ein weiterer Import liefert `imported`/`409`. Export je Depot bei gesetztem Marker und die Reaktivierung sind im Code gelesen, nicht im Browser geklickt |
+| Logout und Kontowechsel | `AuthRoot.logout`, `cache.ts`, Store-Lebenszyklus gelesen | Marktcaches werden geleert, der Datenclient abgemeldet, und das Neuladen verwirft Pinia. Vor der Anmeldung wird kein Store angelegt (`main.ts`, `AuthRoot`) |
+| Offline und Konflikt | `App.vue` gelesen | Jeder fehlgeschlagene private Zugriff ersetzt die Ansicht durch eine Meldung mit „neu laden“; der veraltete Stand bleibt verdeckt. Einen echten parallelen Konflikt habe ich wie Codex nicht ausgelöst |
+| Altbestands-Ansicht (SP-R-03) | Screenshot bei 1440 px neben dem Anmeldedialog | Dieselbe Karte, dasselbe Logo, dieselbe Titelgestaltung |
+| Doku | `README.md`, `docker/README.md` und `unraid/README.md` zu Daten, Altbestand und bestehender Datenbank gelesen; Ticketbelege | Stimmen überein. Dass eine Kontodatenbank von vor der Markierung kein Setup-Konto hat, ist als Grenze mit Reset-Weg beschrieben; das ist nach `AGENTS.md` („Keine Migrationspfade“) zulässig |
+
+**Befund (blockierend):**
+
+1. **Dieselbe Backup-Datei lässt sich nicht in einem zweiten Konto
+   wiederherstellen.** `restoreBackup`, `saveResource` (neues Depot) und
+   `importLegacy` verlangen, dass eine Depot-ID über **alle** Konten eindeutig
+   ist (`occupied`). Probe: Restore von Depot `p-1` in das Setup-Konto ergibt
+   `done`; derselbe Restore in ein anderes Konto ergibt `not_found`. In der App
+   ist das eine allgemeine Ablehnung ohne Erklärung. So scheitert etwa ein
+   Depot, das Mike exportiert und einem weiteren Konto gibt, oder ein
+   Altimport, dessen Depot schon ein anderes Konto per Restore hat (dort sogar
+   mit `409` für den ganzen Import). Außerdem verrät die Antwort, dass ein
+   anderes Konto diese ID besitzt. Nötig ist die Sperre nicht: Der
+   Primärschlüssel gilt schon je Besitzer, und alle Abfragen filtern nach
+   `owner_id`.
+   **Erwartet:** Die drei kontoübergreifenden `occupied`-Prüfungen entfallen.
+   Ein API-Test belegt denselben Restore in zwei Konten und dass A dabei
+   unverändert bleibt.
+
+**Hinweise, nicht blockierend:**
+
+1. **Stiller Rückfall auf IndexedDB.** `create…Repository()` liefert IndexedDB,
+   wenn kein Datenclient aktiv ist. Heute führt kein Pfad dorthin, weil kein
+   Store vor der Anmeldung entsteht. Ein künftiger früher Store-Zugriff würde
+   Kontodaten aber still in den besitzerlosen Altbestand schreiben. Ein Fehler
+   statt des Rückfalls wäre sicherer.
+2. **Eine verwaiste Zustandsdatei hat meinen Start blockiert.** Beim Start
+   aus dem Worktree lag `stockportfolio-test-server-8899.json` aus einem Lauf
+   des Hauptverzeichnisses um 15:29 herum, zu einem nicht mehr laufenden
+   Prozess. Das Skript des Hauptverzeichnisses hat sie mit `-t` als verwaist
+   erkannt und entfernt. Aus einem anderen Pfad meldet das Skript nur „gehört
+   nicht zu diesem Testserver“. Das betrifft T-63 und nicht diese Fassung.
+
+**Urteil:** `changes_requested` für `0ad4a6a`. Außer Befund 1 ist die
+Konzeptregel aus Runde 2 vollständig und nachprüfbar umgesetzt. Die
+Nachprüfung beschränkt sich auf Befund 1 und seinen Test.
