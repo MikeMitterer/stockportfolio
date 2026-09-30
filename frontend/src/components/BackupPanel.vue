@@ -142,34 +142,22 @@ async function onFileChosen(event: Event): Promise<void> {
 /**
  * Spielt das geprüfte Backup ein.
  *
- * Mit Auffangnetz: Schlägt das Schreiben fehl — voller Speicher, gesperrte
- * IndexedDB im privaten Modus, ein veraltetes Modul nach einem Hot-Reload —
- * blieb sonst der Dialog offen und sonst geschah nichts. Ein Vorgang, der das
- * ganze Depot ersetzt, darf nicht stumm scheitern.
+ * Schlägt die Server-Wiederherstellung fehl, zeigt die Oberfläche den Grund.
+ * Nach Erfolg lädt sie den maßgeblichen Serverstand neu.
  */
 async function applyPending(): Promise<void> {
   const backup = pending.value
   if (!backup) return
 
   try {
-    if (await backupStore.restore(backup) === 'server') {
-      window.location.reload()
-      return
-    }
+    await backupStore.restore(backup)
+    window.location.reload()
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
     error.value = t('backup.importFailed', { reason })
     consola.error('backup: Einspielen fehlgeschlagen', { reason })
     pending.value = null
-    return
   }
-
-  const count = backup.portfolio.positions.length
-  done.value = t('backup.restored', {
-    name: backup.portfolio.name,
-    positions: t('units.positions', count, { named: { count: integer(count) } }),
-  })
-  pending.value = null
 }
 
 function discardPending(): void {
