@@ -1,8 +1,8 @@
 /**
  * Repositories — kapseln jeden IndexedDB-Zugriff.
  *
- * Stores und Komponenten sprechen ausschließlich mit diesen Klassen;
- * `idb` taucht außerhalb von `src/db/` nirgends auf.
+ * Der besitzerlose Altbestand und Markt-Caches verwenden diese Klassen.
+ * Private Kontodaten laufen über `src/data/` zur Konto-API.
  */
 
 import {

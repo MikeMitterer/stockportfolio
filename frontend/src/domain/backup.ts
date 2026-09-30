@@ -1,10 +1,9 @@
 /**
  * Backup und Wiederherstellung des Depots.
  *
- * Alle Daten der App liegen im Browser. Ein gelöschter Website-Speicher, ein
- * neues Gerät oder ein anderer Browser heißt: alles weg. Diese Datei ist die
- * einzige Möglichkeit, das zu überleben — entsprechend streng ist die Prüfung
- * beim Einlesen.
+ * Private Depotdaten liegen im Konto auf dem Server. Die Datei ermöglicht
+ * eine zusätzliche Sicherung unabhängig von dessen Datenbank. Entsprechend
+ * streng ist die Prüfung beim Einlesen.
  *
  * Reine Funktionen, kein DOM: Weder Datei-Auswahl noch Download stehen hier.
  */

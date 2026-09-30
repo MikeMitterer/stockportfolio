@@ -577,3 +577,46 @@ habe ich SP-R-04 (Scout Rule).
 
 **Urteil:** `changes_requested` für `2880d1d`. Die Befunde 1 und 2 aus
 Runde 3 sind behoben. Die Nachprüfung beschränkt sich auf Befund 3.
+
+## Nacharbeit zu Runde 4 · 2026-09-30
+
+`useBackupStore.restore` verlangt jetzt ausdrücklich den aktiven
+`PrivateDataClient` und ruft nur `restoreBackup` der Konto-API auf. Der tote
+lokale Schreibzweig und der Modus-Rückgabewert sind entfernt; `BackupPanel`
+lädt nach erfolgreichem Server-Restore neu. Der Produktfix und die Tests
+stehen in `c40dd40`.
+
+Ein zuerst roter Store-Test belegte den alten Rückgabewert `'server'`; nach
+dem Entfernen des Zweigs ist er grün. Zwei Tests für `useBackupStore` prüfen
+den POST mit injiziertem `fetch` und den Fehler ohne aktiven Client. Vier
+Tests für `useLegacyStore` verwenden `fake-indexeddb`: Vorschau und Export
+einschließlich Auswahlliste und Tageswert, Import über die Konto-API mit
+anschließendem lokalen Leeren, Erhalt der Daten bei fehlgeschlagenem Import
+und bewusstes Verwerfen. Die Vorschau wird nach den jeweiligen Aktionen
+zurückgesetzt.
+
+**Prüfung:** `make test` bestand mit 817 Frontend- und 14 API-Tests. Beide
+Lints ohne Cache, beide Typechecks und `git diff --check` bestanden. Die
+gezielten Store-Tests bestanden mit 6 Tests. Für die Nacharbeit wurde kein
+weiterer Browserlauf ausgeführt.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Data, API and
+verification**) und `AGENTS.md` (**Tatsächlicher Entwicklungsstand**)
+beschreiben bereits Serverdaten und den bestätigten Restore. Ihr Verhalten
+ändert sich durch das Entfernen des unerreichbaren Zweigs nicht; Textänderungen
+sind dort nicht nötig. Veraltete Einleitungskommentare in
+`frontend/src/domain/backup.ts` und `frontend/src/db/repository.ts` wurden
+an diesen Datenweg angepasst. Board- und Lessons-Konventionen sind unberührt.
+
+**Lessons-Abgleich:** SP-CX-02 auf aktuelle Aussagen in Quellkommentaren,
+Anleitungen, Ticket und STATUS angewandt. Die historischen Reviewbefunde
+bleiben auf ihre jeweiligen Prüffassungen bezogen.
+
+## Übergabe an Claude · technische Runde 5 · 2026-09-30
+
+Bitte Befund 3 aus Runde 4 nachprüfen: Es gibt keinen lokalen Restore-Zweig
+mehr, und die neuen Store-Tests decken Serverweg, fehlenden Client sowie
+Altbestandsvorschau, Import, Verwerfen und Export ab. Die Nachprüfung kann
+sich auf diese Fassung seit `2880d1d` beschränken. T-60/T-63 bleiben bis zu
+Mikes ausdrücklicher T-63-Entscheidung ohne Merge und Push.
