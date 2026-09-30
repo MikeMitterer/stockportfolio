@@ -940,3 +940,53 @@ den Fallback. `docker/README.md` (**Data and backups**, **Configuration**)
 betrifft den Container und hat keinen Aufruf dieses lokalen Skripts;
 inhaltlich bleibt es unverändert. Keine Board- oder Lessons-Konvention
 wurde geändert.
+
+## Technische Prüfung Runde 7
+
+`claude`, 2026-09-30, an Handoff-Commit `bd4faecb64f6fd92db2c2942055a94eed063da17`
+(Branch `t-63-reproduzierbarer-lokaler-teststack`, Diff seit `26b59ed`).
+Geprüft habe ich Mikes Theme-Abnahmepunkt in einem eigenen, abgetrennten
+Worktree. Angewandt habe ich SP-R-04 (Scout Rule) und die projektweite
+StockInfo-Grenze aus `AGENTS.md`.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Code | `scripts/cli_theme.py`, `local_test_stack.py` und `stockinfo-test-server.py` gelesen | Optionaler Import: Nur ein fehlendes `projecttools`-Modul führt zum schlichten Rückfall, andere Importfehler werden weitergereicht. Kein Rechnerpfad im Skript. Fehler, Status und Stop laufen über `print_message` mit Rollen `SUCCESS`, `WARNING` und `DANGER` |
+| Ohne Paket | StockInfo-`.venv` (ohne `projecttools`), `--help` in eine Pipe, falsche Optionskombination | Native Hilfe mit „Beispiele:“ und fünf Zeilen untereinander, Exit 0; schlichte argparse-Fehlermeldung |
+| Mit Paket | Für die Probe nur `PYTHONPATH` auf ProjectTools-`master` `f8cd8ec`, ohne Installation; Pseudo-Terminal über `script`, `MAKE_THEME=ocean`, `TERM=xterm` | Hilfe mit 21 farbigen Zeilen (Gruppen, Optionen, Beschreibungen); Fehler rot mit „✗“, „kein Stack registriert“ gelb |
+| `NO_COLOR` und Pipe | dieselbe Probe mit `NO_COLOR=1` beziehungsweise umgeleiteter Ausgabe | 0 farbige Zeilen |
+| Katalog, Lint | `msgfmt --check-format`, `.mo` neu erzeugt und verglichen, `ruff check`, `py_compile` | Katalog gültig, `.mo` aktuell, Ruff „All checks passed“ |
+| Umfang | `git diff --stat 26b59ed bd4faec -- frontend api` | Frontend und API unverändert; ein erneuter Testlauf ist dafür nicht nötig |
+| StockInfo-Umgebung | `pip show mmit-projecttools` und Import in StockInfos `.venv` | Nicht installiert; StockInfos Umgebung ist unverändert |
+
+**Befund (blockierend):**
+
+1. **Die Anleitungen schreiben eine Installation in StockInfos Python-Umgebung
+   vor und greifen damit StockInfo-T-82 vor.** `README.md` (**Command-line
+   themes**) und `AGENTS.md` (**Bauen und prüfen**) nennen als Weg
+   `../StockInfo/.venv/bin/python -m pip install -e ./.libs/ProjectTools`.
+   Genau diese Frage klärt StockInfos eigenes Ticket
+   `20-ready/T-82-python-paket-fuer-konsumententests-klaeren.md` (Stand
+   `ce69410`, noch nicht aktiviert). Es hält ausdrücklich fest: „Keine
+   vorweggenommene Entscheidung über StockInfos Abhängigkeiten“ und „keine
+   automatische Änderung fremder Projekt-venvs“. `AGENTS.md` sagt: Braucht die
+   App etwas vom Dienst, entsteht ein StockInfo-Ticket, und über die Lösung
+   entscheidet, wer den Dienst kennt. Dazu kommt ein technisches Risiko: Die
+   editierbare Installation bindet StockInfos `.venv` an den Symlink
+   `.libs/ProjectTools` dieses Repositorys. StockInfo deklariert das Paket
+   nicht, und ein Neuaufbau oder Abgleich seiner Umgebung entfernt es wieder
+   still. Mikes Zustimmung laut Übergabe betrifft den lokalen Fast-Forward von
+   ProjectTools-`master`, nicht diesen Installationsweg.
+   **Erwartet, je nach Mikes Entscheidung:**
+   (a) Die Anleitungen beschreiben das Theme als verfügbar, sobald
+   `projecttools` in der ausführenden Umgebung importierbar ist, und kennzeichnen
+   den Installationsweg für StockInfos Umgebung als **noch nicht verfügbar,
+   geklärt in StockInfo-T-82**; der Code bleibt unverändert. Oder
+   (b) Mike entscheidet ausdrücklich, diesen Installationsweg jetzt
+   festzulegen. Dann steht das mit seinem Wortlaut in T-63 und als
+   Konsumentenhinweis in StockInfos T-82, und die Anleitungen nennen die
+   Grenze, dass ein Neuaufbau von StockInfos `.venv` die Installation entfernt.
+
+**Urteil:** `changes_requested` für `bd4faec`. Der Code erfüllt Mikes
+Theme-Abnahmepunkt vollständig, einschließlich Rückfall, `NO_COLOR` und Pipe.
+Die Nachprüfung beschränkt sich auf den Befund zu den Anleitungen.
