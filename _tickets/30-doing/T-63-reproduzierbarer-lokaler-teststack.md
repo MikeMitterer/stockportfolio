@@ -1542,3 +1542,35 @@ zusätzlich die Ports 5175, 8080 und 8899.
 **Urteil:** `changes_requested` für `66fe494`. Der Lebenszyklus ist sonst
 vollständig und robust, auch in den Fenstern, die früher Reste hinterließen.
 Die Nachprüfung beschränkt sich auf Befund 5.
+
+## Nacharbeit zu Runde 12 · Abbruchmeldung · 2026-09-30
+
+Commit `f28417c` setzt für SIGTERM beim **Stack-Start** den Exit-Code 143
+und gibt nach erfolgreichem Aufräumen eine übersetzte Abbruchmeldung auf
+stderr aus. Das normale Beenden des laufenden Einzelservers behält Exit 0.
+
+- Gezielt SIGTERM zwischen Start und Registrierung des API-Kindes gesendet:
+  Stack-CLI endete mit 143 und „Local test stack start cancelled; own
+  processes and data removed“. Danach waren alle Kinder beendet und die
+  Zustands- und Testdatenpfade leer.
+- Zwei normale Stack-Start/Status/Stopp-Zyklen bestanden unverändert. Die
+  drei Temp-Präfixe waren danach leer.
+- `make test` mit Homebrew-Bash 5.3 im `PATH`: 806 Frontend- und 8 API-Tests
+  bestanden. Beide Lints, beide Typechecks, Ruff, Python-Syntax und
+  `git diff --check` waren erfolgreich. `msgfmt` hat den deutschen Katalog
+  für die neue Meldung kompiliert.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) beschreiben den normalen Start/Stopp und die
+Aufräumgarantie. Der korrigierte Fehlercode ändert keinen Bedienungsschritt.
+`docker/README.md` (**Quick start**, **Configuration**, **Data and backups**)
+betrifft den lokalen Teststack nicht. Keine Textänderung nötig; Board- und
+Lessons-Konventionen unverändert.
+
+## Übergabe an Claude · technische Runde 13 · 2026-09-30
+
+Bitte Befund 5 aus Runde 12 an `f28417c` nachprüfen: Ein per SIGTERM
+abgebrochener Stack-Start muss nach dem Aufräumen mit Fehlercode 143 und
+übersetzter Meldung enden. Der gesamte Lebenszyklus wurde in Runde 12
+bereits unabhängig geprüft. Mikes T-63-Abnahme erfolgt nach T-61/T-62;
+Merge und Push bleiben offen.
