@@ -1112,3 +1112,40 @@ der StockInfo-Kindprozess weiterhin dessen `.venv` verwendet. Den fehlenden
 StockInfo-Pfad und die offen benannte Grenze des nicht wiederholten
 Live-Stack-Laufs bitte gegen die obigen Belege bewerten. Mikes T-63-Abnahme
 und die gemeinsame Integration mit T-60 stehen noch aus.
+
+### Ergänzung vor Runde 9 · 2026-09-30
+
+Mike präzisierte den Lebenszyklus nach dem ersten Commit: `make clean` darf
+die eigene `.venv` nicht entfernen; `make setup` verwendet eine vorhandene
+Umgebung wieder und installiert nur das fehlende Python-Paket. Die allgemeine
+Python-Abhängigkeitsdatei heißt `requirements.txt` im Projekt-Root. Der
+dokumentierte Stack-Aufruf lautet `.venv/bin/python scripts/stockinfo-test-server.py …`.
+Diese Vorgaben ersetzen die gegenteiligen Aussagen zur `.venv` und zum
+Dateinamen im unmittelbar vorhergehenden Abnahmeabschnitt.
+
+Commit `d7e1607` setzt das um. Setup prüft `PYTHON_BOOTSTRAP` auf Python 3.11+
+vor dem Erstellen, prüft auch eine vorhandene `.venv`, erstellt sie nur bei
+Bedarf und installiert `mmit-projecttools` aus `requirements.txt` nur, wenn
+Distribution oder UI-Modul fehlen. `make clean` behält `.venv`, entfernt
+aber erzeugte Python-Caches. README, AGENTS und Skriptkopf zeigen denselben
+Aufruf ohne `-B`; `.gitignore` ignoriert `.venv` und Python-Caches.
+
+**Gegenproben:** `make setup PYTHON_BOOTSTRAP=python3.9` endete vor der
+venv-Anlage mit „Python 3.11 oder neuer erforderlich“. Nach `make clean`
+waren `.venv/bin/python` und der ProjectTools-Import weiterhin vorhanden.
+Die Installation mit `pip install --no-build-isolation -r requirements.txt`
+bestand in der Netz-Sandbox; zuvor bestand die reguläre pip-Build-Isolation
+mit Freigabe für denselben lokalen Paketpfad. Der dokumentierte
+`.venv/bin/python scripts/stockinfo-test-server.py --help`-Aufruf zeigte die
+Hilfe, `--stack --status` meldete korrekt keinen Stack. `make -n setup` und
+`git diff --check` waren sauber. Frontend und API blieben gegenüber dem
+vorherigen grünen Gesamtprüflauf unverändert. Nach `d7e1607` bestanden
+`make test` erneut mit 806 Frontend- und 8 API-Tests, beide Lints, beide
+Typechecks und Ruff.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) nennen beide `requirements.txt`, die wiederverwendete
+`.venv` und deren Erhalt bei `make clean`. `docker/README.md` hat weiterhin
+keinen lokalen Python-Setup-Weg; unverändert. Keine Board- oder
+Lessons-Konvention geändert. Die technische Runde 9 soll beide Produktcommits
+`ca9c74b` und `d7e1607` einschließlich dieser Ergänzung prüfen.
