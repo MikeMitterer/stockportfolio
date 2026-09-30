@@ -29,7 +29,6 @@ export const de = {
   },
   app: {
     title: 'StockPortfolio',
-    subtitle: 'Tolerance-Band Rebalancing',
     /*
      * Die Wortmarke in zwei Teilen, zusammengesetzt ergeben sie `title`. Der
      * zweite trägt die Kennfarbe: „Stock" teilen sich beide Apps, farbig gehört

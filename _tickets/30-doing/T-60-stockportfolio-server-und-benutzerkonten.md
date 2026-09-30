@@ -581,6 +581,19 @@ Abnahmepunkte:
 - Die Benutzerverwaltung erhält denselben oberen Inhaltsabstand wie
   Einstellungen und Status. Alle regulären Routen verwenden dafür den
   gemeinsamen `content-frame`; ein Test prüft die Routenliste auf Auslassungen.
+- Der Kontenablauf ist für die Abnahme geklärt: Normale Nutzer sehen nach
+  dem nötigen Passwortwechsel „Depotzugriff folgt“, kein leeres Dashboard
+  und keinen Backup-Import. Lokale Depots haben keine Ablaufzeit und sind
+  an Browserprofil und Webadresse gebunden, derzeit nicht an die Admin-ID.
+  Mehrere Admins im selben Browser sehen denselben Bestand. Das widerspricht
+  dem Satz „nur erster Admin“ in der Architektur-Spezifikation (**Oberfläche**);
+  Mike lässt die Zugriffsregel erst bei T-61 von Claude beurteilen. T-60
+  behält während dieser Abnahme das aktuelle Verhalten.
+- Nach Login und erzwungenem Passwortwechsel eines normalen Nutzers zeigt
+  die Adresse wieder `/#/`, statt einen vorherigen Depotpfad wie
+  `/#/rebalancing` zu behaupten. Auch Logout aus der App setzt die Adresse
+  zurück. Die sachfremde Unterzeile „Tolerance-Band Rebalancing“ entfällt
+  auf den Konto-Seiten; Logo und zustandsbezogene Überschrift bleiben.
 
 **Doku-Abgleich:** `README.md` (**Where the data lives**, **Setup**, **Docker**)
 und `docker/README.md` (**Quick start**, **Configuration**) erklären Code,
@@ -590,8 +603,11 @@ weiterhin den unveränderten Entwicklungsablauf. `unraid/README.md` und die
 Unraid-Vorlage
 enthalten keine Passwortvorgaben; dort ist für diese Kontoänderung keine
 Anpassung nötig.
+Die beiden READMEs beschreiben jetzt auch den tatsächlich laufenden
+Depotzugriff für Admins und normale Nutzer. Die noch offene Abweichung zur
+Architektur-Spezifikation ist oben vermerkt.
 
-**Eigenprüfung:** `make test` bestand mit 805 Frontend- und 8 API-Tests.
+**Eigenprüfung:** `make test` bestand mit 806 Frontend- und 8 API-Tests.
 `npm --prefix frontend run lint`, `npm --prefix api run lint` und beide
 `typecheck`-Befehle bestanden. `npm --prefix frontend run build` baute die
 Produktionsansicht. Die Docker-Hub-README-Vorschau wurde mit dem gemeinsamen
@@ -609,3 +625,12 @@ Routenwächter war vor der Korrektur bei `UserAdminView` rot und danach grün.
 Ein Komponententest prüft Admin-Zugang und Benutzername für beide Rollen; das
 Konto-Menü zeigte im Browser „Abmelden“ erst nach dem Öffnen. `git diff --check`
 war unauffällig. Der erneute Build und die Docker-Hub-Vorschau bestanden.
+Mikes eigener Browserdurchlauf bestätigte die Anmeldung eines normalen Nutzers
+mit neuem Passwort und meldete den stehen gebliebenen Pfad `/#/rebalancing`.
+Der neue Frontendtest stellte diesen Pfad und die sachfremde Unterzeile zuerst
+rot nach und bestand nach der Korrektur.
+Frontend- und API-Lint, beide Typechecks, Frontend-Build und Docker-Hub-Vorschau
+bestanden danach erneut. Der Build meldet weiterhin den großen `vendor-ui`-Chunk.
+Für die URL- und Textkorrektur brauchten `README.md`, `docker/README.md`,
+`unraid/README.md` und die Unraid-Vorlage keine zusätzliche Anleitung:
+Sie nennen weder die Anmelde-URL noch die frühere Unterzeile.

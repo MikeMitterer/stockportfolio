@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { NButton, NConfigProvider, NFormItem, NInput, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
 import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
 import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
@@ -12,6 +13,7 @@ import { AUTH_CLIENT, AUTH_LOGOUT, AUTH_USER } from './context'
 type View = 'loading' | 'setup' | 'login' | 'change' | 'app' | 'pending' | 'missingStockInfo' | 'unavailable'
 
 const { t, te, locale } = useI18n()
+const router = useRouter()
 const client = new PortfolioAuthClient()
 const user = ref<PortfolioUser | null>(null)
 const view = ref<View>('loading')
@@ -42,6 +44,7 @@ function acceptUser(nextUser: PortfolioUser): void {
     view.value = 'change'
   } else if (nextUser.role !== 'admin') {
     view.value = 'pending'
+    void router.replace({ name: 'dashboard' })
   } else {
     try {
       baseUrl.value = apiBaseUrl()
@@ -122,6 +125,7 @@ async function logout(): Promise<void> {
     user.value = null
     view.value = 'login'
     errorCode.value = ''
+    void router.replace({ name: 'dashboard' })
   } catch (error) {
     reportError(error)
   } finally {
@@ -145,7 +149,6 @@ onMounted(() => {
             <img class="auth-panel__logo" src="/favicon.svg" alt="" aria-hidden="true" width="48" height="48">
             <span>{{ t('app.brandLead') }}<span class="auth-panel__brand-accent">{{ t('app.brandAccent') }}</span></span>
           </h1>
-          <p class="auth-panel__subtitle">{{ t('app.subtitle') }}</p>
         </header>
         <p v-if="view === 'loading'" role="status">{{ t('auth.loading') }}</p>
         <template v-else-if="view === 'setup'">
@@ -240,11 +243,6 @@ onMounted(() => {
   }
   &__brand-accent { color: rgb(var(--brand-word)); }
   &__logo { flex: none; width: 3rem; height: 3rem; }
-  &__subtitle {
-    margin: var(--space-2) 0 0 calc(3rem + var(--space-3));
-    color: rgb(var(--text-muted));
-    font-size: 0.8125rem;
-  }
   &__title {
     margin: 0 0 var(--space-3);
     font-family: var(--font-display);

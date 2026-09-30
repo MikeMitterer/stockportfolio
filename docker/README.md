@@ -123,8 +123,9 @@ In an empty portfolio, **Restore backup …** opens **Settings → Backup** dire
 
 Keep the same web address and host port when updating. Clearing the browser's
 site data removes the locally stored portfolio. Until T-61 adds server-side
-portfolio storage, only the first admin can open the existing local portfolio;
-other accounts see a notice that portfolio access is pending.
+portfolio storage, admin accounts in the same browser profile can open the
+same local portfolio. Regular user accounts see a pending-access notice and
+cannot yet open the dashboard or import a backup.
 
 ## Updating
 

@@ -262,8 +262,9 @@ That has consequences worth knowing:
 - A different browser or device shows an empty portfolio.
 - "Clear site data" in the browser deletes the portfolio too.
 - Container updates keep accounts only when the same `/data` volume is mounted.
-- Until the server-side portfolio work in T-61, only the first admin can open
-  the existing browser portfolio. Other accounts see a pending-access notice.
+- Until the server-side portfolio work in T-61, admin accounts in the same
+  browser profile can open the same local portfolio. Regular user accounts see
+  a pending-access notice and cannot yet open the dashboard or import a backup.
 
 _Settings → Backup_ offers backup and restore: a JSON file with the
 portfolio, the settings and the list of hidden assets. Prices are not included —
