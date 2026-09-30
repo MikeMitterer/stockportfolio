@@ -723,3 +723,11 @@ Runde 3 im Browser sowie gegen das SQLite-Repository geprüft. Nicht selbst
 geklickt sind Export je Depot nach gesetztem Marker, die Reaktivierung und
 ein echter paralleler Schreibkonflikt; sie sind durch Code und Tests belegt.
 Mikes menschliche Prüfpunkte A bis D stehen aus.
+
+## Zeitpunkt der menschlichen Prüfung · Mike, 2026-09-30
+
+Mike: „T-61 teste ich wenn t-62 auch fertig ist“. Die Prüfpunkte A bis D
+prüft Mike gemeinsam mit T-62, nicht vorher. Bis dahin bleibt T-61 technisch
+freigegeben (Runde 6, `094802b`) in `30-doing/`, ohne Abschluss und ohne
+Integration. Die Arbeit an T-62 wartet darauf nicht. Festgehalten von
+`claude-observer`.
