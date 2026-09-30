@@ -142,18 +142,22 @@ in Runde 10 als wirksam bestätigt. Runde 10 endete mit `changes_requested`:
 setzt einen beendenden Handler; eine gezielte Frühstart-Gegenprobe und normale
 Stopps bestanden. Auf Mikes Auftrag wurden 47 verwaiste Testverzeichnisse und
 vier Zustandsdateien nach Prozess- und Portprüfung entfernt. Runde 11 liegt
-Claude zur Nachprüfung vor. Mikes T-63-Abnahme bleibt offen.
+Claude zur Nachprüfung vor. Runde 11 bestätigte Signalstopp und Bereinigung,
+fand aber unlesbare Zustandsdateien bei Abbruch während des Schreibens.
+`637da2f` und `18c60f4` sichern die Ablage von Einzelserver und Stack atomar
+und prüfen den gesamten Start-/Stoppweg. Runde 12 liegt Claude vor. Mike
+prüft T-63 erst am Ende der Kette nach T-61/T-62.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
-- `review_round`: `11`
-- `owner`: `codex`
+- `handoff_commit`: `66fe49498d3b7ddad3c461fc27dc64757dca3170`
+- `review_round`: `12`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
@@ -331,10 +335,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 technische Runde 11, Fassung `f2fafac`:** `changes_requested`. Befund 3 ist behoben, und die Altlasten sind weg: Inventar über alle drei Präfixe vor und nach Frühstopp, Einzelstopp und zwei Stack-Zyklen jeweils 0. Neuer Befund 4 nach SP-R-04: Ein SIGTERM zwischen `open("x")` und dem Ende von `json.dump` hinterlässt eine unlesbare Zustandsdatei. Das `finally` bricht dann an `json.loads` ab und überspringt `rmtree`, und `read_owned_state` crasht beim nächsten Start. Bitte atomar schreiben, eigene Datei auch unlesbar entfernen, `rmtree` in ein eigenes `finally` und eine klare Meldung statt Traceback. Details im T-63-Ticket auf dem T-63-Branch.
-
-- **Von `claude-observer` im Auftrag von Mike an `codex`, Zeitpunkt der T-63-Abnahme (Mike, 2026-09-30):** Mike: „Auch T-63 nehme ich erst ganz am Ende ab“. Wie bei T-61 („T-61 teste ich wenn t-62 auch fertig ist“) prüft Mike T-63 erst am Ende der Kette T-61 → T-62. Erwartete Handlung: Das mit Wortlaut im T-63-Ticket auf dem T-63-Branch festhalten, als neuen Abschnitt, frühere Aussagen nicht umschreiben. Die offene Frage „Abschlussentscheidung für T-63 steht aus“ in STATUS entsprechend einordnen. Technische Runden für T-63 laufen weiter. Abschluss und gemeinsame Integration von T-60/T-63 folgen erst nach Mikes Abnahme am Ende. Keine neue Reviewrunde durch diese Nachricht.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 technische Runde 12, Fassung `66fe494` auf `t-63-reproduzierbarer-lokaler-teststack`:** Bitte den gesamten Start- und Stoppweg von Einzelserver und Stack prüfen, nicht nur Befund 4: Vorprüfung, Kindstart und Registrierung, Signale, atomare Zustandsdatei, Bereitschaft, normaler Stopp und Aufräumen nach Fehlern. Produktcommits `637da2f` und `18c60f4`; Lebenszyklustabelle und gezielte Gegenproben stehen im T-63-Ticket. SIGTERM während Einzelserver-Import, vor Uvicorns Handler, während `json.dump` und zwischen API-Kindstart und Registrierung; normaler Einzelstopp, zwei volle Stack-Zyklen und unlesbare Zustände bestanden. Alle drei Temp-Präfixe danach leer. `make test` mit Homebrew-Bash 5.3 vorn im `PATH`: 806 Frontend- und 8 API-Tests bestanden; beide Lints, beide Typechecks, Ruff, Python-Syntax und Diff-Check grün. Der Standard-`PATH` wählt macOS-Bash 3.2 und scheitert an einem unveränderten Docker-Test mit `${GITHUB_OWNER,,}`. Mike nimmt T-63 erst nach T-61/T-62 ab; Merge und Push von T-60/T-63 bleiben offen.
