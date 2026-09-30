@@ -1052,3 +1052,63 @@ damit ohne Theme. Die Einzelheiten der Umsetzung stehen in der INBOX
 für Variante (c). Die Fassung selbst enthält keinen Fehler. Die nächste
 Runde prüft die eigene `.venv`, den Stack-Aufruf daraus, die unveränderte
 StockInfo-Umgebung und den Abgleich beider Anleitungen.
+
+## Abnahme Mike · Python-Umgebung · 2026-09-30
+
+Mike entschied nach Runde 8, den Stack mit StockPortfolios eigener `.venv`
+auszuführen. Der StockInfo-Kindprozess bleibt an StockInfos `.venv` gebunden;
+der Einzelserver ohne `--stack` importiert StockInfos App im selben Prozess
+und wird deshalb weiter direkt mit dessen Python gestartet. Diese Entscheidung
+ersetzt den vorläufigen T-82-Verweis aus der Nacharbeit zu Runde 7, ohne die
+älteren Reviewbelege umzuschreiben.
+
+Commit `ca9c74b` richtet `make setup` für die lokale Python-Umgebung und das
+deklarierte `requirements-test-stack.txt` ein. `.gitignore` ignoriert `.venv`;
+`make clean` entfernt sie. Der Bibliotheks-Check in `setup-libs.sh` verwendet
+den paketierten Pfad `projecttools/ui/colors.py`. README, AGENTS und
+Skriptkopf zeigen Stack-Start, Status und Stop mit `.venv/bin/python` sowie
+den StockInfo-only-Aufruf mit dessen Python. `make hints` zeigt die verkürzte
+Setup-Reihenfolge ohne doppelte npm-Installation.
+
+**Prüfung:** Ein frisches `python3.11 -m venv .venv` und die reguläre
+Installation aus `requirements-test-stack.txt` bestanden; der erste pip-Lauf
+in der Netz-Sandbox scheiterte nur am isolierten Build-Download, derselbe
+Befehl mit Netzfreigabe bestand. Der Import kommt aus dem lokalen,
+paketierten ProjectTools-`master`. `bash scripts/setup-libs.sh --install`,
+`make help`, `make hints` und `make -n setup` bestanden. `make clean`
+entfernte die `.venv`; sie wurde danach für die Reviewprobe wieder angelegt.
+Der gesamte `make setup`-Lauf wurde im Prüf-Worktree wegen seiner auf den
+Haupt-Workspace zeigenden `node_modules`-Symlinks nicht erneut ausgeführt;
+der unveränderte npm-Teil ist durch `make test` geprüft.
+
+Die CLI-Hilfe lief aus StockPortfolios `.venv` ohne StockInfo-Pakete. Im
+Pseudo-Terminal zeigte `MAKE_THEME=ocean` farbige Gruppen und Optionen;
+`NO_COLOR=1` sowie die Pipe zeigten keine ANSI-Farben. `--stack --status`
+meldete korrekt keinen registrierten Stack. Ein `--stack --run` mit absichtlich
+fehlendem StockInfo-Pfad endete vor einem Prozessstart mit
+`Missing StockInfo Python environment: .../.venv/bin/python`; für dessen
+`ps`-Identitätsprüfung wurde die vorgesehene Freigabe verwendet. Der
+vollständige Stack wurde für diese Änderung nicht erneut gestartet. Der
+frühere Endpunkt-, Kurs- und CORS-Lauf aus Runde 7 bleibt der letzte
+Live-Stack-Nachweis. StockInfos `.venv` wurde nicht verändert.
+
+`make test` bestand mit 806 Frontend- und 8 API-Tests. Beide ESLint-Läufe,
+beide Typechecks, Ruff, Python-Syntaxprüfung und `git diff --check`
+bestanden. Frontend- und API-Produktcode blieben unverändert.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) nennen beide den eigenen Stack-Interpreter, den
+StockInfo-Kindprozess und den direkten Einzelserver-Aufruf. `docker/README.md`
+(**Quick start**, **Configuration**, **Data and backups**) enthält weder
+lokalen Teststack noch Python-Setup; keine Änderung nötig. StockInfo-T-82
+wird durch diese Lösung für StockPortfolios Theme-Bezug nicht benötigt und
+hier nicht verändert. Keine Board- oder Lessons-Konvention wurde geändert.
+
+## Übergabe an Claude · technische Runde 9 · 2026-09-30
+
+Bitte Mikes Variante (c) auf Commit `ca9c74b` prüfen: `make setup` richtet
+StockPortfolios `.venv` ein, die CLI verwendet daraus das Theme, während
+der StockInfo-Kindprozess weiterhin dessen `.venv` verwendet. Den fehlenden
+StockInfo-Pfad und die offen benannte Grenze des nicht wiederholten
+Live-Stack-Laufs bitte gegen die obigen Belege bewerten. Mikes T-63-Abnahme
+und die gemeinsame Integration mit T-60 stehen noch aus.
