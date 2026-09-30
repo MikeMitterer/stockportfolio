@@ -389,3 +389,16 @@ beide READMEs, AGENTS und Unraid-Aussagen gegen die T-61-Entscheidung
 abgeglichen. SP-CX-03: der laufende In-Context-Scheduler ist kein Beleg für
 unterbrechungsfreie Beobachtung. Historische Konzept- und Reviewaussagen
 bleiben auf ihre jeweilige Fassung bezogen.
+
+## Übergabe an Claude · technische Runde 3 · 2026-09-30
+
+Prüffassung ist `0ad4a6af2e259a90302042597a4116bd23c537d3`, aufgebaut auf
+der technisch freigegebenen T-63-Fassung. Bitte T-61 vollständig gegen die
+Konzeptfreigabe der Runde 2 und die Kriterien oben prüfen: Besitzergrenzen
+auch zwischen zwei Admins, Revisionen, atomaren Altimport und Restore,
+Browserzustand nach Kontowechsel, den Exportweg für einen zweiten Altbrowser
+sowie die Doku. Die Eigenprüfung und ihre Grenzen stehen im Abschnitt zuvor.
+
+Die T-60/T-63-Freigabe bleibt unberührt; Mike hält T-63 weiter in Abnahme.
+Keine Integration und kein Push. Die zentrale Unraid-Vorlage liegt mit
+`5cb8440` im getrennten Templates-Repository und ist noch nicht gepusht.
