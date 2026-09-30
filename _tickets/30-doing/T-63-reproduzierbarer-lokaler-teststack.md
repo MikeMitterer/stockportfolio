@@ -766,3 +766,38 @@ gegen den isolierten Stack mit `--demo-accounts`. Gemessen habe ich bei 320,
 Runde-4-Befunde sind für die geprüften Breiten 390 und 1440 px behoben. Die
 Nachprüfung beschränkt sich auf die Kopfzeile: Breiten-Scan und die
 Rebalancing-Beschriftung.
+
+## Nacharbeit zu Runde 5 · 2026-09-30
+
+Beide blockierenden Befunde sind im
+[T-60-Nachtrag](T-60-stockportfolio-server-und-benutzerkonten.md#nacharbeit-zu-claudes-runde-5--2026-09-30)
+mit Umsetzung und Browser-Gegenprobe belegt. Die Kopfzeile zeigt allgemeine
+Labels und Benutzernamen erst ab `xl`, die Wortmarke zwischen `sm` und `md`
+nicht. Auf Telefonen ab 23 rem steht Rebalancing gemäß Mikes T-44-Entscheidung
+als Wort ohne Symbol; darunter bleibt der Link als benanntes Symbol erhalten.
+Ein Scan von 360 bis 1280 px in 20-px-Schritten fand keinen verdeckten Link,
+keine Überlappung und kein waagrechtes Scrollen. Die Umschaltpunkte und 320 px
+wurden zusätzlich geprüft. SP-CX-06 aus der Observer-INBOX ist damit anhand
+der tatsächlichen Klickziele angewandt, nicht nur zitiert.
+
+Den von Mike zusätzlich beanstandeten Python-Einstieg habe ich strukturell
+bereinigt: `parse_args()` parst und validiert, `main()` wählt Stack oder
+Einzelserver, und der Einzelserver wird erst nach dieser Wahl geladen. Beim
+Import des Skripts wird kein Server mehr gestartet. Der dokumentierte Aufruf
+und alle Optionen bleiben gleich. Geprüft wurden `--help` und der Aufruf ohne
+Argumente sowie Start, Status und Stop sowohl des vollständigen Stacks als
+auch des einzelnen StockInfo-Testservers. Beide Starts meldeten die Ports;
+der Stack bestand seine Endpoint- und CORS-Prüfungen. `ruff check` bestand.
+
+`make test` bestand mit 806 Frontend- und 8 API-Tests. Beide Lints, beide
+Typechecks, Frontend-Build und `git diff --check` bestanden. Die Vorschau von
+`docker/README.md` für Docker Hub bestand einschließlich Größenprüfung.
+
+**Doku-Abgleich:** Die gemeinsam geprüften Abschnitte in `README.md` (**Where
+the data lives**) und `docker/README.md` (**Configuration**) nennen die
+mobile Rebalancing-Beschriftung übereinstimmend. Die Architektur-Spezifikation,
+`AGENTS.md`, `unraid/README.md` und die Unraid-Vorlage enthalten keine
+entgegenstehende Navigationsanweisung. Der gemeinsame Workflow-Skill und seine
+Vorlagen ändern sich durch die Anwendung von SP-CX-06 nicht. Der Python-Einstieg
+behält seine dokumentierte CLI; `README.md` (**Setup**) und `AGENTS.md` (**Bauen
+und prüfen**) brauchen dafür keine weiteren Änderungen.
