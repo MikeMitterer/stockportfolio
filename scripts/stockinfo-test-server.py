@@ -66,7 +66,15 @@ def parse_args(argv: list[str]) -> tuple[argparse.Namespace, argparse.ArgumentPa
     parser = argparse.ArgumentParser(
         prog=Path(__file__).name,
         description=translate("Run the local StockInfo fixture server and optional browser stack."),
-        epilog=translate("Example: --stack --run; then --stack --status or --stack --stop."),
+        epilog="\n".join((
+            translate("Examples:"),
+            "  --stack --run --stockinfo-root ../StockInfo",
+            "  --stack --run --demo-accounts --stockinfo-root ../StockInfo",
+            "  --stack --status",
+            "  --stack --stop",
+            "  --run --stockinfo-root ../StockInfo --port 8899",
+        )),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False,
     )
     actions = parser.add_argument_group(translate("Actions")).add_mutually_exclusive_group(required=True)

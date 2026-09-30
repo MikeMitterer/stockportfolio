@@ -532,6 +532,11 @@ dass die Punkte im Ticket stehen und vor der Freigabe nichts integriert wird.
   erzeugt Passwörter mit Großbuchstabe, Ziffer und Sonderzeichen passend zur
   Konto-API. Die native `argparse`-Hilfe bleibt auf Python 3.11 zulässig
   unfarbig; eine Laufzeitabhängigkeit vom ProjectTools-Quellpfad entsteht nicht.
+- Mikes weitere Vorgabe für dieses Skript: keine Farben, Themes oder
+  Hints-Sektion. Die native unfarbige Hilfe zeigt stattdessen mehrere
+  Beispiele sauber untereinander: Stack-Start, Demo-Konten, Status, Stop und
+  Einzelserver. Der bereits vorhandene gettext-Katalog übersetzt die
+  Überschrift. T-63 bleibt bis zu Mikes ausdrücklichem Urteil in Abnahme.
 - „Anmeldung nicht erreichbar“ bei einzeln gestartetem Vite ist ein fehlender
   Konto-API-Prozess auf Port 8080. `make dev` startet beide Server; der
   isolierte Stack startet sie zusammen und meldet die konkreten Adressen.
@@ -862,3 +867,23 @@ festgehalten. Der Observer hat vor dem Archivieren auf diese Trennung
 hingewiesen. T-60 und T-63 bleiben deshalb in `30-doing/`; der gemeinsame
 Merge und Push warten auf Mikes T-63-Entscheidung. T-61 kann auf einem eigenen,
 auf der geprüften Fassung aufbauenden Branch beginnen.
+
+## Weitere Abnahmepräzisierung · CLI-Hilfe · 2026-09-30
+
+Die einzelne `Example:`-Zeile der Hilfe ist durch fünf getrennte
+Beispielzeilen ersetzt. `argparse.RawDescriptionHelpFormatter` erhält deren
+Zeilenumbrüche. Das Skript enthält weiterhin keine Farb-, Theme- oder
+Hints-Ausgabe und lädt `projecttools.ui.colors` nicht. Der Skriptkopf und die
+Aktionsoptionen bleiben unverändert.
+
+**Eigenprüfung:** `--help` und Aufruf ohne Argumente zeigten die Beispiele
+zeilenweise und endeten jeweils mit Exit 0. Die deutsche Ausgabe mit
+`LC_ALL=de_DE.UTF-8` zeigte „Beispiele:“ und dieselben fünf Aufrufe.
+`msgfmt --check-format` erzeugte den aktuellen deutschen Katalog; `ruff check`
+für beide Python-Dateien und `git diff --check` bestanden.
+
+**Doku-Abgleich:** `README.md` (**Setup**) und `AGENTS.md` (**Bauen und prüfen**)
+nennen weiterhin die gültigen Aufrufe. `docker/README.md` beschreibt den
+Containerbetrieb und betrifft die lokale Skript-Hilfe nicht. Keine Änderung
+an Board- oder Lessons-Konventionen; der `task-verification-workflow`-Skill
+bleibt unverändert. T-60 ist von Mike abgenommen; T-63 bleibt in Abnahme.

@@ -6,8 +6,8 @@ msgstr ""
 msgid "Run the local StockInfo fixture server and optional browser stack."
 msgstr "Lokalen StockInfo-Testserver und optional den Browserstack verwalten."
 
-msgid "Example: --stack --run; then --stack --status or --stack --stop."
-msgstr "Beispiel: --stack --run; danach --stack --status oder --stack --stop."
+msgid "Examples:"
+msgstr "Beispiele:"
 
 msgid "Actions"
 msgstr "Aktionen"
