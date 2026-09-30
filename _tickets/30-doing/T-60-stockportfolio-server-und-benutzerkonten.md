@@ -594,6 +594,9 @@ Abnahmepunkte:
   `/#/rebalancing` zu behaupten. Auch Logout aus der App setzt die Adresse
   zurück. Die sachfremde Unterzeile „Tolerance-Band Rebalancing“ entfällt
   auf den Konto-Seiten; Logo und zustandsbezogene Überschrift bleiben.
+- Der Anmeldedialog sitzt etwas höher: Seine Mitte liegt bei üblicher
+  Fensterhöhe auf 38,2 % der Höhe. Bei niedrigen Fenstern bleibt der
+  bisherige Abstand erhalten, damit das Formular nicht abgeschnitten wird.
 
 **Doku-Abgleich:** `README.md` (**Where the data lives**, **Setup**, **Docker**)
 und `docker/README.md` (**Quick start**, **Configuration**) erklären Code,
@@ -634,3 +637,11 @@ bestanden danach erneut. Der Build meldet weiterhin den großen `vendor-ui`-Chun
 Für die URL- und Textkorrektur brauchten `README.md`, `docker/README.md`,
 `unraid/README.md` und die Unraid-Vorlage keine zusätzliche Anleitung:
 Sie nennen weder die Anmelde-URL noch die frühere Unterzeile.
+Die reine Positionsänderung braucht ebenfalls keine zusätzliche Anleitung.
+Im Browser lag die Panelmitte bei 900 px Fensterhöhe auf 38,2 %;
+bei 844 px Höhe blieb das Formular ohne Scrollen vollständig sichtbar.
+Der abschließende gemeinsame Lauf bestand mit 806 Frontend- und 8 API-Tests;
+Frontend- und API-Lint sowie beide Typechecks bestanden.
+Lessons-Abgleich: SP-CX-05 wurde durch den Browservergleich mit dem
+beauftragten Goldenen-Schnitt-Verhältnis geprüft; SP-R-03 durch den
+bereits dokumentierten Vergleich mit den benachbarten Hauptansichten.

@@ -142,7 +142,7 @@ onMounted(() => {
 <template>
   <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
     <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
-    <main v-else class="auth-page" :class="{ 'auth-page--pending': view === 'pending' }">
+    <main v-else class="auth-page" :class="{ 'auth-page--pending': view === 'pending', 'auth-page--login': view === 'login' }">
       <section class="auth-panel">
         <header class="auth-panel__header">
           <h1 class="auth-panel__brand">
@@ -220,6 +220,13 @@ onMounted(() => {
 }
 
 .auth-page--pending { padding-bottom: calc(var(--space-6) + 8vh); }
+
+// Die Mitte des Login-Panels liegt bei 38,2 % der Fensterhöhe.
+.auth-page--login {
+  padding-bottom: calc(var(--space-6) + 23.6vh);
+
+  @media (max-height: 650px) { padding-bottom: var(--space-6); }
+}
 
 .auth-panel {
   width: min(100%, 30rem);
