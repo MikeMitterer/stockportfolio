@@ -527,6 +527,14 @@ dass die Punkte im Ticket stehen und vor der Freigabe nichts integriert wird.
   der Einstellungsleiste. `README.md` (**Docker**), `docker/README.md`
   (**Configuration**, **Status and logs**) und `unraid/README.md` (**Data,
   API and verification**) beschreiben den neuen Weg.
+- Der Python-Testserver nennt alle Optionen im Skriptkopf; Einzelserver- und
+  Stackmeldungen laufen durch denselben gettext-Katalog. `--demo-accounts`
+  erzeugt Passwörter mit Großbuchstabe, Ziffer und Sonderzeichen passend zur
+  Konto-API. Die native `argparse`-Hilfe bleibt auf Python 3.11 zulässig
+  unfarbig; eine Laufzeitabhängigkeit vom ProjectTools-Quellpfad entsteht nicht.
+- „Anmeldung nicht erreichbar“ bei einzeln gestartetem Vite ist ein fehlender
+  Konto-API-Prozess auf Port 8080. `make dev` startet beide Server; der
+  isolierte Stack startet sie zusammen und meldet die konkreten Adressen.
 
 **Eigenprüfung:** `make help` zeigt `dev`, `test` und `clean` gemeinsam unter
 „Entwicklung“; `git diff --check` ist unauffällig. `make test` bestand mit
@@ -535,3 +543,19 @@ bestanden. Die gemeinsame Prüfung ist auch in T-60 belegt.
 Im Browser öffnete ein Klick auf den API-Eintrag die Statusseite; die
 Einstellungen zeigten weder Status- noch Benutzerreiter und „About“ blieb
 rechts.
+`msgfmt --check-format` für den ergänzten Katalog und die deutsche
+`--help`-Ausgabe bestanden. Der isolierte Stack startete mit
+`--demo-accounts`; StockInfo, Konto-API und Vite sowie Kurs, Health und CORS
+waren bereit. Danach stoppte `--stack --stop` alle eigenen Prozesse und
+entfernte die temporären Kontodaten.
+
+**Doku-Abgleich:** `README.md` (**Setup**) erklärt den Fehler bei einzeln
+gestartetem Vite und nennt den gemeinsamen Start mit `make dev`. Die
+synthetischen Passwörter erfüllen nun die dokumentierten Passwortregeln.
+`docker/README.md` beschreibt ausschließlich den Containerbetrieb und
+braucht für diese lokale CLI-Korrektur keine Änderung.
+Der abschließende gemeinsame Lauf bestand mit 806 Frontend- und 8 API-Tests;
+Frontend- und API-Lint sowie beide Typechecks bestanden. SP-CX-01 wurde am
+beibehaltenen direkten Python-Aufruf ohne neue Startschicht geprüft;
+SP-CX-02 am Abgleich von `README.md`, `AGENTS.md`, den aktiven Tickets und
+den tatsächlichen CLI-Aufrufen.

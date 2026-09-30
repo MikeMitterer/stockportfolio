@@ -37,9 +37,11 @@ def process_identity(pid: int) -> str:
             capture_output=True, text=True, check=False,
         )
     except OSError as error:
-        raise RuntimeError(f"Process inspection requires ps access: {error}") from error
+        raise RuntimeError(translate("Process inspection requires ps access: {error}").format(error=error)) from error
     if result.stderr.strip():
-        raise RuntimeError(f"Process inspection requires ps access: {result.stderr.strip()}")
+        raise RuntimeError(translate("Process inspection requires ps access: {error}").format(
+            error=result.stderr.strip(),
+        ))
     identity = result.stdout.strip()
     if result.returncode or not identity or identity.startswith("Z"):
         return ""
@@ -51,25 +53,31 @@ def require_free_port(port: int) -> None:
         try:
             probe.bind(("127.0.0.1", port))
         except OSError as error:
-            raise RuntimeError(f"Port {port} is already in use; no process was stopped") from error
+            raise RuntimeError(translate("Port {port} is already in use; no process was stopped").format(
+                port=port,
+            )) from error
 
 
 def preflight(project_root: Path, stockinfo_root: Path, stockinfo_port: int) -> Path:
     if not process_identity(os.getpid()):
-        raise RuntimeError("ps cannot identify this process")
+        raise RuntimeError(translate("ps cannot identify this process"))
     for port in (stockinfo_port, API_PORT, FRONTEND_PORT):
         require_free_port(port)
     stockinfo_python = stockinfo_root / ".venv/bin/python"
     if not stockinfo_python.is_file():
-        raise RuntimeError(f"Missing StockInfo Python environment: {stockinfo_python}")
+        raise RuntimeError(translate("Missing StockInfo Python environment: {path}").format(
+            path=stockinfo_python,
+        ))
     for executable in (
         project_root / "api/node_modules/.bin/tsx",
         project_root / "frontend/node_modules/.bin/vite",
     ):
         if not executable.is_file():
-            raise RuntimeError(f"Missing {executable}; install the declared npm packages first")
+            raise RuntimeError(translate("Missing {path}; install the declared npm packages first").format(
+                path=executable,
+            ))
     if not shutil.which("node"):
-        raise RuntimeError("Missing Node.js in PATH")
+        raise RuntimeError(translate("Missing Node.js in PATH"))
     return stockinfo_python
 
 
@@ -110,7 +118,9 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
                 time.sleep(0.1)
                 identity = process_identity(process.pid)
                 if not identity:
-                    raise RuntimeError(f"{name} exited during startup; see {log_path}")
+                    raise RuntimeError(translate("{name} exited during startup; see {path}").format(
+                        name=name, path=log_path,
+                    ))
             except (Exception, KeyboardInterrupt):
                 if process.poll() is None:
                     os.killpg(process.pid, signal.SIGTERM)
@@ -131,22 +141,28 @@ def stop_children(children: dict[str, dict[str, object]]) -> None:
         if not current_identity:
             continue
         if current_identity != child["identity"]:
-            raise RuntimeError(f"Refusing to stop {name}: its process identity changed")
+            raise RuntimeError(translate("Refusing to stop {name}: its process identity changed").format(
+                name=name,
+            ))
         if os.getpgid(pid) != pid:
-            raise RuntimeError(f"Refusing to stop {name}: its process group changed")
+            raise RuntimeError(translate("Refusing to stop {name}: its process group changed").format(
+                name=name,
+            ))
         os.killpg(pid, signal.SIGTERM)
         deadline = time.monotonic() + 10
         while process_identity(pid) == child["identity"] and time.monotonic() < deadline:
             time.sleep(0.1)
         if process_identity(pid) == child["identity"]:
-            raise RuntimeError(f"{name} did not stop; see {child['log']}")
+            raise RuntimeError(translate("{name} did not stop; see {path}").format(name=name, path=child["log"]))
 
 
 def remove_data(data_dir: Path) -> None:
     temporary_root = Path(tempfile.gettempdir()).resolve()
     resolved = data_dir.resolve()
     if resolved.parent != temporary_root or not resolved.name.startswith("stockportfolio-t63-"):
-        raise RuntimeError(f"Refusing to remove unexpected test directory: {data_dir}")
+        raise RuntimeError(translate("Refusing to remove unexpected test directory: {path}").format(
+            path=data_dir,
+        ))
     shutil.rmtree(resolved)
 
 
@@ -162,7 +178,9 @@ def request(url: str, origin: str | None = None, body: dict[str, str] | None = N
         with urlopen(http_request, timeout=2) as response:
             return response.status, {key.lower(): value for key, value in response.headers.items()}, response.read()
     except HTTPError as error:
-        raise RuntimeError(f"{url} returned HTTP {error.code}") from error
+        raise RuntimeError(translate("{url} returned HTTP {status}").format(
+            url=url, status=error.code,
+        )) from error
 
 
 def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
@@ -170,21 +188,23 @@ def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
     for path in ("/health", QUOTE_PATH):
         status, headers, payload = request(stockinfo_url + path, FRONTEND_ORIGIN)
         if status != 200 or headers.get("access-control-allow-origin") != FRONTEND_ORIGIN:
-            raise RuntimeError(f"StockInfo {path} has the wrong response or CORS origin")
+            raise RuntimeError(translate("StockInfo {path} has the wrong response or CORS origin").format(
+                path=path,
+            ))
         if path == QUOTE_PATH and json.loads(payload).get("price") != 128.7:
-            raise RuntimeError("The known StockInfo test quote is missing")
+            raise RuntimeError(translate("The known StockInfo test quote is missing"))
     status, _, _ = request(f"http://127.0.0.1:{API_PORT}/healthz")
     if status != 200:
-        raise RuntimeError("The account API health check failed")
+        raise RuntimeError(translate("The account API health check failed"))
     status, _, payload = request(f"http://127.0.0.1:{API_PORT}/api/setup/status")
     if status != 200 or json.loads(payload).get("required") != (not demo_accounts):
-        raise RuntimeError("The account API has unexpected setup state")
+        raise RuntimeError(translate("The account API has unexpected setup state"))
     status, _, module = request(FRONTEND_ORIGIN + "/src/api/client.ts")
     if status != 200 or stockinfo_url.encode() not in module:
-        raise RuntimeError("Vite is not serving the selected StockInfo endpoint")
+        raise RuntimeError(translate("Vite is not serving the selected StockInfo endpoint"))
     status, _, runtime_config = request(FRONTEND_ORIGIN + "/config.js")
     if status != 200 or b"apiUrl: ''" not in runtime_config:
-        raise RuntimeError("Vite runtime configuration overrides the selected StockInfo endpoint")
+        raise RuntimeError(translate("Vite runtime configuration overrides the selected StockInfo endpoint"))
 
 
 def wait_ready(stockinfo_port: int, demo_accounts: bool = False) -> None:
@@ -197,30 +217,32 @@ def wait_ready(stockinfo_port: int, demo_accounts: bool = False) -> None:
         except (RuntimeError, URLError, TimeoutError) as error:
             last_error = error
             time.sleep(0.25)
-    raise RuntimeError(f"The local test stack did not become ready: {last_error}")
+    raise RuntimeError(translate("The local test stack did not become ready: {error}").format(
+        error=last_error,
+    ))
 
 
 def seed_accounts(data_dir: Path) -> Path:
     api_log = (data_dir / "api.log").read_text()
     code_match = re.search(r"StockPortfolio setup code: ([A-Za-z0-9_-]+)", api_log)
     if not code_match:
-        raise RuntimeError("No setup code in the isolated API log")
+        raise RuntimeError(translate("No setup code in the isolated API log"))
     api_url = f"http://127.0.0.1:{API_PORT}"
-    admin_password = secrets.token_urlsafe(18)
-    user_password = secrets.token_urlsafe(18)
+    admin_password = f"Aa1!{secrets.token_urlsafe(18)}"
+    user_password = f"Aa1!{secrets.token_urlsafe(18)}"
     setup = {"code": code_match.group(1), "username": "test-admin", "password": admin_password}
     status, _, _ = request(api_url + "/api/setup", FRONTEND_ORIGIN, setup)
     if status != 201:
-        raise RuntimeError("Creating the synthetic admin failed")
+        raise RuntimeError(translate("Creating the synthetic admin failed"))
     status, headers, _ = request(api_url + "/api/auth/login", FRONTEND_ORIGIN,
                                  {"username": "test-admin", "password": admin_password})
     if status != 200:
-        raise RuntimeError("Signing in the synthetic admin failed")
+        raise RuntimeError(translate("Signing in the synthetic admin failed"))
     cookie = headers.get("set-cookie", "").split(";", 1)[0]
     status, _, _ = request(api_url + "/api/admin/users", FRONTEND_ORIGIN,
                            {"username": "test-user", "password": user_password, "role": "user"}, cookie)
     if status != 201:
-        raise RuntimeError("Creating the synthetic user failed")
+        raise RuntimeError(translate("Creating the synthetic user failed"))
     credentials_path = data_dir / "demo-accounts.json"
     descriptor = os.open(credentials_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(descriptor, "w") as credentials_file:
@@ -250,7 +272,7 @@ def describe_stack(state: dict[str, object]) -> None:
 def require_owned_processes(state: dict[str, object]) -> None:
     for name, child in dict(state["children"]).items():
         if process_identity(int(child["pid"])) != child["identity"]:
-            raise RuntimeError(f"The registered {name} process is not running")
+            raise RuntimeError(translate("The registered {name} process is not running").format(name=name))
 
 
 def run_stack_cli(args: Namespace, script_path: Path) -> int:
@@ -260,7 +282,7 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
     state_path = Path(tempfile.gettempdir()) / f"stockportfolio-t63-stack-{state_suffix}.json"
     state = json.loads(state_path.read_text()) if state_path.exists() else None
     if state and state.get("project_root") != str(project_root):
-        raise RuntimeError(f"The state file belongs to another project: {state_path}")
+        raise RuntimeError(translate("The state file belongs to another project: {path}").format(path=state_path))
 
     if args.status:
         if not state:
@@ -289,7 +311,9 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
     if state:
         raise RuntimeError(translate("A local test stack is already registered; use --stack --stop before starting again"))
     if args.origin and args.origin != FRONTEND_ORIGIN:
-        raise RuntimeError(f"The full stack requires --origin {FRONTEND_ORIGIN}")
+        raise RuntimeError(translate("The full stack requires --origin {origin}").format(
+            origin=FRONTEND_ORIGIN,
+        ))
     stockinfo_python = preflight(project_root, stockinfo_root, args.port)
     data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t63-"))
     children: dict[str, dict[str, object]] = {}

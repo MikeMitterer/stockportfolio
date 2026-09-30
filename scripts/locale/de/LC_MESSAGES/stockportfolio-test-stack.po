@@ -113,3 +113,105 @@ msgstr "StockInfo, Konto-API und Vite gemeinsam verwalten"
 
 msgid "Create synthetic accounts in the temporary stack"
 msgstr "Synthetische Konten im temporären Stack anlegen"
+
+msgid "Process inspection failed: {error}"
+msgstr "Prozessprüfung fehlgeschlagen: {error}"
+
+msgid "The state file does not belong to this test server: {path}"
+msgstr "Die Zustandsdatei gehört nicht zu diesem Testserver: {path}"
+
+msgid "The state file has an invalid process ID."
+msgstr "Die Zustandsdatei enthält eine ungültige Prozesskennung."
+
+msgid "No own test server is registered on port {port}."
+msgstr "Kein eigener Testserver auf Port {port} registriert."
+
+msgid "StockInfo test server: {url} (PID {pid})"
+msgstr "StockInfo-Testserver: {url} (PID {pid})"
+
+msgid "The server is still stopping; run --stop again. It was not killed."
+msgstr "Der Server beendet sich noch. Rufe --stop erneut auf; er wurde nicht erzwungen beendet."
+
+msgid "Own test server on port {port} stopped (PID {pid})."
+msgstr "Eigener Testserver auf Port {port} beendet (PID {pid})."
+
+msgid "An own test server is already running on port {port}; run --stop first."
+msgstr "Ein eigener Testserver läuft bereits auf Port {port}; rufe zuerst --stop auf."
+
+msgid "Process inspection requires ps access: {error}"
+msgstr "Die Prozessprüfung benötigt Zugriff auf ps: {error}"
+
+msgid "Port {port} is already in use; no process was stopped"
+msgstr "Port {port} ist bereits belegt; kein Prozess wurde beendet"
+
+msgid "ps cannot identify this process"
+msgstr "ps kann diesen Prozess nicht identifizieren"
+
+msgid "Missing StockInfo Python environment: {path}"
+msgstr "StockInfos Python-Umgebung fehlt: {path}"
+
+msgid "Missing {path}; install the declared npm packages first"
+msgstr "{path} fehlt; installiere zuerst die deklarierten npm-Pakete"
+
+msgid "Missing Node.js in PATH"
+msgstr "Node.js fehlt im PATH"
+
+msgid "{name} exited during startup; see {path}"
+msgstr "{name} wurde beim Start beendet; siehe {path}"
+
+msgid "Refusing to stop {name}: its process identity changed"
+msgstr "{name} wird nicht beendet: Die Prozessidentität hat sich geändert"
+
+msgid "Refusing to stop {name}: its process group changed"
+msgstr "{name} wird nicht beendet: Die Prozessgruppe hat sich geändert"
+
+msgid "{name} did not stop; see {path}"
+msgstr "{name} wurde nicht beendet; siehe {path}"
+
+msgid "Refusing to remove unexpected test directory: {path}"
+msgstr "Unerwartetes Testverzeichnis wird nicht entfernt: {path}"
+
+msgid "{url} returned HTTP {status}"
+msgstr "{url} antwortete mit HTTP {status}"
+
+msgid "StockInfo {path} has the wrong response or CORS origin"
+msgstr "StockInfo {path} liefert eine falsche Antwort oder CORS-Herkunft"
+
+msgid "The known StockInfo test quote is missing"
+msgstr "Der bekannte StockInfo-Testkurs fehlt"
+
+msgid "The account API health check failed"
+msgstr "Die Health-Prüfung der Konto-API ist fehlgeschlagen"
+
+msgid "The account API has unexpected setup state"
+msgstr "Die Konto-API meldet einen unerwarteten Einrichtungsstand"
+
+msgid "Vite is not serving the selected StockInfo endpoint"
+msgstr "Vite liefert den ausgewählten StockInfo-Endpunkt nicht aus"
+
+msgid "Vite runtime configuration overrides the selected StockInfo endpoint"
+msgstr "Die Vite-Laufzeitkonfiguration überschreibt den ausgewählten StockInfo-Endpunkt"
+
+msgid "The local test stack did not become ready: {error}"
+msgstr "Der lokale Teststack wurde nicht bereit: {error}"
+
+msgid "No setup code in the isolated API log"
+msgstr "Im isolierten API-Log steht kein Einrichtungscode"
+
+msgid "Creating the synthetic admin failed"
+msgstr "Das synthetische Admin-Konto konnte nicht angelegt werden"
+
+msgid "Signing in the synthetic admin failed"
+msgstr "Das synthetische Admin-Konto konnte nicht angemeldet werden"
+
+msgid "Creating the synthetic user failed"
+msgstr "Das synthetische Benutzerkonto konnte nicht angelegt werden"
+
+msgid "The registered {name} process is not running"
+msgstr "Der registrierte Prozess {name} läuft nicht"
+
+msgid "The state file belongs to another project: {path}"
+msgstr "Die Zustandsdatei gehört zu einem anderen Projekt: {path}"
+
+msgid "The full stack requires --origin {origin}"
+msgstr "Der vollständige Stack benötigt --origin {origin}"

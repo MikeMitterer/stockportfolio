@@ -11,10 +11,17 @@
 #   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 #
 # Optionen:
-#   -r | --run      Testserver beziehungsweise ganzen Stack starten
-#   -s | --status   Registrierte Prozesse und Endpunkte prüfen
-#   -t | --stop     Nur registrierte eigene Prozesse beenden
-#   -h | --help     Diese Hilfe anzeigen; auch ohne Argumente
+#   -r | --run              Testserver beziehungsweise Stack starten
+#   -s | --status           Registrierte Prozesse und Endpunkte prüfen
+#   -t | --stop             Nur registrierte eigene Prozesse beenden
+#   -S | --stack            Konto-API und Vite ebenfalls verwalten
+#   -i | --stockinfo-root   StockInfo-Repository angeben
+#   -d | --demo-accounts    Synthetische Konten im Stack anlegen
+#   -p | --port             StockInfo-Testport angeben
+#   -o | --origin           Erlaubte Browser-Herkunft angeben
+#   -f | --detail-fixtures  Detail-Fixtures angeben
+#   -D | --demo-details     Lesbare Quelldaten verwenden
+#   -h | --help             Diese Hilfe anzeigen; auch ohne Argumente
 #------------------------------------------------------------------------------
 """Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
 
@@ -93,7 +100,9 @@ def process_identity(pid: int) -> str:
     result = subprocess.run(["ps", "-p", str(pid), "-o", "stat=", "-o", "lstart=", "-o", "command="],
                             capture_output=True, text=True, check=False)
     if result.stderr.strip():
-        raise RuntimeError(f"Prozessprüfung fehlgeschlagen: {result.stderr.strip()}")
+        raise RuntimeError(
+            translate("Process inspection failed: {error}").format(error=result.stderr.strip())
+        )
     identity = result.stdout.strip()
     if result.returncode or not identity or identity.startswith("Z"):
         return ""
@@ -106,10 +115,10 @@ def read_owned_state() -> dict[str, Any] | None:
         return None
     state = json.loads(state_path.read_text())
     if state.get("script") != str(script_path) or state.get("port") != args.port:
-        parser.error(f"Die Zustandsdatei {state_path} gehört nicht zu diesem Testserver")
+        parser.error(translate("The state file does not belong to this test server: {path}").format(path=state_path))
     pid = state.get("pid")
     if not isinstance(pid, int) or pid <= 1:
-        parser.error("Ungültige Prozesskennung in der Zustandsdatei")
+        parser.error(translate("The state file has an invalid process ID."))
     identity = process_identity(pid)
     if not identity or identity != state.get("identity") or script_path.name not in identity:
         state_path.unlink()
@@ -120,13 +129,15 @@ def read_owned_state() -> dict[str, Any] | None:
 existing_state = read_owned_state()
 if args.status:
     if not existing_state:
-        print(f"Kein eigener Testserver auf Port {args.port} registriert.")
+        print(translate("No own test server is registered on port {port}.").format(port=args.port))
         sys.exit(1)
-    print(f"StockInfo-Testserver: http://127.0.0.1:{args.port} (PID {existing_state['pid']})")
+    print(translate("StockInfo test server: {url} (PID {pid})").format(
+        url=f"http://127.0.0.1:{args.port}", pid=existing_state["pid"],
+    ))
     sys.exit(0)
 if args.stop:
     if not existing_state:
-        print(f"Kein eigener Testserver auf Port {args.port} registriert.")
+        print(translate("No own test server is registered on port {port}.").format(port=args.port))
         sys.exit(0)
     pid = existing_state["pid"]
     os.kill(pid, signal.SIGTERM)
@@ -134,14 +145,16 @@ if args.stop:
     while process_identity(pid) == existing_state["identity"] and time.monotonic() < deadline:
         time.sleep(0.1)
     if process_identity(pid) == existing_state["identity"]:
-        parser.error("Server beendet sich noch; kein erzwungenes Beenden. --stop erneut aufrufen.")
+        parser.error(translate("The server is still stopping; run --stop again. It was not killed."))
     # Der Server räumt selbst auf; nur seinen unveränderten Rest entfernen.
     if state_path.exists() and json.loads(state_path.read_text()).get("pid") == pid:
         state_path.unlink()
-    print(f"Eigener Testserver auf Port {args.port} sauber beendet (PID {pid}).")
+    print(translate("Own test server on port {port} stopped (PID {pid}).").format(port=args.port, pid=pid))
     sys.exit(0)
 if existing_state:
-    parser.error(f"Eigener Testserver läuft bereits auf Port {args.port}; zuerst --stop aufrufen")
+    parser.error(translate("An own test server is already running on port {port}; run --stop first.").format(
+        port=args.port,
+    ))
 if not args.stockinfo_root:
     parser.error(translate("A single-server start requires --stockinfo-root."))
 stockinfo_root = args.stockinfo_root.resolve()

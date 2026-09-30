@@ -318,6 +318,9 @@ closes after the first admin account is created. New passwords need 12 to 1024
 characters, including an
 uppercase letter, a number and a special character.
 StockInfo is a separate service; `make dev` does not start it.
+If the login page says the account service is unreachable, check that the
+account API is running on port 8080. Vite alone serves the page but cannot
+handle login requests; `make dev` starts both servers.
 
 For browser checks with local StockInfo prices and an isolated account API,
 start the complete test stack with StockInfo's Python environment:
@@ -333,6 +336,7 @@ The start command returns after the three processes are ready. It prints Vite
 (`127.0.0.1:8899`), and the path to the one-time setup code in the isolated
 API log. Add `--demo-accounts` to create a synthetic admin and user instead;
 their generated credentials are stored only in the printed temporary file.
+Both generated passwords meet the account API's password rules.
 The stop command removes these test accounts and temporary databases. It does
 not use Docker, change `.env` or `.local-data`, or call a Make target. The
 script sets Vite's StockInfo URL directly and checks the URL actually served
