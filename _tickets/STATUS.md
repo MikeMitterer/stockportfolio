@@ -138,18 +138,22 @@ Claudes Runde 9 bestätigte die eigene `.venv` live, fand aber Restdateien
 nach dem Stopp und einen falschen Portkonflikt bei `TIME_WAIT`. Die Korrekturen
 `44f61a6` und `05ccd7b` sind nach Einzelserver- und doppeltem Stack-Lauf
 in Runde 10 als wirksam bestätigt. Runde 10 endete mit `changes_requested`:
-`SIG_IGN` kann ein frühes SIGTERM verwerfen (Befund 3). Mikes T-63-Abnahme bleibt offen.
+`SIG_IGN` konnte ein frühes SIGTERM verwerfen (Befund 3). `4d5e81f`
+setzt einen beendenden Handler; eine gezielte Frühstart-Gegenprobe und normale
+Stopps bestanden. Auf Mikes Auftrag wurden 47 verwaiste Testverzeichnisse und
+vier Zustandsdateien nach Prozess- und Portprüfung entfernt. Runde 11 liegt
+Claude zur Nachprüfung vor. Mikes T-63-Abnahme bleibt offen.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `e596e1b76b08d629fac979544fa2ef1ff8d22252`
-- `review_round`: `10`
-- `owner`: `codex`
+- `handoff_commit`: `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
+- `review_round`: `11`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `e596e1b76b08d629fac979544fa2ef1ff8d22252`
@@ -327,9 +331,10 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` im Auftrag von Mike an `codex`, T-63 Altlasten im System-Temp (Mike, 2026-09-30):** Mike: „Sag Codex dass er die 46 stockportfolio-t39-server-*-Verzeichnisse aufräumen soll“. Erwartete Handlung: Unter dem System-Temp (`python3 -c "import tempfile; print(tempfile.gettempdir())"`) alle `stockportfolio-t39-server-*`-Verzeichnisse entfernen, deren Einzelserver nicht mehr läuft, sowie die vier verwaisten Zustandsdateien `stockportfolio-test-server-{18898,59999,8898,8901}.json`. Nur Einträge mit genau diesen Präfixen und nur bei beendeter PID beziehungsweise ohne laufenden Server auf dem Port; fremde Prozesse und Dateien nicht anfassen. Vorher und nachher zählen und das Ergebnis im T-63-Ticket festhalten. Ursache laut Runde 9/10: Bis `44f61a6` lief der `finally`-Block des Einzelservers wegen `uvicorn`s erneut ausgelöstem SIGTERM nie; jeder Stopp seit Runde 1 hinterließ ein Datenverzeichnis. Die Korrektur verhindert neue Reste, räumt alte aber nicht auf. Keine neue Reviewrunde durch diese Nachricht; das Aufräumen wird bei der Übergabe von Befund 3 mitgeprüft.
-- **Von `claude` an `codex`, T-63 technische Runde 10, Fassung `e596e1b`:** `changes_requested`. Die Befunde 1 und 2 aus Runde 9 sind behoben und live belegt: Einzelserver und Stack je zweimal ohne neue Reste, sofortiger Neustart bei `TIME_WAIT`. Neuer Befund 3 nach SP-R-04: `SIG_IGN` vor `uvicorn.run` verwirft ein SIGTERM, das eintrifft, bevor `uvicorn` seinen Handler setzt; der Server läuft dann weiter, und `stop_children` meldet nach 10 s „did not stop“. Vorschlag: Handler mit `sys.exit(0)` statt `SIG_IGN` samt Gegenprobe. Details im T-63-Ticket auf dem T-63-Branch.
+Keine offene Nachricht.
+
+- **Von `claude-observer` im Auftrag von Mike an `codex`, Zeitpunkt der T-63-Abnahme (Mike, 2026-09-30):** Mike: „Auch T-63 nehme ich erst ganz am Ende ab“. Wie bei T-61 („T-61 teste ich wenn t-62 auch fertig ist“) prüft Mike T-63 erst am Ende der Kette T-61 → T-62. Erwartete Handlung: Das mit Wortlaut im T-63-Ticket auf dem T-63-Branch festhalten, als neuen Abschnitt, frühere Aussagen nicht umschreiben. Die offene Frage „Abschlussentscheidung für T-63 steht aus“ in STATUS entsprechend einordnen. Technische Runden für T-63 laufen weiter. Abschluss und gemeinsame Integration von T-60/T-63 folgen erst nach Mikes Abnahme am Ende. Keine neue Reviewrunde durch diese Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 technische Runde 11, Fassung `f2fafac` auf `t-63-reproduzierbarer-lokaler-teststack`:** Bitte ausschließlich Befund 3 aus Runde 10 prüfen: früher SIGTERM-Stopp vor Uvicorns Handler mit Prozessende und vollständigem Aufräumen. Produktänderung `4d5e81f`, Belege und die von Mike beauftragte Bereinigung von 47 verwaisten Verzeichnissen und vier Zustandsdateien stehen im T-63-Ticket. Gezielte Frühstart-Gegenprobe, normaler Einzelserver-Stopp und zwei unmittelbare Stack-Start-Stopp-Zyklen bestanden. `make test`: 806 Frontend- und 8 API-Tests bestanden mit Homebrew-Bash 5.3 vorn im `PATH`; der Standard-`PATH` nimmt macOS-Bash 3.2 und lässt einen unveränderten Docker-Build-Test an `${GITHUB_OWNER,,}` scheitern. Beide Lints, beide Typechecks, Ruff, Python-Syntax und Diff-Check sind grün. Mikes T-63-Abschlussentscheidung sowie Merge und Push bleiben offen.
