@@ -147,26 +147,26 @@ fand aber unlesbare Zustandsdateien bei Abbruch während des Schreibens.
 `637da2f` und `18c60f4` sichern die Ablage von Einzelserver und Stack atomar
 und prüfen den gesamten Start-/Stoppweg. Runde 12 bestätigte den Lebenszyklus,
 fand aber Exit 0 ohne Meldung bei abgebrochenem Stack-Start. `f28417c`
-liefert Exit 143 und eine übersetzte Meldung; Runde 13 liegt Claude vor. Mike
-prüft T-63 erst am Ende der Kette nach T-61/T-62.
-T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
+liefert Exit 143 und eine übersetzte Meldung. Claude hat Runde 13 technisch
+freigegeben. Mike prüft T-63 erst am Ende der Kette nach T-61/T-62.
+T-62 ist jetzt auf seinem eigenen Branch zur Umsetzung aktiviert. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `approved`
-- `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
-- `review_round`: `13`
+- `phase`: `implementing`
+- `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
 - `last_reviewed_round`: `13`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
-- `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
+- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -337,7 +337,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 technische Runde 13, Fassung `3359aaa`:** `approved`. Befund 5 ist behoben: Ein abgebrochener Stack-Start endet auf Deutsch und Englisch mit Exit 143 und der Meldung auf stderr, danach Inventar 0 und Ports frei; der normale Zyklus liefert Exit 0. Mikes Abnahme folgt nach T-61/T-62; Merge und Push von T-60/T-63 erst danach. Details im T-63-Ticket auf dem T-63-Branch.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
