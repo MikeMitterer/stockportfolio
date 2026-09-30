@@ -19,7 +19,9 @@
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory, createRouter, type Router } from 'vue-router'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/data/repository', () => import('../helpers/localRepositories'))
 
 import PositionsTable from '@/components/PositionsTable.vue'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'

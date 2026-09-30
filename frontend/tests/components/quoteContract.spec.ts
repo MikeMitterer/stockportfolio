@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/data/repository', () => import('../helpers/localRepositories'))
 import { flushPromises, mount, shallowMount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { NButton, NInputNumber, NSelect } from 'naive-ui'

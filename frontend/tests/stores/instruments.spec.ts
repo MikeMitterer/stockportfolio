@@ -7,6 +7,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/data/repository', () => import('../helpers/localRepositories'))
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
 import { useInstrumentsStore } from '@/stores/instruments'

@@ -1,23 +1,11 @@
 import type { ValueSnapshotEntry } from '@/db/schema'
 import type { Portfolio, Settings } from '@/types/portfolio'
 import { PrivateDataClient, privateDataClient } from './client'
-import {
-  AllowlistRepository,
-  PortfolioRepository,
-  SettingsRepository,
-  ValueSnapshotRepository,
-} from '@/db/repository'
 
 function activeClient(): PrivateDataClient {
   const client = privateDataClient()
   if (!client) throw new Error('PrivateDataClient fehlt')
   return client
-}
-
-function useLocalRepository(): boolean {
-  if (privateDataClient()) return false
-  if (import.meta.env.MODE === 'test') return true
-  throw new Error('PrivateDataClient fehlt')
 }
 
 class ServerPortfolioRepository {
@@ -94,18 +82,22 @@ class ServerValueSnapshotRepository {
   }
 }
 
-export function createPortfolioRepository(): PortfolioRepository | ServerPortfolioRepository {
-  return useLocalRepository() ? new PortfolioRepository() : new ServerPortfolioRepository()
+export function createPortfolioRepository(): ServerPortfolioRepository {
+  activeClient()
+  return new ServerPortfolioRepository()
 }
 
-export function createSettingsRepository(): SettingsRepository | ServerSettingsRepository {
-  return useLocalRepository() ? new SettingsRepository() : new ServerSettingsRepository()
+export function createSettingsRepository(): ServerSettingsRepository {
+  activeClient()
+  return new ServerSettingsRepository()
 }
 
-export function createAllowlistRepository(): AllowlistRepository | ServerAllowlistRepository {
-  return useLocalRepository() ? new AllowlistRepository() : new ServerAllowlistRepository()
+export function createAllowlistRepository(): ServerAllowlistRepository {
+  activeClient()
+  return new ServerAllowlistRepository()
 }
 
-export function createValueSnapshotRepository(): ValueSnapshotRepository | ServerValueSnapshotRepository {
-  return useLocalRepository() ? new ValueSnapshotRepository() : new ServerValueSnapshotRepository()
+export function createValueSnapshotRepository(): ServerValueSnapshotRepository {
+  activeClient()
+  return new ServerValueSnapshotRepository()
 }
