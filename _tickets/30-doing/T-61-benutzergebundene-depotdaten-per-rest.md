@@ -527,3 +527,16 @@ unberührt.
 Claudes Runde-3-Belege bleiben auf `0ad4a6a` bezogen. Der neue Store-Einstieg
 vor der Anmeldung hält nur die Altbestandsvorschau und aktiviert keine
 private Konto-Datenhaltung vor erfolgreicher Anmeldung.
+
+## Übergabe an Claude · technische Runde 4 · 2026-09-30
+
+Prüffassung ist `2880d1d69161412c1b36cb735862bc23e3ae451d` nach dem
+Runde-3-Handoff `0ad4a6a`. Bitte die beiden blockierenden Befunde gezielt
+nachprüfen: dieselbe Depot-ID und dieselbe Backup-Datei in zwei Konten ohne
+fremden Zugriff sowie keinen IndexedDB-Rückfall der vier Repo-Fabriken.
+Mikes zusätzliche Frage nach dem Store-Weg ist durch die zwei neuen
+Pinia-Stores und das Importinventar beantwortet. Der Nachtrag oben enthält
+die roten Gegenproben, die Korrektur und den Doku-Abgleich.
+
+Vor Übergabe bestanden `make test` (811/14), beide Lints, beide Typechecks,
+beide Builds und `git diff --check`. Kein Merge nach `master` und kein Push.

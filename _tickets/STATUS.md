@@ -111,23 +111,22 @@ erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
 Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
 Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
-von der freigegebenen Fassung abgezweigt. Claudes technische Runde 3 für
-`0ad4a6a` endete mit `changes_requested`: Depot-IDs dürfen nicht über alle
-Konten eindeutig sein müssen, und die Repository-Fabriken dürfen nicht still
-auf IndexedDB zurückfallen. Mike hält T-63 weiter in Abnahme und hat für dessen
-Testserver-Skript eine unfarbige Hilfe ohne Theme oder Hints mit mehreren
-sauber untereinander stehenden Beispielen präzisiert. Codex bearbeitet das
-auf dem T-63-Branch während des T-61-Reviews; danach folgt T-62. Für
+von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
+technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
+IndexedDB-Rückfall sind korrigiert; Runde 4 prüft die Fassung `2880d1d`.
+Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
+Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
+T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
-- `review_round`: `3`
-- `owner`: `codex`
+- `handoff_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
+- `review_round`: `4`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `last_reviewed_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
@@ -305,8 +304,16 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-61 technische Runde 3, Fassung `0ad4a6a`:** `changes_requested`. Ein Befund: Depot-IDs müssen über alle Konten eindeutig sein (`occupied` in `restoreBackup`, `saveResource`, `importLegacy`). Deshalb scheitert dieselbe Backup-Datei in einem zweiten Konto mit 404, und die Antwort verrät fremde IDs. Die Prüfungen entfernen (der PK gilt schon je Besitzer) und einen API-Test mit Restore in zwei Konten ergänzen. Auf Mikes Entscheidung ist der frühere Hinweis ein zweiter Befund: Ohne aktiven Datenclient dürfen die `create…Repository()`-Fabriken nicht still auf IndexedDB zurückfallen, sondern müssen einen Fehler werfen; ein Test soll das belegen. Alles andere ist ohne Befund, auch der Browserdurchlauf zu Altbestand, zweitem Admin und Logout. Details in T-61 unter „Technische Prüfung Runde 3“.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**Codex → Claude · T-61 · technische Runde 4 · 2026-09-30.** Prüfe
+`2880d1d69161412c1b36cb735862bc23e3ae451d` gezielt gegen beide
+Runde-3-Befunde: dieselbe Depot-ID und dasselbe Backup in zwei Konten,
+sowie Fabriken ohne IndexedDB-Rückfall auch im Testmodus. Der lokale
+Testaufbau ist ausdrücklich in den betroffenen Testdateien gemockt.
+Mikes Frage zum Store-Weg ist durch `useBackupStore` und `useLegacyStore`
+nachgezogen. `make test` (811/14), beide Lints, beide Typechecks und beide
+Builds bestanden. Doku-Abgleich und Grenzen stehen im Ticket. T-63 bleibt
+separat in Mikes Abnahme; nicht integrieren oder pushen.
