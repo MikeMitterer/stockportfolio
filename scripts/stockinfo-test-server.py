@@ -58,6 +58,7 @@ from pathlib import Path
 import sys
 import tempfile
 import time
+from types import FrameType
 from typing import Any
 
 from cli_theme import HelpFormatter, has_theme, print_message
@@ -393,12 +394,16 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
 
     # Exklusiv anlegen: ein zweiter Start darf die erste Prozesskennung nicht ersetzen.
     process_state = {"script": str(script_path), "port": args.port, "pid": os.getpid(), "identity": process_identity(os.getpid())}
-    with state_path.open("x") as state_file:
-        json.dump(process_state, state_file)
-    # Uvicorn löst SIGTERM nach dem Herunterfahren erneut aus. Ohne eigenen
-    # Handler beendet das Signal den Prozess vor dem Aufräumen im finally.
-    previous_sigterm = signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    # Uvicorn löst SIGTERM nach dem Herunterfahren erneut aus. Der eigene
+    # Handler beendet auch während des Starts und lässt finally aufräumen.
+    def exit_on_termination(_signal_number: int, _frame: FrameType | None) -> None:
+        raise SystemExit(0)
+
+    previous_sigterm = signal.getsignal(signal.SIGTERM)
     try:
+        signal.signal(signal.SIGTERM, exit_on_termination)
+        with state_path.open("x") as state_file:
+            json.dump(process_state, state_file)
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
     finally:
         try:
