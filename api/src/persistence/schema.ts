@@ -7,6 +7,8 @@ export const users = sqliteTable('users', {
   role: text('role', { enum: ['admin', 'user'] }).notNull(),
   active: integer('active', { mode: 'boolean' }).notNull(),
   mustChangePassword: integer('must_change_password', { mode: 'boolean' }).notNull(),
+  isSetupAccount: integer('is_setup_account', { mode: 'boolean' }).notNull().default(false),
+  legacyImported: integer('legacy_imported', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at').notNull(),
 })
 

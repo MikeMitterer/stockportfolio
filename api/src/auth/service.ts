@@ -19,6 +19,8 @@ export interface PublicUser {
   role: 'admin' | 'user'
   active: boolean
   mustChangePassword: boolean
+  isSetupAccount: boolean
+  legacyImported: boolean
 }
 
 export function publicUser(user: UserRecord): PublicUser {
@@ -28,6 +30,8 @@ export function publicUser(user: UserRecord): PublicUser {
     role: user.role,
     active: user.active,
     mustChangePassword: user.mustChangePassword,
+    isSetupAccount: user.isSetupAccount,
+    legacyImported: user.legacyImported,
   }
 }
 
@@ -184,5 +188,9 @@ export class AccountService {
     const result = this.repository.deactivateUser(userId)
     if (result === 'last_admin') throw new ServiceError(409, 'last_admin')
     if (result === 'not_found') throw new ServiceError(404, 'user_not_found')
+  }
+
+  reactivateUser(userId: string): void {
+    if (!this.repository.reactivateUser(userId)) throw new ServiceError(404, 'user_not_found')
   }
 }

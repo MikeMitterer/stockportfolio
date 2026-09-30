@@ -4,6 +4,8 @@ export interface PortfolioUser {
   role: 'admin' | 'user'
   active: boolean
   mustChangePassword: boolean
+  isSetupAccount: boolean
+  legacyImported: boolean
 }
 
 export class PortfolioApiError extends Error {
@@ -74,5 +76,9 @@ export class PortfolioAuthClient {
 
   deactivateUser(id: string): Promise<{ ok: boolean }> {
     return this.request(`/api/admin/users/${encodeURIComponent(id)}/deactivate`, 'POST')
+  }
+
+  reactivateUser(id: string): Promise<{ ok: boolean }> {
+    return this.request(`/api/admin/users/${encodeURIComponent(id)}/reactivate`, 'POST')
   }
 }

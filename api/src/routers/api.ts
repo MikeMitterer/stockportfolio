@@ -146,6 +146,12 @@ export function createApiRouter(service: AccountService, options: ApiOptions): H
     return context.json({ ok: true })
   })
 
+  app.post('/api/admin/users/:id/reactivate', (context) => {
+    requireAdmin(context, service)
+    service.reactivateUser(context.req.param('id'))
+    return context.json({ ok: true })
+  })
+
   app.all('/api/*', (context) => context.json({ error: 'not_found' }, 404))
   return app
 }

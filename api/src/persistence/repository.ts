@@ -15,6 +15,8 @@ export interface UserRecord {
   role: 'admin' | 'user'
   active: boolean
   mustChangePassword: boolean
+  isSetupAccount: boolean
+  legacyImported: boolean
   createdAt: number
 }
 
@@ -42,6 +44,7 @@ export interface AccountRepository {
   createUser(username: string, passwordHash: string, role: 'admin' | 'user', now: number): UserRecord
   replacePassword(id: string, passwordHash: string, mustChangePassword: boolean): boolean
   deactivateUser(id: string): 'done' | 'last_admin' | 'not_found'
+  reactivateUser(id: string): boolean
   createSession(record: SessionRecord): void
   findSession(tokenHash: string): SessionRecord | null
   touchSession(tokenHash: string, now: number): void
@@ -76,7 +79,7 @@ export function createSqliteRepository(filePath: string): AccountRepository {
       return database.transaction((transaction) => {
         if (transaction.select({ id: users.id }).from(users).where(eq(users.role, 'admin')).get()) return null
         const id = randomUUID()
-        transaction.insert(users).values({ id, username, passwordHash, role: 'admin', active: true, mustChangePassword: false, createdAt: now }).run()
+        transaction.insert(users).values({ id, username, passwordHash, role: 'admin', active: true, mustChangePassword: false, isSetupAccount: true, createdAt: now }).run()
         return transaction.select().from(users).where(eq(users.id, id)).get() ?? null
       })
     },
@@ -111,6 +114,9 @@ export function createSqliteRepository(filePath: string): AccountRepository {
         transaction.delete(sessions).where(eq(sessions.userId, id)).run()
         return 'done'
       })
+    },
+    reactivateUser(id) {
+      return database.update(users).set({ active: true }).where(eq(users.id, id)).run().changes > 0
     },
     createSession(record) {
       database.insert(sessions).values(record).run()
