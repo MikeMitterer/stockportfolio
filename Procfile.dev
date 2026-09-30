@@ -1,0 +1,2 @@
+frontend: npm run dev --prefix frontend
+api: env STOCKPORTFOLIO_PUBLIC_ORIGIN=http://localhost:5175 npm run dev --prefix api

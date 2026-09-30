@@ -234,3 +234,69 @@ Handoff-Commit und bleibt unverändert. Die Aussage „Menschliche Prüfung ist
 nicht vorgesehen“ betrifft eine zusätzliche praktische Human-Gegenprobe.
 Die menschliche Abschlussentscheidung nach dem Board-Workflow ist damit
 nicht ersetzt und steht noch aus.
+
+## Nachtrag 2026-09-30 · lokale Entwicklungsumgebung und CLI
+
+Mike nimmt T-60 über `make dev` ab. Er beauftragte, Vite und die eigene
+Konto-API gemeinsam zu starten. `make dev` verwendet dafür Overmind mit
+`Procfile.dev`. Einzelne Server werden bei Bedarf über npm gestartet.
+Overmind übernimmt keine `.env`-Werte und setzt keinen eigenen Port; Vite
+liest die Projekt-`.env` wie bisher. `make build` bleibt nach Mikes
+Korrektur der Docker-Image-Build. Weitere Make-Ziele für einzelne
+Subprojekte sowie Lint, Format, Typprüfung, Watch und Preview wurden auf
+Mikes Wunsch entfernt. `make test` prüft beide Subprojekte; `make clean`
+räumt generierte Dateien in Root, Frontend und API auf.
+
+Mikes Frage nach dem Root-`package.json` führte zur Trennung der beiden
+Paketmanifeste: Frontend-Manifest und Lockfile liegen jetzt unter
+`frontend/`, die API-Dateien weiter unter `api/`. Die Projektversion kommt
+aus `frontend/package.json`. Dockerfile, Versionierungsziele,
+Quellarchiv, Teststack-Helfer und Entwickleranleitungen wurden auf die
+neuen Pfade angepasst.
+
+Das Testserver-Skript zeigt ohne Argumente Hilfe und verlangt `--run` zum
+Start. Kurzformen für seine Optionen sind ergänzt; Hilfetexte laufen über
+den vorhandenen gettext-Katalog. Der Stack-Helfer reicht `--run` auch an
+den StockInfo-Kindprozess weiter. Die CLI-Farben werden noch nicht aus einem
+festen Dateipfad geladen: ProjectTools stellt inzwischen das installierbare
+Paket `projecttools.ui.colors` bereit (Branch
+`feat/package-python-tools`, Commit `f8cd8ec`). StockInfo
+klärt mit T-82 unter `_tickets/20-ready/` in seinem eigenen Repository
+den reproduzierbaren Installationsweg für seine Python-Umgebung. Bis dahin
+verwendet dieses Skript die unfarbige native argparse-Hilfe.
+
+Der Observer wies darauf hin, dass die Freigabe für `493c35c` weder die
+neuen Makefile-Wege noch das neue `--run` deckt und dass die ersten
+Startbeispiele noch veraltet waren. Die Beispiele in `README.md`,
+`AGENTS.md` und der Browser-Fixture-Anleitung sind aktualisiert.
+Der Nachtrag braucht eine neue unabhängige technische Prüfung.
+
+**Prüfstand vor der Übergabe:** `make test` 803 Frontend- und 7 API-Tests
+grün; Frontend-Build, beide Typprüfungen und Lint ohne Cache über npm grün.
+`make -n build` zeigt wieder `./docker/build.sh --build "x86"`.
+`make help` zeigt bei Entwicklung nur `dev`, `test` und `clean`.
+`make dev` lieferte nach dem Paketumzug und der Makefile-Vereinfachung für
+Vite und API jeweils HTTP 200;
+beide Prozesse wurden anschließend über Overmind beendet. `make clean`
+entfernte generierte Root-/Paketdateien, ließ die installierten Abhängigkeiten
+stehen. Der Teststack startete mit `--stack --run`; Status zeigte alle drei
+eigenen Prozesse und bestand Endpunkt-/CORS-Prüfungen. Stop entfernte
+Prozesse und temporäre Kontodaten, Ports 5175, 8080 und 8899 sind frei.
+Direkter Skriptaufruf ohne Argumente und deutsche
+`--help`-Ausgabe enden mit 0; `-s -S` meldet ohne laufenden Stack
+erwartungsgemäß Status 1. `msgfmt --check-format` und
+`git diff --check` sind grün. Ein frisches `npm ci --prefix frontend` auf
+dem Host konnte wegen Registry-Timeout auch mit freigegebenem Netzzugriff
+nicht abgeschlossen werden. Die frische Frontend-Installation in der
+Docker-Stage gelang; der Frontend- und der vollständige Container-Build
+waren grün. Die vollständige Live-Abnahme von `make dev` bleibt Mikes
+Prüfung.
+
+**Doku-Abgleich:** `README.md` (Setup, Befehlsübersicht, Docker-Build,
+Paketstruktur), `AGENTS.md` (lokaler Start, Bauen und Prüfen) und
+`SOURCE.md` (Quellarchiv und Buildaufrufe) beschreiben die neuen Pfade.
+Die Browser-Fixture-Anleitung verwendet `--run` und relative Pfade.
+`docker/README.md` enthält keine Entwicklerbefehle und bleibt für den
+unveränderten Containerbetrieb richtig.
+Der Skill `task-verification-workflow` braucht keine Anpassung:
+Board-Verfahren und Ticketformat sind unverändert.

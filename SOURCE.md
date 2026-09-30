@@ -9,15 +9,16 @@ same working files as the browser bundle. The archive contains the application,
 both build configurations, both dependency lockfiles, API database migrations,
 license documents and container build files. It excludes local configuration,
 portfolio data, Git history,
-installed dependencies and previous build output. The `files` list in
-`package.json` defines its contents; include new build inputs there when needed.
+installed dependencies and previous build output. The `sourceFiles` list in
+`frontend/package.json` defines its contents; include new build inputs there
+when needed.
 
-Extract the archive into an empty directory. With Node.js 20+ (Node.js 22 is
-used in Docker), npm and tar installed, run:
+Extract the archive into an empty directory. With Node.js 22+, npm and tar
+installed, run:
 
 ```sh
-npm ci
-npm run build
+npm ci --prefix frontend
+npm run build --prefix frontend
 npm ci --prefix api
 npm run build --prefix api
 ```
@@ -25,7 +26,8 @@ npm run build --prefix api
 Dependencies are downloaded from the registries recorded in the lockfile and
 retain their own licenses. Use the published `@mmit/ux-foundation` dependency
 for reproducible builds; local package links require access to their matching
-sources separately. Local development uses `npm run dev`.
+sources separately. Local frontend development uses
+`npm run dev --prefix frontend`.
 
 For Docker, build the extracted sources with:
 

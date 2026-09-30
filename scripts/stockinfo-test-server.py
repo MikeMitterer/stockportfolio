@@ -1,4 +1,21 @@
 #!/usr/bin/env python3
+#------------------------------------------------------------------------------
+# stockinfo-test-server.py — StockInfo-Testkurse und lokalen Browserstack starten
+#
+# Verwendet StockInfos Python-Umgebung und temporäre Daten. Mit --stack werden
+# zusätzlich die StockPortfolio-Konto-API und Vite verwaltet.
+#
+# Verwendung:
+#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run
+#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
+#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+#
+# Optionen:
+#   -r | --run      Testserver beziehungsweise ganzen Stack starten
+#   -s | --status   Registrierte Prozesse und Endpunkte prüfen
+#   -t | --stop     Nur registrierte eigene Prozesse beenden
+#   -h | --help     Diese Hilfe anzeigen; auch ohne Argumente
+#------------------------------------------------------------------------------
 """Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
 
 Start mit StockInfos Python-Umgebung aus einem leeren temporären Arbeitsordner.
@@ -34,26 +51,33 @@ import tempfile
 import time
 from typing import Any
 
+sys.dont_write_bytecode = True
 from local_test_stack import run_stack_cli, translate
 
-sys.dont_write_bytecode = True
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--stockinfo-root", type=Path)
-parser.add_argument("--stop", action="store_true", help="Den eigenen Server auf --port sauber beenden")
-parser.add_argument("--status", action="store_true", help=translate("Check the local test environment"))
-parser.add_argument("--stack", action="store_true", help=translate("Manage StockInfo, the account API, and Vite together"))
-parser.add_argument("--demo-accounts", action="store_true", help=translate("Create synthetic accounts in the temporary stack"))
-parser.add_argument("--port", type=int, default=8899)
-parser.add_argument("--origin", help="Erlaubte Browser-Herkunft, auch für isolierte Containerproben")
-parser.add_argument("--detail-fixtures", type=Path)
-parser.add_argument("--demo-details", action="store_true", help="Lesbare Quellen und Notiz für wiederholbare Browserproben")
-args = parser.parse_args()
+parser = argparse.ArgumentParser(
+    prog=Path(__file__).name,
+    description=translate("Run the local StockInfo fixture server and optional browser stack."),
+    epilog=translate("Example: --stack --run; then --stack --status or --stack --stop."),
+    add_help=False,
+)
+actions = parser.add_argument_group(translate("Actions")).add_mutually_exclusive_group(required=True)
+actions.add_argument("-r", "--run", action="store_true", help=translate("Start the test server or the full stack."))
+actions.add_argument("-s", "--status", action="store_true", help=translate("Check registered processes and endpoints."))
+actions.add_argument("-t", "--stop", action="store_true", help=translate("Stop only registered processes."))
+options = parser.add_argument_group(translate("Options"))
+options.add_argument("-S", "--stack", action="store_true", help=translate("Manage StockInfo, the account API, and Vite together."))
+options.add_argument("-i", "--stockinfo-root", type=Path, help=translate("StockInfo repository path (required for a single-server start)."))
+options.add_argument("-d", "--demo-accounts", action="store_true", help=translate("Create synthetic accounts in the temporary stack."))
+options.add_argument("-p", "--port", type=int, default=8899, help=translate("StockInfo test port (default: 8899)."))
+options.add_argument("-o", "--origin", help=translate("Allowed browser origin for CORS."))
+options.add_argument("-f", "--detail-fixtures", type=Path, help=translate("Directory with detail fixtures."))
+options.add_argument("-D", "--demo-details", action="store_true", help=translate("Use readable sources and notes for browser checks."))
+options.add_argument("-h", "--help", action="help", help=translate("Show this help and exit."))
+args = parser.parse_args(sys.argv[1:] or ["--help"])
 if not 1 <= args.port <= 65535:
-    parser.error("--port muss zwischen 1 und 65535 liegen")
-if args.stop and args.status:
-    parser.error("--stop und --status schließen sich aus")
-if args.demo_accounts and not args.stack:
-    parser.error("--demo-accounts benötigt --stack")
+    parser.error(translate("--port must be between 1 and 65535."))
+if args.demo_accounts and not (args.stack and args.run):
+    parser.error(translate("--demo-accounts requires --stack --run."))
 script_path = Path(__file__).resolve()
 if args.stack:
     try:
@@ -119,7 +143,7 @@ if args.stop:
 if existing_state:
     parser.error(f"Eigener Testserver läuft bereits auf Port {args.port}; zuerst --stop aufrufen")
 if not args.stockinfo_root:
-    parser.error("Zum Starten ist --stockinfo-root erforderlich")
+    parser.error(translate("A single-server start requires --stockinfo-root."))
 stockinfo_root = args.stockinfo_root.resolve()
 detail_fixtures = args.detail_fixtures.resolve() if args.detail_fixtures else None
 data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t39-server-"))

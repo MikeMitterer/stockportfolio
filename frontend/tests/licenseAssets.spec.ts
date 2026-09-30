@@ -34,8 +34,9 @@ describe('Lizenzartefakte', () => {
   it('liefert Originaltexte und aktuelle Quellen ohne private Dateien oder Buildreste', () => {
     const root = mkdtempSync(join(tmpdir(), 'stockportfolio-license-test-'))
     temporaryDirectories.push(root)
-    writeFileSync(join(root, 'package.json'), JSON.stringify({
-      name: 'license-test', version: '1.0.0', private: true, files: ['src'],
+    mkdirSync(join(root, 'frontend'))
+    writeFileSync(join(root, 'frontend/package.json'), JSON.stringify({
+      name: 'license-test', version: '1.0.0', private: true, sourceFiles: ['src'],
     }))
     mkdirSync(join(root, 'src'))
     writeFileSync(join(root, 'src', 'main.ts'), 'export const changed = true\n')

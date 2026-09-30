@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 
 FROM node:22-bookworm-slim AS frontend-build
-WORKDIR /app
-COPY package.json package-lock.json ./
+WORKDIR /app/frontend
+COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
-COPY . .
+COPY . /app
 ARG VITE_STOCKINFO_API_URL=""
 ENV VITE_STOCKINFO_API_URL=${VITE_STOCKINFO_API_URL}
 RUN npm run build

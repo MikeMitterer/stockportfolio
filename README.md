@@ -8,8 +8,6 @@ run yourself.
 **Docker:** [Container setup and configuration](docker/README.md) ·
 [Docker Hub repository](https://hub.docker.com/r/mangolila/stockportfolio)
 
-![Version](https://img.shields.io/github/package-json/v/MikeMitterer/stockportfolio)
-
 ![Dashboard](docs/images/dashboard.png)
 
 _The dashboard: portfolio groups at the top, positions below. Holdings and targets
@@ -291,21 +289,29 @@ selection.
 ```bash
 make setup                 # .libs/ symlinks + frontend and API dependencies
 cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
-make dev-api               # own API on http://localhost:8080
-make dev                   # Vue app on http://localhost:5175
+make dev                   # Vue app on :5175 and account API on :8080
 ```
 
 `make setup` links existing BashLib, MakeLib and ProjectTools repositories.
 For the first setup, set `BASH_LIBS`, `DEV_MAKE` and `PROJECT_TOOLS` to their
-locations; later commands can use the links under `.libs/`. For frontend-only
-development, `npm install` plus `npm ci --prefix api` works without these
-shared tools. The API keeps its own lockfile under `api/`.
+locations; later commands can use the links under `.libs/`. For manual
+dependency installation, `npm ci --prefix frontend` plus
+`npm ci --prefix api` works
+without these shared tools. Each subproject keeps its own package lockfile.
+`make dev` uses Overmind and tmux to run both servers in one terminal. Install
+them first (on macOS: `brew install overmind tmux`); Ctrl-C stops both.
+`npm run dev --prefix frontend` starts only Vite. To start only the API from
+the repository root, use
+`STOCKPORTFOLIO_DATA_DIR="$PWD/.local-data" STOCKPORTFOLIO_PUBLIC_ORIGIN=http://localhost:5175 npm run dev --prefix api`.
+With `make dev`, the API stores local accounts under `.local-data` unless
+`STOCKPORTFOLIO_DATA_DIR` is set.
+StockInfo is a separate service; `make dev` does not start it.
 
 For browser checks with local StockInfo prices and an isolated account API,
 start the complete test stack with StockInfo's Python environment:
 
 ```bash
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stockinfo-root ../StockInfo
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 ```
@@ -327,7 +333,8 @@ dependency stops startup with an error and leaves other processes alone. The
 script checks process identity with `ps`; restricted agent environments must
 allow that read rather than bypass it. In a worktree outside the sibling layout,
 pass absolute paths for the StockInfo Python executable and `--stockinfo-root`.
-The original StockInfo-only command remains available without `--stack`.
+For the StockInfo-only server, use `--run --stockinfo-root ../StockInfo`
+without `--stack`.
 
 ## Commands
 
@@ -335,19 +342,17 @@ The original StockInfo-only command remains available without `--stack`.
 
 | Command                        | Purpose                                     |
 | ------------------------------ | ------------------------------------------- |
-| `make dev`                     | Vite dev server (port 5175)                 |
-| `make dev-api`                 | Account API (port 8080, local SQLite data) |
-| `make build-frontend`          | Typecheck + production build into `dist/`   |
-| `make build-api`               | Compile the API into `api/dist/`            |
-| `make preview`                 | Preview of the production build (port 4175) |
+| `make dev`                     | Vite and account API (ports 5175/8080)     |
 | `make test`                    | Frontend and API tests, single run          |
-| `make lint` / `make typecheck` | ESLint / frontend and API typechecks       |
+| `make clean`                   | Remove generated files from both packages  |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
 | `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |
 | `make changelog`              | Regenerate `CHANGELOG.md` without committing |
 
-Frontend commands are also available as `npm run …`.
+Lint and frontend typechecks run through `npm run lint --prefix frontend` and
+`npm run typecheck --prefix frontend`; run `npm run typecheck --prefix api` for
+the API. Package builds and preview remain npm scripts, outside the Makefile.
 
 ### Command-line themes
 
@@ -385,8 +390,8 @@ install packages.
 StockPortfolio account API, `frontend/src/db/` owns IndexedDB, and
 `frontend/src/stores/` holds application state. The account service lives under
 `api/`, with HTTP routes in `api/src/routers/` and SQLite access in
-`api/src/persistence/`. The root `package.json` remains the project version
-source and holds frontend dependencies.
+`api/src/persistence/`. `frontend/package.json` is the project version source
+and declares frontend dependencies; `api/package.json` declares API dependencies.
 The router uses hash URLs (`/#/rebalancing`); settings tabs are addressable as
 `/#/settings?tab=calc`. The server needs no application-route rewrites.
 
@@ -520,8 +525,8 @@ make build PLATFORM=arm       # optional local ARM build
 
 As in StockInfo, building and publishing are separate steps: test the built
 container before running `make push`. `make build` defaults to linux/amd64,
-independently of the host architecture. `make build-frontend`
-runs only the frontend production build.
+independently of the host architecture. Package builds remain available
+through their npm scripts.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
 `STRICT=2` allows commits after a tag; `STRICT=1` requires the tagged commit.
@@ -548,7 +553,8 @@ The build uses `node:22-bookworm-slim` for build and runtime, with locked `serve
 
 `TARGET=dockerhub` is the default; GHCR and ECR remain optional. `make push`
 uses the immutable image ID saved by the local build, including for `latest`.
-Failed or incomplete builds cannot reuse an old build marker. `make docker-update BASE_IMAGE=node:22-bookworm-slim` pulls an explicit base reference.
+Failed or incomplete builds cannot reuse an old build marker. For an explicit
+base-image refresh, run `BASE_IMAGE=node:22-bookworm-slim ./docker/build.sh --update`.
 
 After a successful Docker Hub image push, the common **ProjectTools** helper
 updates the repository overview from [docker/README.md](docker/README.md) and

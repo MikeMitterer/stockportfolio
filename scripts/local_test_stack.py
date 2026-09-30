@@ -64,7 +64,7 @@ def preflight(project_root: Path, stockinfo_root: Path, stockinfo_port: int) -> 
         raise RuntimeError(f"Missing StockInfo Python environment: {stockinfo_python}")
     for executable in (
         project_root / "api/node_modules/.bin/tsx",
-        project_root / "node_modules/.bin/vite",
+        project_root / "frontend/node_modules/.bin/vite",
     ):
         if not executable.is_file():
             raise RuntimeError(f"Missing {executable}; install the declared npm packages first")
@@ -77,7 +77,7 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
                    stockinfo_python: Path, data_dir: Path, stockinfo_port: int,
                    demo_details: bool = False, detail_fixtures: Path | None = None) -> dict[str, dict[str, object]]:
     stockinfo_url = f"http://127.0.0.1:{stockinfo_port}"
-    stockinfo_command = [str(stockinfo_python), "-B", str(script_path), "--stockinfo-root", str(stockinfo_root),
+    stockinfo_command = [str(stockinfo_python), "-B", str(script_path), "--run", "--stockinfo-root", str(stockinfo_root),
                          "--port", str(stockinfo_port), "--origin", FRONTEND_ORIGIN]
     if demo_details:
         stockinfo_command.append("--demo-details")
@@ -86,7 +86,7 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
     commands = {
         "stockinfo": stockinfo_command,
         "api": [shutil.which("node") or "node", "--import", "tsx", "src/index.ts"],
-        "frontend": [str(project_root / "node_modules/.bin/vite"), "--config", str(project_root / "frontend/vite.config.ts"),
+        "frontend": [str(project_root / "frontend/node_modules/.bin/vite"), "--config", str(project_root / "frontend/vite.config.ts"),
                      "--host", "127.0.0.1", "--port", str(FRONTEND_PORT), "--strictPort"],
     }
     environments = {
@@ -101,7 +101,7 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
             log_path = data_dir / f"{name}.log"
             with log_path.open("ab") as log_file:
                 process = subprocess.Popen(
-                    command, cwd=project_root / "api" if name == "api" else project_root,
+                    command, cwd=project_root / name if name in {"api", "frontend"} else project_root,
                     env={**os.environ, **environments[name]},
                     stdin=subprocess.DEVNULL, stdout=log_file, stderr=subprocess.STDOUT,
                     start_new_session=True,

@@ -9,13 +9,13 @@ export function createLegalAssets(root: string): { fileName: string; source: Buf
     fileName: file === 'LICENSE' ? 'LICENSE.txt' : file,
     source: readFileSync(join(root, file)),
   }))
-  const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as { files: string[] }
+  const manifest = JSON.parse(readFileSync(join(root, 'frontend/package.json'), 'utf8')) as { sourceFiles: string[] }
   const directory = mkdtempSync(join(tmpdir(), 'stockportfolio-source-'))
   try {
     const archive = join(directory, 'stockportfolio-source.tgz')
     // Explizite Paketdateien statt gesamtem Arbeitsbaum: keine lokalen Daten,
     // Git-Historie oder Buildreste. Anders als npm pack bleibt der Lockfile dabei.
-    execFileSync('tar', ['-czf', archive, '-C', root, '--', 'package.json', ...manifest.files], {
+    execFileSync('tar', ['-czf', archive, '-C', root, '--', 'frontend/package.json', ...manifest.sourceFiles], {
       // macOS darf keine Finder-Metadaten als zusätzliche ._-Dateien ausliefern.
       env: { ...process.env, COPYFILE_DISABLE: '1' },
     })

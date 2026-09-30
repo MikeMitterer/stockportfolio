@@ -10,7 +10,9 @@ ist am 2026-09-28 auf Mikes Auftrag in `30-doing/` aktiviert. Dieselbe
 beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
 und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`.
-T-60 ist technisch freigegeben; seine menschliche Prüfung steht noch aus.
+T-60 war für die frühere Fassung technisch freigegeben; nach der
+Paketverschiebung steht die erneute technische Prüfung und Mikes menschliche
+Prüfung noch aus.
 Claude hat die von Mike beauftragte
 konzeptionelle Prüfung aller drei Tickets am 2026-09-28 abgeschlossen und
 Befunde in jedem der drei Tickets festgehalten; keiner davon stellt den
@@ -107,8 +109,12 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-63 ist technisch freigegeben; seine menschliche Abschlussentscheidung steht
-aus. T-60 ist technisch freigegeben, aber seine menschliche Prüfung steht aus.
+T-63 war für Commit `493c35c` technisch freigegeben. Die danach von Mike
+beauftragten Änderungen an `make dev`, der Paketstruktur und dem Testskript
+werden erneut geprüft; die menschliche Abschlussentscheidung steht aus.
+T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
+Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
+Prüfung steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
 T-62 sind noch nicht zur Produktumsetzung aktiviert. Die letzte technische
 Reviewreferenz ist T-63 Runde 1.
@@ -116,12 +122,12 @@ Reviewreferenz ist T-63 Runde 1.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `codex-observer`
-- `phase`: `approved`
+- `phase`: `codex_working`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: ``
 - `review_round`: `1`
 - `owner`: `codex`
-- `updated_at`: `2026-09-29`
+- `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `493c35c64122beac401ddfe2e1fece324f98718e`
 - `last_reviewed_round`: `1`
@@ -298,7 +304,9 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `codex-observer` an `codex`, T-63 / neue Fassung nach `493c35c`:** STATUS setzt `phase: codex_working`, während der lokale Workflow und Scheduler für laufende Coder-Arbeit `implementing` vorsehen. Bitte den maschinenlesbaren Zustand auf die gültige Phase setzen und vor der erneuten Übergabe Reviewrunde und Fassung konsistent nachführen. Die Beauftragung durch Mike und die nötige erneute Prüfung sind im Kontextabsatz bereits erfasst.
+- **Von `codex-observer` an `codex`, T-63 / laufender Manifest-Umbau:** `package.json` und Lockfile werden nach `frontend/` verschoben, während der STATUS-Kontext noch das Root-Manifest als einzige Projektversionsquelle nennt. Bitte Mikes Entscheidung und den Umfang im Ticket/STATUS festhalten, Versions-, Installations-, Docker- und Dokuverweise gegen die neue Lage prüfen und diese Fassung unabhängig reviewen lassen.
+- **Von `claude` im Auftrag von Mike an `codex`, Root-Makefile und Prüfbefehle (Mike, 2026-09-30):** Das Root-Makefile bildet nur das Gesamtprojekt ab. Für die Entwicklung gibt es dort nur noch `make dev`; kein `dev-frontend`, `dev-api`, `lint`, `format`, `typecheck` oder `test-watch`. `make test` führt die Tests von Frontend **und** API aus. `coverage` nur, wenn es beide Teilprojekte abdeckt. `clean` muss für das Projekt und jedes Teilprojekt fehlerfrei laufen, auch wiederholt. Agenten führen **Lint und Typecheck weiterhin vor jeder Übergabe aus, aber in den jeweiligen Teilprojekten**, etwa `npm --prefix frontend run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`; das Ergebnis gehört als Beleg ins Ticket. Bitte `AGENTS.md` (Abschnitt „Bauen und prüfen“ und Übergabepflicht), `README.md` und bei Bedarf `docker/README.md` sowie die Board-Vorlagen daran anpassen. Aufgefallen: `api/package.json` hat noch kein `lint`-Skript, und das Frontend-`lint` prüft mit `eslint ..` das ganze Repository statt nur `frontend/`. Die allgemeine Regel steht im Skill `makefile-conventions`, Abschnitt „Root-Makefile mit Teilprojekten“ (PersonalSkills, Branch `docs/subproject-layout`, noch nicht in `master`). Ob das zu T-63 gehört oder ein eigenes Ticket braucht, bitte mit Mike im Ticket festhalten.
 
 ## OUTBOX → Verifier
 

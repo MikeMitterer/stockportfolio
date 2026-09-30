@@ -3,6 +3,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: de\n"
 
+msgid "Run the local StockInfo fixture server and optional browser stack."
+msgstr "Lokalen StockInfo-Testserver und optional den Browserstack verwalten."
+
+msgid "Example: --stack --run; then --stack --status or --stack --stop."
+msgstr "Beispiel: --stack --run; danach --stack --status oder --stack --stop."
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Options"
+msgstr "Optionen"
+
+msgid "Start the test server or the full stack."
+msgstr "Testserver oder ganzen Stack starten."
+
+msgid "Check registered processes and endpoints."
+msgstr "Registrierte Prozesse und Endpunkte prüfen."
+
+msgid "Stop only registered processes."
+msgstr "Nur registrierte eigene Prozesse beenden."
+
+msgid "Manage StockInfo, the account API, and Vite together."
+msgstr "StockInfo, Konto-API und Vite gemeinsam verwalten."
+
+msgid "StockInfo repository path (required for a single-server start)."
+msgstr "StockInfo-Repository (für einzelnen Serverstart erforderlich)."
+
+msgid "Create synthetic accounts in the temporary stack."
+msgstr "Synthetische Konten im temporären Stack anlegen."
+
+msgid "StockInfo test port (default: 8899)."
+msgstr "StockInfo-Testport (Vorgabe: 8899)."
+
+msgid "Allowed browser origin for CORS."
+msgstr "Erlaubte Browser-Herkunft für CORS."
+
+msgid "Directory with detail fixtures."
+msgstr "Verzeichnis mit Detail-Fixtures."
+
+msgid "Use readable sources and notes for browser checks."
+msgstr "Lesbare Quellen und Notizen für Browserprüfungen verwenden."
+
+msgid "Show this help and exit."
+msgstr "Diese Hilfe anzeigen."
+
+msgid "--port must be between 1 and 65535."
+msgstr "--port muss zwischen 1 und 65535 liegen."
+
+msgid "--demo-accounts requires --stack --run."
+msgstr "--demo-accounts benötigt --stack --run."
+
+msgid "A single-server start requires --stockinfo-root."
+msgstr "Ein einzelner Serverstart benötigt --stockinfo-root."
+
 msgid "Frontend: {origin}"
 msgstr "Frontend: {origin}"
 

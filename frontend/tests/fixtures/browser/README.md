@@ -10,15 +10,15 @@ Backup und werden beim Öffnen frisch geladen.
 1. Den lokalen Dienst vom StockPortfolio-Repo aus starten:
 
    ```bash
-   /Volumes/DevLocal/DevWeb/Production/StockInfo/.venv/bin/python scripts/stockinfo-test-server.py \
-     --stockinfo-root /Volumes/DevLocal/DevWeb/Production/StockInfo \
+   ../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run \
+     --stockinfo-root ../StockInfo \
      --detail-fixtures tests/fixtures/stockinfo --demo-details
    ```
 
 2. Die App mit diesem Dienst starten:
 
    ```bash
-   VITE_STOCKINFO_API_URL=http://127.0.0.1:8899 npm run dev -- \
+   VITE_STOCKINFO_API_URL=http://127.0.0.1:8899 npm run dev --prefix frontend -- \
      --host 127.0.0.1 --port 5189 --strictPort
    ```
 

@@ -526,3 +526,19 @@ Der nicht blockierende ESLint-Node-Globals-Punkt bleibt als offene
 Beobachtung bestehen, ohne die Freigabe zu verzögern. Die menschliche Prüfung
 von Setup und Benutzerverwaltung nach T-60 bleibt weiterhin gesondert
 ausstehend.
+
+## Nachtrag 2026-09-30 · Paketstruktur vor menschlicher Abnahme
+
+Nach Mikes Nachfrage zum Root-`package.json` liegen Frontend-Manifest und
+Lockfile unter `frontend/`; `api/` behält seine eigenen Dateien. Die
+Projektversion kommt aus `frontend/package.json`. Damit ist die frühere
+Entscheidung in der Architekturberatung für das Root-Manifest überholt.
+Versionierungsziele, Docker-Build, Quellarchiv und Entwickleranleitungen
+sind entsprechend angepasst. `make dev` startet beide Server gemeinsam;
+Mike nimmt T-60 über diesen Weg ab.
+
+Die technische Freigabe der Runde 3 bezieht sich auf den damaligen Commit
+und deckt diesen Nachtrag nicht ab. Die erneute technische Prüfung des
+geänderten Entwicklungs- und Buildwegs ist im aktiven
+[T-63](T-63-reproduzierbarer-lokaler-teststack.md) erfasst. Mikes
+menschliche T-60-Abnahme steht weiterhin aus.

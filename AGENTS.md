@@ -86,8 +86,7 @@ den Dev-Server:
 
 ```bash
 make dev          # in StockInfo: Backend auf http://localhost:8000, Swagger unter /docs
-make dev          # in StockPortfolio: Vite auf http://localhost:5175
-make dev-api      # in StockPortfolio: eigene Konto-API auf http://localhost:8080
+make dev          # in StockPortfolio: Vite auf :5175 und Konto-API auf :8080
 ```
 
 Die gehostete Instanz steht unter `https://stockinfo.int.mikemitterer.at`; sie
@@ -189,20 +188,19 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ## Bauen und prüfen
 
 ```bash
-make dev        # Vite-Dev-Server, Port 5175
-make dev-api    # eigene Konto-API, Port 8080
+make dev        # Vite und Konto-API gemeinsam, Ports 5175 und 8080
 make test       # Frontend- und API-Tests, einmalig
-make lint       # ESLint über Frontend und API
-make typecheck  # vue-tsc und API-TypeScript
-make build-frontend # typecheck + Production-Build nach dist/
-make build-api  # API-TypeScript nach api/dist/
+make clean      # generierte Dateien in Root, Frontend und API entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
-`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Vor einer
-Übergabe laufen mindestens `make test`, `make lint` und `make typecheck`; das
-Ergebnis gehört als Beleg ins Ticket.
+`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Für
+Einzelpaket-Befehle npm direkt mit `--prefix frontend` beziehungsweise
+`--prefix api` verwenden. Vor einer Übergabe laufen mindestens `make test`,
+`npm run lint --prefix frontend` sowie die Typprüfungen beider Pakete
+(`npm run typecheck --prefix frontend` und `npm run typecheck --prefix api`);
+das Ergebnis gehört als Beleg ins Ticket.
 
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
@@ -210,7 +208,7 @@ temporären Kursen, die eigene Konto-API und Vite gemeinsam. Mit StockInfos
 Python-Umgebung aus diesem Repository aufrufen:
 
 ```bash
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stockinfo-root ../StockInfo
+../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 ```
@@ -226,8 +224,8 @@ Identitätsprüfung und benötigt in eingeschränkten Agentenlaufzeiten die
 entsprechende Freigabe; sie wird nicht umgangen. `--port PORT` ändert beim Start
 nur den StockInfo-Testport; Status und Stop lesen den registrierten Port. Für
 Worktrees außerhalb des gemeinsamen Elternverzeichnisses absolute Pfade für
-Python und `--stockinfo-root` verwenden. Ohne `--stack` bleibt der bisherige
-StockInfo-only-Start verfügbar. Details stehen in `README.md` (**Setup**).
+Python und `--stockinfo-root` verwenden. Ohne `--stack` startet `--run`
+nur StockInfo. Details stehen in `README.md` (**Setup**).
 
 [↑ Übersicht](#übersicht)
 

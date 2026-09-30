@@ -1,5 +1,5 @@
 {
-  "name": "stockportfolio",
+  "name": "stockportfolio-frontend",
   "version": "0.5.0",
   "private": true,
   "description": "Tolerance-band rebalancing web app für persönliches Portfolio (Excel-Ersatz)",
@@ -8,16 +8,16 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "vite --config frontend/vite.config.ts",
-    "build": "vue-tsc --project frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
-    "preview": "vite preview --config frontend/vite.config.ts --port 4175",
-    "typecheck": "vue-tsc --project frontend/tsconfig.json --noEmit && npm run typecheck --prefix api",
-    "lint": "eslint . --ext .vue,.ts,.tsx --cache",
-    "lint:fix": "eslint . --ext .vue,.ts,.tsx --fix",
-    "format": "prettier --write \"frontend/src/**/*.{vue,ts,tsx,css,json}\"",
-    "test": "vitest run --config frontend/vitest.config.ts && npm run test --prefix api",
-    "test:watch": "vitest --config frontend/vitest.config.ts",
-    "test:coverage": "vitest run --config frontend/vitest.config.ts --coverage"
+    "dev": "vite --config vite.config.ts",
+    "build": "vue-tsc --project tsconfig.json --noEmit && vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts --port 4175",
+    "typecheck": "vue-tsc --project tsconfig.json --noEmit",
+    "lint": "eslint .. --config ../eslint.config.mjs --ext .vue,.ts,.tsx --cache",
+    "lint:fix": "eslint .. --config ../eslint.config.mjs --ext .vue,.ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{vue,ts,tsx,css,json}\"",
+    "test": "cd .. && frontend/node_modules/.bin/vitest run --config frontend/vitest.config.ts",
+    "test:watch": "cd .. && frontend/node_modules/.bin/vitest --config frontend/vitest.config.ts",
+    "test:coverage": "cd .. && frontend/node_modules/.bin/vitest run --config frontend/vitest.config.ts --coverage"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -50,7 +50,7 @@
     "vue-tsc": "^2.2.10"
   },
   "license": "EUPL-1.2",
-  "files": [
+  "sourceFiles": [
     "frontend/src",
     "frontend/public",
     "api/src",
@@ -59,7 +59,8 @@
     "api/package-lock.json",
     "api/tsconfig.json",
     "scripts/licenseAssets.ts",
-    "package-lock.json",
+    "frontend/package-lock.json",
+    "eslint.config.mjs",
     "frontend/index.html",
     "frontend/vite.config.ts",
     "frontend/tsconfig.json",

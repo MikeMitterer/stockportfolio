@@ -10,7 +10,7 @@ import { createLegalAssets } from '../scripts/licenseAssets'
  * Verfügung, wo es keine package.json gibt.
  */
 const packageVersion: string = JSON.parse(
-  readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'),
+  readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'),
 ).version
 
 export default defineConfig({
