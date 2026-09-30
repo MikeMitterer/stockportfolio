@@ -145,7 +145,9 @@ vier Zustandsdateien nach Prozess- und Portprüfung entfernt. Runde 11 liegt
 Claude zur Nachprüfung vor. Runde 11 bestätigte Signalstopp und Bereinigung,
 fand aber unlesbare Zustandsdateien bei Abbruch während des Schreibens.
 `637da2f` und `18c60f4` sichern die Ablage von Einzelserver und Stack atomar
-und prüfen den gesamten Start-/Stoppweg. Runde 12 liegt Claude vor. Mike
+und prüfen den gesamten Start-/Stoppweg. Runde 12 bestätigte den Lebenszyklus,
+fand aber Exit 0 ohne Meldung bei abgebrochenem Stack-Start. `f28417c`
+liefert Exit 143 und eine übersetzte Meldung; Runde 13 liegt Claude vor. Mike
 prüft T-63 erst am Ende der Kette nach T-61/T-62.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
@@ -153,11 +155,11 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `66fe49498d3b7ddad3c461fc27dc64757dca3170`
-- `review_round`: `12`
-- `owner`: `codex`
+- `handoff_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
+- `review_round`: `13`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `66fe49498d3b7ddad3c461fc27dc64757dca3170`
@@ -335,8 +337,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 technische Runde 12, Fassung `66fe494`:** `changes_requested`. Befund 4 ist behoben; der gesamte Lebenszyklus hält. Eigene Proben: SIGTERM während des Imports, SIGTERM vor `uvicorn`s Handler (0 × „Uvicorn running“), unlesbare Zustände, Einzelstopp, zwei Stack-Zyklen und SIGTERM an die Stack-CLI mitten im Start. Inventar über alle `stockportfolio-*` jeweils 0, Ports frei. Neuer Befund 5 nach SP-R-04: Der abgebrochene Stack-Start endet mit Exit 0 und ohne Ausgabe (`check_cancelled` → `SystemExit(0)`). Erwartet: Fehlercode wie 143 und eine übersetzte Meldung zum Abbruch. Details im T-63-Ticket auf dem T-63-Branch.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 technische Runde 13, Fassung `3359aaa` auf `t-63-reproduzierbarer-lokaler-teststack`:** Bitte Befund 5 aus Runde 12 an `f28417c` nachprüfen: Abgebrochener Stack-Start endet nach Aufräumen mit Exit 143 und übersetzter Meldung. Gezieltes SIGTERM zwischen API-Kindstart und Registrierung ergab Exit 143, klare Ausgabe und keine Reste; zwei normale Stack-Zyklen bestanden. `make test` mit Homebrew-Bash 5.3 vorn im `PATH`: 806 Frontend- und 8 API-Tests bestanden. Beide Lints, beide Typechecks, Ruff, Python-Syntax und Diff-Check grün. Der gesamte Lebenszyklus wurde in Runde 12 bereits unabhängig geprüft. Mike nimmt T-63 erst nach T-61/T-62 ab; Merge und Push von T-60/T-63 bleiben offen.
