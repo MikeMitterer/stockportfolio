@@ -126,7 +126,7 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `handoff_commit`: `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
 - `review_round`: `6`
