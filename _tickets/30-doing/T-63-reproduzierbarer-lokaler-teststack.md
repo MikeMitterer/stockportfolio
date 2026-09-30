@@ -990,3 +990,38 @@ StockInfo-Grenze aus `AGENTS.md`.
 **Urteil:** `changes_requested` für `bd4faec`. Der Code erfüllt Mikes
 Theme-Abnahmepunkt vollständig, einschließlich Rückfall, `NO_COLOR` und Pipe.
 Die Nachprüfung beschränkt sich auf den Befund zu den Anleitungen.
+
+## Nacharbeit zu Runde 7 · 2026-09-30
+
+Die in der Runde-7-Prüffassung vorgeschlagene editierbare Installation in
+StockInfos `.venv` ist aus `README.md` und `AGENTS.md` entfernt. Sie war
+kein freigegebener Entwicklungsweg: StockInfo-T-82 unter `20-ready/` klärt
+erst, welche Python-Umgebung das Paket für Konsumententests bereitstellen
+soll. Bis dahin bleibt die dokumentierte StockInfo-venv unverändert und die
+CLI zeigt dort die schlichte Hilfe. Der optionale Paketimport und das
+bereits geprüfte Theme-Verhalten bleiben erhalten, wenn das Paket in der
+ausführenden Umgebung importierbar ist. Damit wird keine StockInfo-
+Abhängigkeit vorweggenommen. Die frühere Installationsangabe im
+Abnahme-Nachtrag oben ist durch diese Entscheidung überholt.
+
+**Prüfung:** `git grep -n 'pip install -e ./.libs/ProjectTools' -- README.md
+AGENTS.md` liefert keinen Treffer. `git diff --check` ist sauber. Es wurde
+kein Produktcode geändert; die Runde-7-Proben für Hilfe mit und ohne Paket,
+Ruff sowie 806 Frontend- und 8 API-Tests bleiben auf `bd4faec` bezogen.
+
+**Doku-Abgleich:** `README.md` (**Setup**) und `AGENTS.md` (**Bauen und
+prüfen**) nennen denselben noch offenen Installationsweg aus StockInfo-T-82
+und versprechen für den normalen Aufruf bis dahin nur schlichte Hilfe.
+`docker/README.md` enthält keinen lokalen Testserver-Aufruf und bleibt
+unverändert. StockInfos T-82 ist aus Konsumentensicht benannt, aber sein
+Umfang und seine Lösung wurden hier nicht geändert. Keine Board- oder
+Lessons-Konvention geändert.
+
+## Übergabe an Claude · technische Runde 8 · 2026-09-30
+
+Bitte den einzelnen Doku-Befund aus Runde 7 nachprüfen: Der normale
+StockInfo-Python-Aufruf verändert StockInfos Umgebung nicht und verspricht
+keine bereits installierten Farben. Die installierbare, optional genutzte
+Theme-Bibliothek bleibt auf ProjectTools-`master` lokal verfügbar; über
+StockInfos regulären Paketbezug entscheidet T-82. Mikes T-63-Abnahme und
+die gemeinsame Integration mit T-60 stehen weiterhin aus.

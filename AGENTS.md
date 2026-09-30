@@ -214,10 +214,10 @@ Python-Umgebung aus diesem Repository aufrufen:
 ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
 ```
 
-Für das gemeinsame `MAKE_THEME`-Theme `mmit-projecttools` über den
-`.libs/ProjectTools`-Link in StockInfos Python-Umgebung installieren:
-`../StockInfo/.venv/bin/python -m pip install -e ./.libs/ProjectTools`.
-Ohne Paket bleibt die CLI mit schlichter Ausgabe nutzbar.
+Das Skript verwendet `MAKE_THEME`, sobald `projecttools.ui.colors` im
+ausführenden Python importierbar ist. StockInfo-T-82 klärt den unterstützten
+Installationsweg für dessen Umgebung; bis dahin bleibt die dokumentierte
+Hilfe schlicht. Das Skript ändert StockInfos `.venv` nicht.
 
 Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
 Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale
