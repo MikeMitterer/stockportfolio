@@ -20,7 +20,7 @@ function createFixture() {
   const repository = createSqliteRepository(join(directory, 'test.sqlite'))
   let currentTime = 100_000
   const service = new AccountService(repository, hashSetupCode('setup-code'), () => currentTime)
-  const app = createApiRouter(service, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1' })
+  const app = createApiRouter(service, repository, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1' })
   return { app, repository, service, advance: (milliseconds: number) => { currentTime += milliseconds } }
 }
 

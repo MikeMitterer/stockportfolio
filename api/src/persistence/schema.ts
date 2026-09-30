@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
@@ -25,3 +25,11 @@ export const loginAttempts = sqliteTable('login_attempts', {
   failureCount: integer('failure_count').notNull(),
   blockedUntil: integer('blocked_until'),
 })
+
+export const privateResources = sqliteTable('private_resources', {
+  ownerId: text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  kind: text('kind', { enum: ['portfolio', 'settings', 'allowlist', 'snapshots'] }).notNull(),
+  resourceId: text('resource_id').notNull(),
+  revision: integer('revision').notNull(),
+  value: text('value').notNull(),
+}, (table) => [primaryKey({ columns: [table.ownerId, table.kind, table.resourceId] })])

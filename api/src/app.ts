@@ -16,7 +16,7 @@ export function createServerApp(repository: AccountRepository, options: ServerOp
 
   app.get('/healthz', (context) => context.json({ status: 'ok' }))
   app.get('/admin/users', (context) => context.redirect('/#/admin/users', 302))
-  app.route('/', createApiRouter(service, options))
+  app.route('/', createApiRouter(service, repository, options))
 
   // Die Hash-Navigation lädt immer index.html; echte Dateien liefert der
   // statische Handler direkt aus. API-Fehler bleiben JSON-Antworten.

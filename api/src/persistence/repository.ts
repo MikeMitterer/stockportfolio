@@ -6,7 +6,21 @@ import Database from 'better-sqlite3'
 import { and, eq } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
-import { loginAttempts, sessions, users } from './schema.js'
+import { loginAttempts, privateResources, sessions, users } from './schema.js'
+
+export type ResourceKind = 'portfolio' | 'settings' | 'allowlist' | 'snapshots'
+
+export interface PrivateResource {
+  resourceId: string
+  revision: number
+  value: unknown
+}
+
+export interface LegacyPortfolio {
+  portfolio: Record<string, unknown>
+  allowlist: Record<string, boolean>
+  snapshots: unknown[]
+}
 
 export interface UserRecord {
   id: string
@@ -45,6 +59,11 @@ export interface AccountRepository {
   replacePassword(id: string, passwordHash: string, mustChangePassword: boolean): boolean
   deactivateUser(id: string): 'done' | 'last_admin' | 'not_found'
   reactivateUser(id: string): boolean
+  listResources(userId: string, kind: ResourceKind): PrivateResource[]
+  findResource(userId: string, kind: ResourceKind, resourceId: string): PrivateResource | null
+  saveResource(userId: string, kind: ResourceKind, resourceId: string, revision: number, value: unknown): number | 'not_found' | null
+  deleteResource(userId: string, kind: ResourceKind, resourceId: string, revision: number): 'done' | 'not_found' | 'conflict'
+  importLegacy(userId: string, portfolios: LegacyPortfolio[], settings: Record<string, unknown> | null): 'done' | 'forbidden' | 'imported' | 'conflict'
   createSession(record: SessionRecord): void
   findSession(tokenHash: string): SessionRecord | null
   touchSession(tokenHash: string, now: number): void
@@ -68,6 +87,14 @@ export function createSqliteRepository(filePath: string): AccountRepository {
 
   function findUserById(id: string): UserRecord | null {
     return database.select().from(users).where(eq(users.id, id)).get() ?? null
+  }
+
+  function resourceWhere(userId: string, kind: ResourceKind, resourceId: string) {
+    return and(eq(privateResources.ownerId, userId), eq(privateResources.kind, kind), eq(privateResources.resourceId, resourceId))
+  }
+
+  function decodeResource(row: typeof privateResources.$inferSelect): PrivateResource {
+    return { resourceId: row.resourceId, revision: row.revision, value: JSON.parse(row.value) as unknown }
   }
 
   return {
@@ -117,6 +144,75 @@ export function createSqliteRepository(filePath: string): AccountRepository {
     },
     reactivateUser(id) {
       return database.update(users).set({ active: true }).where(eq(users.id, id)).run().changes > 0
+    },
+    listResources(userId, kind) {
+      return database.select().from(privateResources).where(and(eq(privateResources.ownerId, userId), eq(privateResources.kind, kind))).all().map(decodeResource)
+    },
+    findResource(userId, kind, resourceId) {
+      const row = database.select().from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+      return row ? decodeResource(row) : null
+    },
+    saveResource(userId, kind, resourceId, revision, value) {
+      return database.transaction((transaction) => {
+        if (kind === 'allowlist' || kind === 'snapshots') {
+          const parent = transaction.select({ resourceId: privateResources.resourceId }).from(privateResources).where(resourceWhere(userId, 'portfolio', resourceId)).get()
+          if (!parent) return 'not_found'
+        }
+        const current = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+        if (kind === 'portfolio' && !current) {
+          const occupied = transaction.select({ ownerId: privateResources.ownerId }).from(privateResources).where(and(eq(privateResources.kind, 'portfolio'), eq(privateResources.resourceId, resourceId))).get()
+          if (occupied) return 'not_found'
+        }
+        if ((current?.revision ?? 0) !== revision) return null
+        const nextRevision = revision + 1
+        if (current) {
+          transaction.update(privateResources).set({ revision: nextRevision, value: JSON.stringify(value) }).where(resourceWhere(userId, kind, resourceId)).run()
+        } else {
+          transaction.insert(privateResources).values({ ownerId: userId, kind, resourceId, revision: nextRevision, value: JSON.stringify(value) }).run()
+        }
+        return nextRevision
+      })
+    },
+    deleteResource(userId, kind, resourceId, revision) {
+      return database.transaction((transaction) => {
+        const current = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+        if (!current) return 'not_found'
+        if (current.revision !== revision) return 'conflict'
+        transaction.delete(privateResources).where(resourceWhere(userId, kind, resourceId)).run()
+        if (kind === 'portfolio') {
+          for (const childKind of ['allowlist', 'snapshots'] as const) {
+            transaction.delete(privateResources).where(resourceWhere(userId, childKind, resourceId)).run()
+          }
+        }
+        return 'done'
+      })
+    },
+    importLegacy(userId, portfolios, settings) {
+      return database.transaction((transaction) => {
+        const user = transaction.select().from(users).where(eq(users.id, userId)).get()
+        if (!user?.isSetupAccount) return 'forbidden'
+        if (user.legacyImported) return 'imported'
+        const existing = transaction.select({ resourceId: privateResources.resourceId }).from(privateResources).where(eq(privateResources.ownerId, userId)).all()
+        const importedIds = new Set(portfolios.map((entry) => entry.portfolio.id))
+        if (existing.some((row) => importedIds.has(row.resourceId) || (row.resourceId === 'current' && settings))) return 'conflict'
+        for (const entry of portfolios) {
+          const occupied = transaction.select({ ownerId: privateResources.ownerId }).from(privateResources).where(and(eq(privateResources.kind, 'portfolio'), eq(privateResources.resourceId, String(entry.portfolio.id)))).get()
+          if (occupied) return 'conflict'
+        }
+        for (const entry of portfolios) {
+          const resourceId = String(entry.portfolio.id)
+          for (const [kind, value] of [
+            ['portfolio', entry.portfolio],
+            ['allowlist', entry.allowlist],
+            ['snapshots', entry.snapshots],
+          ] as const) {
+            transaction.insert(privateResources).values({ ownerId: userId, kind, resourceId, revision: 1, value: JSON.stringify(value) }).run()
+          }
+        }
+        if (settings) transaction.insert(privateResources).values({ ownerId: userId, kind: 'settings', resourceId: 'current', revision: 1, value: JSON.stringify(settings) }).run()
+        transaction.update(users).set({ legacyImported: true }).where(eq(users.id, userId)).run()
+        return 'done'
+      })
     },
     createSession(record) {
       database.insert(sessions).values(record).run()

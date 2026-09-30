@@ -2,6 +2,7 @@ import type { HttpBindings } from '@hono/node-server'
 import { Hono, type Context } from 'hono'
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { AccountService, ServiceError, type PublicUser } from '../auth/service.js'
+import type { AccountRepository, LegacyPortfolio, ResourceKind } from '../persistence/repository.js'
 
 type ServerContext = Context<{ Bindings: HttpBindings }>
 
@@ -24,6 +25,55 @@ function readObject(value: unknown): Record<string, unknown> {
 function readString(value: unknown): string {
   if (typeof value !== 'string') throw new ServiceError(400, 'invalid_request')
   return value
+}
+
+function readRevision(value: unknown): number {
+  if (!Number.isSafeInteger(value) || (value as number) < 0) throw new ServiceError(400, 'invalid_revision')
+  return value as number
+}
+
+function readResourceKind(value: string): ResourceKind {
+  if (value !== 'portfolio' && value !== 'settings' && value !== 'allowlist' && value !== 'snapshots') {
+    throw new ServiceError(404, 'not_found')
+  }
+  return value
+}
+
+function validateResource(kind: ResourceKind, id: string, value: unknown): void {
+  if (kind === 'snapshots') {
+    if (!Array.isArray(value) || value.some((entry) => {
+      const row = readObject(entry)
+      return typeof row.date !== 'string' || typeof row.currency !== 'string' || typeof row.total !== 'number' || !Number.isFinite(row.total)
+    })) throw new ServiceError(400, 'invalid_data')
+    return
+  }
+  const record = readObject(value)
+  if (kind === 'portfolio' && (record.id !== id || typeof record.name !== 'string' || !Array.isArray(record.positions))) {
+    throw new ServiceError(400, 'invalid_data')
+  }
+  if (kind === 'settings' && (id !== 'current' || typeof record.activePortfolioId !== 'string')) {
+    throw new ServiceError(400, 'invalid_data')
+  }
+  if (kind === 'allowlist' && Object.values(record).some((enabled) => typeof enabled !== 'boolean')) {
+    throw new ServiceError(400, 'invalid_data')
+  }
+}
+
+function readLegacyPortfolios(value: unknown): LegacyPortfolio[] {
+  if (!Array.isArray(value) || value.length > 1000) throw new ServiceError(400, 'invalid_data')
+  const entries = value.map((item) => {
+    const source = readObject(item)
+    const portfolio = readObject(source.portfolio ?? source)
+    const id = readString(portfolio.id)
+    validateResource('portfolio', id, portfolio)
+    const allowlist = readObject(source.allowlist ?? {}) as Record<string, boolean>
+    validateResource('allowlist', id, allowlist)
+    const snapshots = source.snapshots ?? []
+    validateResource('snapshots', id, snapshots)
+    return { portfolio, allowlist, snapshots: snapshots as unknown[] }
+  })
+  if (new Set(entries.map((entry) => entry.portfolio.id)).size !== entries.length) throw new ServiceError(400, 'invalid_data')
+  return entries
 }
 
 async function body(context: ServerContext): Promise<Record<string, unknown>> {
@@ -63,7 +113,7 @@ function setSessionCookie(context: ServerContext, value: string, secure: boolean
   })
 }
 
-export function createApiRouter(service: AccountService, options: ApiOptions): Hono<{ Bindings: HttpBindings }> {
+export function createApiRouter(service: AccountService, repository: AccountRepository, options: ApiOptions): Hono<{ Bindings: HttpBindings }> {
   const app = new Hono<{ Bindings: HttpBindings }>()
 
   app.onError((error, context) => {
@@ -149,6 +199,56 @@ export function createApiRouter(service: AccountService, options: ApiOptions): H
   app.post('/api/admin/users/:id/reactivate', (context) => {
     requireAdmin(context, service)
     service.reactivateUser(context.req.param('id'))
+    return context.json({ ok: true })
+  })
+
+  app.get('/api/data/:kind', (context) => {
+    const user = currentUser(context, service)
+    const kind = readResourceKind(context.req.param('kind'))
+    return context.json({ resources: repository.listResources(user.id, kind) })
+  })
+
+  app.get('/api/data/:kind/:id', (context) => {
+    const user = currentUser(context, service)
+    const kind = readResourceKind(context.req.param('kind'))
+    const resource = repository.findResource(user.id, kind, context.req.param('id'))
+    if (!resource) throw new ServiceError(404, 'not_found')
+    return context.json(resource)
+  })
+
+  app.put('/api/data/:kind/:id', async (context) => {
+    const user = currentUser(context, service)
+    const kind = readResourceKind(context.req.param('kind'))
+    const id = context.req.param('id')
+    const request = await body(context)
+    const revision = readRevision(request.revision)
+    validateResource(kind, id, request.value)
+    const nextRevision = repository.saveResource(user.id, kind, id, revision, request.value)
+    if (nextRevision === 'not_found') throw new ServiceError(404, 'not_found')
+    if (nextRevision === null) throw new ServiceError(409, 'revision_conflict')
+    return context.json({ revision: nextRevision })
+  })
+
+  app.delete('/api/data/:kind/:id', async (context) => {
+    const user = currentUser(context, service)
+    const kind = readResourceKind(context.req.param('kind'))
+    const request = await body(context)
+    const result = repository.deleteResource(user.id, kind, context.req.param('id'), readRevision(request.revision))
+    if (result === 'not_found') throw new ServiceError(404, 'not_found')
+    if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
+    return context.json({ ok: true })
+  })
+
+  app.post('/api/data/legacy-import', async (context) => {
+    const user = currentUser(context, service)
+    const request = await body(context)
+    const portfolios = readLegacyPortfolios(request.portfolios)
+    const settings = request.settings === null || request.settings === undefined ? null : readObject(request.settings)
+    if (settings) validateResource('settings', 'current', settings)
+    const result = repository.importLegacy(user.id, portfolios, settings)
+    if (result === 'forbidden') throw new ServiceError(403, 'forbidden')
+    if (result === 'imported') throw new ServiceError(409, 'legacy_already_imported')
+    if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
     return context.json({ ok: true })
   })
 

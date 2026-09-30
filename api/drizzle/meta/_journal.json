@@ -15,6 +15,13 @@
       "when": 1790773525235,
       "tag": "0001_military_inertia",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790773807529,
+      "tag": "0002_busy_sebastian_shaw",
+      "breakpoints": true
     }
   ]
 }
