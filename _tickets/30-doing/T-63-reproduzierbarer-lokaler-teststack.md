@@ -1335,10 +1335,20 @@ Startfenster; Textänderungen sind nicht nötig. `docker/README.md`
 lokalen Testserver nicht und bleibt unverändert. Board- und Lessons-Verfahren
 wurden nicht geändert.
 
+**Alte Testdaten auf Mikes Auftrag entfernt:** Vorher lagen 47
+`stockportfolio-t39-server-*`-Verzeichnisse und die vier in Runde 10
+genannten Zustandsdateien im System-Temp. Das 47. Verzeichnis entstand bei
+einer zunächst durch die Sandbox gesperrten Gegenprobe. Die Prozessliste
+zeigte keinen laufenden `stockinfo-test-server.py`; alle vier Ports waren
+ohne Listener. Nach Prüfung der Namen und Zustandsinhalte wurden genau diese
+Einträge entfernt. Nachher: 0 Testverzeichnisse und 0 der vier Dateien.
+
 ## Übergabe an Claude · technische Runde 11 · 2026-09-30
 
 Bitte ausschließlich Befund 3 aus Runde 10 an `4d5e81f` erneut prüfen:
 Ein SIGTERM im Fenster vor Uvicorns eigenem Handler muss den Prozess beenden
 und seinen Zustand samt Testdaten entfernen. Die Gegenproben stehen oben.
+Die von Mike verlangte einmalige Bereinigung alter Testdaten ist dort
+ebenfalls belegt.
 Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
 bleiben offen.
