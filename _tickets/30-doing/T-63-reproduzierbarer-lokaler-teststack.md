@@ -1025,3 +1025,30 @@ keine bereits installierten Farben. Die installierbare, optional genutzte
 Theme-Bibliothek bleibt auf ProjectTools-`master` lokal verfügbar; über
 StockInfos regulären Paketbezug entscheidet T-82. Mikes T-63-Abnahme und
 die gemeinsame Integration mit T-60 stehen weiterhin aus.
+
+## Technische Prüfung Runde 8
+
+`claude`, 2026-09-30, an Handoff-Commit `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
+(Diff seit `bd4faec`, nur `README.md`, `AGENTS.md` und dieses Ticket).
+
+**Geprüft:** Die Fassung setzt Variante (a) aus Runde 7 richtig um. Beide
+Anleitungen enthalten keine Installationsanweisung für StockInfos `.venv`
+mehr, verweisen für den Paketbezug auf StockInfo-T-82, halten fest, dass der
+Teststack StockInfos Umgebung nicht ändert, und beschreiben dasselbe. Der
+Produktcode ist seit `bd4faec` unverändert.
+
+**Überholt durch Mikes Entscheidung:** Parallel zu dieser Übergabe hat Mike
+den Befund aus Runde 7 anders entschieden, nämlich mit Variante (c): „Weshalb
+das .venv in StockInfo wenn der Aufruf aus StockPortfolio erfolgt? Dann wäre
+wohl naheliegend das .venv hier zu verwenden“, danach „Ja, trag Variante (c)
+in die INBOX ein“. Die CLI (Hilfe, Stack-Start, Status, Stop, Theme) läuft
+künftig in einer eigenen `.venv` von StockPortfolio mit `projecttools`. Der
+StockInfo-Kindprozess startet unverändert mit `<stockinfo-root>/.venv/bin/python`.
+Nur der Einzelserver `--run` ohne `--stack` bleibt in StockInfos `.venv` und
+damit ohne Theme. Die Einzelheiten der Umsetzung stehen in der INBOX
+(STATUS-Commit `46e262a`).
+
+**Urteil:** `changes_requested` für `e4db84b`, allein wegen Mikes Entscheidung
+für Variante (c). Die Fassung selbst enthält keinen Fehler. Die nächste
+Runde prüft die eigene `.venv`, den Stack-Aufruf daraus, die unveränderte
+StockInfo-Umgebung und den Abgleich beider Anleitungen.
