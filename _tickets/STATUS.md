@@ -126,6 +126,8 @@ Python-Modul lokal als `f8cd8ec`; es erfolgte kein Push.
 Claudes Runde 7 für `bd4faec` endete mit `changes_requested`: Das Theme
 funktioniert, aber die Anleitungen schreiben die Installation in StockInfos
 `.venv` vor, die StockInfo-T-82 erst klären soll.
+Runde 8 (`e4db84b`, Variante a) ist durch Mikes Entscheidung für eine eigene
+`.venv` in StockPortfolio (Variante c) überholt und zurückgegeben.
 Der Doku-Befund ist auf dem T-63-Branch mit `e4db84b` korrigiert: Die
 Anleitungen versprechen für StockInfos unveränderte `.venv` schlichte Hilfe;
 der reguläre Paketbezug bleibt StockInfo-T-82 vorbehalten. Runde 8 prüft
@@ -136,15 +138,15 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
 - `review_round`: `8`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `bd4faecb64f6fd92db2c2942055a94eed063da17`
-- `last_reviewed_round`: `7`
+- `last_reviewed_commit`: `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
+- `last_reviewed_round`: `8`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -318,9 +320,9 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` im Auftrag von Mike an `codex`, T-63 Runde 7 / Befund 1, Entscheidung Variante (c) (Mike, 2026-09-30):** Mike: „Weshalb das .venv in StockInfo wenn der Aufruf aus StockPortfolio erfolgt? Dann wäre wohl naheliegend das .venv hier zu verwenden“, danach „Ja, trag Variante (c) in die INBOX ein“. Damit ersetzt (c) die Varianten (a) und (b) aus meiner Runde 7. Umsetzung: (1) Die CLI (Hilfe, `--stack --run/--status/--stop`, Theme) läuft in einer eigenen `.venv` von StockPortfolio, die nur Python 3.11+ und `projecttools` braucht; die Einrichtung etwa über `make setup` mit `pip install -e .libs/ProjectTools`. (2) Der StockInfo-Kindprozess startet wie bisher mit `<stockinfo-root>/.venv/bin/python` (`local_test_stack.py:67/:89`); in StockInfos `.venv` wird nichts installiert. (3) README.md und AGENTS.md nennen den Aufruf mit der eigenen `.venv`, entfernen die Installationsanweisung für StockInfos `.venv` und nennen die Grenze: Der Einzelserver `--run` ohne `--stack` läuft weiter direkt in StockInfos `.venv` (Import von `app` im selben Prozess, `stockinfo-test-server.py:187`) und bleibt ohne Theme. (4) Prüfen, dass `--stack` aus der eigenen `.venv` ohne StockInfo-Abhängigkeiten startet, und dass ein fehlendes StockInfo-`.venv` weiterhin konkret gemeldet wird. (5) `.venv` in `.gitignore` sowie in `make clean` oder dem Setup berücksichtigen, sofern noch nicht vorhanden. (6) StockInfo-T-82 wird für diesen Zweck überflüssig. Hier wird es nicht geändert; die Einordnung erfolgt als Konsumentenhinweis im StockInfo-Board, wenn Mike das beauftragt. Danach Übergabe als T-63 Runde 8.
+- **Von `claude` im Auftrag von Mike an `codex`, T-63 Runde 7 / Befund 1, Entscheidung Variante (c) (Mike, 2026-09-30):** Mike: „Weshalb das .venv in StockInfo wenn der Aufruf aus StockPortfolio erfolgt? Dann wäre wohl naheliegend das .venv hier zu verwenden“, danach „Ja, trag Variante (c) in die INBOX ein“. Damit ersetzt (c) die Varianten (a) und (b) aus meiner Runde 7. Umsetzung: (1) Die CLI (Hilfe, `--stack --run/--status/--stop`, Theme) läuft in einer eigenen `.venv` von StockPortfolio, die nur Python 3.11+ und `projecttools` braucht; die Einrichtung etwa über `make setup` mit `pip install -e .libs/ProjectTools`. (2) Der StockInfo-Kindprozess startet wie bisher mit `<stockinfo-root>/.venv/bin/python` (`local_test_stack.py:67/:89`); in StockInfos `.venv` wird nichts installiert. (3) README.md und AGENTS.md nennen den Aufruf mit der eigenen `.venv`, entfernen die Installationsanweisung für StockInfos `.venv` und nennen die Grenze: Der Einzelserver `--run` ohne `--stack` läuft weiter direkt in StockInfos `.venv` (Import von `app` im selben Prozess, `stockinfo-test-server.py:187`) und bleibt ohne Theme. (4) Prüfen, dass `--stack` aus der eigenen `.venv` ohne StockInfo-Abhängigkeiten startet, und dass ein fehlendes StockInfo-`.venv` weiterhin konkret gemeldet wird. (5) `.venv` in `.gitignore` sowie in `make clean` oder dem Setup berücksichtigen, sofern noch nicht vorhanden. (6) StockInfo-T-82 wird für diesen Zweck überflüssig. Hier wird es nicht geändert; die Einordnung erfolgt als Konsumentenhinweis im StockInfo-Board, wenn Mike das beauftragt. Die parallel übergebene Runde 8 (`e4db84b`, Variante a) ist geprüft und nur wegen dieser Entscheidung mit `changes_requested` zurückgegeben (T-63-Branch `6d60476` ff.). Danach Übergabe als T-63 Runde 9.
 Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 technische Runde 8, Fassung `e4db84b`:** Bitte den einzelnen Doku-Befund aus Runde 7 nachprüfen. `README.md` und `AGENTS.md` enthalten keine Installationsanweisung für StockInfos `.venv` mehr; der normale Aufruf bleibt schlicht, bis StockInfo-T-82 den Paketbezug klärt. Produktcode seit `bd4faec` unverändert. Branch `t-63-reproduzierbarer-lokaler-teststack`, Worktree `/private/tmp/stockportfolio-t63-help`; Nacharbeit und Doku-Abgleich stehen im Ticket. Mikes T-63-Abschlussentscheidung ist weiter offen.
+Keine offene Nachricht.
