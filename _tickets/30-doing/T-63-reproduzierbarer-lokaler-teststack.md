@@ -1444,3 +1444,44 @@ Bitte ausschließlich Befund 4 aus Runde 11 an `637da2f` nachprüfen:
 atomarer Zustand, Aufräumen auch nach Signal während des Schreibens und
 klare Meldung bei unlesbarer vorhandener Datei. Die Gegenproben stehen oben.
 Mikes Abnahme liegt nach T-61/T-62; Merge und Push bleiben bis dahin offen.
+
+## Lebenszyklusprüfung vor Runde 12 · 2026-09-30
+
+Der Observer forderte nach den wiederholten Start- und Stoppbefunden eine
+Prüfung des gesamten Ablaufs. Commit `18c60f4` verwendet die atomare
+Zustandsablage aus `637da2f` nun auch für den Stack. Beim Stack-Start merkt
+der Signalhandler die Beendigungsanforderung zunächst nur vor. So wird ein
+gerade gestartetes Kind vollständig registriert, bevor das Aufräumen
+beginnt. Der Einzelserver installiert seinen Handler schon vor dem Anlegen
+des Testverzeichnisses; während `mkdtemp` wird das Signal vorgemerkt,
+danach greift ein `atexit`-Rückfall für die Importphase ohne Zustandsdatei.
+
+| Schritt | Signal oder Fehler an dieser Stelle | Ergebnis und Schutz |
+|---|---|---|
+| Vorprüfung und Zustandslesen | Port belegt, `ps` unzugänglich oder JSON unlesbar | Kein Kind gestartet. Port und Prozessidentität werden geprüft; unlesbare eigene Zustände melden ihren Pfad ohne Traceback und werden nicht blind entfernt. |
+| Einzelserver: Testverzeichnis und StockInfo-Import | SIGTERM vor der Zustandsdatei | Handler wird vor `mkdtemp` gesetzt; das Signal während der Anlage wird vorgemerkt. `atexit` entfernt das eigene Verzeichnis auch bei Abbruch während des Imports. Importfenster mit SIGTERM gezielt geprüft: keine Reste. |
+| Stack: Kind starten und registrieren | SIGTERM nach `Popen`, vor Speicherung der PID; oder Fehler beim Start eines späteren Kindes | Der Stack-Handler merkt SIGTERM vor. Jedes Kind wird vor dem Abbruch registriert; bei Fehlern stoppt der Stack alle bereits registrierten Kinder. Probe während der API-Registrierung: keine laufenden Kinder, Zustände oder Testdaten. |
+| Zustand schreiben | SIGTERM oder Fehler während `json.dump`; vorhandener Zielname | Gemeinsamer Helfer schreibt in eine temporäre Datei und bindet den vollständigen Inhalt mit `os.link` exklusiv an den Zielnamen. Eigene Datei wird über Dateigerät und Inode erkannt, ohne JSON erneut zu lesen. Teil-Schreibprobe und unlesbare Zustandsdatei geprüft. |
+| Laufen und Bereitschaft prüfen | SIGTERM vor Uvicorns Handler, nach dem Start oder während Stack-Health-Checks | Einzelserver beendet sich über `SystemExit` und sein `finally`; Stack prüft die vorgemerkte Anforderung bei jedem Start- und Health-Schritt und stoppt seine Kinder. Früher und normaler Einzelserver-Stopp sowie zweimaliger voller Stack-Lauf geprüft. |
+| Stoppen und Aufräumen | Kind ist schon beendet, Identität hat gewechselt oder ein Stopp schlägt fehl | Nur eigene Prozessgruppen werden signalisiert. Der Stack versucht alle registrierten Kinder zu stoppen; bei einem Fehlschlag bleiben Zustandsdatei und Daten zur sicheren Nachprüfung erhalten. Nach erfolgreichem Stopp entfernt er Testdaten und dann Zustand. Im Fehlerpfad der Initialisierung entfernt ein eigenes `finally` die Zustandsdatei und ein weiteres die Testdaten. |
+
+**Gegenproben:** SIGTERM während StockInfo-Import, vor Uvicorns Handler,
+während `json.dump` des Einzelservers und zwischen API-Kindstart und
+Registrierung; normaler Einzelserver-Stopp; zweimal Start/Status/Stopp des
+gesamten Stacks; unlesbarer Einzel- und Stack-Zustand. Vorher und nachher
+jeweils 0 verbliebene `stockportfolio-t39-server-*`-Verzeichnisse,
+`stockportfolio-test-server-*.json`-Dateien und `stockportfolio-t63-*`-Einträge.
+`make test` mit Homebrew-Bash 5.3 im `PATH` bestand mit 806 Frontend- und
+8 API-Tests. Beide Lints, beide Typechecks, Ruff, Python-Syntax und
+`git diff --check` waren erfolgreich.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) versprechen bereits den vollständigen Stopp eigener
+Prozesse und Daten. Der Stack erfüllt das nun auch bei Abbruch während des
+Starts. `docker/README.md` (**Quick start**, **Configuration**, **Data and
+backups**) behandelt den lokalen Teststack nicht. Keine Textänderung nötig.
+Die Board- und Lessons-Konventionen wurden nicht geändert.
+
+**Runde-12-Übergabe:** Die Nachprüfung von Befund 4 umfasst `637da2f` und
+`18c60f4` sowie diese Lebenszyklusbelege. Mikes T-63-Abnahme bleibt bis
+nach T-61 und T-62 offen.
