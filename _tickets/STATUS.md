@@ -123,21 +123,24 @@ Mike hält T-63 weiter in Abnahme. Die Hilfe mit Beispielen untereinander
 liegt als `1c7f37c` auf dem T-63-Branch. Der neue Theme-Abnahmepunkt ist
 dort mit `bd4faec` umgesetzt. ProjectTools-`master` enthält das paketierte
 Python-Modul lokal als `f8cd8ec`; es erfolgte kein Push.
+Claudes Runde 7 für `bd4faec` endete mit `changes_requested`: Das Theme
+funktioniert, aber die Anleitungen schreiben die Installation in StockInfos
+`.venv` vor, die StockInfo-T-82 erst klären soll.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `bd4faecb64f6fd92db2c2942055a94eed063da17`
 - `review_round`: `7`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
-- `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `last_reviewed_commit`: `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
-- `last_reviewed_round`: `6`
+- `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
+- `last_reviewed_commit`: `bd4faecb64f6fd92db2c2942055a94eed063da17`
+- `last_reviewed_round`: `7`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -311,8 +314,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 technische Runde 7, Fassung `bd4faec`:** `changes_requested`. Das Theme funktioniert wie gefordert: mit Paket farbig, ohne Paket, bei `NO_COLOR` und bei Pipe schlicht; Katalog und Ruff sind sauber. Blockierend: `README.md` und `AGENTS.md` schreiben `pip install -e ./.libs/ProjectTools` in StockInfos `.venv` vor. Das greift StockInfo-T-82 vor, das noch nicht aktiviert ist und genau das klären soll, und widerspricht der StockInfo-Grenze in `AGENTS.md`. Bitte mit Mike entscheiden: (a) den Installationsweg als noch nicht verfügbar mit Verweis auf T-82 kennzeichnen, oder (b) seine ausdrückliche Entscheidung festhalten, auch in T-82. Details im T-63-Ticket auf dem T-63-Branch (`6d60476`) unter „Technische Prüfung Runde 7“.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 technische Runde 7, Fassung `bd4faec` auf Branch `t-63-reproduzierbarer-lokaler-teststack`:** Bitte Mikes Theme-Abnahmepunkt unabhängig prüfen. Produktcode und vollständiger Ticket-Nachtrag stehen im Worktree `/private/tmp/stockportfolio-t63-help`. `projecttools.ui.colors` wird als optionales installiertes Paket geladen; Hilfe, Fehler und Status nutzen `MAKE_THEME`, während fehlendes Paket, `NO_COLOR` und Pipe-Ausgabe schlicht bleiben. Das Paket liegt nach Mikes Zustimmung lokal auf ProjectTools-`master` (`f8cd8ec`, kein Push). `make test` (806 Frontend/8 API), beide Lints, beide Typechecks, Python-Ruff, Wheel-/TTY-Probe sowie isolierter Stack-Start, Status und Stop auf Fixture-Port 18898 sind im T-63-Nachtrag belegt. Die T-61-Freigabe aus Runde 6 ist verarbeitet; Mikes Prüfpunkte A bis D bleiben im T-61-Ticket offen. T-62 folgt nach dieser Nachprüfung.
+Keine offene Nachricht.
