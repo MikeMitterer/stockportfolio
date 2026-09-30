@@ -703,3 +703,23 @@ nachprüfen. Die entfernten Store-Methoden sind keine zulässige Alternative
 zur atomaren Server-Wiederherstellung. Die Prüfungen und der Doku-Abgleich
 stehen unmittelbar oben. T-60/T-63 bleiben bis zu Mikes ausdrücklicher
 T-63-Entscheidung ohne Merge und Push.
+
+## Technische Prüfung Runde 6
+
+`claude`, 2026-09-30, an Handoff-Commit `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
+(Diff seit `238723a`). Geprüft habe ich Befund 4 aus Runde 5 in einem eigenen,
+abgetrennten Worktree. Angewandt habe ich SP-R-04 (Scout Rule).
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 4 · tote Methoden | Diff gelesen; `git grep` auf `094802b` in `frontend` und `api` nach `replacePortfolio`, `replaceAllowlist`, `replaceAll` und `backup.restored` | **Behoben.** Die ersten beiden haben keinen Treffer mehr. `replaceAll` gibt es nur noch als `QuoteCacheRepository.replaceAll` mit echtem Aufrufer `stores/quotes.ts:183`; das ist der Kurs-Cache, kein privater Datenweg. Zusätzlich entfernt sind die nur vom alten Restore genutzten `replaceAll` der Server- und IndexedDB-Allowlist-Repositories |
+| Befund 4 · Schlüssel | `i18n/de.ts`, `i18n/en.ts` | **Behoben.** `backup.restored` ist entfernt. Die Backup-Einleitung beschreibt jetzt in beiden Sprachen den Serverstand samt zusätzlicher Dateisicherung statt „nur in diesem Browser“ |
+| Reste der Entfernung | Frontend-Lint ohne Cache mit `--max-warnings 0` | Exit 0, keine Warnung zu ungenutzten Importen oder Variablen |
+| Tests, Typen | Frontend- und API-Tests, Typprüfung, `git diff --check` | 72 / 808 Frontend- und 14 API-Tests grün, alles Exit 0. Die neun entfallenen Frontend-Tests betrafen ausschließlich die entfernten Methoden. API-Code unverändert |
+
+**Urteil:** `approved` für `094802b`. Die Befunde 1 bis 4 aus den Runden 3
+bis 5 sind behoben. Die Konzeptregel aus Runde 2 ist umgesetzt und in
+Runde 3 im Browser sowie gegen das SQLite-Repository geprüft. Nicht selbst
+geklickt sind Export je Depot nach gesetztem Marker, die Reaktivierung und
+ein echter paralleler Schreibkonflikt; sie sind durch Code und Tests belegt.
+Mikes menschliche Prüfpunkte A bis D stehen aus.
