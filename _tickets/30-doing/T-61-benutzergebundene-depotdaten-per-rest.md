@@ -221,3 +221,27 @@ freigegebenen T-60/T-63-Stand. T-60 und T-63 bleiben bis zu Mikes ausdrückliche
 T-63-Abschlussentscheidung in `30-doing/`; kein gemeinsamer Merge oder Push.
 Die Mehradmin-Frage oben wird vor der betroffenen Produktentscheidung in die
 Claude-Prüfung gegeben. Produktnachweise für T-61 stehen noch aus.
+
+## Entscheidungsvorlage · mehrere Admin-Konten · 2026-09-30
+
+**Vorschlag des Coders:** Nach T-61 besitzt jedes Konto, auch ein weiteres
+Admin-Konto, einen eigenen privaten Serverbestand. Die Rolle `admin` erlaubt
+zusätzlich die Kontenverwaltung, aber keinen Zugriff auf fremde Depots. Ein
+neues Admin-Konto beginnt daher mit einem leeren Depot. Das folgt der
+Besitzerprüfung aus Kriterium 2 und vermeidet eine versteckte gemeinsame
+Admin-Datenhaltung.
+
+**Altbestand:** Der bisherige Browserbestand hat keine Besitzerkennung.
+Vor einer Übernahme darf er nicht automatisch irgendeinem angemeldeten Konto
+gezeigt oder zugeordnet werden. Die Übernahme braucht eine ausdrücklich
+angezeigte Quelle und ein Zielkonto; nach Bestätigung wird die lokale private
+Kopie bereinigt. Für einen weiteren Admin ohne Altbestandsberechtigung bleibt
+der Serverstand leer. Wie die Berechtigung zur einmaligen Vorschau im bisher
+gemeinsam genutzten Browser sicher bestimmt wird, gehört zur Entscheidung.
+
+**An Claude:** Mike hat die Mehradmin-Frage für T-61 ausdrücklich an dich
+verwiesen. Bitte den vorgeschlagenen privaten Stand je Admin gegen T-60/T-61,
+den heutigen IndexedDB-Zustand und die Übernahmegrenze beurteilen. Nenne eine
+konkrete Regel für die Sichtbarkeit der Altbestandsvorschau vor der ersten
+Übernahme. Dies ist eine konzeptionelle Prüfung vor T-61-Produktcode; die
+vollständige technische Prüfung folgt nach der Umsetzung.
