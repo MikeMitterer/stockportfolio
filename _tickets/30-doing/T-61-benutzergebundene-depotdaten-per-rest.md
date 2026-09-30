@@ -14,6 +14,10 @@ Instrumentauswahl und Tageswerte direkt in IndexedDB. Das bestehende Backup
 enthält nur das aktive Depot. T-60 schafft Server und Konten; dieses Ticket
 ist danach an der Reihe. Produktcode für diese Aufgabe ist noch nicht geändert.
 
+**Stand am 2026-09-30:** Die Umsetzung auf dem T-61-Branch ist abgeschlossen
+und wartet auf die unabhängige technische Prüfung. Der Stand vom 2026-09-28
+beschreibt den Ausgangspunkt.
+
 **Mikes Präzisierung vom 2026-09-28:** Der Datenaustausch mit dem eigenen Server
 muss sicher und verständlich bedienbar sein. Für vorhandene Browserdepots
 braucht es den unten beschriebenen ausdrücklichen Übernahmeweg. Nutzer müssen
@@ -107,12 +111,12 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | <a id="pruefpunkt-1"></a>Im Browser A speichern, Browser B mit demselben Konto neu laden | Depot, Einstellungen, Auswahl und Tageswerte stimmen überein | ➖ |
-| 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ➖ |
-| 3 | <a id="pruefpunkt-3"></a>Altbestand mit Setup- und zweitem Admin-Konto, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur Setup-Konto sieht die Vorschau; fremder Import `403`; bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch `409`. Nach gesetztem Marker Export je altem Depot statt Pauschalimport | ➖ |
-| 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ➖ |
-| 5 | <a id="pruefpunkt-5"></a>Vor und nach dem Altimport abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Besitzerloser Altbestand übersteht Logout vor Import; danach entfernt. Keine neuen privaten Browserkopien des vorigen Kontos; Restore schreibt nur ins angemeldete Konto. Deaktiviertes Setup-Konto kann von anderem Admin reaktiviert werden | ➖ |
-| 6 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
+| 1 | <a id="pruefpunkt-1"></a>Im Browser A speichern, Browser B mit demselben Konto neu laden | Depot, Einstellungen, Auswahl und Tageswerte stimmen überein | ◑ |
+| 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ✅ |
+| 3 | <a id="pruefpunkt-3"></a>Altbestand mit Setup- und zweitem Admin-Konto, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur Setup-Konto sieht die Vorschau; fremder Import `403`; bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch `409`. Nach gesetztem Marker Export je altem Depot statt Pauschalimport | ◑ |
+| 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ◑ |
+| 5 | <a id="pruefpunkt-5"></a>Vor und nach dem Altimport abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Besitzerloser Altbestand übersteht Logout vor Import; danach entfernt. Keine neuen privaten Browserkopien des vorigen Kontos; Restore schreibt nur ins angemeldete Konto. Deaktiviertes Setup-Konto kann von anderem Admin reaktiviert werden | ◑ |
+| 6 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ✅ |
 
 ### Doku-Abgleich
 
@@ -331,3 +335,57 @@ Pauschalimport.
 
 **Urteil:** Das Konzept ist **freigegeben** mit der Regel in Punkt 1 bis 6.
 Das ist keine technische Freigabe; ein Produktstand fehlt noch.
+
+## Umsetzung und Eigenprüfung · 2026-09-30
+
+Die Konto-API speichert Depots, Einstellungen, Instrumentauswahl und Tageswerte
+je Benutzer in SQLite. Jede Route nimmt die Benutzerkennung aus der Sitzung;
+Depot-IDs anderer Konten liefern bei Lesen, Schreiben und Löschen `404`.
+Revisionen schützen Änderungen vor veralteten Schreibständen. Restore und
+einmaliger Altimport laufen jeweils in einer Transaktion. Das Setup-Konto
+und der Importmarker liegen dauerhaft in der Konto-Datenbank. Neue Konten,
+auch weitere Admins, beginnen ohne Depotdaten.
+
+Die App lädt private Daten über die Konto-API. Beim Abmelden werden private
+Pinia-Zustände durch den anschließenden Neustart verworfen und Marktcaches
+geleert. Besitzerloser IndexedDB-Altbestand bleibt bis Import oder bewusstem
+Verwerfen im Browser. Nur das Setup-Konto bekommt dessen Vorschau; nach
+gesetztem Marker stehen einzelne Dateiexporte statt eines zweiten
+Pauschalimports bereit. Scheitert ein privater REST-Zugriff, verdeckt die App
+den möglicherweise veralteten Depotstand und zeigt den Fehler.
+
+| Prüffrage | Eigener Nachweis | Grenze |
+|---|---|---|
+| Gleiches Konto, zwei Browser | Isolierter Teststack mit zwei Browserkontexten und synthetischem Setup-Konto: ein angelegtes Beispieldepot erschien nach Neuladen im zweiten Browser. | Einstellungen, Auswahl und Tageswerte sind auf API-Ebene geprüft, nicht in beiden Browsern einzeln durchgeklickt. |
+| Getrennte Konten | Synthetischer Normalnutzer sah ein leeres Dashboard, keinen Admin-Zugang und keinen zuvor im selben Browser gesetzten lokalen Altbestand. Direkte `GET`- und `PUT`-Aufrufe mit der fremden Depot-ID lieferten `404`. API-Tests decken zwei Admins sowie Lesen und Schreiben aller privaten Arten und fremdes Löschen ab. | Zweiter Admin wurde per API-Test geprüft, nicht als zusätzlicher Browserkontext. |
+| Altbestand | Setup-Konto sah die Vorschau eines synthetischen IndexedDB-Depots; bestätigter Import schrieb es auf den Server und leerte den lokalen Bestand. Ein zweiter Browser desselben Kontos mit weiterem Altdepot zeigte nur den Dateiexport. API-Test: fremder Import `403`, zweiter Import `409`. | Der Abmeldeschritt vor dem Import ist durch die getrennte Datenbehandlung im Code und den IndexedDB-Test belegt, nicht im Browser durchgeklickt. |
+| Konflikt, Offline und Restore | API-Tests zeigen `409` für veraltete Revision und atomaren Restore; der Client-Test prüft den Fehlerweg. Im Browser wurde die Fehleransicht mit einem simulierten Konfliktereignis kontrolliert. | Kein echter paralleler Browser-Schreibkonflikt ausgelöst. |
+
+Der Browserlauf nutzte nur temporäre Testdaten. Der isolierte Stack wurde mit
+`--stack --stop` beendet; eigene Prozesse und temporäre Kontodaten sind
+entfernt. Keine echten StockInfo-Daten oder persönlichen Depots verwendet.
+
+**Prüfbefehle nach dem letzten Produktcommit:** `make test` (69 Dateien,
+809 Frontend-Tests; 4 Dateien, 13 API-Tests), Frontend- und API-Lint,
+Frontend- und API-Typecheck, beide Builds und `git diff --check`: jeweils
+Exit 0. Der Frontend-Build meldet weiterhin nur die bekannte Warnung für
+einen Vendor-Chunk über 500 kB. Die Docker-Hub-README-Vorschau mit Größenlimit
+bestand. Die Tests greifen weder auf echte StockInfo-Daten noch auf das Netz
+zu.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**, **Docker**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Updating**,
+**Data, API and verification**) und `AGENTS.md` (**StockPortfolio hängt an
+StockInfo**, **Tatsächlicher Entwicklungsstand**) nennen dieselbe Trennung:
+Marktdaten aus StockInfo, private Daten in der Konto-API, Altbestand nur beim
+Setup-Konto. Die zentrale Unraid-Vorlage wurde im eigenen Templates-Repository
+mit `5cb8440` angepasst und mit `xmllint --noout` geprüft; kein Push. Die
+T-60-Spezifikation beschreibt die jetzt geltenden Grenzen für T-61/T-62.
+Keine Board- oder Lessons-Konvention wurde geändert; der
+`task-verification-workflow`-Skill braucht keine Anpassung.
+
+**Lessons-Abgleich:** SP-CX-02 angewandt: aktuelle Ticketkriterien, STATUS,
+beide READMEs, AGENTS und Unraid-Aussagen gegen die T-61-Entscheidung
+abgeglichen. SP-CX-03: der laufende In-Context-Scheduler ist kein Beleg für
+unterbrechungsfreie Beobachtung. Historische Konzept- und Reviewaussagen
+bleiben auf ihre jeweilige Fassung bezogen.
