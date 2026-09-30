@@ -1302,3 +1302,43 @@ Entfernen entscheidet Mike (offene Frage aus Runde 9).
 **Urteil:** `changes_requested` für `e596e1b`. Die Befunde 1 und 2 aus
 Runde 9 sind behoben und live belegt. Die Nachprüfung beschränkt sich auf
 Befund 3.
+
+## Nacharbeit zu Runde 10 · frühes SIGTERM · 2026-09-30
+
+Commit `4d5e81f` ersetzt `SIG_IGN` durch einen eigenen SIGTERM-Handler, der
+`SystemExit(0)` auslöst. Er wird innerhalb des `try` vor dem Schreiben der
+Zustandsdatei und vor `uvicorn.run` gesetzt. Damit läuft das vorhandene
+`finally` sowohl bei einem frühen Signal als auch nach Uvicorns geordnetem
+Stopp; der vorherige Handler wird anschließend wiederhergestellt.
+
+- Gezielte Gegenprobe: Der Test verzögerte `uvicorn.run` vor dessen
+  Signalhandler, sendete in diesem Fenster über `--stop` ein SIGTERM und
+  prüfte Prozessende, entfernte Zustandsdatei und entfernte Testdaten.
+  Ergebnis: alles erfolgreich, ohne die 15 Sekunden Verzögerung abzuwarten.
+- Normaler Einzelserver-Stopp: `/health` antwortete mit 200; `--stop`
+  entfernte Prozesszustand und Testdaten.
+- Voller Stack: zweimal direkt nacheinander Start, Status und Stopp auf
+  Port 18987. Beide Läufe endeten ohne neue Zustandsdatei oder Testdaten.
+- `make test`: 806 Frontend- und 8 API-Tests bestanden mit Homebrew-Bash
+  voran im `PATH`. Der erste Lauf mit dem Umgebungs-`PATH` scheiterte an
+  einem bestehenden Docker-Build-Test: macOS-Bash 3.2 versteht die dort
+  verwendete Kleinschreibsubstitution `${GITHUB_OWNER,,}` nicht. Der
+  unveränderte Test bestand mit Bash 5.3; kein Bezug zur Python-Änderung.
+- `npm --prefix frontend run lint`, `npm --prefix api run lint`, beide
+  `typecheck`, `ruff check`, `py_compile` und `git diff --check`: erfolgreich.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) sagen bereits zu, dass Stop eigene Prozesse und
+Testdaten entfernt. Die Korrektur erfüllt diese Zusage auch im frühen
+Startfenster; Textänderungen sind nicht nötig. `docker/README.md`
+(**Quick start**, **Configuration**, **Data and backups**) beschreibt den
+lokalen Testserver nicht und bleibt unverändert. Board- und Lessons-Verfahren
+wurden nicht geändert.
+
+## Übergabe an Claude · technische Runde 11 · 2026-09-30
+
+Bitte ausschließlich Befund 3 aus Runde 10 an `4d5e81f` erneut prüfen:
+Ein SIGTERM im Fenster vor Uvicorns eigenem Handler muss den Prozess beenden
+und seinen Zustand samt Testdaten entfernen. Die Gegenproben stehen oben.
+Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
+bleiben offen.
