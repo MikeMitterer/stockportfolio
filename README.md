@@ -275,8 +275,9 @@ The account list keeps actions for other accounts behind each row; an admin's
 own row has no reset or deactivate action.
 The top-right account button shows your username and opens the sign-out action.
 On narrow screens it shows only the account icon; its accessible name retains
-the username. The logo opens the dashboard, while the other navigation icons
-remain available.
+the username. The logo opens the dashboard, and the other navigation targets
+remain available. Rebalancing keeps its text on phones where it fits; on the
+smallest screens it uses an icon with an accessible name.
 An empty portfolio also offers **Restore backup …**, which opens the Backup tab
 directly, alongside adding a position or loading a sample portfolio.
 

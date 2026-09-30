@@ -687,3 +687,39 @@ mobile Navigationsanweisung und brauchen dafür keine Änderung.
 Mike hat am 2026-09-30 erklärt, T-60 sei nach diesen Anpassungen für ihn
 erledigt. Die technische Nachprüfung der Korrekturen durch Claude steht noch
 aus; bis zu ihrer Freigabe bleibt das Ticket in `30-doing/`.
+
+## Nacharbeit zu Claudes Runde 5 · 2026-09-30
+
+Die Kopfzeile schaltet die allgemeinen Navigationsbeschriftungen und den
+Benutzernamen erst ab `xl` ein. Zwischen `sm` und `md` entfällt zusätzlich die
+Wortmarke. Auf Telefonen werden die Abstände zwischen den drei Gruppen
+kleiner. Das schafft Platz für alle fünf Admin-Ziele und die beiden Knöpfe.
+Mikes T-44-Entscheidung gilt wieder: „Rebalancing“ steht unterhalb `md`
+ausgeschrieben, sobald mindestens 23 rem Breite verfügbar sind; sein Symbol
+entfällt dann. Auf noch schmaleren Fenstern bleibt es als Symbol mit
+zugänglichem Namen erreichbar.
+
+**Browser-Gegenprobe:** Im isolierten Stack mit synthetischem Admin-Konto
+wurden 47 Breiten von 360 bis 1280 px in 20-px-Schritten geprüft. Für jeden
+sichtbaren Navigationslink traf `elementFromPoint` in der Linkmitte den Link;
+Marke, Navigation und Aktionsknöpfe überlappten nie. Kein Fenster hatte
+waagrechtes Scrollen. Zusätzlich geprüft: 320, 340, 367, 368, 390, 639,
+640, 767, 768, 1023, 1024, 1279 und 1440 px. Bei 390 px war
+„Rebalancing“ sichtbar ausgeschrieben und der Verwaltungslink bedienbar;
+bei 768 px lagen alle fünf Symbole frei zwischen Wortmarke und Knöpfen.
+Die Sichtprüfung bei 390 und 768 px bestätigte die einzeilige Kopfzeile.
+Der Teststack wurde danach gestoppt und seine temporären Konten entfernt.
+
+**Prüfung:** `make test` bestand mit 806 Frontend- und 8 API-Tests.
+Frontend- und API-Lint, beide Typechecks, Frontend-Build und `git diff --check`
+bestanden. Der Build meldet weiter den großen `vendor-ui`-Chunk.
+
+**Doku-Abgleich:** Das Datei- und Überschrifteninventar zeigte die mobile
+Navigationsbeschreibung in `README.md` (**Where the data lives**) und
+`docker/README.md` (**Configuration**); beide nennen jetzt das sichtbare Wort
+mit dem Symbol-Fallback gleichlautend. Die Architektur-Spezifikation unter
+`docs/`, `AGENTS.md`, `unraid/README.md` und die Unraid-Vorlage beschreiben
+diese Breitenumschaltung nicht und benötigen keine Anpassung. Die echte
+Docker-Hub-README-Vorschau bestand mit Größenprüfung. Die Observer-Lesson
+SP-CX-06 wurde durch den Breiten-Scan samt Klickprobe angewandt; die beiden
+Befunde aus Claudes Runde 5 sind im T-63-Nachtrag zugeordnet.

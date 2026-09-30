@@ -64,8 +64,9 @@ API entry in the bottom status bar. Admins reach **User management** directly
 from the people icon in the top bar. The account button at the top right shows
 the username and opens the sign-out action.
 On narrow screens it shows only the account icon; its accessible name retains
-the username. The logo opens the dashboard, while the other navigation icons
-remain available.
+the username. The logo opens the dashboard, and the other navigation targets
+remain available. Rebalancing keeps its text on phones where it fits; on the
+smallest screens it uses an icon with an accessible name.
 
 ## Docker Compose
 

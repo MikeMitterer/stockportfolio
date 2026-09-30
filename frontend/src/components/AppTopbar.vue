@@ -52,6 +52,7 @@ const isActive = (name: string): boolean => route.name === name
     Menüpunkte es gibt und was rechts angezeigt wird.
   -->
   <UxTopbar
+    class="portfolio-topbar"
     :brand-lead="t('app.brandLead')"
     :brand-accent="t('app.brandAccent')"
     :href="dashboardHref"
@@ -90,9 +91,10 @@ const isActive = (name: string): boolean => route.name === name
 
     <template #nav>
       <!--
-        `UxNavItem` aus dem Fundament: Beschriftung ab `md`, verstecktes Label
+        `UxNavItem` aus dem Fundament: verstecktes Label
         für Hilfstechnik und der Unterstrich am aktiven Punkt stecken darin.
-        Hier lagen dieselben Regeln vorher als eigene siebzig Zeilen.
+        Die sichtbaren Beschriftungen schalten wegen des zusätzlichen
+        Personen-Icons erst ab `xl` ein; Rebalancing bleibt mobil lesbar.
 
         Die Adresse kommt aus dem Router, damit Mittelklick und „in neuem Tab
         öffnen" funktionieren; der Klick selbst geht über `router.push`, sonst
@@ -101,7 +103,10 @@ const isActive = (name: string): boolean => route.name === name
       <UxNavItem
         v-for="item in navItems"
         :key="item.name"
-        :class="{ 'topbar__dashboard': item.name === 'dashboard' }"
+        :class="{
+          'topbar__dashboard': item.name === 'dashboard',
+          'topbar__rebalancing': item.name === 'rebalancing',
+        }"
         :icon="item.icon"
         :label="item.label"
         :active="isActive(item.name)"
@@ -185,9 +190,34 @@ const isActive = (name: string): boolean => route.name === name
 
 
 /*
- * Ein Strich, kein Kasten: Eine eingefärbte Fläche hinter dem aktiven Punkt
- * konkurriert mit den Karten darunter.
+ * Fünf Ziele samt Konto und Aktualisieren passen mit Text erst ab xl in eine
+ * Zeile. Unter sm sparen kleinere Gruppenzwischenräume den Platz für das
+ * ausgeschriebene Rebalancing. Die Wortmarke kehrt ab md zurück.
  */
+.portfolio-topbar {
+  @include below(sm) {
+    :deep(.ux-topbar__inner) { gap: var(--space-2); }
+    :deep(.ux-topbar__actions) { gap: var(--space-1); }
+  }
+
+  @include below(md) {
+    :deep(.ux-topbar__wordmark) { display: none; }
+  }
+
+  @include below(xl) {
+    :deep(.ux-navitem__label) { display: none; }
+  }
+}
+
+/* Unterhalb 23rem braucht auch Rebalancing sein Symbol, damit alle Ziele passen. */
+.topbar__rebalancing {
+  @include below(md) {
+    @media (min-width: 23rem) {
+      :deep(svg) { display: none; }
+      :deep(.ux-navitem__label) { display: inline; }
+    }
+  }
+}
 
 /*
  * Erst ab `lg`: Bei Tablet-Breite drängen die vier Beschriftungen und der
@@ -215,7 +245,14 @@ const isActive = (name: string): boolean => route.name === name
 
 // Auf schmalen Schirmen bleibt das Konto über Symbol und zugänglichen Namen erreichbar.
 .topbar__account-name {
-  @include below(md) { display: none; }
+  display: inline-block;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  @include below(xl) { display: none; }
 }
 
 // Auf Telefonen führt die Plakette zur Übersicht; ihr zweiter Menüpunkt entfällt.
@@ -245,6 +282,6 @@ const isActive = (name: string): boolean => route.name === name
     background: token(--accent);
     content: '';
   }
-  @include below(md) { span { display: none; } }
+  @include below(xl) { span { display: none; } }
 }
 </style>
