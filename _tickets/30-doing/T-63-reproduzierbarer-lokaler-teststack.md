@@ -1214,3 +1214,49 @@ Inhaltlich ist der Stand richtig, er steht nur unter meinem Commit.
 **Urteil:** `changes_requested` für `70c25a6`. Variante (c) ist vollständig
 und nachprüfbar umgesetzt, einschließlich aller drei Vorgaben Mikes. Die
 Nachprüfung beschränkt sich auf die Befunde 1 und 2.
+
+## Nacharbeit zu Runde 9 · 2026-09-30
+
+Die zwei Befunde sind getrennt behoben:
+
+1. `44f61a6` hält `SIGTERM` beim StockInfo-Einzelserver während Uvicorns
+   Signalrückgabe zurück. Uvicorn kann geordnet herunterfahren; danach läuft
+   der vorhandene `finally`-Block und entfernt die zur eigenen PID gehörende
+   Zustandsdatei sowie das neue `stockportfolio-t39-server-*`-Verzeichnis.
+   Anschließend wird der vorherige Signalhandler wiederhergestellt.
+2. `05ccd7b` setzt beim Port-Probesocket `SO_REUSEADDR` vor `bind`, wie der
+   eigentliche Uvicorn-Server. Eine reine `TIME_WAIT`-Verbindung wird damit
+   nicht mehr als fremder Listener gemeldet.
+
+**Gegenproben:** Vor dem Port-Fix scheiterte ein lokaler Bind nach einer
+geschlossenen Testverbindung auf Port 60190 mit `Address already in use`;
+mit dem Fix bestand dieselbe Probe auf Port 60212. Auf Port 18987 wurde der
+StockInfo-Einzelserver zweimal gestartet und mit `--stop` beendet: Jeweils
+verschwanden seine Zustandsdatei und das neue Datenverzeichnis. Danach wurde
+der **vollständige Stack zweimal direkt hintereinander** auf Port 18987 aus
+StockPortfolios `.venv` gestartet, mit `--stack --status` geprüft und mit
+`--stack --stop` beendet. Beide Starts, Statusläufe und Stopps bestanden.
+Nach jedem Stopp waren weder Stack- noch Kindzustandsdatei vorhanden; die
+Menge der zuvor vorhandenen `stockportfolio-t39-server-*`-Verzeichnisse war
+unverändert. Der Lauf berührte keine der von Claude genannten Altverzeichnisse.
+
+Nach den Codecommits bestanden `make test` mit 806 Frontend- und 8 API-Tests,
+beide ESLint-Läufe, beide Typechecks, Ruff, Python-Syntaxprüfung und
+`git diff --check`. Die Produktänderung betrifft nur die beiden lokalen
+Python-Skripte.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) versprachen bereits, dass Stop die eigenen Testdaten
+entfernt und ein belegter Port fremde Prozesse nicht beendet. Diese Zusagen
+werden nun erfüllt; kein Wortlautwechsel nötig. `docker/README.md`
+(**Quick start**, **Configuration**, **Data and backups**) enthält diesen
+lokalen Fixture-Stack nicht und bleibt unverändert. Keine Board- oder
+Lessons-Konvention geändert.
+
+## Übergabe an Claude · technische Runde 10 · 2026-09-30
+
+Bitte nur die zwei Befunde aus Runde 9 an `44f61a6` und `05ccd7b` erneut
+prüfen: Aufräumen des StockInfo-Kindprozesses nach `SIGTERM` sowie sofortiger
+Stack-Neustart nach Stopp trotz `TIME_WAIT`. Die Gegenproben stehen oben.
+Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
+bleiben offen.
