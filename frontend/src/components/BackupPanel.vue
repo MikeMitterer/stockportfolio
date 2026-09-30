@@ -17,7 +17,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useValueHistoryStore } from '@/stores/valueHistory'
-import { privateDataClient } from '@/data/client'
+import { useBackupStore } from '@/stores/backup'
 
 /**
  * Backup und Wiederherstellung.
@@ -37,6 +37,7 @@ const portfolioStore = usePortfolioStore()
 const settingsStore = useSettingsStore()
 const instrumentsStore = useInstrumentsStore()
 const valueHistory = useValueHistoryStore()
+const backupStore = useBackupStore()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
@@ -151,19 +152,10 @@ async function applyPending(): Promise<void> {
   if (!backup) return
 
   try {
-    const dataClient = privateDataClient()
-    if (dataClient) {
-      await dataClient.restoreBackup(backup, portfolioStore.portfolio?.id ?? null)
+    if (await backupStore.restore(backup) === 'server') {
       window.location.reload()
       return
     }
-    await portfolioStore.replacePortfolio(backup.portfolio)
-    await settingsStore.replaceAll({
-      ...backup.settings,
-      activePortfolioId: backup.portfolio.id,
-    })
-    await instrumentsStore.replaceAllowlist(new Map(Object.entries(backup.allowlist)))
-    await valueHistory.replaceAll(backup.portfolio.id, backup.valueHistory)
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause)
     error.value = t('backup.importFailed', { reason })

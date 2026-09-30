@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, shallowRef } from 'vue'
+import { computed, onMounted, provide, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NButton, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
@@ -8,9 +9,7 @@ import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
 import { readStoredTheme } from '@/stores/theme'
 import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
 import { clearMarketCaches } from '@/db/cache'
-import { clearLegacyData, readLegacyData, type LegacyData } from '@/db/legacy'
-import { backupFileName, buildBackup } from '@/domain/backup'
-import { defaultSettings } from '@/stores/settings'
+import { useLegacyStore } from '@/stores/legacy'
 import AuthenticatedApp from './AuthenticatedApp.vue'
 import { PortfolioAuthClient, PortfolioApiError, type PortfolioUser } from './client'
 import { AUTH_CLIENT, AUTH_LOGOUT, AUTH_USER } from './context'
@@ -29,8 +28,8 @@ const username = ref('')
 const password = ref('')
 const newPassword = ref('')
 const baseUrl = ref('')
-const legacyData = shallowRef<LegacyData | null>(null)
-let dataClient: PrivateDataClient | null = null
+const legacyStore = useLegacyStore()
+const { legacyData } = storeToRefs(legacyStore)
 const isDark = THEMES[readStoredTheme()].isDark
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
@@ -48,18 +47,15 @@ async function acceptUser(nextUser: PortfolioUser): Promise<void> {
   const cameFromLogin = view.value === 'login' || view.value === 'change' || view.value === 'setup'
   user.value = nextUser
   errorCode.value = ''
-  legacyData.value = null
+  legacyStore.clearPreview()
   if (nextUser.mustChangePassword) {
     view.value = 'change'
   } else {
     try {
       baseUrl.value = apiBaseUrl()
-      dataClient = new PrivateDataClient()
-      activatePrivateData(dataClient)
+      activatePrivateData(new PrivateDataClient())
       if (nextUser.isSetupAccount) {
-        const currentLegacy = await readLegacyData()
-        if (currentLegacy.portfolios.length > 0) {
-          legacyData.value = currentLegacy
+        if (await legacyStore.inspect()) {
           view.value = 'legacy'
           return
         }
@@ -144,7 +140,7 @@ async function logout(): Promise<void> {
     await clearMarketCaches()
     await client.logout()
     deactivatePrivateData()
-    legacyData.value = null
+    legacyStore.clearPreview()
     user.value = null
     view.value = 'login'
     errorCode.value = ''
@@ -158,14 +154,12 @@ async function logout(): Promise<void> {
 }
 
 async function importLegacy(): Promise<void> {
-  if (!dataClient || !legacyData.value || !user.value) return
+  if (!legacyData.value || !user.value) return
   busy.value = true
   errorCode.value = ''
   try {
-    await dataClient.importLegacy(legacyData.value.portfolios, legacyData.value.settings)
-    await clearLegacyData()
+    await legacyStore.importToSetupAccount()
     user.value = { ...user.value, legacyImported: true }
-    legacyData.value = null
     view.value = 'app'
   } catch (error) {
     reportError(error)
@@ -178,8 +172,7 @@ async function discardLegacy(): Promise<void> {
   busy.value = true
   errorCode.value = ''
   try {
-    await clearLegacyData()
-    legacyData.value = null
+    await legacyStore.discard()
     view.value = 'app'
   } catch (error) {
     reportError(error)
@@ -193,22 +186,12 @@ function continueWithoutImport(): void {
 }
 
 function exportLegacy(index: number): void {
-  const entry = legacyData.value?.portfolios[index]
-  if (!entry) return
-  const exportedAt = new Date().toISOString()
-  const settings = { ...(legacyData.value?.settings ?? defaultSettings(entry.portfolio.id)), activePortfolioId: entry.portfolio.id }
-  const backup = buildBackup(
-    entry.portfolio,
-    settings,
-    new Map(Object.entries(entry.allowlist)),
-    __APP_VERSION__,
-    exportedAt,
-    entry.snapshots.map(({ date, total, currency }) => ({ date, total, currency })),
-  )
-  const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }))
+  const exported = legacyStore.exportAt(index)
+  if (!exported) return
+  const url = URL.createObjectURL(new Blob([JSON.stringify(exported.backup, null, 2)], { type: 'application/json' }))
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = backupFileName(entry.portfolio.name, exportedAt)
+  anchor.download = exported.fileName
   anchor.click()
   URL.revokeObjectURL(url)
 }
