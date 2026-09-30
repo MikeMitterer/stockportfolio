@@ -205,14 +205,22 @@ Vor einer Übergabe laufen mindestens `make test`, `npm --prefix frontend run li
 
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
-temporären Kursen, die eigene Konto-API und Vite gemeinsam. Mit StockInfos
-Python-Umgebung aus diesem Repository aufrufen:
+temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
+erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
+das verlinkte ProjectTools-Paket aus `requirements.txt`, wenn es fehlt.
+Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
+wiederverwendet. Aus diesem Repository aufrufen:
 
 ```bash
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
-../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+.venv/bin/python scripts/stockinfo-test-server.py --stack --status
+.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 ```
+
+Die lokale `.venv` stellt `projecttools.ui.colors` für `MAKE_THEME` bereit;
+`NO_COLOR` und umgeleitete Ausgabe bleiben schlicht. Der StockInfo-Kindprozess
+verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
+diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
 
 Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
 Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale
@@ -224,9 +232,11 @@ dem Start geprüft, fremde Prozesse werden nicht beendet. `ps` dient zur
 Identitätsprüfung und benötigt in eingeschränkten Agentenlaufzeiten die
 entsprechende Freigabe; sie wird nicht umgangen. `--port PORT` ändert beim Start
 nur den StockInfo-Testport; Status und Stop lesen den registrierten Port. Für
-Worktrees außerhalb des gemeinsamen Elternverzeichnisses absolute Pfade für
-Python und `--stockinfo-root` verwenden. Ohne `--stack` startet `--run`
-nur StockInfo. Details stehen in `README.md` (**Setup**).
+Worktrees außerhalb des gemeinsamen Elternverzeichnisses benötigen einen
+absoluten Pfad für `--stockinfo-root`. Ohne `--stack` startet `--run` nur
+StockInfo und muss direkt mit StockInfos `.venv/bin/python` aufgerufen werden,
+weil es dessen `app` im selben Prozess importiert. Die Hilfe bleibt mit dessen
+derzeitiger Umgebung schlicht. Details stehen in `README.md` (**Setup**).
 
 [↑ Übersicht](#übersicht)
 

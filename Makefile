@@ -8,6 +8,7 @@ PROJECT_NAME := $(notdir $(WORKSPACE))
 BASH_LIBS ?= $(WORKSPACE)/.libs/BashLib/src
 PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
 PYTHON ?= python3
+PYTHON_BOOTSTRAP ?= python3.11
 DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
 export BASH_LIBS PROJECT_TOOLS
 
@@ -88,10 +89,9 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Docker Hub" ""   "https://hub.docker.com/r/mangolila/stockportfolio"
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Setup$(RESET)"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Symlinks" ""  "make setup"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Setup" ""  "make setup"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "2. Env" ""       "cp .env.example .env"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Deps" ""      "npm ci --prefix frontend && npm ci --prefix api"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "4. Start" ""     "make dev"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Start" ""     "make dev"
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Docker$(RESET)"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Server (x86)" ""  "make build                  # nur bauen, danach prüfen"
@@ -111,8 +111,12 @@ precheck: ## Benötigte Bibliotheksdateien prüfen
 ##@ Setup
 
 .PHONY: setup
-setup: ## Symlinks (.libs/) + Deps installieren
+setup: ## Symlinks, Python-venv und npm-Abhängigkeiten einrichten
 	@./scripts/setup-libs.sh --install
+	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
+	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
+	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
+	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -r requirements.txt
 	@npm ci --prefix frontend --no-audit --no-fund
 	@npm ci --prefix api --no-audit --no-fund
 
@@ -142,10 +146,10 @@ test: ## Frontend- und API-Tests einmalig ausführen
 	@npm run test --prefix api
 
 .PHONY: clean
-clean: ## Build-, Test- und Cache-Dateien in Root, Frontend und API löschen
+clean: ## Build-, Test- und Cache-Dateien löschen; Python-venv behalten
 	@npm --prefix frontend run clean
 	@npm --prefix api run clean
-	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__
 	@echo "$(GREEN)✓$(RESET) aufgeräumt"
 
 # ─── Docker ──────────────────────────────────────────────────────────────────

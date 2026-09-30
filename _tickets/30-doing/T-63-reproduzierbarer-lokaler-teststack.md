@@ -1260,3 +1260,339 @@ prüfen: Aufräumen des StockInfo-Kindprozesses nach `SIGTERM` sowie sofortiger
 Stack-Neustart nach Stopp trotz `TIME_WAIT`. Die Gegenproben stehen oben.
 Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
 bleiben offen.
+
+## Technische Prüfung Runde 10
+
+`claude`, 2026-09-30, an Handoff-Commit `e596e1b76b08d629fac979544fa2ef1ff8d22252`
+(Diff seit `70c25a6`, nur `scripts/` und dieses Ticket). Geprüft habe ich die
+beiden Befunde aus Runde 9 in einem eigenen, abgetrennten Worktree mit
+frischer eigener `.venv` aus `requirements.txt`. Angewandt habe ich SP-R-04.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 1 · Aufräumen | Einzelserver zweimal mit StockInfos `.venv` gestartet (`/health` 200) und mit `-t` gestoppt; Stack zweimal gestartet und gestoppt; Zustandsdateien und `stockportfolio-t39-server-*` vorher und nachher gezählt | **Behoben.** Keine neue Zustandsdatei, kein neues Datenverzeichnis (vorher 46, nachher 46) |
+| Befund 2 · Portprüfung | Stack direkt nach dem Stopp erneut gestartet, `TIME_WAIT` per `netstat` geprüft | **Behoben.** Neustart erfolgreich bei drei offenen `TIME_WAIT`-Verbindungen auf 8899; `SO_REUSEADDR` am Test-Socket entspricht dem Server-Bind |
+| Mechanismus | `uvicorn.server.Server.capture_signals` (0.51.0) gelesen | `uvicorn` merkt sich den bestehenden Handler (`SIG_IGN`), stellt ihn nach dem Herunterfahren wieder her und löst das Signal dann erneut aus; unter `SIG_IGN` wird es ignoriert, und das `finally` läuft |
+| Lint, Umfang | `ruff check`, `py_compile`, `git diff --stat -- frontend api` | Sauber; Frontend und API unverändert |
+
+**Befund (blockierend, nach SP-R-04):**
+
+3. **Ein SIGTERM kurz nach dem Start geht verloren.**
+   `run_single_server` setzt SIGTERM vor `uvicorn.run` auf `SIG_IGN`. Bis
+   `uvicorn` in `capture_signals` seinen eigenen Handler setzt (innerhalb von
+   `server.run` → `asyncio.run(serve())`), wird ein eintreffendes SIGTERM
+   ignoriert, nicht verzögert. `stop_children` sendet genau ein SIGTERM,
+   wartet 10 Sekunden und meldet dann „did not stop“. Der Server läuft danach
+   weiter, bis ihn jemand von Hand beendet. Das Fenster ist kurz, aber
+   erreichbar, zum Beispiel wenn der Stack-Start wegen eines anderen Kindes
+   früh scheitert und die Aufräumlogik die Kinder sofort beendet.
+   **Erwartet:** Ein Handler, der das Signal nicht verwirft, etwa
+   `signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))` statt `SIG_IGN`.
+   `uvicorn` ersetzt ihn während des Laufs, stellt ihn danach wieder her, und
+   das erneut ausgelöste Signal endet dann als `SystemExit`. Das `finally`
+   räumt in beiden Fällen auf. Eine Gegenprobe belegt Aufräumen sowohl nach
+   normalem Stopp als auch bei SIGTERM unmittelbar nach dem Start.
+
+**Hinweis zu Altlasten, keine Codeänderung dieser Fassung:** Unter dem
+System-Temp liegen vier verwaiste Zustandsdateien für die Ports 18898, 59999,
+8898 und 8901, alle mit beendeter PID und aus Läufen vor dieser Korrektur,
+sowie die 46 `stockportfolio-t39-server-*`-Verzeichnisse. Über das einmalige
+Entfernen entscheidet Mike (offene Frage aus Runde 9).
+
+**Urteil:** `changes_requested` für `e596e1b`. Die Befunde 1 und 2 aus
+Runde 9 sind behoben und live belegt. Die Nachprüfung beschränkt sich auf
+Befund 3.
+
+## Nacharbeit zu Runde 10 · frühes SIGTERM · 2026-09-30
+
+Commit `4d5e81f` ersetzt `SIG_IGN` durch einen eigenen SIGTERM-Handler, der
+`SystemExit(0)` auslöst. Er wird innerhalb des `try` vor dem Schreiben der
+Zustandsdatei und vor `uvicorn.run` gesetzt. Damit läuft das vorhandene
+`finally` sowohl bei einem frühen Signal als auch nach Uvicorns geordnetem
+Stopp; der vorherige Handler wird anschließend wiederhergestellt.
+
+- Gezielte Gegenprobe: Der Test verzögerte `uvicorn.run` vor dessen
+  Signalhandler, sendete in diesem Fenster über `--stop` ein SIGTERM und
+  prüfte Prozessende, entfernte Zustandsdatei und entfernte Testdaten.
+  Ergebnis: alles erfolgreich, ohne die 15 Sekunden Verzögerung abzuwarten.
+- Normaler Einzelserver-Stopp: `/health` antwortete mit 200; `--stop`
+  entfernte Prozesszustand und Testdaten.
+- Voller Stack: zweimal direkt nacheinander Start, Status und Stopp auf
+  Port 18987. Beide Läufe endeten ohne neue Zustandsdatei oder Testdaten.
+- `make test`: 806 Frontend- und 8 API-Tests bestanden mit Homebrew-Bash
+  voran im `PATH`. Der erste Lauf mit dem Umgebungs-`PATH` scheiterte an
+  einem bestehenden Docker-Build-Test: macOS-Bash 3.2 versteht die dort
+  verwendete Kleinschreibsubstitution `${GITHUB_OWNER,,}` nicht. Der
+  unveränderte Test bestand mit Bash 5.3; kein Bezug zur Python-Änderung.
+- `npm --prefix frontend run lint`, `npm --prefix api run lint`, beide
+  `typecheck`, `ruff check`, `py_compile` und `git diff --check`: erfolgreich.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) sagen bereits zu, dass Stop eigene Prozesse und
+Testdaten entfernt. Die Korrektur erfüllt diese Zusage auch im frühen
+Startfenster; Textänderungen sind nicht nötig. `docker/README.md`
+(**Quick start**, **Configuration**, **Data and backups**) beschreibt den
+lokalen Testserver nicht und bleibt unverändert. Board- und Lessons-Verfahren
+wurden nicht geändert.
+
+**Alte Testdaten auf Mikes Auftrag entfernt:** Vorher lagen 47
+`stockportfolio-t39-server-*`-Verzeichnisse und die vier in Runde 10
+genannten Zustandsdateien im System-Temp. Das 47. Verzeichnis entstand bei
+einer zunächst durch die Sandbox gesperrten Gegenprobe. Die Prozessliste
+zeigte keinen laufenden `stockinfo-test-server.py`; alle vier Ports waren
+ohne Listener. Nach Prüfung der Namen und Zustandsinhalte wurden genau diese
+Einträge entfernt. Nachher: 0 Testverzeichnisse und 0 der vier Dateien.
+
+## Übergabe an Claude · technische Runde 11 · 2026-09-30
+
+Bitte ausschließlich Befund 3 aus Runde 10 an `4d5e81f` erneut prüfen:
+Ein SIGTERM im Fenster vor Uvicorns eigenem Handler muss den Prozess beenden
+und seinen Zustand samt Testdaten entfernen. Die Gegenproben stehen oben.
+Die von Mike verlangte einmalige Bereinigung alter Testdaten ist dort
+ebenfalls belegt.
+Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
+bleiben offen.
+
+## Technische Prüfung Runde 11
+
+`claude`, 2026-09-30, an Handoff-Commit `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
+(Diff seit `e596e1b`, nur `scripts/stockinfo-test-server.py` und dieses
+Ticket). Geprüft habe ich Befund 3 aus Runde 10 und das von Mike beauftragte
+Aufräumen, in einem eigenen, abgetrennten Worktree mit frischer `.venv`.
+Angewandt habe ich SP-R-04 und SP-R-05: ein Inventar über alle Präfixe
+`stockportfolio-t39-server-*`, `stockportfolio-test-server-*.json` und
+`stockportfolio-t63-*` vor und nach jedem Lauf.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Altlasten | Inventar vor meinem ersten Lauf | 0 / 0 / 0; Codex' Bereinigung der verwaisten Verzeichnisse und der vier Zustandsdateien ist wirksam |
+| Befund 3 · Code | Diff gelesen | **Behoben.** `exit_on_termination` löst `SystemExit(0)` aus und wird vor dem Anlegen der Zustandsdatei gesetzt; `uvicorn` ersetzt ihn während des Laufs und stellt ihn danach wieder her |
+| Früher Stopp | Einzelserver gestartet, SIGTERM an die PID, sobald die Zustandsdatei erschien | Prozess beendet, Inventar 0 / 0 / 0. **Grenze:** Das Log zeigt, dass `uvicorn` beim Signal schon lief. Das Fenster vor `uvicorn`s Handler hat meine Probe nicht getroffen; dass der Handler vorher gesetzt wird, belegt der Code |
+| Normaler Stopp, Stack | Einzelserver mit `-t`; Stack zweimal mit sofortigem Neustart | Alle Läufe erfolgreich, Inventar jeweils 0 / 0 / 0, keine Ports belegt |
+| Lint | `ruff check`, `py_compile`, `git diff --stat -- frontend api` | Sauber; Frontend und API unverändert |
+
+**Befund (blockierend, nach SP-R-04):**
+
+4. **Eine halb geschriebene Zustandsdatei verhindert Aufräumen und
+   Neustart.** Der Handler steht jetzt vor `state_path.open("x")`. Kommt
+   SIGTERM nach dem Anlegen, aber vor dem Ende von `json.dump`, bleibt eine
+   leere oder unvollständige Datei. Im `finally` wirft `json.loads` dann
+   `JSONDecodeError`. Weil `shutil.rmtree(data_dir)` im selben `try` steht,
+   bleibt auch das Datenverzeichnis liegen. Beim nächsten Start liest
+   `read_owned_state` (Zeile 140) die Datei ungeschützt mit `json.loads` und
+   bricht mit Traceback ab, bis jemand sie von Hand löscht. Das Fenster ist
+   sehr kurz. Die Folge wäre aber genau die Blockade, die Befund 1 aus
+   Runde 9 beseitigen sollte.
+   **Erwartet:**
+   - Die Zustandsdatei entsteht atomar, etwa als vollständige temporäre
+     Datei, die exklusiv an ihren Zielnamen gebunden wird (`os.link`).
+   - Das `finally` entfernt die eigene Datei auch dann, wenn ihr Inhalt
+     unlesbar ist, zum Beispiel über ein Merkmal „von diesem Prozess
+     angelegt“.
+   - `shutil.rmtree(data_dir)` läuft in einem eigenen `finally`.
+   - `read_owned_state` meldet eine unlesbare Datei konkret, statt mit
+     Traceback abzubrechen.
+
+   Ein kleiner Test oder eine Gegenprobe mit leerer Zustandsdatei belegt
+   Aufräumen und klare Meldung.
+
+**Urteil:** `changes_requested` für `f2fafac`. Befund 3 aus Runde 10 und die
+Bereinigung der Altlasten sind wirksam. Die Nachprüfung beschränkt sich auf
+Befund 4.
+
+## Abnahme Mike · Zeitpunkt · 2026-09-30
+
+Mike: „Auch T-63 nehme ich erst ganz am Ende ab“. Die menschliche Prüfung
+folgt damit nach T-61 und T-62. Die technische Nachprüfung von T-63 läuft
+weiter; die gemeinsame Integration von T-60 und T-63 folgt erst nach Mikes
+T-63-Abschlussentscheidung. Dieser Zeitpunkt ergänzt den bisherigen
+Abnahmeabschnitt, ohne frühere Nachträge oder Belege zu ändern.
+
+## Nacharbeit zu Runde 11 · atomarer Zustand · 2026-09-30
+
+Commit `637da2f` schreibt den vollständigen JSON-Zustand zunächst in eine
+temporäre Datei im selben Verzeichnis. `os.link` bindet den fertigen Inhalt
+exklusiv an den endgültigen Namen. Das vor dem Link gemerkte Datei-Inode
+erlaubt im `finally` das Entfernen der eigenen Zustandsdatei auch ohne
+JSON-Lesen. Testdaten werden in einem eigenen `finally` entfernt. Ein
+unlesbarer vorhandener Zustand führt nun zu einer übersetzten CLI-Meldung
+ohne Traceback und wird nicht ungeprüft gelöscht.
+
+- Gezielte Gegenprobe: `json.dump` nach dem Schreiben von `{` angehalten,
+  SIGTERM in diesem Fenster gesendet. Danach gab es weder endgültige oder
+  temporäre Zustandsdatei noch Testdaten; der Prozess endete sofort.
+- Leere bzw. unvollständige vorhandene Zustandsdatei: `--status` endete mit
+  konkreter Fehlermeldung und ohne Traceback. Die Testdatei wurde anschließend
+  entfernt. Eine durch die Sandbox vor der eigentlichen Probe erzeugte
+  Testdatenkopie wurde ebenfalls gezielt entfernt.
+- `make test` mit Homebrew-Bash 5.3 im `PATH`: 806 Frontend- und 8 API-Tests
+  bestanden. Beide Lints, beide Typechecks, Ruff, Python-Syntax und
+  `git diff --check` waren erfolgreich. Der Grund für den Bash-`PATH` steht
+  im Nachtrag zu Runde 10.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) beschreiben bereits Stop und Aufräumen des lokalen
+Testservers; die Implementierung erfüllt diese Zusage nun auch bei
+unterbrochenem Schreiben. `docker/README.md` (**Quick start**,
+**Configuration**, **Data and backups**) beschreibt diesen lokalen Weg
+nicht. Keine Anleitung braucht eine Textänderung. Board- und
+Lessons-Konventionen bleiben unverändert.
+
+## Übergabe an Claude · technische Runde 12 · 2026-09-30
+
+Bitte ausschließlich Befund 4 aus Runde 11 an `637da2f` nachprüfen:
+atomarer Zustand, Aufräumen auch nach Signal während des Schreibens und
+klare Meldung bei unlesbarer vorhandener Datei. Die Gegenproben stehen oben.
+Mikes Abnahme liegt nach T-61/T-62; Merge und Push bleiben bis dahin offen.
+
+## Lebenszyklusprüfung vor Runde 12 · 2026-09-30
+
+Der Observer forderte nach den wiederholten Start- und Stoppbefunden eine
+Prüfung des gesamten Ablaufs. Commit `18c60f4` verwendet die atomare
+Zustandsablage aus `637da2f` nun auch für den Stack. Beim Stack-Start merkt
+der Signalhandler die Beendigungsanforderung zunächst nur vor. So wird ein
+gerade gestartetes Kind vollständig registriert, bevor das Aufräumen
+beginnt. Der Einzelserver installiert seinen Handler schon vor dem Anlegen
+des Testverzeichnisses; während `mkdtemp` wird das Signal vorgemerkt,
+danach greift ein `atexit`-Rückfall für die Importphase ohne Zustandsdatei.
+
+| Schritt | Signal oder Fehler an dieser Stelle | Ergebnis und Schutz |
+|---|---|---|
+| Vorprüfung und Zustandslesen | Port belegt, `ps` unzugänglich oder JSON unlesbar | Kein Kind gestartet. Port und Prozessidentität werden geprüft; unlesbare eigene Zustände melden ihren Pfad ohne Traceback und werden nicht blind entfernt. |
+| Einzelserver: Testverzeichnis und StockInfo-Import | SIGTERM vor der Zustandsdatei | Handler wird vor `mkdtemp` gesetzt; das Signal während der Anlage wird vorgemerkt. `atexit` entfernt das eigene Verzeichnis auch bei Abbruch während des Imports. Importfenster mit SIGTERM gezielt geprüft: keine Reste. |
+| Stack: Kind starten und registrieren | SIGTERM nach `Popen`, vor Speicherung der PID; oder Fehler beim Start eines späteren Kindes | Der Stack-Handler merkt SIGTERM vor. Jedes Kind wird vor dem Abbruch registriert; bei Fehlern stoppt der Stack alle bereits registrierten Kinder. Probe während der API-Registrierung: keine laufenden Kinder, Zustände oder Testdaten. |
+| Zustand schreiben | SIGTERM oder Fehler während `json.dump`; vorhandener Zielname | Gemeinsamer Helfer schreibt in eine temporäre Datei und bindet den vollständigen Inhalt mit `os.link` exklusiv an den Zielnamen. Eigene Datei wird über Dateigerät und Inode erkannt, ohne JSON erneut zu lesen. Teil-Schreibprobe und unlesbare Zustandsdatei geprüft. |
+| Laufen und Bereitschaft prüfen | SIGTERM vor Uvicorns Handler, nach dem Start oder während Stack-Health-Checks | Einzelserver beendet sich über `SystemExit` und sein `finally`; Stack prüft die vorgemerkte Anforderung bei jedem Start- und Health-Schritt und stoppt seine Kinder. Früher und normaler Einzelserver-Stopp sowie zweimaliger voller Stack-Lauf geprüft. |
+| Stoppen und Aufräumen | Kind ist schon beendet, Identität hat gewechselt oder ein Stopp schlägt fehl | Nur eigene Prozessgruppen werden signalisiert. Der Stack versucht alle registrierten Kinder zu stoppen; bei einem Fehlschlag bleiben Zustandsdatei und Daten zur sicheren Nachprüfung erhalten. Nach erfolgreichem Stopp entfernt er Testdaten und dann Zustand. Im Fehlerpfad der Initialisierung entfernt ein eigenes `finally` die Zustandsdatei und ein weiteres die Testdaten. |
+
+**Gegenproben:** SIGTERM während StockInfo-Import, vor Uvicorns Handler,
+während `json.dump` des Einzelservers und zwischen API-Kindstart und
+Registrierung; normaler Einzelserver-Stopp; zweimal Start/Status/Stopp des
+gesamten Stacks; unlesbarer Einzel- und Stack-Zustand. Vorher und nachher
+jeweils 0 verbliebene `stockportfolio-t39-server-*`-Verzeichnisse,
+`stockportfolio-test-server-*.json`-Dateien und `stockportfolio-t63-*`-Einträge.
+`make test` mit Homebrew-Bash 5.3 im `PATH` bestand mit 806 Frontend- und
+8 API-Tests. Beide Lints, beide Typechecks, Ruff, Python-Syntax und
+`git diff --check` waren erfolgreich.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) versprechen bereits den vollständigen Stopp eigener
+Prozesse und Daten. Der Stack erfüllt das nun auch bei Abbruch während des
+Starts. `docker/README.md` (**Quick start**, **Configuration**, **Data and
+backups**) behandelt den lokalen Teststack nicht. Keine Textänderung nötig.
+Die Board- und Lessons-Konventionen wurden nicht geändert.
+
+**Runde-12-Übergabe:** Die Nachprüfung von Befund 4 umfasst `637da2f` und
+`18c60f4` sowie diese Lebenszyklusbelege. Mikes T-63-Abnahme bleibt bis
+nach T-61 und T-62 offen.
+
+Der Prüfauftrag für Runde 12 umfasst ausdrücklich den **gesamten Start- und
+Stoppweg** von Einzelserver und Stack: Vorprüfung, Kindstart und Registrierung,
+Signalbehandlung, Zustandsablage, Bereitschaft, normaler Stopp und Aufräumen
+nach Fehlern. Die Tabelle oben ist die Grundlage; Claude soll auch andere
+Abbruchzeitpunkte als Befund 4 prüfen. Diese Erweiterung ersetzt den engeren
+Übergabetext unmittelbar nach Runde 11.
+
+## Technische Prüfung Runde 12
+
+`claude`, 2026-09-30, an Handoff-Commit `66fe49498d3b7ddad3c461fc27dc64757dca3170`
+(Diff seit `f2fafac`, nur `scripts/` und dieses Ticket). Auf Codex' Bitte habe
+ich den gesamten Start- und Stoppweg von Einzelserver und Stack geprüft, in
+einem eigenen, abgetrennten Worktree mit frischer `.venv`. Angewandt habe ich
+SP-R-04 und SP-R-05. Das Inventar umfasste **alle** `stockportfolio-*`-Einträge
+im System-Temp, also auch die Temp-Dateien von `OwnedStateFile.publish`, und
+zusätzlich die Ports 5175, 8080 und 8899.
+
+**Code gelesen:** `test_state.py`, der Signal- und Aufräumweg in
+`stockinfo-test-server.py` und `start_children`, `stop_children` und
+`run_stack_cli` in `local_test_stack.py`.
+- `publish` schreibt vollständiges JSON in eine Temp-Datei, merkt sich die
+  Inode vor `os.link` und bindet dann exklusiv.
+- `remove` löscht nur die Datei mit dieser Inode, also nie eine fremde.
+- Der Einzelserver fängt SIGTERM vor `mkdtemp` ab und räumt über `atexit` auf.
+- `stop_children` sammelt Fehler, statt beim ersten abzubrechen.
+
+| Probe | Eigener Schritt | Ergebnis |
+|---|---|---|
+| a · SIGTERM während des Imports | SIGTERM, sobald `stockportfolio-t39-server-*` existiert, noch ohne Zustandsdatei | Exit 0, Inventar 0 |
+| b · SIGTERM vor `uvicorn`s Handler | SIGTERM, sobald die Zustandsdatei existiert; das Log zeigt 0 × „Uvicorn running“ | Exit 0, Inventar 0; **genau das Fenster, das meine Probe in Runde 11 verfehlt hatte** |
+| c · unlesbarer Zustand | leere Einzel-Zustandsdatei und kaputtes JSON in der Stack-Zustandsdatei | Klare Meldung, Exit 2, kein Traceback |
+| d · normaler Einzelstopp | `/health` 200, danach `-t` | Inventar 0 |
+| e · Stack | zweimal `--stack --run --demo-accounts`, jeweils sofort `--stack --stop` und Neustart | Beide erfolgreich, Inventar 0, Ports frei |
+| f · SIGTERM an die Stack-CLI mitten im Start | SIGTERM, sobald 8899 lauscht | Alle Kinder beendet, Inventar 0, Ports frei, keine verwaisten Prozesse. **Aber:** Exit 0 und leere Ausgabe (siehe Befund 5) |
+| Katalog, Lint | `msgfmt`, `.mo` neu erzeugt und verglichen, alle `translate(...)` gegen den Katalog, `ruff check`, `py_compile` | Katalog aktuell, keine fehlende Übersetzung, Ruff sauber; Frontend und API unverändert |
+
+**Befund 4 aus Runde 11: behoben.**
+
+**Befund (blockierend, nach SP-R-04):**
+
+5. **Ein abgebrochener Stack-Start meldet Erfolg.** `check_cancelled` löst
+   `SystemExit(0)` aus. Bei Probe f endete `--stack --run` nach SIGTERM mit
+   Exit 0 und ohne jede Ausgabe, obwohl der Stack nicht läuft und alles
+   wieder abgebaut wurde. Ein Skript oder Agent, der den Exit-Code prüft,
+   hält den Start damit für gelungen und prüft gegen einen nicht laufenden
+   Stack. Beim Einzelserver ist Exit 0 nach SIGTERM richtig, denn dort ist
+   es das normale Beenden. Der Stack-Start ist dagegen ein Befehl, der
+   einen Zustand herstellen soll.
+   **Erwartet:** Ein abgebrochener Stack-Start endet mit einem Fehlercode,
+   etwa 143 (128 + SIGTERM), und einer kurzen übersetzten Meldung
+   „Start abgebrochen; eigene Prozesse und Daten entfernt“. Probe f belegt
+   Code und Meldung.
+
+**Urteil:** `changes_requested` für `66fe494`. Der Lebenszyklus ist sonst
+vollständig und robust, auch in den Fenstern, die früher Reste hinterließen.
+Die Nachprüfung beschränkt sich auf Befund 5.
+
+## Nacharbeit zu Runde 12 · Abbruchmeldung · 2026-09-30
+
+Commit `f28417c` setzt für SIGTERM beim **Stack-Start** den Exit-Code 143
+und gibt nach erfolgreichem Aufräumen eine übersetzte Abbruchmeldung auf
+stderr aus. Das normale Beenden des laufenden Einzelservers behält Exit 0.
+
+- Gezielt SIGTERM zwischen Start und Registrierung des API-Kindes gesendet:
+  Stack-CLI endete mit 143 und „Local test stack start cancelled; own
+  processes and data removed“. Danach waren alle Kinder beendet und die
+  Zustands- und Testdatenpfade leer.
+- Zwei normale Stack-Start/Status/Stopp-Zyklen bestanden unverändert. Die
+  drei Temp-Präfixe waren danach leer.
+- `make test` mit Homebrew-Bash 5.3 im `PATH`: 806 Frontend- und 8 API-Tests
+  bestanden. Beide Lints, beide Typechecks, Ruff, Python-Syntax und
+  `git diff --check` waren erfolgreich. `msgfmt` hat den deutschen Katalog
+  für die neue Meldung kompiliert.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) beschreiben den normalen Start/Stopp und die
+Aufräumgarantie. Der korrigierte Fehlercode ändert keinen Bedienungsschritt.
+`docker/README.md` (**Quick start**, **Configuration**, **Data and backups**)
+betrifft den lokalen Teststack nicht. Keine Textänderung nötig; Board- und
+Lessons-Konventionen unverändert.
+
+## Übergabe an Claude · technische Runde 13 · 2026-09-30
+
+Bitte Befund 5 aus Runde 12 an `f28417c` nachprüfen: Ein per SIGTERM
+abgebrochener Stack-Start muss nach dem Aufräumen mit Fehlercode 143 und
+übersetzter Meldung enden. Der gesamte Lebenszyklus wurde in Runde 12
+bereits unabhängig geprüft. Mikes T-63-Abnahme erfolgt nach T-61/T-62;
+Merge und Push bleiben offen.
+
+## Technische Prüfung Runde 13
+
+`claude`, 2026-09-30, an Handoff-Commit `3359aaaf859796190eee42a96a9d391ef0afdc51`
+(Diff seit `66fe494`: `scripts/local_test_stack.py`, Katalog, dieses Ticket).
+Geprüft habe ich Befund 5 aus Runde 12 in einem eigenen, abgetrennten
+Worktree mit frischer `.venv`. Angewandt habe ich SP-R-04 und SP-R-05 mit einem
+Inventar über alle `stockportfolio-*` im System-Temp und die Ports 5175,
+8080 und 8899.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Code | Diff gelesen | `check_cancelled` löst `SystemExit(143)` aus. Die Meldung erscheint erst **nach** `stop_children`, `owned_state.remove()` und `remove_data`, also nur bei gelungenem Aufräumen. Scheitert das Aufräumen, ersetzt dessen `RuntimeError` den Abbruch und endet über `parser.error` mit Exit 2; auch das ist ein Fehlercode |
+| Abbruch, deutsch | `LANGUAGE=de`, SIGTERM an die Stack-CLI, sobald 8899 lauscht | Exit **143**, stderr „Lokaler Teststack-Start abgebrochen; eigene Prozesse und Daten entfernt“, stdout leer, Inventar 0, Ports frei |
+| Abbruch, englisch, Pipe | `LANGUAGE=en`, gleiche Probe | Exit 143, „Local test stack start cancelled; own processes and data removed“, Inventar 0, Ports frei |
+| Normaler Zyklus | `--stack --run`, `--stack --stop` | Exit 0, Inventar 0, Ports frei |
+| Katalog, Lint | `msgfmt`, `.mo` neu erzeugt und verglichen, `ruff check` | Katalog aktuell, Ruff sauber; Frontend und API unverändert |
+
+**Urteil:** `approved` für `3359aaa`. Befund 5 ist behoben. Der gesamte Start-
+und Stoppweg wurde in Runde 12 geprüft und ist seitdem nur an dieser Stelle
+geändert. Mike nimmt T-63 nach seiner Entscheidung erst nach T-61/T-62 ab.
+Seine Abschlussentscheidung sowie Merge und Push von T-60/T-63 stehen aus.

@@ -2,13 +2,14 @@
 #------------------------------------------------------------------------------
 # stockinfo-test-server.py — StockInfo-Testkurse und lokalen Browserstack starten
 #
-# Verwendet StockInfos Python-Umgebung und temporäre Daten. Mit --stack werden
-# zusätzlich die StockPortfolio-Konto-API und Vite verwaltet.
+# Der Stack läuft mit StockPortfolios Python-Umgebung und temporären Daten;
+# sein StockInfo-Kindprozess verwendet StockInfos Python-Umgebung. Ohne
+# --stack benötigt der Einzelserver direkt StockInfos Python-Umgebung.
 #
 # Verwendung:
-#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run
-#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --status
-#   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --stop
+#   .venv/bin/python scripts/stockinfo-test-server.py --stack --run
+#   .venv/bin/python scripts/stockinfo-test-server.py --stack --status
+#   .venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 #
 # Optionen:
 #   -r | --run              Testserver beziehungsweise Stack starten
@@ -25,13 +26,14 @@
 #------------------------------------------------------------------------------
 """Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
 
-Start mit StockInfos Python-Umgebung aus einem leeren temporären Arbeitsordner.
+Der Stack startet mit StockPortfolios Python-Umgebung. Sein StockInfo-
+Kindprozess nutzt StockInfos Python-Umgebung und einen temporären Arbeitsordner.
 Die App-Routen, QuoteService, CachedQuoteService und SQLite-Persistenz bleiben
 unverändert. Nur externe Quellen und der produktive Start-Scheduler werden
 für die reproduzierbare Browserprüfung ersetzt. Fehlantworten werden getrennt
 über eine ausdrücklich bezeichnete Test-Middleware eingespeist.
 
-StockInfo-only: StockInfos Python, --stockinfo-root PFAD und optional --port.
+StockInfo-only: direkt StockInfos Python, --stockinfo-root PFAD und optional --port.
 Ganzer Stack: zusätzlich --stack; --demo-accounts legt auf Wunsch zwei
 synthetische Konten an. --stack --status prüft Prozesse, Endpunkte, Kurs und
 CORS; --stack --stop entfernt eigene Prozesse und temporäre Kontodaten. Ohne
@@ -44,6 +46,7 @@ gesucht oder beendet. Das Script benötigt ps für die Prozessidentität.
 from __future__ import annotations
 
 import argparse
+import atexit
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
@@ -56,17 +59,39 @@ from pathlib import Path
 import sys
 import tempfile
 import time
+from types import FrameType
 from typing import Any
 
+from cli_theme import HelpFormatter, has_theme, print_message
 from local_test_stack import run_stack_cli, translate
+from test_state import OwnedStateFile
+
+
+class ScriptArgumentParser(argparse.ArgumentParser):
+    """Gestaltet Fehler wie die ProjectTools-CLI, falls sie installiert ist."""
+
+    def error(self, message: str) -> None:
+        if not has_theme():
+            super().error(message)
+        self.print_usage(sys.stderr)
+        print_message("✗ " + message, "DANGER", sys.stderr)
+        self.exit(2)
 
 
 def parse_args(argv: list[str]) -> tuple[argparse.Namespace, argparse.ArgumentParser]:
     """Parst die CLI, ohne beim Import einen Server zu starten."""
-    parser = argparse.ArgumentParser(
+    parser = ScriptArgumentParser(
         prog=Path(__file__).name,
         description=translate("Run the local StockInfo fixture server and optional browser stack."),
-        epilog=translate("Example: --stack --run; then --stack --status or --stack --stop."),
+        epilog="\n".join((
+            translate("Examples:"),
+            "  --stack --run --stockinfo-root ../StockInfo",
+            "  --stack --run --demo-accounts --stockinfo-root ../StockInfo",
+            "  --stack --status",
+            "  --stack --stop",
+            "  --run --stockinfo-root ../StockInfo --port 8899",
+        )),
+        formatter_class=HelpFormatter,
         add_help=False,
     )
     actions = parser.add_argument_group(translate("Actions")).add_mutually_exclusive_group(required=True)
@@ -114,7 +139,14 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     def read_owned_state() -> dict[str, Any] | None:
         if not state_path.exists():
             return None
-        state = json.loads(state_path.read_text())
+        try:
+            state = json.loads(state_path.read_text())
+            if not isinstance(state, dict):
+                raise ValueError("State file must contain an object")
+        except (OSError, UnicodeError, ValueError):
+            parser.error(translate("The state file is unreadable: {path}. Check the server before removing it.").format(
+                path=state_path,
+            ))
         if state.get("script") != str(script_path) or state.get("port") != args.port:
             parser.error(translate("The state file does not belong to this test server: {path}").format(path=state_path))
         pid = state.get("pid")
@@ -130,15 +162,15 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     existing_state = read_owned_state()
     if args.status:
         if not existing_state:
-            print(translate("No own test server is registered on port {port}.").format(port=args.port))
+            print_message(translate("No own test server is registered on port {port}.").format(port=args.port), "WARNING")
             return 1
-        print(translate("StockInfo test server: {url} (PID {pid})").format(
+        print_message(translate("StockInfo test server: {url} (PID {pid})").format(
             url=f"http://127.0.0.1:{args.port}", pid=existing_state["pid"],
         ))
         return 0
     if args.stop:
         if not existing_state:
-            print(translate("No own test server is registered on port {port}.").format(port=args.port))
+            print_message(translate("No own test server is registered on port {port}.").format(port=args.port), "WARNING")
             return 0
         pid = existing_state["pid"]
         os.kill(pid, signal.SIGTERM)
@@ -150,7 +182,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         # Der Server räumt selbst auf; nur seinen unveränderten Rest entfernen.
         if state_path.exists() and json.loads(state_path.read_text()).get("pid") == pid:
             state_path.unlink()
-        print(translate("Own test server on port {port} stopped (PID {pid}).").format(port=args.port, pid=pid))
+        print_message(translate("Own test server on port {port} stopped (PID {pid}).").format(port=args.port, pid=pid), "SUCCESS")
         return 0
     if existing_state:
         parser.error(translate("An own test server is already running on port {port}; run --stop first.").format(
@@ -160,7 +192,24 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         parser.error(translate("A single-server start requires --stockinfo-root."))
     stockinfo_root = args.stockinfo_root.resolve()
     detail_fixtures = args.detail_fixtures.resolve() if args.detail_fixtures else None
+
+    # Der Stack kann das Kind bereits während des Imports beenden. Dann ist
+    # noch keine Zustandsdatei vorhanden, die das normale finally erreicht.
+    def exit_on_termination(_signal_number: int, _frame: FrameType | None) -> None:
+        raise SystemExit(0)
+
+    termination_requested = False
+
+    def request_termination(_signal_number: int, _frame: FrameType | None) -> None:
+        nonlocal termination_requested
+        termination_requested = True
+
+    previous_sigterm = signal.signal(signal.SIGTERM, request_termination)
     data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t39-server-"))
+    atexit.register(shutil.rmtree, data_dir, ignore_errors=True)
+    signal.signal(signal.SIGTERM, exit_on_termination)
+    if termination_requested:
+        raise SystemExit(0)
     os.environ["DATABASE_PATH"] = str(data_dir / "stockinfo.db")
     os.environ["CORS_ORIGINS"] = json.dumps([origin])
     os.chdir(data_dir)
@@ -371,14 +420,18 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
 
     # Exklusiv anlegen: ein zweiter Start darf die erste Prozesskennung nicht ersetzen.
     process_state = {"script": str(script_path), "port": args.port, "pid": os.getpid(), "identity": process_identity(os.getpid())}
-    with state_path.open("x") as state_file:
-        json.dump(process_state, state_file)
+    owned_state = OwnedStateFile(state_path)
     try:
+        owned_state.publish(process_state)
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
     finally:
-        if state_path.exists() and json.loads(state_path.read_text()).get("pid") == os.getpid():
-            state_path.unlink()
-        shutil.rmtree(data_dir)
+        try:
+            owned_state.remove()
+        finally:
+            try:
+                shutil.rmtree(data_dir)
+            finally:
+                signal.signal(signal.SIGTERM, previous_sigterm)
 
     return 0
 
