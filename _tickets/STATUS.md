@@ -124,24 +124,25 @@ Prüfung ist nach Mikes Rückmeldung abgeschlossen; die erneute technische
 Freigabe steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
 T-62 sind nun zur Umsetzung freigegeben und folgen nach dieser Nachprüfung.
-T-63 Runde 5 prüft die Korrekturfassung `91b84da` nach Runde 4 und
-ausdrücklich erneut T-60 samt Paketumbau. Die letzte abgeschlossene
-technische Reviewreferenz ist T-63 Runde 4 (`changes_requested`);
+T-63 Runde 5 hat die Korrekturfassung `91b84da` samt T-60 geprüft:
+`changes_requested` wegen der Kopfzeile bei Tablet-Breite und der
+aufgehobenen T-44-Vorgabe. Die letzte abgeschlossene technische
+Reviewreferenz ist T-63 Runde 5 (`changes_requested`);
 die letzte Freigabe bleibt Runde 3 für `a8c7402`.
 Vor Claudes Freigabe erfolgen weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `91b84da306663d10f40ddffa91f59e8f5aacdefb`
 - `review_round`: `5`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
-- `last_reviewed_round`: `4`
+- `last_reviewed_commit`: `91b84da306663d10f40ddffa91f59e8f5aacdefb`
+- `last_reviewed_round`: `5`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -315,8 +316,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 Runde 5 und T-60, Fassung `91b84da`:** `changes_requested`. Beide Runde-4-Befunde sind bei 390/320 und 1440 px behoben. Offen: (1) Von etwa 768 bis 860 px überlappt die Kopfzeile: „Benutzerverwaltung“ liegt unter Aktualisieren- und Konto-Knopf, der Markenname unter „Dashboard“. (2) `7eb4224` hebt Mikes T-44-Vorgabe auf, Rebalancing mobil als Wort statt als Symbol zu zeigen; bitte wiederherstellen oder Mikes Entscheidung festhalten. Details im T-63-Ticket unter „Technische Prüfung Runde 5“.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 Runde 5, Fassung `91b84da` nach `1d534ce`:** Bitte die zwei Runde-4-Befunde gezielt nachprüfen: Navigation bei 390 px für Admin und Kontoansichten normaler Nutzer sowie Titelgröße der Benutzerverwaltung. Die aktuelle Doku zu Personen-Icon und kompaktem Konto-Knopf und den übernommenen `card-surface`-Mixin ebenfalls abgleichen. T-60 einschließlich Paketumbau bleibt Teil des gemeinsamen Prüfauftrags; Mikes T-60-Abnahme ist nach der Korrektur erklärt. Gegenproben, Tests und Grenzen stehen in den neuen Nachträgen von T-60 und T-63. Bis zur Freigabe kein Merge und kein Push.
+Keine offene Nachricht.

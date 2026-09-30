@@ -713,3 +713,56 @@ Typechecks, Frontend-Build, Docker-Hub-README-Vorschau und
 `git diff --check`. Der mobile Browserbefund und der Doku-Abgleich stehen
 im T-60-Nachtrag. Der isolierte Teststack ist wieder gestoppt. Merge und
 Push bleiben bis zur technischen Freigabe aus.
+
+## Technische Prüfung Runde 5 · mit T-60
+
+`claude`, 2026-09-30, an Handoff-Commit `91b84da306663d10f40ddffa91f59e8f5aacdefb`
+(Diff seit `1d534ce`). Geprüft wurden die beiden Befunde aus Runde 4 und die
+aufgegriffenen Hinweise. Der Browserdurchlauf lief wieder mit `playwright-core`
+gegen den isolierten Stack mit `--demo-accounts`. Gemessen habe ich bei 320,
+390, 768 und 1440 px und zusätzlich alle Breiten von 360 bis 1280 px in
+20-px-Schritten.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 1 · 390 px | Positionen und `elementFromPoint` für jeden sichtbaren Nav-Link, Screenshot | **Behoben für Telefone.** Bei 390 px: Die Navigation hat 169 von 169 px, der letzte Link endet bei 233, die Knöpfe beginnen bei 274, alle vier Links sind klickbar. Bei 320 px ebenso (Knöpfe ab 204). Der Konto-Knopf zeigt nur das Symbol; `aria-label` „Konto test-admin: Menü öffnen“. Das Logo heißt „Dashboard“ und führt zu `/#/`, das Personen-Icon zu `/#/admin/users`. Kein horizontales Scrollen |
+| Befund 2 · Überschrift | berechneter Stil bei 390 und 1440 px | **Behoben.** Benutzerverwaltung, Einstellungen und Status haben jeweils 24px, Gewicht 600, Oberkante 88 px |
+| Hinweis 1 · Pfadangaben | Diff gelesen | Spezifikation und T-60-Kriterium 3 nennen das Personen-Icon |
+| Hinweis 3 · `card-surface` | Diff gelesen | `StatusView` und `UserAdminView` nutzen den Mixin. Schatten und Innenabstand bleiben lokal; das ist gleichwertig |
+| Doku | `README.md` und `docker/README.md` gelesen | Beide beschreiben den kompakten Konto-Knopf gleich |
+| Tests | `make test`, Frontend-Lint und -Typprüfung, `git diff --check` | 806 + 8 Tests grün, alles Exit 0. Der API-Code ist in dieser Runde unverändert |
+
+**Befunde (blockierend):**
+
+1. **Bei Tablet-Breite überlappt die Kopfzeile weiterhin.** Bei 768 px
+   (Screenshot `r5-settings-768`) braucht die Navigation 586 px und hat 414 px.
+   Der Markenname überlagert „Dashboard“, und „Benutzerverwaltung“
+   (x 565–729) liegt unter dem Aktualisieren-Knopf und dem Konto-Knopf, der
+   ab x 573 beginnt. `elementFromPoint` trifft den Knopf und nicht den Link. Der
+   Scan meldet den Verwaltungslink ab etwa 768 bis 860 px als nicht klickbar.
+   Ab `md` zeigt die Leiste wieder alle Beschriftungen und den Benutzernamen.
+   Die Korrektur dieser Runde gilt nur unterhalb von `sm`/`md`. Die Ursache ist
+   dieselbe wie in Runde-4-Befund 1: Das zusätzliche Personen-Icon und der
+   Benutzername passen dort nicht mehr. T-60 nennt ausdrücklich nur 390 und
+   1440 px. Eine sichtbar zerbrochene Kopfzeile in einem gängigen
+   Tablet-Hochformat ist trotzdem ein Befund.
+   **Erwartet:** Zwischen `md` und der Breite, ab der alles passt, überlappt
+   nichts, etwa indem Beschriftungen oder der Benutzername dort später
+   erscheinen. Beleg ist ein Breiten-Scan ohne nicht klickbaren Link.
+2. **Mikes T-44-Entscheidung zu Rebalancing ist stillschweigend aufgehoben.**
+   [T-44](../40-done/T-44-aktien-etfs-und-linkgruppen-trennen.md) hält Mikes
+   Vorgabe fest: „In der mobilen Navigation soll das Rebalancing-Symbol
+   entfallen; der Menüpunkt bleibt erreichbar und verständlich beschriftet“.
+   Umgesetzt war das mit `.topbar__rebalancing`. `7eb4224` entfernt diese
+   Regel: Bei 390 px ist Rebalancing jetzt ein reines Symbol ohne sichtbare
+   Beschriftung (`labelVisible: false`). Die T-60-Nacharbeit erwähnt T-44
+   nicht. Mikes Erklärung „T-60 erledigt“ nennt diese Abkehr nicht und deckt
+   sie daher nicht erkennbar ab.
+   **Erwartet:** Entweder die T-44-Regel wiederherstellen, soweit der Platz es
+   zulässt (Rebalancing als Wort, übrige Einträge als Symbole), oder Mikes
+   ausdrückliche Entscheidung zur Aufhebung im Ticket festhalten.
+
+**Urteil:** `changes_requested` für `91b84da`, ebenso für T-60. Beide
+Runde-4-Befunde sind für die geprüften Breiten 390 und 1440 px behoben. Die
+Nachprüfung beschränkt sich auf die Kopfzeile: Breiten-Scan und die
+Rebalancing-Beschriftung.
