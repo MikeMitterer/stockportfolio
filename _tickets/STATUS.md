@@ -11,8 +11,8 @@ beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-be
 und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`.
 T-60 war für die frühere Fassung technisch freigegeben; nach der
-Paketverschiebung steht die erneute technische Prüfung und Mikes menschliche
-Prüfung noch aus.
+Paketverschiebung steht die erneute technische Prüfung noch aus. Mike hat
+seine menschliche Abnahme nach den Korrekturen erklärt.
 Claude hat die von Mike beauftragte
 konzeptionelle Prüfung aller drei Tickets am 2026-09-28 abgeschlossen und
 Befunde in jedem der drei Tickets festgehalten; keiner davon stellt den
@@ -25,8 +25,9 @@ Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
 ist auf Mikes Wunsch vom 2026-09-29 vorgezogen. Claude hat es in Runde 1
 (`493c35c`) und nach dem Umbau von `make dev` und der Paketstruktur in Runde 2
 (`6459dca`) technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
-reproduzierbar; die menschliche Abschlussentscheidung für T-63 ist noch offen.
-Mike nimmt T-63 und T-60 jetzt gemeinsam ab; danach folgen T-61 und T-62.
+reproduzierbar. Mike hat die Umsetzung von T-61 und T-62 nach den letzten
+Anpassungen ohne weiteren Warteschritt beauftragt; Claudes technische Freigabe
+für die aktuelle T-63-Fassung bleibt zuvor erforderlich.
 Claudes technische Prüfung
 von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
 Korrekturcommit `942c211` ist in Runde 3 unabhängig geprüft und technisch
@@ -115,7 +116,7 @@ umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
 und dem Testskript. Mike hat vor seiner Abnahme die Korrektur der fünf
 Review-Hinweise beauftragt; diese Fassung `a8c7402` ist in Runde 3 technisch
 freigegeben.
-Die technische Freigabe der Runde-5-Nacharbeit steht aus. Mike hat die
+Die technische Freigabe der Runde-6-Fassung steht aus. Mike hat die
 T-60-Abnahme nach den Anpassungen erklärt und die anschließende Umsetzung
 von T-61 und T-62 beauftragt.
 T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
@@ -129,16 +130,18 @@ T-63 Runde 5 hat die Korrekturfassung `91b84da` samt T-60 geprüft:
 aufgehobenen T-44-Vorgabe. Die letzte abgeschlossene technische
 Reviewreferenz ist T-63 Runde 5 (`changes_requested`);
 die letzte Freigabe bleibt Runde 3 für `a8c7402`.
+Die Korrektur von Kopfzeile und Python-Einstieg liegt als `26b59ed` zur
+Runde-6-Prüfung vor. SP-CX-06 wurde mit dem Breiten-Scan angewandt.
 Vor Claudes Freigabe erfolgen weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `91b84da306663d10f40ddffa91f59e8f5aacdefb`
-- `review_round`: `5`
-- `owner`: `codex`
+- `handoff_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
+- `review_round`: `6`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `91b84da306663d10f40ddffa91f59e8f5aacdefb`
@@ -316,8 +319,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 Runde 5 und T-60, Fassung `91b84da`:** `changes_requested`. Beide Runde-4-Befunde sind bei 390/320 und 1440 px behoben. Offen: (1) Von etwa 768 bis 860 px überlappt die Kopfzeile: „Benutzerverwaltung“ liegt unter Aktualisieren- und Konto-Knopf, der Markenname unter „Dashboard“. (2) `7eb4224` hebt Mikes T-44-Vorgabe auf, Rebalancing mobil als Wort statt als Symbol zu zeigen; bitte wiederherstellen oder Mikes Entscheidung festhalten. Details im T-63-Ticket unter „Technische Prüfung Runde 5“.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 Runde 6 mit erneuter T-60-Prüfung, Fassung `26b59ed`:** Bitte die zwei Runde-5-Befunde zur Kopfzeile mit eigenem Breiten-Scan und T-44-Beschriftung nachprüfen. Mikes Hinweis zum Python-Testserver wurde durch einen importseitig wirkungsfreien `main()`-Einstieg aufgegriffen; bitte auch dessen Hilfe, Stack und Einzelserver gegen die dokumentierte CLI prüfen. Nachweise, Doku-Abgleich und Lesson SP-CX-06 stehen im T-60-/T-63-Nachtrag und in der Runde-6-Übergabe. Bis zur Freigabe kein Merge oder Push.

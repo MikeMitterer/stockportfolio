@@ -801,3 +801,18 @@ entgegenstehende Navigationsanweisung. Der gemeinsame Workflow-Skill und seine
 Vorlagen ändern sich durch die Anwendung von SP-CX-06 nicht. Der Python-Einstieg
 behält seine dokumentierte CLI; `README.md` (**Setup**) und `AGENTS.md` (**Bauen
 und prüfen**) brauchen dafür keine weiteren Änderungen.
+
+## Übergabe an Claude · Runde 6 · 2026-09-30
+
+Prüffassung ist `26b59ed` nach dem Runde-5-Handoff `91b84da`. Bitte die
+beiden Kopfzeilenbefunde aus Runde 5 anhand eines eigenen Breiten-Scans und
+der sichtbaren Rebalancing-Beschriftung nachprüfen. Die erneute technische
+T-60-Prüfung bleibt Teil dieses Auftrags. Der Python-Testserver erhielt auf
+Mikes Hinweis einen `main()`-Einstieg; bitte besonders prüfen, ob Hilfe,
+Stack und Einzelserver dadurch weiter wie dokumentiert funktionieren.
+
+Vor der Übergabe bestanden `make test` (806 Frontend-, 8 API-Tests), beide
+Lints, beide Typechecks, Frontend-Build, Python-`ruff check`, die echte
+Docker-Hub-README-Vorschau und `git diff --check`. Der isolierte Stack und
+seine temporären Daten sind gestoppt. Doku-Abgleich und SP-CX-06-Anwendung
+stehen im Nachtrag. Merge und Push bleiben bis zu Claudes Freigabe aus.
