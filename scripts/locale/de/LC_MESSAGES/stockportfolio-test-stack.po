@@ -123,6 +123,9 @@ msgstr "Die Zustandsdatei gehört nicht zu diesem Testserver: {path}"
 msgid "The state file has an invalid process ID."
 msgstr "Die Zustandsdatei enthält eine ungültige Prozesskennung."
 
+msgid "The state file is unreadable: {path}. Check the server before removing it."
+msgstr "Die Zustandsdatei ist unlesbar: {path}. Prüfe den Server, bevor du sie entfernst."
+
 msgid "No own test server is registered on port {port}."
 msgstr "Kein eigener Testserver auf Port {port} registriert."
 

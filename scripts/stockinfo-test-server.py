@@ -137,7 +137,14 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     def read_owned_state() -> dict[str, Any] | None:
         if not state_path.exists():
             return None
-        state = json.loads(state_path.read_text())
+        try:
+            state = json.loads(state_path.read_text())
+            if not isinstance(state, dict):
+                raise ValueError("State file must contain an object")
+        except (OSError, UnicodeError, ValueError):
+            parser.error(translate("The state file is unreadable: {path}. Check the server before removing it.").format(
+                path=state_path,
+            ))
         if state.get("script") != str(script_path) or state.get("port") != args.port:
             parser.error(translate("The state file does not belong to this test server: {path}").format(path=state_path))
         pid = state.get("pid")
@@ -400,18 +407,32 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         raise SystemExit(0)
 
     previous_sigterm = signal.getsignal(signal.SIGTERM)
+    owned_state_inode: tuple[int, int] | None = None
     try:
         signal.signal(signal.SIGTERM, exit_on_termination)
-        with state_path.open("x") as state_file:
+        # Der Zielname erscheint erst mit vollständig geschriebenem Inhalt.
+        with tempfile.NamedTemporaryFile(mode="w", dir=state_path.parent, prefix=f"{state_path.name}.") as state_file:
             json.dump(process_state, state_file)
+            state_file.flush()
+            file_stat = os.fstat(state_file.fileno())
+            owned_state_inode = (file_stat.st_dev, file_stat.st_ino)
+            os.link(state_file.name, state_path)
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
     finally:
         try:
-            if state_path.exists() and json.loads(state_path.read_text()).get("pid") == os.getpid():
-                state_path.unlink()
-            shutil.rmtree(data_dir)
+            if owned_state_inode is not None:
+                try:
+                    current_stat = state_path.stat()
+                except FileNotFoundError:
+                    pass
+                else:
+                    if (current_stat.st_dev, current_stat.st_ino) == owned_state_inode:
+                        state_path.unlink()
         finally:
-            signal.signal(signal.SIGTERM, previous_sigterm)
+            try:
+                shutil.rmtree(data_dir)
+            finally:
+                signal.signal(signal.SIGTERM, previous_sigterm)
 
     return 0
 
