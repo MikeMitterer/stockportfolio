@@ -46,6 +46,7 @@ gesucht oder beendet. Das Script benötigt ps für die Prozessidentität.
 from __future__ import annotations
 
 import argparse
+import atexit
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
@@ -63,6 +64,7 @@ from typing import Any
 
 from cli_theme import HelpFormatter, has_theme, print_message
 from local_test_stack import run_stack_cli, translate
+from test_state import OwnedStateFile
 
 
 class ScriptArgumentParser(argparse.ArgumentParser):
@@ -190,7 +192,24 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         parser.error(translate("A single-server start requires --stockinfo-root."))
     stockinfo_root = args.stockinfo_root.resolve()
     detail_fixtures = args.detail_fixtures.resolve() if args.detail_fixtures else None
+
+    # Der Stack kann das Kind bereits während des Imports beenden. Dann ist
+    # noch keine Zustandsdatei vorhanden, die das normale finally erreicht.
+    def exit_on_termination(_signal_number: int, _frame: FrameType | None) -> None:
+        raise SystemExit(0)
+
+    termination_requested = False
+
+    def request_termination(_signal_number: int, _frame: FrameType | None) -> None:
+        nonlocal termination_requested
+        termination_requested = True
+
+    previous_sigterm = signal.signal(signal.SIGTERM, request_termination)
     data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t39-server-"))
+    atexit.register(shutil.rmtree, data_dir, ignore_errors=True)
+    signal.signal(signal.SIGTERM, exit_on_termination)
+    if termination_requested:
+        raise SystemExit(0)
     os.environ["DATABASE_PATH"] = str(data_dir / "stockinfo.db")
     os.environ["CORS_ORIGINS"] = json.dumps([origin])
     os.chdir(data_dir)
@@ -401,33 +420,13 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
 
     # Exklusiv anlegen: ein zweiter Start darf die erste Prozesskennung nicht ersetzen.
     process_state = {"script": str(script_path), "port": args.port, "pid": os.getpid(), "identity": process_identity(os.getpid())}
-    # Uvicorn löst SIGTERM nach dem Herunterfahren erneut aus. Der eigene
-    # Handler beendet auch während des Starts und lässt finally aufräumen.
-    def exit_on_termination(_signal_number: int, _frame: FrameType | None) -> None:
-        raise SystemExit(0)
-
-    previous_sigterm = signal.getsignal(signal.SIGTERM)
-    owned_state_inode: tuple[int, int] | None = None
+    owned_state = OwnedStateFile(state_path)
     try:
-        signal.signal(signal.SIGTERM, exit_on_termination)
-        # Der Zielname erscheint erst mit vollständig geschriebenem Inhalt.
-        with tempfile.NamedTemporaryFile(mode="w", dir=state_path.parent, prefix=f"{state_path.name}.") as state_file:
-            json.dump(process_state, state_file)
-            state_file.flush()
-            file_stat = os.fstat(state_file.fileno())
-            owned_state_inode = (file_stat.st_dev, file_stat.st_ino)
-            os.link(state_file.name, state_path)
+        owned_state.publish(process_state)
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
     finally:
         try:
-            if owned_state_inode is not None:
-                try:
-                    current_stat = state_path.stat()
-                except FileNotFoundError:
-                    pass
-                else:
-                    if (current_stat.st_dev, current_stat.st_ino) == owned_state_inode:
-                        state_path.unlink()
+            owned_state.remove()
         finally:
             try:
                 shutil.rmtree(data_dir)

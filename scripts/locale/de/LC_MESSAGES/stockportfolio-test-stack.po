@@ -216,5 +216,8 @@ msgstr "Der registrierte Prozess {name} läuft nicht"
 msgid "The state file belongs to another project: {path}"
 msgstr "Die Zustandsdatei gehört zu einem anderen Projekt: {path}"
 
+msgid "The stack state file is unreadable: {path}. Check the processes before removing it."
+msgstr "Die Stack-Zustandsdatei ist unlesbar: {path}. Prüfe die Prozesse, bevor du sie entfernst."
+
 msgid "The full stack requires --origin {origin}"
 msgstr "Der vollständige Stack benötigt --origin {origin}"
