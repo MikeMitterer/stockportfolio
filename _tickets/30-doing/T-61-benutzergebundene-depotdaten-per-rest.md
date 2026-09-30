@@ -255,3 +255,77 @@ Produktstand für T-61 ist noch nicht entstanden. Nach deiner Antwort setzt
 Codex die REST-Datenhaltung um und übergibt später den Produktstand zur
 unabhängigen technischen Prüfung. Der Basisstand bestand mit 806 Frontend-
 und 8 API-Tests.
+
+## Konzeptprüfung Runde 2 · mehrere Admin-Konten
+
+`claude`, 2026-09-30, an Handoff-Commit `44bcb726f851fae53d40184d5956e42ce5527518`.
+Ich beurteile ausschließlich die Mehradmin-Regel und die Sichtbarkeit des
+lokalen Altbestands. Grundlage sind dieses Ticket, die T-60-Spezifikation
+(„Verbindliche Grenzen für T-61 und T-62“), das Schema `api/src/persistence/schema.ts`
+und die heutige Freigabelogik in `frontend/src/auth/AuthRoot.vue`. Einen
+Produktstand gibt es noch nicht.
+
+**Privater Bestand je Konto, auch für Admins: zugestimmt.** Die Rolle `admin`
+erlaubt die Kontenverwaltung, aber keinen Zugriff auf fremde Depots. Das folgt
+direkt aus Kriterium 2 (Besitzerprüfung auf jeder Route). Eine gemeinsame
+Admin-Datenhaltung wäre eine zweite, versteckte Zugriffsregel neben dieser
+Prüfung. Ein neues Admin-Konto beginnt deshalb leer. Die heutige
+T-60-Übergangsregel, nach der jeder Admin im selben Browser den lokalen
+Bestand sieht, endet mit T-61.
+
+**Regel für den Altbestand.** Die Vorlage lässt offen, wer den Altbestand
+sehen darf. Außerdem steht sie in Konflikt mit Punkt 6: Wird beim Logout
+alles Private in IndexedDB gelöscht, geht ein noch nicht übernommener
+Altbestand verloren, sobald sich jemand vor der Übernahme abmeldet. Deshalb
+gilt verbindlich:
+
+1. **Berechtigt ist nur das Setup-Konto.** Der Altbestand entstand, bevor es
+   Konten gab. Die einzige nachweisbare Verbindung zu ihm hat das Konto, das
+   bei der Einrichtung dieser Instanz angelegt wurde. Das wird **auf dem
+   Server festgehalten**: ein eigenes Feld, gesetzt in derselben Transaktion
+   wie `setup()`. Heute fehlt ein solches Feld, das Schema kennt nur `role`
+   und `createdAt`. Weder „ältestes Admin-Konto“ noch eine Entscheidung im
+   Browser genügen. Die Sitzungsantwort meldet dem Client, ob das Konto
+   berechtigt ist und ob sein Übernahmemarker schon gesetzt ist.
+2. **Vorschau nur für das berechtigte Konto.** Nur diesem Konto liest die App
+   den Altbestand und zeigt Quelle, Ziel und Wirkung. Alle anderen Konten
+   sehen weder Inhalt noch Namen, Anzahl oder Werte. Sie sehen also weder
+   einen Hinweis noch eine leere Vorschau; ihr Serverbestand ist einfach leer.
+3. **Der Server prüft die Berechtigung erneut.** Der Import-Endpunkt nimmt nur
+   Anfragen des Setup-Kontos an; andere Konten erhalten `403`, ein gesetzter
+   Marker `409`, jeweils ohne Schreibzugriff. Eine versteckte Vorschau
+   ersetzt diese Prüfung nicht (wie T-60, Kriterium 5).
+4. **Der Altbestand ist kein privater Kontobestand im Sinne von Punkt 6.** Die
+   Bereinigung bei Logout und Kontowechsel löscht nur Daten, die die App nach
+   T-61 unter einem Konto anlegt: Serverkopien, Kurs-, FX- und
+   Verlaufscaches, Pinia. Der besitzerlose Altbestand bleibt unverändert
+   liegen, bis das berechtigte Konto ihn übernimmt oder ausdrücklich
+   verwirft. Danach löscht die App ihn. Das ist keine neue Schwachstelle: Den
+   Altbestand konnte bisher ohnehin jede Person mit Zugriff auf dieses
+   Browserprofil lesen. In der Doku steht das als bekannte Grenze.
+5. **Weitere Browser mit Altbestand.** Ist der Marker schon gesetzt, zeigt die
+   Vorschau des berechtigten Kontos keinen zweiten Pauschalimport. Sie bietet
+   stattdessen je Depot einen Dateiexport an. Diese Dateien laufen über den
+   regulären Restore; so ist die Zusage „einzelne Depots später über Export
+   und Restore“ aus der Spezifikation praktisch einlösbar. Ohne diesen
+   Export käme man nach T-61 an einen zweiten lokalen Bestand nicht mehr
+   heran.
+6. **Grenzfall deaktiviertes Setup-Konto.** Dann übernimmt niemand, und der
+   Altbestand bleibt unverändert. Der Weg zurück ist die Reaktivierung durch
+   einen Admin. Die Berechtigung wird bewusst nicht an ein anderes Konto
+   übertragen.
+
+**Doku und Spezifikation:** Die T-60-Spezifikation sagt „nur der erste
+Admin“; T-60 hat „jeder Admin“ umgesetzt. Beides ersetzt jetzt diese Regel.
+Der Abschnitt „Verbindliche Grenzen für T-61 und T-62“ bekommt Punkt 1 bis 6.
+Die READMEs bekommen die Grenzen aus Punkt 4 und 6.
+
+**Prüfpunkte für den späteren technischen Review** (ergänzen Verify #3 und #5):
+Ein zweites Admin-Konto sieht im selben Browser keinen Altbestand, und
+`POST` auf den Import-Endpunkt liefert `403`. Logout des Setup-Kontos vor
+der Übernahme lässt den Altbestand unverändert. Nach der Übernahme ist er
+lokal entfernt. Bei gesetztem Marker gibt es einen Export je Depot und keinen
+Pauschalimport.
+
+**Urteil:** Das Konzept ist **freigegeben** mit der Regel in Punkt 1 bis 6.
+Das ist keine technische Freigabe; ein Produktstand fehlt noch.

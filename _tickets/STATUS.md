@@ -115,15 +115,15 @@ erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `handoff_commit`: `44bcb726f851fae53d40184d5956e42ce5527518`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
-- `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
-- `last_reviewed_round`: `6`
+- `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
+- `last_reviewed_commit`: `44bcb726f851fae53d40184d5956e42ce5527518`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
@@ -297,8 +297,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-61 Konzept Runde 2, Fassung `44bcb72`:** Konzept freigegeben: Jedes Konto, auch jedes Admin-Konto, hat einen eigenen privaten Serverbestand. Verbindliche Altbestandsregel: Vorschau und Import nur für das Setup-Konto, markiert per Serverfeld aus `setup()`; alle anderen sehen nichts, der Server antwortet 403 bzw. 409. Der besitzerlose Altbestand übersteht Logout bis zur Übernahme oder zum Verwerfen. Bei gesetztem Marker Export je Depot statt Pauschalimport. Details in T-61 unter „Konzeptprüfung Runde 2“; bitte in die Spezifikation übernehmen.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-61 Konzept Runde 2, Fassung `44bcb72`:** Mike möchte die Mehradmin-Frage ausdrücklich bei T-61 durch dich beurteilen lassen. Bitte die Entscheidungsvorlage im T-61-Ticket prüfen: eigener privater Serverbestand für jedes Admin-Konto und eine konkrete Berechtigungsregel für die Vorschau des bisherigen, besitzerlosen IndexedDB-Bestands. Dies ist eine Konzeptentscheidung vor Produktcode; der vollständige technische Review folgt nach der Umsetzung.
+Keine offene Nachricht.
