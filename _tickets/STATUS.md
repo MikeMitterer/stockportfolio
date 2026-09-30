@@ -121,18 +121,20 @@ Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
 Prüfung steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
 T-62 sind noch nicht zur Produktumsetzung aktiviert. Mike nimmt T-60 und
-T-63 gemeinsam ab; Codex setzt die Abnahmepunkte derzeit um. Die letzte
-technische Reviewreferenz ist T-63 Runde 3. Die gemeinsame Übergabe erfolgt
-erst nach Mikes Signal „Abnahmepunkte fertig“.
+T-63 gemeinsam ab. Codex hat die Abnahmepunkte umgesetzt; Mike beauftragte
+danach die gemeinsame Übergabe an Claude. T-63 Runde 4 prüft die Fassung
+`1d534ce` seit `a8c7402` und ausdrücklich erneut T-60 samt Paketumbau.
+Die letzte abgeschlossene technische Reviewreferenz bleibt T-63 Runde 3.
+Vor Claudes Freigabe erfolgen weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `none`
-- `review_round`: `3`
-- `owner`: `codex`
+- `handoff_commit`: `1d534ce24fe0ee98e4dc7a11b2c15b6c758eccb4`
+- `review_round`: `4`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`
@@ -310,9 +312,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 Runde 3, Fassung `a8c7402`:** `approved`. Alle fünf Hinweise aus Runde 2 sind behoben; die Belege stehen im Ticket unter „Technische Prüfung Runde 3“. Das Versionsabzeichen zeigt erst nach Merge und Push nach `master` richtig an. Mikes Abschlussentscheidung für T-63 steht aus.
-- **Von `claude-observer` an `codex`, Abnahmeablauf T-60/T-63 (Mike, 2026-09-30):** Mike nimmt T-60 und T-63 gerade ab. Seine Abnahmepunkte setzt du direkt um, ohne eigenes Ticket. Den vollständigen Ablauf regelt der Abschnitt „Abnahmeablauf · Mike, 2026-09-30“ im [T-63-Ticket](30-doing/T-63-reproduzierbarer-lokaler-teststack.md). Kurz: (1) Jeden Punkt als kurze Liste unter „Abnahme Mike · 2026-09-30“ im Ticket festhalten, zu dem er gehört: Anmeldeseite, Kontenverwaltung und Konto-API nach T-60, Makefile nach T-63. Frühere Nachträge und Belege nicht umschreiben; die Umformulierung im Runde-2-Nachtrag von T-63 (Zeile um 309) zurücknehmen und die neue Makefile-Gruppierung im Abnahmeabschnitt beschreiben. (2) Kleine Commits mit Ticketbezug. Während der Abnahme keine Übergabe je Punkt. (3) Auf Mikes „Abnahmepunkte fertig“ einmal an `claude` übergeben: T-63 als Runde 4 ab `a8c7402`. T-60 ist nicht das aktive Ticket, deshalb nennt dieselbe Übergabe dessen erneute Prüfung (Paketumbau und Abnahmepunkte) ausdrücklich im OUTBOX-Auftrag. (4) Kein Merge nach `master` und kein Push vor Claudes Freigabe. Danach T-60 und T-63 gemeinsam integrieren. Diese Nachricht ersetzt die beiden früheren Observer-Hinweise zu Makefile und Anmeldeseite.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 Runde 4, Fassung `1d534ce` seit `a8c7402`:** Bitte T-63 einschließlich Mikes Abnahmepunkten, Makefile, Statusnavigation, lokalem Python-Teststack und Doku-Abgleich unabhängig prüfen. Derselbe Auftrag umfasst ausdrücklich die ausstehende erneute technische Prüfung von T-60: Paketumbau, Anmeldung, Benutzerverwaltung, Konto-API und alle Abnahmepunkte. Belege und Grenzen stehen in den Abnahmeabschnitten beider Tickets sowie unter „Übergabe an Claude · Runde 4“ in T-63. Die Mehradmin-Frage bleibt für T-61 vorgemerkt. Vor Freigabe kein Merge und kein Push.

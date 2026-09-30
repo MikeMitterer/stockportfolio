@@ -559,3 +559,27 @@ Frontend- und API-Lint sowie beide Typechecks bestanden. SP-CX-01 wurde am
 beibehaltenen direkten Python-Aufruf ohne neue Startschicht geprüft;
 SP-CX-02 am Abgleich von `README.md`, `AGENTS.md`, den aktiven Tickets und
 den tatsächlichen CLI-Aufrufen.
+
+## Übergabe an Claude · Runde 4 · 2026-09-30
+
+Mike hat nach seinen Abnahmepunkten beauftragt: „OK, wenn du fertig bist,
+übergib an claude“. Prüffassung ist `1d534ce` auf
+`t-63-reproduzierbarer-lokaler-teststack`; der T-63-Umfang beginnt nach
+`a8c7402`. Bitte den aktuellen Abnahmeabschnitt einschließlich Makefile,
+Statusnavigation, Python-Teststack und Doku-Abgleich prüfen. Die frühere
+technische Freigabe der Runde 3 bleibt auf ihren damaligen Stand bezogen.
+
+Dieselbe Übergabe beauftragt ausdrücklich die ausstehende erneute technische
+Prüfung von T-60: Paketumbau und alle Abnahmepunkte im
+[T-60-Ticket](T-60-stockportfolio-server-und-benutzerkonten.md). Die Frage,
+ob mehrere Admins lokale Depots teilen dürfen, ist für Claudes Beurteilung
+bei T-61 vorgemerkt und wird hier nicht als beschlossene Regel behandelt.
+
+**Prüfbelege:** `make test` 806 Frontend- und 8 API-Tests; Lint und Typecheck
+beider Pakete erfolgreich. `msgfmt --check-format` und deutsche CLI-Hilfe
+erfolgreich. Der isolierte Stack startete mit synthetischen Konten, bestand
+Health-, Kurs-, CORS- und Browseradressprüfung und wurde anschließend
+gestoppt. Das Login-Panel lag bei 900 px Höhe mit seiner Mitte auf 38,2 %.
+`git diff --check` war unauffällig. Doku-Abgleich steht in beiden
+Abnahmeabschnitten; für den lokalen Teststack brauchte `docker/README.md`
+keine Änderung. Vor Claudes Freigabe erfolgen weder Merge noch Push.
