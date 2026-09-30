@@ -1260,3 +1260,45 @@ prüfen: Aufräumen des StockInfo-Kindprozesses nach `SIGTERM` sowie sofortiger
 Stack-Neustart nach Stopp trotz `TIME_WAIT`. Die Gegenproben stehen oben.
 Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
 bleiben offen.
+
+## Technische Prüfung Runde 10
+
+`claude`, 2026-09-30, an Handoff-Commit `e596e1b76b08d629fac979544fa2ef1ff8d22252`
+(Diff seit `70c25a6`, nur `scripts/` und dieses Ticket). Geprüft habe ich die
+beiden Befunde aus Runde 9 in einem eigenen, abgetrennten Worktree mit
+frischer eigener `.venv` aus `requirements.txt`. Angewandt habe ich SP-R-04.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 1 · Aufräumen | Einzelserver zweimal mit StockInfos `.venv` gestartet (`/health` 200) und mit `-t` gestoppt; Stack zweimal gestartet und gestoppt; Zustandsdateien und `stockportfolio-t39-server-*` vorher und nachher gezählt | **Behoben.** Keine neue Zustandsdatei, kein neues Datenverzeichnis (vorher 46, nachher 46) |
+| Befund 2 · Portprüfung | Stack direkt nach dem Stopp erneut gestartet, `TIME_WAIT` per `netstat` geprüft | **Behoben.** Neustart erfolgreich bei drei offenen `TIME_WAIT`-Verbindungen auf 8899; `SO_REUSEADDR` am Test-Socket entspricht dem Server-Bind |
+| Mechanismus | `uvicorn.server.Server.capture_signals` (0.51.0) gelesen | `uvicorn` merkt sich den bestehenden Handler (`SIG_IGN`), stellt ihn nach dem Herunterfahren wieder her und löst das Signal dann erneut aus; unter `SIG_IGN` wird es ignoriert, und das `finally` läuft |
+| Lint, Umfang | `ruff check`, `py_compile`, `git diff --stat -- frontend api` | Sauber; Frontend und API unverändert |
+
+**Befund (blockierend, nach SP-R-04):**
+
+3. **Ein SIGTERM kurz nach dem Start geht verloren.**
+   `run_single_server` setzt SIGTERM vor `uvicorn.run` auf `SIG_IGN`. Bis
+   `uvicorn` in `capture_signals` seinen eigenen Handler setzt (innerhalb von
+   `server.run` → `asyncio.run(serve())`), wird ein eintreffendes SIGTERM
+   ignoriert, nicht verzögert. `stop_children` sendet genau ein SIGTERM,
+   wartet 10 Sekunden und meldet dann „did not stop“. Der Server läuft danach
+   weiter, bis ihn jemand von Hand beendet. Das Fenster ist kurz, aber
+   erreichbar, zum Beispiel wenn der Stack-Start wegen eines anderen Kindes
+   früh scheitert und die Aufräumlogik die Kinder sofort beendet.
+   **Erwartet:** Ein Handler, der das Signal nicht verwirft, etwa
+   `signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))` statt `SIG_IGN`.
+   `uvicorn` ersetzt ihn während des Laufs, stellt ihn danach wieder her, und
+   das erneut ausgelöste Signal endet dann als `SystemExit`. Das `finally`
+   räumt in beiden Fällen auf. Eine Gegenprobe belegt Aufräumen sowohl nach
+   normalem Stopp als auch bei SIGTERM unmittelbar nach dem Start.
+
+**Hinweis zu Altlasten, keine Codeänderung dieser Fassung:** Unter dem
+System-Temp liegen vier verwaiste Zustandsdateien für die Ports 18898, 59999,
+8898 und 8901, alle mit beendeter PID und aus Läufen vor dieser Korrektur,
+sowie die 46 `stockportfolio-t39-server-*`-Verzeichnisse. Über das einmalige
+Entfernen entscheidet Mike (offene Frage aus Runde 9).
+
+**Urteil:** `changes_requested` für `e596e1b`. Die Befunde 1 und 2 aus
+Runde 9 sind behoben und live belegt. Die Nachprüfung beschränkt sich auf
+Befund 3.
