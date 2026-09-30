@@ -35,6 +35,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
+    "scripts/**/*.ts",
     "vite.config.ts",
     "vitest.config.ts"
   ],

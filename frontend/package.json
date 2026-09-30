@@ -61,7 +61,7 @@
     "api/package-lock.json",
     "api/eslint.config.mjs",
     "api/tsconfig.json",
-    "scripts/licenseAssets.ts",
+    "frontend/scripts/licenseAssets.ts",
     "frontend/package-lock.json",
     "frontend/eslint.config.mjs",
     "frontend/index.html",

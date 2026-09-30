@@ -86,7 +86,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | 2 | <a id="pruefpunkt-2"></a>Mit anderem Konto C mithören und A ändern | C bekommt weder Ereignis noch fremde Kennung oder Daten | ➖ |
 | 3 | SSE trennen, währenddessen ändern, wieder verbinden und Keep-Alive hinter dem Proxy prüfen | B lädt den neuesten Stand; verpasste Ereignisse gehen nicht als Zustand verloren; Verbindung bleibt auch ohne Nutzereignisse offen | ➖ |
 | 4 | Schreibkonflikt, Logout und Sitzungsablauf während offenem Stream prüfen | Konflikt sichtbar; privater Stream endet oder weist spätestens beim nächsten Keep-Alive Zugriff ab | ➖ |
-| 5 | `make test`, `make lint`, `make typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
+| 5 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
 
 ### Doku-Abgleich
 

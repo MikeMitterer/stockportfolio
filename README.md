@@ -8,6 +8,8 @@ run yourself.
 **Docker:** [Container setup and configuration](docker/README.md) ·
 [Docker Hub repository](https://hub.docker.com/r/mangolila/stockportfolio)
 
+![Version](https://img.shields.io/github/package-json/v/MikeMitterer/stockportfolio?filename=frontend%2Fpackage.json)
+
 ![Dashboard](docs/images/dashboard.png)
 
 _The dashboard: portfolio groups at the top, positions below. Holdings and targets

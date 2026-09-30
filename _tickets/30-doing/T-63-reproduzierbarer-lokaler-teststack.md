@@ -400,3 +400,59 @@ dadurch in Codex' Commit gelandet. Der Inhalt stimmt; es ging nichts verloren.
 **Urteil:** `approved` für `6459dca`. Die Hinweise ändern das Ergebnis nicht.
 Mikes menschliche Abschlussentscheidung für T-63 steht aus, ebenso seine
 T-60-Abnahme über `make dev`.
+
+**Observer-Nachtrag zu Hinweis 3 (`claude-observer`, 2026-09-30):** Auf Mikes
+Auftrag „Aktualisiere du den Skill“ entfernt PersonalSkills-Commit `d547005`
+(Branch `docs/docker-conventions-stockportfolio-targets`, auf `master`
+`642e9c0`) die Zeilen `docker-update` und `build-frontend` aus der
+Target-Tabelle von `docker-conventions`. Der Skill nennt nun den direkten
+Aufruf `BASE_IMAGE=<Referenz> ./docker/build.sh --update` und verweist für
+den Frontend-Build auf das Paket-Skript. Die Skill-Tests liefen mit 24 Tests
+grün. Noch nicht nach `master` gemergt; StockPortfolio-Code ist unverändert.
+
+## Nachtrag 2026-09-30 · Hinweise aus Runde 2 korrigiert
+
+Mike hat vor seiner Abnahme die Korrektur aller fünf Hinweise beauftragt,
+einschließlich des vom Observer ergänzten T-60-Prüfpunkts. Die Freigabe für
+`6459dca` bleibt auf diese Fassung beschränkt; dieser Nachtrag braucht
+erneut eine unabhängige technische Prüfung.
+
+1. Die noch geltenden Verify-Zeilen T-60 #5, T-61 #6 und T-62 #5 nennen
+   jetzt `make test` sowie Lint und Typprüfung mit den npm-Skripten beider
+   Pakete. Historische Belegabsätze bleiben auf ihrem damaligen Stand.
+2. Der Quellarchiv-Helfer liegt unter `frontend/scripts/licenseAssets.ts`.
+   Vite, Test, TypeScript-Konfiguration und Quellarchiv-Liste verwenden den
+   neuen Pfad. Der Frontend-Lint erfasst die Datei; ein gezielter ESLint-Lauf
+   meldete für sie null Fehler und null Warnungen.
+3. Der Observer hat `docker-conventions` im separaten PersonalSkills-Branch
+   `docs/docker-conventions-stockportfolio-targets` mit Commit `d547005`
+   korrigiert. Die veralteten StockPortfolio-Targets stehen dort nicht mehr;
+   der direkte Update-Aufruf und das npm-Build-Skript sind genannt. Mike hat
+   die Integration ausdrücklich freigegeben; PersonalSkills-`master` wurde
+   per Fast-Forward auf `d547005` gesetzt und ist sauber. Ein Push zu
+   `origin` war nicht beauftragt und wurde nicht ausgeführt.
+4. Das README zeigt das Versionsabzeichen wieder mit dem Dateiparameter
+   `frontend/package.json`. Die offizielle Shields-Dokumentation nennt
+   `filename` für den GitHub-package.json-Version-Badge. Auf `master` wird
+   es die neue Datei erst nach der Integration dieser Projektfassung finden.
+5. Die Meldung beim zweiten Stack-Start kommt jetzt aus dem gettext-Katalog.
+   Der deutsche `.po`-Eintrag ist in die `.mo`-Datei übersetzt und per
+   Katalog-Lookup geprüft.
+
+**Prüfungen:** `make test` (803 Frontend- und 7 API-Tests), beide Paket-Lints
+ohne Cache, beide Typprüfungen, Frontend-Build und vollständiger Docker-Build
+bestanden. Der Frontend-Build erzeugte das Quellarchiv; darin ist
+`frontend/scripts/licenseAssets.ts` enthalten. Der gezielte
+Lizenzartefakt-Test bestand mit drei Tests. `msgfmt --check-format` und die
+Python-Syntaxprüfung bestanden. Der erste Syntaxprüfungsversuch scheiterte
+nur am gesperrten macOS-Python-Cache; die Wiederholung mit Cache unter
+`/private/tmp` bestand.
+
+**Doku-Abgleich:** `README.md` (Versionsabzeichen) zeigt wieder die Version
+aus dem Frontend-Manifest. Die aktuellen Verify-Zeilen in T-60, T-61 und
+T-62 verwenden die Paketbefehle aus `AGENTS.md`; historische Nachweise
+bleiben unverändert. `SOURCE.md` beschreibt die vom Manifest gesteuerte
+Dateiliste weiterhin zutreffend. `docker/README.md` behandelt den
+unveränderten Containerbetrieb und braucht keine Anpassung. Die
+PersonalSkills-Korrektur liegt getrennt im Skill-Repository und ist lokal in
+dessen `master` integriert; `origin/master` steht noch auf `642e9c0`.

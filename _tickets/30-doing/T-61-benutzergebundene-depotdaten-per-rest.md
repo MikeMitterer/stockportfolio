@@ -110,7 +110,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | 3 | <a id="pruefpunkt-3"></a>Altbestand, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch erhält `409` ohne Änderung | ➖ |
 | 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ➖ |
 | 5 | <a id="pruefpunkt-5"></a>Abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Keine privaten Rohdaten des vorigen Kontos; Restore schreibt nur in das angemeldete Konto | ➖ |
-| 6 | `make test`, `make lint`, `make typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
+| 6 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
 
 ### Doku-Abgleich
 

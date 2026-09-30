@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { gunzipSync } from 'node:zlib'
-import { createLegalAssets } from '../../scripts/licenseAssets'
+import { createLegalAssets } from '../scripts/licenseAssets'
 
 const temporaryDirectories: string[] = []
 

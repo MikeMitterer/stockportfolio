@@ -103,7 +103,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | 2 | <a id="pruefpunkt-2"></a>Admin-Seite als Admin und normaler Nutzer öffnen; Konten verwalten | Admin-Aktionen funktionieren; normale Sitzung und direkter API-Aufruf erhalten 403 | ✅ |
 | 3 | Passwort-Reset, Deaktivierung, Logout und letztes Admin-Konto prüfen | Alte Sitzungen verlieren Zugriff; letztes Admin-Konto bleibt aktiv | ✅ |
 | 4 | Container mit demselben Volume neu erstellen | Konten bleiben, ohne Volume beginnt ein unabhängiges Setup | ✅ |
-| 5 | `make test`, `make lint`, `make typecheck`, Frontend-/Container-Build und Browserprüfung | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ✅ |
+| 5 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Frontend-/Container-Build und Browserprüfung | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ✅ |
 | 6 | Doku und Namen prüfen | README, Docker-README, Unraid-Anleitung und Vorlage stimmen; Bezeichnerinventar ist englisch | ✅ |
 
 **Technische Belege vom 2026-09-29:** `npm ci --prefix api` installierte aus

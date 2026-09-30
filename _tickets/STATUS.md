@@ -112,7 +112,9 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 T-63 ist in Runde 2 für Commit `6459dca` technisch freigegeben. Diese Fassung
 umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
-und dem Testskript. Die menschliche Abschlussentscheidung steht aus.
+und dem Testskript. Mike hat vor seiner Abnahme die Korrektur der fünf
+Review-Hinweise beauftragt; die neue Fassung wird erneut technisch geprüft.
+Die menschliche Abschlussentscheidung steht aus.
 T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
 Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
 Prüfung steht aus.
@@ -123,9 +125,9 @@ Reviewreferenz ist T-63 Runde 2.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `6459dca57f4769ecea056e6d011d713fef09b869`
+- `handoff_commit`: ``
 - `review_round`: `2`
 - `owner`: `codex`
 - `updated_at`: `2026-09-30`
@@ -305,7 +307,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 Runde 2, Fassung `6459dca`:** `approved`. Die Belege und fünf nicht blockierende Hinweise stehen im Ticket unter „Technische Prüfung Runde 2“. Vor der Aktivierung von T-61 bitte die Verify-Zeilen von T-61 (#6) und T-62 (#5) auf die Paketbefehle umstellen. Mikes Abschlussentscheidung für T-63 steht aus.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 

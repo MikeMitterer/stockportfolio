@@ -93,6 +93,9 @@ msgstr "{name}: {state} (PID {pid})"
 msgid "No local test stack is registered"
 msgstr "Es ist kein lokaler Teststack registriert."
 
+msgid "A local test stack is already registered; use --stack --stop before starting again"
+msgstr "Ein lokaler Teststack ist bereits registriert; beende ihn vor einem neuen Start mit --stack --stop."
+
 msgid "All local endpoints and CORS checks passed"
 msgstr "Alle lokalen Endpunkte und CORS-Prüfungen sind erfolgreich."
 

@@ -287,7 +287,7 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
         return 0
 
     if state:
-        raise RuntimeError(f"A local test stack is already registered; use --stack --stop before starting again")
+        raise RuntimeError(translate("A local test stack is already registered; use --stack --stop before starting again"))
     if args.origin and args.origin != FRONTEND_ORIGIN:
         raise RuntimeError(f"The full stack requires --origin {FRONTEND_ORIGIN}")
     stockinfo_python = preflight(project_root, stockinfo_root, args.port)
