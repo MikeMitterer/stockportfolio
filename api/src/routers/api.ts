@@ -1,7 +1,9 @@
 import type { HttpBindings } from '@hono/node-server'
 import { Hono, type Context } from 'hono'
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
+import { streamSSE } from 'hono/streaming'
 import { AccountService, ServiceError, type PublicUser } from '../auth/service.js'
+import { ResourceEvents } from '../data/events.js'
 import type { AccountRepository, LegacyPortfolio, ResourceKind, RestoreData } from '../persistence/repository.js'
 
 type ServerContext = Context<{ Bindings: HttpBindings }>
@@ -10,6 +12,7 @@ export interface ApiOptions {
   publicOrigin?: string
   secureCookies: boolean
   remoteAddress: (context: ServerContext) => string
+  heartbeatMs?: number
 }
 
 const cookieName = 'stockportfolio_session'
@@ -115,6 +118,7 @@ function setSessionCookie(context: ServerContext, value: string, secure: boolean
 
 export function createApiRouter(service: AccountService, repository: AccountRepository, options: ApiOptions): Hono<{ Bindings: HttpBindings }> {
   const app = new Hono<{ Bindings: HttpBindings }>()
+  const events = new ResourceEvents()
 
   app.onError((error, context) => {
     if (error instanceof ServiceError) {
@@ -202,6 +206,33 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
     return context.json({ ok: true })
   })
 
+  app.get('/api/data/events', (context) => {
+    const sessionToken = token(context)
+    const user = currentUser(context, service)
+    context.header('Cache-Control', 'no-cache')
+    context.header('X-Accel-Buffering', 'no')
+    return streamSSE(context, async (stream) => {
+      const subscription = events.subscribe(user.id)
+      stream.onAbort(() => subscription.close())
+      try {
+        await stream.write(': connected\n\n')
+        while (!stream.aborted) {
+          const event = await subscription.next(options.heartbeatMs ?? 15_000)
+          if (stream.aborted) break
+          try {
+            service.session(sessionToken)
+          } catch {
+            break
+          }
+          if (event) await stream.writeSSE({ event: 'resource', data: JSON.stringify(event) })
+          else await stream.write(': keep-alive\n\n')
+        }
+      } finally {
+        subscription.close()
+      }
+    })
+  })
+
   app.get('/api/data/:kind', (context) => {
     const user = currentUser(context, service)
     const kind = readResourceKind(context.req.param('kind'))
@@ -226,16 +257,20 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
     const nextRevision = repository.saveResource(user.id, kind, id, revision, request.value)
     if (nextRevision === 'not_found') throw new ServiceError(404, 'not_found')
     if (nextRevision === null) throw new ServiceError(409, 'revision_conflict')
+    events.publish(user.id, { kind, resourceId: id, revision: nextRevision })
     return context.json({ revision: nextRevision })
   })
 
   app.delete('/api/data/:kind/:id', async (context) => {
     const user = currentUser(context, service)
     const kind = readResourceKind(context.req.param('kind'))
+    const id = context.req.param('id')
     const request = await body(context)
-    const result = repository.deleteResource(user.id, kind, context.req.param('id'), readRevision(request.revision))
+    const revision = readRevision(request.revision)
+    const result = repository.deleteResource(user.id, kind, id, revision)
     if (result === 'not_found') throw new ServiceError(404, 'not_found')
     if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
+    events.publish(user.id, { kind, resourceId: id, revision: revision + 1 })
     return context.json({ ok: true })
   })
 
@@ -245,10 +280,20 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
     const portfolios = readLegacyPortfolios(request.portfolios)
     const settings = request.settings === null || request.settings === undefined ? null : readObject(request.settings)
     if (settings) validateResource('settings', 'current', settings)
+    const previousSettings = repository.findResource(user.id, 'settings', 'current')
     const result = repository.importLegacy(user.id, portfolios, settings)
     if (result === 'forbidden') throw new ServiceError(403, 'forbidden')
     if (result === 'imported') throw new ServiceError(409, 'legacy_already_imported')
     if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
+    for (const entry of portfolios) {
+      const resourceId = String(entry.portfolio.id)
+      for (const kind of ['portfolio', 'allowlist', 'snapshots'] as const) {
+        events.publish(user.id, { kind, resourceId, revision: 1 })
+      }
+    }
+    if (settings && !previousSettings) {
+      events.publish(user.id, { kind: 'settings', resourceId: 'current', revision: 1 })
+    }
     return context.json({ ok: true })
   })
 
@@ -280,9 +325,24 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
         replaced: revisions.replaced === null ? null : readRevision(revisions.replaced),
       },
     }
+    const removed = replacedId && replacedId !== id
+      ? (['portfolio', 'allowlist', 'snapshots'] as const).flatMap((kind) => {
+          const resource = repository.findResource(user.id, kind, replacedId)
+          return resource ? [{ kind, resourceId: replacedId, revision: resource.revision + 1 }] : []
+        })
+      : []
     const result = repository.restoreBackup(user.id, data)
     if (result === 'not_found') throw new ServiceError(404, 'not_found')
     if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
+    for (const event of removed) events.publish(user.id, event)
+    for (const [kind, resourceId, revision] of [
+      ['portfolio', id, data.revisions.portfolio],
+      ['settings', 'current', data.revisions.settings],
+      ['allowlist', id, data.revisions.allowlist],
+      ['snapshots', id, data.revisions.snapshots],
+    ] as const) {
+      events.publish(user.id, { kind, resourceId, revision: revision + 1 })
+    }
     return context.json({ ok: true })
   })
 
