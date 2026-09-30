@@ -198,3 +198,16 @@ Tickets und hält den Zuschnitt der Kette eng, wie vom Observer gewünscht.
 **Coder-Nacharbeit · 2026-09-28:** Prüfpunkt D ist oben ergänzt und auf Verify
 #5 bezogen. Die Empfehlung der Konzeptprüfung ist damit im Ticket enthalten;
 der Produktnachweis und Mikes Urteil bleiben offen.
+
+## Vormerkung für Claudes Prüfung · 2026-09-30
+
+Bei Mikes gemeinsamer T-60/T-63-Abnahme wurde der heutige Zwischenstand
+sichtbar: Die Depotdaten liegen in der IndexedDB des Browserprofils. Ein
+normales Konto sieht nach dem ersten Passwortwechsel „Depotzugriff folgt“;
+alle Admin-Konten im selben Browserprofil können derzeit denselben lokalen
+Bestand öffnen. Die T-60-Architekturspezifikation sagt dagegen „nur der erste
+Admin“. Mike möchte die Mehradmin-Regel erst bei T-61 von Claude beurteilen
+lassen. Dort sind kontogebundene Depotdaten, Altbestandsübernahme und die
+Trennung lokaler Caches ohnehin Teil des Auftrags. Bis zu dieser Prüfung
+bleibt das laufende T-60-Verhalten unverändert; hier wird keine Umsetzung
+oder vorgezogene technische Freigabe für T-61 behauptet.
