@@ -532,6 +532,21 @@ dass die Punkte im Ticket stehen und vor der Freigabe nichts integriert wird.
   erzeugt Passwörter mit Großbuchstabe, Ziffer und Sonderzeichen passend zur
   Konto-API. Die native `argparse`-Hilfe bleibt auf Python 3.11 zulässig
   unfarbig; eine Laufzeitabhängigkeit vom ProjectTools-Quellpfad entsteht nicht.
+- Mikes weitere Vorgabe für dieses Skript: keine Farben, Themes oder
+  Hints-Sektion. Die native unfarbige Hilfe zeigt stattdessen mehrere
+  Beispiele sauber untereinander: Stack-Start, Demo-Konten, Status, Stop und
+  Einzelserver. Der bereits vorhandene gettext-Katalog übersetzt die
+  Überschrift. T-63 bleibt bis zu Mikes ausdrücklichem Urteil in Abnahme.
+- **Neuerer Abnahmepunkt · Testserver-Theme:** Mike erwartet inzwischen die
+  gemeinsame Gestaltung wie bei ProjectTools `changelog.py`. Das Skript
+  verwendet optional `projecttools.ui.colors.HelpFormatter` und `Theme` für
+  Hilfe, Fehler und Statusmeldungen. `MAKE_THEME` wählt das Theme; `NO_COLOR`,
+  Umleitung und `TERM=dumb` bleiben farblos. Das Python-Paket kann über den
+  auf jeder Maschine eingerichteten `.libs/ProjectTools`-Link in StockInfos
+  bestehende venv installiert werden, ohne im Skript einen
+  ProjectTools-Quellpfad zu suchen. Fehlt das Paket, funktionieren Start,
+  Status, Stop und Hilfe schlicht mit nativer `argparse`-Hilfe. `README.md`
+  (**Setup**) und `AGENTS.md` (**Bauen und prüfen**) nennen den Bezugsweg.
 - „Anmeldung nicht erreichbar“ bei einzeln gestartetem Vite ist ein fehlender
   Konto-API-Prozess auf Port 8080. `make dev` startet beide Server; der
   isolierte Stack startet sie zusammen und meldet die konkreten Adressen.
@@ -862,3 +877,66 @@ festgehalten. Der Observer hat vor dem Archivieren auf diese Trennung
 hingewiesen. T-60 und T-63 bleiben deshalb in `30-doing/`; der gemeinsame
 Merge und Push warten auf Mikes T-63-Entscheidung. T-61 kann auf einem eigenen,
 auf der geprüften Fassung aufbauenden Branch beginnen.
+
+## Weitere Abnahmepräzisierung · CLI-Hilfe · 2026-09-30
+
+Die einzelne `Example:`-Zeile der Hilfe ist durch fünf getrennte
+Beispielzeilen ersetzt. `argparse.RawDescriptionHelpFormatter` erhält deren
+Zeilenumbrüche. Das Skript enthält weiterhin keine Farb-, Theme- oder
+Hints-Ausgabe und lädt `projecttools.ui.colors` nicht. Der Skriptkopf und die
+Aktionsoptionen bleiben unverändert.
+
+**Eigenprüfung:** `--help` und Aufruf ohne Argumente zeigten die Beispiele
+zeilenweise und endeten jeweils mit Exit 0. Die deutsche Ausgabe mit
+`LC_ALL=de_DE.UTF-8` zeigte „Beispiele:“ und dieselben fünf Aufrufe.
+`msgfmt --check-format` erzeugte den aktuellen deutschen Katalog; `ruff check`
+für beide Python-Dateien und `git diff --check` bestanden.
+
+**Doku-Abgleich:** `README.md` (**Setup**) und `AGENTS.md` (**Bauen und prüfen**)
+nennen weiterhin die gültigen Aufrufe. `docker/README.md` beschreibt den
+Containerbetrieb und betrifft die lokale Skript-Hilfe nicht. Keine Änderung
+an Board- oder Lessons-Konventionen; der `task-verification-workflow`-Skill
+bleibt unverändert. T-60 ist von Mike abgenommen; T-63 bleibt in Abnahme.
+
+## Weitere Abnahmepräzisierung · CLI-Theme · 2026-09-30
+
+Mikes neuerer Abnahmepunkt aus der Observer-INBOX ersetzt die frühere
+Festlegung auf durchgehend unfarbige Hilfe. `scripts/cli_theme.py` bindet
+`projecttools.ui.colors` als optional installiertes Paket ein. Ist es
+vorhanden, formatieren `HelpFormatter` und `Theme` Optionen, Beispiele,
+Fehler sowie Statusmeldungen nach `MAKE_THEME`. Ohne Paket bleiben alle
+Aktionen und die native `argparse`-Hilfe nutzbar. Im Skript steht kein
+absoluter ProjectTools-Quellpfad. ProjectTools-`master` enthält das
+paketierbare Python-Modul nach Mikes Zustimmung lokal als Fast-Forward
+`f8cd8ec`; `origin/master` wurde nicht verändert. Die unversionierte
+ProjectTools-`AGENTS.md` blieb unberührt.
+
+**Eigenprüfung:** Aus dem ProjectTools-Stand wurde ein Wheel gebaut und in
+ein isoliertes Testverzeichnis installiert. Mit diesem Paket zeigte ein
+PTY-Aufruf unter `MAKE_THEME=ocean`, `TERM=xterm` und ohne `NO_COLOR` ANSI-
+Farben in Hilfe und Fehlern. `NO_COLOR=1` und umgeleitete Ausgabe blieben
+farblos; die fünf Beispiele stehen weiterhin untereinander. Ohne Paket
+erschienen Hilfe und Fehlermeldung im nativen Format; die deutsche Hilfe
+zeigte „Beispiele:“ und alle fünf Zeilen. `ruff check` für die drei
+Python-Dateien bestand.
+
+Der isolierte Stack startete mit synthetischen Konten auf Fixture-Port
+18898, bestand `--stack --status` einschließlich Endpunkt-, Kurs- und
+CORS-Prüfung und wurde mit `--stack --stop` samt temporären Kontodaten
+beendet. Port 8899 war durch eine fremde registrierte State-Datei belegt;
+deren Prozess und Daten blieben unberührt. Ein erneuter interaktiver
+Browserdurchlauf fand für diese CLI-Änderung nicht statt.
+
+`make test` bestand mit 806 Frontend- und 8 API-Tests, beide Lints ohne
+Cache, beide Typechecks und `git diff --check` bestanden. Der erste Lauf im
+Worktree traf den bekannten Docker-Test unter macOS-Bash 3.2; mit Bash 5.3
+im `PATH` bestand der unveränderte Gesamtumfang. ProjectTools-
+`tests/python/test_cli_themes.py` bestand mit 9 Tests und 11 übersprungenen
+Fällen.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Command-line themes**) und
+`AGENTS.md` (**Bauen und prüfen**) erklären Installation, `MAKE_THEME` und
+den Fallback. `docker/README.md` (**Data and backups**, **Configuration**)
+betrifft den Container und hat keinen Aufruf dieses lokalen Skripts;
+inhaltlich bleibt es unverändert. Keine Board- oder Lessons-Konvention
+wurde geändert.

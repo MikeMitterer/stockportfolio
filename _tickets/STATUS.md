@@ -13,8 +13,9 @@ beide Tickets in `30-doing/` und werden noch nicht gemeinsam integriert.
 Der Teststack verbindet StockInfos vorhandene Testkurse, Konto-API und Vite.
 StockInfo wurde nicht geändert.
 
-**Aktuelle Arbeit:** [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
-und danach [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
+**Aktuelle Arbeit:** [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+mit Mikes neuem Theme-Abnahmepunkt in der technischen Nachprüfung; danach
+[T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
 Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
 Produktnachweise stehen noch aus. Die Mehradmin-Regel und die Sichtbarkeit des
@@ -118,26 +119,28 @@ verbliebenen Befund 3 zum lokalen Restore-Zweig und zu fehlenden Store-Tests
 hat Codex mit `238723a` behoben. Die aufruflosen Store-Methoden und den
 verwaisten i18n-Schlüssel aus Runde 5 hat Codex mit `094802b` entfernt. Claude hat
 T-61 in Runde 6 technisch freigegeben; Mikes Prüfpunkte A bis D stehen aus.
-Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
-Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
-T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
+Mike hält T-63 weiter in Abnahme. Die Hilfe mit Beispielen untereinander
+liegt als `1c7f37c` auf dem T-63-Branch. Der neue Theme-Abnahmepunkt ist
+dort mit `bd4faec` umgesetzt. ProjectTools-`master` enthält das paketierte
+Python-Modul lokal als `f8cd8ec`; es erfolgte kein Push.
+T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `approved`
-- `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
-- `review_round`: `6`
-- `owner`: `codex`
+- `phase`: `ready_for_review`
+- `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
+- `handoff_commit`: `bd4faecb64f6fd92db2c2942055a94eed063da17`
+- `review_round`: `7`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `last_reviewed_commit`: `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
 - `last_reviewed_round`: `6`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
-- `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
+- `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -308,9 +311,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-61 technische Runde 6, Fassung `094802b`:** `approved`. Befund 4 ist behoben; das Inventar auf `094802b` zeigt keinen Treffer mehr für die entfernten Methoden und den Schlüssel, und der Lint mit `--max-warnings 0` ist sauber. Die Befunde 1 bis 4 sind damit erledigt. Mikes Prüfpunkte A bis D stehen aus. Details in T-61 unter „Technische Prüfung Runde 6“.
-- **Von `claude-observer` im Auftrag von Mike an `codex`, T-63-Abnahme, Testserver-Theme (2026-09-30):** Mike: „Das Script unterstütz immer noch kein Theme wie zb `/Volumes/DevLocal/DevBash/Production/ProjectTools/src/python/changelog.py`“. `scripts/stockinfo-test-server.py` (Stand `1c7f37c`) zeigt die native, unfarbige argparse-Hilfe. Die Zurückstellung in T-63 (Zeilen 259–266 und 534: warten auf ein installierbares `projecttools.ui.colors`, keine Laufzeitabhängigkeit vom ProjectTools-Quellpfad) trägt Mike damit nicht mit. Referenz: `changelog.py` verwendet `projecttools.ui.colors` (`HelpFormatter`, `Theme`, `styled`), gesteuert über `MAKE_THEME`. Das Paket liegt bisher nur auf ProjectTools-Branch `feat/package-python-tools` (`f8cd8ec`); ProjectTools-`master` steht auf `239ed2c`. Im Projekt ist `.libs/ProjectTools` bereits verlinkt. Erwartete Handlung: Als Abnahmepunkt in T-63 aufnehmen und das Theme wie bei `changelog.py` umsetzen, samt Bezugsweg für `projecttools` und Verhalten ohne ProjectTools. Den Weg mit Mike klären, falls er ein Merge in ProjectTools voraussetzt. Danach unabhängig prüfen lassen. Keine neue Reviewrunde durch diese Nachricht.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 technische Runde 7, Fassung `bd4faec` auf Branch `t-63-reproduzierbarer-lokaler-teststack`:** Bitte Mikes Theme-Abnahmepunkt unabhängig prüfen. Produktcode und vollständiger Ticket-Nachtrag stehen im Worktree `/private/tmp/stockportfolio-t63-help`. `projecttools.ui.colors` wird als optionales installiertes Paket geladen; Hilfe, Fehler und Status nutzen `MAKE_THEME`, während fehlendes Paket, `NO_COLOR` und Pipe-Ausgabe schlicht bleiben. Das Paket liegt nach Mikes Zustimmung lokal auf ProjectTools-`master` (`f8cd8ec`, kein Push). `make test` (806 Frontend/8 API), beide Lints, beide Typechecks, Python-Ruff, Wheel-/TTY-Probe sowie isolierter Stack-Start, Status und Stop auf Fixture-Port 18898 sind im T-63-Nachtrag belegt. Die T-61-Freigabe aus Runde 6 ist verarbeitet; Mikes Prüfpunkte A bis D bleiben im T-61-Ticket offen. T-62 folgt nach dieser Nachprüfung.
