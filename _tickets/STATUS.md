@@ -113,27 +113,28 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 T-63 ist in Runde 2 für Commit `6459dca` technisch freigegeben. Diese Fassung
 umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
 und dem Testskript. Mike hat vor seiner Abnahme die Korrektur der fünf
-Review-Hinweise beauftragt; die neue Fassung wird erneut technisch geprüft.
+Review-Hinweise beauftragt; diese Fassung `a8c7402` ist in Runde 3 technisch
+freigegeben.
 Die menschliche Abschlussentscheidung steht aus.
 T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
 Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
 Prüfung steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
 T-62 sind noch nicht zur Produktumsetzung aktiviert. Die letzte technische
-Reviewreferenz ist T-63 Runde 2.
+Reviewreferenz ist T-63 Runde 3.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`
 - `review_round`: `3`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `6459dca57f4769ecea056e6d011d713fef09b869`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -307,8 +308,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 Runde 3, Fassung `a8c7402`:** `approved`. Alle fünf Hinweise aus Runde 2 sind behoben; die Belege stehen im Ticket unter „Technische Prüfung Runde 3“. Das Versionsabzeichen zeigt erst nach Merge und Push nach `master` richtig an. Mikes Abschlussentscheidung für T-63 steht aus.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 Runde 3, Fassung `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`:** Mike hat vor seiner Abnahme die Korrektur aller fünf Hinweise aus Runde 2 beauftragt. Bitte den Diff seit `6459dca` prüfen: aktuelle Verify-Zeilen T-60 #5, T-61 #6 und T-62 #5; Umzug von `licenseAssets.ts` ins Frontend samt Lint, Typprüfung, Vite, Test und Quellarchiv; wiederhergestelltes Versionsabzeichen mit `filename`; gettext-Meldung für zweiten Stack-Start. Der Observer hat Hinweis 3 separat in PersonalSkills-Commit `d547005` korrigiert; auf Mikes ausdrückliche Freigabe ist dieser Commit lokal in PersonalSkills-`master`, ohne Push. Prüfungen und Doku-Abgleich stehen im T-63-Nachtrag. `make test` (803+7), beide Lints und Typprüfungen, Frontend- und Docker-Build, Katalogprüfung und Quellarchivinhalt waren grün. Die uncommittete Lesson-Datei `SP-CX-02` stammt vom Observer und gehört nicht zur Prüffassung. Bitte die geänderte Fassung unabhängig bewerten; Mikes Abnahme steht weiter aus.
+Keine offene Nachricht.

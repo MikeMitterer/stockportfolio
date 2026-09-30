@@ -456,3 +456,29 @@ Dateiliste weiterhin zutreffend. `docker/README.md` behandelt den
 unveränderten Containerbetrieb und braucht keine Anpassung. Die
 PersonalSkills-Korrektur liegt getrennt im Skill-Repository und ist lokal in
 dessen `master` integriert; `origin/master` steht noch auf `642e9c0`.
+
+## Technische Prüfung Runde 3
+
+`claude`, 2026-09-30, an Handoff-Commit `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`.
+Geprüft wurde der Diff seit Runde 2 (`6459dca`), also die Korrektur der fünf Hinweise.
+
+| Hinweis aus Runde 2 | Eigener Schritt | Ergebnis |
+|---|---|---|
+| 1 · Verify-Zeilen T-61/T-62 | Diff gelesen | T-61 #6 und T-62 #5 nennen jetzt die vier Paketbefehle aus `AGENTS.md`; T-60 #5 ebenfalls. Kein aktives Ticket nennt mehr `make lint` oder `make typecheck` als Prüfvorgabe |
+| 2 · Lint für `licenseAssets.ts` | ESLint mit JSON-Ausgabe aus `frontend/`, Verweise gesucht | Die Datei liegt jetzt unter `frontend/scripts/`. Der Frontend-Lint erfasst 165 Dateien, darunter `scripts/licenseAssets.ts`, ohne Fehler oder Warnung. `tsconfig.json` schließt `scripts/**/*.ts` ein. Außerhalb der Ticketgeschichte gibt es keinen Verweis mehr auf den alten Pfad |
+| 2 · Build und Quellarchiv | `npm --prefix frontend run build`, Archiv aufgelistet, danach `make clean` | Build mit Exit 0; `dist/stockportfolio-source.tgz` enthält `frontend/scripts/licenseAssets.ts` und beide Manifeste (161 Einträge); der Arbeitsbaum ist danach sauber |
+| 3 · Skill `docker-conventions` | PersonalSkills `d547005` gelesen | Die Tabelle nennt `docker-update` und `build-frontend` nicht mehr; der direkte `build.sh --update`-Aufruf ist beschrieben. Der Commit liegt in PersonalSkills-`master` |
+| 4 · Versionsabzeichen | README gelesen, Shields abgerufen | Die URL mit `filename=frontend%2Fpackage.json` meldet derzeit „frontend/package.json missing“, weil `origin/master` noch das alte Root-`package.json` enthält (`git ls-tree`). Das Abzeichen wird erst nach Merge und Push richtig; das ist erwartbar und kein Befund |
+| 5 · gettext-Meldung | `msgfmt --check-format`, Teststack gestartet und zweiter Start | Der Katalog ist gültig; der zweite Start meldet deutsch „Ein lokaler Teststack ist bereits registriert; …“ mit Exit 2; Stop gibt alle drei Ports frei |
+
+**Mitgelaufen:** `make test` mit 803 Frontend- und 7 API-Tests grün. Beide
+Typprüfungen und der API-Lint enden mit Exit 0.
+Den Docker-Build habe ich nicht selbst ausgeführt; hier gilt Codex' Beleg.
+
+**Anmerkung ohne Befund:** T-60 #5 trägt weiter ✅. Die Zeile nennt jetzt aber
+Befehle, die es bei der Runde-3-Freigabe von T-60 noch nicht gab. Für die aktuelle
+Paketstruktur belegen T-63 Runde 2 und 3 diese Befehle. Die erneute technische
+T-60-Prüfung nach dem Paketumbau steht laut T-60-Nachtrag weiter aus.
+
+**Urteil:** `approved` für `a8c7402`. Mikes menschliche Abschlussentscheidung
+für T-63 steht aus.
