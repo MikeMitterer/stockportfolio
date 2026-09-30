@@ -1399,3 +1399,48 @@ Angewandt habe ich SP-R-04 und SP-R-05: ein Inventar über alle Präfixe
 **Urteil:** `changes_requested` für `f2fafac`. Befund 3 aus Runde 10 und die
 Bereinigung der Altlasten sind wirksam. Die Nachprüfung beschränkt sich auf
 Befund 4.
+
+## Abnahme Mike · Zeitpunkt · 2026-09-30
+
+Mike: „Auch T-63 nehme ich erst ganz am Ende ab“. Die menschliche Prüfung
+folgt damit nach T-61 und T-62. Die technische Nachprüfung von T-63 läuft
+weiter; die gemeinsame Integration von T-60 und T-63 folgt erst nach Mikes
+T-63-Abschlussentscheidung. Dieser Zeitpunkt ergänzt den bisherigen
+Abnahmeabschnitt, ohne frühere Nachträge oder Belege zu ändern.
+
+## Nacharbeit zu Runde 11 · atomarer Zustand · 2026-09-30
+
+Commit `637da2f` schreibt den vollständigen JSON-Zustand zunächst in eine
+temporäre Datei im selben Verzeichnis. `os.link` bindet den fertigen Inhalt
+exklusiv an den endgültigen Namen. Das vor dem Link gemerkte Datei-Inode
+erlaubt im `finally` das Entfernen der eigenen Zustandsdatei auch ohne
+JSON-Lesen. Testdaten werden in einem eigenen `finally` entfernt. Ein
+unlesbarer vorhandener Zustand führt nun zu einer übersetzten CLI-Meldung
+ohne Traceback und wird nicht ungeprüft gelöscht.
+
+- Gezielte Gegenprobe: `json.dump` nach dem Schreiben von `{` angehalten,
+  SIGTERM in diesem Fenster gesendet. Danach gab es weder endgültige oder
+  temporäre Zustandsdatei noch Testdaten; der Prozess endete sofort.
+- Leere bzw. unvollständige vorhandene Zustandsdatei: `--status` endete mit
+  konkreter Fehlermeldung und ohne Traceback. Die Testdatei wurde anschließend
+  entfernt. Eine durch die Sandbox vor der eigentlichen Probe erzeugte
+  Testdatenkopie wurde ebenfalls gezielt entfernt.
+- `make test` mit Homebrew-Bash 5.3 im `PATH`: 806 Frontend- und 8 API-Tests
+  bestanden. Beide Lints, beide Typechecks, Ruff, Python-Syntax und
+  `git diff --check` waren erfolgreich. Der Grund für den Bash-`PATH` steht
+  im Nachtrag zu Runde 10.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) beschreiben bereits Stop und Aufräumen des lokalen
+Testservers; die Implementierung erfüllt diese Zusage nun auch bei
+unterbrochenem Schreiben. `docker/README.md` (**Quick start**,
+**Configuration**, **Data and backups**) beschreibt diesen lokalen Weg
+nicht. Keine Anleitung braucht eine Textänderung. Board- und
+Lessons-Konventionen bleiben unverändert.
+
+## Übergabe an Claude · technische Runde 12 · 2026-09-30
+
+Bitte ausschließlich Befund 4 aus Runde 11 an `637da2f` nachprüfen:
+atomarer Zustand, Aufräumen auch nach Signal während des Schreibens und
+klare Meldung bei unlesbarer vorhandener Datei. Die Gegenproben stehen oben.
+Mikes Abnahme liegt nach T-61/T-62; Merge und Push bleiben bis dahin offen.
