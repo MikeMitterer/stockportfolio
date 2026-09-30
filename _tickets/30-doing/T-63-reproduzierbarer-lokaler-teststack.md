@@ -940,3 +940,88 @@ den Fallback. `docker/README.md` (**Data and backups**, **Configuration**)
 betrifft den Container und hat keinen Aufruf dieses lokalen Skripts;
 inhaltlich bleibt es unverändert. Keine Board- oder Lessons-Konvention
 wurde geändert.
+
+## Technische Prüfung Runde 7
+
+`claude`, 2026-09-30, an Handoff-Commit `bd4faecb64f6fd92db2c2942055a94eed063da17`
+(Branch `t-63-reproduzierbarer-lokaler-teststack`, Diff seit `26b59ed`).
+Geprüft habe ich Mikes Theme-Abnahmepunkt in einem eigenen, abgetrennten
+Worktree. Angewandt habe ich SP-R-04 (Scout Rule) und die projektweite
+StockInfo-Grenze aus `AGENTS.md`.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Code | `scripts/cli_theme.py`, `local_test_stack.py` und `stockinfo-test-server.py` gelesen | Optionaler Import: Nur ein fehlendes `projecttools`-Modul führt zum schlichten Rückfall, andere Importfehler werden weitergereicht. Kein Rechnerpfad im Skript. Fehler, Status und Stop laufen über `print_message` mit Rollen `SUCCESS`, `WARNING` und `DANGER` |
+| Ohne Paket | StockInfo-`.venv` (ohne `projecttools`), `--help` in eine Pipe, falsche Optionskombination | Native Hilfe mit „Beispiele:“ und fünf Zeilen untereinander, Exit 0; schlichte argparse-Fehlermeldung |
+| Mit Paket | Für die Probe nur `PYTHONPATH` auf ProjectTools-`master` `f8cd8ec`, ohne Installation; Pseudo-Terminal über `script`, `MAKE_THEME=ocean`, `TERM=xterm` | Hilfe mit 21 farbigen Zeilen (Gruppen, Optionen, Beschreibungen); Fehler rot mit „✗“, „kein Stack registriert“ gelb |
+| `NO_COLOR` und Pipe | dieselbe Probe mit `NO_COLOR=1` beziehungsweise umgeleiteter Ausgabe | 0 farbige Zeilen |
+| Katalog, Lint | `msgfmt --check-format`, `.mo` neu erzeugt und verglichen, `ruff check`, `py_compile` | Katalog gültig, `.mo` aktuell, Ruff „All checks passed“ |
+| Umfang | `git diff --stat 26b59ed bd4faec -- frontend api` | Frontend und API unverändert; ein erneuter Testlauf ist dafür nicht nötig |
+| StockInfo-Umgebung | `pip show mmit-projecttools` und Import in StockInfos `.venv` | Nicht installiert; StockInfos Umgebung ist unverändert |
+
+**Befund (blockierend):**
+
+1. **Die Anleitungen schreiben eine Installation in StockInfos Python-Umgebung
+   vor und greifen damit StockInfo-T-82 vor.** `README.md` (**Command-line
+   themes**) und `AGENTS.md` (**Bauen und prüfen**) nennen als Weg
+   `../StockInfo/.venv/bin/python -m pip install -e ./.libs/ProjectTools`.
+   Genau diese Frage klärt StockInfos eigenes Ticket
+   `20-ready/T-82-python-paket-fuer-konsumententests-klaeren.md` (Stand
+   `ce69410`, noch nicht aktiviert). Es hält ausdrücklich fest: „Keine
+   vorweggenommene Entscheidung über StockInfos Abhängigkeiten“ und „keine
+   automatische Änderung fremder Projekt-venvs“. `AGENTS.md` sagt: Braucht die
+   App etwas vom Dienst, entsteht ein StockInfo-Ticket, und über die Lösung
+   entscheidet, wer den Dienst kennt. Dazu kommt ein technisches Risiko: Die
+   editierbare Installation bindet StockInfos `.venv` an den Symlink
+   `.libs/ProjectTools` dieses Repositorys. StockInfo deklariert das Paket
+   nicht, und ein Neuaufbau oder Abgleich seiner Umgebung entfernt es wieder
+   still. Mikes Zustimmung laut Übergabe betrifft den lokalen Fast-Forward von
+   ProjectTools-`master`, nicht diesen Installationsweg.
+   **Erwartet, je nach Mikes Entscheidung:**
+   (a) Die Anleitungen beschreiben das Theme als verfügbar, sobald
+   `projecttools` in der ausführenden Umgebung importierbar ist, und kennzeichnen
+   den Installationsweg für StockInfos Umgebung als **noch nicht verfügbar,
+   geklärt in StockInfo-T-82**; der Code bleibt unverändert. Oder
+   (b) Mike entscheidet ausdrücklich, diesen Installationsweg jetzt
+   festzulegen. Dann steht das mit seinem Wortlaut in T-63 und als
+   Konsumentenhinweis in StockInfos T-82, und die Anleitungen nennen die
+   Grenze, dass ein Neuaufbau von StockInfos `.venv` die Installation entfernt.
+
+**Urteil:** `changes_requested` für `bd4faec`. Der Code erfüllt Mikes
+Theme-Abnahmepunkt vollständig, einschließlich Rückfall, `NO_COLOR` und Pipe.
+Die Nachprüfung beschränkt sich auf den Befund zu den Anleitungen.
+
+## Nacharbeit zu Runde 7 · 2026-09-30
+
+Die in der Runde-7-Prüffassung vorgeschlagene editierbare Installation in
+StockInfos `.venv` ist aus `README.md` und `AGENTS.md` entfernt. Sie war
+kein freigegebener Entwicklungsweg: StockInfo-T-82 unter `20-ready/` klärt
+erst, welche Python-Umgebung das Paket für Konsumententests bereitstellen
+soll. Bis dahin bleibt die dokumentierte StockInfo-venv unverändert und die
+CLI zeigt dort die schlichte Hilfe. Der optionale Paketimport und das
+bereits geprüfte Theme-Verhalten bleiben erhalten, wenn das Paket in der
+ausführenden Umgebung importierbar ist. Damit wird keine StockInfo-
+Abhängigkeit vorweggenommen. Die frühere Installationsangabe im
+Abnahme-Nachtrag oben ist durch diese Entscheidung überholt.
+
+**Prüfung:** `git grep -n 'pip install -e ./.libs/ProjectTools' -- README.md
+AGENTS.md` liefert keinen Treffer. `git diff --check` ist sauber. Es wurde
+kein Produktcode geändert; die Runde-7-Proben für Hilfe mit und ohne Paket,
+Ruff sowie 806 Frontend- und 8 API-Tests bleiben auf `bd4faec` bezogen.
+
+**Doku-Abgleich:** `README.md` (**Setup**) und `AGENTS.md` (**Bauen und
+prüfen**) nennen denselben noch offenen Installationsweg aus StockInfo-T-82
+und versprechen für den normalen Aufruf bis dahin nur schlichte Hilfe.
+`docker/README.md` enthält keinen lokalen Testserver-Aufruf und bleibt
+unverändert. StockInfos T-82 ist aus Konsumentensicht benannt, aber sein
+Umfang und seine Lösung wurden hier nicht geändert. Keine Board- oder
+Lessons-Konvention geändert.
+
+## Übergabe an Claude · technische Runde 8 · 2026-09-30
+
+Bitte den einzelnen Doku-Befund aus Runde 7 nachprüfen: Der normale
+StockInfo-Python-Aufruf verändert StockInfos Umgebung nicht und verspricht
+keine bereits installierten Farben. Die installierbare, optional genutzte
+Theme-Bibliothek bleibt auf ProjectTools-`master` lokal verfügbar; über
+StockInfos regulären Paketbezug entscheidet T-82. Mikes T-63-Abnahme und
+die gemeinsame Integration mit T-60 stehen weiterhin aus.

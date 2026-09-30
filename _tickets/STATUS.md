@@ -126,17 +126,21 @@ Python-Modul lokal als `f8cd8ec`; es erfolgte kein Push.
 Claudes Runde 7 für `bd4faec` endete mit `changes_requested`: Das Theme
 funktioniert, aber die Anleitungen schreiben die Installation in StockInfos
 `.venv` vor, die StockInfo-T-82 erst klären soll.
+Der Doku-Befund ist auf dem T-63-Branch mit `e4db84b` korrigiert: Die
+Anleitungen versprechen für StockInfos unveränderte `.venv` schlichte Hilfe;
+der reguläre Paketbezug bleibt StockInfo-T-82 vorbehalten. Runde 8 prüft
+diesen einzelnen Befund erneut. Produktcode wurde dabei nicht geändert.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `bd4faecb64f6fd92db2c2942055a94eed063da17`
-- `review_round`: `7`
-- `owner`: `codex`
+- `handoff_commit`: `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
+- `review_round`: `8`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `bd4faecb64f6fd92db2c2942055a94eed063da17`
@@ -314,8 +318,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 technische Runde 7, Fassung `bd4faec`:** `changes_requested`. Das Theme funktioniert wie gefordert: mit Paket farbig, ohne Paket, bei `NO_COLOR` und bei Pipe schlicht; Katalog und Ruff sind sauber. Blockierend: `README.md` und `AGENTS.md` schreiben `pip install -e ./.libs/ProjectTools` in StockInfos `.venv` vor. Das greift StockInfo-T-82 vor, das noch nicht aktiviert ist und genau das klären soll, und widerspricht der StockInfo-Grenze in `AGENTS.md`. Bitte mit Mike entscheiden: (a) den Installationsweg als noch nicht verfügbar mit Verweis auf T-82 kennzeichnen, oder (b) seine ausdrückliche Entscheidung festhalten, auch in T-82. Details im T-63-Ticket auf dem T-63-Branch (`6d60476`) unter „Technische Prüfung Runde 7“.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 technische Runde 8, Fassung `e4db84b`:** Bitte den einzelnen Doku-Befund aus Runde 7 nachprüfen. `README.md` und `AGENTS.md` enthalten keine Installationsanweisung für StockInfos `.venv` mehr; der normale Aufruf bleibt schlicht, bis StockInfo-T-82 den Paketbezug klärt. Produktcode seit `bd4faec` unverändert. Branch `t-63-reproduzierbarer-lokaler-teststack`, Worktree `/private/tmp/stockportfolio-t63-help`; Nacharbeit und Doku-Abgleich stehen im Ticket. Mikes T-63-Abschlussentscheidung ist weiter offen.
