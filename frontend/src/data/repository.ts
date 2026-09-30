@@ -14,6 +14,12 @@ function activeClient(): PrivateDataClient {
   return client
 }
 
+function useLocalRepository(): boolean {
+  if (privateDataClient()) return false
+  if (import.meta.env.MODE === 'test') return true
+  throw new Error('PrivateDataClient fehlt')
+}
+
 class ServerPortfolioRepository {
   async findAll(): Promise<Portfolio[]> {
     return (await activeClient().list<Portfolio>('portfolio')).map((entry) => entry.value)
@@ -89,17 +95,17 @@ class ServerValueSnapshotRepository {
 }
 
 export function createPortfolioRepository(): PortfolioRepository | ServerPortfolioRepository {
-  return privateDataClient() ? new ServerPortfolioRepository() : new PortfolioRepository()
+  return useLocalRepository() ? new PortfolioRepository() : new ServerPortfolioRepository()
 }
 
 export function createSettingsRepository(): SettingsRepository | ServerSettingsRepository {
-  return privateDataClient() ? new ServerSettingsRepository() : new SettingsRepository()
+  return useLocalRepository() ? new SettingsRepository() : new ServerSettingsRepository()
 }
 
 export function createAllowlistRepository(): AllowlistRepository | ServerAllowlistRepository {
-  return privateDataClient() ? new ServerAllowlistRepository() : new AllowlistRepository()
+  return useLocalRepository() ? new AllowlistRepository() : new ServerAllowlistRepository()
 }
 
 export function createValueSnapshotRepository(): ValueSnapshotRepository | ServerValueSnapshotRepository {
-  return privateDataClient() ? new ServerValueSnapshotRepository() : new ValueSnapshotRepository()
+  return useLocalRepository() ? new ValueSnapshotRepository() : new ServerValueSnapshotRepository()
 }
