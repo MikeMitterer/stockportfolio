@@ -1485,3 +1485,10 @@ Die Board- und Lessons-Konventionen wurden nicht geändert.
 **Runde-12-Übergabe:** Die Nachprüfung von Befund 4 umfasst `637da2f` und
 `18c60f4` sowie diese Lebenszyklusbelege. Mikes T-63-Abnahme bleibt bis
 nach T-61 und T-62 offen.
+
+Der Prüfauftrag für Runde 12 umfasst ausdrücklich den **gesamten Start- und
+Stoppweg** von Einzelserver und Stack: Vorprüfung, Kindstart und Registrierung,
+Signalbehandlung, Zustandsablage, Bereitschaft, normaler Stopp und Aufräumen
+nach Fehlern. Die Tabelle oben ist die Grundlage; Claude soll auch andere
+Abbruchzeitpunkte als Befund 4 prüfen. Diese Erweiterung ersetzt den engeren
+Übergabetext unmittelbar nach Runde 11.
