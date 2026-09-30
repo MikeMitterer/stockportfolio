@@ -56,8 +56,6 @@ export const de = {
     changeTitle: 'Passwort ändern',
     changeHint: 'Für dieses Konto ist vor der weiteren Nutzung ein neues Passwort nötig.',
     changePassword: 'Passwort speichern',
-    pendingTitle: 'Depotzugriff folgt',
-    pendingHint: 'Die gemeinsame Depotablage ist noch nicht verfügbar. Dein Konto ist eingerichtet; Depotdaten werden erst mit der nächsten Ausbaustufe freigegeben.',
     unavailableTitle: 'Anmeldung nicht erreichbar',
     unavailableHint: 'Die StockPortfolio-API antwortet nicht. Prüfe den Dienst und versuche es erneut.',
     retry: 'Erneut versuchen',
@@ -81,6 +79,7 @@ export const de = {
     saveTemporaryPassword: 'Neues Passwort setzen',
     yourAccount: 'Dein Konto',
     deactivate: 'Deaktivieren',
+    reactivate: 'Reaktivieren',
     deactivateConfirm: 'Konto {username} deaktivieren?',
     loadingUsers: 'Konten werden geladen …',
     errors: {
@@ -138,6 +137,7 @@ export const de = {
     title: 'Depotdaten nicht gespeichert',
     conflict: 'Der Stand wurde in einem anderen Browser geändert. Deine letzte Änderung wurde nicht gespeichert. Lade den aktuellen Serverstand neu und wiederhole sie bei Bedarf.',
     unavailable: 'Die Konto-API ist nicht erreichbar oder die Sitzung ist abgelaufen. Änderungen sind derzeit nicht möglich. Lade die Seite neu, sobald die Verbindung wieder besteht.',
+    rejected: 'Die Konto-API hat die Änderung abgelehnt. Sie wurde nicht gespeichert. Lade den Serverstand neu und prüfe deine Berechtigung und Eingabe.',
     reload: 'Serverstand neu laden',
   },
 

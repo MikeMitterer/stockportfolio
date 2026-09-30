@@ -45,6 +45,7 @@ const errorMessage = computed(() => {
 })
 
 async function acceptUser(nextUser: PortfolioUser): Promise<void> {
+  const cameFromLogin = view.value === 'login' || view.value === 'change' || view.value === 'setup'
   user.value = nextUser
   errorCode.value = ''
   legacyData.value = null
@@ -64,6 +65,7 @@ async function acceptUser(nextUser: PortfolioUser): Promise<void> {
         }
       }
       view.value = 'app'
+      if (cameFromLogin) void router.replace({ name: 'dashboard' })
     } catch (error) {
       if (!(error instanceof MissingApiUrlError)) throw error
       view.value = 'missingStockInfo'
@@ -139,9 +141,9 @@ async function submitPassword(): Promise<void> {
 async function logout(): Promise<void> {
   busy.value = true
   try {
+    await clearMarketCaches()
     await client.logout()
     deactivatePrivateData()
-    await clearMarketCaches()
     legacyData.value = null
     user.value = null
     view.value = 'login'

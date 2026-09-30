@@ -2,7 +2,7 @@ import type { HttpBindings } from '@hono/node-server'
 import { Hono, type Context } from 'hono'
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { AccountService, ServiceError, type PublicUser } from '../auth/service.js'
-import type { AccountRepository, LegacyPortfolio, ResourceKind } from '../persistence/repository.js'
+import type { AccountRepository, LegacyPortfolio, ResourceKind, RestoreData } from '../persistence/repository.js'
 
 type ServerContext = Context<{ Bindings: HttpBindings }>
 
@@ -60,7 +60,7 @@ function validateResource(kind: ResourceKind, id: string, value: unknown): void 
 }
 
 function readLegacyPortfolios(value: unknown): LegacyPortfolio[] {
-  if (!Array.isArray(value) || value.length > 1000) throw new ServiceError(400, 'invalid_data')
+  if (!Array.isArray(value) || value.length === 0 || value.length > 1000) throw new ServiceError(400, 'invalid_data')
   const entries = value.map((item) => {
     const source = readObject(item)
     const portfolio = readObject(source.portfolio ?? source)
@@ -248,6 +248,40 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
     const result = repository.importLegacy(user.id, portfolios, settings)
     if (result === 'forbidden') throw new ServiceError(403, 'forbidden')
     if (result === 'imported') throw new ServiceError(409, 'legacy_already_imported')
+    if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
+    return context.json({ ok: true })
+  })
+
+  app.post('/api/data/restore', async (context) => {
+    const user = currentUser(context, service)
+    const request = await body(context)
+    const portfolio = readObject(request.portfolio)
+    const id = readString(portfolio.id)
+    validateResource('portfolio', id, portfolio)
+    const settings = readObject(request.settings)
+    validateResource('settings', 'current', settings)
+    if (settings.activePortfolioId !== id) throw new ServiceError(400, 'invalid_data')
+    const allowlist = readObject(request.allowlist) as Record<string, boolean>
+    validateResource('allowlist', id, allowlist)
+    validateResource('snapshots', id, request.snapshots)
+    const revisions = readObject(request.revisions)
+    const replacedId = request.replacedId === null ? null : readString(request.replacedId)
+    const data: RestoreData = {
+      portfolio,
+      settings,
+      allowlist,
+      snapshots: request.snapshots as unknown[],
+      replacedId,
+      revisions: {
+        portfolio: readRevision(revisions.portfolio),
+        settings: readRevision(revisions.settings),
+        allowlist: readRevision(revisions.allowlist),
+        snapshots: readRevision(revisions.snapshots),
+        replaced: revisions.replaced === null ? null : readRevision(revisions.replaced),
+      },
+    }
+    const result = repository.restoreBackup(user.id, data)
+    if (result === 'not_found') throw new ServiceError(404, 'not_found')
     if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')
     return context.json({ ok: true })
   })

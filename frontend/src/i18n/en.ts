@@ -57,8 +57,6 @@ export const en: MessageSchema = {
     changeTitle: 'Change password',
     changeHint: 'This account needs a new password before you can continue.',
     changePassword: 'Save password',
-    pendingTitle: 'Portfolio access is coming',
-    pendingHint: 'Shared portfolio storage is not available yet. Your account is ready; portfolio data will be enabled in the next stage.',
     unavailableTitle: 'Sign in is unavailable',
     unavailableHint: 'The StockPortfolio API did not respond. Check the service and try again.',
     retry: 'Try again',
@@ -82,6 +80,7 @@ export const en: MessageSchema = {
     saveTemporaryPassword: 'Set new password',
     yourAccount: 'Your account',
     deactivate: 'Deactivate',
+    reactivate: 'Reactivate',
     deactivateConfirm: 'Deactivate account {username}?',
     loadingUsers: 'Loading accounts…',
     errors: {
@@ -139,6 +138,7 @@ export const en: MessageSchema = {
     title: 'Portfolio data not saved',
     conflict: 'The data changed in another browser. Your last change was not saved. Reload the current server data and repeat the change if needed.',
     unavailable: 'The account API is unavailable or your session has expired. Changes are not possible right now. Reload the page when the connection is back.',
+    rejected: 'The account API rejected the change. It was not saved. Reload the server data and check your access and input.',
     reload: 'Reload server data',
   },
 

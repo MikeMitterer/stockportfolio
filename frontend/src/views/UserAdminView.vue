@@ -91,6 +91,19 @@ async function deactivateUser(user: PortfolioUser): Promise<void> {
   }
 }
 
+async function reactivateUser(user: PortfolioUser): Promise<void> {
+  busy.value = true
+  errorCode.value = ''
+  try {
+    await client.reactivateUser(user.id)
+    await loadUsers()
+  } catch (error) {
+    reportError(error)
+  } finally {
+    busy.value = false
+  }
+}
+
 onMounted(() => { void loadUsers() })
 </script>
 
@@ -145,6 +158,7 @@ onMounted(() => { void loadUsers() })
                 {{ t('auth.deactivateConfirm', { username: account.username }) }}
               </NPopconfirm>
             </NSpace>
+            <NButton v-else-if="!account.active" size="small" secondary :disabled="busy" @click="reactivateUser(account)">{{ t('auth.reactivate') }}</NButton>
           </div>
           <form v-if="resetAccountId === account.id" :id="`reset-account-${account.id}`" class="user-admin__reset-form" @submit.prevent="resetPassword(account)">
             <NFormItem :show-feedback="false">

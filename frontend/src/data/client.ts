@@ -1,4 +1,5 @@
 export type ResourceKind = 'portfolio' | 'settings' | 'allowlist' | 'snapshots'
+import type { Backup } from '@/domain/backup'
 
 export interface PrivateResource<T> {
   resourceId: string
@@ -47,7 +48,9 @@ export class PrivateDataClient {
     if (!response.ok) {
       const result = await response.json().catch(() => null) as { error?: string } | null
       const error = new PrivateDataError(response.status, result?.error ?? 'request_failed')
-      if (response.status !== 404) window.dispatchEvent(new CustomEvent(DATA_ERROR_EVENT, { detail: error }))
+      if (response.status !== 404 || method !== 'GET') {
+        window.dispatchEvent(new CustomEvent(DATA_ERROR_EVENT, { detail: error }))
+      }
       throw error
     }
     return response.json() as Promise<T>
@@ -114,6 +117,37 @@ export class PrivateDataClient {
 
   async importLegacy(portfolios: object[], settings: object | null): Promise<void> {
     await this.request('/api/data/legacy-import', 'POST', { portfolios, settings })
+    this.revisions.clear()
+  }
+
+  async restoreBackup(backup: Backup, replacedId: string | null): Promise<void> {
+    const id = backup.portfolio.id
+    const [portfolio, settings, allowlist, snapshots, replaced] = await Promise.all([
+      this.get('portfolio', id),
+      this.get('settings', 'current'),
+      this.get('allowlist', id),
+      this.get('snapshots', id),
+      replacedId && replacedId !== id ? this.get('portfolio', replacedId) : Promise.resolve(null),
+    ])
+    const snapshotValues = backup.valueHistory.map((entry) => ({
+      ...entry,
+      portfolioId: id,
+      key: `${id}::${entry.currency}::${entry.date}`,
+    }))
+    await this.request('/api/data/restore', 'POST', {
+      portfolio: backup.portfolio,
+      settings: { ...backup.settings, activePortfolioId: id },
+      allowlist: backup.allowlist,
+      snapshots: snapshotValues,
+      replacedId,
+      revisions: {
+        portfolio: portfolio?.revision ?? 0,
+        settings: settings?.revision ?? 0,
+        allowlist: allowlist?.revision ?? 0,
+        snapshots: snapshots?.revision ?? 0,
+        replaced: replaced?.revision ?? null,
+      },
+    })
     this.revisions.clear()
   }
 }

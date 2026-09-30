@@ -17,12 +17,13 @@ import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useValueHistoryStore } from '@/stores/valueHistory'
+import { privateDataClient } from '@/data/client'
 
 /**
  * Backup und Wiederherstellung.
  *
- * Alles liegt im Browser — ein gelöschter Website-Speicher oder ein neues
- * Gerät heißt sonst: alles weg. Diese Datei ist das einzige Backup.
+ * Bei angemeldeten Konten liegt der maßgebliche Stand auf dem Server. Der
+ * Dateiexport bleibt als selbst verwahrte Sicherung erhalten.
  *
  * Das Einspielen läuft absichtlich in zwei Schritten: erst Datei lesen und
  * zeigen, was drinsteht, dann bestätigen. Ein Dateidialog, der beim Loslassen
@@ -150,6 +151,12 @@ async function applyPending(): Promise<void> {
   if (!backup) return
 
   try {
+    const dataClient = privateDataClient()
+    if (dataClient) {
+      await dataClient.restoreBackup(backup, portfolioStore.portfolio?.id ?? null)
+      window.location.reload()
+      return
+    }
     await portfolioStore.replacePortfolio(backup.portfolio)
     await settingsStore.replaceAll({
       ...backup.settings,

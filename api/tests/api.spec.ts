@@ -121,6 +121,8 @@ describe('eigene Konto-API', () => {
     expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: changedCookie } })).status).toBe(200)
     expect((await app.request(`${origin}/api/admin/users/${guestId}/deactivate`, jsonRequest({}, adminCookie))).status).toBe(200)
     expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: changedCookie } })).status).toBe(401)
+    expect((await app.request(`${origin}/api/admin/users/${guestId}/reactivate`, jsonRequest({}, adminCookie))).status).toBe(200)
+    expect((await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'guest', password: 'Changed-password-123' }))).status).toBe(200)
     expect((await app.request(`${origin}/api/auth/logout`, jsonRequest({}, adminCookie))).status).toBe(200)
     expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: adminCookie } })).status).toBe(401)
     repository.close()

@@ -74,4 +74,55 @@ describe('private Depotdaten', () => {
     expect((await app.request(`${origin}/api/data/portfolio/legacy-one`, request('GET', secondCookie))).status).toBe(404)
     repository.close()
   })
+
+  it('trennt Einstellungen, Instrumentauswahl und Tageswerte vom zweiten Konto', async () => {
+    const { app, repository, setupCookie, secondCookie } = await fixture()
+    const id = 'private-portfolio'
+    await app.request(`${origin}/api/data/portfolio/${id}`, request('PUT', setupCookie, {
+      revision: 0, value: { id, name: 'Privat', positions: [] },
+    }))
+    for (const [kind, resourceId, value] of [
+      ['settings', 'current', { activePortfolioId: id }],
+      ['allowlist', id, { 'isin:private': false }],
+      ['snapshots', id, [{ date: '2026-09-30', currency: 'EUR', total: 100 }]],
+    ] as const) {
+      expect((await app.request(`${origin}/api/data/${kind}/${resourceId}`, request('PUT', setupCookie, { revision: 0, value }))).status).toBe(200)
+      expect((await app.request(`${origin}/api/data/${kind}/${resourceId}`, request('GET', secondCookie))).status).toBe(404)
+      expect((await app.request(`${origin}/api/data/${kind}/${resourceId}`, request('PUT', secondCookie, { revision: 0, value }))).status).not.toBe(200)
+    }
+    expect((await app.request(`${origin}/api/data/allowlist/${id}`, request('DELETE', secondCookie, { revision: 1 }))).status).toBe(404)
+    repository.close()
+  })
+
+  it('spielt ein Backup atomar ein und schützt dabei Depot und Einstellungen vor veralteten Ständen', async () => {
+    const { app, repository, setupCookie, secondCookie } = await fixture()
+    const oldId = 'old-portfolio'
+    await app.request(`${origin}/api/data/portfolio/${oldId}`, request('PUT', setupCookie, {
+      revision: 0, value: { id: oldId, name: 'Alt', positions: [] },
+    }))
+    await app.request(`${origin}/api/data/settings/current`, request('PUT', setupCookie, {
+      revision: 0, value: { activePortfolioId: oldId },
+    }))
+    const backup = {
+      portfolio: { id: 'restored-portfolio', name: 'Neu', positions: [] },
+      settings: { activePortfolioId: 'restored-portfolio' },
+      allowlist: { 'isin:one': false },
+      snapshots: [{ date: '2026-09-30', currency: 'EUR', total: 123 }],
+      replacedId: oldId,
+      revisions: { portfolio: 0, settings: 1, allowlist: 0, snapshots: 0, replaced: 1 },
+    }
+
+    expect((await app.request(`${origin}/api/data/restore`, request('POST', secondCookie, backup))).status).toBe(404)
+    expect((await app.request(`${origin}/api/data/restore`, request('POST', setupCookie, {
+      ...backup, revisions: { ...backup.revisions, settings: 0 },
+    }))).status).toBe(409)
+    expect((await (await app.request(`${origin}/api/data/portfolio/${oldId}`, request('GET', setupCookie))).json()).value.name).toBe('Alt')
+
+    expect((await app.request(`${origin}/api/data/restore`, request('POST', setupCookie, backup))).status).toBe(200)
+    expect((await app.request(`${origin}/api/data/portfolio/${oldId}`, request('GET', setupCookie))).status).toBe(404)
+    expect((await (await app.request(`${origin}/api/data/portfolio/restored-portfolio`, request('GET', setupCookie))).json()).value.name).toBe('Neu')
+    expect((await (await app.request(`${origin}/api/data/allowlist/restored-portfolio`, request('GET', setupCookie))).json()).value['isin:one']).toBe(false)
+    expect((await (await app.request(`${origin}/api/data/settings/current`, request('GET', setupCookie))).json()).value.activePortfolioId).toBe('restored-portfolio')
+    repository.close()
+  })
 })

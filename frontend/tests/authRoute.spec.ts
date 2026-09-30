@@ -3,11 +3,13 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import AuthRoot from '@/auth/AuthRoot.vue'
+import { deactivatePrivateData } from '@/data/client'
 
-afterEach(() => { vi.unstubAllGlobals() })
+afterEach(() => { deactivatePrivateData(); delete window.__STOCKPORTFOLIO_CONFIG__; vi.unstubAllGlobals() })
 
 describe('Adresse nach der Anmeldung', () => {
-  it('lässt bei einem Nutzer ohne Depotzugriff keinen alten Dashboard-Pfad stehen', async () => {
+  it('öffnet nach der Passwortänderung eines Nutzers das Dashboard statt des alten Pfads', async () => {
+    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: 'https://stockinfo.example' }
     const emptyPage = { template: '<div />' }
     const router = createRouter({
       history: createMemoryHistory(),
@@ -24,15 +26,15 @@ describe('Adresse nach der Anmeldung', () => {
       if (path === '/api/setup/status') return Response.json({ required: false })
       if (path === '/api/auth/session') return Response.json({ error: 'unauthorized' }, { status: 401 })
       if (path === '/api/auth/login') {
-        return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: true } })
+        return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: true, isSetupAccount: false, legacyImported: false } })
       }
       if (path === '/api/auth/change-password') {
-        return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: false } })
+        return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: false, isSetupAccount: false, legacyImported: false } })
       }
       throw new Error(`Unexpected request: ${path}`)
     }))
 
-    const wrapper = mount(AuthRoot, { global: { plugins: [router] } })
+    const wrapper = mount(AuthRoot, { global: { plugins: [router], stubs: { AuthenticatedApp: true } } })
     await flushPromises()
     expect(wrapper.text()).not.toContain('Tolerance-Band Rebalancing')
     const [usernameInput, passwordInput] = wrapper.findAll('input')
@@ -45,7 +47,7 @@ describe('Adresse nach der Anmeldung', () => {
     await wrapper.get('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.get('h2').text()).toMatch(/Depotzugriff folgt|Portfolio access is coming/)
+    expect(wrapper.find('authenticated-app-stub').exists()).toBe(true)
     expect(router.currentRoute.value.path).toBe('/')
     wrapper.unmount()
   })

@@ -51,9 +51,13 @@ function onDataFailure(event: Event): void {
 window.addEventListener(DATA_ERROR_EVENT, onDataFailure)
 onUnmounted(() => window.removeEventListener(DATA_ERROR_EVENT, onDataFailure))
 
-const dataFailureMessage = computed(() => dataFailure.value?.status === 409
-  ? t('privateData.conflict')
-  : t('privateData.unavailable'))
+const dataFailureMessage = computed(() => {
+  if (dataFailure.value?.status === 409) return t('privateData.conflict')
+  if (dataFailure.value?.status === 0 || dataFailure.value?.status === 401 || (dataFailure.value?.status ?? 0) >= 500) {
+    return t('privateData.unavailable')
+  }
+  return t('privateData.rejected')
+})
 
 function reloadServerData(): void {
   window.location.reload()
@@ -228,7 +232,7 @@ async function refresh(): Promise<void> {
               <RouterView v-else />
 
               <template #statusbar>
-                <AppStatusBar />
+                <AppStatusBar v-if="!dataFailure" />
               </template>
             </UxAppShell>
           </UxNotificationProvider>
