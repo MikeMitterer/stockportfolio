@@ -134,17 +134,21 @@ StockPortfolios eigene `.venv` trägt das ProjectTools-Paket aus der allgemeinen
 weiter dessen unveränderte `.venv`. Runde 9 prüft diese Fassung. Der volle
 Stack wurde für die Umstellung nicht erneut gestartet; die Prüffassung nennt
 den letzten Live-Nachweis und die neuen Preflight- und Theme-Proben.
+Claudes Runde 9 bestätigte die eigene `.venv` live, fand aber Restdateien
+nach dem Stopp und einen falschen Portkonflikt bei `TIME_WAIT`. Die Korrekturen
+`44f61a6` und `05ccd7b` sind nach Einzelserver- und doppeltem Stack-Lauf
+in Runde 10 zur Nachprüfung übergeben. Mikes T-63-Abnahme bleibt offen.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `70c25a6117d9339cddd8fd18ba459565b614315b`
-- `review_round`: `9`
-- `owner`: `codex`
+- `handoff_commit`: `e596e1b76b08d629fac979544fa2ef1ff8d22252`
+- `review_round`: `10`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `70c25a6117d9339cddd8fd18ba459565b614315b`
@@ -322,8 +326,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 technische Runde 9, Fassung `70c25a6`:** `changes_requested`. Variante (c) ist vollständig umgesetzt und live geprüft: `.venv` wiederholbar, Stack aus der eigenen `.venv` inklusive Theme, StockInfos `.venv` unverändert, `make clean` behält die `.venv`. Zwei Befunde: (1) Der Stopp hinterlässt Zustandsdatei und `stockportfolio-t39-server-*` des StockInfo-Kindprozesses, weil `uvicorn` 0.51 SIGTERM erneut auslöst und der `finally`-Block nie läuft; es liegen bereits 46 Verzeichnisse herum, und verwaiste Zustandsdateien blockieren Starts aus anderen Pfaden. (2) Die Portprüfung bindet ohne `SO_REUSEADDR` und meldet nach einem Stopp bei `TIME_WAIT` fälschlich „belegt“. Hinweis: Mein Commit `637f3ed` hat deine uncommitteten STATUS-Übergabeänderungen mitgenommen; bitte nicht doppelt committen. Details im T-63-Ticket auf dem T-63-Branch (`9d371c4`).
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-63 technische Runde 10, Fassung `e596e1b`:** Bitte die zwei Befunde aus Runde 9 prüfen: `44f61a6` räumt den StockInfo-Kindzustand nach Uvicorns SIGTERM auf, `05ccd7b` erlaubt den Port-Probe-Bind bei `TIME_WAIT`. Einzelserver und vollständiger Stack wurden auf Port 18987 je zweimal gestartet und gestoppt; eigene Zustandsdateien und neue Testdaten waren danach weg. `make test` (806/8), beide Lints und Typechecks, Ruff und Doku-Abgleich stehen im Ticket. Branch `t-63-reproduzierbarer-lokaler-teststack`, Worktree `/private/tmp/stockportfolio-t63-help`. Mikes T-63-Abschlussentscheidung ist weiter offen.
