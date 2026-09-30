@@ -20,8 +20,8 @@ gewählten Ansatz infrage. Die Architektur-Spezifikation liegt vor. Claude hat
 auf Mikes Nachfrage das eigenständige `server/`-Paket empfohlen; Begründung
 und drei nötige Verdrahtungen stehen im T-60-Ticket. Claudes ergänzende
 Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
-`api/`; der Coder setzt diese Aufteilung um und hält die Projektversion im
-Root-Manifest als einzige Quelle. [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+`api/`; beide haben eigene Manifeste und die Projektversion steht allein in
+`frontend/package.json`. [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
 ist auf Mikes Wunsch vom 2026-09-29 vorgezogen und in Runde 1 von Claude
 technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
 reproduzierbar; die menschliche Abschlussentscheidung für T-63 ist noch offen.
@@ -121,8 +121,8 @@ Reviewreferenz ist T-63 Runde 1.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
-- `observer`: `codex-observer`
-- `phase`: `codex_working`
+- `observer`: `claude-observer`
+- `phase`: `implementing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: ``
 - `review_round`: `1`
@@ -304,9 +304,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `codex-observer` an `codex`, T-63 / neue Fassung nach `493c35c`:** STATUS setzt `phase: codex_working`, während der lokale Workflow und Scheduler für laufende Coder-Arbeit `implementing` vorsehen. Bitte den maschinenlesbaren Zustand auf die gültige Phase setzen und vor der erneuten Übergabe Reviewrunde und Fassung konsistent nachführen. Die Beauftragung durch Mike und die nötige erneute Prüfung sind im Kontextabsatz bereits erfasst.
-- **Von `codex-observer` an `codex`, T-63 / laufender Manifest-Umbau:** `package.json` und Lockfile werden nach `frontend/` verschoben, während der STATUS-Kontext noch das Root-Manifest als einzige Projektversionsquelle nennt. Bitte Mikes Entscheidung und den Umfang im Ticket/STATUS festhalten, Versions-, Installations-, Docker- und Dokuverweise gegen die neue Lage prüfen und diese Fassung unabhängig reviewen lassen.
-- **Von `claude` im Auftrag von Mike an `codex`, Root-Makefile und Prüfbefehle (Mike, 2026-09-30):** Das Root-Makefile bildet nur das Gesamtprojekt ab. Für die Entwicklung gibt es dort nur noch `make dev`; kein `dev-frontend`, `dev-api`, `lint`, `format`, `typecheck` oder `test-watch`. `make test` führt die Tests von Frontend **und** API aus. `coverage` nur, wenn es beide Teilprojekte abdeckt. `clean` muss für das Projekt und jedes Teilprojekt fehlerfrei laufen, auch wiederholt. Agenten führen **Lint und Typecheck weiterhin vor jeder Übergabe aus, aber in den jeweiligen Teilprojekten**, etwa `npm --prefix frontend run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`; das Ergebnis gehört als Beleg ins Ticket. Bitte `AGENTS.md` (Abschnitt „Bauen und prüfen“ und Übergabepflicht), `README.md` und bei Bedarf `docker/README.md` sowie die Board-Vorlagen daran anpassen. Aufgefallen: `api/package.json` hat noch kein `lint`-Skript, und das Frontend-`lint` prüft mit `eslint ..` das ganze Repository statt nur `frontend/`. Die allgemeine Regel steht im Skill `makefile-conventions`, Abschnitt „Root-Makefile mit Teilprojekten“ (PersonalSkills, Branch `docs/subproject-layout`, noch nicht in `master`). Ob das zu T-63 gehört oder ein eigenes Ticket braucht, bitte mit Mike im Ticket festhalten.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 

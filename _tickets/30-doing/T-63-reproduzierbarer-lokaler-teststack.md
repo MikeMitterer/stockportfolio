@@ -300,3 +300,46 @@ Die Browser-Fixture-Anleitung verwendet `--run` und relative Pfade.
 unveränderten Containerbetrieb richtig.
 Der Skill `task-verification-workflow` braucht keine Anpassung:
 Board-Verfahren und Ticketformat sind unverändert.
+
+## Nachtrag 2026-09-30 · Paketprüfungen und Makefile-Zuschnitt
+
+Mike hat über Claude präzisiert, dass das Root-Makefile nur gemeinsame
+Abläufe enthält. Diese Präzisierung gehört zum laufenden T-63-Auftrag,
+weil sie denselben lokalen Entwicklungs- und Prüfweg betrifft; ein neues
+Ticket würde denselben Umbau künstlich trennen. Unter „Entwicklung“ steht
+allein `make dev`. `make test` prüft beide Pakete, und `make clean` ruft
+deren eigene `clean`-Skripte auf und räumt danach den Root auf. Einzelne
+Lint- und Typprüfungen laufen direkt über npm in `frontend/` und `api/`.
+
+Frontend und API haben nun je eine eigene ESLint-Konfiguration und ein
+`lint`-Skript. Das Frontend durchsucht nur `frontend/`; die API nur `api/`.
+Beide Pakete bleiben im selben Repository, haben ein gemeinsames Image und
+eine gemeinsame Version. Der Projektstruktur-Abschnitt des
+`code-standards`-Skills auf dem PersonalSkills-Branch `docs/subproject-layout`
+sieht ohne eigenen Lebenszyklus keine zusätzlichen
+Teilprojekt-Makefiles vor. Die npm-Skripte decken die Einzelabläufe ab.
+
+**Nachweise dieser Fassung:** `make test` bestand mit 803 Frontend- und 7
+API-Tests. `npm --prefix frontend run lint -- --no-cache`,
+`npm --prefix api run lint -- --no-cache` und beide `typecheck`-Skripte
+bestanden. `make clean` lief zweimal hintereinander fehlerfrei; erzeugte
+Dateien in Root, Frontend und API waren danach nicht mehr vorhanden. Eine
+Kopie von Makefile und Paketmanifesten ohne `node_modules` bestand `make clean`
+ebenfalls.
+`make help` zeigte nur `dev` unter „Entwicklung“, `make version` las 0.5.0
+aus `frontend/package.json`, und `git diff --check` war grün. Der vollständige
+Docker-Build mit frischen `npm ci`-Schritten für Frontend und API bestand.
+Die neue API-Lint-Konfiguration ist im Quellarchiv gelistet.
+
+**Doku-Abgleich:** `AGENTS.md` („Bauen und prüfen“) nennt beide Lint- und
+Typprüfungen als Übergabepflicht. `README.md` („Commands“) erklärt den
+Root-Zuschnitt und die Paketbefehle. `SOURCE.md` verweist bereits auf die
+Dateiliste in `frontend/package.json`; diese enthält nun beide
+Lint-Konfigurationen. Die T-60-Spezifikation („Aufbau“, „Prüfschritte“) und
+der Umsetzungsplan („Serverkern“, „Betrieb“, „Übergabe“) nennen jetzt
+Frontend-Manifest, Paketprüfungen und `make dev` als Abnahmepfad.
+`docker/README.md` enthält keine Entwicklerbefehle;
+Containerstart und -betrieb sind von der Trennung der Lintläufe nicht
+betroffen. Board-Vorlagen enthalten keine Make-Aufrufe und brauchen keine
+Änderung. `task-verification-workflow` beschreibt weiterhin den gültigen
+Übergabeweg ohne neue Board-Konvention.

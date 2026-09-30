@@ -536,6 +536,8 @@ Entscheidung in der Architekturberatung für das Root-Manifest überholt.
 Versionierungsziele, Docker-Build, Quellarchiv und Entwickleranleitungen
 sind entsprechend angepasst. `make dev` startet beide Server gemeinsam;
 Mike nimmt T-60 über diesen Weg ab.
+Frontend und API prüfen Lint und Typen jetzt über ihre eigenen npm-Skripte;
+das Root-Makefile bietet nur gemeinsame Abläufe an.
 
 Die technische Freigabe der Runde 3 bezieht sich auf den damaligen Commit
 und deckt diesen Nachtrag nicht ab. Die erneute technische Prüfung des

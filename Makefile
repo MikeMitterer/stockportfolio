@@ -136,18 +136,20 @@ dev: ## Vite und Konto-API gemeinsam starten (Ports 5175/8080)
 	@command -v tmux >/dev/null || { echo "tmux fehlt; tmux installieren." >&2; exit 1; }
 	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -N -f Procfile.dev
 
+##@ Prüfen
+
 .PHONY: test
-test: ## Vitest — einmalig
+test: ## Frontend- und API-Tests einmalig ausführen
 	@npm run test --prefix frontend
 	@npm run test --prefix api
 
+##@ Wartung
+
 .PHONY: clean
 clean: ## Build-, Test- und Cache-Dateien in Root, Frontend und API löschen
-	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo \
-		frontend/dist frontend/coverage frontend/.vite frontend/.eslintcache frontend/tsconfig.tsbuildinfo \
-		frontend/node_modules/.vite frontend/node_modules/.vite-temp \
-		api/dist api/coverage api/.vite api/.eslintcache api/tsconfig.tsbuildinfo \
-		api/node_modules/.vite api/node_modules/.vite-temp
+	@npm --prefix frontend run clean
+	@npm --prefix api run clean
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo
 	@echo "$(GREEN)✓$(RESET) aufgeräumt"
 
 # ─── Docker ──────────────────────────────────────────────────────────────────

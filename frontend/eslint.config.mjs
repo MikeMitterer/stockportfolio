@@ -1,11 +1,8 @@
-import { createRequire } from 'node:module'
-
-const require = createRequire(new URL('./frontend/package.json', import.meta.url))
-const js = require('@eslint/js')
-const vue = require('eslint-plugin-vue')
-const tsPlugin = require('@typescript-eslint/eslint-plugin')
-const tsParser = require('@typescript-eslint/parser')
-const vueParser = require('vue-eslint-parser')
+import js from '@eslint/js'
+import vue from 'eslint-plugin-vue'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import vueParser from 'vue-eslint-parser'
 
 /**
  * Browser- und Test-Globals.
@@ -38,9 +35,9 @@ const browserGlobals = {
 
 export default [
   {
-    // frontend/public/ wird unverändert ausgeliefert und nicht übersetzt — config.js
+    // public/ wird unverändert ausgeliefert und nicht übersetzt — config.js
     // ist bewusst eine schlichte Browser-Datei ohne Modul-Kontext.
-    ignores: ['dist/**', 'api/dist/**', 'node_modules/**', 'frontend/node_modules/**', 'api/node_modules/**', '.vite/**', 'coverage/**', '**/public/**'],
+    ignores: ['dist/**', 'node_modules/**', '.vite/**', 'coverage/**', 'public/**'],
   },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
@@ -89,7 +86,7 @@ export default [
      * `allowlist` deckt ab, was keine Sprache hat: Satzzeichen, Einheiten,
      * Währungszeichen.
      */
-    files: ['frontend/src/**/*.vue'],
+    files: ['src/**/*.vue'],
     rules: {
       'vue/no-bare-strings-in-template': [
         'error',

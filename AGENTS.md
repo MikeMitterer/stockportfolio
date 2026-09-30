@@ -195,12 +195,12 @@ make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
-`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Für
-Einzelpaket-Befehle npm direkt mit `--prefix frontend` beziehungsweise
-`--prefix api` verwenden. Vor einer Übergabe laufen mindestens `make test`,
-`npm run lint --prefix frontend` sowie die Typprüfungen beider Pakete
-(`npm run typecheck --prefix frontend` und `npm run typecheck --prefix api`);
-das Ergebnis gehört als Beleg ins Ticket.
+`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
+Root-Makefile bildet nur Abläufe des Gesamtprojekts ab; unter Entwicklung steht
+allein `make dev`. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
+Vor einer Übergabe laufen mindestens `make test`, `npm --prefix frontend run lint`,
+`npm --prefix api run lint`, `npm --prefix frontend run typecheck` und
+`npm --prefix api run typecheck`. Das Ergebnis gehört als Beleg ins Ticket.
 
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit

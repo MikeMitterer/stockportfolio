@@ -11,7 +11,7 @@ Auftrag: `_tickets/30-doing/T-60-stockportfolio-server-und-benutzerkonten.md`
   `npm ci --prefix api` für die lokale Einrichtung und den Container nutzen.
   Servertests bleiben unter `api/tests/`; die Root-Prüfbefehle rufen sie auf.
 - Bestehende Vue-Quellen, Tests, öffentliche Dateien und Vite-Konfiguration
-  nach `frontend/` verschieben. Das Root-`package.json` bleibt die einzige
+  nach `frontend/` verschieben. `frontend/package.json` ist die einzige
   Projektversionsquelle und trägt die Frontend-Abhängigkeiten.
 - Den Container von `serve` auf diesen Server umstellen; statische Dateien,
   `/api` und `/healthz` auf Port 8080 bereitstellen.
@@ -41,12 +41,12 @@ Auftrag: `_tickets/30-doing/T-60-stockportfolio-server-und-benutzerkonten.md`
 
 - Docker-Build, Entrypoint, Beispielkonfiguration, README, Docker-README,
   Unraid-Anleitung und zentrale Vorlage mit dem neuen Betrieb abgleichen.
-- Isolierten Testcontainer auf `127.0.0.1:18080` mit getrenntem Datenverzeichnis
-  starten und Startbefehl sowie Grenzen im Ticket festhalten.
+- Mikes Abnahmepfad `make dev` vorbereiten und Startbefehl sowie Grenzen
+  im Ticket festhalten; den konkreten Datenaufbau bestimmt Mike.
 
 ## 6. Übergabe
 
-- `make test`, `make lint`, `make typecheck`, Builds, Browserprüfung und
+- `make test`, Lint und Typprüfung per npm in beiden Paketen, Builds, Browserprüfung und
   englisches Bezeichnerinventar ausführen. Verify-Matrix und Doku-Abgleich
   anhand der tatsächlichen Nachweise ausfüllen.
 - Produktstand committen, Handoff an `claude` mit Fassung, Umfang und offenen

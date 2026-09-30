@@ -20,8 +20,8 @@ T-60 behauptet noch keine Trennung oder Synchronisation dieser lokalen Daten.
   Laufzeitpakete des Servers. Serverquellen, Drizzle-Migrationen und Tests
   liegen vollständig unter `api/`. Der Container installiert daraus nur
   Produktionsabhängigkeiten. Das bestehende Frontend zieht mit Quellen,
-  Tests und Vite-Konfiguration nach `frontend/`; sein Root-`package.json`
-  bleibt zugleich die einzige Quelle der Projektversion.
+  Tests und Vite-Konfiguration nach `frontend/`; `frontend/package.json`
+  ist die einzige Quelle der Projektversion.
 - Node 22 betreibt den Server im bestehenden Container. Er bedient `/api/*`,
   `/healthz`, statische Dateien und die Weiterleitung von `/admin/users` nach
   `/#/admin/users`. Vite bleibt Frontend-Build und Dev-Server; in der lokalen
@@ -114,10 +114,12 @@ und bei 390 px Breite. Ein versteckter Link ersetzt keine API-Prüfung.
 2. API-Gegenproben mit zwei synthetischen Konten: 401/403, fremder Origin,
    fehlendes JSON, letztes aktives Admin-Konto, direkte Admin-URL.
 3. Frontendtests für Auth-Gate und Admin-Aktionen; kein echter StockInfo-Aufruf.
-4. `make test`, `make lint`, `make typecheck`, Frontend- und Container-Build.
+4. `make test`, Lint und Typprüfung per npm in Frontend und API,
+   Frontend- und Container-Build.
    Container mit demselben Volume neu erstellen und Kontoerhalt belegen.
-5. Browserdurchlauf bei 390 und 1440 px in DE/EN. Eine getrennte Testinstanz
-   auf `127.0.0.1:18080` nutzt leere Daten und synthetische Passwörter.
+5. Browserdurchlauf bei 390 und 1440 px in DE/EN. Mikes Abnahme nutzt
+   `make dev` mit Vite auf 5175 und Konto-API auf 8080. Den konkreten
+   Datenaufbau für die Abnahme bestimmt Mike.
 6. README, Docker-README, Unraid-Anleitung und zentrale Vorlage auf Setup,
    Cookies, Volume und die T-61/T-62-Grenze abgleichen. Bezeichnerinventar
    für angefasste TypeScript/Vue/Bash-Dateien durchführen.

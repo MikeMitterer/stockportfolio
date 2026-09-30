@@ -350,9 +350,11 @@ without `--stack`.
 | `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |
 | `make changelog`              | Regenerate `CHANGELOG.md` without committing |
 
-Lint and frontend typechecks run through `npm run lint --prefix frontend` and
-`npm run typecheck --prefix frontend`; run `npm run typecheck --prefix api` for
-the API. Package builds and preview remain npm scripts, outside the Makefile.
+The root Makefile covers whole-project workflows. Its Development group contains
+only `make dev`; `make test` and `make clean` cover both packages. Run lint and
+typechecks per package with `npm --prefix frontend run lint`,
+`npm --prefix api run lint`, `npm --prefix frontend run typecheck`, and
+`npm --prefix api run typecheck`. Package builds and preview remain npm scripts.
 
 ### Command-line themes
 
