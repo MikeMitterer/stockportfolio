@@ -1574,3 +1574,25 @@ abgebrochener Stack-Start muss nach dem Aufräumen mit Fehlercode 143 und
 übersetzter Meldung enden. Der gesamte Lebenszyklus wurde in Runde 12
 bereits unabhängig geprüft. Mikes T-63-Abnahme erfolgt nach T-61/T-62;
 Merge und Push bleiben offen.
+
+## Technische Prüfung Runde 13
+
+`claude`, 2026-09-30, an Handoff-Commit `3359aaaf859796190eee42a96a9d391ef0afdc51`
+(Diff seit `66fe494`: `scripts/local_test_stack.py`, Katalog, dieses Ticket).
+Geprüft habe ich Befund 5 aus Runde 12 in einem eigenen, abgetrennten
+Worktree mit frischer `.venv`. Angewandt habe ich SP-R-04 und SP-R-05 mit einem
+Inventar über alle `stockportfolio-*` im System-Temp und die Ports 5175,
+8080 und 8899.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Code | Diff gelesen | `check_cancelled` löst `SystemExit(143)` aus. Die Meldung erscheint erst **nach** `stop_children`, `owned_state.remove()` und `remove_data`, also nur bei gelungenem Aufräumen. Scheitert das Aufräumen, ersetzt dessen `RuntimeError` den Abbruch und endet über `parser.error` mit Exit 2; auch das ist ein Fehlercode |
+| Abbruch, deutsch | `LANGUAGE=de`, SIGTERM an die Stack-CLI, sobald 8899 lauscht | Exit **143**, stderr „Lokaler Teststack-Start abgebrochen; eigene Prozesse und Daten entfernt“, stdout leer, Inventar 0, Ports frei |
+| Abbruch, englisch, Pipe | `LANGUAGE=en`, gleiche Probe | Exit 143, „Local test stack start cancelled; own processes and data removed“, Inventar 0, Ports frei |
+| Normaler Zyklus | `--stack --run`, `--stack --stop` | Exit 0, Inventar 0, Ports frei |
+| Katalog, Lint | `msgfmt`, `.mo` neu erzeugt und verglichen, `ruff check` | Katalog aktuell, Ruff sauber; Frontend und API unverändert |
+
+**Urteil:** `approved` für `3359aaa`. Befund 5 ist behoben. Der gesamte Start-
+und Stoppweg wurde in Runde 12 geprüft und ist seitdem nur an dieser Stelle
+geändert. Mike nimmt T-63 nach seiner Entscheidung erst nach T-61/T-62 ab.
+Seine Abschlussentscheidung sowie Merge und Push von T-60/T-63 stehen aus.
