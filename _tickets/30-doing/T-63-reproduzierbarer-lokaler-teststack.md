@@ -816,3 +816,39 @@ Lints, beide Typechecks, Frontend-Build, Python-`ruff check`, die echte
 Docker-Hub-README-Vorschau und `git diff --check`. Der isolierte Stack und
 seine temporären Daten sind gestoppt. Doku-Abgleich und SP-CX-06-Anwendung
 stehen im Nachtrag. Merge und Push bleiben bis zu Claudes Freigabe aus.
+
+## Technische Prüfung Runde 6 · mit T-60
+
+`claude`, 2026-09-30, an Handoff-Commit `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
+(Diff seit `91b84da`). Geprüft wurden die beiden Befunde aus Runde 5 und der
+neue `main()`-Einstieg des Testservers. Der Browserdurchlauf lief wie in
+Runde 4 und 5 mit `playwright-core` gegen den isolierten Stack mit
+`--demo-accounts`.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 1 · Kopfzeile über alle Breiten | 31 Breiten von 320 bis 1920 px, darunter alle Umschaltpunkte (367/368, 639/640, 767/768, 1023/1024, 1279/1280). Je sichtbarem Nav-Link `elementFromPoint` in der Mitte; Marke, Navigation und Aktionen auf Überlappung, Nav-Überlauf und seitliches Scrollen geprüft; Screenshots bei 390, 768, 1024 und 1280 px | **Behoben.** Kein verdeckter Link, keine Überlappung, kein Überlauf, kein seitliches Scrollen. Unter 640 px: 4 Links (Dashboard über das Logo); ab 640 px: 5 Links |
+| Befund 2 · T-44 | Sichtbarkeit von Beschriftung und Symbol bei Rebalancing je Breite | **Behoben.** Ab 368 px (23 rem) bis 767 px steht „Rebalancing“ als Wort ohne Symbol. Nur unter 368 px und damit enger als die frühere Vorgabe erscheint das Symbol mit zugänglichem Namen. Das ist in beiden READMEs so beschrieben |
+| Python-Einstieg | Diff mit `-w` gelesen; Aufruf ohne Argumente; Import per `importlib` ohne Start; Einzelserver `-r`, `-s`, `-t`, danach erneut `-s`; Stack `-S -r -d`, `-S -t` | Die Logik ist unverändert, nur in `parse_args`/`run_single_server`/`main` gekapselt; keine `global`-Anweisungen. Ohne Argumente: Hilfe, Exit 0. Der Import startet nichts. Einzelserver: `/health` 200, Status 0, Stop 0, Port frei, danach Status 1. Stack: Endpunkt- und CORS-Prüfung erfolgreich, Stop entfernt alles |
+| Tests | `make test`, Frontend-Lint und -Typprüfung, `git diff --check` | 806 + 8 grün, alles Exit 0 |
+| Doku | `README.md` und `docker/README.md` gelesen | Beide sagen dasselbe über Konto-Knopf, Logo und Rebalancing-Beschriftung |
+
+**Hinweise, nicht blockierend:**
+
+1. **Zwischen 768 und 1279 px zeigt die Navigation nur Symbole.** Das gilt auch
+   für Laptop-Breiten wie 1024 px, wo rechts viel Platz frei bleibt
+   (Screenshot `r6-1024`). Vor T-60 erschienen die Beschriftungen ab `md`.
+   Die Ansicht ist bedienbar, und jedes Symbol hat einen zugänglichen Namen.
+   Ob die Beschriftungen früher zurückkommen sollen, etwa ab `lg` ohne
+   Benutzernamen, ist eine Gestaltungsfrage für Mike.
+2. **`sys.dont_write_bytecode = True` ist entfallen.** Wird das Skript ohne
+   `-B` aufgerufen, etwa direkt über den Shebang, entsteht `scripts/__pycache__`.
+   Ausgeschlossen wird es nur über Mikes globale Git-Ignore-Datei, nicht über
+   die Projekt-`.gitignore`. Beim Aufräumen nach meiner `py_compile`-Probe
+   habe ich eine dort schon vorhandene Cache-Datei mitgelöscht; das war nur
+   generierter Cache.
+
+**Urteil:** `approved` für `26b59ed`, ebenso die erneute technische Prüfung
+von T-60 samt Paketumbau (Runden 2 bis 6). Mike hat die T-60-Abnahme erklärt.
+Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
+Tickets stehen aus.

@@ -116,36 +116,25 @@ umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
 und dem Testskript. Mike hat vor seiner Abnahme die Korrektur der fünf
 Review-Hinweise beauftragt; diese Fassung `a8c7402` ist in Runde 3 technisch
 freigegeben.
-Die technische Freigabe der Runde-6-Fassung steht aus. Mike hat die
-T-60-Abnahme nach den Anpassungen erklärt und die anschließende Umsetzung
-von T-61 und T-62 beauftragt.
-T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
-Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
-Prüfung ist nach Mikes Rückmeldung abgeschlossen; die erneute technische
-Freigabe steht aus.
-Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
-T-62 sind nun zur Umsetzung freigegeben und folgen nach dieser Nachprüfung.
-T-63 Runde 5 hat die Korrekturfassung `91b84da` samt T-60 geprüft:
-`changes_requested` wegen der Kopfzeile bei Tablet-Breite und der
-aufgehobenen T-44-Vorgabe. Die letzte abgeschlossene technische
-Reviewreferenz ist T-63 Runde 5 (`changes_requested`);
-die letzte Freigabe bleibt Runde 3 für `a8c7402`.
-Die Korrektur von Kopfzeile und Python-Einstieg liegt als `26b59ed` zur
-Runde-6-Prüfung vor. SP-CX-06 wurde mit dem Breiten-Scan angewandt.
-Vor Claudes Freigabe erfolgen weder Merge noch Push.
+T-63 ist in Runde 6 für `26b59ed` technisch freigegeben; dieselbe Prüfung
+gibt T-60 samt Paketumbau technisch erneut frei. Mike hat die T-60-Abnahme
+erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
+Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
+Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
+Merge und Push folgen erst mit der gemeinsamen Integration.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
 - `review_round`: `6`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `91b84da306663d10f40ddffa91f59e8f5aacdefb`
-- `last_reviewed_round`: `5`
+- `last_reviewed_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
+- `last_reviewed_round`: `6`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -319,8 +308,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 Runde 6 und T-60, Fassung `26b59ed`:** `approved`. Beide Befunde aus Runde 5 sind behoben; ein Scan über 31 Breiten von 320 bis 1920 px fand keinen verdeckten Link. Der `main()`-Einstieg arbeitet für Hilfe, Import, Einzelserver und Stack wie dokumentiert. Zwei nicht blockierende Hinweise stehen im T-63-Ticket unter „Technische Prüfung Runde 6“. T-60 ist damit auch technisch erneut freigegeben; Mikes T-63-Abschlussentscheidung und die gemeinsame Integration stehen aus.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 Runde 6 mit erneuter T-60-Prüfung, Fassung `26b59ed`:** Bitte die zwei Runde-5-Befunde zur Kopfzeile mit eigenem Breiten-Scan und T-44-Beschriftung nachprüfen. Mikes Hinweis zum Python-Testserver wurde durch einen importseitig wirkungsfreien `main()`-Einstieg aufgegriffen; bitte auch dessen Hilfe, Stack und Einzelserver gegen die dokumentierte CLI prüfen. Nachweise, Doku-Abgleich und Lesson SP-CX-06 stehen im T-60-/T-63-Nachtrag und in der Runde-6-Übergabe. Bis zur Freigabe kein Merge oder Push.
+Keine offene Nachricht.
