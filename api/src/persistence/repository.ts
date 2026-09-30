@@ -192,9 +192,9 @@ export function createSqliteRepository(filePath: string): AccountRepository {
         const user = transaction.select().from(users).where(eq(users.id, userId)).get()
         if (!user?.isSetupAccount) return 'forbidden'
         if (user.legacyImported) return 'imported'
-        const existing = transaction.select({ resourceId: privateResources.resourceId }).from(privateResources).where(eq(privateResources.ownerId, userId)).all()
+        const existing = transaction.select({ kind: privateResources.kind, resourceId: privateResources.resourceId }).from(privateResources).where(eq(privateResources.ownerId, userId)).all()
         const importedIds = new Set(portfolios.map((entry) => entry.portfolio.id))
-        if (existing.some((row) => importedIds.has(row.resourceId) || (row.resourceId === 'current' && settings))) return 'conflict'
+        if (existing.some((row) => row.kind === 'portfolio' && importedIds.has(row.resourceId))) return 'conflict'
         for (const entry of portfolios) {
           const occupied = transaction.select({ ownerId: privateResources.ownerId }).from(privateResources).where(and(eq(privateResources.kind, 'portfolio'), eq(privateResources.resourceId, String(entry.portfolio.id)))).get()
           if (occupied) return 'conflict'
@@ -209,7 +209,9 @@ export function createSqliteRepository(filePath: string): AccountRepository {
             transaction.insert(privateResources).values({ ownerId: userId, kind, resourceId, revision: 1, value: JSON.stringify(value) }).run()
           }
         }
-        if (settings) transaction.insert(privateResources).values({ ownerId: userId, kind: 'settings', resourceId: 'current', revision: 1, value: JSON.stringify(settings) }).run()
+        if (settings && !existing.some((row) => row.kind === 'settings' && row.resourceId === 'current')) {
+          transaction.insert(privateResources).values({ ownerId: userId, kind: 'settings', resourceId: 'current', revision: 1, value: JSON.stringify(settings) }).run()
+        }
         transaction.update(users).set({ legacyImported: true }).where(eq(users.id, userId)).run()
         return 'done'
       })

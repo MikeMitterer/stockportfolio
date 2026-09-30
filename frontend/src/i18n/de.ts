@@ -134,6 +134,31 @@ export const de = {
     noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
   },
 
+  privateData: {
+    title: 'Depotdaten nicht gespeichert',
+    conflict: 'Der Stand wurde in einem anderen Browser geändert. Deine letzte Änderung wurde nicht gespeichert. Lade den aktuellen Serverstand neu und wiederhole sie bei Bedarf.',
+    unavailable: 'Die Konto-API ist nicht erreichbar oder die Sitzung ist abgelaufen. Änderungen sind derzeit nicht möglich. Lade die Seite neu, sobald die Verbindung wieder besteht.',
+    reload: 'Serverstand neu laden',
+  },
+
+  legacy: {
+    title: 'Vorhandene Browserdepots',
+    intro: 'In diesem Browser liegen Depots aus der Zeit vor den Benutzerkonten. Nur das Einrichtungskonto darf sie übernehmen.',
+    alreadyImported: 'Der einmalige Altimport wurde bereits durchgeführt. Weitere Depots aus diesem Browser kannst du einzeln als Datei sichern und anschließend im Konto wiederherstellen.',
+    source: 'Quelle',
+    browser: 'Dieses Browserprofil',
+    target: 'Zielkonto',
+    portfolios: 'Depots',
+    positions: 'Positionen',
+    importHint: 'Die Übernahme ergänzt die Depots auf dem Server. Vorhandene Serverdepots und Einstellungen bleiben erhalten. Der Vorgang ist nur einmal möglich. Ohne Übernahme bleiben die Daten in diesem Browserprofil über Browserwerkzeuge lesbar.',
+    restoreHint: 'Ein weiterer pauschaler Import ist gesperrt. Exportiere jedes benötigte Depot und spiele die Datei über Backup/Wiederherstellung ein.',
+    import: 'Depots jetzt übernehmen',
+    export: 'Datei exportieren',
+    later: 'Später entscheiden',
+    discard: 'Lokale Depots verwerfen',
+    discardConfirm: 'Lokale Depots und ihre Tageswerte in diesem Browser endgültig löschen?',
+  },
+
   valueHistory: {
     heading: 'Wertverlauf',
     empty: 'Noch kein Verlauf — sobald Kurse geladen sind, entsteht er.',

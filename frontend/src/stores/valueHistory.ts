@@ -13,7 +13,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
-import { ValueSnapshotRepository } from '@/db/repository'
+import { createValueSnapshotRepository } from '@/data/repository'
 import {
   buildBacktest,
   snapshotPoints,
@@ -32,7 +32,7 @@ export function isoDay(date: Date): string {
 }
 
 export const useValueHistoryStore = defineStore('valueHistory', () => {
-  const repository = new ValueSnapshotRepository()
+  const repository = createValueSnapshotRepository()
 
   const snapshots = ref<ValueSnapshot[]>([])
   const backtest = ref<HistoryPoint[]>([])

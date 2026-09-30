@@ -1,12 +1,12 @@
 /**
  * Pinia-Store für die Einstellungen (Bänder, Kennzahlen, Anzeige).
- * Jede Änderung wird direkt nach IndexedDB durchgeschrieben.
+ * Jede Änderung wird über das aktive Repository durchgeschrieben.
  */
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
-import { SettingsRepository } from '@/db/repository'
+import { createSettingsRepository } from '@/data/repository'
 import type { Bands, ExternalLink, Settings } from '@/types/portfolio'
 
 /**
@@ -103,7 +103,7 @@ export function withDefaults(stored: Partial<Settings>): Settings {
 }
 
 export const useSettingsStore = defineStore('settings', () => {
-  const repository = new SettingsRepository()
+  const repository = createSettingsRepository()
 
   const settings = ref<Settings>(defaultSettings(''))
   const loaded = ref<boolean>(false)

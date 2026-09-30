@@ -135,6 +135,31 @@ export const en: MessageSchema = {
     noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
   },
 
+  privateData: {
+    title: 'Portfolio data not saved',
+    conflict: 'The data changed in another browser. Your last change was not saved. Reload the current server data and repeat the change if needed.',
+    unavailable: 'The account API is unavailable or your session has expired. Changes are not possible right now. Reload the page when the connection is back.',
+    reload: 'Reload server data',
+  },
+
+  legacy: {
+    title: 'Existing browser portfolios',
+    intro: 'This browser contains portfolios from before user accounts were introduced. Only the setup account may import them.',
+    alreadyImported: 'The one-time legacy import has already been used. You can export additional portfolios from this browser one at a time and restore them in your account.',
+    source: 'Source',
+    browser: 'This browser profile',
+    target: 'Target account',
+    portfolios: 'Portfolios',
+    positions: 'positions',
+    importHint: 'Import adds these portfolios to the server. Existing server portfolios and settings remain. This can only be done once. Until imported, the data remains readable through this browser profile’s developer tools.',
+    restoreHint: 'A second bulk import is blocked. Export each portfolio you need and restore the file through Backup/Restore.',
+    import: 'Import portfolios now',
+    export: 'Export file',
+    later: 'Decide later',
+    discard: 'Discard local portfolios',
+    discardConfirm: 'Permanently delete local portfolios and their daily values from this browser?',
+  },
+
   valueHistory: {
     heading: 'Value history',
     empty: 'No history yet — it appears once prices are loaded.',

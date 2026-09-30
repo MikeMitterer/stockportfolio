@@ -1,14 +1,14 @@
 /**
  * Pinia-Store für das aktive Portfolio.
  *
- * Hält die Positionen im Speicher und schreibt jede Änderung sofort nach
- * IndexedDB — es gibt keinen „Speichern"-Knopf.
+ * Hält die Positionen im Speicher und schreibt jede Änderung sofort über das
+ * aktive Repository — es gibt keinen „Speichern"-Knopf.
  */
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
-import { AllowlistRepository, PortfolioRepository, SettingsRepository } from '@/db/repository'
+import { createAllowlistRepository, createPortfolioRepository, createSettingsRepository } from '@/data/repository'
 import { cashPosition, demoPortfolio, emptyPortfolio } from '@/db/seed'
 import { baseCurrencyOf, isCurrency } from '@/domain/fx'
 import { upgradeAssetGroups } from '@/domain/assetGroup'
@@ -27,8 +27,8 @@ export interface PortfolioSummary {
 }
 
 export const usePortfolioStore = defineStore('portfolio', () => {
-  const repository = new PortfolioRepository()
-  const allowlistRepository = new AllowlistRepository()
+  const repository = createPortfolioRepository()
+  const allowlistRepository = createAllowlistRepository()
 
   const portfolio = ref<Portfolio | null>(null)
   const loaded = ref<boolean>(false)
@@ -69,7 +69,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
     const entries = await repository.findAll()
     // Vorhandene Depots waren EUR; ihre bisherigen Geldschwellen direkt übernehmen.
-    const settings = await new SettingsRepository().load()
+    const settings = await createSettingsRepository().load()
     for (const [index, previous] of entries.entries()) {
       const entry = upgradeAssetGroups(previous)
       entries[index] = entry

@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { computed, onMounted, provide, ref } from 'vue'
+import { computed, onMounted, provide, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { NButton, NConfigProvider, NFormItem, NInput, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
+import { NButton, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
 import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
 import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
 import { readStoredTheme } from '@/stores/theme'
+import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
+import { clearMarketCaches } from '@/db/cache'
+import { clearLegacyData, readLegacyData, type LegacyData } from '@/db/legacy'
+import { backupFileName, buildBackup } from '@/domain/backup'
+import { defaultSettings } from '@/stores/settings'
 import AuthenticatedApp from './AuthenticatedApp.vue'
 import { PortfolioAuthClient, PortfolioApiError, type PortfolioUser } from './client'
 import { AUTH_CLIENT, AUTH_LOGOUT, AUTH_USER } from './context'
 
-type View = 'loading' | 'setup' | 'login' | 'change' | 'app' | 'pending' | 'missingStockInfo' | 'unavailable'
+type View = 'loading' | 'setup' | 'login' | 'change' | 'app' | 'legacy' | 'missingStockInfo' | 'unavailable'
 
 const { t, te, locale } = useI18n()
 const router = useRouter()
@@ -24,6 +29,8 @@ const username = ref('')
 const password = ref('')
 const newPassword = ref('')
 const baseUrl = ref('')
+const legacyData = shallowRef<LegacyData | null>(null)
+let dataClient: PrivateDataClient | null = null
 const isDark = THEMES[readStoredTheme()].isDark
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
@@ -37,17 +44,25 @@ const errorMessage = computed(() => {
   return te(key) ? t(key) : t('auth.errors.request_failed')
 })
 
-function acceptUser(nextUser: PortfolioUser): void {
+async function acceptUser(nextUser: PortfolioUser): Promise<void> {
   user.value = nextUser
   errorCode.value = ''
+  legacyData.value = null
   if (nextUser.mustChangePassword) {
     view.value = 'change'
-  } else if (nextUser.role !== 'admin') {
-    view.value = 'pending'
-    void router.replace({ name: 'dashboard' })
   } else {
     try {
       baseUrl.value = apiBaseUrl()
+      dataClient = new PrivateDataClient()
+      activatePrivateData(dataClient)
+      if (nextUser.isSetupAccount) {
+        const currentLegacy = await readLegacyData()
+        if (currentLegacy.portfolios.length > 0) {
+          legacyData.value = currentLegacy
+          view.value = 'legacy'
+          return
+        }
+      }
       view.value = 'app'
     } catch (error) {
       if (!(error instanceof MissingApiUrlError)) throw error
@@ -69,8 +84,11 @@ async function initialize(): Promise<void> {
       return
     }
     const session = await client.session()
-    if (session) acceptUser(session)
-    else view.value = 'login'
+    if (session) await acceptUser(session)
+    else {
+      deactivatePrivateData()
+      view.value = 'login'
+    }
   } catch (error) {
     console.error('StockPortfolio auth initialization failed', error)
     view.value = 'unavailable'
@@ -82,7 +100,7 @@ async function submitSetup(): Promise<void> {
   errorCode.value = ''
   try {
     await client.setup(setupCode.value, username.value, password.value)
-    acceptUser((await client.login(username.value, password.value)).user)
+    await acceptUser((await client.login(username.value, password.value)).user)
     setupCode.value = ''
     password.value = ''
   } catch (error) {
@@ -96,7 +114,7 @@ async function submitLogin(): Promise<void> {
   busy.value = true
   errorCode.value = ''
   try {
-    acceptUser((await client.login(username.value, password.value)).user)
+    await acceptUser((await client.login(username.value, password.value)).user)
     password.value = ''
   } catch (error) {
     reportError(error)
@@ -109,7 +127,7 @@ async function submitPassword(): Promise<void> {
   busy.value = true
   errorCode.value = ''
   try {
-    acceptUser((await client.changePassword(newPassword.value)).user)
+    await acceptUser((await client.changePassword(newPassword.value)).user)
     newPassword.value = ''
   } catch (error) {
     reportError(error)
@@ -122,15 +140,75 @@ async function logout(): Promise<void> {
   busy.value = true
   try {
     await client.logout()
+    deactivatePrivateData()
+    await clearMarketCaches()
+    legacyData.value = null
     user.value = null
     view.value = 'login'
     errorCode.value = ''
     void router.replace({ name: 'dashboard' })
+    window.location.reload()
   } catch (error) {
     reportError(error)
   } finally {
     busy.value = false
   }
+}
+
+async function importLegacy(): Promise<void> {
+  if (!dataClient || !legacyData.value || !user.value) return
+  busy.value = true
+  errorCode.value = ''
+  try {
+    await dataClient.importLegacy(legacyData.value.portfolios, legacyData.value.settings)
+    await clearLegacyData()
+    user.value = { ...user.value, legacyImported: true }
+    legacyData.value = null
+    view.value = 'app'
+  } catch (error) {
+    reportError(error)
+  } finally {
+    busy.value = false
+  }
+}
+
+async function discardLegacy(): Promise<void> {
+  busy.value = true
+  errorCode.value = ''
+  try {
+    await clearLegacyData()
+    legacyData.value = null
+    view.value = 'app'
+  } catch (error) {
+    reportError(error)
+  } finally {
+    busy.value = false
+  }
+}
+
+function continueWithoutImport(): void {
+  view.value = 'app'
+}
+
+function exportLegacy(index: number): void {
+  const entry = legacyData.value?.portfolios[index]
+  if (!entry) return
+  const exportedAt = new Date().toISOString()
+  const settings = { ...(legacyData.value?.settings ?? defaultSettings(entry.portfolio.id)), activePortfolioId: entry.portfolio.id }
+  const backup = buildBackup(
+    entry.portfolio,
+    settings,
+    new Map(Object.entries(entry.allowlist)),
+    __APP_VERSION__,
+    exportedAt,
+    entry.snapshots.map(({ date, total, currency }) => ({ date, total, currency })),
+  )
+  const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }))
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = backupFileName(entry.portfolio.name, exportedAt)
+  anchor.click()
+  URL.revokeObjectURL(url)
 }
 
 onMounted(() => {
@@ -142,7 +220,7 @@ onMounted(() => {
 <template>
   <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
     <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
-    <main v-else class="auth-page" :class="{ 'auth-page--pending': view === 'pending', 'auth-page--login': view === 'login' }">
+    <main v-else class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
       <section class="auth-panel">
         <header class="auth-panel__header">
           <h1 class="auth-panel__brand">
@@ -188,10 +266,36 @@ onMounted(() => {
             <NSpace><NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.changePassword') }}</NButton><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></NSpace>
           </form>
         </template>
-        <template v-else-if="view === 'pending'">
-          <h2 class="auth-panel__title">{{ t('auth.pendingTitle') }}</h2>
-          <p>{{ t('auth.pendingHint') }}</p>
-          <div class="auth-actions"><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></div>
+        <template v-else-if="view === 'legacy'">
+          <h2 class="auth-panel__title">{{ t('legacy.title') }}</h2>
+          <p class="auth-panel__intro">
+            {{ user?.legacyImported ? t('legacy.alreadyImported') : t('legacy.intro') }}
+          </p>
+          <dl class="legacy-facts">
+            <dt>{{ t('legacy.source') }}</dt>
+            <dd>{{ t('legacy.browser') }}</dd>
+            <dt>{{ t('legacy.target') }}</dt>
+            <dd>{{ user?.username }}</dd>
+            <dt>{{ t('legacy.portfolios') }}</dt>
+            <dd>{{ legacyData?.portfolios.length }}</dd>
+          </dl>
+          <ul class="legacy-list">
+            <li v-for="(entry, index) in legacyData?.portfolios ?? []" :key="entry.portfolio.id">
+              <span>{{ entry.portfolio.name }} · {{ entry.portfolio.positions.length }} {{ t('legacy.positions') }}</span>
+              <NButton v-if="user?.legacyImported" size="small" @click="exportLegacy(index)">{{ t('legacy.export') }}</NButton>
+            </li>
+          </ul>
+          <p class="auth-panel__intro">
+            {{ user?.legacyImported ? t('legacy.restoreHint') : t('legacy.importHint') }}
+          </p>
+          <NSpace class="legacy-actions">
+            <NButton v-if="!user?.legacyImported" type="primary" :loading="busy" @click="importLegacy">{{ t('legacy.import') }}</NButton>
+            <NButton :disabled="busy" @click="continueWithoutImport">{{ t('legacy.later') }}</NButton>
+            <NPopconfirm @positive-click="discardLegacy">
+              <template #trigger><NButton type="error" ghost :disabled="busy">{{ t('legacy.discard') }}</NButton></template>
+              {{ t('legacy.discardConfirm') }}
+            </NPopconfirm>
+          </NSpace>
         </template>
         <template v-else-if="view === 'missingStockInfo'">
           <h2 class="auth-panel__title">{{ t('startup.noApiUrlTitle') }}</h2>
@@ -218,8 +322,6 @@ onMounted(() => {
   background: radial-gradient(circle at 50% 0, rgb(var(--brand-from) / 0.12), transparent 55%),
     rgb(var(--surface-page));
 }
-
-.auth-page--pending { padding-bottom: calc(var(--space-6) + 8vh); }
 
 // Die Mitte des Login-Panels liegt bei 38,2 % der Fensterhöhe.
 .auth-page--login {
@@ -266,4 +368,10 @@ onMounted(() => {
 
 .auth-actions { margin-top: var(--space-6); }
 .auth-error { color: rgb(var(--status-out)); margin-top: var(--space-4); }
+.legacy-facts { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); margin: var(--space-6) 0; }
+.legacy-facts dt { color: rgb(var(--text-secondary)); }
+.legacy-facts dd { margin: 0; }
+.legacy-list { display: grid; gap: var(--space-2); margin: 0 0 var(--space-6); padding-left: var(--space-5); }
+.legacy-list li { padding-left: var(--space-1); }
+.legacy-actions { margin-top: var(--space-6); }
 </style>

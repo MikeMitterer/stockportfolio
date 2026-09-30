@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch, onMounted } from 'vue'
+import { computed, inject, ref, watch, onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
@@ -7,6 +7,8 @@ import {
   NMessageProvider,
   NDialogProvider,
   NLoadingBarProvider,
+  NAlert,
+  NButton,
   darkTheme,
   dateDeDE,
   dateEnUS,
@@ -27,6 +29,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
 import { buildNaiveOverrides, UxAppShell, UxNotificationProvider } from '@mmit/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
+import { DATA_ERROR_EVENT, PrivateDataError } from '@/data/client'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
@@ -39,6 +42,22 @@ const quotesStore = useQuotesStore()
 const apiStatus = useApiStatusStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+const dataFailure = ref<PrivateDataError | null>(null)
+
+function onDataFailure(event: Event): void {
+  dataFailure.value = (event as CustomEvent<PrivateDataError>).detail
+}
+
+window.addEventListener(DATA_ERROR_EVENT, onDataFailure)
+onUnmounted(() => window.removeEventListener(DATA_ERROR_EVENT, onDataFailure))
+
+const dataFailureMessage = computed(() => dataFailure.value?.status === 409
+  ? t('privateData.conflict')
+  : t('privateData.unavailable'))
+
+function reloadServerData(): void {
+  window.location.reload()
+}
 
 // Typänderungen auch nach Aktualisierung außerhalb des Dashboards speichern.
 watch(() => [quotesStore.quotes, portfolioStore.portfolio?.id], () => {
@@ -200,7 +219,13 @@ async function refresh(): Promise<void> {
                 />
               </template>
 
-              <RouterView />
+              <div v-if="dataFailure" class="private-data-alert">
+                <NAlert type="error" :title="t('privateData.title')">
+                  <p>{{ dataFailureMessage }}</p>
+                  <NButton type="primary" @click="reloadServerData">{{ t('privateData.reload') }}</NButton>
+                </NAlert>
+              </div>
+              <RouterView v-else />
 
               <template #statusbar>
                 <AppStatusBar />
@@ -213,4 +238,6 @@ async function refresh(): Promise<void> {
   </NConfigProvider>
 </template>
 
-
+<style scoped lang="scss">
+.private-data-alert { padding: var(--space-6); }
+</style>

@@ -13,13 +13,13 @@ import { consola } from 'consola'
 import { translate } from '@/i18n'
 import { ApiError, describeFailure } from '@/api/errors'
 import { cacheKeyOf } from '@/api/mappers'
-import { AllowlistRepository } from '@/db/repository'
+import { createAllowlistRepository } from '@/data/repository'
 import { usePortfolioStore } from '@/stores/portfolio'
 import type { StockInfoClient } from '@/api/client'
 import type { InstrumentSummary } from '@/api/types'
 
 export const useInstrumentsStore = defineStore('instruments', () => {
-  const repository = new AllowlistRepository()
+  const repository = createAllowlistRepository()
   const portfolioStore = usePortfolioStore()
 
   /**
