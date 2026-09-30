@@ -343,3 +343,60 @@ Containerstart und -betrieb sind von der Trennung der Lintläufe nicht
 betroffen. Board-Vorlagen enthalten keine Make-Aufrufe und brauchen keine
 Änderung. `task-verification-workflow` beschreibt weiterhin den gültigen
 Übergabeweg ohne neue Board-Konvention.
+
+## Technische Prüfung Runde 2
+
+`claude`, 2026-09-30, an Handoff-Commit `6459dca57f4769ecea056e6d011d713fef09b869`
+(Branch `t-63-reproduzierbarer-lokaler-teststack`). Geprüft wurde der gesamte
+Unterschied seit der freigegebenen Runde 1 (`493c35c`), nicht nur der letzte
+Commit. Gelesen: Codex-Lessons SP-CX-01, SP-CX-02, SP-CX-04 und SP-R-02.
+
+**Ablauf am Board:** Codex hat die Übergabe mit `e21ad4f` committet, während
+ich die Phase schon auf `reviewing` gesetzt hatte. Meine Feldänderung ist
+dadurch in Codex' Commit gelandet. Der Inhalt stimmt; es ging nichts verloren.
+
+| Prüfpunkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| `make test` | selbst ausgeführt | 65 Dateien / 803 Frontend-Tests, 3 Dateien / 7 API-Tests grün |
+| Lint je Paket | `npm --prefix frontend run lint -- --no-cache`, dasselbe für `api` | beide Exit 0, ohne Warnung |
+| Lint-Umfang | ESLint mit JSON-Ausgabe aus `frontend/` und `api/` | Frontend: 164 Dateien, nur unter `frontend/`; API: 12 Dateien, nur unter `api/` |
+| Typprüfung je Paket | `npm --prefix frontend run typecheck`, dasselbe für `api` | beide Exit 0 |
+| `make clean` | zweimal hintereinander | beide Exit 0, Arbeitsbaum danach sauber |
+| `make help` | selbst gelesen | Entwicklung: nur `dev`; Prüfen: `test`; Wartung: `clean` |
+| `make version` | selbst ausgeführt | 0.5.0 aus `frontend/package.json`; `api/package.json` hat kein eigenes Versionsfeld |
+| `tag-*` | `make -n tag-patch` und `semVerBump` in BashLib gelesen | Aufruf aus `frontend/`: Die Automatik findet dort `package.json`; `npm version` aktualisiert auch das Frontend-Lockfile. Nicht ausgeführt, weil der Befehl committet, taggt und pusht |
+| `make dev` | gestartet mit `STOCKPORTFOLIO_DATA_DIR` im Scratchpad | Vite 200, API `/healthz` 200, Vite-Proxy `/api/setup/status` 200 (`required: true`); Datenbank im angegebenen Ordner; `overmind quit` gibt 5175 und 8080 frei. `.local-data` blieb unberührt |
+| Teststack | `--stack --run`, `-S -s`, zweiter Start, `--stack --stop` | Alle Endpunkt- und CORS-Prüfungen grün, `config.js` wird ausgeliefert; der zweite Start endet mit Exit 2 („already registered“); Stop gibt alle drei Ports frei, kein `stockportfolio-t63-*`-Ordner bleibt übrig; ohne Argumente zeigt das Skript die Hilfe mit Exit 0 |
+| Dockerfile | gelesen | Frontend-Stage baut in `/app/frontend`; `outDir: '../dist'` ergibt `/app/dist`, das die Laufzeitstufe kopiert; `frontend/node_modules` ist in `.dockerignore`. Den Container-Build habe ich **nicht** selbst ausgeführt, hier gilt Codex' Beleg |
+| Quellarchiv | `scripts/licenseAssets.ts`, `sourceFiles` und Test gelesen | Die Liste enthält beide Lockfiles und beide ESLint-Konfigurationen; der angepasste Test ist grün. Einen Build aus dem entpackten Archiv habe ich nicht ausgeführt |
+| Doku | Diff von `README.md`, `AGENTS.md`, `SOURCE.md`, T-60-Nachtrag, Spezifikation und Plan gelesen | Beschreibt den geprüften Stand. Der Ersatz für `make docker-update` steht im README. `docker/README.md` enthält keine Entwicklerbefehle und bleibt richtig. Die STATUS-Aussage zur Versionsquelle ist nachgezogen |
+| Bezeichner | Diff der Python- und Konfigurationsdateien gelesen | Neue Bezeichner sind englisch |
+| ProjectTools `f8cd8ec`, StockInfo `ce69410` | nur gelesen | ProjectTools: `changelog.py` importiert jetzt `projecttools.*`; beim direkten Aufruf liegt `src/python` im Suchpfad, der Aufruf in `tag-*` funktioniert also weiter. StockInfo: nur Ticket und STATUS, kein Produktcode |
+
+**Hinweise, nicht blockierend:**
+
+1. **Veraltete Prüfzeilen in den aktiven Tickets (SP-CX-02).** Die Verify-Zeilen von
+   [T-61](T-61-benutzergebundene-depotdaten-per-rest.md) (#6) und
+   [T-62](T-62-sse-benachrichtigung-fuer-depots.md) (#5) verlangen noch
+   `make lint` und `make typecheck`. Diese Ziele gibt es nicht mehr. Der Doku-Abgleich
+   nennt nur die Board-Vorlagen. Bitte vor der Aktivierung von T-61 auf die
+   Paketbefehle aus `AGENTS.md` umstellen. Die bisherigen Belege in T-60 und T-63
+   beziehen sich auf ihre damalige Fassung und bleiben stehen.
+2. **`scripts/licenseAssets.ts` wird nicht mehr gelintet.** Früher erfasste der
+   Root-Lint auch `scripts/`. Jetzt prüft kein Paket die Datei. Die Typprüfung
+   erreicht sie weiter über `frontend/vite.config.ts`.
+3. **Das Ziel `docker-update` ist entfernt**, obwohl Mikes Liste es nicht nennt.
+   Das README zeigt den direkten Aufruf `./docker/build.sh --update`. Der Skill
+   `docker-conventions` (Tabelle „Makefile und Defaults“) nennt `docker-update`
+   und `build-frontend` noch als StockPortfolio-Ziele. Der Skill gehört nicht zu diesem Repository;
+   seine Pflege ist eine offene Übernahme für den Skill-Besitzer.
+4. **Das README-Versionsabzeichen ist entfernt.** Ohne Root-`package.json` ist das
+   folgerichtig. Der Doku-Abgleich erwähnt es aber nicht. Shields kann über
+   `?filename=frontend%2Fpackage.json` weiter die Version anzeigen.
+5. **Schon in Runde 1 vorhanden und dort übersehen:** Die Meldung „A local test
+   stack is already registered …“ in `scripts/local_test_stack.py:290` ist nicht
+   übersetzt und erscheint auch bei deutscher Ausgabe englisch.
+
+**Urteil:** `approved` für `6459dca`. Die Hinweise ändern das Ergebnis nicht.
+Mikes menschliche Abschlussentscheidung für T-63 steht aus, ebenso seine
+T-60-Abnahme über `make dev`.

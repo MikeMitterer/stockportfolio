@@ -22,8 +22,9 @@ und drei nötige Verdrahtungen stehen im T-60-Ticket. Claudes ergänzende
 Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
 `api/`; beide haben eigene Manifeste und die Projektversion steht allein in
 `frontend/package.json`. [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
-ist auf Mikes Wunsch vom 2026-09-29 vorgezogen und in Runde 1 von Claude
-technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
+ist auf Mikes Wunsch vom 2026-09-29 vorgezogen. Claude hat es in Runde 1
+(`493c35c`) und nach dem Umbau von `make dev` und der Paketstruktur in Runde 2
+(`6459dca`) technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
 reproduzierbar; die menschliche Abschlussentscheidung für T-63 ist noch offen.
 Danach folgen die offene menschliche T-60-Prüfung sowie
 T-61 und T-62. Claudes technische Prüfung
@@ -109,28 +110,28 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-T-63 war für Commit `493c35c` technisch freigegeben. Die danach von Mike
-beauftragten Änderungen an `make dev`, der Paketstruktur und dem Testskript
-werden erneut geprüft; die menschliche Abschlussentscheidung steht aus.
+T-63 ist in Runde 2 für Commit `6459dca` technisch freigegeben. Diese Fassung
+umfasst die von Mike beauftragten Änderungen an `make dev`, der Paketstruktur
+und dem Testskript. Die menschliche Abschlussentscheidung steht aus.
 T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
 Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
 Prüfung steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
 T-62 sind noch nicht zur Produktumsetzung aktiviert. Die letzte technische
-Reviewreferenz ist T-63 Runde 1.
+Reviewreferenz ist T-63 Runde 2.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `approved`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `6459dca57f4769ecea056e6d011d713fef09b869`
 - `review_round`: `2`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `493c35c64122beac401ddfe2e1fece324f98718e`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `6459dca57f4769ecea056e6d011d713fef09b869`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-60-stockportfolio-server-und-benutzerkonten.md, T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -304,8 +305,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 Runde 2, Fassung `6459dca`:** `approved`. Die Belege und fünf nicht blockierende Hinweise stehen im Ticket unter „Technische Prüfung Runde 2“. Vor der Aktivierung von T-61 bitte die Verify-Zeilen von T-61 (#6) und T-62 (#5) auf die Paketbefehle umstellen. Mikes Abschlussentscheidung für T-63 steht aus.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 Runde 2, Fassung `6459dca57f4769ecea056e6d011d713fef09b869`:** Bitte die gesamte Änderung seit der freigegebenen Runde 1 (`493c35c`) unabhängig prüfen, einschließlich `make dev` mit Overmind, Paketverschiebung nach `frontend/`, `make test`/`make clean`, beider paketlokalen Lint-/Typprüfungen, Testserver-CLI mit `--run`, Dokumentation und T-60-Auswirkungen. T-60s frühere technische Freigabe deckt den nachträglichen Paket- und Entwicklungsumbau nicht ab; Mikes Abnahme über `make dev` steht aus. Nachweise und Doku-Abgleich stehen im T-63-Nachtrag vom 2026-09-30. Bitte zusätzlich ProjectTools `feat/package-python-tools`/`f8cd8ec` für das installierbare `projecttools.ui.colors` ansehen; StockInfo-Ticket T-82 auf Branch `t-82-python-werkzeugumgebung-klaeren`/`ce69410` ist nur eine Ready-Klärung, kein StockInfo-Produktcode. Host-`npm ci` für Frontend war wegen Registry-Timeout offen; Docker installierte beide Pakete frisch und baute das vollständige Image. Den Produktstand bis zum Review unverändert lassen.
+Keine offene Nachricht.
