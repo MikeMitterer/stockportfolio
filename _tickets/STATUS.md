@@ -115,9 +115,9 @@ von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
 technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
 IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Den
 verbliebenen Befund 3 zum lokalen Restore-Zweig und zu fehlenden Store-Tests
-hat Codex mit `238723a` behoben. Runde 5 endete mit `changes_requested`:
-Die Entfernung hinterlässt tote Store-Methoden und einen verwaisten
-i18n-Schlüssel (Befund 4).
+hat Codex mit `238723a` behoben. Die aufruflosen Store-Methoden und den
+verwaisten i18n-Schlüssel aus Runde 5 hat Codex mit `094802b` entfernt und
+für Runde 6 übergeben.
 Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
 Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
 T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
@@ -126,11 +126,11 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `238723a1b9ff169a9eac2a54d65632e4d0282724`
-- `review_round`: `5`
-- `owner`: `codex`
+- `handoff_commit`: `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
+- `review_round`: `6`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `last_reviewed_commit`: `238723a1b9ff169a9eac2a54d65632e4d0282724`
@@ -308,8 +308,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-61 technische Runde 5, Fassung `238723a`:** `changes_requested`. Befund 3 ist behoben; der lokale Zweig ist weg, und die neuen Store-Tests sind aussagekräftig. Neuer Befund 4 nach SP-R-04: Die Entfernung hinterlässt toten Code. `replaceAllowlist`, `settingsStore.replaceAll` und `valueHistoryStore.replaceAll` haben keinen Aufrufer mehr, `replacePortfolio` wird nur noch von Tests aufgerufen, und der i18n-Schlüssel `backup.restored` ist verwaist. Bitte entfernen und per `git grep`-Inventar belegen. Details in T-61 unter „Technische Prüfung Runde 5“.
+- **Von `claude-observer` im Auftrag von Mike an `codex`, T-63-Abnahme, Testserver-Theme (2026-09-30):** Mike: „Das Script unterstütz immer noch kein Theme wie zb `/Volumes/DevLocal/DevBash/Production/ProjectTools/src/python/changelog.py`“. `scripts/stockinfo-test-server.py` (Stand `1c7f37c`) zeigt die native, unfarbige argparse-Hilfe. Die Zurückstellung in T-63 (Zeilen 259–266 und 534: warten auf ein installierbares `projecttools.ui.colors`, keine Laufzeitabhängigkeit vom ProjectTools-Quellpfad) trägt Mike damit nicht mit. Referenz: `changelog.py` verwendet `projecttools.ui.colors` (`HelpFormatter`, `Theme`, `styled`), gesteuert über `MAKE_THEME`. Das Paket liegt bisher nur auf ProjectTools-Branch `feat/package-python-tools` (`f8cd8ec`); ProjectTools-`master` steht auf `239ed2c`. Im Projekt ist `.libs/ProjectTools` bereits verlinkt. Erwartete Handlung: Als Abnahmepunkt in T-63 aufnehmen und das Theme wie bei `changelog.py` umsetzen, samt Bezugsweg für `projecttools` und Verhalten ohne ProjectTools. Den Weg mit Mike klären, falls er ein Merge in ProjectTools voraussetzt. Danach unabhängig prüfen lassen. Keine neue Reviewrunde durch diese Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-61 technische Runde 6, Fassung `094802b`:** Bitte Befund 4 aus Runde 5 gezielt nachprüfen. Die vier aufruflosen Store-Methoden, ihre Tests und `backup.restored` sind entfernt; ebenso die nur von dem alten Restore genutzten Allowlist-Repository-Methoden. Das `git grep`-Inventar, die korrigierten Backup-Einstiegstexte und der Doku-Abgleich stehen im T-61-Nachtrag. `make test` (808 Frontend/14 API), beide Lints ohne Cache, beide Typechecks, beide Builds und `git diff --check` bestanden. Die T-63-INBOX von `claude-observer` bleibt für die spätere Abnahme-Nacharbeit offen.
