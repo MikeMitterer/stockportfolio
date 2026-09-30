@@ -5,36 +5,21 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Konzeptprüfung abgeschlossen:** [T-60 · StockPortfolio-Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
-ist am 2026-09-28 auf Mikes Auftrag in `30-doing/` aktiviert. Dieselbe
-beauftragte Kette umfasst [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
-und [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
-Alle drei Tickets liegen auf Mikes ausdrücklichen Wunsch bereits in `30-doing/`.
-T-60 war für die frühere Fassung technisch freigegeben; nach der
-Paketverschiebung steht die erneute technische Prüfung noch aus. Mike hat
-seine menschliche Abnahme nach den Korrekturen erklärt.
-Claude hat die von Mike beauftragte
-konzeptionelle Prüfung aller drei Tickets am 2026-09-28 abgeschlossen und
-Befunde in jedem der drei Tickets festgehalten; keiner davon stellt den
-gewählten Ansatz infrage. Die Architektur-Spezifikation liegt vor. Claude hat
-auf Mikes Nachfrage das eigenständige `server/`-Paket empfohlen; Begründung
-und drei nötige Verdrahtungen stehen im T-60-Ticket. Claudes ergänzende
-Architekturberatung liegt im T-60-Ticket vor. Mike bevorzugt `frontend/` und
-`api/`; beide haben eigene Manifeste und die Projektversion steht allein in
-`frontend/package.json`. [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
-ist auf Mikes Wunsch vom 2026-09-29 vorgezogen. Claude hat es in Runde 1
-(`493c35c`) und nach dem Umbau von `make dev` und der Paketstruktur in Runde 2
-(`6459dca`) technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
-reproduzierbar. Mike hat die Umsetzung von T-61 und T-62 nach den letzten
-Anpassungen ohne weiteren Warteschritt beauftragt; Claudes technische Freigabe
-für die aktuelle T-63-Fassung bleibt zuvor erforderlich.
-Claudes technische Prüfung
-von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
-Korrekturcommit `942c211` ist in Runde 3 unabhängig geprüft und technisch
-freigegeben. Mike hat die T-60-Abnahme nach den Runde-4-Korrekturen erklärt.
-T-63 bleibt bis zur erneuten technischen Freigabe das aktive Ticket. Mike hat
-T-61 und T-62 anschließend ohne weiteren Warteschritt zur Umsetzung
-freigegeben. StockInfo wurde nicht geändert.
+**T-60 und T-63 technisch freigegeben:** [Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+sowie [lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+hat Claude in Runde 6 geprüft. Mike hat T-60 für sich abgeschlossen. Seine
+ausdrückliche T-63-Abschlussentscheidung steht noch aus; deshalb bleiben
+beide Tickets in `30-doing/` und werden noch nicht gemeinsam integriert.
+Der Teststack verbindet StockInfos vorhandene Testkurse, Konto-API und Vite.
+StockInfo wurde nicht geändert.
+
+**Nächste Arbeit:** [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+und danach [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
+Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
+Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
+Produktnachweise stehen noch aus. Die Architektur-Spezifikation liegt unter
+`docs/superpowers/specs/`. Die Projektstruktur bleibt bei `frontend/` und
+`api/`, je mit eigenem Manifest; die Version steht in `frontend/package.json`.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
@@ -121,16 +106,17 @@ gibt T-60 samt Paketumbau technisch erneut frei. Mike hat die T-60-Abnahme
 erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
 Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
 Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
-Merge und Push folgen erst mit der gemeinsamen Integration.
+T-61 beginnt auf einem neuen Branch, der von dieser freigegebenen Fassung
+abzweigt. Merge und Push folgen erst mit der gemeinsamen Integration.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `approved`
+- `phase`: `blocked`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
 - `review_round`: `6`
-- `owner`: `codex`
+- `owner`: `none`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `26b59edc2a272cb550de1ef153930b45e5aa4d5b`
@@ -308,7 +294,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-63 Runde 6 und T-60, Fassung `26b59ed`:** `approved`. Beide Befunde aus Runde 5 sind behoben; ein Scan über 31 Breiten von 320 bis 1920 px fand keinen verdeckten Link. Der `main()`-Einstieg arbeitet für Hilfe, Import, Einzelserver und Stack wie dokumentiert. Zwei nicht blockierende Hinweise stehen im T-63-Ticket unter „Technische Prüfung Runde 6“. T-60 ist damit auch technisch erneut freigegeben; Mikes T-63-Abschlussentscheidung und die gemeinsame Integration stehen aus.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 

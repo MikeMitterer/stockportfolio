@@ -852,3 +852,13 @@ Runde 4 und 5 mit `playwright-core` gegen den isolierten Stack mit
 von T-60 samt Paketumbau (Runden 2 bis 6). Mike hat die T-60-Abnahme erklärt.
 Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
 Tickets stehen aus.
+
+## Abschlussstand nach Runde 6 · 2026-09-30
+
+Die technische Freigabe liegt vor. Mike hat T-60 ausdrücklich für sich
+abgeschlossen und den unmittelbaren Beginn von T-61/T-62 beauftragt. Eine
+ausdrückliche menschliche Abschlussentscheidung für T-63 ist damit noch nicht
+festgehalten. Der Observer hat vor dem Archivieren auf diese Trennung
+hingewiesen. T-60 und T-63 bleiben deshalb in `30-doing/`; der gemeinsame
+Merge und Push warten auf Mikes T-63-Entscheidung. T-61 kann auf einem eigenen,
+auf der geprüften Fassung aufbauenden Branch beginnen.

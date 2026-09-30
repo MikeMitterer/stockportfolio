@@ -110,11 +110,11 @@ nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
 ## Aktive Kette: private Depots auf dem StockPortfolio-Server
 
 Mike hat die serverseitige Synchronisation mit getrennten privaten
-Benutzerkonten und SSE am 2026-09-28 beauftragt. Die drei Produkttickets liegen
-auf seinen Wunsch in `30-doing/`. T-60 ist technisch freigegeben; seine
-menschliche Prüfung folgt später. Mike hat T-63 als Teststack-Auftrag
-vorgezogen. **Nur T-63 ist derzeit aktiv**; verbindlich ist
-die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
+Benutzerkonten und SSE am 2026-09-28 beauftragt. T-60 und der vorgezogene
+lokale Teststack T-63 sind technisch freigegeben. Mike hat T-60 für sich
+abgeschlossen; T-63 wartet noch auf seine menschliche Abschlussentscheidung.
+T-61 beginnt auf Mikes Auftrag bereits jetzt, T-62 baut darauf auf.
+Verbindlich ist die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
 
 1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
    liefert App und eigene API im StockPortfolio-Container sowie Setup,
@@ -130,7 +130,8 @@ die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
    daraufhin per REST neu laden.
 
 StockInfo bleibt für Kurse und Instrumente zuständig; diese Kette ändert dort
-nichts. Die beschriebenen Funktionen sind noch nicht verfügbar.
+nichts. Konten und Teststack sind verfügbar; private Serverdepots und
+Live-Abgleich folgen mit T-61 und T-62.
 
 [↑ Übersicht](#übersicht)
 
