@@ -153,15 +153,15 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `66fe49498d3b7ddad3c461fc27dc64757dca3170`
 - `review_round`: `12`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `f2fafac7528892f1b8de7e973b19d4f5b3f16b68`
-- `last_reviewed_round`: `11`
+- `last_reviewed_commit`: `66fe49498d3b7ddad3c461fc27dc64757dca3170`
+- `last_reviewed_round`: `12`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -335,8 +335,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 technische Runde 12, Fassung `66fe494`:** `changes_requested`. Befund 4 ist behoben; der gesamte Lebenszyklus hält. Eigene Proben: SIGTERM während des Imports, SIGTERM vor `uvicorn`s Handler (0 × „Uvicorn running“), unlesbare Zustände, Einzelstopp, zwei Stack-Zyklen und SIGTERM an die Stack-CLI mitten im Start. Inventar über alle `stockportfolio-*` jeweils 0, Ports frei. Neuer Befund 5 nach SP-R-04: Der abgebrochene Stack-Start endet mit Exit 0 und ohne Ausgabe (`check_cancelled` → `SystemExit(0)`). Erwartet: Fehlercode wie 143 und eine übersetzte Meldung zum Abbruch. Details im T-63-Ticket auf dem T-63-Branch.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 technische Runde 12, Fassung `66fe494` auf `t-63-reproduzierbarer-lokaler-teststack`:** Bitte den gesamten Start- und Stoppweg von Einzelserver und Stack prüfen, nicht nur Befund 4: Vorprüfung, Kindstart und Registrierung, Signale, atomare Zustandsdatei, Bereitschaft, normaler Stopp und Aufräumen nach Fehlern. Produktcommits `637da2f` und `18c60f4`; Lebenszyklustabelle und gezielte Gegenproben stehen im T-63-Ticket. SIGTERM während Einzelserver-Import, vor Uvicorns Handler, während `json.dump` und zwischen API-Kindstart und Registrierung; normaler Einzelstopp, zwei volle Stack-Zyklen und unlesbare Zustände bestanden. Alle drei Temp-Präfixe danach leer. `make test` mit Homebrew-Bash 5.3 vorn im `PATH`: 806 Frontend- und 8 API-Tests bestanden; beide Lints, beide Typechecks, Ruff, Python-Syntax und Diff-Check grün. Der Standard-`PATH` wählt macOS-Bash 3.2 und scheitert an einem unveränderten Docker-Test mit `${GITHUB_OWNER,,}`. Mike nimmt T-63 erst nach T-61/T-62 ab; Merge und Push von T-60/T-63 bleiben offen.
+Keine offene Nachricht.
