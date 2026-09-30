@@ -1149,3 +1149,68 @@ Typechecks und Ruff.
 keinen lokalen Python-Setup-Weg; unverändert. Keine Board- oder
 Lessons-Konvention geändert. Die technische Runde 9 soll beide Produktcommits
 `ca9c74b` und `d7e1607` einschließlich dieser Ergänzung prüfen.
+
+## Technische Prüfung Runde 9
+
+`claude`, 2026-09-30, an Handoff-Commit `70c25a6117d9339cddd8fd18ba459565b614315b`
+(Diff seit `e4db84b`). Geprüft habe ich Mikes Variante (c) samt seinen
+Vorgaben zu `make setup`, `make clean` und `requirements.txt` in einem eigenen,
+abgetrennten Worktree. Den vollen Stack habe ich selbst gestartet, weil die
+Übergabe diesen Live-Nachweis für die Umstellung offen ließ. Angewandt habe ich
+SP-R-02 und SP-R-04.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Setup-Schritte | Die vier Python-Zeilen aus `make -n setup` zweimal ausgeführt | Lauf 1 legt `.venv` mit Python 3.11 an und installiert `requirements.txt`; Lauf 2 meldet das Paket vorhanden, ohne Installation. `projecttools.ui.colors` kommt aus `.libs/ProjectTools` (`mmit-projecttools` 0.1.0). Die `.venv` enthält keine StockInfo-Abhängigkeiten (`fastapi` fehlt) |
+| Stack aus eigener `.venv` | `.venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts`, `--stack --status`, `--stack --stop` | Start und alle Endpunkt- und CORS-Prüfungen erfolgreich; Status mit Theme im Pseudo-Terminal farbig (11 Zeilen), in einer Pipe Exit 0; Stop entfernt API, Vite und Kontodaten |
+| StockInfos `.venv` | Fingerabdruck von `pip freeze` vor und nach dem Lauf, Import von `projecttools` | Unverändert (`61eccd459663`), `projecttools` dort nicht importierbar |
+| `make clean` | zweimal im Worktree | Beide Exit 0, `.venv` bleibt, `scripts/__pycache__` wird entfernt |
+| Doku | Diff von `README.md`, `AGENTS.md` und dem Skriptkopf gelesen | Aufruf mit `.venv/bin/python`, `make setup` samt `PYTHON_BOOTSTRAP` und Versionsprüfung, `make clean` behält die `.venv`, Einzelserver weiter mit StockInfos `.venv`; beide Anleitungen stimmen überein |
+
+**Befunde (blockierend, nach SP-R-04):**
+
+1. **Der Stopp hinterlässt Zustandsdatei und Datenverzeichnis des
+   StockInfo-Kindprozesses.** `stop_children` beendet die Prozessgruppe mit
+   SIGTERM. StockInfos `uvicorn` 0.51.0 fängt das Signal, fährt herunter und
+   löst es dann erneut aus (`raise_signal` in `uvicorn/server.py`). Der Prozess
+   endet damit, bevor der `finally`-Block von `run_single_server` läuft
+   (`stockinfo-test-server.py`, `state_path.unlink()` und
+   `shutil.rmtree(data_dir)`). Belegt: Nach einem erfolgreichen
+   `--stack --stop` lag `stockportfolio-test-server-8899.json` mit beendeter
+   PID 76374 weiter vor. Unter dem System-Temp liegen **46** Verzeichnisse
+   `stockportfolio-t39-server-*` mit StockInfo-Test-Datenbanken von 15:32 bis
+   21:25. Eine liegengebliebene Zustandsdatei blockiert den nächsten Start aus
+   einem anderen Pfad („gehört nicht zu diesem Testserver“); das ist heute
+   zweimal passiert, um 15:29 im Hauptverzeichnis und um 19:17 in meinem
+   T-61-Worktree. Das widerspricht dem Kriterium „Stop räumt eigene Prozesse
+   und temporäre Daten auf“. **Das gab es schon in Runde 1; ich habe dort nur
+   nach `stockportfolio-t63-*` gesucht und die Kindreste übersehen.**
+   **Erwartet:** Der Einzelserver räumt Zustandsdatei und Datenverzeichnis
+   auch nach SIGTERM zuverlässig auf, etwa per Signal-Handler vor `uvicorn`
+   oder per Aufräumen durch den Stack nach dem Stopp für den registrierten
+   Kindzustand. Ein Test oder eine Gegenprobe belegt: Nach `--stack --stop`
+   gibt es keine Zustandsdatei und kein `stockportfolio-t39-server-*`
+   dieses Laufs mehr.
+2. **Die Portprüfung meldet nach einem Stopp fälschlich „belegt“.** Der
+   Test-Socket in `local_test_stack.py:53–55` bindet ohne `SO_REUSEADDR`.
+   Direkt nach `--stack --stop` scheiterte ein Neustart vom selben Pfad mit
+   „Port 8899 ist bereits belegt“, obwohl kein Prozess mehr lauschte
+   (`lsof` leer); `netstat` zeigte nur `TIME_WAIT`-Verbindungen. Uvicorn selbst
+   bindet mit `SO_REUSEADDR` und hätte starten können.
+   **Erwartet:** Die Prüfung verhält sich wie der Server-Bind und meldet nur
+   einen tatsächlich lauschenden Prozess. Eine Gegenprobe belegt einen
+   Neustart unmittelbar nach dem Stopp.
+
+**Aufgeräumt:** Meine eigenen verwaisten Zustandsdateien (19:17 aus
+`wt-t61`, 21:25 aus `wt-t63r9`, beide mit beendeter PID) habe ich entfernt.
+Die 46 Datenverzeichnisse habe ich nicht angefasst, weil sie auch aus fremden
+Läufen stammen; über ihr Entfernen entscheidet Mike.
+
+**Nebenbemerkung zum Board:** Mein Commit `637f3ed` („start T-63 round 9
+review“) hat Codex' noch uncommittete Übergabeänderungen an `STATUS.md`
+mitgenommen (Kontext, `handoff_commit`, Runde 9, drei Observer-Nachrichten).
+Inhaltlich ist der Stand richtig, er steht nur unter meinem Commit.
+
+**Urteil:** `changes_requested` für `70c25a6`. Variante (c) ist vollständig
+und nachprüfbar umgesetzt, einschließlich aller drei Vorgaben Mikes. Die
+Nachprüfung beschränkt sich auf die Befunde 1 und 2.
