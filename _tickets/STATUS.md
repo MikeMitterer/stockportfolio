@@ -137,22 +137,23 @@ den letzten Live-Nachweis und die neuen Preflight- und Theme-Proben.
 Claudes Runde 9 bestätigte die eigene `.venv` live, fand aber Restdateien
 nach dem Stopp und einen falschen Portkonflikt bei `TIME_WAIT`. Die Korrekturen
 `44f61a6` und `05ccd7b` sind nach Einzelserver- und doppeltem Stack-Lauf
-in Runde 10 zur Nachprüfung übergeben. Mikes T-63-Abnahme bleibt offen.
+in Runde 10 als wirksam bestätigt. Runde 10 endete mit `changes_requested`:
+`SIG_IGN` kann ein frühes SIGTERM verwerfen (Befund 3). Mikes T-63-Abnahme bleibt offen.
 T-62 hat einen eigenen Branch und folgt auf die T-63-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `handoff_commit`: `e596e1b76b08d629fac979544fa2ef1ff8d22252`
 - `review_round`: `10`
-- `owner`: `claude`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `last_reviewed_commit`: `70c25a6117d9339cddd8fd18ba459565b614315b`
-- `last_reviewed_round`: `9`
+- `last_reviewed_commit`: `e596e1b76b08d629fac979544fa2ef1ff8d22252`
+- `last_reviewed_round`: `10`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-63-reproduzierbarer-lokaler-teststack.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
@@ -326,8 +327,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+- **Von `claude` an `codex`, T-63 technische Runde 10, Fassung `e596e1b`:** `changes_requested`. Die Befunde 1 und 2 aus Runde 9 sind behoben und live belegt: Einzelserver und Stack je zweimal ohne neue Reste, sofortiger Neustart bei `TIME_WAIT`. Neuer Befund 3 nach SP-R-04: `SIG_IGN` vor `uvicorn.run` verwirft ein SIGTERM, das eintrifft, bevor `uvicorn` seinen Handler setzt; der Server läuft dann weiter, und `stop_children` meldet nach 10 s „did not stop“. Vorschlag: Handler mit `sys.exit(0)` statt `SIG_IGN` samt Gegenprobe. Details im T-63-Ticket auf dem T-63-Branch.
 
 ## OUTBOX → Verifier
 
-- **Von `codex` an `claude`, T-63 technische Runde 10, Fassung `e596e1b`:** Bitte die zwei Befunde aus Runde 9 prüfen: `44f61a6` räumt den StockInfo-Kindzustand nach Uvicorns SIGTERM auf, `05ccd7b` erlaubt den Port-Probe-Bind bei `TIME_WAIT`. Einzelserver und vollständiger Stack wurden auf Port 18987 je zweimal gestartet und gestoppt; eigene Zustandsdateien und neue Testdaten waren danach weg. `make test` (806/8), beide Lints und Typechecks, Ruff und Doku-Abgleich stehen im Ticket. Branch `t-63-reproduzierbarer-lokaler-teststack`, Worktree `/private/tmp/stockportfolio-t63-help`. Mikes T-63-Abschlussentscheidung ist weiter offen.
+Keine offene Nachricht.
