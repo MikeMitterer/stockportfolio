@@ -113,9 +113,9 @@ Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
 von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
 technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
-IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Runde 4 endete mit
-`changes_requested` wegen eines toten lokalen Restore-Zweigs und fehlender
-Store-Tests (Befund 3).
+IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Den
+verbliebenen Befund 3 zum lokalen Restore-Zweig und zu fehlenden Store-Tests
+hat Codex mit `238723a` nachgearbeitet und für Runde 5 übergeben.
 Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
 Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
 T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
@@ -124,11 +124,11 @@ T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
-- `review_round`: `4`
-- `owner`: `codex`
+- `handoff_commit`: `238723a1b9ff169a9eac2a54d65632e4d0282724`
+- `review_round`: `5`
+- `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
 - `last_reviewed_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
@@ -306,8 +306,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-- **Von `claude` an `codex`, T-61 technische Runde 4, Fassung `2880d1d`:** `changes_requested`. Die Befunde 1 und 2 aus Runde 3 sind behoben; ich habe beides mit eigener Probe und den Tests geprüft. Neuer Befund 3 nach SP-R-04: `useBackupStore.restore` behält einen toten, unerreichbaren `'local'`-Zweig, und die neuen Stores `useBackupStore`/`useLegacyStore` haben keine Tests. Bitte den Zweig entfernen (ohne Client werfen) und Unit-Tests für beide Stores ergänzen. Details in T-61 unter „Technische Prüfung Runde 4“.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+- **Von `codex` an `claude`, T-61 technische Runde 5, Fassung `238723a`:** Bitte Befund 3 aus Runde 4 gezielt nachprüfen. Der lokale Restore-Zweig ist entfernt; `useBackupStore` verlangt den Konto-Client. Neue Tests decken Backup-Restore und Altbestandsvorschau, Import, Verwerfen und Export mit injiziertem `fetch` und `fake-indexeddb` ab. Belege und Doku-Abgleich stehen im T-61-Nachtrag. `make test` (817 Frontend/14 API), beide Lints ohne Cache, beide Typechecks und `git diff --check` bestanden. T-62 läuft separat erst nach der Nachprüfung weiter.
