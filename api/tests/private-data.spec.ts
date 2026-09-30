@@ -51,12 +51,12 @@ describe('private Depotdaten', () => {
     expect((await first.json()).revision).toBe(1)
     expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('GET', secondCookie))).status).toBe(404)
     expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('PUT', secondCookie, {
-      revision: 0, value: { id, name: 'Fremd', positions: [] },
-    }))).status).toBe(404)
-    expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('PUT', secondCookie, {
       revision: 1, value: { id, name: 'Fremd', positions: [] },
-    }))).status).toBe(404)
-    expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('DELETE', secondCookie, { revision: 1 }))).status).toBe(404)
+    }))).status).toBe(409)
+    expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('PUT', secondCookie, {
+      revision: 0, value: { id, name: 'Eigenes Depot B', positions: [] },
+    }))).status).toBe(200)
+    expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('DELETE', secondCookie, { revision: 1 }))).status).toBe(200)
     expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('PUT', setupCookie, {
       revision: 0, value: { id, name: 'Alt', positions: [] },
     }))).status).toBe(409)
@@ -67,11 +67,36 @@ describe('private Depotdaten', () => {
   it('erlaubt den Altimport nur einmal dem Setup-Konto und schreibt Marker mit Daten atomar', async () => {
     const { app, repository, setupCookie, secondCookie } = await fixture()
     const payload = { portfolios: [{ id: 'legacy-one', name: 'Alt', positions: [] }], settings: { activePortfolioId: 'legacy-one' } }
+    expect((await app.request(`${origin}/api/data/portfolio/legacy-one`, request('PUT', secondCookie, {
+      revision: 0, value: { id: 'legacy-one', name: 'Depot B', positions: [] },
+    }))).status).toBe(200)
     expect((await app.request(`${origin}/api/data/legacy-import`, request('POST', secondCookie, payload))).status).toBe(403)
     expect((await app.request(`${origin}/api/data/legacy-import`, request('POST', setupCookie, payload))).status).toBe(200)
     expect((await app.request(`${origin}/api/data/legacy-import`, request('POST', setupCookie, payload))).status).toBe(409)
     expect((await (await app.request(`${origin}/api/auth/session`, request('GET', setupCookie))).json()).user.legacyImported).toBe(true)
-    expect((await app.request(`${origin}/api/data/portfolio/legacy-one`, request('GET', secondCookie))).status).toBe(404)
+    expect((await (await app.request(`${origin}/api/data/portfolio/legacy-one`, request('GET', secondCookie))).json()).value.name).toBe('Depot B')
+    expect((await (await app.request(`${origin}/api/data/portfolio/legacy-one`, request('GET', setupCookie))).json()).value.name).toBe('Alt')
+    repository.close()
+  })
+
+  it('stellt dieselbe Backup-Datei in zwei Konten getrennt wieder her', async () => {
+    const { app, repository, setupCookie, secondCookie } = await fixture()
+    const id = 'shared-backup-id'
+    const backup = {
+      portfolio: { id, name: 'Gleiche Datei', positions: [] },
+      settings: { activePortfolioId: id },
+      allowlist: {},
+      snapshots: [],
+      replacedId: null,
+      revisions: { portfolio: 0, settings: 0, allowlist: 0, snapshots: 0, replaced: null },
+    }
+    expect((await app.request(`${origin}/api/data/restore`, request('POST', setupCookie, backup))).status).toBe(200)
+    expect((await app.request(`${origin}/api/data/restore`, request('POST', secondCookie, backup))).status).toBe(200)
+    expect((await app.request(`${origin}/api/data/portfolio/${id}`, request('PUT', secondCookie, {
+      revision: 1, value: { id, name: 'Kopie B', positions: [] },
+    }))).status).toBe(200)
+    expect((await (await app.request(`${origin}/api/data/portfolio/${id}`, request('GET', setupCookie))).json()).value.name).toBe('Gleiche Datei')
+    expect((await (await app.request(`${origin}/api/data/portfolio/${id}`, request('GET', secondCookie))).json()).value.name).toBe('Kopie B')
     repository.close()
   })
 

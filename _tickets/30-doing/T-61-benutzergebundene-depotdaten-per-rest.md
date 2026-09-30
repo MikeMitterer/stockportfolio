@@ -14,9 +14,9 @@ Instrumentauswahl und Tageswerte direkt in IndexedDB. Das bestehende Backup
 enthält nur das aktive Depot. T-60 schafft Server und Konten; dieses Ticket
 ist danach an der Reihe. Produktcode für diese Aufgabe ist noch nicht geändert.
 
-**Stand am 2026-09-30:** Die Umsetzung auf dem T-61-Branch ist abgeschlossen
-und wartet auf die unabhängige technische Prüfung. Der Stand vom 2026-09-28
-beschreibt den Ausgangspunkt.
+**Stand am 2026-09-30:** Nach Claudes technischer Runde 3 ist die
+kontoübergreifende ID-Sperre entfernt; die Nachprüfung dieser Korrektur steht
+aus. Der Stand vom 2026-09-28 beschreibt den Ausgangspunkt.
 
 **Mikes Präzisierung vom 2026-09-28:** Der Datenaustausch mit dem eigenen Server
 muss sicher und verständlich bedienbar sein. Für vorhandene Browserdepots
@@ -89,8 +89,9 @@ Depots in der Testinstanz verwenden.
 
 - [ ] Gleicher Nutzer sieht auf zwei Browsern dieselben Depots und Einstellungen
   nach Neuladen; verschiedene Nutzer sehen getrennte Daten.
-- [ ] Lesen, Schreiben und Löschen fremder Depot-IDs wird serverseitig
-  verweigert, auch bei direktem API-Aufruf.
+- [ ] Ein Konto kann fremde Depotdaten weder lesen, ändern noch löschen,
+  auch bei direktem API-Aufruf. Dieselbe Depot-ID darf in zwei Konten
+  vorkommen; jeder Zugriff bleibt auf das eigene Konto begrenzt.
 - [ ] Veraltete Revisionen führen zu sichtbarem Konflikt statt Datenverlust.
 - [ ] Nur das Setup-Konto sieht und importiert den Altbestand nach ausdrücklicher
   Bestätigung; weitere Konten sehen weder Daten noch Metadaten. Der Import
@@ -112,7 +113,7 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
 | 1 | <a id="pruefpunkt-1"></a>Im Browser A speichern, Browser B mit demselben Konto neu laden | Depot, Einstellungen, Auswahl und Tageswerte stimmen überein | ◑ |
-| 2 | <a id="pruefpunkt-2"></a>Mit Konto B IDs und API-Routen von Konto A lesen und ändern | Kein Inhalt und keine Änderung an Konto A; passende 403/404-Antworten | ✅ |
+| 2 | <a id="pruefpunkt-2"></a>Mit Konto B dieselbe ID wie in A lesen, schreiben, löschen und ein Backup wiederherstellen | Vor dem eigenen Anlegen `404` beim Lesen; spätere Änderungen betreffen nur B. Derselbe Restore gelingt in A und B | ✅ |
 | 3 | <a id="pruefpunkt-3"></a>Altbestand mit Setup- und zweitem Admin-Konto, leeren zweiten Browser und zweiten Importversuch durchspielen | Nur Setup-Konto sieht die Vorschau; fremder Import `403`; bestätigter Erstimport schreibt; leerer Browser überschreibt nichts; zweiter Versuch `409`. Nach gesetztem Marker Export je altem Depot statt Pauschalimport | ◑ |
 | 4 | Zwei gleichzeitige Bearbeitungen und Serverausfall auslösen | Konflikt und Offline-Zustand sichtbar; keine stille Überschreibung | ◑ |
 | 5 | <a id="pruefpunkt-5"></a>Vor und nach dem Altimport abmelden, Konto wechseln, lokale Speicher und Caches, Backup und Restore prüfen | Besitzerloser Altbestand übersteht Logout vor Import; danach entfernt. Keine neuen privaten Browserkopien des vorigen Kontos; Restore schreibt nur ins angemeldete Konto. Deaktiviertes Setup-Konto kann von anderem Admin reaktiviert werden | ◑ |
@@ -402,3 +403,140 @@ sowie die Doku. Die Eigenprüfung und ihre Grenzen stehen im Abschnitt zuvor.
 Die T-60/T-63-Freigabe bleibt unberührt; Mike hält T-63 weiter in Abnahme.
 Keine Integration und kein Push. Die zentrale Unraid-Vorlage liegt mit
 `5cb8440` im getrennten Templates-Repository und ist noch nicht gepusht.
+
+## Technische Prüfung Runde 3
+
+`claude`, 2026-09-30, an Handoff-Commit `0ad4a6af2e259a90302042597a4116bd23c537d3`
+(Diff seit `26b59ed`, 42 Dateien). Geprüft habe ich in einem eigenen,
+abgetrennten Worktree auf genau dieser Fassung, gegen meine Konzeptregel aus
+Runde 2 und die T-61-Kriterien. Gelesen: Codex-Lessons SP-CX-01, SP-CX-02 und
+SP-CX-05 sowie meine Lessons SP-R-02 und SP-R-03.
+
+| Prüfpunkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Tests, Lint, Typen | `npm run test` für beide Pakete, beide Lints mit `--no-cache`, beide Typprüfungen, `git diff --check` | 69 / 809 Frontend- und 4 / 13 API-Tests grün, alles Exit 0 |
+| Schema, Migration | `0001`/`0002` und `schema.ts` gelesen | `is_setup_account` und `legacy_imported` am Konto; `private_resources` mit PK (Besitzer, Art, ID) und `ON DELETE CASCADE`. Das Setup-Konto wird in derselben Transaktion wie `createFirstAdmin` markiert |
+| Besitzerprüfung | Router und Repository gelesen; eigene Probe gegen das echte SQLite-Repository | Jede `/api/data`-Route nimmt den Besitzer aus der Sitzung. Die Herkunftsprüfung gilt für alle schreibenden `/api/*`-Routen, und `mustChangePassword` sperrt den Datenzugriff (403). Die Probe mit zwei Admins: `findResource` gibt `null`, fremdes `save` und `delete` geben `not_found` |
+| Revisionen | Repository und `PrivateDataClient` gelesen | Depot und Einstellungen schreiben mit der zuletzt gelesenen Revision, bei veraltetem Stand kommt `409`. Auswahl und Tageswerte lesen vor dem Schreiben frisch (`update`) und ändern nur den eigenen Schlüssel. Schreiben je Ressource ist serialisiert. Löschen eines Depots entfernt Auswahl und Tageswerte in derselben Transaktion |
+| Restore | Repository gelesen, Probe | Eine Transaktion mit Revisionsprüfung aller vier Teile und des ersetzten Depots. Eigener Restore liefert `done`. Befund 1 betrifft denselben Restore in einem zweiten Konto |
+| Altbestand, Regeln 1–6 | Probe und eigener Browserdurchlauf (`playwright-core`, isolierter Stack mit synthetischen Konten, ein Browserprofil mit synthetischem IndexedDB-Depot „Altdepot-Probe“) | Normaler Nutzer: App ohne Vorschau, Import `403`. Zweiter Admin (per API angelegt, im selben Browserprofil): ohne Vorschau, Import `403`. Nach jeder Abmeldung, auch des Setup-Kontos nach „Später entscheiden“, ist der Altbestand weiter lokal vorhanden. Das Setup-Konto sieht Quelle, Ziel, Anzahl und Wirkung. Nach dem Import ist er lokal leer und auf dem Server; ein weiterer Import liefert `imported`/`409`. Export je Depot bei gesetztem Marker und die Reaktivierung sind im Code gelesen, nicht im Browser geklickt |
+| Logout und Kontowechsel | `AuthRoot.logout`, `cache.ts`, Store-Lebenszyklus gelesen | Marktcaches werden geleert, der Datenclient abgemeldet, und das Neuladen verwirft Pinia. Vor der Anmeldung wird kein Store angelegt (`main.ts`, `AuthRoot`) |
+| Offline und Konflikt | `App.vue` gelesen | Jeder fehlgeschlagene private Zugriff ersetzt die Ansicht durch eine Meldung mit „neu laden“; der veraltete Stand bleibt verdeckt. Einen echten parallelen Konflikt habe ich wie Codex nicht ausgelöst |
+| Altbestands-Ansicht (SP-R-03) | Screenshot bei 1440 px neben dem Anmeldedialog | Dieselbe Karte, dasselbe Logo, dieselbe Titelgestaltung |
+| Doku | `README.md`, `docker/README.md` und `unraid/README.md` zu Daten, Altbestand und bestehender Datenbank gelesen; Ticketbelege | Stimmen überein. Dass eine Kontodatenbank von vor der Markierung kein Setup-Konto hat, ist als Grenze mit Reset-Weg beschrieben; das ist nach `AGENTS.md` („Keine Migrationspfade“) zulässig |
+
+**Befund (blockierend):**
+
+1. **Dieselbe Backup-Datei lässt sich nicht in einem zweiten Konto
+   wiederherstellen.** `restoreBackup`, `saveResource` (neues Depot) und
+   `importLegacy` verlangen, dass eine Depot-ID über **alle** Konten eindeutig
+   ist (`occupied`). Probe: Restore von Depot `p-1` in das Setup-Konto ergibt
+   `done`; derselbe Restore in ein anderes Konto ergibt `not_found`. In der App
+   ist das eine allgemeine Ablehnung ohne Erklärung. So scheitert etwa ein
+   Depot, das Mike exportiert und einem weiteren Konto gibt, oder ein
+   Altimport, dessen Depot schon ein anderes Konto per Restore hat (dort sogar
+   mit `409` für den ganzen Import). Außerdem verrät die Antwort, dass ein
+   anderes Konto diese ID besitzt. Nötig ist die Sperre nicht: Der
+   Primärschlüssel gilt schon je Besitzer, und alle Abfragen filtern nach
+   `owner_id`.
+   **Erwartet:** Die drei kontoübergreifenden `occupied`-Prüfungen entfallen.
+   Ein API-Test belegt denselben Restore in zwei Konten und dass A dabei
+   unverändert bleibt.
+
+**Hinweis, nicht blockierend:**
+
+1. **Eine verwaiste Zustandsdatei hat meinen Start blockiert.** Beim Start
+   aus dem Worktree lag `stockportfolio-test-server-8899.json` aus einem Lauf
+   des Hauptverzeichnisses um 15:29 herum, zu einem nicht mehr laufenden
+   Prozess. Das Skript des Hauptverzeichnisses hat sie mit `-t` als verwaist
+   erkannt und entfernt. Aus einem anderen Pfad meldet das Skript nur „gehört
+   nicht zu diesem Testserver“. Das betrifft T-63 und nicht diese Fassung.
+
+**Nachtrag 2026-09-30 · Befund 2 auf Mikes Entscheidung:** Mike hat den
+ursprünglichen Hinweis „stiller Rückfall auf IndexedDB“ als Befund eingestuft:
+„Wenn ein potentieller Fehler erkannt wird muss er gelöst werden.“
+
+2. **Die Repository-Fabriken fallen still auf IndexedDB zurück.**
+   `createPortfolioRepository`, `createSettingsRepository`,
+   `createAllowlistRepository` und `createValueSnapshotRepository` in
+   `frontend/src/data/repository.ts` liefern die IndexedDB-Repositories, wenn
+   `privateDataClient()` `null` ist. Die Stores wählen ihr Repository einmal
+   beim Anlegen. Heute entsteht kein Store vor der Anmeldung, also greift der
+   Rückfall nicht. Würde künftig vor dem Login ein Store angelegt, etwa auf der
+   Anmeldeseite, schriebe er nach der Anmeldung alle Änderungen still in die
+   Tabellen des besitzerlosen Altbestands. Die Folgen: Die Änderung fehlt auf
+   anderen Geräten, erscheint später dem Setup-Konto als Altbestand zur
+   Übernahme und bleibt nach dem Abmelden im Browser lesbar. Das widerspricht
+   Kriterium 4 und den Regeln 2 und 4 aus Runde 2.
+   **Erwartet:** Ohne aktiven Datenclient werfen die Fabriken einen Fehler
+   statt zurückzufallen. Den Altbestand greift nur noch `db/legacy.ts`
+   direkt an. Ein Test belegt, dass eine Fabrik ohne aktiven Datenclient
+   wirft und mit aktivem Client das Server-Repository liefert. Sieben
+   Testdateien in `frontend/tests` legen Stores ohne aktiven Datenclient an
+   und laufen heute über genau diesen Rückfall. Sie brauchen einen
+   ausdrücklichen Testaufbau, etwa einen `PrivateDataClient` mit injiziertem
+   `fetch`. Der Rückfall darf nicht als Testhilfe im Produktcode bleiben.
+
+**Urteil:** `changes_requested` für `0ad4a6a`. Außer den Befunden 1 und 2
+ist die Konzeptregel aus Runde 2 vollständig und nachprüfbar umgesetzt. Die
+Nachprüfung beschränkt sich auf beide Befunde und ihre Tests.
+
+## Nacharbeit zu Runde 3 · 2026-09-30
+
+Die drei globalen `occupied`-Abfragen in `saveResource`, `importLegacy` und
+`restoreBackup` sind entfernt. Der Primärschlüssel
+`(owner_id, kind, resource_id)` und die Besitzerfilter trennen identische
+Depot-IDs. Ein zuerst roter API-Test belegt den gleichen Restore in zwei
+Konten und eine anschließende Änderung nur in B. Der Altimport-Test belegt
+dieselbe ID bei einem zweiten Admin ohne Eingriff in dessen Daten. Die frühere
+Eigenprüfung mit `404` auf `PUT` bezog sich auf die Runde-3-Fassung: Jetzt
+kann B unter dieser ID ein **eigenes** Depot anlegen; A bleibt unverändert.
+Die aktuellen Kriterien oben sind entsprechend präzisiert.
+
+Auf Mikes Frage zum Store-Weg wurden die Zugriffe inventarisiert. Der normale
+Depotfluss ging bereits über die Pinia-Stores. Der atomare Backup-Restore aus
+`BackupPanel` und der Altbestand aus `AuthRoot` griffen noch direkt auf den
+Datenclient beziehungsweise IndexedDB zu. Diese Aktionen liegen jetzt in
+`useBackupStore` und `useLegacyStore`; die Komponenten bedienen sie nur.
+Die vier Repository-Fabriken in `frontend/src/data/repository.ts` werfen ohne
+aktiven Datenclient immer einen Fehler. Es gibt auch im Testmodus keinen
+Rückfall im Produktcode. `db/legacy.ts` liest den Altbestand ausdrücklich
+für den Setup-Dialog. Die betroffenen Store- und Komponententests stellen
+lokale Repositories einzeln per Vitest-Mock bereit. Ein eigener Test belegt
+den Fehler aller vier Fabriken ohne Datenclient und einen REST-Aufruf mit
+aktivem Client.
+
+**Prüfung:** `make test` bestand mit 811 Frontend- und 14 API-Tests. Beide
+Lints, beide Typechecks, beide Builds und `git diff --check` bestanden.
+Der Frontend-Build meldet weiter den bereits bekannten großen Vendor-Chunk.
+Der Datenweg wurde über Imports in `frontend/src/` geprüft: Komponenten und
+Auth-Ansichten rufen private REST-Routen oder alte Repositories nicht mehr
+direkt auf. Ein zusätzlicher Browserlauf fand für diese API- und
+Strukturkorrektur nicht statt.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Data, API and
+verification**) und `AGENTS.md` (**StockPortfolio hängt an StockInfo**)
+beschreiben die Trennung nach Konto und den Datenweg über Stores und
+Konto-API. Keine Datei verspricht global eindeutige Depot-IDs; daher ist
+dort keine Textänderung nötig. Die Unraid-Vorlage beschreibt nur den
+Speicherort; `5cb8440` bleibt gültig. Board- und Lessons-Konventionen sind
+unberührt.
+
+**Lessons-Abgleich:** SP-CX-02 auf aktuelle Kriterien und Doku angewandt;
+Claudes Runde-3-Belege bleiben auf `0ad4a6a` bezogen. Der neue Store-Einstieg
+vor der Anmeldung hält nur die Altbestandsvorschau und aktiviert keine
+private Konto-Datenhaltung vor erfolgreicher Anmeldung.
+
+## Übergabe an Claude · technische Runde 4 · 2026-09-30
+
+Prüffassung ist `2880d1d69161412c1b36cb735862bc23e3ae451d` nach dem
+Runde-3-Handoff `0ad4a6a`. Bitte die beiden blockierenden Befunde gezielt
+nachprüfen: dieselbe Depot-ID und dieselbe Backup-Datei in zwei Konten ohne
+fremden Zugriff sowie keinen IndexedDB-Rückfall der vier Repo-Fabriken.
+Mikes zusätzliche Frage nach dem Store-Weg ist durch die zwei neuen
+Pinia-Stores und das Importinventar beantwortet. Der Nachtrag oben enthält
+die roten Gegenproben, die Korrektur und den Doku-Abgleich.
+
+Vor Übergabe bestanden `make test` (811/14), beide Lints, beide Typechecks,
+beide Builds und `git diff --check`. Kein Merge nach `master` und kein Push.

@@ -111,25 +111,26 @@ erklärt und die anschließende Umsetzung von T-61 und T-62 beauftragt.
 Mikes Abschlussentscheidung für T-63 und die gemeinsame Integration beider
 Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
-von der freigegebenen Fassung abgezweigt und für die technische Runde 3 an
-Claude übergeben. Mike hält T-63 weiter in Abnahme und hat für dessen
-Testserver-Skript eine unfarbige Hilfe ohne Theme oder Hints mit mehreren
-sauber untereinander stehenden Beispielen präzisiert. Codex bearbeitet das
-auf dem T-63-Branch während des T-61-Reviews; danach folgt T-62. Für
+von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
+technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
+IndexedDB-Rückfall sind korrigiert; Runde 4 prüft die Fassung `2880d1d`.
+Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
+Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
+T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `reviewing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
-- `review_round`: `3`
+- `handoff_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
+- `review_round`: `4`
 - `owner`: `claude`
 - `updated_at`: `2026-09-30`
 - `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `last_reviewed_commit`: `44bcb726f851fae53d40184d5956e42ce5527518`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
 - `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
@@ -307,14 +308,12 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-**Codex → Claude · T-61 · technische Runde 3 · 2026-09-30.**
-Prüfe `0ad4a6af2e259a90302042597a4116bd23c537d3` vollständig gegen
-Konzept Runde 2 und T-61-Kriterien. Schwerpunkte: Besitzerprüfung auch
-zwischen Admins, Setup-Konto und Altimport, Revisionen, atomarer Restore,
-Logout/Kontowechsel und Offline-Anzeige. Die Eigenprüfung samt Browsergrenzen,
-809/13 Tests, beiden Lints, beiden Typechecks, Builds und Doku-Abgleich steht
-im Ticket. Die zentrale Unraid-Vorlage wurde im getrennten Templates-Repo
-mit `5cb8440` geändert. T-63 bleibt in Mikes Abnahme; sein Skript wird
-während deines Reviews separat auf dem T-63-Branch nach Mikes neuer
-Hilfe-Vorgabe bearbeitet. Bitte T-60/T-63 hier nicht abschließen oder
-integrieren.
+**Codex → Claude · T-61 · technische Runde 4 · 2026-09-30.** Prüfe
+`2880d1d69161412c1b36cb735862bc23e3ae451d` gezielt gegen beide
+Runde-3-Befunde: dieselbe Depot-ID und dasselbe Backup in zwei Konten,
+sowie Fabriken ohne IndexedDB-Rückfall auch im Testmodus. Der lokale
+Testaufbau ist ausdrücklich in den betroffenen Testdateien gemockt.
+Mikes Frage zum Store-Weg ist durch `useBackupStore` und `useLegacyStore`
+nachgezogen. `make test` (811/14), beide Lints, beide Typechecks und beide
+Builds bestanden. Doku-Abgleich und Grenzen stehen im Ticket. T-63 bleibt
+separat in Mikes Abnahme; nicht integrieren oder pushen.

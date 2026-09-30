@@ -1,12 +1,6 @@
 import type { ValueSnapshotEntry } from '@/db/schema'
 import type { Portfolio, Settings } from '@/types/portfolio'
 import { PrivateDataClient, privateDataClient } from './client'
-import {
-  AllowlistRepository,
-  PortfolioRepository,
-  SettingsRepository,
-  ValueSnapshotRepository,
-} from '@/db/repository'
 
 function activeClient(): PrivateDataClient {
   const client = privateDataClient()
@@ -88,18 +82,22 @@ class ServerValueSnapshotRepository {
   }
 }
 
-export function createPortfolioRepository(): PortfolioRepository | ServerPortfolioRepository {
-  return privateDataClient() ? new ServerPortfolioRepository() : new PortfolioRepository()
+export function createPortfolioRepository(): ServerPortfolioRepository {
+  activeClient()
+  return new ServerPortfolioRepository()
 }
 
-export function createSettingsRepository(): SettingsRepository | ServerSettingsRepository {
-  return privateDataClient() ? new ServerSettingsRepository() : new SettingsRepository()
+export function createSettingsRepository(): ServerSettingsRepository {
+  activeClient()
+  return new ServerSettingsRepository()
 }
 
-export function createAllowlistRepository(): AllowlistRepository | ServerAllowlistRepository {
-  return privateDataClient() ? new ServerAllowlistRepository() : new AllowlistRepository()
+export function createAllowlistRepository(): ServerAllowlistRepository {
+  activeClient()
+  return new ServerAllowlistRepository()
 }
 
-export function createValueSnapshotRepository(): ValueSnapshotRepository | ServerValueSnapshotRepository {
-  return privateDataClient() ? new ServerValueSnapshotRepository() : new ValueSnapshotRepository()
+export function createValueSnapshotRepository(): ServerValueSnapshotRepository {
+  activeClient()
+  return new ServerValueSnapshotRepository()
 }

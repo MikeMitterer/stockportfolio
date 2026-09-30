@@ -3,7 +3,9 @@
  * einer älteren Fassung dürfen die App nicht stolpern lassen.
  */
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/data/repository', () => import('../helpers/localRepositories'))
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
 import { defaultLinks, defaultSettings, useSettingsStore, withDefaults } from '@/stores/settings'

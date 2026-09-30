@@ -176,10 +176,6 @@ export function createSqliteRepository(filePath: string): AccountRepository {
           if (activeId && !transaction.select({ resourceId: privateResources.resourceId }).from(privateResources).where(resourceWhere(userId, 'portfolio', activeId)).get()) return 'not_found'
         }
         const current = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
-        if (kind === 'portfolio' && !current) {
-          const occupied = transaction.select({ ownerId: privateResources.ownerId }).from(privateResources).where(and(eq(privateResources.kind, 'portfolio'), eq(privateResources.resourceId, resourceId))).get()
-          if (occupied) return 'not_found'
-        }
         if ((current?.revision ?? 0) !== revision) return null
         const nextRevision = revision + 1
         if (current) {
@@ -217,10 +213,6 @@ export function createSqliteRepository(filePath: string): AccountRepository {
           if (activeId && !importedIds.has(activeId) && !existing.some((row) => row.kind === 'portfolio' && row.resourceId === activeId)) return 'conflict'
         }
         for (const entry of portfolios) {
-          const occupied = transaction.select({ ownerId: privateResources.ownerId }).from(privateResources).where(and(eq(privateResources.kind, 'portfolio'), eq(privateResources.resourceId, String(entry.portfolio.id)))).get()
-          if (occupied) return 'conflict'
-        }
-        for (const entry of portfolios) {
           const resourceId = String(entry.portfolio.id)
           for (const [kind, value] of [
             ['portfolio', entry.portfolio],
@@ -240,8 +232,6 @@ export function createSqliteRepository(filePath: string): AccountRepository {
     restoreBackup(userId, data) {
       return database.transaction((transaction) => {
         const id = String(data.portfolio.id)
-        const occupied = transaction.select({ ownerId: privateResources.ownerId }).from(privateResources).where(and(eq(privateResources.kind, 'portfolio'), eq(privateResources.resourceId, id))).get()
-        if (occupied && occupied.ownerId !== userId) return 'not_found'
         if (data.replacedId && data.replacedId !== id) {
           const previous = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, 'portfolio', data.replacedId)).get()
           if (!previous) return 'not_found'

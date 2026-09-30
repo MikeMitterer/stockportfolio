@@ -8,7 +8,9 @@
 
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/data/repository', () => import('../helpers/localRepositories'))
 
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import type { PositionResult } from '@/domain/rebalancing'
