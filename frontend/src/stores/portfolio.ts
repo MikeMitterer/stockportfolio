@@ -342,31 +342,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     return changed
   }
 
-  /**
-   * Ersetzt das aktive Depot durch ein eingelesenes.
-   *
-   * Das bisherige wird entfernt, nicht danebengelegt: Zwei Depots mit
-   * derselben Kennung ließen sich nicht auseinanderhalten, und die App zeigt
-   * ohnehin immer nur eines. Aufrufer müssen vorher fragen — hier gibt es
-   * kein Zurück.
-   *
-   * @param next Das einzuspielende Depot.
-   */
-  async function replacePortfolio(next: Portfolio): Promise<void> {
-    const current = portfolio.value
-
-    const upgraded = upgradeAssetGroups(next)
-    await repository.save(upgraded)
-    if (current && current.id !== next.id) {
-      await repository.remove(current.id)
-      await allowlistRepository.removeForPortfolio(current.id)
-    }
-
-    portfolio.value = upgraded
-    await refreshList()
-    consola.info('portfolio: Depot ersetzt', { id: next.id, positions: next.positions.length })
-  }
-
   /** Entfernt eine Position endgültig. */
   async function removePosition(id: string): Promise<void> {
     if (!portfolio.value) return
@@ -396,7 +371,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     addPosition,
     addCashPosition,
     removePosition,
-    replacePortfolio,
     syncKinds,
     markRebalanced,
   }

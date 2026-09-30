@@ -540,3 +540,194 @@ die roten Gegenproben, die Korrektur und den Doku-Abgleich.
 
 Vor Übergabe bestanden `make test` (811/14), beide Lints, beide Typechecks,
 beide Builds und `git diff --check`. Kein Merge nach `master` und kein Push.
+
+## Technische Prüfung Runde 4
+
+`claude`, 2026-09-30, an Handoff-Commit `2880d1d69161412c1b36cb735862bc23e3ae451d`
+(Diff seit `0ad4a6a`). Geprüft habe ich in einem eigenen, abgetrennten
+Worktree die beiden Befunde aus Runde 3 und die neuen Stores. Angewandt
+habe ich SP-R-04 (Scout Rule).
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 1 · Depot-IDs | Diff gelesen; meine Probe aus Runde 3 gegen das echte SQLite-Repository wiederholt | **Behoben.** Die drei kontoübergreifenden `occupied`-Prüfungen sind entfernt. Restore derselben Datei ergibt im Setup-Konto `done` und im zweiten Konto `done`, die Stände bleiben getrennt („Depot“ gegenüber „User-Kopie“). Ein zweiter Admin liest fremde Depots weiterhin nicht (`null`) und kann sie nicht löschen (`not_found`, Original unverändert). Neuer API-Test „stellt dieselbe Backup-Datei in zwei Konten getrennt wieder her“ |
+| Befund 2 · Rückfall | `data/repository.ts`, Testhilfe, neuer Test, Importe in `src/` | **Behoben.** Die Fabriken rufen zuerst `activeClient()` auf und werfen ohne Client „PrivateDataClient fehlt“. Die IndexedDB-Repositories importiert in `src/` nur noch `db/`; private Stores beziehen sie nicht mehr. Die Store- und Komponententests mocken `@/data/repository` ausdrücklich über `tests/helpers/localRepositories.ts`. Der Test `data/repository.spec.ts` deckt beide Seiten ab |
+| Tests, Lint, Typen | beide Testläufe, beide Lints mit `--no-cache`, beide Typprüfungen, `git diff --check` | 70 / 811 Frontend- und 4 / 14 API-Tests grün, alles Exit 0 |
+| Neue Stores | `stores/backup.ts`, `stores/legacy.ts`, `AuthRoot`, `BackupPanel` gelesen | `useLegacyStore` entsteht vor der Anmeldung, liest aber nur über `db/legacy.ts` und berührt keine Kontodaten; die Regeln aus Runde 2 bleiben erhalten. Zu `useBackupStore` siehe Befund 3 |
+
+**Befund (blockierend, nach SP-R-04):**
+
+3. **`useBackupStore.restore` behält einen toten lokalen Zweig, und beide
+   neuen Stores sind ungetestet.** Ohne aktiven Datenclient schreibt `restore`
+   über die Stores „lokal“ und meldet `'local'`. Diesen Modus gibt es nach
+   T-61 nicht mehr. Erreichbar ist der Zweig auch nicht: Ohne Client werfen
+   schon die Fabriken beim Anlegen der Stores, die `useBackupStore` braucht.
+   Der Code täuscht damit einen zweiten Speicherweg vor. Das ist dieselbe Art
+   Rückfall wie in Befund 2; fiele die Fabrikprüfung künftig weg, würde er
+   wieder still aktiv. Dazu kommt: Kein Test deckt `useBackupStore` oder
+   `useLegacyStore` ab (`grep` in `frontend/tests`). Import, Verwerfen,
+   Export je Depot und Restore sind nur über den Browserdurchlauf aus Runde 3
+   belegt.
+   **Erwartet:** `restore` verlangt einen aktiven Datenclient und wirft sonst;
+   der Rückgabewert `'server' | 'local'` und der Zweig in `BackupPanel`
+   entfallen. Unit-Tests belegen für `useBackupStore` den Serverweg und den
+   Fehler ohne Client, für `useLegacyStore` `inspect`, Import samt lokalem
+   Leeren, Verwerfen und `exportAt`, jeweils mit injiziertem `fetch` und
+   `fake-indexeddb`.
+
+**Urteil:** `changes_requested` für `2880d1d`. Die Befunde 1 und 2 aus
+Runde 3 sind behoben. Die Nachprüfung beschränkt sich auf Befund 3.
+
+## Nacharbeit zu Runde 4 · 2026-09-30
+
+`useBackupStore.restore` verlangt jetzt ausdrücklich den aktiven
+`PrivateDataClient` und ruft nur `restoreBackup` der Konto-API auf. Der tote
+lokale Schreibzweig und der Modus-Rückgabewert sind entfernt; `BackupPanel`
+lädt nach erfolgreichem Server-Restore neu. Der Produktfix und die Tests
+stehen in `c40dd40`.
+
+Ein zuerst roter Store-Test belegte den alten Rückgabewert `'server'`; nach
+dem Entfernen des Zweigs ist er grün. Zwei Tests für `useBackupStore` prüfen
+den POST mit injiziertem `fetch` und den Fehler ohne aktiven Client. Vier
+Tests für `useLegacyStore` verwenden `fake-indexeddb`: Vorschau und Export
+einschließlich Auswahlliste und Tageswert, Import über die Konto-API mit
+anschließendem lokalen Leeren, Erhalt der Daten bei fehlgeschlagenem Import
+und bewusstes Verwerfen. Die Vorschau wird nach den jeweiligen Aktionen
+zurückgesetzt.
+
+**Prüfung:** `make test` bestand mit 817 Frontend- und 14 API-Tests. Beide
+Lints ohne Cache, beide Typechecks und `git diff --check` bestanden. Die
+gezielten Store-Tests bestanden mit 6 Tests. Für die Nacharbeit wurde kein
+weiterer Browserlauf ausgeführt.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Data, API and
+verification**) und `AGENTS.md` (**Tatsächlicher Entwicklungsstand**)
+beschreiben bereits Serverdaten und den bestätigten Restore. Ihr Verhalten
+ändert sich durch das Entfernen des unerreichbaren Zweigs nicht; Textänderungen
+sind dort nicht nötig. Veraltete Einleitungskommentare in
+`frontend/src/domain/backup.ts` und `frontend/src/db/repository.ts` wurden
+an diesen Datenweg angepasst. Board- und Lessons-Konventionen sind unberührt.
+
+**Lessons-Abgleich:** SP-CX-02 auf aktuelle Aussagen in Quellkommentaren,
+Anleitungen, Ticket und STATUS angewandt. Die historischen Reviewbefunde
+bleiben auf ihre jeweiligen Prüffassungen bezogen.
+
+## Übergabe an Claude · technische Runde 5 · 2026-09-30
+
+Bitte Befund 3 aus Runde 4 nachprüfen: Es gibt keinen lokalen Restore-Zweig
+mehr, und die neuen Store-Tests decken Serverweg, fehlenden Client sowie
+Altbestandsvorschau, Import, Verwerfen und Export ab. Die Nachprüfung kann
+sich auf diese Fassung seit `2880d1d` beschränken. T-60/T-63 bleiben bis zu
+Mikes ausdrücklicher T-63-Entscheidung ohne Merge und Push.
+
+## Technische Prüfung Runde 5
+
+`claude`, 2026-09-30, an Handoff-Commit `238723a1b9ff169a9eac2a54d65632e4d0282724`
+(Diff seit `2880d1d`). Geprüft habe ich Befund 3 aus Runde 4 in einem
+eigenen, abgetrennten Worktree. Angewandt habe ich SP-R-04 (Scout Rule).
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 3 · lokaler Zweig | Diff von `stores/backup.ts` und `BackupPanel.vue` gelesen | **Behoben.** `restore` wirft ohne Client „PrivateDataClient fehlt“ und läuft sonst nur über `client.restoreBackup`. Der Rückgabewert `'server' \| 'local'` und der lokale Zweig in `BackupPanel` sind entfernt |
+| Befund 3 · Tests | `tests/stores/backup.spec.ts` und `tests/stores/legacy.spec.ts` gelesen | **Behoben.** Backup: Restore nur per `POST /api/data/restore` mit `same-origin`; ohne Client ein Fehler und kein `fetch`. Legacy: `inspect`, `exportAt` samt Grenzindex, Import mit lokalem Leeren erst nach Erfolg, **fehlgeschlagener Import behält den Altbestand**, Verwerfen leert alle vier Tabellen |
+| Tests, Lint, Typen | Frontend- und API-Tests, Frontend-Lint mit `--no-cache`, Typprüfung, `git diff --check` | 72 / 817 Frontend- und 14 API-Tests grün, alles Exit 0. API-Code unverändert |
+| Reste der Entfernung | Aufrufer per `git grep` auf `238723a` gesucht | siehe Befund 4 |
+
+**Befund (blockierend, nach SP-R-04):**
+
+4. **Die Entfernung des lokalen Zweigs hinterlässt toten Code.** Diese
+   Stellen hatten nur den alten lokalen Restore als Nutzer:
+   - `instrumentsStore.replaceAllowlist` (`stores/instruments.ts:105`),
+     `settingsStore.replaceAll` (`stores/settings.ts:167`) und
+     `valueHistoryStore.replaceAll` (`stores/valueHistory.ts:101`) haben
+     keinen Aufrufer mehr.
+   - `portfolioStore.replacePortfolio` (`stores/portfolio.ts:355`) wird nur
+     noch von `tests/stores/portfolio.spec.ts` aufgerufen.
+   - Der Übersetzungsschlüssel `backup.restored` (`i18n/de.ts:490`,
+   `i18n/en.ts:477`) hat keinen Nutzer mehr.
+   Die vier Methoden sind Ersetzungswege am atomaren Server-Restore vorbei
+   (`/api/data/restore`, eine Transaktion mit Revisionsprüfung). Ein künftiger
+   Aufrufer bekäme damit wieder ein nicht atomares Restore in mehreren
+   Einzelschreibvorgängen. Das ist derselbe Befundtyp wie 2 und 3.
+   **Erwartet:** Die vier Methoden, ihre Tests in `portfolio.spec.ts` und der
+   verwaiste Schlüssel entfallen. Ein Inventar belegt, dass nach der Änderung
+   kein Aufrufer mehr existiert: `git grep` auf die vier Namen und
+   `backup.restored`.
+
+**Urteil:** `changes_requested` für `238723a`. Befund 3 ist behoben. Die
+Nachprüfung beschränkt sich auf Befund 4.
+
+## Nacharbeit zu Runde 5 · 2026-09-30
+
+Die vier aufruflosen Store-Methoden `replaceAllowlist`, `replaceAll` in
+Settings und ValueHistory sowie `replacePortfolio` sind entfernt. Damit
+entfallen auch die nur noch dafür vorhandenen Store-Tests. Die
+Allowlist-Repositories hatten ebenfalls nur für diesen alten Restore-Weg
+eine vollständige `replaceAll`-Methode; diese und zwei reine Methodentests
+sind entfernt. Das weiterhin verwendete `replaceAll` des Kurs-Caches bleibt.
+Der verwaiste Schlüssel `backup.restored` ist aus beiden Sprachkatalogen
+entfernt. Der Produkt- und Teststand steht in `b2235b8`.
+
+**Aufruferinventar:** `git grep -n -E 'replaceAllowlist|replacePortfolio|backup\.restored|settingsStore\.replaceAll|valueHistoryStore\.replaceAll' -- frontend`
+ergibt keinen Treffer. `git grep -n 'replaceAll(' -- frontend/src/data frontend/src/db frontend/src/stores` zeigt nur
+`QuoteCacheRepository.replaceAll` und seinen Aufruf in `stores/quotes.ts`.
+Das atomare Einspielen bleibt ausschließlich bei `POST /api/data/restore`.
+
+**Prüfung:** `make test` bestand mit 808 Frontend- und 14 API-Tests. Beide
+Lints ohne Cache und beide Typechecks bestanden ohne Warnung; Frontend- und
+API-Build sowie `git diff --check` bestanden. Der Frontend-Build meldet den
+bereits bekannten großen Vendor-Chunk. Die neun entfernten Tests prüften
+ausschließlich die beseitigten Methoden. Ein zusätzlicher Browserlauf fand
+für diese Entfernung nicht statt.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Data, API and
+verification**) und `AGENTS.md` (**Tatsächlicher Entwicklungsstand**)
+beschreiben Konto-Daten und Backup bereits richtig; ihre Aussagen bleiben
+gültig. In `frontend/src/i18n/de.ts` und `en.ts` versprach der sichtbare
+Backup-Einstieg dagegen fälschlich reine Browserdaten und ein Backup als
+einzigen Gerätewechselweg. Beide Texte nennen jetzt den Server als Datenort
+und das Backup als zusätzliche Sicherung. Veraltete Quellkommentare im
+Instrumenten-Store sind ebenfalls korrigiert. Keine Änderung an Board- oder
+Lessons-Konventionen.
+
+**Lessons-Abgleich:** SP-CX-02 auf Aufrufer, aktuelle App-Texte und
+Anleitungen angewandt; frühere Befunde und Belege bleiben auf ihre Fassung
+bezogen.
+
+## Übergabe an Claude · technische Runde 6 · 2026-09-30
+
+Bitte den aufruflosen Code aus Befund 4 und das Aufruferinventar gezielt
+nachprüfen. Die entfernten Store-Methoden sind keine zulässige Alternative
+zur atomaren Server-Wiederherstellung. Die Prüfungen und der Doku-Abgleich
+stehen unmittelbar oben. T-60/T-63 bleiben bis zu Mikes ausdrücklicher
+T-63-Entscheidung ohne Merge und Push.
+
+## Technische Prüfung Runde 6
+
+`claude`, 2026-09-30, an Handoff-Commit `094802bb63b7d5f38bdcb4cba1f7b349a462cd95`
+(Diff seit `238723a`). Geprüft habe ich Befund 4 aus Runde 5 in einem eigenen,
+abgetrennten Worktree. Angewandt habe ich SP-R-04 (Scout Rule).
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Befund 4 · tote Methoden | Diff gelesen; `git grep` auf `094802b` in `frontend` und `api` nach `replacePortfolio`, `replaceAllowlist`, `replaceAll` und `backup.restored` | **Behoben.** Die ersten beiden haben keinen Treffer mehr. `replaceAll` gibt es nur noch als `QuoteCacheRepository.replaceAll` mit echtem Aufrufer `stores/quotes.ts:183`; das ist der Kurs-Cache, kein privater Datenweg. Zusätzlich entfernt sind die nur vom alten Restore genutzten `replaceAll` der Server- und IndexedDB-Allowlist-Repositories |
+| Befund 4 · Schlüssel | `i18n/de.ts`, `i18n/en.ts` | **Behoben.** `backup.restored` ist entfernt. Die Backup-Einleitung beschreibt jetzt in beiden Sprachen den Serverstand samt zusätzlicher Dateisicherung statt „nur in diesem Browser“ |
+| Reste der Entfernung | Frontend-Lint ohne Cache mit `--max-warnings 0` | Exit 0, keine Warnung zu ungenutzten Importen oder Variablen |
+| Tests, Typen | Frontend- und API-Tests, Typprüfung, `git diff --check` | 72 / 808 Frontend- und 14 API-Tests grün, alles Exit 0. Die neun entfallenen Frontend-Tests betrafen ausschließlich die entfernten Methoden. API-Code unverändert |
+
+**Urteil:** `approved` für `094802b`. Die Befunde 1 bis 4 aus den Runden 3
+bis 5 sind behoben. Die Konzeptregel aus Runde 2 ist umgesetzt und in
+Runde 3 im Browser sowie gegen das SQLite-Repository geprüft. Nicht selbst
+geklickt sind Export je Depot nach gesetztem Marker, die Reaktivierung und
+ein echter paralleler Schreibkonflikt; sie sind durch Code und Tests belegt.
+Mikes menschliche Prüfpunkte A bis D stehen aus.
+
+## Zeitpunkt der menschlichen Prüfung · Mike, 2026-09-30
+
+Mike: „T-61 teste ich wenn t-62 auch fertig ist“. Die Prüfpunkte A bis D
+prüft Mike gemeinsam mit T-62, nicht vorher. Bis dahin bleibt T-61 technisch
+freigegeben (Runde 6, `094802b`) in `30-doing/`, ohne Abschluss und ohne
+Integration. Die Arbeit an T-62 wartet darauf nicht. Festgehalten von
+`claude-observer`.

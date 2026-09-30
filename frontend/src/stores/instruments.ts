@@ -3,7 +3,7 @@
  *
  * Der Katalog kommt aus der API und wird nicht persistiert (er ist
  * jederzeit neu abrufbar). Die Whitelist ist eine Nutzerentscheidung und
- * liegt in IndexedDB — **je Depot**: Welche Papiere für ein Kinderdepot in
+ * liegt in der Konto-API — **je Depot**: Welche Papiere für ein Kinderdepot in
  * Frage kommen, ist eine andere Menge als beim eigenen.
  */
 
@@ -98,26 +98,10 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   }
 
   /**
-   * Ersetzt die Whitelist — für das Einspielen eines Backups.
-   *
-   * @param entries Neue Whitelist (Key → freigegeben).
-   */
-  async function replaceAllowlist(entries: Map<string, boolean>): Promise<void> {
-    const portfolioId = portfolioStore.portfolio?.id
-    if (!portfolioId) return
-
-    allowlist.value = new Map(entries)
-    allowlistFor.value = portfolioId
-    await repository.replaceAll(portfolioId, entries)
-    consola.info('instruments: Whitelist ersetzt', { portfolioId, count: entries.size })
-  }
-
-  /**
    * Lädt nur die Whitelist, ohne den Katalog.
    *
-   * Das Backup lässt sich auch dann einspielen, wenn die Assets-Seite in
-   * dieser Sitzung nie geöffnet wurde — dann steht der Katalog noch nicht,
-   * die Whitelist aber sehr wohl.
+   * Die gespeicherte Auswahl ist auch verfügbar, wenn die Assets-Seite in
+   * dieser Sitzung noch nicht geöffnet wurde.
    */
   async function hydrateAllowlist(): Promise<void> {
     const portfolioId = portfolioStore.portfolio?.id ?? ''
@@ -143,7 +127,6 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     allowlist,
     allowlistFor,
     hydrateAllowlist,
-    replaceAllowlist,
     allowedInstruments,
     loading,
     error,

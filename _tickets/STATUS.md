@@ -13,8 +13,9 @@ beide Tickets in `30-doing/` und werden noch nicht gemeinsam integriert.
 Der Teststack verbindet StockInfos vorhandene Testkurse, Konto-API und Vite.
 StockInfo wurde nicht geändert.
 
-**Aktuelle Arbeit:** [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
-und danach [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
+**Aktuelle Arbeit:** [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+mit Mikes neuem Theme-Abnahmepunkt in der technischen Nachprüfung; danach
+[T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md).
 Mike hat den unmittelbaren Beginn nach den Anpassungen ohne weiteren
 Warteschritt beauftragt. Claude hat die Konzepte beider Tickets geprüft;
 Produktnachweise stehen noch aus. Die Mehradmin-Regel und die Sichtbarkeit des
@@ -113,27 +114,59 @@ Tickets stehen aus. Die letzte technische Reviewreferenz ist T-63 Runde 6.
 T-61 ist auf dem eigenen Branch `t-61-benutzergebundene-depotdaten-per-rest`
 von der freigegebenen Fassung abgezweigt. Die zwei Befunde aus Claudes
 technischer Runde 3 zu kontoübergreifenden Depot-IDs und dem stillen
-IndexedDB-Rückfall sind korrigiert; Runde 4 prüft die Fassung `2880d1d`.
-Mike hält T-63 weiter in Abnahme. Die präzisierte unfarbige Hilfe mit
-Beispielen untereinander liegt als `1c7f37c` auf dem T-63-Branch.
-T-62 hat einen eigenen Branch und folgt auf die T-61-Nachprüfung. Für
+IndexedDB-Rückfall sind in Runde 4 (`2880d1d`) als behoben bestätigt. Den
+verbliebenen Befund 3 zum lokalen Restore-Zweig und zu fehlenden Store-Tests
+hat Codex mit `238723a` behoben. Die aufruflosen Store-Methoden und den
+verwaisten i18n-Schlüssel aus Runde 5 hat Codex mit `094802b` entfernt. Claude hat
+T-61 in Runde 6 technisch freigegeben; Mikes Prüfpunkte A bis D stehen aus.
+Mike hält T-63 weiter in Abnahme. Die Hilfe mit Beispielen untereinander
+liegt als `1c7f37c` auf dem T-63-Branch. Der neue Theme-Abnahmepunkt ist
+dort mit `bd4faec` umgesetzt. ProjectTools-`master` enthält das paketierte
+Python-Modul lokal als `f8cd8ec`; es erfolgte kein Push.
+Claudes Runde 7 für `bd4faec` endete mit `changes_requested`: Das Theme
+funktioniert, aber die Anleitungen schreiben die Installation in StockInfos
+`.venv` vor, die StockInfo-T-82 erst klären soll.
+Runde 8 (`e4db84b`, Variante a) ist durch Mikes Entscheidung für eine eigene
+`.venv` in StockPortfolio (Variante c) überholt und zurückgegeben.
+Variante (c) liegt mit `ca9c74b` und `d7e1607` auf dem T-63-Branch:
+StockPortfolios eigene `.venv` trägt das ProjectTools-Paket aus der allgemeinen
+`requirements.txt`; `make clean` behält sie. Der StockInfo-Kindprozess nutzt
+weiter dessen unveränderte `.venv`. Runde 9 prüft diese Fassung. Der volle
+Stack wurde für die Umstellung nicht erneut gestartet; die Prüffassung nennt
+den letzten Live-Nachweis und die neuen Preflight- und Theme-Proben.
+Claudes Runde 9 bestätigte die eigene `.venv` live, fand aber Restdateien
+nach dem Stopp und einen falschen Portkonflikt bei `TIME_WAIT`. Die Korrekturen
+`44f61a6` und `05ccd7b` sind nach Einzelserver- und doppeltem Stack-Lauf
+in Runde 10 als wirksam bestätigt. Runde 10 endete mit `changes_requested`:
+`SIG_IGN` konnte ein frühes SIGTERM verwerfen (Befund 3). `4d5e81f`
+setzt einen beendenden Handler; eine gezielte Frühstart-Gegenprobe und normale
+Stopps bestanden. Auf Mikes Auftrag wurden 47 verwaiste Testverzeichnisse und
+vier Zustandsdateien nach Prozess- und Portprüfung entfernt. Runde 11 liegt
+Claude zur Nachprüfung vor. Runde 11 bestätigte Signalstopp und Bereinigung,
+fand aber unlesbare Zustandsdateien bei Abbruch während des Schreibens.
+`637da2f` und `18c60f4` sichern die Ablage von Einzelserver und Stack atomar
+und prüfen den gesamten Start-/Stoppweg. Runde 12 bestätigte den Lebenszyklus,
+fand aber Exit 0 ohne Meldung bei abgebrochenem Stack-Start. `f28417c`
+liefert Exit 143 und eine übersetzte Meldung. Claude hat Runde 13 technisch
+freigegeben. Mike prüft T-63 erst am Ende der Kette nach T-61/T-62.
+T-62 ist jetzt auf seinem eigenen Branch zur Umsetzung aktiviert. Für
 T-60/T-63 erfolgen bis zu Mikes T-63-Entscheidung weder Merge noch Push.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `handoff_commit`: `2880d1d69161412c1b36cb735862bc23e3ae451d`
-- `review_round`: `4`
-- `owner`: `claude`
+- `phase`: `implementing`
+- `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `codex`
 - `updated_at`: `2026-09-30`
-- `last_reviewed_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
-- `last_reviewed_commit`: `0ad4a6af2e259a90302042597a4116bd23c537d3`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
+- `last_reviewed_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
+- `last_reviewed_round`: `13`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-61-benutzergebundene-depotdaten-per-rest.md, T-62-sse-benachrichtigung-fuer-depots.md`
-- `priority_ticket`: `T-61-benutzergebundene-depotdaten-per-rest.md`
+- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -308,12 +341,4 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-**Codex → Claude · T-61 · technische Runde 4 · 2026-09-30.** Prüfe
-`2880d1d69161412c1b36cb735862bc23e3ae451d` gezielt gegen beide
-Runde-3-Befunde: dieselbe Depot-ID und dasselbe Backup in zwei Konten,
-sowie Fabriken ohne IndexedDB-Rückfall auch im Testmodus. Der lokale
-Testaufbau ist ausdrücklich in den betroffenen Testdateien gemockt.
-Mikes Frage zum Store-Weg ist durch `useBackupStore` und `useLegacyStore`
-nachgezogen. `make test` (811/14), beide Lints, beide Typechecks und beide
-Builds bestanden. Doku-Abgleich und Grenzen stehen im Ticket. T-63 bleibt
-separat in Mikes Abnahme; nicht integrieren oder pushen.
+Keine offene Nachricht.

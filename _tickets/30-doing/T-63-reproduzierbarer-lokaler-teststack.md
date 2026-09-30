@@ -532,6 +532,21 @@ dass die Punkte im Ticket stehen und vor der Freigabe nichts integriert wird.
   erzeugt Passwörter mit Großbuchstabe, Ziffer und Sonderzeichen passend zur
   Konto-API. Die native `argparse`-Hilfe bleibt auf Python 3.11 zulässig
   unfarbig; eine Laufzeitabhängigkeit vom ProjectTools-Quellpfad entsteht nicht.
+- Mikes weitere Vorgabe für dieses Skript: keine Farben, Themes oder
+  Hints-Sektion. Die native unfarbige Hilfe zeigt stattdessen mehrere
+  Beispiele sauber untereinander: Stack-Start, Demo-Konten, Status, Stop und
+  Einzelserver. Der bereits vorhandene gettext-Katalog übersetzt die
+  Überschrift. T-63 bleibt bis zu Mikes ausdrücklichem Urteil in Abnahme.
+- **Neuerer Abnahmepunkt · Testserver-Theme:** Mike erwartet inzwischen die
+  gemeinsame Gestaltung wie bei ProjectTools `changelog.py`. Das Skript
+  verwendet optional `projecttools.ui.colors.HelpFormatter` und `Theme` für
+  Hilfe, Fehler und Statusmeldungen. `MAKE_THEME` wählt das Theme; `NO_COLOR`,
+  Umleitung und `TERM=dumb` bleiben farblos. Das Python-Paket kann über den
+  auf jeder Maschine eingerichteten `.libs/ProjectTools`-Link in StockInfos
+  bestehende venv installiert werden, ohne im Skript einen
+  ProjectTools-Quellpfad zu suchen. Fehlt das Paket, funktionieren Start,
+  Status, Stop und Hilfe schlicht mit nativer `argparse`-Hilfe. `README.md`
+  (**Setup**) und `AGENTS.md` (**Bauen und prüfen**) nennen den Bezugsweg.
 - „Anmeldung nicht erreichbar“ bei einzeln gestartetem Vite ist ein fehlender
   Konto-API-Prozess auf Port 8080. `make dev` startet beide Server; der
   isolierte Stack startet sie zusammen und meldet die konkreten Adressen.
@@ -862,3 +877,386 @@ festgehalten. Der Observer hat vor dem Archivieren auf diese Trennung
 hingewiesen. T-60 und T-63 bleiben deshalb in `30-doing/`; der gemeinsame
 Merge und Push warten auf Mikes T-63-Entscheidung. T-61 kann auf einem eigenen,
 auf der geprüften Fassung aufbauenden Branch beginnen.
+
+## Weitere Abnahmepräzisierung · CLI-Hilfe · 2026-09-30
+
+Die einzelne `Example:`-Zeile der Hilfe ist durch fünf getrennte
+Beispielzeilen ersetzt. `argparse.RawDescriptionHelpFormatter` erhält deren
+Zeilenumbrüche. Das Skript enthält weiterhin keine Farb-, Theme- oder
+Hints-Ausgabe und lädt `projecttools.ui.colors` nicht. Der Skriptkopf und die
+Aktionsoptionen bleiben unverändert.
+
+**Eigenprüfung:** `--help` und Aufruf ohne Argumente zeigten die Beispiele
+zeilenweise und endeten jeweils mit Exit 0. Die deutsche Ausgabe mit
+`LC_ALL=de_DE.UTF-8` zeigte „Beispiele:“ und dieselben fünf Aufrufe.
+`msgfmt --check-format` erzeugte den aktuellen deutschen Katalog; `ruff check`
+für beide Python-Dateien und `git diff --check` bestanden.
+
+**Doku-Abgleich:** `README.md` (**Setup**) und `AGENTS.md` (**Bauen und prüfen**)
+nennen weiterhin die gültigen Aufrufe. `docker/README.md` beschreibt den
+Containerbetrieb und betrifft die lokale Skript-Hilfe nicht. Keine Änderung
+an Board- oder Lessons-Konventionen; der `task-verification-workflow`-Skill
+bleibt unverändert. T-60 ist von Mike abgenommen; T-63 bleibt in Abnahme.
+
+## Weitere Abnahmepräzisierung · CLI-Theme · 2026-09-30
+
+Mikes neuerer Abnahmepunkt aus der Observer-INBOX ersetzt die frühere
+Festlegung auf durchgehend unfarbige Hilfe. `scripts/cli_theme.py` bindet
+`projecttools.ui.colors` als optional installiertes Paket ein. Ist es
+vorhanden, formatieren `HelpFormatter` und `Theme` Optionen, Beispiele,
+Fehler sowie Statusmeldungen nach `MAKE_THEME`. Ohne Paket bleiben alle
+Aktionen und die native `argparse`-Hilfe nutzbar. Im Skript steht kein
+absoluter ProjectTools-Quellpfad. ProjectTools-`master` enthält das
+paketierbare Python-Modul nach Mikes Zustimmung lokal als Fast-Forward
+`f8cd8ec`; `origin/master` wurde nicht verändert. Die unversionierte
+ProjectTools-`AGENTS.md` blieb unberührt.
+
+**Eigenprüfung:** Aus dem ProjectTools-Stand wurde ein Wheel gebaut und in
+ein isoliertes Testverzeichnis installiert. Mit diesem Paket zeigte ein
+PTY-Aufruf unter `MAKE_THEME=ocean`, `TERM=xterm` und ohne `NO_COLOR` ANSI-
+Farben in Hilfe und Fehlern. `NO_COLOR=1` und umgeleitete Ausgabe blieben
+farblos; die fünf Beispiele stehen weiterhin untereinander. Ohne Paket
+erschienen Hilfe und Fehlermeldung im nativen Format; die deutsche Hilfe
+zeigte „Beispiele:“ und alle fünf Zeilen. `ruff check` für die drei
+Python-Dateien bestand.
+
+Der isolierte Stack startete mit synthetischen Konten auf Fixture-Port
+18898, bestand `--stack --status` einschließlich Endpunkt-, Kurs- und
+CORS-Prüfung und wurde mit `--stack --stop` samt temporären Kontodaten
+beendet. Port 8899 war durch eine fremde registrierte State-Datei belegt;
+deren Prozess und Daten blieben unberührt. Ein erneuter interaktiver
+Browserdurchlauf fand für diese CLI-Änderung nicht statt.
+
+`make test` bestand mit 806 Frontend- und 8 API-Tests, beide Lints ohne
+Cache, beide Typechecks und `git diff --check` bestanden. Der erste Lauf im
+Worktree traf den bekannten Docker-Test unter macOS-Bash 3.2; mit Bash 5.3
+im `PATH` bestand der unveränderte Gesamtumfang. ProjectTools-
+`tests/python/test_cli_themes.py` bestand mit 9 Tests und 11 übersprungenen
+Fällen.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Command-line themes**) und
+`AGENTS.md` (**Bauen und prüfen**) erklären Installation, `MAKE_THEME` und
+den Fallback. `docker/README.md` (**Data and backups**, **Configuration**)
+betrifft den Container und hat keinen Aufruf dieses lokalen Skripts;
+inhaltlich bleibt es unverändert. Keine Board- oder Lessons-Konvention
+wurde geändert.
+
+## Technische Prüfung Runde 7
+
+`claude`, 2026-09-30, an Handoff-Commit `bd4faecb64f6fd92db2c2942055a94eed063da17`
+(Branch `t-63-reproduzierbarer-lokaler-teststack`, Diff seit `26b59ed`).
+Geprüft habe ich Mikes Theme-Abnahmepunkt in einem eigenen, abgetrennten
+Worktree. Angewandt habe ich SP-R-04 (Scout Rule) und die projektweite
+StockInfo-Grenze aus `AGENTS.md`.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Code | `scripts/cli_theme.py`, `local_test_stack.py` und `stockinfo-test-server.py` gelesen | Optionaler Import: Nur ein fehlendes `projecttools`-Modul führt zum schlichten Rückfall, andere Importfehler werden weitergereicht. Kein Rechnerpfad im Skript. Fehler, Status und Stop laufen über `print_message` mit Rollen `SUCCESS`, `WARNING` und `DANGER` |
+| Ohne Paket | StockInfo-`.venv` (ohne `projecttools`), `--help` in eine Pipe, falsche Optionskombination | Native Hilfe mit „Beispiele:“ und fünf Zeilen untereinander, Exit 0; schlichte argparse-Fehlermeldung |
+| Mit Paket | Für die Probe nur `PYTHONPATH` auf ProjectTools-`master` `f8cd8ec`, ohne Installation; Pseudo-Terminal über `script`, `MAKE_THEME=ocean`, `TERM=xterm` | Hilfe mit 21 farbigen Zeilen (Gruppen, Optionen, Beschreibungen); Fehler rot mit „✗“, „kein Stack registriert“ gelb |
+| `NO_COLOR` und Pipe | dieselbe Probe mit `NO_COLOR=1` beziehungsweise umgeleiteter Ausgabe | 0 farbige Zeilen |
+| Katalog, Lint | `msgfmt --check-format`, `.mo` neu erzeugt und verglichen, `ruff check`, `py_compile` | Katalog gültig, `.mo` aktuell, Ruff „All checks passed“ |
+| Umfang | `git diff --stat 26b59ed bd4faec -- frontend api` | Frontend und API unverändert; ein erneuter Testlauf ist dafür nicht nötig |
+| StockInfo-Umgebung | `pip show mmit-projecttools` und Import in StockInfos `.venv` | Nicht installiert; StockInfos Umgebung ist unverändert |
+
+**Befund (blockierend):**
+
+1. **Die Anleitungen schreiben eine Installation in StockInfos Python-Umgebung
+   vor und greifen damit StockInfo-T-82 vor.** `README.md` (**Command-line
+   themes**) und `AGENTS.md` (**Bauen und prüfen**) nennen als Weg
+   `../StockInfo/.venv/bin/python -m pip install -e ./.libs/ProjectTools`.
+   Genau diese Frage klärt StockInfos eigenes Ticket
+   `20-ready/T-82-python-paket-fuer-konsumententests-klaeren.md` (Stand
+   `ce69410`, noch nicht aktiviert). Es hält ausdrücklich fest: „Keine
+   vorweggenommene Entscheidung über StockInfos Abhängigkeiten“ und „keine
+   automatische Änderung fremder Projekt-venvs“. `AGENTS.md` sagt: Braucht die
+   App etwas vom Dienst, entsteht ein StockInfo-Ticket, und über die Lösung
+   entscheidet, wer den Dienst kennt. Dazu kommt ein technisches Risiko: Die
+   editierbare Installation bindet StockInfos `.venv` an den Symlink
+   `.libs/ProjectTools` dieses Repositorys. StockInfo deklariert das Paket
+   nicht, und ein Neuaufbau oder Abgleich seiner Umgebung entfernt es wieder
+   still. Mikes Zustimmung laut Übergabe betrifft den lokalen Fast-Forward von
+   ProjectTools-`master`, nicht diesen Installationsweg.
+   **Erwartet, je nach Mikes Entscheidung:**
+   (a) Die Anleitungen beschreiben das Theme als verfügbar, sobald
+   `projecttools` in der ausführenden Umgebung importierbar ist, und kennzeichnen
+   den Installationsweg für StockInfos Umgebung als **noch nicht verfügbar,
+   geklärt in StockInfo-T-82**; der Code bleibt unverändert. Oder
+   (b) Mike entscheidet ausdrücklich, diesen Installationsweg jetzt
+   festzulegen. Dann steht das mit seinem Wortlaut in T-63 und als
+   Konsumentenhinweis in StockInfos T-82, und die Anleitungen nennen die
+   Grenze, dass ein Neuaufbau von StockInfos `.venv` die Installation entfernt.
+
+**Urteil:** `changes_requested` für `bd4faec`. Der Code erfüllt Mikes
+Theme-Abnahmepunkt vollständig, einschließlich Rückfall, `NO_COLOR` und Pipe.
+Die Nachprüfung beschränkt sich auf den Befund zu den Anleitungen.
+
+## Nacharbeit zu Runde 7 · 2026-09-30
+
+Die in der Runde-7-Prüffassung vorgeschlagene editierbare Installation in
+StockInfos `.venv` ist aus `README.md` und `AGENTS.md` entfernt. Sie war
+kein freigegebener Entwicklungsweg: StockInfo-T-82 unter `20-ready/` klärt
+erst, welche Python-Umgebung das Paket für Konsumententests bereitstellen
+soll. Bis dahin bleibt die dokumentierte StockInfo-venv unverändert und die
+CLI zeigt dort die schlichte Hilfe. Der optionale Paketimport und das
+bereits geprüfte Theme-Verhalten bleiben erhalten, wenn das Paket in der
+ausführenden Umgebung importierbar ist. Damit wird keine StockInfo-
+Abhängigkeit vorweggenommen. Die frühere Installationsangabe im
+Abnahme-Nachtrag oben ist durch diese Entscheidung überholt.
+
+**Prüfung:** `git grep -n 'pip install -e ./.libs/ProjectTools' -- README.md
+AGENTS.md` liefert keinen Treffer. `git diff --check` ist sauber. Es wurde
+kein Produktcode geändert; die Runde-7-Proben für Hilfe mit und ohne Paket,
+Ruff sowie 806 Frontend- und 8 API-Tests bleiben auf `bd4faec` bezogen.
+
+**Doku-Abgleich:** `README.md` (**Setup**) und `AGENTS.md` (**Bauen und
+prüfen**) nennen denselben noch offenen Installationsweg aus StockInfo-T-82
+und versprechen für den normalen Aufruf bis dahin nur schlichte Hilfe.
+`docker/README.md` enthält keinen lokalen Testserver-Aufruf und bleibt
+unverändert. StockInfos T-82 ist aus Konsumentensicht benannt, aber sein
+Umfang und seine Lösung wurden hier nicht geändert. Keine Board- oder
+Lessons-Konvention geändert.
+
+## Übergabe an Claude · technische Runde 8 · 2026-09-30
+
+Bitte den einzelnen Doku-Befund aus Runde 7 nachprüfen: Der normale
+StockInfo-Python-Aufruf verändert StockInfos Umgebung nicht und verspricht
+keine bereits installierten Farben. Die installierbare, optional genutzte
+Theme-Bibliothek bleibt auf ProjectTools-`master` lokal verfügbar; über
+StockInfos regulären Paketbezug entscheidet T-82. Mikes T-63-Abnahme und
+die gemeinsame Integration mit T-60 stehen weiterhin aus.
+
+## Technische Prüfung Runde 8
+
+`claude`, 2026-09-30, an Handoff-Commit `e4db84b5d13a136d9dec4095fa9e6bd6f8cc8781`
+(Diff seit `bd4faec`, nur `README.md`, `AGENTS.md` und dieses Ticket).
+
+**Geprüft:** Die Fassung setzt Variante (a) aus Runde 7 richtig um. Beide
+Anleitungen enthalten keine Installationsanweisung für StockInfos `.venv`
+mehr, verweisen für den Paketbezug auf StockInfo-T-82, halten fest, dass der
+Teststack StockInfos Umgebung nicht ändert, und beschreiben dasselbe. Der
+Produktcode ist seit `bd4faec` unverändert.
+
+**Überholt durch Mikes Entscheidung:** Parallel zu dieser Übergabe hat Mike
+den Befund aus Runde 7 anders entschieden, nämlich mit Variante (c): „Weshalb
+das .venv in StockInfo wenn der Aufruf aus StockPortfolio erfolgt? Dann wäre
+wohl naheliegend das .venv hier zu verwenden“, danach „Ja, trag Variante (c)
+in die INBOX ein“. Die CLI (Hilfe, Stack-Start, Status, Stop, Theme) läuft
+künftig in einer eigenen `.venv` von StockPortfolio mit `projecttools`. Der
+StockInfo-Kindprozess startet unverändert mit `<stockinfo-root>/.venv/bin/python`.
+Nur der Einzelserver `--run` ohne `--stack` bleibt in StockInfos `.venv` und
+damit ohne Theme. Die Einzelheiten der Umsetzung stehen in der INBOX
+(STATUS-Commit `46e262a`).
+
+**Urteil:** `changes_requested` für `e4db84b`, allein wegen Mikes Entscheidung
+für Variante (c). Die Fassung selbst enthält keinen Fehler. Die nächste
+Runde prüft die eigene `.venv`, den Stack-Aufruf daraus, die unveränderte
+StockInfo-Umgebung und den Abgleich beider Anleitungen.
+
+## Abnahme Mike · Python-Umgebung · 2026-09-30
+
+Mike entschied nach Runde 8, den Stack mit StockPortfolios eigener `.venv`
+auszuführen. Der StockInfo-Kindprozess bleibt an StockInfos `.venv` gebunden;
+der Einzelserver ohne `--stack` importiert StockInfos App im selben Prozess
+und wird deshalb weiter direkt mit dessen Python gestartet. Diese Entscheidung
+ersetzt den vorläufigen T-82-Verweis aus der Nacharbeit zu Runde 7, ohne die
+älteren Reviewbelege umzuschreiben.
+
+Commit `ca9c74b` richtet `make setup` für die lokale Python-Umgebung und das
+deklarierte `requirements-test-stack.txt` ein. `.gitignore` ignoriert `.venv`;
+`make clean` entfernt sie. Der Bibliotheks-Check in `setup-libs.sh` verwendet
+den paketierten Pfad `projecttools/ui/colors.py`. README, AGENTS und
+Skriptkopf zeigen Stack-Start, Status und Stop mit `.venv/bin/python` sowie
+den StockInfo-only-Aufruf mit dessen Python. `make hints` zeigt die verkürzte
+Setup-Reihenfolge ohne doppelte npm-Installation.
+
+**Prüfung:** Ein frisches `python3.11 -m venv .venv` und die reguläre
+Installation aus `requirements-test-stack.txt` bestanden; der erste pip-Lauf
+in der Netz-Sandbox scheiterte nur am isolierten Build-Download, derselbe
+Befehl mit Netzfreigabe bestand. Der Import kommt aus dem lokalen,
+paketierten ProjectTools-`master`. `bash scripts/setup-libs.sh --install`,
+`make help`, `make hints` und `make -n setup` bestanden. `make clean`
+entfernte die `.venv`; sie wurde danach für die Reviewprobe wieder angelegt.
+Der gesamte `make setup`-Lauf wurde im Prüf-Worktree wegen seiner auf den
+Haupt-Workspace zeigenden `node_modules`-Symlinks nicht erneut ausgeführt;
+der unveränderte npm-Teil ist durch `make test` geprüft.
+
+Die CLI-Hilfe lief aus StockPortfolios `.venv` ohne StockInfo-Pakete. Im
+Pseudo-Terminal zeigte `MAKE_THEME=ocean` farbige Gruppen und Optionen;
+`NO_COLOR=1` sowie die Pipe zeigten keine ANSI-Farben. `--stack --status`
+meldete korrekt keinen registrierten Stack. Ein `--stack --run` mit absichtlich
+fehlendem StockInfo-Pfad endete vor einem Prozessstart mit
+`Missing StockInfo Python environment: .../.venv/bin/python`; für dessen
+`ps`-Identitätsprüfung wurde die vorgesehene Freigabe verwendet. Der
+vollständige Stack wurde für diese Änderung nicht erneut gestartet. Der
+frühere Endpunkt-, Kurs- und CORS-Lauf aus Runde 7 bleibt der letzte
+Live-Stack-Nachweis. StockInfos `.venv` wurde nicht verändert.
+
+`make test` bestand mit 806 Frontend- und 8 API-Tests. Beide ESLint-Läufe,
+beide Typechecks, Ruff, Python-Syntaxprüfung und `git diff --check`
+bestanden. Frontend- und API-Produktcode blieben unverändert.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) nennen beide den eigenen Stack-Interpreter, den
+StockInfo-Kindprozess und den direkten Einzelserver-Aufruf. `docker/README.md`
+(**Quick start**, **Configuration**, **Data and backups**) enthält weder
+lokalen Teststack noch Python-Setup; keine Änderung nötig. StockInfo-T-82
+wird durch diese Lösung für StockPortfolios Theme-Bezug nicht benötigt und
+hier nicht verändert. Keine Board- oder Lessons-Konvention wurde geändert.
+
+## Übergabe an Claude · technische Runde 9 · 2026-09-30
+
+Bitte Mikes Variante (c) auf Commit `ca9c74b` prüfen: `make setup` richtet
+StockPortfolios `.venv` ein, die CLI verwendet daraus das Theme, während
+der StockInfo-Kindprozess weiterhin dessen `.venv` verwendet. Den fehlenden
+StockInfo-Pfad und die offen benannte Grenze des nicht wiederholten
+Live-Stack-Laufs bitte gegen die obigen Belege bewerten. Mikes T-63-Abnahme
+und die gemeinsame Integration mit T-60 stehen noch aus.
+
+### Ergänzung vor Runde 9 · 2026-09-30
+
+Mike präzisierte den Lebenszyklus nach dem ersten Commit: `make clean` darf
+die eigene `.venv` nicht entfernen; `make setup` verwendet eine vorhandene
+Umgebung wieder und installiert nur das fehlende Python-Paket. Die allgemeine
+Python-Abhängigkeitsdatei heißt `requirements.txt` im Projekt-Root. Der
+dokumentierte Stack-Aufruf lautet `.venv/bin/python scripts/stockinfo-test-server.py …`.
+Diese Vorgaben ersetzen die gegenteiligen Aussagen zur `.venv` und zum
+Dateinamen im unmittelbar vorhergehenden Abnahmeabschnitt.
+
+Commit `d7e1607` setzt das um. Setup prüft `PYTHON_BOOTSTRAP` auf Python 3.11+
+vor dem Erstellen, prüft auch eine vorhandene `.venv`, erstellt sie nur bei
+Bedarf und installiert `mmit-projecttools` aus `requirements.txt` nur, wenn
+Distribution oder UI-Modul fehlen. `make clean` behält `.venv`, entfernt
+aber erzeugte Python-Caches. README, AGENTS und Skriptkopf zeigen denselben
+Aufruf ohne `-B`; `.gitignore` ignoriert `.venv` und Python-Caches.
+
+**Gegenproben:** `make setup PYTHON_BOOTSTRAP=python3.9` endete vor der
+venv-Anlage mit „Python 3.11 oder neuer erforderlich“. Nach `make clean`
+waren `.venv/bin/python` und der ProjectTools-Import weiterhin vorhanden.
+Die Installation mit `pip install --no-build-isolation -r requirements.txt`
+bestand in der Netz-Sandbox; zuvor bestand die reguläre pip-Build-Isolation
+mit Freigabe für denselben lokalen Paketpfad. Der dokumentierte
+`.venv/bin/python scripts/stockinfo-test-server.py --help`-Aufruf zeigte die
+Hilfe, `--stack --status` meldete korrekt keinen Stack. `make -n setup` und
+`git diff --check` waren sauber. Frontend und API blieben gegenüber dem
+vorherigen grünen Gesamtprüflauf unverändert. Nach `d7e1607` bestanden
+`make test` erneut mit 806 Frontend- und 8 API-Tests, beide Lints, beide
+Typechecks und Ruff.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) nennen beide `requirements.txt`, die wiederverwendete
+`.venv` und deren Erhalt bei `make clean`. `docker/README.md` hat weiterhin
+keinen lokalen Python-Setup-Weg; unverändert. Keine Board- oder
+Lessons-Konvention geändert. Die technische Runde 9 soll beide Produktcommits
+`ca9c74b` und `d7e1607` einschließlich dieser Ergänzung prüfen.
+
+## Technische Prüfung Runde 9
+
+`claude`, 2026-09-30, an Handoff-Commit `70c25a6117d9339cddd8fd18ba459565b614315b`
+(Diff seit `e4db84b`). Geprüft habe ich Mikes Variante (c) samt seinen
+Vorgaben zu `make setup`, `make clean` und `requirements.txt` in einem eigenen,
+abgetrennten Worktree. Den vollen Stack habe ich selbst gestartet, weil die
+Übergabe diesen Live-Nachweis für die Umstellung offen ließ. Angewandt habe ich
+SP-R-02 und SP-R-04.
+
+| Punkt | Eigener Schritt | Ergebnis |
+|---|---|---|
+| Setup-Schritte | Die vier Python-Zeilen aus `make -n setup` zweimal ausgeführt | Lauf 1 legt `.venv` mit Python 3.11 an und installiert `requirements.txt`; Lauf 2 meldet das Paket vorhanden, ohne Installation. `projecttools.ui.colors` kommt aus `.libs/ProjectTools` (`mmit-projecttools` 0.1.0). Die `.venv` enthält keine StockInfo-Abhängigkeiten (`fastapi` fehlt) |
+| Stack aus eigener `.venv` | `.venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts`, `--stack --status`, `--stack --stop` | Start und alle Endpunkt- und CORS-Prüfungen erfolgreich; Status mit Theme im Pseudo-Terminal farbig (11 Zeilen), in einer Pipe Exit 0; Stop entfernt API, Vite und Kontodaten |
+| StockInfos `.venv` | Fingerabdruck von `pip freeze` vor und nach dem Lauf, Import von `projecttools` | Unverändert (`61eccd459663`), `projecttools` dort nicht importierbar |
+| `make clean` | zweimal im Worktree | Beide Exit 0, `.venv` bleibt, `scripts/__pycache__` wird entfernt |
+| Doku | Diff von `README.md`, `AGENTS.md` und dem Skriptkopf gelesen | Aufruf mit `.venv/bin/python`, `make setup` samt `PYTHON_BOOTSTRAP` und Versionsprüfung, `make clean` behält die `.venv`, Einzelserver weiter mit StockInfos `.venv`; beide Anleitungen stimmen überein |
+
+**Befunde (blockierend, nach SP-R-04):**
+
+1. **Der Stopp hinterlässt Zustandsdatei und Datenverzeichnis des
+   StockInfo-Kindprozesses.** `stop_children` beendet die Prozessgruppe mit
+   SIGTERM. StockInfos `uvicorn` 0.51.0 fängt das Signal, fährt herunter und
+   löst es dann erneut aus (`raise_signal` in `uvicorn/server.py`). Der Prozess
+   endet damit, bevor der `finally`-Block von `run_single_server` läuft
+   (`stockinfo-test-server.py`, `state_path.unlink()` und
+   `shutil.rmtree(data_dir)`). Belegt: Nach einem erfolgreichen
+   `--stack --stop` lag `stockportfolio-test-server-8899.json` mit beendeter
+   PID 76374 weiter vor. Unter dem System-Temp liegen **46** Verzeichnisse
+   `stockportfolio-t39-server-*` mit StockInfo-Test-Datenbanken von 15:32 bis
+   21:25. Eine liegengebliebene Zustandsdatei blockiert den nächsten Start aus
+   einem anderen Pfad („gehört nicht zu diesem Testserver“); das ist heute
+   zweimal passiert, um 15:29 im Hauptverzeichnis und um 19:17 in meinem
+   T-61-Worktree. Das widerspricht dem Kriterium „Stop räumt eigene Prozesse
+   und temporäre Daten auf“. **Das gab es schon in Runde 1; ich habe dort nur
+   nach `stockportfolio-t63-*` gesucht und die Kindreste übersehen.**
+   **Erwartet:** Der Einzelserver räumt Zustandsdatei und Datenverzeichnis
+   auch nach SIGTERM zuverlässig auf, etwa per Signal-Handler vor `uvicorn`
+   oder per Aufräumen durch den Stack nach dem Stopp für den registrierten
+   Kindzustand. Ein Test oder eine Gegenprobe belegt: Nach `--stack --stop`
+   gibt es keine Zustandsdatei und kein `stockportfolio-t39-server-*`
+   dieses Laufs mehr.
+2. **Die Portprüfung meldet nach einem Stopp fälschlich „belegt“.** Der
+   Test-Socket in `local_test_stack.py:53–55` bindet ohne `SO_REUSEADDR`.
+   Direkt nach `--stack --stop` scheiterte ein Neustart vom selben Pfad mit
+   „Port 8899 ist bereits belegt“, obwohl kein Prozess mehr lauschte
+   (`lsof` leer); `netstat` zeigte nur `TIME_WAIT`-Verbindungen. Uvicorn selbst
+   bindet mit `SO_REUSEADDR` und hätte starten können.
+   **Erwartet:** Die Prüfung verhält sich wie der Server-Bind und meldet nur
+   einen tatsächlich lauschenden Prozess. Eine Gegenprobe belegt einen
+   Neustart unmittelbar nach dem Stopp.
+
+**Aufgeräumt:** Meine eigenen verwaisten Zustandsdateien (19:17 aus
+`wt-t61`, 21:25 aus `wt-t63r9`, beide mit beendeter PID) habe ich entfernt.
+Die 46 Datenverzeichnisse habe ich nicht angefasst, weil sie auch aus fremden
+Läufen stammen; über ihr Entfernen entscheidet Mike.
+
+**Nebenbemerkung zum Board:** Mein Commit `637f3ed` („start T-63 round 9
+review“) hat Codex' noch uncommittete Übergabeänderungen an `STATUS.md`
+mitgenommen (Kontext, `handoff_commit`, Runde 9, drei Observer-Nachrichten).
+Inhaltlich ist der Stand richtig, er steht nur unter meinem Commit.
+
+**Urteil:** `changes_requested` für `70c25a6`. Variante (c) ist vollständig
+und nachprüfbar umgesetzt, einschließlich aller drei Vorgaben Mikes. Die
+Nachprüfung beschränkt sich auf die Befunde 1 und 2.
+
+## Nacharbeit zu Runde 9 · 2026-09-30
+
+Die zwei Befunde sind getrennt behoben:
+
+1. `44f61a6` hält `SIGTERM` beim StockInfo-Einzelserver während Uvicorns
+   Signalrückgabe zurück. Uvicorn kann geordnet herunterfahren; danach läuft
+   der vorhandene `finally`-Block und entfernt die zur eigenen PID gehörende
+   Zustandsdatei sowie das neue `stockportfolio-t39-server-*`-Verzeichnis.
+   Anschließend wird der vorherige Signalhandler wiederhergestellt.
+2. `05ccd7b` setzt beim Port-Probesocket `SO_REUSEADDR` vor `bind`, wie der
+   eigentliche Uvicorn-Server. Eine reine `TIME_WAIT`-Verbindung wird damit
+   nicht mehr als fremder Listener gemeldet.
+
+**Gegenproben:** Vor dem Port-Fix scheiterte ein lokaler Bind nach einer
+geschlossenen Testverbindung auf Port 60190 mit `Address already in use`;
+mit dem Fix bestand dieselbe Probe auf Port 60212. Auf Port 18987 wurde der
+StockInfo-Einzelserver zweimal gestartet und mit `--stop` beendet: Jeweils
+verschwanden seine Zustandsdatei und das neue Datenverzeichnis. Danach wurde
+der **vollständige Stack zweimal direkt hintereinander** auf Port 18987 aus
+StockPortfolios `.venv` gestartet, mit `--stack --status` geprüft und mit
+`--stack --stop` beendet. Beide Starts, Statusläufe und Stopps bestanden.
+Nach jedem Stopp waren weder Stack- noch Kindzustandsdatei vorhanden; die
+Menge der zuvor vorhandenen `stockportfolio-t39-server-*`-Verzeichnisse war
+unverändert. Der Lauf berührte keine der von Claude genannten Altverzeichnisse.
+
+Nach den Codecommits bestanden `make test` mit 806 Frontend- und 8 API-Tests,
+beide ESLint-Läufe, beide Typechecks, Ruff, Python-Syntaxprüfung und
+`git diff --check`. Die Produktänderung betrifft nur die beiden lokalen
+Python-Skripte.
+
+**Doku-Abgleich:** `README.md` (**Setup**, **Commands**) und `AGENTS.md`
+(**Bauen und prüfen**) versprachen bereits, dass Stop die eigenen Testdaten
+entfernt und ein belegter Port fremde Prozesse nicht beendet. Diese Zusagen
+werden nun erfüllt; kein Wortlautwechsel nötig. `docker/README.md`
+(**Quick start**, **Configuration**, **Data and backups**) enthält diesen
+lokalen Fixture-Stack nicht und bleibt unverändert. Keine Board- oder
+Lessons-Konvention geändert.
+
+## Übergabe an Claude · technische Runde 10 · 2026-09-30
+
+Bitte nur die zwei Befunde aus Runde 9 an `44f61a6` und `05ccd7b` erneut
+prüfen: Aufräumen des StockInfo-Kindprozesses nach `SIGTERM` sowie sofortiger
+Stack-Neustart nach Stopp trotz `TIME_WAIT`. Die Gegenproben stehen oben.
+Mikes T-63-Abschlussentscheidung und die gemeinsame Integration mit T-60
+bleiben offen.

@@ -50,10 +50,6 @@ class ServerAllowlistRepository {
     await activeClient().update<Record<string, boolean>>('allowlist', portfolioId, (current) => ({ ...current, [key]: enabled }))
   }
 
-  async replaceAll(portfolioId: string, entries: Map<string, boolean>): Promise<void> {
-    await activeClient().save('allowlist', portfolioId, Object.fromEntries(entries))
-  }
-
   async removeForPortfolio(portfolioId: string): Promise<void> {
     await activeClient().remove('allowlist', portfolioId)
   }
