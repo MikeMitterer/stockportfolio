@@ -657,3 +657,49 @@ eigenen, abgetrennten Worktree. Angewandt habe ich SP-R-04 (Scout Rule).
 
 **Urteil:** `changes_requested` für `238723a`. Befund 3 ist behoben. Die
 Nachprüfung beschränkt sich auf Befund 4.
+
+## Nacharbeit zu Runde 5 · 2026-09-30
+
+Die vier aufruflosen Store-Methoden `replaceAllowlist`, `replaceAll` in
+Settings und ValueHistory sowie `replacePortfolio` sind entfernt. Damit
+entfallen auch die nur noch dafür vorhandenen Store-Tests. Die
+Allowlist-Repositories hatten ebenfalls nur für diesen alten Restore-Weg
+eine vollständige `replaceAll`-Methode; diese und zwei reine Methodentests
+sind entfernt. Das weiterhin verwendete `replaceAll` des Kurs-Caches bleibt.
+Der verwaiste Schlüssel `backup.restored` ist aus beiden Sprachkatalogen
+entfernt. Der Produkt- und Teststand steht in `b2235b8`.
+
+**Aufruferinventar:** `git grep -n -E 'replaceAllowlist|replacePortfolio|backup\.restored|settingsStore\.replaceAll|valueHistoryStore\.replaceAll' -- frontend`
+ergibt keinen Treffer. `git grep -n 'replaceAll(' -- frontend/src/data frontend/src/db frontend/src/stores` zeigt nur
+`QuoteCacheRepository.replaceAll` und seinen Aufruf in `stores/quotes.ts`.
+Das atomare Einspielen bleibt ausschließlich bei `POST /api/data/restore`.
+
+**Prüfung:** `make test` bestand mit 808 Frontend- und 14 API-Tests. Beide
+Lints ohne Cache und beide Typechecks bestanden ohne Warnung; Frontend- und
+API-Build sowie `git diff --check` bestanden. Der Frontend-Build meldet den
+bereits bekannten großen Vendor-Chunk. Die neun entfernten Tests prüften
+ausschließlich die beseitigten Methoden. Ein zusätzlicher Browserlauf fand
+für diese Entfernung nicht statt.
+
+**Doku-Abgleich:** `README.md` (**Where the data lives**, **Layout**),
+`docker/README.md` (**Data and backups**), `unraid/README.md` (**Data, API and
+verification**) und `AGENTS.md` (**Tatsächlicher Entwicklungsstand**)
+beschreiben Konto-Daten und Backup bereits richtig; ihre Aussagen bleiben
+gültig. In `frontend/src/i18n/de.ts` und `en.ts` versprach der sichtbare
+Backup-Einstieg dagegen fälschlich reine Browserdaten und ein Backup als
+einzigen Gerätewechselweg. Beide Texte nennen jetzt den Server als Datenort
+und das Backup als zusätzliche Sicherung. Veraltete Quellkommentare im
+Instrumenten-Store sind ebenfalls korrigiert. Keine Änderung an Board- oder
+Lessons-Konventionen.
+
+**Lessons-Abgleich:** SP-CX-02 auf Aufrufer, aktuelle App-Texte und
+Anleitungen angewandt; frühere Befunde und Belege bleiben auf ihre Fassung
+bezogen.
+
+## Übergabe an Claude · technische Runde 6 · 2026-09-30
+
+Bitte den aufruflosen Code aus Befund 4 und das Aufruferinventar gezielt
+nachprüfen. Die entfernten Store-Methoden sind keine zulässige Alternative
+zur atomaren Server-Wiederherstellung. Die Prüfungen und der Doku-Abgleich
+stehen unmittelbar oben. T-60/T-63 bleiben bis zu Mikes ausdrücklicher
+T-63-Entscheidung ohne Merge und Push.
