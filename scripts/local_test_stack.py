@@ -20,6 +20,7 @@ from argparse import Namespace
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from cli_theme import print_message
 
 API_PORT = 8080
 FRONTEND_PORT = 5175
@@ -253,20 +254,21 @@ def seed_accounts(data_dir: Path) -> Path:
 
 def describe_stack(state: dict[str, object]) -> None:
     stockinfo_port = int(state["port"])
-    print(translate("Frontend: {origin}").format(origin=FRONTEND_ORIGIN))
-    print(translate("Account API: {url}").format(url=f"http://127.0.0.1:{API_PORT}"))
-    print(translate("StockInfo fixtures: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
-    print(translate("Browser origin / API origin: {origin}").format(origin=FRONTEND_ORIGIN))
-    print(translate("Effective StockInfo endpoint: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
+    print_message(translate("Frontend: {origin}").format(origin=FRONTEND_ORIGIN))
+    print_message(translate("Account API: {url}").format(url=f"http://127.0.0.1:{API_PORT}"))
+    print_message(translate("StockInfo fixtures: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
+    print_message(translate("Browser origin / API origin: {origin}").format(origin=FRONTEND_ORIGIN))
+    print_message(translate("Effective StockInfo endpoint: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
     if state.get("demo_accounts"):
-        print(translate("Synthetic account credentials: {path}").format(path=f"{state['data_dir']}/demo-accounts.json"))
+        print_message(translate("Synthetic account credentials: {path}").format(path=f"{state['data_dir']}/demo-accounts.json"))
     else:
-        print(translate("One-time setup code: {path}").format(path=f"{state['data_dir']}/api.log"))
-    print(translate("Temporary files: {path}").format(path=state["data_dir"]))
+        print_message(translate("One-time setup code: {path}").format(path=f"{state['data_dir']}/api.log"))
+    print_message(translate("Temporary files: {path}").format(path=state["data_dir"]))
     for name, child in dict(state["children"]).items():
         alive = process_identity(int(child["pid"])) == child["identity"]
         state_text = translate("running") if alive else translate("stopped")
-        print(translate("{name}: {state} (PID {pid})").format(name=name, state=state_text, pid=child["pid"]))
+        print_message(translate("{name}: {state} (PID {pid})").format(name=name, state=state_text, pid=child["pid"]),
+                      "SUCCESS" if alive else "WARNING")
 
 
 def require_owned_processes(state: dict[str, object]) -> None:
@@ -286,26 +288,26 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
 
     if args.status:
         if not state:
-            print(translate("No local test stack is registered"))
+            print_message(translate("No local test stack is registered"), "WARNING")
             return 1
         describe_stack(state)
         try:
             require_owned_processes(state)
             check_stack(int(state["port"]), bool(state["demo_accounts"]))
         except (RuntimeError, URLError, TimeoutError, ValueError) as error:
-            print(translate("Stack is not ready: {error}").format(error=error), file=sys.stderr)
+            print_message(translate("Stack is not ready: {error}").format(error=error), "DANGER", sys.stderr)
             return 1
-        print(translate("All local endpoints and CORS checks passed"))
+        print_message(translate("All local endpoints and CORS checks passed"), "SUCCESS")
         return 0
 
     if args.stop:
         if not state:
-            print(translate("No local test stack is registered"))
+            print_message(translate("No local test stack is registered"), "WARNING")
             return 0
         stop_children(dict(state["children"]))
         remove_data(Path(state["data_dir"]))
         state_path.unlink()
-        print(translate("Own local test stack stopped; temporary account data removed"))
+        print_message(translate("Own local test stack stopped; temporary account data removed"), "SUCCESS")
         return 0
 
     if state:
@@ -331,7 +333,7 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
             wait_ready(args.port, demo_accounts=True)
         require_owned_processes(state)
         describe_stack(state)
-        print(translate("All local endpoints and CORS checks passed"))
+        print_message(translate("All local endpoints and CORS checks passed"), "SUCCESS")
         return 0
     except (Exception, KeyboardInterrupt):
         stop_children(children)

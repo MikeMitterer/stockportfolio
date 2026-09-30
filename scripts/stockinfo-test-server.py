@@ -58,12 +58,24 @@ import tempfile
 import time
 from typing import Any
 
+from cli_theme import HelpFormatter, has_theme, print_message
 from local_test_stack import run_stack_cli, translate
+
+
+class ScriptArgumentParser(argparse.ArgumentParser):
+    """Gestaltet Fehler wie die ProjectTools-CLI, falls sie installiert ist."""
+
+    def error(self, message: str) -> None:
+        if not has_theme():
+            super().error(message)
+        self.print_usage(sys.stderr)
+        print_message("✗ " + message, "DANGER", sys.stderr)
+        self.exit(2)
 
 
 def parse_args(argv: list[str]) -> tuple[argparse.Namespace, argparse.ArgumentParser]:
     """Parst die CLI, ohne beim Import einen Server zu starten."""
-    parser = argparse.ArgumentParser(
+    parser = ScriptArgumentParser(
         prog=Path(__file__).name,
         description=translate("Run the local StockInfo fixture server and optional browser stack."),
         epilog="\n".join((
@@ -74,7 +86,7 @@ def parse_args(argv: list[str]) -> tuple[argparse.Namespace, argparse.ArgumentPa
             "  --stack --stop",
             "  --run --stockinfo-root ../StockInfo --port 8899",
         )),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=HelpFormatter,
         add_help=False,
     )
     actions = parser.add_argument_group(translate("Actions")).add_mutually_exclusive_group(required=True)
@@ -138,15 +150,15 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     existing_state = read_owned_state()
     if args.status:
         if not existing_state:
-            print(translate("No own test server is registered on port {port}.").format(port=args.port))
+            print_message(translate("No own test server is registered on port {port}.").format(port=args.port), "WARNING")
             return 1
-        print(translate("StockInfo test server: {url} (PID {pid})").format(
+        print_message(translate("StockInfo test server: {url} (PID {pid})").format(
             url=f"http://127.0.0.1:{args.port}", pid=existing_state["pid"],
         ))
         return 0
     if args.stop:
         if not existing_state:
-            print(translate("No own test server is registered on port {port}.").format(port=args.port))
+            print_message(translate("No own test server is registered on port {port}.").format(port=args.port), "WARNING")
             return 0
         pid = existing_state["pid"]
         os.kill(pid, signal.SIGTERM)
@@ -158,7 +170,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         # Der Server räumt selbst auf; nur seinen unveränderten Rest entfernen.
         if state_path.exists() and json.loads(state_path.read_text()).get("pid") == pid:
             state_path.unlink()
-        print(translate("Own test server on port {port} stopped (PID {pid}).").format(port=args.port, pid=pid))
+        print_message(translate("Own test server on port {port} stopped (PID {pid}).").format(port=args.port, pid=pid), "SUCCESS")
         return 0
     if existing_state:
         parser.error(translate("An own test server is already running on port {port}; run --stop first.").format(
