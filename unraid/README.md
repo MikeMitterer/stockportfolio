@@ -147,8 +147,9 @@ portfolios yet; they see a pending-access notice.
 
 At startup, the API address from `STOCKINFO_API_URL` is written to `config.js`.
 It must be reachable from the browser; `localhost` refers to the browser's
-computer, not a Docker service. The active URL is shown under
-**Settings → Status**. Restart the container after changing the address.
+computer, not a Docker service. The active URL is shown on the separate
+**Status** page, opened from the bottom status bar. Restart the container
+after changing the address.
 
 StockInfo must allow the web app's origin, such as `http://unraid:8088`, through
 CORS. An HTTPS web interface requires an HTTPS API.

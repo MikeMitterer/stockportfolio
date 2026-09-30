@@ -482,3 +482,56 @@ T-60-Prüfung nach dem Paketumbau steht laut T-60-Nachtrag weiter aus.
 
 **Urteil:** `approved` für `a8c7402`. Mikes menschliche Abschlussentscheidung
 für T-63 steht aus.
+
+## Abnahmeablauf · Mike, 2026-09-30
+
+Mike: „Ich bin bei der Abnahme, das sind die Punkte die mir bei der Abnahme
+einfallen bzw. die ich sehe. Codex setzt sie gleich um. Dafür kann es kein
+Ticket geben. […] Schlussendlich müssen aber dennoch diese Änderungen von
+Claude abgenommen werden.“ Auf den Vorschlag des Observers hat Mike
+geantwortet: „Ja, trag das so ein“.
+
+Mike nimmt T-63 und T-60 gemeinsam ab. Dafür gilt:
+
+1. **Kein eigenes Ticket.** Jeder Abnahmepunkt steht als kurzer Eintrag unter
+   „Abnahme Mike · 2026-09-30“ in dem Ticket, zu dem er gehört: Anmeldeseite,
+   Kontenverwaltung und Konto-API in
+   [T-60](T-60-stockportfolio-server-und-benutzerkonten.md), Makefile und
+   lokaler Entwicklungsweg hier in T-63. Frühere Nachträge und Belege bleiben
+   unverändert; Änderungen am Stand stehen im Abnahmeabschnitt.
+2. **Direkte Umsetzung durch Codex**, in kleinen Commits mit Ticketbezug.
+   Während der Abnahme gibt es keine Übergabe je Punkt.
+3. **Eine Übergabe**, sobald Mike die Abnahmepunkte für fertig erklärt:
+   T-63 als Runde 4 mit dem Umfang seit `a8c7402`. Dieselbe Übergabe
+   beauftragt ausdrücklich die ausstehende erneute technische Prüfung von
+   T-60: Paketumbau und Abnahmepunkte.
+4. **Abschluss unter Vorbehalt.** Mikes Abnahme wird wirksam, wenn Claude
+   beide Fassungen freigibt. Vorher kein Merge nach `master` und kein Push;
+   danach werden T-60 und T-63 gemeinsam integriert.
+
+Der Observer meldet während der Abnahme nicht jede Einzeländerung. Er prüft,
+dass die Punkte im Ticket stehen und vor der Freigabe nichts integriert wird.
+
+## Abnahme Mike · 2026-09-30
+
+- `make test` und `make clean` stehen im Help mit `make dev` unter
+  „Entwicklung“. Die Targets und ihre Befehle bleiben unverändert. `AGENTS.md`
+  (**Bauen und prüfen**) und `README.md` (**Setup**, Makefile-Übersicht)
+  beschreiben die aktuelle Gruppierung. `make help` zeigt alle drei Ziele in
+  dieser Gruppe. Runde 3 deckt diesen Abnahmepunkt noch nicht ab.
+- Der StockInfo-Status liegt auf einer eigenen Route `/#/status`. Der
+  API-Eintrag rechts unten und die Ausfallmeldung führen direkt dorthin.
+  Das ist eine Navigationsänderung an der Funktion aus
+  [T-52](../40-done/T-52-statuszeile-api-link-zum-status-tab.md).
+  Der Status-Reiter der Einstellungen entfällt; „About“ bleibt rechts in
+  der Einstellungsleiste. `README.md` (**Docker**), `docker/README.md`
+  (**Configuration**, **Status and logs**) und `unraid/README.md` (**Data,
+  API and verification**) beschreiben den neuen Weg.
+
+**Eigenprüfung:** `make help` zeigt `dev`, `test` und `clean` gemeinsam unter
+„Entwicklung“; `git diff --check` ist unauffällig. `make test` bestand mit
+805 Frontend- und 8 API-Tests; Frontend- und API-Lint sowie beide Typechecks
+bestanden. Die gemeinsame Prüfung ist auch in T-60 belegt.
+Im Browser öffnete ein Klick auf den API-Eintrag die Statusseite; die
+Einstellungen zeigten weder Status- noch Benutzerreiter und „About“ blieb
+rechts.

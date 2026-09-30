@@ -51,7 +51,7 @@ const stateLabel = computed<Record<string, string>>(() => ({
   offline: t('status.apiOffline'),
 }))
 
-/** Kurze Adresse ohne Schema — die volle steht in den Einstellungen. */
+/** Kurze Adresse ohne Schema — die volle steht auf der Statusseite. */
 const host = computed(() => {
   const url = client?.url
   if (!url) return ''
@@ -119,7 +119,7 @@ const failures = computed(() =>
     :backend-state="apiStatus.state"
     :backend-version="apiStatus.version ?? ''"
     :backend-state-label="t('status.apiDetails', { state: stateLabel[apiStatus.state] })"
-    @backend-click="router.push({ path: '/settings', query: { tab: 'status' } })"
+    @backend-click="router.push({ name: 'status' })"
   >
     <template #left>
       <span class="status__separator status__separator--brand" aria-hidden="true">·</span>

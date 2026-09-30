@@ -15,7 +15,7 @@ export const i18n = createI18n<[MessageSchema], AppLocale, false>({
   legacy: false,
   locale: 'en',
   // Fehlt eine Übersetzung, erscheint der englische Text — nicht der
-  // Schlüssel. Ein „settings.apiHeading" mitten in der Oberfläche ist das
+  // Schlüssel. Ein „statusPage.heading" mitten in der Oberfläche ist das
   // Schlimmste, was passieren kann; Text in einer anderen Sprache ist
   // immerhin lesbar.
   fallbackLocale: 'en',

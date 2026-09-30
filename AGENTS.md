@@ -196,8 +196,9 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
 `make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
-Root-Makefile bildet nur Abläufe des Gesamtprojekts ab; unter Entwicklung steht
-allein `make dev`. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
+Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
+stehen `make dev`, `make test` und `make clean`. Befehle für ein einzelnes Paket
+laufen über dessen npm-Skripte.
 Vor einer Übergabe laufen mindestens `make test`, `npm --prefix frontend run lint`,
 `npm --prefix api run lint`, `npm --prefix frontend run typecheck` und
 `npm --prefix api run typecheck`. Das Ergebnis gehört als Beleg ins Ticket.

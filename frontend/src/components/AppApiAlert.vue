@@ -98,7 +98,7 @@ async function pruefeErneut(): Promise<void> {
 
 function zurStatusseite(): void {
   show.value = false
-  void router.push({ path: '/settings', query: { tab: 'status' } })
+  void router.push({ name: 'status' })
 }
 </script>
 

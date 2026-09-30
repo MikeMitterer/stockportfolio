@@ -136,14 +136,10 @@ dev: ## Vite und Konto-API gemeinsam starten (Ports 5175/8080)
 	@command -v tmux >/dev/null || { echo "tmux fehlt; tmux installieren." >&2; exit 1; }
 	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -N -f Procfile.dev
 
-##@ Prüfen
-
 .PHONY: test
 test: ## Frontend- und API-Tests einmalig ausführen
 	@npm run test --prefix frontend
 	@npm run test --prefix api
-
-##@ Wartung
 
 .PHONY: clean
 clean: ## Build-, Test- und Cache-Dateien in Root, Frontend und API löschen

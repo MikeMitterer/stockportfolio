@@ -22,6 +22,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/SettingsView.vue'),
   },
   {
+    path: '/status',
+    name: 'status',
+    component: () => import('@/views/StatusView.vue'),
+  },
+  {
     path: '/admin/users',
     name: 'admin-users',
     component: () => import('@/views/UserAdminView.vue'),

@@ -26,13 +26,13 @@ ist auf Mikes Wunsch vom 2026-09-29 vorgezogen. Claude hat es in Runde 1
 (`493c35c`) und nach dem Umbau von `make dev` und der Paketstruktur in Runde 2
 (`6459dca`) technisch freigegeben. Die gemeinsame Browserprüfung mit StockInfo ist damit
 reproduzierbar; die menschliche Abschlussentscheidung für T-63 ist noch offen.
-Danach folgen die offene menschliche T-60-Prüfung sowie
-T-61 und T-62. Claudes technische Prüfung
+Mike nimmt T-63 und T-60 jetzt gemeinsam ab; danach folgen T-61 und T-62.
+Claudes technische Prüfung
 von T-60 in Runde 2 forderte eine Korrektur des Login-Zeitverhaltens; der
 Korrekturcommit `942c211` ist in Runde 3 unabhängig geprüft und technisch
-freigegeben. Mike kann die menschliche Prüfung von Setup und Benutzerverwaltung
-derzeit nicht vornehmen; sie bleibt in T-60 offen. Auf seinen Wunsch wird
-T-63 als aktiver Auftrag vorgezogen. T-61 und T-62 sind weiterhin nicht zur
+freigegeben. Mikes Prüfung von Setup und Benutzerverwaltung läuft; die
+Abnahmepunkte werden direkt in T-60 und T-63 erfasst. T-63 bleibt während
+dieser gemeinsamen Abnahme das aktive Ticket. T-61 und T-62 sind weiterhin nicht zur
 Produktumsetzung aktiviert. StockInfo wurde nicht geändert.
 
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
@@ -120,15 +120,17 @@ T-60 war für die frühere Fassung technisch freigegeben; die nachträgliche
 Paketverschiebung ist von dieser Freigabe nicht gedeckt. Seine menschliche
 Prüfung steht aus.
 Claude hat das Konzept der gesamten Kette T-60 bis T-62 geprüft; T-61 und
-T-62 sind noch nicht zur Produktumsetzung aktiviert. Die letzte technische
-Reviewreferenz ist T-63 Runde 3.
+T-62 sind noch nicht zur Produktumsetzung aktiviert. Mike nimmt T-60 und
+T-63 gemeinsam ab; Codex setzt die Abnahmepunkte derzeit um. Die letzte
+technische Reviewreferenz ist T-63 Runde 3. Die gemeinsame Übergabe erfolgt
+erst nach Mikes Signal „Abnahmepunkte fertig“.
 
 - `implementer`: `codex`
 - `reviewer`: `claude`
 - `observer`: `claude-observer`
-- `phase`: `approved`
+- `phase`: `implementing`
 - `ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
-- `handoff_commit`: `a8c7402b1ed991b9e6f27d0a9f912570cdbb9fdd`
+- `handoff_commit`: `none`
 - `review_round`: `3`
 - `owner`: `codex`
 - `updated_at`: `2026-09-30`
@@ -309,6 +311,7 @@ werden entfernt.
 ## INBOX → Coder
 
 - **Von `claude` an `codex`, T-63 Runde 3, Fassung `a8c7402`:** `approved`. Alle fünf Hinweise aus Runde 2 sind behoben; die Belege stehen im Ticket unter „Technische Prüfung Runde 3“. Das Versionsabzeichen zeigt erst nach Merge und Push nach `master` richtig an. Mikes Abschlussentscheidung für T-63 steht aus.
+- **Von `claude-observer` an `codex`, Abnahmeablauf T-60/T-63 (Mike, 2026-09-30):** Mike nimmt T-60 und T-63 gerade ab. Seine Abnahmepunkte setzt du direkt um, ohne eigenes Ticket. Den vollständigen Ablauf regelt der Abschnitt „Abnahmeablauf · Mike, 2026-09-30“ im [T-63-Ticket](30-doing/T-63-reproduzierbarer-lokaler-teststack.md). Kurz: (1) Jeden Punkt als kurze Liste unter „Abnahme Mike · 2026-09-30“ im Ticket festhalten, zu dem er gehört: Anmeldeseite, Kontenverwaltung und Konto-API nach T-60, Makefile nach T-63. Frühere Nachträge und Belege nicht umschreiben; die Umformulierung im Runde-2-Nachtrag von T-63 (Zeile um 309) zurücknehmen und die neue Makefile-Gruppierung im Abnahmeabschnitt beschreiben. (2) Kleine Commits mit Ticketbezug. Während der Abnahme keine Übergabe je Punkt. (3) Auf Mikes „Abnahmepunkte fertig“ einmal an `claude` übergeben: T-63 als Runde 4 ab `a8c7402`. T-60 ist nicht das aktive Ticket, deshalb nennt dieselbe Übergabe dessen erneute Prüfung (Paketumbau und Abnahmepunkte) ausdrücklich im OUTBOX-Auftrag. (4) Kein Merge nach `master` und kein Push vor Claudes Freigabe. Danach T-60 und T-63 gemeinsam integrieren. Diese Nachricht ersetzt die beiden früheren Observer-Hinweise zu Makefile und Anmeldeseite.
 
 ## OUTBOX → Verifier
 

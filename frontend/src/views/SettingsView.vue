@@ -40,16 +40,11 @@ import { HISTORY_PERIODS, HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
 import type { AmountSetting, HistoryPeriod, RebalancingTrigger } from '@/types/portfolio'
 import { THEME_IDS, THEMES } from '@mmit/ux-foundation'
 import { useInstrumentTypesStore } from '@/stores/instrumentTypes'
-import { useApiStatusStore } from '@/stores/apiStatus'
-import { useRelativeTime } from '@/composables/useRelativeTime'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import { AUTH_USER } from '@/auth/context'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const authenticatedUser = inject(AUTH_USER)
-const isAdmin = computed(() => authenticatedUser?.value?.role === 'admin')
 
 /** Namen der Reiter — Reihenfolge wie in der Anzeige. */
 const SETTINGS_TABS = [
@@ -61,10 +56,8 @@ const SETTINGS_TABS = [
   'notifications',
   'language',
   'about',
-  'status',
 ]
-const availableTabs = computed(() => isAdmin.value ? [...SETTINGS_TABS, 'users'] : SETTINGS_TABS)
-const tabOptions = computed(() => availableTabs.value.map((value) => ({
+const tabOptions = computed(() => SETTINGS_TABS.map((value) => ({
   label: t(`settings.tabs.${value}`),
   value,
 })))
@@ -85,9 +78,6 @@ onMounted(async () => {
   await quotesStore.hydrate()
   // Ohne den Katalog, aber mit der Whitelist — die gehört in das Backup.
   await instrumentsStore.hydrateAllowlist()
-  // Ungefragt prüfen: Wer diese Seite öffnet, will den Zustand sehen, nicht
-  // erst einen Knopf suchen.
-  await api.check(client)
 })
 
 const triggerOptions = computed(() =>
@@ -166,7 +156,7 @@ async function markToday(): Promise<void> {
 const activeTab = computed(() => {
   const requested = route.query.tab
   const name = Array.isArray(requested) ? requested[0] : requested
-  return typeof name === 'string' && availableTabs.value.includes(name) ? name : 'calc'
+  return typeof name === 'string' && SETTINGS_TABS.includes(name) ? name : 'calc'
 })
 
 function setTab(name: string): void {
@@ -174,7 +164,7 @@ function setTab(name: string): void {
 }
 
 function setTabFromSelection(value: string | number | null): void {
-  if (typeof value === 'string' && availableTabs.value.includes(value)) setTab(value)
+  if (typeof value === 'string' && SETTINGS_TABS.includes(value)) setTab(value)
 }
 
 const logoUrl = computed(() => `${import.meta.env.BASE_URL}mangolila-logo-${themeStore.isDark ? 'dark' : 'light'}.png`)
@@ -212,32 +202,12 @@ const themes = THEME_IDS.map((id) => THEMES[id])
 const locales = LOCALE_IDS.map((id) => LOCALES[id])
 const historyPeriods = HISTORY_PERIODS.map((id) => HISTORY_PERIOD_INFO[id])
 
-// ─── Status der Gegenstelle ─────────────────────────────────────────────────
-
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
 const instrumentTypes = useInstrumentTypesStore()
 function loadInstrumentTypes(): void {
   if (client) void instrumentTypes.load(client)
 }
 watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immediate: true })
-const api = useApiStatusStore()
-const apiCheckedAgo = useRelativeTime(computed(() => api.checkedAt))
-
-/** Die Adresse aus `VITE_STOCKINFO_API_URL`, wie sie beim Bauen gesetzt wurde. */
-const apiUrl = computed(() => client?.url ?? '—')
-
-/** Ampelfarbe des Zustands — grün, rot oder neutral. */
-const apiTone = computed(() => {
-  if (api.state === 'online') return 'ok'
-  return api.state === 'offline' ? 'out' : 'neutral'
-})
-
-const apiStateLabel = computed<Record<string, string>>(() => ({
-  unknown: t('settings.apiStates.unknown'),
-  checking: t('settings.apiStates.checking'),
-  online: t('settings.apiStates.online'),
-  offline: t('settings.apiStates.offline'),
-}))
 </script>
 
 <template>
@@ -728,103 +698,16 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
           </div>
         </NCard>
       </NTabPane>
-
-      <NTabPane name="status" :tab="t('settings.tabs.status')">
-        <NCard :bordered="false" class="settings__card">
-          <template #header>
-            <div class="settings__card-head">
-              <span class="settings__card-title">{{ t('settings.apiHeading') }}</span>
-              <NButton
-                size="small"
-                secondary
-                :loading="api.state === 'checking'"
-                @click="api.check(client)"
-              >
-                {{ t('settings.apiRecheck') }}
-              </NButton>
-            </div>
-          </template>
-
-          <dl class="settings__facts">
-            <dt class="settings__label">{{ t('settings.apiAddress') }}</dt>
-            <dd class="settings__address">
-              <!--
-                Im Klartext und anklickbar: Im Container entscheidet sich beim
-                Bauen, welches Backend das Abbild anspricht — das sieht man
-                sonst nirgends.
-              -->
-              <a
-                :href="apiUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="settings__link"
-              >
-                {{ apiUrl }}
-              </a>
-            </dd>
-
-            <dt class="settings__label">{{ t('settings.apiState') }}</dt>
-            <dd class="settings__state">
-              <span
-                class="settings__light"
-                :class="`settings__light--${apiTone}`"
-                aria-hidden="true"
-              ></span>
-              <span
-                :class="`settings__state-label settings__state-label--${apiTone}`"
-              >
-                {{ apiStateLabel[api.state] }}
-              </span>
-              <span v-if="api.status" class="settings__label">
-                {{ t('settings.apiReports', { status: api.status }) }}
-              </span>
-            </dd>
-
-            <template v-if="api.version">
-              <dt class="settings__label">{{ t('settings.apiVersion') }}</dt>
-              <dd class="tabular-nums">{{ api.version }}</dd>
-            </template>
-
-            <template v-if="api.latencyMs !== null">
-              <dt class="settings__label">{{ t('settings.apiLatency') }}</dt>
-              <dd class="tabular-nums">
-                {{ t('settings.apiLatencyUnit', { ms: api.latencyMs }) }}
-              </dd>
-            </template>
-
-            <template v-if="api.checkedAt">
-              <dt class="settings__label">{{ t('settings.apiChecked') }}</dt>
-              <dd class="settings__secondary">{{ apiCheckedAgo }}</dd>
-            </template>
-
-            <template v-if="api.error">
-              <dt class="settings__label">{{ t('settings.apiReason') }}</dt>
-              <dd class="settings__error">{{ api.error }}</dd>
-            </template>
-          </dl>
-
-          <p v-if="api.state === 'offline'" class="settings__note">
-            {{ t('settings.apiOfflineHint') }}
-          </p>
-        </NCard>
-      </NTabPane>
-      <NTabPane v-if="isAdmin" name="users" :tab="t('settings.tabs.users')">
-        <NCard :bordered="false" class="settings__card">
-          <p>{{ t('auth.adminHint') }}</p>
-          <NButton type="primary" @click="router.push({ name: 'admin-users' })">{{ t('auth.manageUsers') }}</NButton>
-        </NCard>
-      </NTabPane>
     </NTabs>
   </div>
 </template>
 
 <style scoped>
 /*
- * Status ganz nach rechts, abgesetzt von den übrigen Reitern.
+ * About steht rechts, abgesetzt von den konfigurierbaren Bereichen.
  *
- * Die drei linken sind zum Einstellen da, Status ist zum Nachsehen — der
- * Abstand macht den Unterschied sichtbar, statt ihn nur in die Reihenfolge
- * zu legen.
+ * Der Abstand macht den Unterschied sichtbar, statt ihn nur in die
+ * Reihenfolge zu legen.
  *
  * `nth-last-child(2)`, nicht `last-of-type`: Naive UI hängt hinter den
  * letzten Reiter noch ein `.n-tabs-scroll-padding` — ebenfalls ein `div`,
@@ -879,12 +762,6 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
 
     /* Über beide Spalten — für Inhalte, die in einer halben Breite eng werden. */
     &--wide { grid-column: 1 / -1; }
-  }
-
-  &__card-head {
-    @include row(var(--space-4));
-
-    justify-content: space-between;
   }
 
   &__card-title {
@@ -972,54 +849,6 @@ const apiStateLabel = computed<Record<string, string>>(() => ({
     gap: var(--space-3);
 
     @include up(md) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-
-  &__facts {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-3) var(--space-6);
-    font-size: var(--font-sm);
-
-    @include up(sm) { grid-template-columns: 10rem minmax(0, 1fr); }
-  }
-
-  &__address { word-break: break-all; }
-
-  &__link {
-    color: token(--accent);
-
-    &:hover { opacity: 0.8; }
-  }
-
-  &__state { @include row; }
-
-  &__light {
-    display: inline-block;
-    flex-shrink: 0;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: var(--radius-full);
-    background-color: token(--text-muted);
-
-    &--ok { background-color: token(--status-ok); }
-    &--out { background-color: token(--status-out); }
-  }
-
-  &__state-label {
-    &--ok { color: token(--status-ok); }
-    &--out { color: token(--status-out); }
-    &--neutral { @include muted(null); }
-  }
-
-  &__secondary { color: token(--text-secondary); }
-
-  &__error { color: token(--status-out); }
-
-  &__note {
-    @include muted;
-
-    margin-top: var(--space-4);
-    line-height: 1.625;
   }
 
   &__about-layout {
