@@ -395,12 +395,18 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     process_state = {"script": str(script_path), "port": args.port, "pid": os.getpid(), "identity": process_identity(os.getpid())}
     with state_path.open("x") as state_file:
         json.dump(process_state, state_file)
+    # Uvicorn löst SIGTERM nach dem Herunterfahren erneut aus. Ohne eigenen
+    # Handler beendet das Signal den Prozess vor dem Aufräumen im finally.
+    previous_sigterm = signal.signal(signal.SIGTERM, signal.SIG_IGN)
     try:
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
     finally:
-        if state_path.exists() and json.loads(state_path.read_text()).get("pid") == os.getpid():
-            state_path.unlink()
-        shutil.rmtree(data_dir)
+        try:
+            if state_path.exists() and json.loads(state_path.read_text()).get("pid") == os.getpid():
+                state_path.unlink()
+            shutil.rmtree(data_dir)
+        finally:
+            signal.signal(signal.SIGTERM, previous_sigterm)
 
     return 0
 
