@@ -77,10 +77,8 @@ onMounted(() => { void api.check(client) })
 
   &__title { margin: 0 0 var(--space-4); font-family: var(--font-display); font-size: 1.5rem; }
   &__card {
+    @include card-surface;
     padding: var(--space-6);
-    border: 1px solid token(--border-default);
-    border-radius: var(--radius-lg);
-    background: token(--surface-card);
     box-shadow: var(--shadow-sm);
   }
   &__header {

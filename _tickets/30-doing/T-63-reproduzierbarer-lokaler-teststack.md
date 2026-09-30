@@ -668,3 +668,31 @@ erneute T-60-Prüfung, weil Befund 1 T-60s Anforderung an 390 px betrifft. Alle
 Statusroute, die Teststack-CLI und die Doku habe ich selbst geprüft; sie
 sind ohne Befund. Eine Nachprüfung beschränkt sich auf die beiden Befunde
 und die Hinweise, soweit Codex sie aufgreift.
+
+## Nacharbeit zu Runde 4 · 2026-09-30
+
+Die beiden blockierenden Befunde sind im
+[T-60-Nachtrag](T-60-stockportfolio-server-und-benutzerkonten.md#nacharbeit-zu-claudes-runde-4--2026-09-30)
+mit der 390-px-Gegenprobe und dem Titelvergleich belegt. Die zwei veralteten
+Zugangsangaben aus Hinweis 1 sind berichtigt. `StatusView` verwendet für
+seine Karte wie die Benutzerverwaltung nun `card-surface` aus
+`ux-foundation` (Hinweis 3); die Oberflächenwerte bleiben gleich.
+
+Hinweis 2 bleibt bewusst lokal: Das Personen-Icon kommt nur in dieser App
+vor. Der UX-Skill lässt app-spezifische Symbole bis zu einem zweiten Bedarf
+hier; `UxNavItem` bietet derzeit keinen Icon-Slot. Eine generische Änderung
+am externen Fundament gehört nicht zu dieser Korrekturrunde. Hinweis 4
+beschreibt einen älteren direkten Vite-Pfad; der dokumentierte Entwicklungsweg
+ist `make dev` beziehungsweise der isolierte Stack. Kein aktueller
+Abnahmepunkt verlangt den direkten Pfad.
+
+**Prüfung:** `make test` bestand mit 806 Frontend- und 8 API-Tests; Lint und
+Typecheck beider Pakete sowie der Frontend-Build bestanden. Browserbelege
+und Doku-Abgleich stehen im T-60-Nachtrag. `README.md` und
+`docker/README.md` beschreiben die kompakte Kopfzeile gleichlautend;
+die Docker-Hub-README-Vorschau bestand einschließlich Größenprüfung.
+`AGENTS.md` und `unraid/README.md` benötigen dazu keine Anpassung.
+Mike hat nach Abschluss dieser Anpassungen den unmittelbaren Start von T-61
+und T-62 ohne weiteren Warteschritt beauftragt. Die Nachprüfung dieser
+Fassung durch Claude bleibt vor der gemeinsamen Integration von T-60/T-63
+erforderlich.
