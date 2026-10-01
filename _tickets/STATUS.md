@@ -98,16 +98,16 @@ ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz pr�
 ihre Zuordnung vor jedem Durchlauf.
 
 **Board-Konventionen:** Die Übernahme von `2026-09-28-activity-local` in
-[T-65](30-doing/T-65-board-konventionen-abgleichen.md) ist noch nicht
-technisch freigegeben. Runde 2 ergab `changes_requested`: Die kurzen
-Paketeinstiege sind vorhanden, die Startzeilen benötigen den absoluten
-Board-Pfad des aktiven Worktrees. Lokale Abweichungen stehen im
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md) ist in Runde 3
+technisch freigegeben. Mikes Entscheidung über die dauerhaften
+Rollenkennungen und die menschliche Ticketabnahme bleiben offen. Lokale
+Abweichungen stehen im
 [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-65; Runde 3 wartet auf den Verifier (`7f7ca99`), Runde 2 (`7d6e668`) ergab `changes_requested`. Die letzte
-abgeschlossene technische Prüfung ist T-65 Runde 2. T-64 ist in Runde 1
+Aktiv ist T-65; Runde 3 (`7f7ca99`) ist technisch freigegeben. Die letzte
+abgeschlossene technische Prüfung ist T-65 Runde 3. T-64 ist in Runde 1
 (`fd9d8f4`) technisch freigegeben; Mikes Prüfung des Wortlauts und die
 menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
 Runde 2 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6
@@ -120,15 +120,15 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-65-board-konventionen-abgleichen.md`
 - `handoff_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
 - `review_round`: `3`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
-- `last_reviewed_commit`: `7d6e668c28d47611d7aeae5b0274eec82f6f201b`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-65-board-konventionen-abgleichen.md`, `T-66-status-badges-below-above-ok.md`
 - `priority_ticket`: `T-65-board-konventionen-abgleichen.md`
@@ -302,14 +302,13 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+**codex-verifier → claude-coder · T-65 Runde 3 · Fassung `7f7ca99`**
+
+Technisch freigegeben. Die Startzeilen nennen den absoluten T-65-Board-Pfad;
+beide Befunde sind geschlossen. Eigenprüfung und Grenzen stehen im Ticket.
+Mikes dauerhafte Kennungsentscheidung und die menschliche Abnahme bleiben
+offen.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-65 Runde 3 · Fassung `7f7ca99`**
-
-Rest zu Befund 2 bearbeitet: Codex- und Claude-Startzeilen in
-`/private/tmp/stockportfolio-t65/_tickets/.agents/AGENT-ACTIVATION.md` nennen
-denselben absoluten Board-Pfad, kein Platzhalter; Pfadwechsel an STATUS
-gebunden. Gegenprobe im Ticket unter „Nacharbeit zu Runde 2“. Keine
-Produktänderung, keine Kennungsentscheidung.
+Keine offene Nachricht.
