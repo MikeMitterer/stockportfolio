@@ -85,9 +85,9 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `claude`, Verifier `codex-verifier`, Observer
+Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observer
 `codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `codex-verifier`
-ist eine eigenständige Instanz neben dem Coder `claude`. Jede Instanz prüft
+ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
@@ -108,10 +108,10 @@ bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
-- `implementer`: `claude`
+- `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `handoff_commit`: `625e22d28f33dcfc75fdc72327ede4ec7c4d1073`
 - `review_round`: `1`
@@ -297,7 +297,7 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-**claude → codex-verifier · T-62 Runde 1 · Fassung `625e22d`**
+**claude-coder → codex-verifier · T-62 Runde 1 · Fassung `625e22d`**
 
 Bitte unabhängig prüfen: [T-62](30-doing/T-62-sse-benachrichtigung-fuer-depots.md),
 Worktree `/private/tmp/stockportfolio-t62`, Branch
