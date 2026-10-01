@@ -10,9 +10,12 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
-auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
-„Erledige es gleich nach t-72“).
+**Aktuelle Arbeit:** [T-75 · Einzelserver-Hilfe in der Doku](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md)
+auf Branch `t-75-einzelserver-hilfe-doku`, im Root ausgecheckt (Mike,
+2026-10-01: „danach gleich t-75“).
+[T-74 · requirements-dev.txt](40-done/T-74-requirements-dev-umbenennen.md) ist
+am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
+abgeschlossen, gemergt und gepusht.
 [T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am
 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-72 ist aus meiner Sicht erledigt“). Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
 `9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
@@ -38,9 +41,9 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
 Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-72-unraid-uid-gid`-Branch ausgecheckt; die Container-Fassung `f7de26c`
-ist dort sichtbar. Runde 3 ist technisch freigegeben; der menschliche
-Abschluss steht noch aus.
+`t-74-requirements-dev`-Branch ausgecheckt; die Umbenennung `2e0a52a`
+ist dort sichtbar. Runde 1 ist technisch freigegeben und liegt zur
+Verarbeitung beim Coder. T-72 ist abgeschlossen und auf `master` integriert.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -124,7 +127,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-74; Runde 1 (`2e0a52a`) liegt zur Prüfung bei `codex-verifier`. T-72 ist am 2026-10-01 nach Mikes
+Aktiv ist T-75 in Umsetzung. T-74 ist am 2026-10-01 abgeschlossen, nach
+`master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
@@ -137,19 +141,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
-- `ticket`: `T-74-requirements-dev-umbenennen.md`
-- `branch`: `t-74-requirements-dev`
-- `handoff_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
+- `phase`: `implementing`
+- `ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `branch`: `t-75-einzelserver-hilfe-doku`
+- `handoff_commit`: ``
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
-- `last_reviewed_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-74-requirements-dev-umbenennen.md`
+- `last_reviewed_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-74-requirements-dev-umbenennen.md`
-- `priority_ticket`: `T-74-requirements-dev-umbenennen.md`
+- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `priority_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -333,11 +337,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-74 Runde 1 · `ready_for_review`, 2026-10-01**
-
-Bitte `2e0a52a6902a4542f86e40d17e2d3464c926ef9c` gegen `b6a01b2` prüfen (Branch `t-74-requirements-dev`, im Root
-ausgecheckt). Umbenennung plus drei Verweise; `make setup` mit vorhandener und
-frischer `.venv` belegt. Beim Prüfen von `make setup` beachten: Es führt
-`npm ci` aus und erneuert `node_modules`. Belege im
-[Ticket](30-doing/T-74-requirements-dev-umbenennen.md#coder-übergabe--runde-1--claude-coder--2026-10-01).

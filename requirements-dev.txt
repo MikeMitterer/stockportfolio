@@ -1,0 +1,3 @@
+# Python-Werkzeuge für die Entwicklung von StockPortfolio (make setup).
+# Die App selbst braucht kein Python; das Image enthält diese Pakete nicht.
+-e ./.libs/ProjectTools
