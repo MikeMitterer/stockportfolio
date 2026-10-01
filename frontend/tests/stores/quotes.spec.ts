@@ -455,9 +455,16 @@ describe('useQuotesStore — loadQuotesIfStale', () => {
    * um 10:00 geholten Kurse bis 11:30.
    */
   it.each([
-    ['im selben Tab', false],
-    ['nach neuem Seitenaufbau', true],
-  ])('hält die ursprüngliche Frist nach Teilabruf und erneutem hydrate — %s', async (_label, reload) => {
+    ['im selben Tab', false, false],
+    ['nach neuem Seitenaufbau', true, false],
+    ['im selben Tab bei blockiertem localStorage', false, true],
+  ])('hält die ursprüngliche Frist nach Teilabruf und erneutem hydrate — %s', async (_label, reload, blocked) => {
+    if (blocked) {
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        get: () => { throw new DOMException('blockiert', 'SecurityError') },
+      })
+    }
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-01T10:00:00Z'))
     const client = mockClient({

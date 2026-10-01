@@ -120,7 +120,8 @@ export const useQuotesStore = defineStore('quotes', () => {
     if (cached.size === 0) return
 
     quotes.value = cached
-    lastRefreshAt.value = safeStorage.read(LAST_REFRESH_KEY) ?? newestFetchedAt(cached)
+    // Gespeicherter Vollabruf, sonst der dieser Sitzung; erst ohne beides der jüngste Kurs.
+    lastRefreshAt.value = safeStorage.read(LAST_REFRESH_KEY) ?? lastRefreshAt.value ?? newestFetchedAt(cached)
   }
 
   /** Prüft einen Aufnahmekandidaten; Fehler gehen vor jeder Depotänderung zurück. */
