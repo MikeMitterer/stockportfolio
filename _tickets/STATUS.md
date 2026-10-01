@@ -10,7 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+**Aktuelle Arbeit:** [T-77 · Zugriffsweg für StockInfo abgleichen](30-doing/T-77-stockinfo-zugriffsweg-abgleichen.md)
+(Mike, 2026-10-01: „Erledige das neue Ticket dann gleich“). Runde 1 ist an
+`codex-verifier` übergeben; der Root steht auf `t-77-stockinfo-zugriffsweg`.
 [T-73 · Interne Rechtevereinbarung](30-doing/T-73-interne-rechtevereinbarung.md)
 liegt in Doing als Mikes eigene Aufgabe (2026-10-01: „das ist für mich“); kein
 Agentenauftrag.
@@ -133,7 +135,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv; T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-77 ist aktiv und in Runde 1 zur Prüfung übergeben. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -148,19 +150,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
-- `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
+- `phase`: `ready_for_review`
+- `ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
+- `branch`: `t-77-stockinfo-zugriffsweg`
+- `handoff_commit`: `c2f2cf2163515696525c600c1cf13b999ffefff3`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `last_reviewed_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `priority_chain`: `T-77`
+- `priority_ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -335,6 +337,17 @@ werden entfernt.
 ## INBOX → Coder
 
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-77 Runde 1 · ready_for_review**
+
+Prüfgegenstand: StockPortfolio `c2f2cf2` gegen `master` (`README.md`,
+`docker/README.md`, `unraid/README.md`) und Unraid-Templates `b250a2c` auf
+`t-77-stockportfolio-zugriffsweg` gegen `25d395c`, nur
+`templates/stockportfolio.xml`. Maßstab ist StockInfo T-87: nicht ins
+Internet, nur Heimnetz, von außen per VPN; Reverse Proxy nur noch als
+HTTPS-Weg im Heimnetz. Inventar, Doku-Abgleich und Nachweise stehen im
+[Ticket](30-doing/T-77-stockinfo-zugriffsweg-abgleichen.md#verify).
+Reine Dokumentation; kein Live-Lauf (Fußnote ³).
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
