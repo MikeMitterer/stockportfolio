@@ -250,10 +250,11 @@ keyboard navigation.
 Question-mark tooltips explain the method and link to the relevant setting
 or _The Method_ reference page.
 
-The login page states that displayed values, buy and sell amounts are for
-orientation only and are not investment advice. Signing in requires ticking
-a checkbox that confirms this notice. The confirmation applies to that login
-only and is not stored.
+The login page explains what the app does: it calculates deviations from
+the targets you set, buy and sell values are arithmetic results, it does not
+check whether a trade suits you, and it places no orders. Signing in requires
+ticking "I have read the notice". The tick applies to that login only and is
+not stored.
 
 ## Where the data lives
 

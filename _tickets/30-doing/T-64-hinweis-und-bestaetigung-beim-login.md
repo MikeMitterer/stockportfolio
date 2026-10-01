@@ -35,27 +35,43 @@ Das sichtbare Prüffenster bleibt bis zu deinem OK offen.
 | A · Wortlaut | [1](#pruefpunkt-1) | Login-Seite öffnen und den Hinweis lesen | Passt der Text so, auch rechtlich nach deiner Prüfung? | |
 | B · Pflicht-Checkbox | [2](#pruefpunkt-2) | Ohne Haken anmelden versuchen, dann mit Haken | Bleibt Anmelden ohne Haken gesperrt? | |
 
-## Entwurf des Wortlauts
+## Wortlaut
 
-**Hinweis (Deutsch):**
+**Aktuelle Fassung (2026-10-01, nach Observer-Einschätzung, von Mike mit
+„Ja, ändere den Text“ beauftragt):**
 
-> StockPortfolio rechnet mit deinen eigenen Eingaben und mit Kursdaten aus
-> externen Quellen. Angezeigte Werte sowie Kauf- und Verkaufsbeträge dienen
-> nur der Orientierung. Sie sind keine Anlageberatung, keine
-> Handlungsempfehlung und keine Aufforderung zum Kauf oder Verkauf von
-> Finanzinstrumenten. Kurse und berechnete Werte können verzögert,
-> unvollständig oder fehlerhaft sein. Prüfe alle Angaben selbst, bevor du
-> handelst. Deine Anlageentscheidungen triffst und verantwortest du selbst.
+> StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen,
+> deinen selbst festgelegten Zielen und Toleranzbändern sowie externen
+> Kursdaten. Buy- und Sell-Hinweise, Kauf- und Verkaufsbeträge und
+> Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese
+> Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein
+> Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Kurse
+> und Berechnungen können verzögert, unvollständig oder fehlerhaft sein.
+> Prüfe Daten, Kosten und Risiken, bevor du handelst.
 
-**Checkbox:** „Ich habe den Hinweis gelesen und treffe meine
-Anlageentscheidungen eigenverantwortlich.“
+**Checkbox:** „Ich habe den Hinweis gelesen.“ Englisch sinngleich
+(„I have read the notice.“).
 
-**Englisch:** sinngleich zu übersetzen. Die Formulierung schließt an die
-vorhandenen Hinweise aus T-58 an (`tradeNotice`, `about.use`, `method.limitsAdvice`).
+**Abgleich mit dem Funktionsumfang:** Der Observer-Vorschlag wurde gegen die
+tatsächlichen Ausgaben geprüft. Die App zeigt je Position den Status
+**Buy**/**Sell** (`suggestion.buy`, `suggestion.sell`), Kauf- und Verkaufsbeträge in
+den Depotgruppen, die Stückzahl bis zum Ziel (Δ-Spalte) und einen
+Rebalancing-Plan mit Stückzahlen. Ziele und Toleranzbänder setzt der Nutzer
+selbst; der Plan „rechnet, er bucht nicht“ (`method.planBody`). Gegenüber
+dem Vorschlag ergänzt sind deshalb die Toleranzbänder, die Buy-/Sell-Hinweise
+und die Stückzahlen. Mikes Bestätigung galt der Einschätzung; der exakte
+Wortlaut ist weiter Teil seiner Abnahme.
+
+**Frühere Fassung (ersetzt):** Der erste Entwurf erklärte die Angaben
+pauschal zu „keine Anlageberatung, keine Handlungsempfehlung“ und endete mit
+„Deine Anlageentscheidungen triffst und verantwortest du selbst“; die
+Checkbox lautete „… treffe meine Anlageentscheidungen eigenverantwortlich“.
+Gründe für den Ersatz stehen in der Observer-Einschätzung unten.
 
 ## Rechtliche Einordnung
 
-Keine Rechtsberatung. Geprüft wurde der Entwurf nur gegen übliche Muster und
+*Bezieht sich auf die frühere Fassung; maßgeblich ergänzt durch die
+Observer-Einschätzung unten.* Keine Rechtsberatung. Geprüft wurde der Entwurf nur gegen übliche Muster und
 die bekannten Grenzen. Die abschließende rechtliche Prüfung bleibt wie in
 T-57 und T-58 bei Mike beziehungsweise MangoLila GmbH.
 
@@ -145,8 +161,9 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
   Knopf umgeht. Nach erfolgreichem Login wird der Haken zurückgesetzt; ein
   Logout lädt die Seite ohnehin neu. Nichts wird gespeichert. Setup,
   Passwortwechsel und Altbestand sind unverändert.
-- `frontend/src/i18n/de.ts`, `en.ts`: Wortlaut wie im Entwurf, Englisch
-  sinngleich.
+- `frontend/src/i18n/de.ts`, `en.ts`: Wortlaut wie oben unter „Wortlaut“,
+  Englisch sinngleich. Erste Fassung nach der Observer-Einschätzung ersetzt;
+  die Übergabe `6d6dbfd` wurde dafür vor Prüfbeginn zurückgenommen.
 - **Layout nach Mikes Nachtrag:** Unter 768 px (`md`) stehen Felder, Hinweis,
   Haken und Knopf untereinander. Ab `md` wird das Login-Panel bis 54 rem
   breit; links die Felder, rechts der Hinweis, darunter über die ganze
@@ -164,16 +181,17 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
   Korrektur meldete er genau diese vier Stellen.
 
 **Tests:** `frontend/tests/authRoute.spec.ts` „meldet erst an, nachdem der
-Hinweis per Checkbox bestätigt wurde“: Hinweis sichtbar, Checkbox
+Hinweis per Checkbox bestätigt wurde“: neuer Hinweis („does not check whether
+a trade or a financial instrument suits you“) und Checkbox-Text sichtbar, Checkbox
 `aria-checked=false`, Knopf gesperrt, Submit ohne Haken ruft `/api/auth/login`
 nicht auf; mit Haken genau ein Aufruf und Wechsel in die App. Vor der
 Umsetzung rot. Der bestehende Login-Test setzt jetzt den Haken.
 
-**Prüfstand (nach Layout-Nachtrag):** `make test` mit 829 Frontend- und 20 API-Tests grün; beide
+**Prüfstand (nach Layout-Nachtrag und neuem Wortlaut):** `make test` mit 829 Frontend- und 20 API-Tests grün; beide
 Lints und beide Typprüfungen ohne Befund; Build grün (bekannte
 Chunk-Warnung); `git diff --check` ohne Befund.
 
-**Browser:** Headless-Bilder der Login-Seite bei 1440 px (Deutsch, Englisch),
+**Browser (neuer Wortlaut erneut aufgenommen):** Headless-Bilder der Login-Seite bei 1440 px (Deutsch, Englisch),
 800 px und 767 px (je Deutsch, direkt über und unter `md`) und 390 px: ab
 800 px zwei Spalten mit dem Hinweis neben den Feldern, bei 767 und 390 px
 untereinander; Hinweis überall vollständig lesbar.
@@ -190,11 +208,12 @@ Englisch-Ansicht ist nur headless geprüft.
 Inventar: `README.md`, `docker/README.md`, `unraid/README.md`, `AGENTS.md`,
 `docs/`, Unraid-Vorlage.
 
-- `README.md` **Explanations inside the app**: Absatz zum Hinweis und zur
-  Bestätigung bei jedem Login, ohne Speicherung.
+- `README.md` **Explanations inside the app**: Absatz beschreibt, was der
+  Hinweis sagt (Abweichung von eigenen Zielen, rechnerische Kauf- und
+  Verkaufswerte, keine Eignungsprüfung, keine Orders) und dass „I have read
+  the notice“ je Login nötig und nicht gespeichert ist.
 - `docker/README.md` Abschnitt zum ersten Start: ein Satz zur Bestätigung
-  beim Login. Gemeinsame Aussage beider READMEs stimmt überein.
-  Hub-Vorschau: 10.542 Bytes, unter 25.000.
+  beim Login, gleiche Aussage. Hub-Vorschau: 10.558 Bytes, unter 25.000.
 - `AGENTS.md` **Wächter-Tests**: Tabelle um `designTokens.spec.ts`
   ergänzt, „Vier“ → „Fünf“.
 - `unraid/README.md`, Unraid-Vorlage, `docs/`: keine Aussage zum Login-Ablauf

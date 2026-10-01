@@ -75,7 +75,8 @@ describe('Hinweis zu Anlageentscheidungen beim Login', () => {
 
     const wrapper = mount(AuthRoot, { global: { plugins: [createPinia(), router], stubs: { AuthenticatedApp: true } } })
     await flushPromises()
-    expect(wrapper.text()).toMatch(/keine Anlageberatung|not investment advice/)
+    expect(wrapper.text()).toMatch(/does not check whether a trade or a financial instrument suits you/)
+    expect(wrapper.text()).toContain('I have read the notice.')
     const checkbox = wrapper.get('[role="checkbox"]')
     expect(checkbox.attributes('aria-checked')).toBe('false')
     const [usernameInput, passwordInput] = wrapper.findAll('input')
