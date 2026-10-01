@@ -43,7 +43,7 @@ const apiStatus = useApiStatusStore()
 const ready = computed(() => portfolioStore.loaded && settingsStore.loaded)
 const hasHoldings = computed(() => portfolioStore.hasHoldings)
 
-const { result, fx, loadFx } = usePortfolioValuation()
+const { result, fx, retryFx } = usePortfolioValuation()
 
 onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
@@ -227,7 +227,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 <template>
   <div class="reb">
     <div class="reb__workspace" role="region" :aria-label="t('nav.rebalancing')" tabindex="0">
-      <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
+      <FxNotice :result="result" :loading="fx.loading" @retry="retryFx" />
       <div v-if="!ready" class="reb__loading">
         <NSpin size="large" />
       </div>

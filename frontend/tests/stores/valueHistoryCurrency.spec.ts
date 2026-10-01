@@ -11,7 +11,7 @@ import { emptyPortfolio } from '@/db/seed'
 import { defaultSettings } from '@/stores/settings'
 
 beforeEach(async () => { await closeDb(); await deleteDB(DB_NAME); setActivePinia(createPinia()) })
-afterEach(async () => { await closeDb(); await deleteDB(DB_NAME) })
+afterEach(async () => { vi.restoreAllMocks(); await closeDb(); await deleteDB(DB_NAME) })
 
 describe('Währung in Tageswerten und Backups', () => {
   it('mischt beim Laden keine verschiedenen Währungen', async () => {
@@ -30,6 +30,19 @@ describe('Währung in Tageswerten und Backups', () => {
     await store.load('anderes', 'EUR')
     expect(store.snapshots).toEqual([])
     expect(store.backtest).toEqual([])
+  })
+
+  it('lädt Tageswerte beim erneuten Aufbau nur für ein anderes Depot oder eine andere Währung', async () => {
+    const store = useValueHistoryStore()
+    const reads = vi.spyOn(ValueSnapshotRepository.prototype, 'findByPortfolio')
+    await store.ensure('depot', 'EUR')
+    await store.ensure('depot', 'EUR')
+    expect(reads).toHaveBeenCalledTimes(1)
+    await store.ensure('depot', 'USD')
+    await store.ensure('anderes', 'USD')
+    expect(reads).toHaveBeenCalledTimes(3)
+    await store.load('anderes', 'USD')
+    expect(reads).toHaveBeenCalledTimes(4)
   })
 
   it('erhält Depotwährung und Geldschwellen und verwirft nicht zuordenbare Tageswerte', () => {

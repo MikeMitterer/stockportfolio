@@ -267,8 +267,44 @@ export const useQuotesStore = defineStore('quotes', () => {
     positions: Position[],
     maxAgeMinutes: number,
   ): Promise<void> {
-    if (!isStale(maxAgeMinutes) && hasQuoteForAll(positions)) return
-    await loadQuotes(client, positions)
+    if (isStale(maxAgeMinutes)) {
+      await loadQuotes(client, positions)
+      return
+    }
+    const missing = positions.filter((position) =>
+      position.enabled && position.group !== 'cash' && !quotes.value.has(quoteKey(position)))
+    if (missing.length > 0) await loadMissing(client, missing)
+  }
+
+  /**
+   * Holt nur die Kurse, die im Bestand fehlen, und behält alle anderen.
+   *
+   * Vorher löste eine einzige fehlende Position — etwa ein Papier, dessen
+   * Abruf dauerhaft scheitert — bei jedem Ansichtswechsel einen vollen
+   * Durchgang über alle Positionen aus. Der Zeitstempel bleibt stehen: Nur
+   * ein Teil ist neu, die übrigen Kurse sind so alt wie zuvor.
+   */
+  async function loadMissing(client: StockInfoClient, missing: Position[]): Promise<void> {
+    loadingRuns.value += 1
+    beginProgress(missing.length)
+    try {
+      const results = await mapWithConcurrency(missing, MAX_CONCURRENT_REQUESTS, async (position) => {
+        const outcome = await fetchOne(client, position, false)
+        stepProgress()
+        return outcome
+      })
+      const sorted = sortOutcomes(results, quotes.value)
+      const touched = new Set(results.map((outcome) => outcome.key))
+      const nextQuotes: QuoteMap = new Map(quotes.value)
+      for (const [key, entry] of sorted.quotes) nextQuotes.set(key, entry)
+      const nextFailures = [
+        ...failures.value.filter((failure) => !touched.has(failure.key)),
+        ...sorted.failures,
+      ]
+      await commit(nextQuotes, nextFailures, false)
+    } finally {
+      loadingRuns.value -= 1
+    }
   }
 
   /** Ist der letzte Abruf länger her als `maxAgeMinutes`? */
@@ -276,13 +312,6 @@ export const useQuotesStore = defineStore('quotes', () => {
     if (!lastRefreshAt.value) return true
     const age = Date.now() - Date.parse(lastRefreshAt.value)
     return Number.isNaN(age) || age >= maxAgeMinutes * 60_000
-  }
-
-  /** Hat jede Position, die einen Kurs haben kann, auch einen? */
-  function hasQuoteForAll(positions: Position[]): boolean {
-    return positions
-      .filter((position) => position.enabled && position.group !== 'cash')
-      .every((position) => quotes.value.has(quoteKey(position)))
   }
 
   /** Lädt den Kurs einer einzelnen Position neu (Server-Refresh erzwungen). */

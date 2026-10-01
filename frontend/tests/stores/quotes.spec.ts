@@ -446,6 +446,29 @@ describe('useQuotesStore — loadQuotesIfStale', () => {
     expect(store.quotes.has('IE0000000002')).toBe(true)
   })
 
+  /** Eine dauerhaft fehlende Position löste vorher bei jedem Wechsel einen vollen Durchgang aus. */
+  it('holt innerhalb der Frist nur fehlende Kurse und behält Bestand, Ausfälle und Zeitstempel', async () => {
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async (isin: string) => {
+        if (isin === 'IE0000000003') throw new Error('kaputt')
+        return makeQuoteResponse('AAA.DE', 100, isin)
+      }),
+    } as Partial<StockInfoClient>)
+    const store = useQuotesStore()
+    const first = makePosition({ id: 'a', isin: 'IE0000000001' })
+    const broken = makePosition({ id: 'c', isin: 'IE0000000003' })
+    await store.loadQuotes(client, [first, broken])
+    const stamp = store.lastRefreshAt
+    vi.mocked(client.getQuoteByIsin).mockClear()
+
+    await store.loadQuotesIfStale(client, [first, makePosition({ id: 'b', isin: 'IE0000000002' }), broken], 60)
+
+    expect(vi.mocked(client.getQuoteByIsin).mock.calls.map(([isin]) => isin)).toEqual(['IE0000000002', 'IE0000000003'])
+    expect([...store.quotes.keys()].sort()).toEqual(['IE0000000001', 'IE0000000002'])
+    expect(store.failures.map((failure) => failure.key)).toEqual(['IE0000000003'])
+    expect(store.lastRefreshAt).toBe(stamp)
+  })
+
   it('lässt Cash außen vor — dafür gibt es nie einen Kurs', async () => {
     const client = mockClient()
     const store = useQuotesStore()
