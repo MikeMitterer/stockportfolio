@@ -5,12 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktuelle Arbeit:** [T-65 · Board-Konventionen abgleichen](30-doing/T-65-board-konventionen-abgleichen.md)
-auf Branch `t-65-board-konventionen-abgleichen` im Worktree
-`/private/tmp/stockportfolio-t65`, aufbauend auf dem freigegebenen T-64-Stand.
-Danach folgt [T-66 · Status-Badges Below/Above/OK](20-ready/T-66-status-badges-below-above-ok.md)
-(Mike, 2026-10-01, über `codex-observer`).
-[T-64 · Login-Hinweis](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
+**Aktuelle Arbeit:** [T-66 · Status-Badges Below/Above/OK](30-doing/T-66-status-badges-below-above-ok.md)
+auf Branch `t-66-status-badges-below-above-ok` im Worktree
+`/private/tmp/stockportfolio-t66`, aufbauend auf dem freigegebenen T-65-Stand.
+[T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
+in Runde 3 (`7f7ca99`) technisch freigegeben; Mikes Kennungsentscheidung und
+Abnahme stehen aus. [T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
 ist in Runde 1 (`fd9d8f4`) technisch freigegeben; Wortlaut und Abnahme liegen
 bei Mike.
 
@@ -97,41 +97,37 @@ Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observe
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
-**Board-Konventionen:** Die Übernahme von `2026-09-28-activity-local` in
-[T-65](30-doing/T-65-board-konventionen-abgleichen.md) ist in Runde 3
-technisch freigegeben. Mikes Entscheidung über die dauerhaften
-Rollenkennungen und die menschliche Ticketabnahme bleiben offen. Lokale
-Abweichungen stehen im
-[Workflow](.agents/AGENT-WORKFLOW.md).
+**Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen und
+in [T-65](30-doing/T-65-board-konventionen-abgleichen.md) Runde 3 technisch
+freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-65; Runde 3 (`7f7ca99`) ist technisch freigegeben. Die letzte
-abgeschlossene technische Prüfung ist T-65 Runde 3. T-64 ist in Runde 1
-(`fd9d8f4`) technisch freigegeben; Mikes Prüfung des Wortlauts und die
-menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
-Runde 2 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6
-(`094802b`) und T-60 mit T-63 Runde 6. Die Prüfgeschichte
-aller Runden steht in den jeweiligen Tickets. Für T-60 bis T-64 erfolgen
-bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
+Aktiv ist T-66 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+T-65 Runde 3 (`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
+T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
+(`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
+T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
+jeweiligen Tickets. Für T-60 bis T-65 erfolgen bis zu Mikes Abnahme am Ende
+weder Abschluss noch Merge oder Push.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-65-board-konventionen-abgleichen.md`
-- `handoff_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
-- `review_round`: `3`
+- `phase`: `implementing`
+- `ticket`: `T-66-status-badges-below-above-ok.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
 - `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-65-board-konventionen-abgleichen.md`, `T-66-status-badges-below-above-ok.md`
-- `priority_ticket`: `T-65-board-konventionen-abgleichen.md`
+- `priority_chain`: `T-66-status-badges-below-above-ok.md`
+- `priority_ticket`: `T-66-status-badges-below-above-ok.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich

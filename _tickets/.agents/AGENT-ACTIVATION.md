@@ -18,7 +18,7 @@ Abweichungen. Die Überschriften bleiben als Sprungziele erhalten.
 - [Observer-Durchlauf](#observer-durchlauf)
 - [Stoppen und Wiedereinstieg](#stoppen-und-wiedereinstieg)
 
-**Aktueller Board-Pfad:** `/private/tmp/stockportfolio-t65/_tickets` (Worktree des aktiven Tickets T-65).
+**Aktueller Board-Pfad:** `/private/tmp/stockportfolio-t66/_tickets` (Worktree des aktiven Tickets T-66).
 Maßgeblich ist der Worktree, den [STATUS](../STATUS.md) unter „Aktuelle
 Arbeit“ nennt. Die Startzeilen unten nennen diesen Pfad absolut; ein Start
 nur mit relativem Pfad aus dem Projektroot fände dort ein anderes Board ohne
@@ -39,11 +39,11 @@ Paket: Abschnitt „Codex-Scheduler“; Vertrag im
 Im Codex-Chat des Verifiers beziehungsweise Observers eingeben:
 
 ```text
-Deine Instanzkennung ist codex-verifier. Board: /private/tmp/stockportfolio-t65/_tickets. Führe /private/tmp/stockportfolio-t65/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+Deine Instanzkennung ist codex-verifier. Board: /private/tmp/stockportfolio-t66/_tickets. Führe /private/tmp/stockportfolio-t66/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
 ```
 
 ```text
-Deine Instanzkennung ist codex-observer. Board: /private/tmp/stockportfolio-t65/_tickets. Führe /private/tmp/stockportfolio-t65/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+Deine Instanzkennung ist codex-observer. Board: /private/tmp/stockportfolio-t66/_tickets. Führe /private/tmp/stockportfolio-t66/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
 ```
 
 ## Claude-Scheduler
@@ -54,7 +54,7 @@ Im Claude-Chat des Coders eingeben; vorher mit `CronList` prüfen, ob der
 Board-Job bereits läuft:
 
 ```text
-/loop 5m Deine Instanzkennung ist claude-coder. Board: /private/tmp/stockportfolio-t65/_tickets. Lies /private/tmp/stockportfolio-t65/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
+/loop 5m Deine Instanzkennung ist claude-coder. Board: /private/tmp/stockportfolio-t66/_tickets. Lies /private/tmp/stockportfolio-t66/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
 ```
 
 Beim Start aus einem normalen Prompt richtet Claude denselben Auftrag per
