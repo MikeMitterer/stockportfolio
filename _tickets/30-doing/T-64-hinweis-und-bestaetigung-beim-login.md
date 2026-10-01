@@ -37,7 +37,12 @@ Das sichtbare Prüffenster bleibt bis zu deinem OK offen.
 
 ## Wortlaut
 
-**Aktuelle Fassung (2026-10-01, nach Observer-Einschätzung, von Mike mit
+**Hinweis:** Der zweite Satz wurde in
+[T-66](T-66-status-badges-below-above-ok.md) an die neuen Status-Badges
+`Below`/`Above` angepasst; maßgeblich ist dort die jeweils neueste Fassung.
+Die technische Freigabe von T-64 gilt der Fassung `fd9d8f4`.
+
+**Fassung von T-64 (2026-10-01, nach Observer-Einschätzung, von Mike mit
 „Ja, ändere den Text“ beauftragt):**
 
 > StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen,

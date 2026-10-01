@@ -47,9 +47,10 @@ Paket: Abschnitt „Rollen und Arbeitsbeginn“.
 
 Lokal: Die sechs Statusordner `10-backlog` bis `90-rejected` ersetzen die
 frühere Ablage im Root und in `solved/` ([Ablage](../README.md#ablage)).
-Ein aktives Ticket liegt in dem Worktree, dessen Branch es bearbeitet; STATUS
-nennt Worktree und Branch, und die STATUS-Kopie im Hauptverzeichnis zeigt
-dieselbe Zuordnung.
+Gearbeitet wird nur im Projekt-Root, ohne Worktrees; STATUS nennt im Feld
+`branch` den dort ausgecheckten Ticketbranch. Vollständige Regel:
+[AGENTS.md · Ein Arbeitsort](../../AGENTS.md#ein-arbeitsort-der-projekt-root)
+(Mike, 2026-10-01).
 
 ## Übergabe und Review
 

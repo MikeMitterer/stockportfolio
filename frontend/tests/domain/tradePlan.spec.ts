@@ -733,7 +733,7 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
 describe('Mindest-Handelsvolumen in der Simulation', () => {
   /**
    * Ohne diese Regel widerspricht sich die App: Das Dashboard sagt „OK",
-   * weil sich die Order nicht lohnt, die Simulation daneben „Buy".
+   * weil sich die Order nicht lohnt, die Simulation daneben „Below".
    */
   const portfolio: Portfolio = {
     id: 'p1',

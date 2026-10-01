@@ -1,6 +1,6 @@
 /** Deutscher Message-Katalog. Source of Truth für Key-Struktur. */
 export const de = {
-  tradeNotice: 'Kauf- und Verkaufswerte sind rechnerische Orientierungshilfen auf Basis deiner Depotdaten und Ziele, keine Empfehlung zum Handeln. Prüfe Daten, Kurse und Kosten selbst, bevor du eine Order aufgibst.',
+  tradeNotice: 'Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um deine selbst gesetzten Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
   fx: {
     baseCurrency: 'Basiswährung', invalidCurrency: 'Bitte eine gültige Basiswährung wählen.',
     changeTitle: 'Basiswährung ändern',
@@ -51,7 +51,7 @@ export const de = {
     createAdmin: 'Admin-Konto anlegen',
     loginTitle: 'Anmelden',
     login: 'Anmelden',
-    investmentNotice: 'StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen, deinen selbst festgelegten Zielen und Toleranzbändern sowie externen Kursdaten. Buy- und Sell-Hinweise, Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Kurse und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. Prüfe Daten, Kosten und Risiken, bevor du handelst.',
+    investmentNotice: 'StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen, deinen selbst festgelegten Zielen und Toleranzbändern sowie externen Kursdaten.\n\nDie Statussymbole ↓ und ↑ zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen **rechnerisch** nötig wären, um diese Ziele zu erreichen.\n\nDie App **prüft nicht**, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und **führt keine Orders aus**. Kurse und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. **Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.**',
     investmentConfirm: 'Ich habe den Hinweis gelesen.',
     logout: 'Abmelden',
     accountMenu: 'Konto {username}: Menü öffnen',
@@ -125,9 +125,9 @@ export const de = {
     moneymarket: 'Geldmarkt',
     cash: 'Cash',
   },
-  // Bewusst englische Kürzel, auch im deutschen UI: „Kaufen"/„Verkaufen"
-  // sind unterschiedlich lang und ließen die Spalte von Zeile zu Zeile
-  // wandern. Buy/Sell/OK sind kurz, gleich lang und im Börsenkontext geläufig.
+  // Die Badges zeigen nur Symbol und Farbe (Mike, 2026-10-01): ↓ unter Ziel,
+  // ↑ über Ziel, ✓ OK, → knapp an der Grenze. Die Texte hier sind ihr
+  // zugänglicher Name und Tooltip; erklärt werden sie unter `hints.status`.
   startup: {
     noApiUrlTitle: 'Keine API-Adresse gesetzt',
     noApiUrlBody:
@@ -182,10 +182,10 @@ export const de = {
   },
 
   suggestion: {
-    buy: 'Buy',
-    sell: 'Sell',
+    buy: 'Unter Ziel',
+    sell: 'Über Ziel',
     ok: 'OK',
-    near: 'Near',
+    near: 'Knapp an der Grenze',
     belowMinTradeMark: 'min',
     belowMinTrade: 'Außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen.',
   },
@@ -378,8 +378,8 @@ export const de = {
     dueSince: 'Seit {days} Tagen fällig.',
     dueIn: 'Noch {days} Tage — nächster Termin {date}.',
     bandsHeading: 'Toleranzbänder',
-    lowerHint: 'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Kaufen.',
-    upperHint: 'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Verkaufen.',
+    lowerHint: 'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Status ↓ (unter Ziel).',
+    upperHint: 'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Status ↑ (über Ziel).',
     metricsHeading: 'Liquidität',
     securityBuffer: 'Sicherheitspuffer',
     minTradeSize: 'Mindest-Handelsvolumen',
@@ -653,11 +653,11 @@ export const de = {
     bandsBody:
       'Ein Depot soll eine bestimmte Aufteilung haben. Kurse verschieben sie laufend, aber nicht jede Abweichung ist ein Handlungsbedarf: Wer bei jedem Prozentpunkt umschichtet, zahlt Gebühren und Steuern für eine Genauigkeit, die am nächsten Tag wieder dahin ist.',
     bandsBody2:
-      'Die Bänder ziehen eine Grenze. Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das untere oder obere Band abweicht, springt der Status auf Buy oder Sell. Relativ heißt: Bei einem Ziel von 10 % und einem unteren Band von 6 % beginnt der Handlungsbedarf bei 9,4 % — nicht bei 4 %.',
+      'Die Bänder ziehen eine Grenze. Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das untere oder obere Band abweicht, zeigt der Status ↓ (unter Ziel) oder ↑ (über Ziel). Relativ heißt: Bei einem Ziel von 10 % und einem unteren Band von 6 % beginnt ↓ bei 9,4 % — nicht bei 4 %.',
     bandsDelta:
       'Die Delta-Spalte zeigt diese Abweichung — relativ zum Ziel, nicht in Prozentpunkten. Der Unterschied ist keine Spitzfindigkeit: Bei einem Ziel von 10 % heißt −10 % nicht „bei null angekommen", sondern ein Zehntel unter dem Zielwert, also 9 %. In Prozentpunkten gerechnet wären −10 dagegen tatsächlich null.',
     bandsDelta2:
-      'Relativ gerechnet wird, damit ein Band für jede Position dasselbe bedeutet. Bei einem Ziel von 45 % wären 6 Prozentpunkte gut ein Achtel der Position, bei einem Ziel von 5 % mehr als die ganze — dieselbe Zahl hieße an jeder Zeile etwas anderes. Als Anteil des Ziels ist „6 %" überall derselbe Handlungsbedarf.',
+      'Relativ gerechnet wird, damit ein Band für jede Position dasselbe bedeutet. Bei einem Ziel von 45 % wären 6 Prozentpunkte gut ein Achtel der Position, bei einem Ziel von 5 % mehr als die ganze — dieselbe Zahl hieße an jeder Zeile etwas anderes. Als Anteil des Ziels ist „6 %" überall dieselbe Schwelle.',
     bandsBody3:
       'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben. Ein gefallener Anteil bedeutet, dass man günstig nachkaufen kann; ein gestiegener bedeutet nur, dass etwas gut gelaufen ist.',
     bandsBody4:
@@ -666,11 +666,11 @@ export const de = {
     bandsMinTrade:
       'Dass die Bänder relativ zum Ziel gelten, hat eine Kehrseite. Es löst zwar die Blindheit bei kleinen Positionen — 6 % von 2 % sind 6 % von 2 %, egal wie klein der Anteil ist —, macht sie in Euro aber überempfindlich: Bei einem Depot von 100.000 € meldet sich ein Ziel von 2 % schon bei 120 € Abweichung. Für diesen Betrag lohnt keine Order; die Gebühr frisst den Nutzen.',
     bandsMinTrade2:
-      'Dagegen steht das Mindest-Handelsvolumen in den Einstellungen. Liegt eine Position außerhalb ihres Bandes, ist die fehlende Summe aber kleiner als diese Grenze, bleibt der Status auf „OK" und die Zeile bekommt ein kleines „min". Die Abweichung verschwindet nicht — sie steht weiter in der Delta-Spalte —, nur das Handlungssignal unterbleibt. Vorgabe ist 0, also aus.',
+      'Dagegen steht das Mindest-Handelsvolumen in den Einstellungen. Liegt eine Position außerhalb ihres Bandes, ist die fehlende Summe aber kleiner als diese Grenze, bleibt der Status auf ✓ (OK) und die Zeile bekommt ein kleines „min". Die Abweichung verschwindet nicht — sie steht weiter in der Delta-Spalte —, nur die Anzeige ↓ oder ↑ unterbleibt. Vorgabe ist 0, also aus.',
 
     triggerHeading: 'Bänder, Termin — oder beides',
     triggerBody:
-      'Die App kennt drei Auslöser. „Toleranzbänder" ist das oben Beschriebene: Es geschieht etwas, wenn etwas zu tun ist. „Fester Termin" ist das verbreitete Kalender-Rebalancing: einmal im Jahr, unabhängig davon, wie die Anteile stehen — dafür dann jede Abweichung, nicht nur die großen.',
+      'Die App kennt drei Auslöser. „Toleranzbänder" ist das oben Beschriebene: Es geschieht etwas, wenn etwas zu tun ist. „Fester Termin" ist das verbreitete Kalender-Rebalancing: einmal im Jahr, unabhängig davon, wie die Anteile stehen — dafür dann jede Abweichung, nicht nur die großen. Am fälligen Termin richtet sich der Status deshalb nach dem Zielwert: ↓ oder ↑ erscheint dann schon bei jeder Abweichung, nicht erst außerhalb der Bänder.',
     triggerBody2:
       'Reines Kalender-Rebalancing hat eine bekannte Schwäche: Bricht der Markt im März ein, verschiebt sich die Aufteilung sofort, der Termin aber liegt im Dezember. Neun Monate lang passiert nichts. Umgekehrt kann ein Jahr so ruhig verlaufen, dass am Termin nur Rundungsreste umzuschichten wären.',
     triggerBody3:
@@ -702,16 +702,22 @@ export const de = {
     limitsRisk:
       'Sie sagt nichts über Währungsrisiko. Ein EUR-notierter MSCI World steckt zu zwei Dritteln in US-Dollar; das ist eine andere Frage als die Notierungswährung.',
     limitsAdvice:
-      'Sie gibt keine Anlageberatung. Sie rechnet aus, was aus der eingegebenen Zielverteilung folgt — ob diese Verteilung sinnvoll ist, entscheidet der Nutzer.',
+      'Sie prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Sie rechnet aus, was aus der eingegebenen Zielverteilung folgt — ob diese Verteilung sinnvoll ist, entscheidest du.',
     limitsData:
-      'Sie speichert nichts außerhalb des Browsers. Kein Server kennt die Bestände; die Kursquelle erfährt nur, welche Papiere abgefragt werden.',
+      'Depots, Einstellungen und Tageswerte liegen in deinem Konto auf dem StockPortfolio-Server, getrennt je Konto. Die Kursquelle StockInfo erfährt nur, welche Papiere abgefragt werden.',
   },
 
   hints: {
+    statusBands:
+      '↓ unter, ↑ über dem Ziel, jeweils außerhalb deiner Bänder ({lower} / {upper} relativ zum Ziel). ✓ innerhalb der Bänder. → noch im Band, aber nahe der Grenze: zwischen {lower} und {nearLower} sowie zwischen {nearUpper} und {upper}. ✓ mit „min“: außerhalb des Bands, Betrag unter dem Mindest-Handelsvolumen.',
+    statusDueDate:
+      'An einem fälligen Termin zählt jede Abweichung vom Ziel.',
+    statusCalendar:
+      '↓ unter, ↑ über dem Ziel: an einem fälligen Termin bei jeder Abweichung. ✓ kein Termin fällig oder genau im Ziel. ✓ mit „min“: Betrag unter dem Mindest-Handelsvolumen.',
     baseCurrency:
       'Währung, in der das aktive Depot bewertet wird. Positionen in anderen Währungen rechnet die App mit aktuellen Devisenkursen um. Jedes Depot hat seine eigene Basiswährung.',
     bands:
-      'Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das Band abweicht, entsteht Handlungsbedarf. Kleine Ausschläge bleiben unbeachtet — sie kosten sonst Gebühren für eine Genauigkeit, die nicht hält.',
+      'Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das Band abweicht, zeigt die Position ↓ (unter Ziel) oder ↑ (über Ziel). Kleine Ausschläge bleiben unbeachtet — sie kosten sonst Gebühren für eine Genauigkeit, die nicht hält.',
     investmentReserve:
       'Geldmarkt und Cash abzüglich Sicherheitspuffer. Sagt, wie viel bei einem Rückgang höchstens eingesetzt werden könnte — nicht, wie viel eingesetzt werden soll.',
     securityBuffer:
@@ -719,7 +725,7 @@ export const de = {
     trigger:
       'Woran sich der Ausgleich entscheidet: laufend an den Bändern, an einem festen Termin, oder an beidem. Reines Kalender-Rebalancing lässt einen Einbruch im März bis zum Jahresende unbeachtet.',
     minTradeSize:
-      'Kleinster Betrag, für den sich eine Order lohnt. Bleibt eine Abweichung darunter, meldet die Position keinen Handlungsbedarf — sichtbar bleibt sie trotzdem. 0 schaltet die Grenze ab.',
+      'Kleinster Betrag, für den sich eine Order lohnt. Bleibt eine Abweichung darunter, zeigt die Position ✓ (OK) mit dem Zusatz „min" — die Abweichung bleibt trotzdem sichtbar. 0 schaltet die Grenze ab.',
     delta:
       'Abweichung vom Ziel, relativ zum Ziel selbst: −10 % heißt „ein Zehntel unter dem Zielwert", nicht „zehn Prozentpunkte". Die Farbe zeigt, ob die Position im Band liegt.',
     coverFrom:
@@ -727,7 +733,7 @@ export const de = {
     historyPeriod:
       'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
     dataStatus:
-      'Vollständig heißt: Für jede Position sind Kurs und nötige Währungsumrechnung verfügbar. Fehlende Kurse oder Devisenkurse machen die Bewertung unvollständig. Betroffene Positionen bleiben sichtbar und werden aus den Summen ausgeschlossen; veraltete verwendbare Kurse sind gewarnt. Ob eine Position gekauft oder verkauft werden sollte, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
+      'Vollständig heißt: Für jede Position sind Kurs und nötige Währungsumrechnung verfügbar. Fehlende Kurse oder Devisenkurse machen die Bewertung unvollständig. Betroffene Positionen bleiben sichtbar und werden aus den Summen ausgeschlossen; veraltete verwendbare Kurse sind gewarnt. Ob eine Position unter oder über ihrem Ziel liegt, steht nicht hier, sondern in der Status-Spalte jeder Zeile.',
     moneymarket:
       'Geldmarktnahe Papiere schwanken kaum und zählen deshalb zusammen mit Cash zur verfügbaren Liquidität. Laufzeit-Anleihen tun das nicht.',
   },
@@ -781,7 +787,7 @@ export const de = {
     websiteLink: 'Website von MangoLila',
     intro: 'StockPortfolio übernimmt Kurse aus StockInfo und berechnet Werte aus deinen Beständen, Zielanteilen und Einstellungen.',
     data: 'Daten können fehlen, veraltet oder fehlerhaft sein. Angezeigte Kurse sind keine verbindlichen Handelskurse.',
-    use: 'Kauf- und Verkaufswerte folgen deinen Zielwerten und Regeln. Sie dienen zur Orientierung und sind keine persönliche Empfehlung zum Handeln. Prüfe Daten, Kurse und Kosten vor einer Order bei den maßgeblichen Quellen.',
+    use: 'Die Statussymbole ↓ und ↑ zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
     legal: 'Die Software steht unter der EUPL 1.2. MangoLilas Erklärung für Verbraucher erläutert die geltenden Regeln zu Gewährleistung und Haftung.',
     licenseLink: 'EUPL 1.2 (Deutsch)',
     licensingLink: 'Lizenz- und Verbraucherklärung',

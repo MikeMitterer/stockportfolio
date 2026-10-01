@@ -56,9 +56,12 @@ const color = computed(() => {
 })
 
 const arrow = computed(() => {
-  if (state.value === 'buy') return '↓'
-  if (state.value === 'sell') return '↑'
-  return null
+  switch (state.value) {
+    case 'buy': return '↓'
+    case 'sell': return '↑'
+    case 'near': return '→'
+    default: return '✓'
+  }
 })
 </script>
 
@@ -69,10 +72,20 @@ const arrow = computed(() => {
     bleiben.
   -->
   <span class="badge" :style="{ '--badge-color': color }">
-    <span class="badge__pill" :class="{ 'badge__pill--plain': plain }">
-      <span class="badge__dot"></span>
-      <span v-if="arrow" class="badge__arrow">{{ arrow }}</span>
-      <span>{{ label }}</span>
+    <!--
+      Nur Symbol und Farbe (Mike, 2026-10-01). Die Bedeutung steht als
+      zugänglicher Name und Tooltip am Badge; erklärt wird sie am
+      Fragezeichen im Spaltenkopf „Status“.
+    -->
+    <span
+      class="badge__pill"
+      :class="{ 'badge__pill--plain': plain }"
+      role="img"
+      :aria-label="label"
+      :title="label"
+    >
+      <span class="badge__dot" aria-hidden="true"></span>
+      <span class="badge__arrow" aria-hidden="true">{{ arrow }}</span>
     </span>
 
     <NTooltip v-if="belowMinTrade" trigger="hover">
@@ -98,8 +111,11 @@ const arrow = computed(() => {
     align-items: center;
     justify-content: center;
     gap: var(--space-1);
-    width: 4.5rem;
+    // Platz für Punkt und Symbol; die Breite ist für alle Zustände gleich,
+    // damit die Spalte nicht wandert. Ein Umbruch ist nie gewollt.
+    width: 2.75rem;
     padding: 0.125rem var(--space-2);
+    white-space: nowrap;
     border: 1px solid color-mix(in srgb, rgb(var(--badge-color)) 45%, transparent);
     border-radius: var(--radius-full);
     background-color: color-mix(in srgb, rgb(var(--badge-color)) 14%, transparent);
@@ -108,11 +124,19 @@ const arrow = computed(() => {
     font-weight: 500;
     font-variant-numeric: tabular-nums;
 
+    // Ohne Fläche und Rahmen, aber mit demselben Kastenmaß wie die Pille:
+    // So stehen Punkt und Symbol im Gruppenkopf genau über denen der Zeilen.
     &--plain {
-      padding: 0;
-      border: 0;
+      border-color: transparent;
       background: none;
     }
+  }
+
+  // Punkt und Pfeil dürfen nicht schrumpfen: Wird die Pille eng, drückte
+  // Flexbox den Punkt sonst zu einem senkrechten Strich zusammen.
+  &__dot,
+  &__arrow {
+    flex-shrink: 0;
   }
 
   &__dot {

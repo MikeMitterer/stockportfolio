@@ -7,7 +7,7 @@
 import type { MessageSchema } from './de'
 
 export const en: MessageSchema = {
-  tradeNotice: 'Buy and sell figures are calculated guides based on your portfolio data and targets, not recommendations to trade. Check the data, prices and costs yourself before placing an order.',
+  tradeNotice: 'Buy and sell amounts and unit counts show which changes would be needed, by calculation, to reach the targets you set yourself. The app does not check whether a trade or a financial instrument suits you, and it does not place orders. Check data, prices, costs and risks before you trade.',
   fx: {
     baseCurrency: 'Base currency', invalidCurrency: 'Choose a valid base currency.',
     changeTitle: 'Change base currency',
@@ -52,7 +52,7 @@ export const en: MessageSchema = {
     createAdmin: 'Create admin account',
     loginTitle: 'Sign in',
     login: 'Sign in',
-    investmentNotice: 'StockPortfolio calculates portfolio values and deviations from your holdings, the targets and tolerance bands you set yourself, and external price data. Buy and sell indicators, buy and sell amounts and unit counts show which changes would be needed, by calculation, to reach these targets. The app does not check whether a trade or a financial instrument suits you, and it does not place orders. Prices and calculations may be delayed, incomplete or wrong. Check data, costs and risks before you trade.',
+    investmentNotice: 'StockPortfolio calculates portfolio values and deviations from your holdings, the targets and tolerance bands you set yourself, and external price data.\n\nThe status symbols ↓ and ↑ show deviations from the targets and limits you set yourself. Buy and sell amounts and unit counts show which changes would be needed, **by calculation**, to reach these targets.\n\nThe app **does not check** whether a trade or a financial instrument suits you, and it **does not place orders**. Prices and calculations may be delayed, incomplete or wrong. **Check data, prices, costs and risks before you trade.**',
     investmentConfirm: 'I have read the notice.',
     logout: 'Sign out',
     accountMenu: 'Account {username}: open menu',
@@ -126,9 +126,8 @@ export const en: MessageSchema = {
     moneymarket: 'Money market',
     cash: 'Cash',
   },
-  // Bewusst englische Kürzel, auch im deutschen UI: „Kaufen"/„Verkaufen"
-  // sind unterschiedlich lang und ließen die Spalte von Zeile zu Zeile
-  // wandern. Buy/Sell/OK sind kurz, gleich lang und im Börsenkontext geläufig.
+  // Die Badges zeigen nur Symbol und Farbe (Mike, 2026-10-01). Die Texte hier
+  // sind ihr zugänglicher Name und Tooltip; erklärt unter `hints.status`.
   startup: {
     noApiUrlTitle: 'No API address configured',
     noApiUrlBody:
@@ -183,10 +182,10 @@ export const en: MessageSchema = {
   },
 
   suggestion: {
-    buy: 'Buy',
-    sell: 'Sell',
+    buy: 'Below',
+    sell: 'Above',
     ok: 'OK',
-    near: 'Near',
+    near: 'Near the limit',
     belowMinTradeMark: 'min',
     belowMinTrade: 'Outside the band, but below the minimum trade size.',
   },
@@ -369,8 +368,8 @@ export const en: MessageSchema = {
     dueSince: 'Due for {days} days.',
     dueIn: '{days} days to go — next review {date}.',
     bandsHeading: 'Tolerance bands',
-    lowerHint: 'Market value below target by more than this share → buy.',
-    upperHint: 'Market value above target by more than this share → sell.',
+    lowerHint: 'Market value below target by more than this share → status ↓ (below target).',
+    upperHint: 'Market value above target by more than this share → status ↑ (above target).',
     metricsHeading: 'Liquidity',
     securityBuffer: 'Safety buffer',
     minTradeSize: 'Minimum trade size',
@@ -642,11 +641,11 @@ export const en: MessageSchema = {
     bandsBody:
       'A portfolio is meant to have a certain allocation. Prices keep shifting it, but not every deviation calls for action: rebalancing on every percentage point costs fees and taxes for a precision that is gone again the next day.',
     bandsBody2:
-      'The bands draw a line. Only when a share deviates from its target by more than the lower or upper band does the status switch to Buy or Sell. Relative, that is: with a target of 10 % and a lower band of 6 %, action starts at 9.4 % — not at 4 %.',
+      'The bands draw a line. Only when a share deviates from its target by more than the lower or upper band does the status show ↓ (below target) or ↑ (above target). Relative, that is: with a target of 10 % and a lower band of 6 %, ↓ starts at 9.4 % — not at 4 %.',
     bandsDelta:
       'The delta column shows this deviation — relative to the target, not in percentage points. The difference is not hair-splitting: with a target of 10 %, −10 % does not mean “down to zero” but a tenth below the target value, that is 9 %. In percentage points, −10 would indeed be zero.',
     bandsDelta2:
-      'The relative reading makes one band mean the same for every position. With a target of 45 %, 6 percentage points would be about an eighth of the position; with a target of 5 %, more than all of it — the same number would mean something different in every row. As a share of the target, “6 %” is the same call to action everywhere.',
+      'The relative reading makes one band mean the same for every position. With a target of 45 %, 6 percentage points would be about an eighth of the position; with a target of 5 %, more than all of it — the same number would mean something different in every row. As a share of the target, “6 %” is the same threshold everywhere.',
     bandsBody3:
       'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up. A share that has fallen means you can buy in cheaply; one that has risen only means something went well.',
     bandsBody4:
@@ -655,11 +654,11 @@ export const en: MessageSchema = {
     bandsMinTrade:
       'Bands relative to the target have a flip side. They do fix the blindness towards small positions — 6 % of 2 % is 6 % of 2 %, however small the share — but they make them oversensitive in euro terms: in a €100,000 portfolio a 2 % target already signals at €120 of deviation. No order is worth that; the fee eats the benefit.',
     bandsMinTrade2:
-      'The minimum trade size in the settings counters this. If a position sits outside its band but the missing amount is smaller than that limit, the status stays “OK” and the row gets a small “min”. The deviation does not disappear — it remains in the delta column — only the call to action does. The default is 0, i.e. off.',
+      'The minimum trade size in the settings counters this. If a position sits outside its band but the missing amount is smaller than that limit, the status stays ✓ (OK) and the row gets a small “min”. The deviation does not disappear — it remains in the delta column — only the ↓ or ↑ symbol does. The default is 0, i.e. off.',
 
     triggerHeading: 'Bands, schedule — or both',
     triggerBody:
-      'The app knows three triggers. “Tolerance bands” is what is described above: something happens when there is something to do. “Fixed schedule” is the common calendar rebalancing: once a year, regardless of where the shares stand — but then every deviation, not just the large ones.',
+      'The app knows three triggers. “Tolerance bands” is what is described above: something happens when there is something to do. “Fixed schedule” is the common calendar rebalancing: once a year, regardless of where the shares stand — but then every deviation, not just the large ones. On a due date the status therefore follows the target value: ↓ or ↑ appears for any deviation, not only outside the bands.',
     triggerBody2:
       'Pure calendar rebalancing has a known weakness: if the market drops in March, the allocation shifts at once, but the date is in December. For nine months nothing happens. Conversely a year can be so quiet that the date would only shuffle rounding remainders.',
     triggerBody3:
@@ -691,16 +690,22 @@ export const en: MessageSchema = {
     limitsRisk:
       'It says nothing about currency risk. A EUR-quoted MSCI World holds two thirds in US dollars; that is a different question from the quoting currency.',
     limitsAdvice:
-      'It gives no investment advice. It works out what follows from the target allocation you entered — whether that allocation makes sense is your call.',
+      'It does not check whether a trade or a financial instrument suits you, and it does not place orders. It works out what follows from the target allocation you entered — whether that allocation makes sense is your call.',
     limitsData:
-      'It stores nothing outside the browser. No server knows the holdings; the price source only learns which instruments are queried.',
+      'Portfolios, settings and daily values are kept in your account on the StockPortfolio server, separately for each account. The price source StockInfo only learns which instruments are queried.',
   },
 
   hints: {
+    statusBands:
+      '↓ below, ↑ above target, each outside your bands ({lower} / {upper} relative to target). ✓ within the bands. → still inside the band but close to the limit: between {lower} and {nearLower} and between {nearUpper} and {upper}. ✓ with “min”: outside the band, amount below the minimum trade size.',
+    statusDueDate:
+      'On a due date any deviation from the target counts.',
+    statusCalendar:
+      '↓ below, ↑ above target: on a due date for any deviation. ✓ no date due or exactly on target. ✓ with “min”: amount below the minimum trade size.',
     baseCurrency:
       'Currency in which the active portfolio is valued. Positions in other currencies are converted with current exchange rates. Each portfolio has its own base currency.',
     bands:
-      'Action is only called for once a share deviates from its target by more than the band. Small swings are ignored — otherwise they cost fees for a precision that does not hold.',
+      'A position only shows ↓ (below target) or ↑ (above target) once its share deviates from its target by more than the band. Small swings are ignored — otherwise they cost fees for a precision that does not hold.',
     investmentReserve:
       'Money market and cash minus the safety buffer. Says how much could at most be invested in a downturn — not how much should be.',
     securityBuffer:
@@ -708,7 +713,7 @@ export const en: MessageSchema = {
     trigger:
       'What decides a rebalance: the bands continuously, a fixed date, or both. Pure calendar rebalancing leaves a March crash unattended until the end of the year.',
     minTradeSize:
-      'Smallest amount for which an order is worthwhile. A deviation below it reports no action — it stays visible all the same. 0 switches the limit off.',
+      'Smallest amount for which an order is worthwhile. A deviation below it shows ✓ (OK) with a small “min” — it stays visible all the same. 0 switches the limit off.',
     delta:
       'Deviation from the target, relative to the target itself: −10 % means “a tenth below the target value”, not “ten percentage points”. The colour shows whether the position is inside the band.',
     coverFrom:
@@ -716,7 +721,7 @@ export const en: MessageSchema = {
     historyPeriod:
       'Period of the small line next to the price. A month, a week or a day — with “one day” it shows the change from the last trading day to today.',
     dataStatus:
-      'Complete means that each position has a price and any required currency conversion. Missing prices or exchange rates make the valuation incomplete. Affected positions remain visible and are excluded from totals; usable stale rates carry a warning. Whether a position should be bought or sold is not shown here but in the status column of each row.',
+      'Complete means that each position has a price and any required currency conversion. Missing prices or exchange rates make the valuation incomplete. Affected positions remain visible and are excluded from totals; usable stale rates carry a warning. Whether a position is below or above its target is not shown here but in the status column of each row.',
     moneymarket:
       'Money-market instruments barely fluctuate and therefore count, together with cash, as available liquidity. Bonds with a maturity do not.',
   },
@@ -770,7 +775,7 @@ export const en: MessageSchema = {
     websiteLink: 'MangoLila website',
     intro: 'StockPortfolio gets quotes from StockInfo and calculates values from your holdings, target shares and settings.',
     data: 'Data may be missing, outdated or incorrect. Displayed prices are not binding trading prices.',
-    use: 'Buy and sell figures follow your targets and rules. They are guides, not personal recommendations to trade. Check data, prices and costs against the relevant sources before placing an order.',
+    use: 'The status symbols ↓ and ↑ show deviations from the targets and limits you set yourself. Buy and sell amounts and unit counts show which changes would be needed, by calculation, to reach these targets. The app does not check whether a trade or a financial instrument suits you, and it does not place orders. Check data, prices, costs and risks before you trade.',
     legal: 'The software is licensed under EUPL 1.2. MangoLila’s consumer declaration explains the applicable warranty and liability rules.',
     licenseLink: 'EUPL 1.2 (English)',
     licensingLink: 'Licensing and consumer declaration',

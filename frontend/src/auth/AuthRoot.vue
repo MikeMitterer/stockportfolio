@@ -11,6 +11,7 @@ import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@
 import { clearMarketCaches } from '@/db/cache'
 import { useLegacyStore } from '@/stores/legacy'
 import AuthenticatedApp from './AuthenticatedApp.vue'
+import EmphasizedText from '@/components/EmphasizedText.vue'
 import { PortfolioAuthClient, PortfolioApiError, type PortfolioUser } from './client'
 import { AUTH_CLIENT, AUTH_LOGOUT, AUTH_USER } from './context'
 
@@ -260,7 +261,7 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
               <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
               <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="current-password" /></NFormItem>
             </div>
-            <p id="auth-investment-notice" class="auth-login__notice">{{ t('auth.investmentNotice') }}</p>
+            <div id="auth-investment-notice" class="auth-login__notice"><EmphasizedText :text="t('auth.investmentNotice')" /></div>
             <div class="auth-login__confirm">
               <NCheckbox v-model:checked="noticeAccepted" aria-describedby="auth-investment-notice">{{ t('auth.investmentConfirm') }}</NCheckbox>
             </div>
@@ -399,7 +400,8 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
     grid-area: notice;
     margin: 0 0 var(--space-3);
     padding: var(--space-3) var(--space-4);
-    border-left: 3px solid rgb(var(--border-default));
+    // Dezent: Der Strich gliedert, er soll nicht mit dem Text konkurrieren.
+    border-left: 2px solid rgb(var(--border-subtle));
     color: rgb(var(--text-secondary));
     font-size: 0.8125rem;
 

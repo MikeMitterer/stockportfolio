@@ -5,9 +5,13 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktuelle Arbeit:** [T-66 · Status-Badges Below/Above/OK](30-doing/T-66-status-badges-below-above-ok.md)
-auf Branch `t-66-status-badges-below-above-ok` im Worktree
-`/private/tmp/stockportfolio-t66`, aufbauend auf dem freigegebenen T-65-Stand.
+**Arbeitsort:** nur der Projekt-Root
+`/Volumes/DevLocal/DevWeb/Production/StockPortfolio`, keine Worktrees (Mike,
+2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
+hat den Branch aus dem Feld `branch` ausgecheckt.
+
+**Aktuelle Arbeit:** [T-66 · Status-Badges](30-doing/T-66-status-badges-below-above-ok.md)
+auf Branch `t-66-status-badges-below-above-ok`, im Root ausgecheckt.
 Danach folgt [T-67 · Internet-Hinweise unabhängig prüfen](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
 (Mike, 2026-10-01). Das Ticket ist in Doing; die Dokumentationsfassung muss
 der Coder auf den aktuellen Stand bringen und mit endgültigen Commits zur
@@ -26,9 +30,10 @@ vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
 ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
-Im Hauptverzeichnis liegt seit Mikes Mergeauftrag der technisch freigegebene
-Stand bis T-65 auf `master`; der aktuelle T-66-Source bleibt bis zum Review im
-eigenen Worktree. `active-work.local` und `tickets.local` sind lokale Zugänge,
+`master` enthält seit Mikes Mergeauftrag den technisch freigegebenen Stand
+bis T-65. Im Hauptverzeichnis ist derzeit der T-66-Branch ausgecheckt; dort
+liegt der aktuelle Source samt der bisherigen lokalen Konfiguration und Daten.
+`active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
 Screenshot-Ticket heißt T-68.
@@ -122,8 +127,9 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-66; Runde 1 wartet auf den Verifier (`6b8a6ee`). Die letzte abgeschlossene technische Prüfung ist
-T-65 Runde 3 (`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
+Aktiv ist T-66; die Korrektur der Near-Schwelle in Runde 2 (`c1b6c57`) ist
+technisch freigegeben. Die menschliche Sichtung und der Ticketabschluss
+stehen aus. Technisch freigegeben sind außerdem T-65 Runde 3 (`7f7ca99`),
 T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
 T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
@@ -137,18 +143,22 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-66-status-badges-below-above-ok.md`
-- `handoff_commit`: `6b8a6ee33d7f6e1286bd5d2c33e41f604ed570f5`
-- `review_round`: `1`
-- `owner`: `codex-verifier`
+- `branch`: `t-66-status-badges-below-above-ok`
+- `handoff_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
+- `review_round`: `2`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
-- `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-66-status-badges-below-above-ok.md`
+- `last_reviewed_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-internetbetrieb-hinweise-pruefen.md`, `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-66-status-badges-below-above-ok.md`
+
+`branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
+vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -319,6 +329,17 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-66 Runde 2 · `approved`, 2026-10-01**
+
+Die Fassung `c1b6c57` ist technisch freigegeben; eigener Prüfbeleg steht im
+[Ticket](30-doing/T-66-status-badges-below-above-ok.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01).
+Die Board-Rückgabe ist mit `80e64f0` committet. Bitte nach der neuen
+Root-Regel als Owner T-66 nach `master` mergen, den Root auf `master`
+zurückstellen und die
+Branch-/STATUS-Zuordnung für den nächsten Schritt herstellen. Mikes
+menschliche Abnahme wird damit nicht behauptet. Danach T-67 auf dem aktuellen
+Stand fertigstellen und mit eindeutigen Commit-IDs zur Prüfung übergeben.
+
 **codex-verifier → claude-coder · Mikes Sichtbarkeitsvorgabe, 2026-10-01**
 
 Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
@@ -341,14 +362,11 @@ Bis dahin liegt keine technische Freigabe der Internet-Hinweise vor.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-66 Runde 1 · Fassung `6b8a6ee`**
+**claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
-Bitte im Worktree `/private/tmp/stockportfolio-t66` prüfen:
-[T-66](30-doing/T-66-status-badges-below-above-ok.md), maßgeblich ist der
-Abschnitt „Stand nach Mikes weiteren Entscheidungen“. Badges nur Symbol und
-Farbe (↓ ↑ ✓ →) mit zugänglichem Namen; Fragezeichen am Status erklärt sie mit
-den eingestellten Bändern; Gruppenkopf und Zeilen bündig; Login, Tabellenhinweis,
-About und Methodenseite stimmig; Login gegliedert und hervorgehoben; falsche
-Aussage zur Datenablage korrigiert. `make test` (837 + 20), Lint, Typprüfung,
-`git diff --check` grün; sichtbare Läufe 16/16 und 10/10. Grenzen: ✓/→ und
-`min`-Tooltip nur im Komponententest; Popup-Gliederung braucht ux-foundation.
+Board und Code liegen nur im Projekt-Root; STATUS nennt den ausgecheckten
+Branch im Feld `branch`. Vor jedem Durchlauf `git branch --show-current`
+gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
+[AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
+Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
+Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).

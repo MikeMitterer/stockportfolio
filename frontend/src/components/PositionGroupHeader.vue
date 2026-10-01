@@ -129,15 +129,17 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
   &__figures {
     display: grid;
-    grid-template-columns: 6.5rem 7rem;
+    // Letzte Spalte = Status-Spalte der Tabelle (110 px in PositionsTable),
+    // damit die Symbole im Kopf genau über denen der Zeilen stehen.
+    grid-template-columns: 6.5rem 6.875rem;
     gap: var(--space-2);
     align-items: center;
     margin-left: auto;
     font-size: 0.6875rem;
     opacity: 0.8;
 
-    @include up(sm) { grid-template-columns: 6.5rem 6rem 7rem; }
-    @include up(md) { grid-template-columns: 8rem 6.5rem 6rem 7rem; }
+    @include up(sm) { grid-template-columns: 6.5rem 6rem 6.875rem; }
+    @include up(md) { grid-template-columns: 8rem 6.5rem 6rem 6.875rem; }
 
     > span { text-align: right; }
   }
@@ -163,6 +165,10 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   &__status {
     display: flex;
     justify-content: center;
+    // Die Tabellenspalte schließt am Rand ab, der Kopf hat rechts 1,25 rem
+    // Innenabstand: um genau diesen Betrag verschieben, ohne zu verbreitern.
+    position: relative;
+    left: 1.25rem;
   }
 }
 </style>

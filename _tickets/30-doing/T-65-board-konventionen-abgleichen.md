@@ -363,3 +363,10 @@ Installation wird im AgentLessons-Board umgesetzt und unabhängig geprüft.
 Danach hier die wirksamen Shortcuts und die Aktivierungsanleitung gegen STATUS
 prüfen; erst dann den Übergangsweg (c) entfernen. Der Doku-Abgleich umfasst
 die Launcher-Anleitung im AgentLessons-Paket und die lokalen Startbeispiele.
+
+## Folgeauftrag Launcher
+
+Mike, 2026-10-01: „2 - Ticket“. Die Anpassung der Rollen-Shortcuts (Variante b)
+liegt als [T-51](/Volumes/DevLocal/DevKI/Production/AgentLessons/_tickets/10-backlog/T-51-rollen-shortcuts-mit-eindeutigen-kennungen.md)
+im AgentLessons-Board (Backlog, Commit `7708f61` dort). Bis zur Umsetzung gilt
+der in `AGENT-ACTIVATION.md` dokumentierte Übergangsweg.
