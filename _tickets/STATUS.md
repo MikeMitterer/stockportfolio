@@ -13,9 +13,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
 auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
 „Erledige es gleich nach t-72“).
-[T-72 · Container als 99:100](30-doing/T-72-unraid-uid-gid.md) ist in Runde 3
-(`f7de26c`) technisch freigegeben und lokal nach `master` gemergt (kein Push);
-Mikes Abnahme steht aus. Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
+[T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am
+2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-72 ist aus meiner Sicht erledigt“). Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
 `9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
 nächsten Image-Release. StockInfo T-86 liegt dort im Backlog.
 
@@ -125,8 +124,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-74; Runde 1 (`2e0a52a`) liegt zur Prüfung bei `codex-verifier`. T-72 Runde 3 (`f7de26c`) ist technisch freigegeben
-und lokal nach `master` gemergt; Mikes Abnahme steht aus.
+Aktiv ist T-74; Runde 1 (`2e0a52a`) liegt zur Prüfung bei `codex-verifier`. T-72 ist am 2026-10-01 nach Mikes
+Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes

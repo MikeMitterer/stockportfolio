@@ -1,5 +1,7 @@
 # T-72 · Container nach Unraid-Vorgabe als 99:100 betreiben
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-72 ist aus meiner Sicht erledigt“ Offener Rest: StockInfo T-86 (gleiche Randfälle dort) liegt im StockInfo-Backlog. Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und `9670339` (Screenshots) werden auf `t-60-stockportfolio-template` erst mit dem nächsten Image-Release veröffentlicht. Nicht blockierender Randfall aus Runde 3: Eine übergroße numerische `PUID` bricht ab, meldet aber irreführend fehlende SETUID/SETGID-Rechte. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** Das Image läuft fest als UID/GID 1000. Unraid erwartet
 für Dienste mit Daten 99:100 (`nobody:users`). Schlimmer: Legt Docker bzw.
 Unraid den Appdata-Ordner beim ersten Start an, gehört er `root`, und der
@@ -327,3 +329,9 @@ Meldung für Werte außerhalb des UID-Bereichs bleibt offen.
 positivem Fremddatei-Fall angewendet. Die Runde-1/2-Befunde bleiben als
 Originalbelege im Ticket. Keine neue Board-Konvention; kein Abgleich des
 Skills `task-verification-workflow` nötig.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-72 ist aus meiner Sicht erledigt“
+Integration: nach `master` gemergt (`415e96f`) und zu `origin` gepusht.
+Offener Rest: StockInfo T-86 (gleiche Randfälle dort) liegt im StockInfo-Backlog. Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und `9670339` (Screenshots) werden auf `t-60-stockportfolio-template` erst mit dem nächsten Image-Release veröffentlicht. Nicht blockierender Randfall aus Runde 3: Eine übergroße numerische `PUID` bricht ab, meldet aber irreführend fehlende SETUID/SETGID-Rechte.
