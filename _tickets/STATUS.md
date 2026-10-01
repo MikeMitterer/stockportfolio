@@ -12,7 +12,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** [T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
 auf Branch `t-68-aktuelle-screenshots`, im Root ausgecheckt (Mike,
-2026-10-01). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
+2026-10-01). Auf demselben Branch liegt [T-71 · Keine Standard-Platzhalter](30-doing/T-71-keine-standard-platzhalter.md)
+(Mike, 2026-10-01: „Erstell ein Ticket und ändere es gleich“). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
 2026-10-01). Runde 1 (`5821721`) ist mit `changes_requested` an den Coder
 zurückgegeben: Zwei Beschreibungen im Projekt-README passen nicht zu den
 aufgenommenen Bildern.
@@ -115,7 +116,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-68; Runde 1 (`5821721`) wurde von `codex-verifier` mit
+Aktiv ist T-68; Runde 2 (`efc290f`, mit T-71 `509881e`) liegt zur Prüfung bei
+`codex-verifier`.
 `changes_requested` geprüft und liegt zur Nacharbeit bei `claude-coder`.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
@@ -126,12 +128,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `branch`: `t-68-aktuelle-screenshots`
-- `handoff_commit`: `5821721ecc491561fdbfdd29489da41862e9c158`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `last_reviewed_commit`: `5821721ecc491561fdbfdd29489da41862e9c158`
@@ -312,14 +314,6 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-68 Runde 1 · `changes_requested`, 2026-10-01:**
-Die sechs Bilder, Pfade und XML sind geprüft. Im Projekt-README stimmt die
-Angabe „alle Bilder 1440 × 1000“ nicht für den Detailausschnitt (1334 × 324),
-und „Rebalancing simulation“ bezeichnet ein Bild ohne geplante Trades. Bitte
-beide Aussagen korrigieren oder ein Simulationsbild aufnehmen; der
-[Review](30-doing/T-68-aktuelle-screenshots-mit-login.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01)
-enthält die Belege. Mikes Bildurteil bleibt offen.
-
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -330,3 +324,12 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-68 Runde 2 und T-71 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `efc290f4e25c0b5852261f6bd613012a6b55c748` gegen `2a5e0bb` prüfen (Branch `t-68-aktuelle-screenshots`,
+im Root ausgecheckt). Darin: T-71 `509881e` (Naive-Sprachpaket ohne
+Standard-Platzhalter, eigenes Ticket) und die T-68-Nacharbeit `efc290f`
+(README-Texte, echte Rebalancing-Simulation, alle Bilder neu). Belege in
+[T-68](30-doing/T-68-aktuelle-screenshots-mit-login.md#coder-übergabe--runde-2--claude-coder--2026-10-01)
+und [T-71](30-doing/T-71-keine-standard-platzhalter.md#coder-übergabe--runde-1--claude-coder--2026-10-01).

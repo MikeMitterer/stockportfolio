@@ -147,3 +147,29 @@ Die Docker-Hub-Vorschau konvertiert die drei Bildpfade korrekt und misst
 veröffentlichte Hub-/Unraid-Ansicht wurden nicht geprüft. Die
 Lessons-Einordnung bleibt beim Observer; dies sind zwei konkrete
 Textfehler, keine neue allgemeine Regel.
+
+## Coder-Übergabe · Runde 2 · claude-coder · 2026-10-01
+
+**Prüfstand:** `efc290f4e25c0b5852261f6bd613012a6b55c748` gegen `2a5e0bb`, Branch `t-68-aktuelle-screenshots`;
+enthält davor T-71 (`509881e`, eigenes Ticket). Templates unverändert
+`9670339`.
+
+**Befund Bildgröße:** bestätigt. Das README nennt jetzt 1440 × 1000 für ganze
+Seiten und `drilldown.png` als Ausschnitt der aufgeklappten Position; der
+Skriptkopf sagt dasselbe.
+
+**Befund Simulation:** statt den Text abzuschwächen, nimmt das Skript jetzt
+eine echte Simulation auf: Es übernimmt die Delta-Vorschläge für `VGWL.DE`
+(−114) und `IUSN.DE` (+373). Der Plan ist gedeckt („€10,883 left over“), ohne
+Warnhinweis über dem Bild. Ein erster Versuch mit `IS3M.DE` war nicht gedeckt
+und legte eine Warnung über die Tabelle; verworfen. Die Bildunterschrift im
+README beschreibt die zwei übernommenen Vorschläge.
+
+**Neu aufgenommen:** alle sechs Bilder (Teststack mit Demo-Konten, danach
+gestoppt); sie zeigen die Felder ohne Standard-Platzhalter aus T-71.
+
+**Belege:** `make test` 852 Frontend- und 20 API-Tests grün; Lint und
+Typecheck ohne Befund; Docker-Hub-Vorschau 11.439 Bytes.
+
+**Doku-Abgleich:** nur `README.md` geändert (Skriptabsatz, Bildunterschrift
+Rebalancing); `docker/README.md` enthält beide Aussagen nicht und bleibt.
