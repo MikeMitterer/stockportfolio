@@ -1,8 +1,8 @@
 # T-67 · Hinweise zum Internetbetrieb unabhängig prüfen
 
-Die neuen Warnungen für StockPortfolio liegen als Dokumentations-Commits vor,
-wurden aber noch nicht unabhängig geprüft. Vor einer Übernahme oder
-Veröffentlichung soll der zugeordnete Verifier prüfen, ob die Hinweise zur
+Die neuen Warnungen für StockPortfolio liegen als Dokumentations-Commits vor.
+Der unabhängige Review von Runde 1 steht unten. Vor einer Übernahme oder
+Veröffentlichung war zu prüfen, ob die Hinweise zur
 Anmeldung, zum direkten Browserzugriff auf StockInfo und zur Proxy-Konfiguration
 fachlich stimmen und in allen Auslieferungstexten übereinstimmen.
 
@@ -16,9 +16,9 @@ nicht schützt.
 Stand (`master` mit T-66) und ist an `codex-verifier` übergeben. Der zentrale
 Template-Commit `ca7ae2d` ist unverändert.
 
-Für Mike steht jetzt kein Handgriff an. Nach der technischen Prüfung bleiben
-Abschluss und Veröffentlichung getrennte Entscheidungen; Docker Hub und das
-Unraid-Listing zeigen die neue Fassung derzeit nicht.
+Die menschliche Abnahme steht aus. Abschluss und Veröffentlichung bleiben
+getrennte Entscheidungen; eine Veröffentlichung der neuen Fassung ist in
+diesem Ticket nicht belegt.
 
 ## Prüfgegenstand
 
@@ -38,12 +38,10 @@ pro Ticket nur für die eigene XML-Datei bewertet.
 Eine Freigabe des gesamten Template-Commits braucht auch das StockInfo-
 Prüfergebnis aus T-84.
 
-Vor einer formellen Übergabe stellt der zuständige Coder `claude-coder` die
-Dokumentationsfassung auf dem dann aktuellen StockPortfolio-Stand bereit und
-schreibt die OUTBOX mit den endgültigen Commit-IDs. Der unabhängige Review
-gehört `codex-verifier`. Der bisherige Branch baut auf T-61 auf; er ist nicht
-automatisch mit dem laufenden T-66-Stand abgeglichen. Keine Reviewphase allein
-aus diesen vorbereiteten Commits ableiten.
+Die Dokumentationsfassung wurde auf dem mit T-66 integrierten `master`
+erstellt und mit `50a6924` übergeben; die OUTBOX nennt auch den unveränderten
+Template-Commit `ca7ae2d`. Der unabhängige Review gehört `codex-verifier`.
+Der frühere T-61-basierte Branch ist nur noch Vorgeschichte.
 
 ### Verify
 
@@ -52,34 +50,36 @@ und ersetzt kein Verifier-Urteil.
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | StockPortfolio-Diff gegen den aktuellen Login-, Cookie-, Origin- und StockInfo-Zugriffsweg lesen | Keine falsche Sicherheitszusage; direkte Portfreigabe und separater Schutz der API sind zutreffend beschrieben | ➖ |
-| 2 | `README.md`, `docker/README.md` und `unraid/README.md` inhaltlich abgleichen | Gleiche Grenze für Internetzugriff; HTTPS-Proxy-Einstellungen und Browserzugriff widersprechen sich nicht | ➖ |
-| 3 | `templates/stockportfolio.xml` gegen die Anleitungen und Containerkonfiguration prüfen | Englischer Hinweis steht sichtbar in Overview, Description und Portfeld; keine andere Template-Funktion geändert | ➖ |
-| 4 | Docker-Hub-Vorschau und XML erneut am endgültigen Prüfstand erzeugen | Vorschau unter 25.000 UTF-8-Bytes, Links korrekt; XML gültig | ➖ |
-| 5 | Git-Fassung und Veröffentlichungsstand trennen | Review benennt geprüfte Commit-IDs und hält fest, dass kein Merge, Push oder Hub-/Unraid-Update belegt ist | ➖ |
+| 1 | StockPortfolio-Diff gegen den aktuellen Login-, Cookie-, Origin- und StockInfo-Zugriffsweg lesen | Keine falsche Sicherheitszusage; direkte Portfreigabe und separater Schutz der API sind zutreffend beschrieben | ✅ |
+| 2 | `README.md`, `docker/README.md` und `unraid/README.md` inhaltlich abgleichen | Gleiche Grenze für Internetzugriff; HTTPS-Proxy-Einstellungen und Browserzugriff widersprechen sich nicht | ✅ |
+| 3 | `templates/stockportfolio.xml` gegen die Anleitungen und Containerkonfiguration prüfen | Englischer Hinweis steht sichtbar in Overview, Description und Portfeld; keine andere Template-Funktion geändert | ✅ |
+| 4 | Docker-Hub-Vorschau und XML erneut am endgültigen Prüfstand erzeugen | Vorschau unter 25.000 UTF-8-Bytes, Links korrekt; XML gültig | ✅ |
+| 5 | Git-Fassung und Veröffentlichungsstand trennen | Review benennt geprüfte Commit-IDs und hält fest, dass kein Merge, Push oder Hub-/Unraid-Update belegt ist | ✅ |
 
-**Autorbelege vom 2026-10-01:** `git diff --check` ohne Befund;
+**Vorbereitungsbelege vor der aktuellen Übergabe:** `git diff --check` ohne Befund;
 `xmllint --noout` für beide Templates erfolgreich. Die Docker-Hub-Vorschau
 von StockPortfolio wurde erzeugt und hatte 10.239 UTF-8-Bytes. Das sind
 Vorprüfungen, keine unabhängige Freigabe.
 
 ### Akzeptanzkriterien
 
-- [ ] `codex-verifier` prüft die eindeutig benannte Endfassung unabhängig und hält Befunde oder Freigabe im Ticket fest.
-- [ ] Der Doku-Abgleich umfasst beide READMEs, die Unraid-Anleitung und den StockPortfolio-Teil der zentralen Vorlage.
-- [ ] Der Coder löst nötige Korrekturen auf dem aktuellen Branch; danach wird die tatsächlich geprüfte Fassung übergeben.
+- [x] `codex-verifier` prüft die eindeutig benannte Endfassung unabhängig und hält Befunde oder Freigabe im Ticket fest.
+- [x] Der Doku-Abgleich umfasst beide READMEs, die Unraid-Anleitung und den StockPortfolio-Teil der zentralen Vorlage.
+- [x] Die tatsächlich geprüfte Fassung ist auf dem aktuellen Branch übergeben; keine Korrektur erforderlich.
 - [ ] Veröffentlichung wird erst nach der vorgesehenen Abnahme als eigener Schritt ausgewiesen.
 
 ### Side-Effects
 
-Nur Dokumentation und Template-Beschreibung. Die aktive T-66-Umsetzung, der
+Nur Dokumentation und Template-Beschreibung. Der freigegebene T-66-Stand, der
 StockInfo-Dienst und die Containerkonfiguration bleiben außerhalb dieses
 Reviewauftrags. Kein Produktcode wird durch das Ticket geändert.
 
 ### Auflösung
 
-Offen. Das Ticket liegt auf Mikes Anweisung in Doing; die formelle
-Coder-Übergabe auf dem aktuellen Stand und das unabhängige Prüfurteil fehlen.
+Technisch freigegeben in Runde 1 für den StockPortfolio-Commit und den
+StockPortfolio-Teil des Template-Commits. Das Ticket bleibt in Doing;
+Mikes Abnahme und Veröffentlichung stehen aus. Der StockInfo-Teil des
+Template-Commits gehört zu dessen eigenem Review.
 
 ## Coder-Übergabe · Runde 1 · claude-coder · 2026-10-01
 
@@ -112,3 +112,54 @@ unverändert.
 
 **Lessons:** CLAUDE-LESSONS gelesen; SP-CL-01 angewendet (Branch im Root).
 Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · `codex-verifier` · 2026-10-01
+
+**Prüffassungen:** StockPortfolio `50a6924fb13e36a6a9b8467c880ac14f84413608`
+gegen `fd0b22a1419b220a94ad0106612f7fc3503e5a9e`; Unraid-Templates
+`ca7ae2d7b15331bf84a0fa344f436c37e3863e9c` gegen
+`c828e24671a81fd53824f67e3fea21b4e35b280b`, ausschließlich
+`templates/stockportfolio.xml`. **Urteil: technisch `approved` für genau
+diese Teile.** Keine menschliche Abnahme, keine Freigabe des
+`templates/stockinfo.xml` aus demselben Template-Commit.
+
+**Inhaltliche Gegenprobe:** `frontend/src/api/client.ts` ruft StockInfo per
+Browser-`fetch` unter der konfigurierten API-Adresse auf. Anmeldung und
+Sitzung liegen dagegen in `api/src/routers/api.ts`; dessen Origin-Prüfung
+verwendet `STOCKPORTFOLIO_PUBLIC_ORIGIN`, das Cookie-Flag
+`STOCKPORTFOLIO_SECURE_COOKIES`. Die Texte sagen deshalb zutreffend, dass
+das StockPortfolio-Login StockInfo nicht schützt. Die Anweisungen zu einer
+browsererreichbaren HTTPS-API, passendem CORS-Origin, exaktem öffentlichen
+Origin und sicheren Cookies stimmen mit diesen Pfaden überein. Das
+ungeschützte Veröffentlichen von `-p 8080:8080` ist durch den Hinweis
+oberhalb des Beispiels und die spätere Erklärung eingeordnet. Laut
+[Docker-Dokumentation](https://docs.docker.com/get-started/docker-concepts/running-containers/publishing-ports/)
+bindet ein veröffentlichter Port standardmäßig an alle Host-Schnittstellen.
+[MDN zu CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
+und [Mixed Content](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Mixed_content)
+bestätigen die Browsergrenzen. Das ist ein Quellen- und Dokumentationsreview,
+kein Test einer öffentlich betriebenen Instanz.
+
+**Doku-Abgleich:** `README.md` (Docker-Abschnitt), `docker/README.md`
+(Kopfhinweis, Portbindung, API-Adresse, Proxy und SSE) und
+`unraid/README.md` (Installation und Konfiguration) geben dieselbe
+Zugriffsgrenze wieder. Der StockPortfolio-Teil der Vorlage nennt sie in
+`Overview`, `Description` und am `WebUI Port`. Der Diff dieser XML-Datei
+ändert nur diese drei Beschreibungsstellen. Die ältere Aussage zu nginx und
+SSE bleibt bestehen; der Server sendet `X-Accel-Buffering: no`, das nginx
+laut [Proxy-Dokumentation](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
+standardmäßig berücksichtigt. `docs/` braucht für diese Portwarnung keinen
+Nachtrag. Für den StockInfo-Teil der Vorlage ist T-84 zuständig.
+
+**Eigene Prüfungen:** `git diff --check` für beide geprüften Diffs ohne
+Befund; `xmllint --noout` auf `ca7ae2d:templates/stockportfolio.xml`
+erfolgreich. Die Docker-Hub-Vorschau wurde mit dem Projektwerkzeug und
+`--ref master` neu erzeugt: 11.112 UTF-8-Bytes, unter 25.000; der
+GitHub-Link und das Bild zeigen auf die vorgesehenen Projektpfade. Nur
+Dokumentation und XML wurden geändert; ein Produkt-Testlauf war für diese
+Fassung nicht nötig. Im lokalen Git liegt `50a6924` weder auf
+StockPortfolio-`master` noch `ca7ae2d` auf Templates-`master`;
+`origin/master` beider Repositories enthält die Änderungen ebenfalls nicht.
+Ein Docker-Hub- oder Unraid-Push wurde nicht ausgeführt oder als Erfolg
+übernommen. Lessons: SP-R-02/AL-R-01 (Prüftiefe und Veröffentlichungsgrenze),
+SP-CX-02 (aktuelle Boardaussagen nachgezogen).
