@@ -243,3 +243,47 @@ Keine Produktänderung; `make test` daher nicht erneut, letzter Lauf in Runde 1
 
 **Lessons-Einordnung:** Übernommen wie vom Verifier eingeordnet (Befund 1
 Einzelfall, Befund 2 SP-CX-02 angewendet). Keine neue Lesson.
+
+## Technische Prüfung Runde 2
+
+`codex-verifier`, 2026-10-01, Übergabefassung
+`7d6e668c28d47611d7aeae5b0274eec82f6f201b`. Der nachfolgende
+Übergabecommit änderte nur STATUS. **Nacharbeit erforderlich:** Befund 1 ist
+behoben; der Startweg aus Befund 2 bleibt in einem Teil unvollständig. Keine
+menschliche Abnahme und kein Ticketabschluss.
+
+**Eigene Gegenprüfung:** Die vier Dateien sind jetzt kurze Einstiege mit
+Paketpfad, VERSION-Regel, Verweis auf den gleichnamigen Vertrag und erhaltenen
+lokalen Regeln samt Abschnittsankern. Die Startbeispiele nennen nun
+`codex-verifier`, `codex-observer` und `claude-coder`; der Zusatzschritt nach
+den Shortcuts entspricht dem tatsächlich installierten Launcher. Die
+Entscheidung über dauerhafte Kennungen bleibt ausdrücklich bei Mike.
+`git diff --check 6c94c12..7d6e668` war ohne Befund. Kein Produktcode wurde
+geändert; der Testlauf aus Runde 1 ist weiterhin nur ein Coder-Beleg.
+
+### Rest zu Befund 2 · Board-Pfad im Startauftrag fehlt
+
+Der gemeinsame `CODEX-IN-CONTEXT-SCHEDULER.md` verlangt in Schritt 1 einen
+**absoluten Board-Pfad aus dem Startauftrag**. Die lokale Codex-Startzeile in
+`AGENT-ACTIVATION.md` nennt nur die relative Scheduler-Datei. Vom
+Projektroot aus wird damit das dortige Board gewählt: Der Root steht auf
+Branch `t-61-benutzergebundene-depotdaten-per-rest`, und
+`_tickets/30-doing/T-65-board-konventionen-abgleichen.md` existiert dort
+nicht. Es liegt ausschließlich im Worktree `/private/tmp/stockportfolio-t65`.
+Das war auch der Grund für Mikes Rückfrage nach den fehlenden T-64-/T-65-Dateien.
+Die Claude-Startzeile enthält statt des absoluten Pfads noch den Platzhalter
+`<Worktree>`; `references/board-setup.md` verbietet Vorlagen-Platzhalter im
+fertigen Board. Ein Start aus dem Root kann so den fälligen Auftrag nicht
+zuverlässig finden.
+
+**Erwartete Korrektur:** Die aktuell ausführbaren Startzeilen mit dem
+absoluten T-65-Board-Pfad versehen und den Pfadwechsel bei späteren Tickets
+ausdrücklich an STATUS binden. In Codex- und Claude-Beispiel denselben
+aktuellen Worktree angeben; keine Platzhalter stehen lassen. Gegenprobe:
+Startauftrag, lokales Ticket unter `30-doing/`, STATUS-Kopie im Worktree und
+Hauptverzeichnis stimmen überein. Keine neue Kennungsentscheidung treffen.
+
+**Lessons-Einordnung:** Der Rest gehört zu Befund 2 und damit zu
+[SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md),
+Stand 2026-09-30: Startbeispiele gegen den wirksamen Boardpfad prüfen.
+Nacharbeit in T-65 bei `claude-coder`; keine neue Lesson-ID.
