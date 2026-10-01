@@ -250,14 +250,12 @@ das verlinkte ProjectTools-Paket aus `requirements-dev.txt`, wenn es fehlt.
 Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
 wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
-Aus diesem Repository über den Wrapper aufrufen; er nimmt immer die Python der
-Projekt-`.venv`. Ein direkter Aufruf der `.py`-Datei liefe über deren Shebang
-mit der System-Python ohne ProjectTools und damit ohne Farben:
+Aus diesem Repository aufrufen:
 
 ```bash
-./scripts/stockinfo-test-server.sh --stack --run --stockinfo-root ../StockInfo
-./scripts/stockinfo-test-server.sh --stack --status
-./scripts/stockinfo-test-server.sh --stack --stop
+.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+.venv/bin/python scripts/stockinfo-test-server.py --stack --status
+.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 ```
 
 Die lokale `.venv` stellt `projecttools.ui.colors` für `MAKE_THEME` bereit;

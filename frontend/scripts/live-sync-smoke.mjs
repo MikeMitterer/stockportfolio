@@ -1,7 +1,7 @@
 // Sichtbarer Browser-Smoketest für den Live-Abgleich (T-62).
 //
 // Voraussetzung: laufender Teststack mit synthetischen Konten:
-//   ./scripts/stockinfo-test-server.sh --stack --run --demo-accounts --stockinfo-root ../StockInfo
+//   ../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
 // Aufruf aus dem Repository-Root mit der dort gemeldeten Datei:
 //   npm --prefix frontend run smoke:live-sync -- <data_dir>/demo-accounts.json
 //

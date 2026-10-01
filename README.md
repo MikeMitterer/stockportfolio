@@ -384,14 +384,13 @@ account API is running on port 8080. Vite alone serves the page but cannot
 handle login requests; `make dev` starts both servers.
 
 For browser checks with local StockInfo prices and an isolated account API,
-run `make setup`, then start the complete test stack with the wrapper script. It
-always uses StockPortfolio's `.venv`; calling the `.py` file directly would use
-the system Python without ProjectTools and therefore without colors:
+run `make setup`, then start the complete test stack with StockPortfolio's
+Python environment:
 
 ```bash
-./scripts/stockinfo-test-server.sh --stack --run --stockinfo-root ../StockInfo
-./scripts/stockinfo-test-server.sh --stack --status
-./scripts/stockinfo-test-server.sh --stack --stop
+.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+.venv/bin/python scripts/stockinfo-test-server.py --stack --status
+.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 ```
 
 The local venv provides `projecttools.ui.colors` for themed help and status.
