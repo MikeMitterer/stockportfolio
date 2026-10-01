@@ -98,6 +98,32 @@ describe('private Depotereignisse', () => {
     repository.close()
   })
 
+  it('lässt den internen Kurs-Hinweis nicht löschen, damit seine Revision weiterzählt', async () => {
+    const { app, repository, cookie } = await fixture()
+    const headers = { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' }
+    const announce = async (revision: number) => app.request(`${origin}/api/data/quote-refresh/current`, {
+      method: 'PUT', headers,
+      body: JSON.stringify({ revision, value: { refreshedAt: new Date().toISOString() } }),
+    })
+    expect(await (await announce(0)).json()).toEqual({ revision: 1 })
+    expect(await (await announce(1)).json()).toEqual({ revision: 2 })
+
+    const response = await app.request(`${origin}/api/data/events`, { headers: { Cookie: cookie } })
+    const reader = response.body!.getReader()
+    await readFrame(reader)
+    const deleted = await app.request(`${origin}/api/data/quote-refresh/current`, {
+      method: 'DELETE', headers, body: JSON.stringify({ revision: 2 }),
+    })
+    expect(deleted.status).toBe(405)
+    expect(await deleted.json()).toEqual({ error: 'not_deletable' })
+
+    // Offene Fenster merken sich Revision 2; ein neuer Hinweis muss darüber liegen.
+    expect(await (await announce(2)).json()).toEqual({ revision: 3 })
+    await expect(readFrame(reader)).resolves.toContain('"kind":"quote-refresh","resourceId":"current","revision":3')
+    await reader.cancel()
+    repository.close()
+  })
+
   it('sendet keine fremden Depotkennungen und schließt einen abgemeldeten Stream', async () => {
     const { app, repository, service, cookie, token } = await fixture(20)
     await service.createUser('second-user', 'Second-password-123!', 'user')

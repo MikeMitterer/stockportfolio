@@ -227,6 +227,34 @@ try {
   if (foreignEvents.length || foreignData.includes(run)) throw new Error('Konto C erhielt ein fremdes Ereignis oder fremde Daten')
   passed('Konto C erhielt weder Ereignis noch Daten des anderen Kontos')
 
+  // ── Kurs-Hinweis an andere Fenster ─────────────────────────────────────────
+  step('Kurs-Hinweis: A versucht ihn zu löschen und klickt danach Aktualisieren; B holt selbst Kurse')
+  const deleteStatus = await pages.A.evaluate(async () => {
+    const current = await (await fetch('/api/data/quote-refresh/current')).json().catch(() => null)
+    const response = await fetch('/api/data/quote-refresh/current', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ revision: current?.revision ?? 0 }),
+    })
+    return response.status
+  })
+  if (deleteStatus !== 405) throw new Error(`Löschen des Kurs-Hinweises ergab ${deleteStatus} statt 405`)
+  passed('Der interne Kurs-Hinweis lässt sich nicht löschen (405)')
+  const quoteRequestsB = []
+  await pages.B.route('**/quote/**', async (route) => {
+    quoteRequestsB.push(route.request().url())
+    await route.continue()
+  })
+  const announced = pages.A.waitForResponse((response) => response.url().endsWith('/api/data/quote-refresh/current') &&
+    response.request().method() === 'PUT')
+  await pages.A.getByRole('button', { name: 'Aktualisieren' }).first().click()
+  if ((await announced).status() !== 200) throw new Error('Kurs-Hinweis in A nicht gespeichert')
+  for (let waited = 0; quoteRequestsB.length === 0 && waited < 20000; waited += 250) await pages.B.waitForTimeout(250)
+  await pages.B.unroute('**/quote/**')
+  if (quoteRequestsB.length === 0) throw new Error('B holte nach dem Kurs-Hinweis keine Kurse')
+  if (navigationsB !== 0) throw new Error('B hat die Seite neu geladen')
+  passed(`B holte nach dem Kursabruf in A ${quoteRequestsB.length} Kurse ohne Seiten-Refresh`)
+
   // ── Backup und Wiederherstellung ───────────────────────────────────────────
   step('Backup: A sichert das Depot, löscht die Hälfte der Positionen und spielt die Sicherung wieder ein')
   const originalCount = await positionCount(pages.A)

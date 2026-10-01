@@ -411,8 +411,9 @@ npm --prefix frontend run smoke:live-sync -- <temporary-dir>/demo-accounts.json
 
 It opens two windows of one account side by side and a third window of the
 second account. It checks that a change in one window appears in the other
-without a page reload, that the other account sees nothing, that a backup
-restore reaches the second window, reconnection after an interrupted stream,
+without a page reload, that the other account sees nothing, that a price
+refresh in one window makes the other fetch prices, that a backup restore
+reaches the second window, reconnection after an interrupted stream,
 the 15-second keep-alive through the Vite proxy, conflict handling and
 logout. A forced password change of a new test account is handled
 automatically. The windows stay open until you press Enter.

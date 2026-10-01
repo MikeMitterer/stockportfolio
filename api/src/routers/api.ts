@@ -267,6 +267,9 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   app.delete('/api/data/:kind/:id', async (context) => {
     const user = currentUser(context, service)
     const kind = readResourceKind(context.req.param('kind'))
+    // Offene Fenster vergleichen die Revision des Kurs-Hinweises. Nach einem
+    // Löschen begänne sie wieder bei 1, und spätere Hinweise blieben unbeachtet.
+    if (kind === 'quote-refresh') throw new ServiceError(405, 'not_deletable')
     const id = context.req.param('id')
     const request = await body(context)
     const revision = readRevision(request.revision)

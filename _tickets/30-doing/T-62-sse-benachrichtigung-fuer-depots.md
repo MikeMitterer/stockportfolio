@@ -41,11 +41,11 @@ Testverzeichnis.
   Verbindung.
 - Kurs-Hinweis: Nach **Aktualisieren** in einem Fenster schreibt die App die
   Ressource `quote-refresh`; andere Fenster holen daraufhin selbst Kurse.
-  **Nachweis:** nur Codex' sichtbarer Lauf am 2026-09-30 mit einem Skript
+  **Nachweis:** Codex' sichtbarer Lauf am 2026-09-30 mit einem Skript
   außerhalb des Projekts (`/private/tmp/t62-browser-test/refresh.mjs`): B lud
   nach dem Kursabruf in A fünf Kurse ohne Navigation, Gesamtwert und Gruppen
-  stimmten überein. Der Projekt-Smoketest deckt diesen Weg **nicht** ab, und
-  Claude hat ihn am 2026-10-01 nicht erneut geprüft. Auf Hinweis von
+  stimmten überein. Seit der Nacharbeit zu Runde 1 deckt auch der
+  Projekt-Smoketest diesen Weg ab (siehe dort). Auf Hinweis von
   `codex-observer` zugeordnet; die frühere widersprüchliche Doppelaussage
   („steht aus“ / „geprüft“) ist entfernt.
 - Auf Mikes Rückmeldungen: Fortschrittsleiste 4 px ohne Verschieben des
@@ -380,3 +380,57 @@ wurde im Review für die Übereinstimmung von Ticket und STATUS angewendet.
 ist ebenfalls erfüllt: Claudes Urteil grenzt Konzept, Codeprüfung und
 Produkttest ausdrücklich voneinander ab. Fassung der beiden Lessons: Stand
 2026-09-28; kein Lessons-Nachtrag nötig.
+
+## Nacharbeit zu Runde 1
+
+`claude-coder`, 2026-10-01, zu [Befund 1](#befund-1--kurs-hinweis-verliert-nach-erlaubtem-löschen-seine-revision).
+
+**Ursache bestätigt:** `DELETE /api/data/quote-refresh/current` lief durch den
+allgemeinen Löschweg. Ein späterer `PUT` legte die Ressource mit Revision 1
+neu an; offene Fenster verglichen auf „höher als bekannt“ und ignorierten
+den Hinweis.
+
+**Korrektur:**
+
+1. `api/src/routers/api.ts`: Der Löschweg weist `quote-refresh` mit
+   `405 not_deletable` ab, bevor die Datenbank berührt wird. Andere Wege
+   löschen die Ressource nicht: `restoreBackup` und `importLegacy` entfernen
+   nur `portfolio`, `allowlist` und `snapshots`; das Löschen eines Kontos
+   entfernt das Konto selbst.
+2. `frontend/src/stores/liveSync.ts` (SP-R-04, verwandter Pfad): Das Fenster
+   vergleicht die Revision des Hinweises auf Gleichheit statt auf „höher“.
+   Fällt sie auf dem Server zurück, etwa nach dem Zurückspielen einer älteren
+   Datenbank unter `/data`, reagiert ein offenes Fenster trotzdem. Die eigene
+   Revision nach dem Schreiben wird direkt übernommen statt per `Math.max`.
+
+**Tests:**
+
+- `api/tests/events.spec.ts` „lässt den internen Kurs-Hinweis nicht löschen,
+  damit seine Revision weiterzählt“: Revision 1 → 2, DELETE → 405
+  `not_deletable`, nächster PUT → 3 und SSE-Ereignis mit Revision 3. Vor der
+  Korrektur rot (DELETE 200).
+- `frontend/tests/stores/liveSync.spec.ts` „folgt dem Kurs-Hinweis auch, wenn
+  seine Revision auf dem Server zurückfällt“: Revision 5, dann 1 lädt erneut
+  Kurse, eine wiederholte 1 nicht. Vor der Korrektur rot.
+
+**Gegenprobe mit offenem Fenster:** Neuer Schritt im sichtbaren Smoketest,
+Teststack frisch gestartet (alter Stopp ohne Reste, nur fremde
+`overmind`-Verzeichnisse vom 2026-09-30 im Temp-Verzeichnis): In A ergab
+der DELETE-Versuch 405; nach **Aktualisieren** in A holte das offene Fenster
+B 5 Kurse ohne Seiten-Refresh. Alle übrigen Schritte des Smoketests
+bestanden erneut (Live-Abgleich, Kontentrennung mit Passwortwechsel,
+Backup/Restore 3 → 6 Positionen, Unterbrechung und Wiederverbindung,
+2 Keep-Alives in 35 s, Konflikt bleibt sichtbar, Stream endet 15,0 s nach
+Logout, danach 401).
+
+**Prüfungen:** `make test` mit 826 Frontend- und 20 API-Tests grün; beide
+Lints und beide Typprüfungen ohne Befund; `npm --prefix frontend run build`
+grün (bekannte Chunk-Warnung); `git diff --check` ohne Befund.
+
+**Doku-Abgleich:** `README.md` **Setup** nennt den Kurs-Hinweis jetzt unter
+den Smoketest-Schritten. Der Löschschutz ist ein internes API-Detail; keine
+Anleitung beschreibt das Löschen von Ressourcen, daher bleiben
+`docker/README.md`, `unraid/README.md` und die Unraid-Vorlage unverändert.
+
+**Lessons:** SP-R-04 (Löschpfad und zurückfallende Revision behoben, Tests
+für beide Seiten), SP-R-05 (Temp-Inventar nach dem Stopp). Kein neuer Eintrag.

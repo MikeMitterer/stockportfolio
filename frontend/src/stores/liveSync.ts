@@ -24,6 +24,12 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
   let pending: Promise<void> = Promise.resolve()
   let visiblePending = 0
   let generation = 0
+  /*
+   * Zuletzt bekannte Revision des Kurs-Hinweises. Verglichen wird auf
+   * Gleichheit, nicht auf „höher“: Fällt die Revision auf dem Server zurück,
+   * etwa nach dem Zurückspielen einer älteren Datenbank, bliebe jeder weitere
+   * Hinweis sonst unbeachtet.
+   */
   let lastQuoteRevision = 0
 
   async function refreshQuotes(): Promise<void> {
@@ -39,12 +45,12 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
       'quote-refresh', 'current', () => ({ refreshedAt: new Date().toISOString() }),
       { conflictRetries: 2, reportConflict: false },
     )
-    lastQuoteRevision = Math.max(lastQuoteRevision, revision)
+    lastQuoteRevision = revision
   }
 
   async function refreshAnnouncedQuotes(): Promise<boolean> {
     const resource = await privateDataClient()?.get<{ refreshedAt: string }>('quote-refresh', 'current')
-    if (!resource || resource.revision <= lastQuoteRevision || !quoteClient || !portfolio.portfolio) return false
+    if (!resource || resource.revision === lastQuoteRevision || !quoteClient || !portfolio.portfolio) return false
     await quotes.loadQuotes(quoteClient, portfolio.positions)
     lastQuoteRevision = resource.revision
     return true
@@ -85,7 +91,7 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
       await instruments.hydrateAllowlist()
     } else if (event.kind === 'snapshots' && history.loaded && portfolio.portfolio?.id === event.resourceId) {
       await history.load(event.resourceId, baseCurrencyOf(portfolio.portfolio))
-    } else if (event.kind === 'quote-refresh' && event.resourceId === 'current' && event.revision > lastQuoteRevision && quoteClient && portfolio.portfolio) {
+    } else if (event.kind === 'quote-refresh' && event.resourceId === 'current' && event.revision !== lastQuoteRevision && quoteClient && portfolio.portfolio) {
       await quotes.loadQuotes(quoteClient, portfolio.positions)
       lastQuoteRevision = event.revision
     }

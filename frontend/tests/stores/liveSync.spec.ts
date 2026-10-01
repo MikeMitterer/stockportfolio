@@ -108,6 +108,26 @@ describe('Live-Abgleich der Stores', () => {
     live.stop()
   })
 
+  it('folgt dem Kurs-Hinweis auch, wenn seine Revision auf dem Server zurückfällt', async () => {
+    // Etwa nach dem Zurückspielen einer älteren Datenbank: Nur eine gleiche
+    // Revision ist bereits bekannt, eine abweichende ist ein neuer Hinweis.
+    const portfolio = usePortfolioStore()
+    await portfolio.load()
+    const loadQuotes = vi.spyOn(useQuotesStore(), 'loadQuotes').mockResolvedValue()
+    const stream = new FakeEventStream()
+    const live = useLiveSyncStore()
+    live.start(new LiveEventsClient(() => stream), 30_000, {} as StockInfoClient)
+
+    stream.resource('current', 5, 'quote-refresh')
+    await vi.waitFor(() => expect(loadQuotes).toHaveBeenCalledTimes(1))
+    stream.resource('current', 1, 'quote-refresh')
+    await vi.waitFor(() => expect(loadQuotes).toHaveBeenCalledTimes(2))
+    stream.resource('current', 1, 'quote-refresh')
+    await flushPromises()
+    expect(loadQuotes).toHaveBeenCalledTimes(2)
+    live.stop()
+  })
+
   it('lädt ein fremd geändertes Depot und gleicht nach Wiederverbindung erneut ab', async () => {
     const portfolio = usePortfolioStore()
     await portfolio.load()
