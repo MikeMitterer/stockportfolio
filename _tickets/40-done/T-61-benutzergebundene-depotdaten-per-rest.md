@@ -1,5 +1,7 @@
 # T-61 · Private Depotdaten über die StockPortfolio-API speichern
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Kein offener Rest. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 Ein Benutzerkonto allein macht ein Depot noch nicht auf anderen Browsern
 verfügbar. **Der StockPortfolio-Server wird zur maßgeblichen Datenquelle** für
 Depots und Einstellungen. Jeder angemeldete Nutzer sieht nur seine Daten;
@@ -731,3 +733,9 @@ prüft Mike gemeinsam mit T-62, nicht vorher. Bis dahin bleibt T-61 technisch
 freigegeben (Runde 6, `094802b`) in `30-doing/`, ohne Abschluss und ohne
 Integration. Die Arbeit an T-62 wartet darauf nicht. Festgehalten von
 `claude-observer`.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Kein offener Rest.

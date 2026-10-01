@@ -27,7 +27,7 @@ ausgecheckte Branch muss dem Feld `branch` in STATUS entsprechen.
 Verifier `codex-verifier`, Observer `codex-observer`. Maßgeblich ist immer
 STATUS; bei einer Änderung dort gelten die Beispiele unten mit der neuen
 Kennung. Ob Kennungen oder Shortcuts dauerhaft angeglichen werden, entscheidet
-Mike ([T-65](../30-doing/T-65-board-konventionen-abgleichen.md)).
+Mike ([T-65](../40-done/T-65-board-konventionen-abgleichen.md)).
 
 ## Codex-Scheduler
 

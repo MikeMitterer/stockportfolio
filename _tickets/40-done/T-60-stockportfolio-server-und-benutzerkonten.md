@@ -1,5 +1,7 @@
 # T-60 · StockPortfolio-Server und private Benutzerkonten
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Kein offener Rest. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 StockPortfolio speichert Depots bislang nur im Browser. Für private Depots
 mehrerer Personen braucht der Server, der die App ausliefert, eigene Konten
 und eine verlässliche Anmeldung. **StockInfo bleibt ausschließlich Quelle für
@@ -723,3 +725,9 @@ diese Breitenumschaltung nicht und benötigen keine Anpassung. Die echte
 Docker-Hub-README-Vorschau bestand mit Größenprüfung. Die Observer-Lesson
 SP-CX-06 wurde durch den Breiten-Scan samt Klickprobe angewandt; die beiden
 Befunde aus Claudes Runde 5 sind im T-63-Nachtrag zugeordnet.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Kein offener Rest.

@@ -1,5 +1,7 @@
 # T-67 · Hinweise zum Internetbetrieb unabhängig prüfen
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Der gemeinsame Template-Commit `ca7ae2d` im Unraid-Templates-Repository ist nicht integriert; er wartet auf das StockInfo-Prüfurteil aus T-84. Docker Hub und Unraid-Listing zeigen die neuen Hinweise erst nach einer eigenen Veröffentlichung. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 Die neuen Warnungen für StockPortfolio liegen als Dokumentations-Commits vor.
 Der unabhängige Review von Runde 1 steht unten. Vor einer Übernahme oder
 Veröffentlichung war zu prüfen, ob die Hinweise zur
@@ -163,3 +165,9 @@ StockPortfolio-`master` noch `ca7ae2d` auf Templates-`master`;
 Ein Docker-Hub- oder Unraid-Push wurde nicht ausgeführt oder als Erfolg
 übernommen. Lessons: SP-R-02/AL-R-01 (Prüftiefe und Veröffentlichungsgrenze),
 SP-CX-02 (aktuelle Boardaussagen nachgezogen).
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Der gemeinsame Template-Commit `ca7ae2d` im Unraid-Templates-Repository ist nicht integriert; er wartet auf das StockInfo-Prüfurteil aus T-84. Docker Hub und Unraid-Listing zeigen die neuen Hinweise erst nach einer eigenen Veröffentlichung.

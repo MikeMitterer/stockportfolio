@@ -1,5 +1,7 @@
 # T-70 · Hinweis unter den Tabellen etwas größer
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Eine unabhängige technische Prüfung durch `codex-verifier` hat nicht stattgefunden; Mike hat das Ticket nach eigener Sichtung direkt abgeschlossen. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** Der Hinweis unter der Tabelle in Dashboard und
 Rebalancing („Kauf- und Verkaufsbeträge … zeigen, welche Änderungen
 rechnerisch nötig wären …“) ist mit 11 px schwer zu lesen. Mike, 2026-10-01:
@@ -52,3 +54,9 @@ Ports belegt. Prüfpunkt 1 bleibt für die Sichtprüfung offen (➖).
 Screenshots folgen ohnehin in T-68.
 
 **Lessons:** Keine Befunde, keine neue Lesson.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Eine unabhängige technische Prüfung durch `codex-verifier` hat nicht stattgefunden; Mike hat das Ticket nach eigener Sichtung direkt abgeschlossen.

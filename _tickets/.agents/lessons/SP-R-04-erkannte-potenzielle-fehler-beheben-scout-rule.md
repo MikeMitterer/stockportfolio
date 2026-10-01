@@ -56,7 +56,7 @@ Test, der beide Seiten zeigt.
 
 ## Originalbeleg und Grenze
 
-In [T-61](../../30-doing/T-61-benutzergebundene-depotdaten-per-rest.md),
+In [T-61](../../40-done/T-61-benutzergebundene-depotdaten-per-rest.md),
 technische Runde 3, Fassung `0ad4a6a`, fand Claude, dass die
 `create…Repository()`-Fabriken ohne aktiven Datenclient still auf IndexedDB
 zurückfallen. Ein Store, der künftig vor der Anmeldung angelegt würde, hätte

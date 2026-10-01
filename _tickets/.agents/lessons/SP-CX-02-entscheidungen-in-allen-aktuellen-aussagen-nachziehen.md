@@ -135,7 +135,7 @@ Ergänzung und Entdeckung durch `codex-observer`; Autor der übergebenen Fassung
 ## Ergänzung · 2026-09-30 · T-63
 
 Die Codex-Fassung `6459dca` von
-[T-63](../../30-doing/T-63-reproduzierbarer-lokaler-teststack.md) entfernte
+[T-63](../../40-done/T-63-reproduzierbarer-lokaler-teststack.md) entfernte
 auf Mikes Vorgabe die Root-Ziele `make lint` und `make typecheck`. Der
 Doku-Abgleich nannte `AGENTS.md`, `README.md`, Spezifikation, Plan und
 Board-Vorlagen, nicht aber die Verify-Tabellen der aktiven Tickets. Dort

@@ -113,32 +113,28 @@ nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
 ## Serverdepots und laufende Folgearbeit
 
 Mike hat die serverseitige Synchronisation mit getrennten privaten
-Benutzerkonten und SSE am 2026-09-28 beauftragt. T-60 und der vorgezogene
-lokale Teststack T-63 sind technisch freigegeben. Mike hat T-60 für sich
-abgeschlossen; T-63 wartet noch auf seine menschliche Abschlussentscheidung.
-T-61, T-62, T-64 und T-65 sind ebenfalls technisch freigegeben und auf Mikes
-Auftrag lokal nach `master` integriert. Die offenen menschlichen Abnahmen
-bleiben davon getrennt. T-66 liegt dem Verifier vor. T-67 prüft die
-Internet-Hinweise nach einer aktualisierten Coder-Übergabe; T-68 mit den
+Benutzerkonten und SSE am 2026-09-28 beauftragt. Die Kette T-60 bis T-63 ist
+mit den Folgetickets T-64 bis T-67, T-69 und T-70 am 2026-10-01 nach Mikes
+Bestätigung abgeschlossen und liegt unter `40-done/`. T-68 mit den
 Screenshots steht bereit.
 Verbindlich ist die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
 
-1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+1. [T-60 · Server und Benutzerkonten](40-done/T-60-stockportfolio-server-und-benutzerkonten.md)
    liefert App und eigene API im StockPortfolio-Container sowie Setup,
    Anmeldung und Admin-Verwaltung.
-2. [T-63 · Lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+2. [T-63 · Lokaler Teststack](40-done/T-63-reproduzierbarer-lokaler-teststack.md)
    verbindet StockInfos vorhandene Testkurse, die Konto-API und Vite
    reproduzierbar ohne Docker.
-3. [T-61 · Private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+3. [T-61 · Private Depotdaten per REST](40-done/T-61-benutzergebundene-depotdaten-per-rest.md)
    macht den Server zur Datenquelle und übernimmt vorhandene Browserdaten
    ausdrücklich in das richtige Konto.
-4. [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+4. [T-62 · SSE-Benachrichtigung](40-done/T-62-sse-benachrichtigung-fuer-depots.md)
    meldet gespeicherte Änderungen an andere Browser desselben Kontos, die
    daraufhin per REST neu laden.
 
 StockInfo bleibt für Kurse und Instrumente zuständig; diese Kette ändert dort
-nichts. Der jeweils aktive Auftrag, die Rolle am Zug und der Worktree stehen
-in STATUS.
+nichts. Der jeweils aktive Auftrag, die Rolle am Zug und der im Root
+ausgecheckte Branch stehen in STATUS.
 
 [↑ Übersicht](#übersicht)
 

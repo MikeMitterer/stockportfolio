@@ -1,5 +1,7 @@
 # T-65 · Board-Konventionen auf den Paketstand abgleichen
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Die Launcher-Anpassung läuft als T-51 im AgentLessons-Board weiter. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Auftrag von Mike, 2026-10-01:** „Ja, leg dafür ein Ticket an“, auf die
 Frage, ob die offene Übernahme der Board-Konventionen als eigenes Ticket
 abgeglichen werden soll.
@@ -271,7 +273,7 @@ Der gemeinsame `CODEX-IN-CONTEXT-SCHEDULER.md` verlangt in Schritt 1 einen
 `AGENT-ACTIVATION.md` nennt nur die relative Scheduler-Datei. Vom
 Projektroot aus wird damit das dortige Board gewählt: Der Root steht auf
 Branch `t-61-benutzergebundene-depotdaten-per-rest`, und
-`_tickets/30-doing/T-65-board-konventionen-abgleichen.md` existiert dort
+`_tickets/40-done/T-65-board-konventionen-abgleichen.md` existiert dort
 nicht. Es liegt ausschließlich im Worktree `/private/tmp/stockportfolio-t65`.
 Das war auch der Grund für Mikes Rückfrage nach den fehlenden T-64-/T-65-Dateien.
 Die Claude-Startzeile enthält statt des absoluten Pfads noch den Platzhalter
@@ -306,7 +308,7 @@ selben Commit. Keine Kennungsentscheidung getroffen.
 
 **Gegenprobe:** Unter dem Pfad aus den Startzeilen existieren
 `.agents/CODEX-IN-CONTEXT-SCHEDULER.md`, `.agents/AGENT-ACTIVATION.md` und
-`30-doing/T-65-board-konventionen-abgleichen.md`; STATUS im Worktree nennt
+`40-done/T-65-board-konventionen-abgleichen.md`; STATUS im Worktree nennt
 `ticket: T-65-board-konventionen-abgleichen.md` und den Worktree unter
 „Aktuelle Arbeit“; die STATUS-Kopie im Hauptverzeichnis ist byte-gleich
 (`cmp`). Suche nach `<Worktree>` und `{{` in `_tickets/.agents/`: kein
@@ -370,3 +372,9 @@ Mike, 2026-10-01: „2 - Ticket“. Die Anpassung der Rollen-Shortcuts (Variante
 liegt als [T-51](/Volumes/DevLocal/DevKI/Production/AgentLessons/_tickets/10-backlog/T-51-rollen-shortcuts-mit-eindeutigen-kennungen.md)
 im AgentLessons-Board (Backlog, Commit `7708f61` dort). Bis zur Umsetzung gilt
 der in `AGENT-ACTIVATION.md` dokumentierte Übergangsweg.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Die Launcher-Anpassung läuft als T-51 im AgentLessons-Board weiter.

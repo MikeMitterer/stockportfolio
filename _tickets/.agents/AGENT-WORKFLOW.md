@@ -14,7 +14,7 @@ Hier stehen nur StockPortfolios lokale Entscheidungen und Ergänzungen. Die
 den passenden Abschnitt des Paketvertrags.
 
 **Übernahmestand der Board-Konventionen: `2026-09-28-activity-local`.**
-Am 2026-10-01 in [T-65](../30-doing/T-65-board-konventionen-abgleichen.md)
+Am 2026-10-01 in [T-65](../40-done/T-65-board-konventionen-abgleichen.md)
 übernommen: Paketeinstieg in `AGENTS.md`, `_tickets/.gitignore` für ACTIVITY,
 Lessons-Einordnung, Rollen-Shortcuts, kurze Einstiege für Workflow,
 Aktivierung, Codex-Scheduler und Lessons-Zugriff.
