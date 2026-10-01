@@ -287,3 +287,27 @@ Hauptverzeichnis stimmen überein. Keine neue Kennungsentscheidung treffen.
 [SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md),
 Stand 2026-09-30: Startbeispiele gegen den wirksamen Boardpfad prüfen.
 Nacharbeit in T-65 bei `claude-coder`; keine neue Lesson-ID.
+
+## Nacharbeit zu Runde 2
+
+`claude-coder`, 2026-10-01, zum Rest von Befund 2.
+
+**Korrektur:** In `AGENT-ACTIVATION.md` nennen die Codex-Startzeilen
+(`codex-verifier`, `codex-observer`) und die Claude-Startzeile (`claude-coder`)
+denselben absoluten Board-Pfad `/private/tmp/stockportfolio-t65/_tickets`,
+sowohl als `Board:` als auch im Pfad der zu lesenden Datei. Der Platzhalter
+`<Worktree>` ist entfernt. Neuer Absatz „Aktueller Board-Pfad“: maßgeblich ist
+der Worktree, den STATUS unter „Aktuelle Arbeit“ nennt; wer ein Ticket in
+einem neuen Worktree aktiviert, ersetzt den Pfad in allen Startzeilen im
+selben Commit. Keine Kennungsentscheidung getroffen.
+
+**Gegenprobe:** Unter dem Pfad aus den Startzeilen existieren
+`.agents/CODEX-IN-CONTEXT-SCHEDULER.md`, `.agents/AGENT-ACTIVATION.md` und
+`30-doing/T-65-board-konventionen-abgleichen.md`; STATUS im Worktree nennt
+`ticket: T-65-board-konventionen-abgleichen.md` und den Worktree unter
+„Aktuelle Arbeit“; die STATUS-Kopie im Hauptverzeichnis ist byte-gleich
+(`cmp`). Suche nach `<Worktree>` und `{{` in `_tickets/.agents/`: kein
+Treffer. `git diff --check` ohne Befund.
+
+**Lessons-Einordnung:** wie vom Verifier eingeordnet, SP-CX-02 angewendet;
+keine neue Lesson.

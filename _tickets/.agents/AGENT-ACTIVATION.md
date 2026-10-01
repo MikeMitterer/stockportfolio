@@ -18,6 +18,13 @@ Abweichungen. Die Überschriften bleiben als Sprungziele erhalten.
 - [Observer-Durchlauf](#observer-durchlauf)
 - [Stoppen und Wiedereinstieg](#stoppen-und-wiedereinstieg)
 
+**Aktueller Board-Pfad:** `/private/tmp/stockportfolio-t65/_tickets` (Worktree des aktiven Tickets T-65).
+Maßgeblich ist der Worktree, den [STATUS](../STATUS.md) unter „Aktuelle
+Arbeit“ nennt. Die Startzeilen unten nennen diesen Pfad absolut; ein Start
+nur mit relativem Pfad aus dem Projektroot fände dort ein anderes Board ohne
+das aktive Ticket. Wer ein Ticket in einem neuen Worktree aktiviert, ersetzt
+den Pfad in allen Startzeilen dieser Datei im selben Commit.
+
 **Kennungen in StockPortfolio** (Mike, 2026-10-01): Coder `claude-coder`,
 Verifier `codex-verifier`, Observer `codex-observer`. Maßgeblich ist immer
 STATUS; bei einer Änderung dort gelten die Beispiele unten mit der neuen
@@ -32,11 +39,11 @@ Paket: Abschnitt „Codex-Scheduler“; Vertrag im
 Im Codex-Chat des Verifiers beziehungsweise Observers eingeben:
 
 ```text
-Deine Instanzkennung ist codex-verifier. Führe _tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+Deine Instanzkennung ist codex-verifier. Board: /private/tmp/stockportfolio-t65/_tickets. Führe /private/tmp/stockportfolio-t65/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
 ```
 
 ```text
-Deine Instanzkennung ist codex-observer. Führe _tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+Deine Instanzkennung ist codex-observer. Board: /private/tmp/stockportfolio-t65/_tickets. Führe /private/tmp/stockportfolio-t65/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
 ```
 
 ## Claude-Scheduler
@@ -44,11 +51,10 @@ Deine Instanzkennung ist codex-observer. Führe _tickets/.agents/CODEX-IN-CONTEX
 Paket: Abschnitt „Claude-Scheduler“.
 
 Im Claude-Chat des Coders eingeben; vorher mit `CronList` prüfen, ob der
-Board-Job bereits läuft. Den Board-Pfad auf das Board im Worktree des aktiven
-Tickets setzen (STATUS nennt ihn):
+Board-Job bereits läuft:
 
 ```text
-/loop 5m Deine Instanzkennung ist claude-coder. Board: <Worktree>/_tickets. Lies <Worktree>/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
+/loop 5m Deine Instanzkennung ist claude-coder. Board: /private/tmp/stockportfolio-t65/_tickets. Lies /private/tmp/stockportfolio-t65/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
 ```
 
 Beim Start aus einem normalen Prompt richtet Claude denselben Auftrag per
