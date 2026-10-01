@@ -285,3 +285,49 @@ App-Texte (oben). Offen: Screenshot `docs/images/dashboard.png` (siehe oben).
 Noch keine Reviewbefunde. Vorbeugend angewendet: SP-CX-02 (Entscheidung in
 allen aktuellen Aussagen nachziehen: Badges, Hilfen, Methodenseite,
 Login-Hinweis, T-64-Ticket), SP-R-02 (Browsergrenzen getrennt benannt).
+
+## Unabhängige Prüfung · Runde 1 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** Produkt-Commit `6b8a6ee`; spätere Commits bis `429bccf`
+ändern laut `git diff 6b8a6ee HEAD -- frontend/src frontend/tests README.md
+docker/README.md` keinen Produkt-, Test- oder Anleitungscode. Das Urteil lautet
+`changes_requested`.
+
+**Blockierender Befund · Erklärung der Near-Schwelle:**
+`frontend/src/composables/useStatusHint.ts` begrenzt `upperPercent - 1` und
+`lowerPercent - 1` mit `Math.max(..., 0)`. Die Einstellungen erlauben aber
+Bandwerte von 0 bis 100 Prozent in Schritten von 0,1. Bei einem oberen Band
+von 0,5 % beginnt Near nach `isNearBand` bereits 1 Prozentpunkt vor der
+Obergrenze, also bei einer relativen Abweichung von −0,5 %. Das Popup nennt
+dagegen +0,0 %. Beispielsweise ist −0,4 % noch innerhalb der Bänder und
+`isNearBand` liefert `true`, obwohl der erklärte obere Schwellenwert nicht
+erreicht ist. Die untere Grenze hat denselben Fehler bei Werten unter 1 %.
+Die Erklärung muss die wirklichen Schwellen auch mit Vorzeichenwechsel
+abbilden. Ein gezielter Test mit 0,5 % oberem und unterem Band soll Text und
+`isNearBand` an beiden Seiten vergleichen.
+
+**Ticket-Abgleich:** Die aktuelle Verify-Zeile #1 fordert noch ausgeschriebene
+Badges `Below`/`Above`/`OK`, obwohl Mikes maßgebliche Entscheidung nur
+Symbole verlangt. Der Doku-Abgleich darunter behauptet weiterhin, beide
+READMEs seien unverändert; `6b8a6ee` änderte beide. Diese aktuellen
+Prüfaussagen bitte an die Entscheidung und die tatsächlich geprüfte Fassung
+anpassen. Die ältere Umsetzungsgeschichte bleibt historisch erkennbar.
+
+**Eigene Nachweise:** Quellvergleich von Badge, Status-Hinweis,
+`isNearBand`, Band-Eingaben, Login-Textkomponente, i18n-Katalogen und
+README-Diff. `make test` erneut vollständig grün: 837 Frontend- und 20
+API-Tests; beide Lints und Typprüfungen grün; `git diff --check` ohne Befund.
+Ein erster `make test`-Lauf brach bei einer gleichzeitig wechselnden
+`node_modules`-Installation nach 837 Frontend-Tests ab; er zählt nicht als
+erfolgreicher Gesamtlauf. Browser-Ausrichtung und `min`-Tooltip wurden
+von mir nicht live wiederholt; dazu liegen nur die oben getrennt genannten
+Coder-Belege beziehungsweise Komponententests vor. Das ändert den konkreten
+Schwellenbefund nicht.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` wurden in `6b8a6ee`
+inhaltlich auf denselben Hinweis zu berechneten Beträgen, Eignungsprüfung und
+Orders geprüft; keine weitere Anpassung dafür nötig. Die statusbezogenen
+Katalogtexte bleiben wegen des Near-Befunds offen. Der alte Screenshot ist
+als T-68 getrennt vorgemerkt. Lessons: SP-R-02/AL-R-01 für die belegte
+Prüftiefe, SP-CX-02 für den aktuellen Tickettext, SP-R-04 für die
+blockierende Einstufung eines real möglichen Grenzfalls.

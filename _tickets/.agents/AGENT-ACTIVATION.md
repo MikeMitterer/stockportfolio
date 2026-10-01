@@ -18,12 +18,10 @@ Abweichungen. Die Überschriften bleiben als Sprungziele erhalten.
 - [Observer-Durchlauf](#observer-durchlauf)
 - [Stoppen und Wiedereinstieg](#stoppen-und-wiedereinstieg)
 
-**Aktueller Board-Pfad:** `/private/tmp/stockportfolio-t66/_tickets` (Worktree des aktiven Tickets T-66).
-Maßgeblich ist der Worktree, den [STATUS](../STATUS.md) unter „Aktuelle
-Arbeit“ nennt. Die Startzeilen unten nennen diesen Pfad absolut; ein Start
-nur mit relativem Pfad aus dem Projektroot fände dort ein anderes Board ohne
-das aktive Ticket. Wer ein Ticket in einem neuen Worktree aktiviert, ersetzt
-den Pfad in allen Startzeilen dieser Datei im selben Commit.
+**Board-Pfad:** immer `/Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets`
+im Projekt-Root; es gibt keine Worktrees ([AGENTS.md · Ein
+Arbeitsort](../../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der
+ausgecheckte Branch muss dem Feld `branch` in STATUS entsprechen.
 
 **Kennungen in StockPortfolio** (Mike, 2026-10-01): Coder `claude-coder`,
 Verifier `codex-verifier`, Observer `codex-observer`. Maßgeblich ist immer
@@ -39,11 +37,11 @@ Paket: Abschnitt „Codex-Scheduler“; Vertrag im
 Im Codex-Chat des Verifiers beziehungsweise Observers eingeben:
 
 ```text
-Deine Instanzkennung ist codex-verifier. Board: /private/tmp/stockportfolio-t66/_tickets. Führe /private/tmp/stockportfolio-t66/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+Deine Instanzkennung ist codex-verifier. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Führe /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
 ```
 
 ```text
-Deine Instanzkennung ist codex-observer. Board: /private/tmp/stockportfolio-t66/_tickets. Führe /private/tmp/stockportfolio-t66/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+Deine Instanzkennung ist codex-observer. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Führe /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
 ```
 
 ## Claude-Scheduler
@@ -54,7 +52,7 @@ Im Claude-Chat des Coders eingeben; vorher mit `CronList` prüfen, ob der
 Board-Job bereits läuft:
 
 ```text
-/loop 5m Deine Instanzkennung ist claude-coder. Board: /private/tmp/stockportfolio-t66/_tickets. Lies /private/tmp/stockportfolio-t66/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
+/loop 5m Deine Instanzkennung ist claude-coder. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Lies /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
 ```
 
 Beim Start aus einem normalen Prompt richtet Claude denselben Auftrag per
@@ -63,8 +61,10 @@ absolutem Board-Pfad ein und führt sofort einen ersten Durchlauf aus.
 
 ### Arbeitsdurchlauf
 
-Paket: gleichnamiger Abschnitt. Lokal zusätzlich: Prüfen, dass die STATUS-Kopie
-im Hauptverzeichnis dieselbe Zuordnung zeigt wie das Board im Worktree.
+Paket: gleichnamiger Abschnitt. Lokal zusätzlich: Prüfen, dass
+`git -C /Volumes/DevLocal/DevWeb/Production/StockPortfolio branch --show-current`
+dem Feld `branch` in STATUS entspricht; sonst Konflikt melden und nicht
+weiterarbeiten.
 
 ## Rollen-Shortcuts im Terminal
 

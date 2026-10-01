@@ -15,6 +15,7 @@ Fehler im falschen Repository.
 
 - [StockPortfolio hängt an StockInfo](#stockportfolio-hängt-an-stockinfo)
 - [Vor Arbeitsbeginn](#vor-arbeitsbeginn)
+- [Ein Arbeitsort: der Projekt-Root](#ein-arbeitsort-der-projekt-root)
 - [Bezeichner sind englisch. Ausnahmslos.](#bezeichner-sind-englisch-ausnahmslos)
 - [Wächter-Tests prüfen das Muster, nicht die Fundstelle](#wächter-tests-prüfen-das-muster-nicht-die-fundstelle)
 - [Bauen und prüfen](#bauen-und-prüfen)
@@ -146,6 +147,34 @@ Die alten Sammeldateien sind Linkeinstiege. Verzeichnisinventar, gemeinsamer
 AgentLessons-Bestand und Herkunft folgen
 [Lessons lesen und pflegen](_tickets/.agents/LESSONS-ACCESS.md); die gemeinsame
 Sammlung wird noch nicht automatisch aktualisiert.
+
+[↑ Übersicht](#übersicht)
+
+## Ein Arbeitsort: der Projekt-Root
+
+**Alle Instanzen arbeiten ausschließlich im Projekt-Root
+`/Volumes/DevLocal/DevWeb/Production/StockPortfolio`** (Mike, 2026-10-01).
+Keine `git worktree add`, keine Kopien unter `/private/tmp` oder anderswo —
+außer Mike ordnet es ausdrücklich an. Grund: Mike muss Board und Quellstand
+jederzeit an einer Stelle sehen und von dort testen können.
+
+- **Ein Board.** `_tickets/` gibt es nur im Root. Board-Änderungen kommen auf
+  den gerade ausgecheckten Branch; es gibt keine STATUS-Kopien abzugleichen.
+- **Branch im Root.** Der Ticketbranch wird im Root ausgecheckt
+  (`git switch`). STATUS nennt ihn im Feld `branch`. Vor jedem Durchlauf
+  prüft jede Instanz `git branch --show-current` gegen dieses Feld; bei
+  Abweichung meldet sie den Konflikt und arbeitet nicht weiter.
+- **Nur der Owner schaltet den Branch.** Der Verifier prüft den im Root
+  ausgecheckten Übergabestand und wechselt den Branch nicht; ältere Fassungen
+  liest er mit `git show` und `git diff`.
+- **Früh integrieren.** Nach der technischen Freigabe wird der Ticketbranch
+  sofort nach `master` gemergt und der Root auf `master` zurückgestellt.
+  Mikes Abnahme findet auf `master` statt; Nacharbeit beginnt auf einem neuen
+  Branch von `master`. Ketten, die nur auf Seitenbranches existieren, entstehen
+  so nicht.
+- **Hilfsinstanzen nur aus dem Root,** mit den dokumentierten Ports, und nach
+  dem Lauf beenden. Der Teststack startet aus dem Root
+  ([Bauen und prüfen](#bauen-und-prüfen)).
 
 [↑ Übersicht](#übersicht)
 
