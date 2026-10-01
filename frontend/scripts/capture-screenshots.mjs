@@ -4,7 +4,8 @@
 //   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
 //   npm --prefix frontend run screenshots -- <data_dir>/demo-accounts.json
 //
-// Englische Oberfläche, Theme MangoLila, Bildgröße 1440 × 1000. Das Depot ist
+// Englische Oberfläche, Theme MangoLila, Bildgröße 1440 × 1000; die
+// aufgeklappte Position wird als Ausschnitt aufgenommen. Das Depot ist
 // das eingebaute Beispiel-Depot; echte Daten kommen nie auf ein Bild. Der
 // Browser läuft sichtbar, damit der Ablauf nachvollziehbar bleibt.
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -95,6 +96,11 @@ try {
   // 4 · Rebalancing.
   await page.getByRole('link', { name: 'Rebalancing' }).first().click()
   await page.locator('.reb__status-head').first().waitFor({ timeout: 20000 })
+  await settle()
+  // Eine kleine Simulation: zwei Vorschläge aus der Delta-Spalte übernehmen.
+  for (const symbol of ['VGWL.DE', 'IUSN.DE']) {
+    await page.locator('tr').filter({ hasText: symbol }).first().locator('.reb__delta').click()
+  }
   await settle()
   await capture('rebalancing.png')
 

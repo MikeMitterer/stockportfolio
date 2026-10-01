@@ -238,6 +238,9 @@ update holdings on the dashboard.
 
 ![Rebalancing simulation](docs/images/rebalancing.png)
 
+_Two suggested trades taken over from the Delta column: the plan shows the
+amounts, the resulting shares and whether the plan adds up._
+
 The bar and the separate _Rel. %_ column show the relative deviation from the target after
 the planned trade, using the same format as the dashboard. The resulting
 portfolio share appears below the bar; the _Off target_ column shows the difference
@@ -449,8 +452,9 @@ npm --prefix frontend run screenshots -- <temporary-dir>/demo-accounts.json
 
 It signs in as the synthetic admin, loads the sample portfolio and saves
 `login.png`, `dashboard.png`, `drilldown.png`, `rebalancing.png`,
-`settings-calculation.png` and `user-admin.png` at 1440 × 1000 in English with
-the MangoLila theme. No real portfolio data is involved.
+`settings-calculation.png` and `user-admin.png` in English with the MangoLila
+theme. Full pages are 1440 × 1000; `drilldown.png` is a cut-out of the opened
+position. No real portfolio data is involved.
 
 ## Commands
 
