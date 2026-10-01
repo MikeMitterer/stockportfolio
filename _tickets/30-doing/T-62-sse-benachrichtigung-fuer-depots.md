@@ -219,11 +219,14 @@ Inventar: `README.md`, `docker/README.md`, `unraid/README.md`, `AGENTS.md`,
 - `unraid/README.md` **Configuration**: Proxy-Hinweis für den Stream (Codex).
 - `AGENTS.md` **Bauen und prüfen**: Smoketest-Aufruf und Fensteranordnung.
 - `docs/`: keine Aussage zum Live-Abgleich betroffen.
-- **Offen:** Die zentrale Vorlage
-  `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
-  nennt den Reverse-Proxy, aber nicht, dass der SSE-Stream ungepuffert
-  durchgereicht werden muss. Sie liegt in einem eigenen Repository; die
-  Ergänzung ist nicht vorgenommen und braucht Mikes Entscheidung.
+- Zentrale Vorlage
+  `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`:
+  Auf Mikes Auftrag vom 2026-10-01 ergänzt die `Overview` den Satz „Behind a
+  reverse proxy, the live update stream must not be buffered; nginx-based
+  proxies handle this automatically.“ Begründung: Die Konto-API sendet
+  `X-Accel-Buffering: no`, nginx schaltet das Puffern damit selbst ab.
+  `xmllint --noout` ohne Befund; Commit `c828e24` im Templates-Repo auf
+  `t-60-stockportfolio-template`, nicht gepusht.
 - Keine Board- oder Lessons-Konventionsänderung; kein Nachtrag im Skill
   `task-verification-workflow`.
 

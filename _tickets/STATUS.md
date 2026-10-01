@@ -314,6 +314,5 @@ besteht alle Schritte gegen den Stack mit `--demo-accounts`.
 
 Grenzen: Kurs-Hinweis an andere Fenster nur durch Codex' Lauf vom
 2026-09-30 belegt, nicht im Projekt-Smoketest; Sitzungsablauf nur über den API-Weg geprüft; Proxy nur Vites
-Entwicklungsproxy; native Datei-Dialoge nicht bedient. Offen ist der
-SSE-Hinweis in der zentralen Unraid-Vorlage (eigenes Repository, wartet auf
-Mikes Entscheidung).
+Entwicklungsproxy; native Datei-Dialoge nicht bedient. Der SSE-Hinweis in der zentralen Unraid-Vorlage ist
+ergänzt (Templates-Repo `c828e24`, nicht gepusht).
