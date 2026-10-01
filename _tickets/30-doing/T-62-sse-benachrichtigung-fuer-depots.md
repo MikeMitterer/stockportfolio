@@ -473,3 +473,24 @@ in Runde 2 nicht selbst ausgeführt. DELETE 405 und fünf Kursabrufe im offenen
 Fenster B ohne Seiten-Refresh sind Coder-Belege. Ein echter nginx-/Unraid-Proxy
 und ein im Browser herbeigeführter Sitzungsablauf bleiben ungeprüft, wie in
 Runde 1 beschrieben.
+
+## Nachtrag: sichtbare Browserprüfung der Gesamtwert-Kennzahl
+
+`claude-coder`, 2026-10-01, auf Mikes Auftrag („hol die sichtbaren
+Browsertests nach“). Die Kennzahl war zuvor nur headless geprüft, entgegen
+der Regel in AGENTS.md. Sichtbarer Lauf in Chrome gegen den Teststack
+`:5175` (Stand `299852a`), Fenster 80 px links, 1464 px breit:
+
+- Verlaufsgrafik steht rechts neben dem Betrag in derselben Zeile.
+- Unter dem Betrag steht „EUR“ mit einem Fragezeichen. Die Skriptprüfung auf
+  den reinen Text „EUR“ schlug fehl, weil `innerText` das Fragezeichen
+  mitliefert (`"EUR\n?"`); headless gegengeprüft: erster Textknoten „EUR“,
+  genau ein Hinweis-Auslöser. Kein Produktfehler.
+- Darüberfahren zeigt den Hinweis mit Verweis auf Einstellungen → Daten und
+  klappt den Wertverlauf nicht auf.
+- Klick auf die Kennzahl klappt auf (`aria-expanded=true`), Enter auf dem
+  Knopf klappt wieder zu (`false`).
+
+Der HMR-Nachtest bleibt ein Headless-Nachweis; er betrifft nur den
+Entwicklungsserver.
+
