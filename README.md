@@ -562,9 +562,9 @@ The Docker Hub image name is
 It contains the finished Vue bundle and the StockPortfolio account API on one
 Node server. Accounts and sessions need a persistent `/data` volume.
 
-Do not forward the container port directly to the internet. Use a trusted
-network or VPN; external access through an HTTPS reverse proxy needs the
-settings below and separate protection for StockInfo.
+Do not put StockPortfolio or StockInfo on the internet. Use both only in your
+home network. From outside, connect to your home network with a VPN, for
+example WireGuard or Tailscale.
 
 ### Run it
 
@@ -589,10 +589,9 @@ StockInfo must allow the web app's origin through CORS. An HTTPS page needs
 an HTTPS API to avoid mixed-content blocking.
 
 The web interface has a login, but that login does not protect StockInfo.
-For access through an HTTPS reverse proxy, set `STOCKPORTFOLIO_PUBLIC_ORIGIN`
-to the exact browser origin and `STOCKPORTFOLIO_SECURE_COOKIES=true`. Protect
-both services and verify that the browser can reach StockInfo through the
-chosen access path.
+If a reverse proxy in your home network serves the app over HTTPS, set
+`STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
+`STOCKPORTFOLIO_SECURE_COOKIES=true`.
 The same account's open browsers use a long-lived `/api/data/events` stream
 for change notices. A reverse proxy must pass that stream without buffering
 and keep idle connections open for more than the server's 15-second keep-alive

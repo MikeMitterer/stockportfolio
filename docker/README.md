@@ -5,9 +5,9 @@ target allocations and rebalancing simulations.
 
 **[GitHub repository — documentation, source code and setup](https://github.com/MikeMitterer/stockportfolio)**
 
-**Network access:** Do not forward the container port directly to the internet.
-Use a trusted network or VPN. For remote access through an HTTPS reverse
-proxy, protect StockInfo separately because the browser calls its API directly.
+**Network access:** Do not put StockPortfolio or StockInfo on the internet.
+Use both only in your home network. From outside, connect to your home network
+with a VPN, for example WireGuard or Tailscale.
 
 StockPortfolio is a web app. Market data comes from a separate
 [StockInfo](https://github.com/MikeMitterer/stockinfo) instance that you provide.
@@ -64,10 +64,9 @@ Docker host, use `-p 127.0.0.1:8080:8080` instead.
 reachable from the browser; a Docker-internal hostname usually is not.
 StockInfo must allow the web app's origin through CORS. For example, when
 opening the app at `http://nas:8080`, allow that exact origin in StockInfo.
-An HTTPS web address requires an HTTPS API. If you use an HTTPS reverse proxy,
-set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
-`STOCKPORTFOLIO_SECURE_COOKIES=true`. Protect StockInfo through a separately
-controlled access path and check that browser requests to it work.
+An HTTPS web address requires an HTTPS API. If a reverse proxy in your home
+network serves the app over HTTPS, set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the
+exact browser origin and `STOCKPORTFOLIO_SECURE_COOKIES=true`.
 
 The container also serves its own account API at `/api/*`. It is separate from
 StockInfo. Without a StockInfo address, setup and login still work, while the
