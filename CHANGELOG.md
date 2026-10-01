@@ -2,6 +2,88 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.6.0+261001.2129.d0eba — 2026-10-01
+
+Konten mit eigener API, Depotdaten auf dem Server und Live-Abgleich einführen; Container läuft nach Unraid-Vorgabe als 99:100
+
+### Documentation
+
+- Serverarchitektur und Prüfschritte festhalten (`671522c`)
+- Grenzen der Folgetickets verbindlich entscheiden (`9e843bc`)
+- Mehradmin-Regel und Umsetzungsplan festhalten (`1e5cb95`)
+- Serverdaten und Altimport dokumentieren (`bf490a7`)
+- belege Restore-Nacharbeit und Datenweg (`238723a`)
+- Theme-Bezugsweg und Abnahmebelege festhalten (`bd4faec`)
+- Installationsweg an StockInfo T-82 belassen (`e4db84b`)
+- Geschützten Fernzugriff für Depots erklären (`50a6924`)
+- aktuelle Screenshots mit Login und Benutzerverwaltung (`5821721`)
+- Rebalancing-Simulation aufnehmen, Bildgrößen richtig nennen (`efc290f`)
+- PUID/PGID 99/100 in allen Anleitungen, Rauchtest räumt per Label auf (`e7cda36`)
+- Startbedingung bei fehlendem chown genau beschreiben (`7aea00f`)
+- Einzelserver-Hilfe nutzt das gemeinsame CLI-Theme (`8b6358d`)
+
+### Features
+
+- add account API and administration (T-60) (`7b4cbbe`)
+- start isolated local StockPortfolio stack (`493c35c`)
+- lokale Entwicklung beider Dienste vereinfachen (`4c847b5`)
+- Setup-Konto für Altbestand markieren (`fb93ee0`)
+- Private REST-Daten mit Besitzerprüfung und Revisionen speichern (`e8942f3`)
+- Depots und Einstellungen über Konto-API laden (`5383570`)
+- Backup atomar wiederherstellen und Altbestand trennen (`508c1af`)
+- Konto-Ereignisse nach REST-Commits senden (`0bbf80b`)
+- Live-Abgleich offener Browser fertigstellen (`625e22d`)
+- Hinweis zu Anlageentscheidungen beim Login bestätigen (`1eab2fd`)
+- Hinweis auf dem Desktop neben den Eingabefeldern (`6d6dbfd`)
+- Login-Hinweis beschreibt die Funktion statt eines Ausschlusses (`fd9d8f4`)
+- Status-Badges zeigen Below / Above / OK (`079c923`)
+- deutsche Badges „Unter Ziel“ / „Über Ziel“, kein Umbruch (`5a077ef`)
+- Status als Symbole, erklärt mit den eingestellten Bändern (`6b8a6ee`)
+- Wrapper startet den Teststack mit der Projekt-.venv (`b1e58cb`)
+
+### Fixes
+
+- equalize login verification for unknown users (T-60) (`942c211`)
+- Review-Hinweise vor Abnahme beheben (`a8c7402`)
+- Kontenoberfläche und Passwortregeln korrigieren (`157fc12`)
+- Statusseite und Entwicklungsziele ordnen (`8aa9818`)
+- Kontoansichten und Nutzerpfad klären (`350fbd8`)
+- Anmeldedialog höher positionieren (`d27030f`)
+- Teststack und CLI-Meldungen an Kontoregeln anpassen (`1d534ce`)
+- Kontonavigation auf Telefonen bedienbar halten (`7eb4224`)
+- Statuskarte mit gemeinsamem Stil darstellen (`91b84da`)
+- Kontonavigation bei allen Breiten bedienbar halten (`aa242e8`)
+- Testserver-Einstieg vom Serverstart trennen (`26b59ed`)
+- Beispiele der Testserver-Hilfe untereinander zeigen (`1c7f37c`)
+- Depot-IDs pro Konto statt global prüfen (`0542048`)
+- privaten Datenclient im Produktbetrieb erzwingen (`cfe395b`)
+- IndexedDB-Rueckfall aus Produktcode entfernen (`18ab5e1`)
+- entferne lokalen Backup-Rückfall und prüfe Stores (`c40dd40`)
+- optionales ProjectTools-Theme im Testserver nutzen (`0a8bb4d`)
+- eigene Python-Umgebung für Teststack einrichten (`ca9c74b`)
+- Python-Setup wiederholbar und dauerhaft halten (`d7e1607`)
+- StockInfo-Kindzustand nach SIGTERM aufräumen (`44f61a6`)
+- Portprüfung für sofortigen Neustart korrigieren (`05ccd7b`)
+- frühes SIGTERM beim Testserver aufräumen (`4d5e81f`)
+- Testserver-Zustand atomar schreiben und aufräumen (`637da2f`)
+- Start und Zustandsablage im Teststack absichern (`18c60f4`)
+- abgebrochenen Stack-Start als Fehler melden (`f28417c`)
+- Kurs-Hinweis gegen Löschen und Revisionsrückfall absichern (`299852a`)
+- Near-Schwellen im Status-Hinweis auch unter 1 % richtig (`c1b6c57`)
+- Dashboard beim Ansichtswechsel ohne erneutes Laden zeigen (`f8bbe20`)
+- Schonfrist nach Teilabruf über erneutes Hydrieren halten (`2bdf21b`)
+- Vollabruf-Zeitpunkt im selben Tab auch ohne localStorage halten (`9d28d56`)
+- keine Standard-Platzhalter in Eingabefeldern (`509881e`)
+- Container startet als root und läuft als PUID/PGID 99:100 (`eaf6db6`)
+- vorhandene Dateien in /data vor dem Start auf Schreibrecht prüfen (`aa67e82`)
+- Startprüfung auf die von SQLite benötigten Pfade begrenzen (`f7de26c`)
+
+### Other changes
+
+- Backup und Altbestand durch Stores führen (`cffcf5d`)
+- Backup und Altbestand durch Stores führen (`ec6a783`)
+- entferne verwaiste Restore-Wege (`b2235b8`)
+
 ## v0.5.0+260928.1401.98d5d — 2026-09-28
 
 About mit Anbieterangaben und Datenhinweisen ergänzen; Startmeldung im dunklen Theme lesbar machen
