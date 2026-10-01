@@ -13,8 +13,7 @@ läuft ungefärbt mit `/usr/bin/python3`. Danach:
 `./scripts/stockinfo-test-server.sh --stack --status` wählt selbst die
 Projekt-`.venv` und zeigt die farbige Ausgabe.
 
-**Stand:** Im Backlog, eingeplant direkt nach T-75 (Root steht während der
-T-75-Prüfung auf dessen Branch).
+**Stand:** In Umsetzung durch `claude-coder` auf `t-76-teststack-wrapper`.
 
 Für dich steht jetzt nichts an.
 
