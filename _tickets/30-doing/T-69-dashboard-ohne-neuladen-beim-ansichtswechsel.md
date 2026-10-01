@@ -11,10 +11,11 @@ erneut über das Netz beantwortet sind. Danach: Die Tabelle steht sofort mit
 den zwischengespeicherten Werten; eine Aktualisierung läuft nur, wenn die
 eingestellte Schonfrist abgelaufen ist, und dann im Hintergrund.
 
-**Stand:** Ursache im Code eingegrenzt, noch nicht umgesetzt und nicht im
-Browser gemessen. Mike, 2026-10-01: „Kurse können gecached werden.“
+**Stand:** In Umsetzung durch `claude-coder` auf
+`t-69-dashboard-ohne-neuladen`, vor T-68. Mike, 2026-10-01: „Kurse können
+gecached werden.“
 
-Für dich: Entscheiden, wann das Ticket nach T-67 drankommt.
+Für dich steht jetzt nichts an.
 
 ## Ursache (Codeanalyse, 2026-10-01)
 
