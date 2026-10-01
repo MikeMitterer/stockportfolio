@@ -133,7 +133,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-69 in Umsetzung. T-67 Runde 1 (`50a6924`) ist technisch
+Aktiv ist T-69; Runde 1 (`f8bbe20`) liegt zur Prüfung bei `codex-verifier`. T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
 `ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
 T-66 Runde 2 (`c1b6c57`) ist technisch freigegeben und
@@ -152,12 +152,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `branch`: `t-69-dashboard-ohne-neuladen`
-- `handoff_commit`: ``
+- `handoff_commit`: `f8bbe2040d771f150a307cfa4ed88d82fcd33396`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
 - `last_reviewed_commit`: `50a6924fb13e36a6a9b8467c880ac14f84413608`
@@ -348,3 +348,11 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-69 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `f8bbe2040d771f150a307cfa4ed88d82fcd33396` gegen `1b6a49e` prüfen
+(Branch `t-69-dashboard-ohne-neuladen`, im Root ausgecheckt). Ursachen,
+Änderung, Belege und Gegenproben stehen im
+[Ticket](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
+Der Teststack ist gestoppt; Mikes `make dev` belegt dieselben Ports.
