@@ -8,6 +8,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktuelle Arbeit:** [T-66 · Status-Badges Below/Above/OK](30-doing/T-66-status-badges-below-above-ok.md)
 auf Branch `t-66-status-badges-below-above-ok` im Worktree
 `/private/tmp/stockportfolio-t66`, aufbauend auf dem freigegebenen T-65-Stand.
+Danach folgt [T-67 · Aktuelle Screenshots mit Login](20-ready/T-67-aktuelle-screenshots-mit-login.md)
+(Mike, 2026-10-01). Die Launcher-Anpassung aus T-65 liegt als T-51 im
+AgentLessons-Board (Backlog).
 [T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
 in Runde 3 (`7f7ca99`) technisch freigegeben; Mikes Kennungsentscheidung und
 Abnahme stehen aus. [T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
@@ -126,7 +129,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-66-status-badges-below-above-ok.md`
+- `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-66-status-badges-below-above-ok.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
