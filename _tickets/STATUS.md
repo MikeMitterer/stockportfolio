@@ -299,11 +299,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-64 Runde 1 · Fassung `fd9d8f4`**
-
-Technisch freigegeben. Eigene Test- und Browsernachweise mit Grenzen stehen
-im Ticket. Mikes Prüfung des Wortlauts und die menschliche Abnahme bleiben
-offen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
