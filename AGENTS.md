@@ -282,8 +282,9 @@ nur den StockInfo-Testport; Status und Stop lesen den registrierten Port. Für
 Worktrees außerhalb des gemeinsamen Elternverzeichnisses benötigen einen
 absoluten Pfad für `--stockinfo-root`. Ohne `--stack` startet `--run` nur
 StockInfo und muss direkt mit StockInfos `.venv/bin/python` aufgerufen werden,
-weil es dessen `app` im selben Prozess importiert. Die Hilfe bleibt mit dessen
-derzeitiger Umgebung schlicht. Details stehen in `README.md` (**Setup**).
+weil es dessen `app` im selben Prozess importiert. StockInfos `make setup`
+installiert ProjectTools in dessen `.venv`; die Hilfe nutzt dort deshalb
+ebenfalls das gemeinsame CLI-Theme. Details stehen in `README.md` (**Setup**).
 
 [↑ Übersicht](#übersicht)
 

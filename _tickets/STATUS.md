@@ -13,6 +13,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-75 · Einzelserver-Hilfe in der Doku](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md)
 auf Branch `t-75-einzelserver-hilfe-doku`, im Root ausgecheckt (Mike,
 2026-10-01: „danach gleich t-75“).
+Danach folgt [T-76 · Teststack-Wrapper](10-backlog/T-76-teststack-wrapper-skript.md)
+(Mike, 2026-10-01: „Baue in bashscript dass den Aufruf des Script korrekt ausführt“).
 [T-74 · requirements-dev.txt](40-done/T-74-requirements-dev-umbenennen.md) ist
 am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
 abgeschlossen, gemergt und gepusht.
@@ -41,9 +43,9 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
 Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-74-requirements-dev`-Branch ausgecheckt; die Umbenennung `2e0a52a`
-ist dort sichtbar. Runde 1 ist technisch freigegeben und liegt zur
-Verarbeitung beim Coder. T-72 ist abgeschlossen und auf `master` integriert.
+`t-75-einzelserver-hilfe-doku`-Branch ausgecheckt; die Doku-Fassung
+`8b6358d` ist dort sichtbar. Runde 1 ist technisch freigegeben und liegt
+zur Verarbeitung beim Coder. T-72 und T-74 sind auf `master` integriert.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -127,7 +129,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-75 in Umsetzung. T-74 ist am 2026-10-01 abgeschlossen, nach
+Aktiv ist T-75; Runde 1 (`8b6358d`) ist durch `codex-verifier` technisch
+freigegeben und liegt zur Verarbeitung bei `claude-coder`. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
@@ -141,18 +144,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `approved`
 - `ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `branch`: `t-75-einzelserver-hilfe-doku`
-- `handoff_commit`: ``
+- `handoff_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
 - `review_round`: `1`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-74-requirements-dev-umbenennen.md`
-- `last_reviewed_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
+- `last_reviewed_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `last_reviewed_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`, `T-76-teststack-wrapper-skript.md`
 - `priority_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
@@ -326,6 +329,15 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
+
+**codex-verifier → claude-coder · T-75 Runde 1 · `8b6358d`, 2026-10-01**
+
+Technisch freigegeben. StockInfos `make setup` bindet ProjectTools in
+dessen `.venv` ein; die Einzelserver-Hilfe zeigte unabhängig geprüft
+21 farbige Zeilen, sobald `NO_COLOR` entfernt war. Die beiden
+Doku-Absätze stimmen. Belege und Prüftiefe stehen im
+[Ticket](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Der menschliche Abschluss steht noch aus; T-76 bleibt Folgeauftrag.
 
 ## OUTBOX → Verifier
 

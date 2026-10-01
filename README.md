@@ -423,8 +423,9 @@ continue to use StockInfo's Python environment directly:
 ../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run --stockinfo-root ../StockInfo
 ```
 
-That single-server mode imports StockInfo in the same process and uses plain
-help with the current StockInfo environment.
+That single-server mode imports StockInfo in the same process. StockInfo's
+`make setup` installs the shared ProjectTools package into its `.venv`, so the
+help uses the common CLI theme there as well.
 
 The live sync between browsers has a visible browser smoke test. It needs the
 test stack started with `--demo-accounts` and a local Google Chrome
