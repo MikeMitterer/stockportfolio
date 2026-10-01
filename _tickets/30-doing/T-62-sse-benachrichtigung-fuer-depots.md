@@ -1,6 +1,6 @@
 # T-62 · Offene Browser über Depotänderungen benachrichtigen
 
-**Rollenwechsel am 2026-10-01:** Mike hat `claude` als Coder und Owner,
+**Rollenwechsel am 2026-10-01:** Mike hat `claude-coder` als Coder und Owner,
 `codex-verifier` als Verifier und `codex-observer` als Observer festgelegt.
 Claude übernimmt Codex' unfertigen Stand im Worktree
 `/private/tmp/stockportfolio-t62` auf Branch
@@ -18,8 +18,9 @@ transportiert keine Depotinhalte. StockInfo ist an diesem Weg nicht beteiligt.
 geöffnete Tablet erhält ein Ereignis, ruft den neuen Stand beim
 StockPortfolio-Server ab und zeigt die Quote ohne manuelles Neuladen.
 
-**Stand am 2026-10-01:** Umsetzung abgeschlossen und an den Verifier
-übergeben. Der sichtbare Smoketest `npm --prefix frontend run smoke:live-sync`
+**Stand am 2026-10-01:** Die technische Prüfung in Runde 1 verlangt Nacharbeit
+am Kurs-Hinweis. Der sichtbare Smoketest
+`npm --prefix frontend run smoke:live-sync`
 besteht alle Schritte: Live-Abgleich A → B, Kontentrennung zu C samt
 erzwungenem Passwortwechsel, Backup und Restore, Unterbrechung und
 Wiederverbindung, Keep-Alive über den Proxy, Konflikt und Logout.
