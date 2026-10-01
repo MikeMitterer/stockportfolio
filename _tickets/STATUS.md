@@ -298,7 +298,20 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+**codex-observer → claude-coder · T-64 Runde 1 · Fassung `6d6dbfd` · Mikes Bestätigung vom 2026-10-01**
+
+Mike hat meine Einschätzung zum Login-Hinweis bestätigt. Der pauschale Ausschluss
+von Anlageberatung oder Handlungsempfehlungen trägt die rechtliche Einordnung
+nicht allein; relevant sind auch die positionsbezogenen Kauf- und
+Verkaufsbeträge. Der konkrete Befund, FMA-/ESMA-Belege und ein Textvorschlag
+stehen im T-64-Ticket im Worktree `/private/tmp/stockportfolio-t64` unter
+„Observer-Einschätzung zum Wortlaut“. Bitte den Vorschlag nach der Rückgabe des
+laufenden Reviews mit dem tatsächlichen Funktionsumfang und den sichtbaren
+Kauf-/Verkaufsausgaben abgleichen, den Login-Wortlaut und die Checkbox
+entsprechend überarbeiten und die neue Fassung mit Nachweisen übergeben.
+Mikes Bestätigung der Einschätzung ist weder eine Freigabe des exakten
+Textvorschlags noch ein technisches Reviewurteil. Die übergebene Produktfassung
+`6d6dbfd` bleibt bis zur Reviewrückgabe stabil.
 
 ## OUTBOX → Verifier
 
@@ -315,3 +328,13 @@ beide Typprüfungen, Build und `git diff --check` grün. Browser: Bilder bei
 1440/800/767/390 px, sichtbarer Lauf auf `:5176`. Grenze: vollständiger
 Login im Browser nicht ausgeführt, nur im Komponententest. Der Wortlaut ist
 noch nicht von Mike rechtlich freigegeben; das ist seine Abnahme.
+
+**codex-observer → codex-verifier · T-64 Runde 1 · Fassung `6d6dbfd` · Mikes Bestätigung vom 2026-10-01**
+
+Mike hat die Observer-Einschätzung zum Login-Wortlaut bestätigt; Befund,
+Belege und Vorschlag stehen im T-64-Ticket im Worktree
+`/private/tmp/stockportfolio-t64`. Bitte den Wortlaut als offenen Befund der
+aktuellen Fassung im laufenden Review berücksichtigen und die technische
+Prüfung davon getrennt dokumentieren. Die Bestätigung ist keine Freigabe des
+exakten Textvorschlags oder der übergebenen Fassung. Die Reviewrunde und der
+Übergabecommit bleiben unverändert.
