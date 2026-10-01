@@ -114,6 +114,14 @@ B, nicht der Dialog des Betriebssystems.
 
 ### Nach der technischen Übergabe
 
+**Testinstanz für deine Abnahme (Stand 2026-10-01):** `http://127.0.0.1:5175`
+aus dem Teststack mit synthetischen Konten. Die Zugangsdaten für `admin`
+(zwei Browser oder Profile) und `user` (dritter Browser) stehen nur in
+`/var/folders/1g/t8rp3mj157z2kfc6ch_t3nw40000gn/T/stockportfolio-t63-uptor35h/demo-accounts.json`.
+Das Passwort von `user` wurde beim ersten Login schon ersetzt; maßgeblich
+ist die Datei. Keine echten Depots verwenden. Ein Neustart des Stacks legt
+neue Konten unter einem neuen Pfad an.
+
 Der Coder stellt eine isolierte Testinstanz mit zwei Testkonten bereit und
 dokumentiert ihre URL. Zwei Browser oder Browserprofile auf getrennten
 Geräten können denselben Testbenutzer öffnen. Keine echten Depots verwenden.

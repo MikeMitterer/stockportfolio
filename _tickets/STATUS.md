@@ -297,11 +297,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-62 Runde 2 · Fassung `299852a`**
-
-Technisch freigegeben. Befund 1 ist behoben; eigene Gegenprüfungen und die
-Grenzen des Browsernachweises stehen im Ticket. Menschliche Abnahme und
-Ticketabschluss bleiben offen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
