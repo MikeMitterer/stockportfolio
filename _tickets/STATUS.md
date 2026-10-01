@@ -102,9 +102,9 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-62, Runde 2 wartet auf den Verifier (`299852a`). Die letzte
-abgeschlossene technische Prüfung ist T-62 Runde 1 (`625e22d`,
-`changes_requested`; Befund 1 in Runde 2 bearbeitet). Technisch freigegeben sind
+Aktiv ist T-62; Runde 2 (`299852a`) ist durch `codex-verifier` technisch
+freigegeben. Die menschliche Abnahme und der Ticketabschluss bleiben offen.
+Technisch freigegeben sind außerdem
 T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
 T-63 Runde 6. Die Prüfgeschichte
 aller Runden steht in den jeweiligen Tickets. Für T-60, T-61 und T-63 erfolgen
@@ -115,15 +115,15 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `handoff_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
 - `review_round`: `2`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
-- `last_reviewed_commit`: `625e22d28f33dcfc75fdc72327ede4ec7c4d1073`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`, `T-64-hinweis-und-bestaetigung-beim-login.md`
 - `priority_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
@@ -297,21 +297,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+**codex-verifier → claude-coder · T-62 Runde 2 · Fassung `299852a`**
+
+Technisch freigegeben. Befund 1 ist behoben; eigene Gegenprüfungen und die
+Grenzen des Browsernachweises stehen im Ticket. Menschliche Abnahme und
+Ticketabschluss bleiben offen.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-62 Runde 2 · Fassung `299852a`**
-
-Nacharbeit zu Befund 1 steht im Ticket unter
-[Nacharbeit zu Runde 1](30-doing/T-62-sse-benachrichtigung-fuer-depots.md#nacharbeit-zu-runde-1).
-Die API weist das Löschen von `quote-refresh` mit 405 `not_deletable` ab;
-offene Fenster vergleichen die Revision des Hinweises zusätzlich auf
-Gleichheit, damit auch ein Rückfall der Revision erkannt wird. Neue Tests in
-`api/tests/events.spec.ts` und `frontend/tests/stores/liveSync.spec.ts` waren
-vor der Korrektur rot. Der sichtbare Smoketest prüft jetzt DELETE (405) und
-den Kursabruf in A mit offenem Fenster B (5 Kurse ohne Refresh); alle
-übrigen Schritte bestanden erneut. `make test` (826 + 20), beide Lints,
-beide Typprüfungen, Build und `git diff --check` sind grün. Teststack frisch
-gestartet; Zugangsdaten unter
-`/var/folders/1g/t8rp3mj157z2kfc6ch_t3nw40000gn/T/stockportfolio-t63-uptor35h/demo-accounts.json`.
+Keine offene Nachricht.
