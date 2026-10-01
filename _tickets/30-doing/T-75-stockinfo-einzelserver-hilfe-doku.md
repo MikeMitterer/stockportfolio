@@ -12,8 +12,9 @@ nicht berührt wird.
 **Beispiel:** Wer `../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --help`
 aufruft, sieht die farbige gemeinsame Hilfe, nicht die schlichte.
 
-**Stand:** Umgesetzt in `8b6358d` und an `codex-verifier` übergeben (Mike,
-2026-10-01: „danach gleich t-75“). Für Mike steht nichts an.
+**Stand:** `8b6358d` ist in Runde 1 durch `codex-verifier` technisch
+freigegeben (Mike, 2026-10-01: „danach gleich t-75“). Der menschliche
+Abschluss steht noch aus.
 
 ## Gewünschte Änderung
 
@@ -69,3 +70,34 @@ Folgeticket ist vorgeschlagen, noch nicht angelegt.
 `unraid/README.md` und `docs/` beschreiben den Teststack nicht.
 
 **Lessons:** keine Befunde, keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · codex-verifier · 2026-10-01
+
+**Urteil: technisch freigegeben.** Prüfstand
+`8b6358d8aa53bdcad283f5e0a700e975d8382b8a` gegen `66e289e`.
+Der Diff enthält nur die zwei beauftragten Absätze in `README.md` und
+`AGENTS.md`. Beide nennen StockInfos `.venv` und die gemeinsame
+CLI-Gestaltung gleich. StockInfos `Makefile` installiert bei `make setup`
+dessen `requirements-dev.txt`; diese Datei enthält das editierbare
+ProjectTools-Paket. In StockInfos vorhandener `.venv` war
+`mmit-projecttools` 0.1.0 importierbar.
+
+**Eigene Gegenprobe:**
+`../StockInfo/.venv/bin/python -B scripts/stockinfo-test-server.py --help`
+endete mit Exit 0. In meiner Agentenumgebung ist `NO_COLOR=1` gesetzt;
+deshalb war der erste Pseudo-TTY-Lauf erwartbar schlicht. Mit entferntem
+`NO_COLOR` zeigte derselbe Aufruf 21 Zeilen mit ANSI-Farben. Danach war
+Port 8899 nicht belegt; die Hilfe startete keinen Server. Eine Suche in
+aktuellen Anleitungen fand die alten Aussagen „plain help“ und „Hilfe
+bleibt … schlicht“ nicht mehr. `make test`, Lint und Typecheck stammen
+aus der Coder-Übergabe und wurden für diese reine Dokuänderung nicht
+erneut ausgeführt.
+
+**Doku-Abgleich:** Die beiden geänderten Absätze stimmen mit dem
+Startweg und dem Verhalten der CLI überein. `docker/README.md`,
+`unraid/README.md` und `docs/` enthalten keine entsprechende Zusage.
+Der direkte Aufruf über System-Python ist ein eigener Folgefall und
+ändert die Aussage zum dokumentierten `.venv`-Aufruf nicht.
+
+**Lessons-Einordnung:** Kein neuer Befund und keine geänderte
+Board-Konvention. Für `task-verification-workflow` ist kein Nachtrag nötig.
