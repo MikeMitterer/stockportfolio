@@ -124,7 +124,6 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 Aktiv ist T-72; Runde 3 (`f7de26c`) liegt zur Prüfung bei `codex-verifier`.
 Danach folgt T-74 (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
-Änderungsbedarf an `claude-coder` zurückgegeben.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
