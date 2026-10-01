@@ -8,9 +8,10 @@ Login-Dialog mit Hinweis und Pflicht-Checkbox (T-64) zeigt bisher kein Bild.
 **Beispiel:** Wer StockPortfolio über Docker Hub oder Unraid findet, sieht
 heute Badges mit „Buy“ und keinen Login, obwohl die App beides anders zeigt.
 
-**Stand:** Auf Mikes Auftrag vom 2026-10-01 eingeplant („3 - JA + Wir brauchen
-noch einen Screenshot vom Login-Dialog“). Folgt in der Kette nach T-66, weil
-die Bilder den Stand von T-66 zeigen sollen.
+**Stand:** In Umsetzung durch `claude-coder` auf `t-68-aktuelle-screenshots`
+(Mike, 2026-10-01: „Dann T-68“). Mike hat ergänzt: „Bei T-68 - mach auch einen
+Screenshot vom Login-Dialog und von der Benutzerverwaltung“. Ein Hinweis
+„keine Anlageberatung“ kommt nicht in die Texte (Mike, 2026-10-01).
 
 ## Für dich
 
@@ -25,14 +26,16 @@ die Bilder den Stand von T-66 zeigen sollen.
    Oberfläche**, synthetisches Beispiel-Depot, keine echten Daten.
 2. Neu `docs/images/login.png`: Login-Dialog in englischer Oberfläche mit
    Hinweis und Checkbox, Desktop-Layout.
-3. Verweise: README und `docker/README.md` zeigen das Login-Bild an passender
+3. Neu `docs/images/user-admin.png`: Benutzerverwaltung (Admin) mit
+   synthetischen Testkonten, englische Oberfläche (Mike, 2026-10-01).
+4. Verweise: README und `docker/README.md` zeigen das Login-Bild an passender
    Stelle; die zentrale Unraid-Vorlage
    (`/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`)
    erhält ein zweites `<Screenshot>`.
-4. `drilldown.png`, `rebalancing.png` und `settings-calculation.png` liegen in
+5. `drilldown.png`, `rebalancing.png` und `settings-calculation.png` liegen in
    `docs/images/`, werden aber nirgends verwendet. Entweder aktualisieren und
    einbinden oder entfernen (SP-CX-07); die Wahl im Ticket begründen.
-5. Theme und Bildbreite einheitlich wählen und im Ticket nennen; Aufnahme
+6. Theme und Bildbreite einheitlich wählen und im Ticket nennen; Aufnahme
    über ein wiederholbares Skript unter `frontend/scripts/` statt von Hand,
    damit spätere Releases die Bilder gleich erzeugen.
 

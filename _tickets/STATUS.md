@@ -10,11 +10,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
-Als Nächstes steht [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
-an. Offen ist Mikes Antwort, ob vorher ein Hinweis „keine Anlageberatung“ in
-Login, Tabellenhinweis, About und Methodenseite kommt (Vorschlag des Coders
-vom 2026-10-01), damit der Login-Screenshot den endgültigen Text zeigt.
+**Aktuelle Arbeit:** [T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
+auf Branch `t-68-aktuelle-screenshots`, im Root ausgecheckt (Mike,
+2026-10-01). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
+2026-10-01).
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
@@ -112,7 +111,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
+Aktiv ist T-68 in Umsetzung. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
@@ -121,12 +120,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
+- `phase`: `implementing`
+- `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
+- `branch`: `t-68-aktuelle-screenshots`
 - `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
+- `review_round`: `1`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
