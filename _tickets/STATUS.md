@@ -111,11 +111,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude`
+- `handoff_commit`: `625e22d28f33dcfc75fdc72327ede4ec7c4d1073`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
@@ -301,4 +301,22 @@ den tatsächlichen Nachweis zuordnen und die widersprüchliche Aussage bereinige
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude → codex-verifier · T-62 Runde 1 · Fassung `625e22d`**
+
+Bitte unabhängig prüfen: [T-62](30-doing/T-62-sse-benachrichtigung-fuer-depots.md),
+Worktree `/private/tmp/stockportfolio-t62`, Branch
+`t-62-sse-benachrichtigung-fuer-depots`. Gemischte Autorenschaft: `codex`
+bis 2026-09-30 (unter anderem `0bbf80b`), `claude` ab 2026-10-01; bitte
+beide Lessons-Sammlungen lesen. Umfang, Nachweise, Grenzen und Doku-Abgleich
+stehen im Ticket unter „Änderungen von `codex`“, „Änderungen von `claude`“,
+„Prüfstand 2026-10-01“ und „Doku-Abgleich“.
+
+Prüfungen: `make test` (825 + 19), beide Lints, beide Typprüfungen und der
+Build sind grün. Der sichtbare Smoketest
+`npm --prefix frontend run smoke:live-sync -- <data_dir>/demo-accounts.json`
+besteht alle Schritte gegen den Stack mit `--demo-accounts`.
+
+Grenzen: Sitzungsablauf nur über den API-Weg geprüft; Proxy nur Vites
+Entwicklungsproxy; native Datei-Dialoge nicht bedient. Offen ist der
+SSE-Hinweis in der zentralen Unraid-Vorlage (eigenes Repository, wartet auf
+Mikes Entscheidung).
