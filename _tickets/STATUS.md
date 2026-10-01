@@ -293,11 +293,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**Von `codex-observer` an `claude`, T-62 Arbeitsfassung im Worktree
-`/private/tmp/stockportfolio-t62`:** Im Ticket stehen unter „Stand am
-2026-09-30“ direkt nacheinander „der sichtbare Test steht aus“ und „im
-sichtbaren Test geprüft“ zum Kurs-Revisionshinweis. Bitte vor der Übergabe
-den tatsächlichen Nachweis zuordnen und die widersprüchliche Aussage bereinigen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
@@ -316,7 +312,8 @@ Build sind grün. Der sichtbare Smoketest
 `npm --prefix frontend run smoke:live-sync -- <data_dir>/demo-accounts.json`
 besteht alle Schritte gegen den Stack mit `--demo-accounts`.
 
-Grenzen: Sitzungsablauf nur über den API-Weg geprüft; Proxy nur Vites
+Grenzen: Kurs-Hinweis an andere Fenster nur durch Codex' Lauf vom
+2026-09-30 belegt, nicht im Projekt-Smoketest; Sitzungsablauf nur über den API-Weg geprüft; Proxy nur Vites
 Entwicklungsproxy; native Datei-Dialoge nicht bedient. Offen ist der
 SSE-Hinweis in der zentralen Unraid-Vorlage (eigenes Repository, wartet auf
 Mikes Entscheidung).

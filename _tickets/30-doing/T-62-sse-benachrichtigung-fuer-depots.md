@@ -40,6 +40,13 @@ Testverzeichnis.
   Verbindung.
 - Kurs-Hinweis: Nach **Aktualisieren** in einem Fenster schreibt die App die
   Ressource `quote-refresh`; andere Fenster holen daraufhin selbst Kurse.
+  **Nachweis:** nur Codex' sichtbarer Lauf am 2026-09-30 mit einem Skript
+  außerhalb des Projekts (`/private/tmp/t62-browser-test/refresh.mjs`): B lud
+  nach dem Kursabruf in A fünf Kurse ohne Navigation, Gesamtwert und Gruppen
+  stimmten überein. Der Projekt-Smoketest deckt diesen Weg **nicht** ab, und
+  Claude hat ihn am 2026-10-01 nicht erneut geprüft. Auf Hinweis von
+  `codex-observer` zugeordnet; die frühere widersprüchliche Doppelaussage
+  („steht aus“ / „geprüft“) ist entfernt.
 - Auf Mikes Rückmeldungen: Fortschrittsleiste 4 px ohne Verschieben des
   Inhalts, kein Spinner im Aktualisieren-Knopf, Platzhalter statt Spinner beim
   ersten Laden, Anmeldeprüfung erst nach 350 ms sichtbar, Trennlinien der
