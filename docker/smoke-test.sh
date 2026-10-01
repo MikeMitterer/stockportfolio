@@ -20,6 +20,7 @@ readonly JAR="$(mktemp)"
 # laufen in $(…)-Subshells; eine Liste in Variablen käme dort nie an.
 readonly LABEL="stockportfolio-smoke=$$"
 FAILURES=0
+PASSES=0
 
 cleanup() {
     docker ps -aq --filter "label=${LABEL}" | xargs docker rm -fv >/dev/null 2>&1
@@ -28,7 +29,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-pass() { echo "OK      $*"; }
+pass() { echo "OK      $*"; PASSES=$((PASSES + 1)); }
 failed() { echo "FEHLER  $*"; FAILURES=$((FAILURES + 1)); }
 expect() { if [[ "$2" == "$3" ]]; then pass "$1"; else failed "$1: erwartet '$3', erhalten '$2'"; fi; }
 
@@ -144,6 +145,16 @@ stop "${C}"
 C=$(start --cap-drop CHOWN --mount type=tmpfs,destination=/data,tmpfs-mode=0755)
 expect "ohne CHOWN, nicht schreibbar: klare Meldung" "$(exitLog "${C}" | grep -c '/data is not writable for UID 99 / GID 100')" 1
 
+# Ordner schreibbar, vorhandene Datenbank aber root-eigen mit Modus 600:
+# Ohne chown darf der Start nicht erst beim Öffnen der Datenbank scheitern.
+V=$(newVolume)
+docker run --rm --platform linux/amd64 --entrypoint sh -v "${V}:/data" "${IMAGE}" \
+    -c 'chmod 0777 /data && touch /data/stockportfolio.sqlite && chown 0:0 /data/stockportfolio.sqlite && chmod 0600 /data/stockportfolio.sqlite' 2>/dev/null
+C=$(start --cap-drop CHOWN -v "${V}:/data")
+expect "ohne CHOWN, Datenbank root-eigen: klare Meldung" "$(exitLog "${C}" | grep -c '/data/stockportfolio.sqlite is not writable for UID 99 / GID 100')" 1
+C=$(start --user 1000:1000 -v "${V}:/data")
+expect "--user, Datenbank root-eigen: klare Meldung" "$(exitLog "${C}" | grep -c '/data/stockportfolio.sqlite is not writable for UID 1000 / GID 1000')" 1
+
 C=$(start --cap-drop SETUID --cap-drop SETGID --mount type=tmpfs,destination=/data,tmpfs-mode=0755)
 expect "ohne SETUID/SETGID: klare Meldung" "$(exitLog "${C}" | grep -c 'lacks the SETUID/SETGID capability')" 1
 
@@ -164,5 +175,5 @@ C=$(start -e PGID=0)
 expect "PGID=0: klare Meldung" "$(exitLog "${C}" | grep -c 'must not be 0')" 1
 
 echo
-if (( FAILURES == 0 )); then echo "Alle Prüfungen bestanden."; else echo "${FAILURES} Prüfung(en) fehlgeschlagen."; fi
+echo "${PASSES} von $((PASSES + FAILURES)) Prüfungen bestanden."
 exit $(( FAILURES == 0 ? 0 : 1 ))

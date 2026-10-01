@@ -43,19 +43,27 @@ writeFileSync(process.env.CONFIG_FILE,
 JS
 }
 
-# SQLite legt neben der Datenbank weitere Dateien an; ein bloßes `test -w`
-# auf den Ordner reicht deshalb nicht, es wird wirklich eine Datei angelegt.
-probeWrite() {
-    PROBE_FILE="${DATA_DIR}/.stockportfolio-write-test"
-    touch "${PROBE_FILE}" 2>/dev/null && rm -f "${PROBE_FILE}"
-}
+# Läuft als Zielbenutzer und prüft, ob SQLite im Datenordner arbeiten kann:
+# Es legt neben der Datenbank weitere Dateien an (eine Probedatei), und jede
+# vorhandene Datei muss les- und schreibbar, jeder Ordner betretbar sein.
+# Eine Datenbank, die nach gescheitertem chown noch root gehört, fiele sonst
+# erst beim Öffnen auf (T-72, Review Runde 1). Gibt den ersten gesperrten Pfad
+# aus und endet dann mit 1.
+CHECK_SCRIPT='
+PROBE_FILE="$1/.stockportfolio-write-test"
+if ! touch "$PROBE_FILE" 2>/dev/null; then echo "$1"; exit 1; fi
+rm -f "$PROBE_FILE"
+BLOCKED=$(find "$1" \( -type d \( ! -writable -o ! -executable \) \) -o \( ! -type d \( ! -readable -o ! -writable \) \) -print -quit 2>/dev/null)
+if [ -n "$BLOCKED" ]; then echo "$BLOCKED"; exit 1; fi
+'
 
 if [ "$(id -u)" != "0" ]; then
     # Start mit --user: kein Rechtewechsel möglich und nicht gewollt.
     if ! writeConfig 2>/dev/null; then
         log "warning: could not write ${CONFIG_FILE}; STOCKINFO_API_URL is not applied"
     fi
-    probeWrite || fail "${DATA_DIR} is not writable for UID $(id -u) / GID $(id -g). Make the host directory writable for this user or start without --user."
+    BLOCKED=$(sh -c "${CHECK_SCRIPT}" check "${DATA_DIR}") \
+        || fail "${BLOCKED} is not writable for UID $(id -u) / GID $(id -g). Make it writable for this user or start without --user."
     exec "$@"
 fi
 
@@ -84,7 +92,7 @@ fi
 SWITCH="setpriv --reuid=${PUID} --regid=${PGID} --clear-groups --inh-caps=-all"
 ${SWITCH} true 2>/dev/null || fail "cannot switch to UID ${PUID} / GID ${PGID}; the container lacks the SETUID/SETGID capability. Start it with --user ${PUID}:${PGID} instead."
 
-DATA_DIR="${DATA_DIR}" ${SWITCH} sh -c 'PROBE_FILE="$DATA_DIR/.stockportfolio-write-test"; touch "$PROBE_FILE" 2>/dev/null && rm -f "$PROBE_FILE"' \
-    || fail "${DATA_DIR} is not writable for UID ${PUID} / GID ${PGID}. Make the host directory writable for this user or set PUID/PGID to its owner."
+BLOCKED=$(${SWITCH} sh -c "${CHECK_SCRIPT}" check "${DATA_DIR}") \
+    || fail "${BLOCKED} is not writable for UID ${PUID} / GID ${PGID}. Make it writable for this user or set PUID/PGID to its owner."
 
 exec ${SWITCH} -- "$@"
