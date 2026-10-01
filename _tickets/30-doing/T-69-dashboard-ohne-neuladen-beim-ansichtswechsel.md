@@ -12,8 +12,10 @@ den zwischengespeicherten Werten; eine Aktualisierung läuft nur, wenn die
 eingestellte Schonfrist abgelaufen ist, und dann im Hintergrund.
 
 **Stand:** Runde 1 (`f8bbe20`) kam mit `changes_requested` wegen der
-Schonfrist nach einem Teilabruf zurück; die Korrektur `2bdf21b` liegt als
-Runde 2 zur Prüfung bei `codex-verifier`. Beim
+Schonfrist nach einem Teilabruf zurück. Runde 2 (`2bdf21b`) wurde durch
+`codex-verifier` ebenfalls mit `changes_requested` zurückgegeben: Bei
+blockiertem `localStorage` geht der im selben Tab noch vorhandene Zeitpunkt
+des vollständigen Abrufs beim nächsten Ansichtswechsel verloren. Beim
 Zurückwechseln stellt das Dashboard im sichtbaren Coder-Browsertest keine
 Anfrage mehr an Konto-API oder StockInfo.
 Mike, 2026-10-01: „Kurse können gecached werden.“
@@ -81,7 +83,7 @@ erst Mikes Prüfung. Das Testdepot ist in EUR, ein FX-Abruf kommt darin nicht vo
 
 - [x] Der Ansichtswechsel lädt Depot, Einstellungen und Tageswerte nicht neu, wenn sie geladen sind.
 - [x] Devisenkurse werden zum selben Kursstand wiederverwendet; neue Kurse oder „Erneut versuchen“ holen sie neu.
-- [ ] Netzabrufe nach der Schonfrist oder für einzelne fehlende Kurse blockieren die Anzeige nicht, sobald Kurse im Cache liegen. Die Anzeige ist belegt; der Zeitpunkt des letzten vollständigen Abrufs bleibt nach Teilabruf und erneutem Aufbau noch nicht korrekt erhalten (Review Runde 1).
+- [ ] Netzabrufe nach der Schonfrist oder für einzelne fehlende Kurse blockieren die Anzeige nicht, sobald Kurse im Cache liegen. Die Anzeige ist belegt; bei blockiertem `localStorage` bleibt der Zeitpunkt des letzten vollständigen Abrufs nach Teilabruf und erneutem Aufbau noch nicht korrekt erhalten (Review Runde 2).
 - [x] Live-Abgleich über SSE liefert weiterhin den aktuellen Stand; Depotwechsel lädt die Tageswerte des neuen Depots.
 
 ### Side-Effects
@@ -208,3 +210,39 @@ Schonfrist ist mit der Korrektur zutreffend.
 
 **Lessons:** SI-P-04/08 angewendet (Gegenprobe mit dem Review-Beispiel).
 Keine neue Lesson; Einordnung beim Observer wie im Review vermerkt.
+
+## Unabhängige Prüfung · Runde 2 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** `2bdf21beb8f0e511d149faf86a68d956782524bb` gegen
+`f8bbe2040d771f150a307cfa4ed88d82fcd33396`. Bis zum Review-HEAD
+`f30a8aa` keine spätere Änderung an Produktcode, Tests oder READMEs.
+**Urteil: `changes_requested`.** Keine menschliche Abnahme.
+
+**Behobener Teil:** Mit verfügbarem `localStorage` hält die neue Speicherung
+den Zeitpunkt des vollständigen Kursabrufs über Teilabruf und erneutes
+`hydrate()` fest. Die Gegenprobe verwendet echte Kurs- und Cache-Repositories,
+setzt 10:00 / 10:30 / 10:31 / 11:01 als Zeitpunkte und prüft beide Kurse beim
+Ablauf der ursprünglichen 60-Minuten-Frist. Sie ist für diesen Fall passend.
+
+**Verbleibender blockierender Befund · derselbe Tab ohne `localStorage`:**
+`safeStorage.write()` kann `false` liefern, und `safeStorage.read()` liefert
+dann `null`. Obwohl `lastRefreshAt` im laufenden Store nach dem Vollabruf um
+10:00 noch 10:00 enthält, überschreibt `hydrate()` es um 10:31 mit dem
+jüngsten `fetchedAt` des um 10:30 einzeln nachgeladenen Kurses. Damit wird
+um 11:01 erneut kein vollständiger Abruf ausgelöst. Der Dashboard-Aufbau
+ruft `hydrate()` bei jedem Ansichtswechsel auf; ein Browser-Neustart ist für
+diesen Fehler nicht nötig. Der neue Test installiert in `beforeEach` stets
+einen funktionierenden Ersatzspeicher und deckt diesen Pfad nicht ab. Den
+vorhandenen Zeitpunkt im laufenden Store beim Hydrieren erhalten und die
+gleiche Ablaufprobe mit nicht verfügbarem `localStorage` ergänzen. Für einen
+vollständigen Browser-Neustart ohne verfügbaren Speicher kann der im
+Coder-Übergabetext benannte Rückfall gesondert als Grenze stehen bleiben.
+
+**Eigene Nachweise:** Gezielter Vitest-Lauf mit `quotes.spec.ts` und
+`dashboardRemount.spec.ts`: 45 Tests grün. Der Befund folgt aus dem
+`safeStorage`-Rückgabevertrag, `quotes.hydrate()` und dem Dashboard-Aufruf;
+einen Browserlauf habe ich nicht wiederholt. Coder-Nachweise für `make test`,
+beide Lints und Typprüfungen stehen in der Übergabe. `README.md` und
+`docker/README.md` enthalten weiter keine Aussage zum Ansichtswechsel;
+kein neuer Dokumentationsbedarf. Lessons-Einordnung bleibt beim Observer;
+dies ist derselbe Ablaufbefund aus Runde 1, kein neuer unabhängiger Vorfall.
