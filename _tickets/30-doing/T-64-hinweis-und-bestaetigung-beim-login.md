@@ -72,6 +72,43 @@ T-57 und T-58 bei Mike beziehungsweise MangoLila GmbH.
   Sie ist keine Einwilligung im Sinn der DSGVO und wird nicht gespeichert.
   Ein Nachweis, wer wann bestätigt hat, entsteht damit ausdrücklich nicht.
 
+### Observer-Einschätzung zum Wortlaut · von Mike am 2026-10-01 bestätigt
+
+Der Login-Hinweis erklärt die Daten- und Berechnungsgrenzen verständlich. Die
+pauschale Aussage „keine Anlageberatung, keine Handlungsempfehlung“ entscheidet
+aber nicht über die rechtliche Einordnung. Maßgeblich ist auch, dass die App
+für einzelne Positionen „Kaufen“ und „Verkaufen“ mit Beträgen und Stückzahlen
+anzeigt. Selbst festgelegte Zielanteile und eine rein rechnerische Ausgabe
+sprechen gegen Beratung; die konkrete Darstellung muss dennoch mitgeprüft
+werden. Ein Disclaimer kann eine tatsächlich persönliche Empfehlung nicht
+umbenennen. Belege: [FMA zu automatisierter Beratung](https://www.fma.gv.at/kontaktstelle-fintech-sandbox/fintechnavigator/automated-advice-trading/)
+und [ESMA zur Abgrenzung und zu Disclaimern](https://www.esma.europa.eu/sites/default/files/2023-07/ESMA35-43-3861_Supervisory_briefing_on_understanding_the_definition_of_advice_under_MiFID_II.pdf).
+
+Für den Login-Text ist eine Beschreibung der tatsächlichen Funktion belastbarer:
+Die App berechnet Abweichungen von selbst gesetzten Zielen, prüft keine Eignung
+eines Geschäfts oder Instruments und führt keine Orders aus. Die Formulierung
+„verantwortest du selbst“ sollte keine Freizeichnung für Fehler des Anbieters
+nahelegen. Die Checkbox kann auf „Ich habe den Hinweis gelesen“ begrenzt werden;
+ohne Speicherung belegt sie keine spätere Bestätigung. Mike hat diese
+Einschätzung im Observer-Chat bestätigt. Die konkrete überarbeitete Fassung
+und die UI-Ausgaben sind im bestehenden T-64-Umfang vor Abschluss abzugleichen;
+damit ist noch keine technische Freigabe der neuen Fassung dokumentiert.
+
+Vorschlag für den überarbeiteten Hinweis (Mikes Bestätigung gilt der
+Einschätzung, nicht bereits dieser exakten Textfassung):
+
+> StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen,
+> deinen selbst festgelegten Zielen und externen Kursdaten. Angezeigte Kauf-
+> und Verkaufsbeträge beschreiben, welche Änderungen rechnerisch zum Erreichen
+> dieser Ziele nötig wären. Die App prüft nicht, ob ein Geschäft oder ein
+> Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Kurse
+> und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. Prüfe
+> Daten, Kosten und Risiken, bevor du handelst.
+
+Für die Checkbox ist „Ich habe den Hinweis gelesen“ vorgeschlagen. Dies ist
+ein Einzelfall in T-64; daraus entsteht ohne zweites unabhängiges Beispiel oder
+ausdrücklichen Lessons-Auftrag keine neue Lesson.
+
 ## Umsetzung und technische Nachweise
 
 | Repo | Umfang | GH-Issue |
