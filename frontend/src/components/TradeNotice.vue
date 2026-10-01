@@ -12,7 +12,7 @@ const { t } = useI18n()
 .trade-notice {
   margin: var(--space-1) 0 0;
   color: token(--text-muted);
-  font-size: 0.6875rem;
+  font-size: var(--font-xs);
   line-height: 1.45;
 }
 </style>
