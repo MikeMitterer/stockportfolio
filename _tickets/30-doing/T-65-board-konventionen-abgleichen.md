@@ -132,3 +132,69 @@ Inventar: `AGENTS.md`, `CLAUDE.md`, `_tickets/README.md`, `_tickets/STATUS.md`,
 |---|---|---|---|
 | Kennungen in STATUS weichen von den Shortcut-Kennungen ab; T-62 stand dadurch über zwei Stunden still | Einzelfall | Ein Vorfall; Ursache ist eine Namensentscheidung, kein wiederholtes Arbeitsmuster. Bei Wiederholung als Lesson aufnehmen. | In der Aktivierung dokumentiert; Entscheidung (a/b/c) bei Mike |
 | Toter Link nach Ticketumzug (T-53) | Vorhandene Lesson angewendet | [SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md), Stand 2026-09-28: Entscheidungen in allen aktuellen Aussagen nachziehen | Link korrigiert; keine Ergänzung der Lesson nötig |
+
+## Technische Prüfung Runde 1
+
+`codex-verifier`, 2026-10-01, Übergabefassung
+`6c94c12419ce6e95202a2f17bb9e257fa3d6912d`. Danach wurden nur T-66
+und STATUS ergänzt; der geprüfte Konventionsstand blieb stabil. **Nacharbeit
+erforderlich.** Keine menschliche Abnahme und kein Ticketabschluss.
+
+**Eigener Abgleich:** Installierte Paketfassung
+`df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+mit `PACKAGE.md`, `PROJECT-RULES.md`, `references/board-conventions.md`,
+`references/board-setup.md` und der Skill-Übernahmeanleitung gelesen. Diff der
+Übergabe gegen Paket und lokale Entscheidungen verglichen. Die neue
+`_tickets/.gitignore` greift laut `git check-ignore -v`; ACTIVITY ist nicht
+getrackt. Acht Rollen-Symlinks und den tatsächlich installierten
+`agent-session.sh` geprüft. Der korrigierte T-53-Link zeigt auf eine
+vorhandene Datei. `git diff --check 79077cd..6c94c12` war ohne Befund.
+`make test` mit 829 Frontend- und 20 API-Tests ist ein Coder-Beleg, kein
+von mir wiederholter Lauf; es gab keine Produktänderung.
+
+### Befund 1 · Übernahmestand trotz duplizierter gemeinsamer Verträge
+
+`references/board-conventions.md` verlangt beim Umstieg, lokale allgemeine
+Regeln durch kurze Paketeinstiege zu ersetzen. `references/board-setup.md`
+nennt hierfür ausdrücklich `AGENT-WORKFLOW.md`, `AGENT-ACTIVATION.md`,
+`CODEX-IN-CONTEXT-SCHEDULER.md` und `LESSONS-ACCESS.md`; bestehende Anker und
+lokale Ausnahmen sind zu erhalten. Diese vier lokalen Dateien sind weiter
+ausführliche eigenständige Verträge (259, 154, 107 und 134 Zeilen). Die
+Übergabe ergänzt nur einzelne Abschnitte, trägt aber bereits den vollständigen
+Stand `2026-09-28-activity-local` ein. So bleibt eine zweite gepflegte Kopie
+und eine spätere Paketänderung wirkt nicht allein über den Einstieg.
+
+**Erwartete Korrektur:** Die vier Dateien als kurze lokale Paketeinstiege
+gestalten, mit überprüfbaren Verweisen auf die gleichnamigen gemeinsamen
+Verträge. Projektentscheidungen, lokale Filecheck-Regel und bestehende
+Abschnittsanker erhalten. Falls ein Teil in diesem Auftrag nicht übernommen
+werden kann, den vollständigen Stand zurücknehmen und die offene Übernahme
+mit Ziel und zuständiger Instanz sichtbar lassen. Anker-/Linkprüfung und
+inhaltlichen Vergleich erneut belegen. Keine Paketvorlage über die lokalen
+Entscheidungen kopieren.
+
+### Befund 2 · Startbeispiele verwenden inaktive Kennungen
+
+In der lokalen `AGENT-ACTIVATION.md` nennen die ausführbaren Codex- und
+Claude-Beispiele weiter `Deine Instanzkennung ist codex` beziehungsweise
+`claude`. STATUS ordnet `codex-verifier` und `claude-coder` zu. Der installierte
+Launcher setzt für Coder/Verifier tatsächlich die bloßen Kennungen; sein
+Prompt verlangt bei fehlender exakter Zuordnung den Abbruch ohne Scheduler.
+Die neue Notiz unter „Rollen-Shortcuts“ benennt die Abweichung, aber die
+Beispiele oberhalb starten weiterhin mit falscher Identität. Die offene Wahl
+(a/b/c) durch Mike ist im Ticket korrekt als menschliche Entscheidung
+ausgewiesen; bis dahin muss der dokumentierte Übergangsweg (c) ausführbar
+sein.
+
+**Erwartete Korrektur:** Aktuelle Beispiele und Startanweisung auf die
+STATUS-Kennungen abstimmen und den zusätzlich nötigen Schritt nach einem
+Shortcut-Start konkret nennen. Den Startweg gegen den installierten Prompt
+und STATUS prüfen. Mikes spätere Entscheidung über die dauerhaften Kennungen
+nicht vorwegnehmen.
+
+### Lessons-Einordnung zur Rückgabe
+
+| Befund oder Gruppe | Einordnung | Lesson-ID/Fassung oder konkreter Einzelfallgrund | Tatsächliche Übernahme / offener Rest und Zuständigkeit |
+|---|---|---|---|
+| Befund 1 · Vollständige Übernahme zu früh behauptet | Einzelfall | Ein erster belegter Abgleich dieses Boards; keine wiederholte Fehlergruppe | Nacharbeit in T-65 bei `claude-coder`; keine neue Lesson |
+| Befund 2 · Aktuelle Startbeispiele und STATUS widersprechen sich | Vorhandene Lesson angewendet | [SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md), Stand 2026-09-30: aktuelle Anweisungen gegen wirksamen Zustand halten | Nacharbeit in T-65 bei `claude-coder`; Mikes Kennungsentscheidung bleibt offen |
