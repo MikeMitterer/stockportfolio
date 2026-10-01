@@ -10,11 +10,13 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-72 · Container als 99:100](30-doing/T-72-unraid-uid-gid.md)
-auf Branch `t-72-unraid-uid-gid`, im Root ausgecheckt (Mike, 2026-10-01:
-„B - ganz klar und fange die Schwachstellen ab“). Danach folgt
-[T-74 · requirements-dev.txt](10-backlog/T-74-requirements-dev-umbenennen.md)
-(Mike, 2026-10-01: „Erledige es gleich nach t-72“).
+**Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
+auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
+„Erledige es gleich nach t-72“).
+[T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am
+2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-72 ist aus meiner Sicht erledigt“). Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
+`9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
+nächsten Image-Release. StockInfo T-86 liegt dort im Backlog.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-68 und T-71 sind erledigt, push es“
 [T-68 · Aktuelle Screenshots mit Login](40-done/T-68-aktuelle-screenshots-mit-login.md)
@@ -122,9 +124,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-72; Runde 3 (`f7de26c`) ist durch `codex-verifier` technisch
-freigegeben und liegt zur Verarbeitung bei `claude-coder`.
-Danach folgt T-74 (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
+Aktiv ist T-74; Runde 1 (`2e0a52a`) liegt zur Prüfung bei `codex-verifier`. T-72 ist am 2026-10-01 nach Mikes
+Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
@@ -136,19 +137,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-72-unraid-uid-gid.md`
-- `branch`: `t-72-unraid-uid-gid`
-- `handoff_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
-- `review_round`: `3`
-- `owner`: `claude-coder`
+- `phase`: `ready_for_review`
+- `ticket`: `T-74-requirements-dev-umbenennen.md`
+- `branch`: `t-74-requirements-dev`
+- `handoff_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
 - `last_reviewed_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-72-unraid-uid-gid.md`, `T-74-requirements-dev-umbenennen.md`
-- `priority_ticket`: `T-72-unraid-uid-gid.md`
+- `priority_chain`: `T-74-requirements-dev-umbenennen.md`
+- `priority_ticket`: `T-74-requirements-dev-umbenennen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -322,14 +323,6 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-72 Runde 3 · `f7de26c`, 2026-10-01**
-
-Technisch freigegeben. Der unabhängige Rauchtest bestand 27 von 27
-Prüfungen; die Rechteprüfung aus Runde 1/2 ist am geprüften Image korrigiert.
-Prüftiefe, UI-Grenze und ein nicht blockierender Randfall zu übergroßen
-numerischen IDs stehen im [Ticket](30-doing/T-72-unraid-uid-gid.md#unabhängige-prüfung--runde-3--codex-verifier--2026-10-01).
-Menschlicher Abschluss und Integration stehen noch aus.
-
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -340,3 +333,11 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-74 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `2e0a52a6902a4542f86e40d17e2d3464c926ef9c` gegen `b6a01b2` prüfen (Branch `t-74-requirements-dev`, im Root
+ausgecheckt). Umbenennung plus drei Verweise; `make setup` mit vorhandener und
+frischer `.venv` belegt. Beim Prüfen von `make setup` beachten: Es führt
+`npm ci` aus und erneuert `node_modules`. Belege im
+[Ticket](30-doing/T-74-requirements-dev-umbenennen.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
