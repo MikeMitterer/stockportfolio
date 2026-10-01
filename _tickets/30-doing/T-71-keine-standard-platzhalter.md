@@ -11,9 +11,10 @@ den Screenshots aus T-68 unfertig. Mike, 2026-10-01: „Erstell ein Ticket und
 leeres Feld unter der Beschriftung. Felder mit eigenem Platzhalter bleiben
 unverändert.
 
-**Stand:** Umgesetzt in `509881e` auf `t-68-aktuelle-screenshots` und mit
-T-68 Runde 2 an `codex-verifier` übergeben. Die neuen T-68-Screenshots zeigen
-die Felder ohne Platzhalter.
+**Stand:** `509881e` ist durch `codex-verifier` technisch freigegeben, im
+gemeinsamen T-68-Übergabestand `efc290f` auf `t-68-aktuelle-screenshots`.
+Mikes Abnahme und der Ticketabschluss stehen aus. Die neuen T-68-Screenshots
+zeigen die Felder ohne Standard-Platzhalter.
 
 Für dich steht jetzt nichts an.
 
@@ -69,3 +70,29 @@ Sichtprüfung über die neu aufgenommenen Bilder `login.png` und `user-admin.png
 
 **Lessons:** SI-P-02/12 angewendet (Inventar aller 28 Felder vor der
 zentralen Lösung). Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** T-71-Commit `509881e1dea0022762d61999fa95480c2f076367`
+gegen `2a5e0bb`, gemeinsam übergeben mit T-68 auf `efc290f`; bis zum
+Review-HEAD `84580e9` keine weitere Produktänderung nach der Übergabe.
+**Urteil: technisch `approved` für T-71.** Die maschinenlesbare aktive
+Übergabe in STATUS bleibt T-68; Mike hat T-71 ausdrücklich beauftragt und
+der Coder hat es im selben Branch und derselben OUTBOX benannt. Kein
+menschlicher Abschluss wird daraus abgeleitet.
+
+**Gegenprobe:** `App.vue` und `AuthRoot.vue` verwenden beide
+`naiveLocales`. Die installierte Naive-UI-Fassung übernimmt per
+`createLocale` die unveränderten Grundtexte und liest die leeren
+Platzhalter für `Input`, `InputNumber` und `Select` aus dem angepassten
+Sprachpaket; ein ausdrücklich gesetzter Platzhalter hat Vorrang.
+`DatePicker` bleibt im Grundpaket. Login- und Benutzerverwaltungsbild zeigen
+leere Felder unter ihren Beschriftungen statt „Please Input“.
+
+**Eigene Nachweise:** `naiveLocale.spec.ts` mit vier Tests grün; den
+`Select`-Pfad zusätzlich im installierten Naive-UI-Code bis zur
+Locale-Auswahl verfolgt. Der Coder dokumentiert `make test` mit 852
+Frontend- und 20 API-Tests sowie Lint und Typecheck ohne Befund. Keine
+eigene vollständige Teststack-Wiederholung. Doku-Abgleich: Beide READMEs
+enthalten keine Verhaltenszusage zu Standard-Platzhaltern; die aktualisierten
+Bilder sind in T-68 geprüft. Keine neue Lesson durch den Verifier.

@@ -8,8 +8,8 @@ Login-Dialog mit Hinweis und Pflicht-Checkbox (T-64) zeigt bisher kein Bild.
 **Beispiel:** Wer StockPortfolio über Docker Hub oder Unraid findet, sieht
 heute Badges mit „Buy“ und keinen Login, obwohl die App beides anders zeigt.
 
-**Stand:** Runde 1 (`5821721`) von `codex-verifier` geprüft;
-`changes_requested` wegen zweier unzutreffender README-Beschreibungen. Branch
+**Stand:** Runde 2 (`efc290f`) durch `codex-verifier` technisch freigegeben;
+Mikes Bildurteil und der Ticketabschluss stehen aus. Branch
 `t-68-aktuelle-screenshots`
 (Mike, 2026-10-01: „Dann T-68“). Mike hat ergänzt: „Bei T-68 - mach auch einen
 Screenshot vom Login-Dialog und von der Benutzerverwaltung“. Ein Hinweis
@@ -65,7 +65,9 @@ bei den gemeinsamen Dashboard-, Login- und Kontohinweisen überein.
 `unraid/README.md` nennt keine Bilder und bleibt zutreffend. Die
 StockPortfolio-Unraid-Vorlage verweist auf vier vorhandene Bildpfade; die
 Raw-URLs werden erst nach Veröffentlichung der Bilder auf `master` wirksam.
-Offen sind die beiden README-Beschreibungen aus Review Runde 1.
+Die beiden README-Beschreibungen aus Review Runde 1 sind in `efc290f`
+berichtigt: Der Detailausschnitt ist ausgenommen, und das Rebalancing-Bild
+zeigt einen gedeckten Plan mit zwei übernommenen Vorschlägen.
 
 ## Coder-Übergabe · Runde 1 · claude-coder · 2026-10-01
 
@@ -173,3 +175,38 @@ Typecheck ohne Befund; Docker-Hub-Vorschau 11.439 Bytes.
 
 **Doku-Abgleich:** nur `README.md` geändert (Skriptabsatz, Bildunterschrift
 Rebalancing); `docker/README.md` enthält beide Aussagen nicht und bleibt.
+
+## Unabhängige Prüfung · Runde 2 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** `efc290f4e25c0b5852261f6bd613012a6b55c748` gegen
+`2a5e0bb`; darin auch T-71 aus `509881e` (separates Review im T-71-Ticket).
+Unraid-Templates bleiben für StockPortfolio auf `9670339`, wie in Runde 1
+geprüft. Bis zum Review-HEAD `84580e9` keine spätere Änderung an Bildern,
+Skript, READMEs oder Produktcode. **Urteil: technisch `approved` für T-68.**
+Mikes Bildurteil und der Ticketabschluss bleiben offen.
+
+**Gegenprobe zu Runde 1:** Das Projekt-README beschreibt 1440 × 1000 Pixel
+für ganze Seiten und nennt `drilldown.png` ausdrücklich als Ausschnitt; die
+Datei ist weiterhin 1334 × 324 Pixel groß. Das neue Rebalancing-Bild zeigt
+die zwei im README genannten Delta-Vorschläge mit −114 und +373 Einheiten,
+Werten und einem verbleibenden Betrag von 10.883 Euro. Es ist damit eine
+tatsächliche Simulation. Dashboard, Login und Benutzerverwaltung wurden
+ebenfalls neu aufgenommen; die Bilder zeigen weiterhin das englische
+Beispiel-Depot beziehungsweise synthetische Testkonten. Die Felder ohne
+Standard-Platzhalter gehören zu T-71.
+
+**Eigene Nachweise:** Alle geänderten Bilder visuell geprüft, die Bildmaße
+erneut abgeglichen, `node --check` für das Aufnahmeskript und
+`xmllint --noout` für die StockPortfolio-Vorlage erfolgreich;
+`git diff --check` ohne Befund. `docker/README.md` und die Vorlagen-XML sind
+seit Runde 1 unverändert; die damals selbst erzeugte Hub-Vorschau hatte
+11.439 UTF-8-Bytes und korrekte Bildpfade. Den Coder-Browserlauf habe ich
+nicht wiederholt. Raw-URLs auf `master` und ein Hub-/Unraid-Upload sind noch
+kein Nachweis einer veröffentlichten neuen Bildfassung.
+
+**Doku-Abgleich:** Die gemeinsame Dashboard-Unterschrift in `README.md` und
+`docker/README.md` stimmt weiter überein. Login- und Kontohinweise sind
+inhaltlich gleich; die neuen Angaben zu Bildmaßen und Rebalancing stehen nur
+im Projekt-README, wo das Skript und die Funktion erklärt werden.
+`unraid/README.md` benötigt keine Änderung. Die Lessons-Einordnung der
+beiden Textbefunde aus Runde 1 bleibt beim Observer; kein neuer Befund.

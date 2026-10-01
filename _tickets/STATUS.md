@@ -14,9 +14,9 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 auf Branch `t-68-aktuelle-screenshots`, im Root ausgecheckt (Mike,
 2026-10-01). Auf demselben Branch liegt [T-71 · Keine Standard-Platzhalter](30-doing/T-71-keine-standard-platzhalter.md)
 (Mike, 2026-10-01: „Erstell ein Ticket und ändere es gleich“). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
-2026-10-01). Runde 1 (`5821721`) ist mit `changes_requested` an den Coder
-zurückgegeben: Zwei Beschreibungen im Projekt-README passen nicht zu den
-aufgenommenen Bildern.
+2026-10-01). T-68 Runde 2 (`efc290f`) und T-71 Runde 1 (`509881e`) sind
+technisch freigegeben; die lokale Integration durch den Coder und Mikes
+Bildurteil beziehungsweise Abnahme stehen aus.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
@@ -31,8 +31,9 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
 Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-68-aktuelle-screenshots`-Branch ausgecheckt; die Bildfassung `5821721`
-und die Review-Rückgabe sind dort sichtbar.
+`t-68-aktuelle-screenshots`-Branch ausgecheckt; die Bild- und README-Fassung
+`efc290f`, die Platzhalter-Korrektur `509881e` und die Reviews sind dort
+sichtbar.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -116,8 +117,9 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-68; Runde 2 (`efc290f`, mit T-71 `509881e`) liegt zur Prüfung bei
-`codex-verifier`.
+Aktiv ist T-68; Runde 2 (`efc290f`) und das gemeinsam übergebene T-71
+(`509881e`, Runde 1) sind durch `codex-verifier` technisch freigegeben.
+`claude-coder` übernimmt die lokale Integration.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
@@ -127,16 +129,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `branch`: `t-68-aktuelle-screenshots`
 - `handoff_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
 - `review_round`: `2`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
-- `last_reviewed_commit`: `5821721ecc491561fdbfdd29489da41862e9c158`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
@@ -313,6 +315,15 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-68 Runde 2 und T-71 Runde 1 · `approved`, 2026-10-01:**
+T-68 `efc290f` und das enthaltene T-71 `509881e` sind technisch freigegeben.
+Die beiden README-Befunde sind behoben; die Bild-, Skript- und
+Sprachpaket-Gegenproben stehen in [T-68](30-doing/T-68-aktuelle-screenshots-mit-login.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01)
+und [T-71](30-doing/T-71-keine-standard-platzhalter.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Bitte nach der Root-Regel lokal nach `master` integrieren und den Root auf
+`master` zurückstellen. Mikes Bildurteil, die Abnahme und die Veröffentlichung
+der Hub-/Unraid-Bilder sind nicht durch diese Freigabe ersetzt.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -323,12 +334,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-68 Runde 2 und T-71 Runde 1 · `ready_for_review`, 2026-10-01**
-
-Bitte `efc290f4e25c0b5852261f6bd613012a6b55c748` gegen `2a5e0bb` prüfen (Branch `t-68-aktuelle-screenshots`,
-im Root ausgecheckt). Darin: T-71 `509881e` (Naive-Sprachpaket ohne
-Standard-Platzhalter, eigenes Ticket) und die T-68-Nacharbeit `efc290f`
-(README-Texte, echte Rebalancing-Simulation, alle Bilder neu). Belege in
-[T-68](30-doing/T-68-aktuelle-screenshots-mit-login.md#coder-übergabe--runde-2--claude-coder--2026-10-01)
-und [T-71](30-doing/T-71-keine-standard-platzhalter.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
