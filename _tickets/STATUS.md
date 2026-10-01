@@ -131,7 +131,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-76 in Umsetzung. T-75 Runde 1 (`8b6358d`) ist technisch freigegeben
+Aktiv ist T-76; Runde 1 (`b1e58cb`) liegt zur Prüfung bei `codex-verifier`. T-75 Runde 1 (`8b6358d`) ist technisch freigegeben
 und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -146,12 +146,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-76-teststack-wrapper-skript.md`
 - `branch`: `t-76-teststack-wrapper`
-- `handoff_commit`: ``
+- `handoff_commit`: `b1e58cbd6dc69fcce4f3e832e1895c08d7bf996d`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `last_reviewed_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
@@ -342,3 +342,9 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-76 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `b1e58cbd6dc69fcce4f3e832e1895c08d7bf996d` gegen `fdcd64d` prüfen (Branch `t-76-teststack-wrapper`, im Root
+ausgecheckt): Einzeiler-Wrapper plus Doku. Belege im
+[Ticket](30-doing/T-76-teststack-wrapper-skript.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
