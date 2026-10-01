@@ -11,6 +11,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+[T-73 · Interne Rechtevereinbarung](30-doing/T-73-interne-rechtevereinbarung.md)
+liegt in Doing als Mikes eigene Aufgabe (2026-10-01: „das ist für mich“); kein
+Agentenauftrag.
 [T-76 · Teststack-Wrapper](90-rejected/T-76-teststack-wrapper-skript.md) ist
 verworfen und zurückgenommen (Mike, 2026-10-01: „Du kannst stockinfo-test-server.sh doch wieder löschen“).
 [T-75 · Einzelserver-Hilfe in der Doku](40-done/T-75-stockinfo-einzelserver-hilfe-doku.md)
