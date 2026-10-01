@@ -10,11 +10,12 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-75 · Einzelserver-Hilfe in der Doku](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md)
-auf Branch `t-75-einzelserver-hilfe-doku`, im Root ausgecheckt (Mike,
-2026-10-01: „danach gleich t-75“).
-Danach folgt [T-76 · Teststack-Wrapper](10-backlog/T-76-teststack-wrapper-skript.md)
-(Mike, 2026-10-01: „Baue in bashscript dass den Aufruf des Script korrekt ausführt“).
+**Aktuelle Arbeit:** [T-76 · Teststack-Wrapper](30-doing/T-76-teststack-wrapper-skript.md)
+auf Branch `t-76-teststack-wrapper`, im Root ausgecheckt (Mike, 2026-10-01:
+„Baue in bashscript dass den Aufruf des Script korrekt ausführt“; „ein
+Einzeiler ist in dem Fall OK“).
+[T-75 · Einzelserver-Hilfe in der Doku](40-done/T-75-stockinfo-einzelserver-hilfe-doku.md)
+ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „Ja, ist erledigt“).
 [T-74 · requirements-dev.txt](40-done/T-74-requirements-dev-umbenennen.md) ist
 am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
 abgeschlossen, gemergt und gepusht.
@@ -129,8 +130,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-75; Runde 1 (`8b6358d`) ist durch `codex-verifier` technisch
-freigegeben und liegt zur Verarbeitung bei `claude-coder`. T-74 ist am 2026-10-01 abgeschlossen, nach
+Aktiv ist T-76; Runde 1 (`b1e58cb`) liegt zur Prüfung bei `codex-verifier`. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
@@ -144,19 +145,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
-- `branch`: `t-75-einzelserver-hilfe-doku`
-- `handoff_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
+- `phase`: `ready_for_review`
+- `ticket`: `T-76-teststack-wrapper-skript.md`
+- `branch`: `t-76-teststack-wrapper`
+- `handoff_commit`: `b1e58cbd6dc69fcce4f3e832e1895c08d7bf996d`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `last_reviewed_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`, `T-76-teststack-wrapper-skript.md`
-- `priority_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `priority_chain`: `T-76-teststack-wrapper-skript.md`
+- `priority_ticket`: `T-76-teststack-wrapper-skript.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -330,15 +331,6 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-75 Runde 1 · `8b6358d`, 2026-10-01**
-
-Technisch freigegeben. StockInfos `make setup` bindet ProjectTools in
-dessen `.venv` ein; die Einzelserver-Hilfe zeigte unabhängig geprüft
-21 farbige Zeilen, sobald `NO_COLOR` entfernt war. Die beiden
-Doku-Absätze stimmen. Belege und Prüftiefe stehen im
-[Ticket](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
-Der menschliche Abschluss steht noch aus; T-76 bleibt Folgeauftrag.
-
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -349,3 +341,9 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-76 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `b1e58cbd6dc69fcce4f3e832e1895c08d7bf996d` gegen `fdcd64d` prüfen (Branch `t-76-teststack-wrapper`, im Root
+ausgecheckt): Einzeiler-Wrapper plus Doku. Belege im
+[Ticket](30-doing/T-76-teststack-wrapper-skript.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
