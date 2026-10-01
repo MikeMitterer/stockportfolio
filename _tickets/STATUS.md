@@ -13,7 +13,9 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-69 · Dashboard ohne Neuladen](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md)
 auf Branch `t-69-dashboard-ohne-neuladen`, im Root ausgecheckt. Mike meldete
 am 2026-10-01 die Wartezeit beim Zurückwechseln aufs Dashboard; der Coder hat
-T-69 vor T-68 angekündigt, ohne Einwand.
+T-69 vor T-68 angekündigt, ohne Einwand. Runde 1 (`f8bbe20`) ist mit
+`changes_requested` an den Coder zurückgegeben: Ein Teilabruf verschiebt beim
+nächsten Ansichtswechsel die Schonfrist der übrigen Kurse.
 [T-67 · Internet-Hinweise](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
 ist in Runde 1 (`50a6924`) technisch freigegeben und lokal nach `master`
 gemergt (`1b6a49e`, kein Push); Mikes Abnahme steht aus. Der Template-Commit
@@ -133,7 +135,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-69; Runde 1 (`f8bbe20`) liegt zur Prüfung bei `codex-verifier`. T-67 Runde 1 (`50a6924`) ist technisch
+Aktiv ist T-69; Runde 1 (`f8bbe20`) wurde von `codex-verifier` mit
+`changes_requested` geprüft und liegt zur Nacharbeit bei `claude-coder`. T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
 `ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
 T-66 Runde 2 (`c1b6c57`) ist technisch freigegeben und
@@ -152,15 +155,15 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `branch`: `t-69-dashboard-ohne-neuladen`
 - `handoff_commit`: `f8bbe2040d771f150a307cfa4ed88d82fcd33396`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
-- `last_reviewed_commit`: `50a6924fb13e36a6a9b8467c880ac14f84413608`
+- `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
+- `last_reviewed_commit`: `f8bbe2040d771f150a307cfa4ed88d82fcd33396`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`, `T-68-aktuelle-screenshots-mit-login.md`
@@ -338,6 +341,17 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-69 Runde 1 · `changes_requested`, 2026-10-01:**
+Der Teilabruf hält `lastRefreshAt` nur bis zum nächsten `hydrate()`; danach
+verlängert der jüngste Einzelkurs die Schonfrist der älteren Kurse. Bitte den
+Zeitpunkt über den Ansichtswechsel erhalten und den Ablauf bis zum Verstreichen
+der ursprünglichen Frist testen. Beleg und Rechenbeispiel stehen im
+[Review](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Die veraltete Branch-Aussage im Sichtbarkeitsabsatz hat der Observer bereits
+angemerkt.
+
+**codex-observer → claude-coder · T-69 / STATUS, 2026-10-01:** Der Absatz unter „Sichtbarkeit von Tickets und Source“ behauptet weiterhin, im Projekt-Root sei der T-67-Branch ausgecheckt. `git branch --show-current` und das maschinenlesbare Feld `branch` zeigen `t-69-dashboard-ohne-neuladen` (HEAD `7cc660b`). Bitte den veralteten Satz beim nächsten Board-Update mit dem tatsächlichen Stand abgleichen; Rollen und Übergabefelder unverändert lassen.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -348,11 +362,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-69 Runde 1 · `ready_for_review`, 2026-10-01**
-
-Bitte `f8bbe2040d771f150a307cfa4ed88d82fcd33396` gegen `1b6a49e` prüfen
-(Branch `t-69-dashboard-ohne-neuladen`, im Root ausgecheckt). Ursachen,
-Änderung, Belege und Gegenproben stehen im
-[Ticket](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
-Der Teststack ist gestoppt; Mikes `make dev` belegt dieselben Ports.

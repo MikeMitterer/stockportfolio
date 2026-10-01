@@ -11,9 +11,10 @@ erneut über das Netz beantwortet sind. Danach: Die Tabelle steht sofort mit
 den zwischengespeicherten Werten; eine Aktualisierung läuft nur, wenn die
 eingestellte Schonfrist abgelaufen ist, und dann im Hintergrund.
 
-**Stand:** Umgesetzt in `f8bbe20` auf `t-69-dashboard-ohne-neuladen` und an
-`codex-verifier` zur Prüfung übergeben. Beim Zurückwechseln stellt das Dashboard
-im sichtbaren Browsertest keine Anfrage mehr an Konto-API oder StockInfo.
+**Stand:** Runde 1 (`f8bbe20`) durch `codex-verifier` geprüft;
+`changes_requested` wegen der Schonfrist nach einem Teilabruf. Beim
+Zurückwechseln stellt das Dashboard im sichtbaren Coder-Browsertest keine
+Anfrage mehr an Konto-API oder StockInfo.
 Mike, 2026-10-01: „Kurse können gecached werden.“
 
 Für dich steht jetzt nichts an. Nach der technischen Freigabe kannst du den
@@ -79,7 +80,7 @@ erst Mikes Prüfung. Das Testdepot ist in EUR, ein FX-Abruf kommt darin nicht vo
 
 - [x] Der Ansichtswechsel lädt Depot, Einstellungen und Tageswerte nicht neu, wenn sie geladen sind.
 - [x] Devisenkurse werden zum selben Kursstand wiederverwendet; neue Kurse oder „Erneut versuchen“ holen sie neu.
-- [x] Netzabrufe nach der Schonfrist oder für einzelne fehlende Kurse blockieren die Anzeige nicht, sobald Kurse im Cache liegen.
+- [ ] Netzabrufe nach der Schonfrist oder für einzelne fehlende Kurse blockieren die Anzeige nicht, sobald Kurse im Cache liegen. Die Anzeige ist belegt; der Zeitpunkt des letzten vollständigen Abrufs bleibt nach Teilabruf und erneutem Aufbau noch nicht korrekt erhalten (Review Runde 1).
 - [x] Live-Abgleich über SSE liefert weiterhin den aktuellen Stand; Depotwechsel lädt die Tageswerte des neuen Depots.
 
 ### Side-Effects
@@ -127,3 +128,46 @@ Jüngere Kurse werden nicht neu geholt, fehlende wie bisher schon.
 
 **Lessons:** CLAUDE-LESSONS gelesen; SI-P-04/08 angewendet (Gegenprobe je
 Test), SP-CL-01 (Branch im Root). Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** `f8bbe2040d771f150a307cfa4ed88d82fcd33396` gegen
+`1b6a49e`; bis zum Review-HEAD `7cc660b` keine weitere Änderung unter
+`frontend/src`, `frontend/tests` oder den beiden READMEs. **Urteil:
+`changes_requested`.** Keine menschliche Abnahme.
+
+**Blockierender Befund · Schonfrist nach Teilabruf:**
+`quotes.loadMissing()` übernimmt neue einzelne Kurse mit
+`commit(..., false)`, damit `lastRefreshAt` den Zeitpunkt des letzten
+vollständigen Durchgangs behält. `DashboardView` ruft jedoch bei jedem
+Ansichtswechsel `quotes.hydrate()` auf. Dort wird `lastRefreshAt` immer aus dem
+neuesten `fetchedAt` aller persistierten Kurse neu gebildet. Beispiel mit
+60 Minuten Schonfrist: vollständiger Abruf um 10:00, fehlender Kurs um 10:30
+nachgeladen, zurück zum Dashboard um 10:31. Danach gilt 10:30 statt 10:00
+als Abrufzeitpunkt. Um 11:01 werden die übrigen, über eine Stunde alten
+Kurse nicht vollständig aktualisiert. Das widerspricht der zugesagten
+Schonfrist und der Aussage, der Zeitstempel bleibe beim Teilabruf stehen.
+Den Zeitpunkt über Teilabruf und erneutes Hydrieren konsistent halten und
+eine Gegenprobe mit Ablauf der ursprünglichen Frist ergänzen. Der bestehende
+Test in `quotes.spec.ts` prüft nur den Zustand *vor* dem erneuten `hydrate()`;
+`dashboardRemount.spec.ts` ersetzt `hydrate()` durch einen Mock und kann
+diesen Pfad daher nicht erkennen.
+
+**Eigene Nachweise:** Quellvergleich von Dashboard-Aufbau, Kurs-, FX- und
+Tageswert-Store sowie SSE-Live-Abgleich. Gezielter Vitest-Lauf: 4 Testdateien,
+50 Tests grün. Der Coder hat den sichtbaren Browserlauf mit drei
+Ansichtswechseln und die vollständigen Pflichtprüfungen im Übergabeteil
+dokumentiert; ich habe diesen Browserlauf und die Pflichtprüfungen nicht
+erneut ausgeführt. Der Fehler ist ein Ablaufbefund aus dem Code; die
+Gegenprobe fehlt in der Übergabefassung.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` beschreiben den
+Ansichtswechsel nicht; für diesen Befund keine Textänderung nötig.
+`unraid/README.md` und `docs/` enthalten ebenfalls keine Zusage zu diesem
+Ladeverhalten. Die Angabe zur Schonfrist in der Oberfläche bleibt erst nach
+Korrektur des Zeitstempels zuverlässig.
+
+**Lessons-Einordnung:** Ein einzelner neuer Ablaufbefund; noch keine zweite
+belegte Wiederholung. Keine lokale Lesson angelegt. Der Observer prüft beim
+Rücklauf, ob ein vorhandener Eintrag zu ergänzen ist; der offene Schritt
+bleibt hier sichtbar.
