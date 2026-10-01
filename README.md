@@ -605,8 +605,9 @@ to `PUID`/`PGID` (default **99:100**, Unraid's `nobody:users`) and then starts
 the app with those IDs, never as root. This also fixes a host directory that
 Docker created as root. Data written by older images (UID 1000) is taken over
 on the first start. If ownership cannot be changed, for example on a network
-share, the container logs a warning and starts as long as the directory is
-writable; otherwise it stops with a message naming the directory and IDs.
+share, the container logs a warning and starts as long as the directory and
+every file in it are readable and writable for that user; otherwise it stops
+with a message naming the blocked path and the IDs.
 With `--user`, no switch happens and `/data` must already be writable for that
 user.
 Keep the host address/port stable so the browser retains the same storage origin.
