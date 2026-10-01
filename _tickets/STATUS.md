@@ -120,7 +120,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-72 in Umsetzung. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-72; Runde 1 (`e7cda36`) liegt zur Prüfung bei `codex-verifier`. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
@@ -131,12 +131,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-72-unraid-uid-gid.md`
 - `branch`: `t-72-unraid-uid-gid`
-- `handoff_commit`: ``
+- `handoff_commit`: `e7cda369713d5c43e87a70672734bbf6cd20bd52`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `last_reviewed_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
@@ -327,3 +327,11 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-72 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `e7cda369713d5c43e87a70672734bbf6cd20bd52` gegen `305f6cc` prüfen (Branch `t-72-unraid-uid-gid`, im Root
+ausgecheckt) sowie im Templates-Repo `bb83dfa` auf
+`t-60-stockportfolio-template` (nur `templates/stockportfolio.xml`). Der
+Rauchtest `./docker/smoke-test.sh` braucht ein frisches `make build`; Belege im
+[Ticket](30-doing/T-72-unraid-uid-gid.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
