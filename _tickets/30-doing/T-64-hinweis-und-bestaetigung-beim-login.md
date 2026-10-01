@@ -287,4 +287,3 @@ Sichtbarer Lauf in Chrome, Fenster 80 px links, 1464 px breit:
 
 Alle Prüfungen bestanden. Die Instanz auf `:8081` und ihre temporären Daten
 werden nach Mikes OK zu den offenen Fenstern beendet und entfernt.
-

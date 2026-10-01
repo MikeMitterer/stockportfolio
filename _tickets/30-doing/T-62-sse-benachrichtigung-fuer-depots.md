@@ -493,4 +493,3 @@ der Regel in AGENTS.md. Sichtbarer Lauf in Chrome gegen den Teststack
 
 Der HMR-Nachtest bleibt ein Headless-Nachweis; er betrifft nur den
 Entwicklungsserver.
-

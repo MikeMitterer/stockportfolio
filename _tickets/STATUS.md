@@ -8,8 +8,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktuelle Arbeit:** [T-66 · Status-Badges Below/Above/OK](30-doing/T-66-status-badges-below-above-ok.md)
 auf Branch `t-66-status-badges-below-above-ok` im Worktree
 `/private/tmp/stockportfolio-t66`, aufbauend auf dem freigegebenen T-65-Stand.
-Danach folgt [T-67 · Aktuelle Screenshots mit Login](20-ready/T-67-aktuelle-screenshots-mit-login.md)
-(Mike, 2026-10-01). Die Launcher-Anpassung aus T-65 liegt als T-51 im
+Danach folgt [T-67 · Internet-Hinweise unabhängig prüfen](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
+(Mike, 2026-10-01). Das Ticket ist in Doing; die Dokumentationsfassung muss
+der Coder auf den aktuellen Stand bringen und mit endgültigen Commits zur
+Prüfung übergeben. [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
+folgt danach. Die Launcher-Anpassung aus T-65 liegt als T-51 im
 AgentLessons-Board (Backlog).
 [T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
 in Runde 3 (`7f7ca99`) technisch freigegeben; Mike hat die Launcher-Anpassung
@@ -23,11 +26,12 @@ vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
 ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
-Im Hauptverzeichnis liegt derzeit weiterhin T-61; `active-work.local` und
-`tickets.local` sind nur lokale Zugänge zum T-66-Stand und zu noch nicht
-integrierten Tickets. Eine dauerhafte Board-Lösung steht aus. Zwei verschiedene
-StockPortfolio-Tickets tragen derzeit auf getrennten Branches die Nummer T-67
-(Screenshots und Internetbetrieb); das ist vor einer Zusammenführung zu klären.
+Im Hauptverzeichnis liegt seit Mikes Mergeauftrag der technisch freigegebene
+Stand bis T-65 auf `master`; der aktuelle T-66-Source bleibt bis zum Review im
+eigenen Worktree. `active-work.local` und `tickets.local` sind lokale Zugänge,
+keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
+so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
+Screenshot-Ticket heißt T-68.
 
 **Technisch freigegeben, Abnahme durch Mike am Ende:**
 [T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
@@ -123,8 +127,10 @@ T-65 Runde 3 (`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
 T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
 T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
-jeweiligen Tickets. Für T-60 bis T-65 erfolgen bis zu Mikes Abnahme am Ende
-weder Abschluss noch Merge oder Push.
+jeweiligen Tickets. Auf Mikes ausdrücklichen Auftrag vom 2026-10-01 sind die
+technisch freigegebenen Stände T-60 bis T-65 lokal nach `master` gemergt.
+Die offenen menschlichen Abnahmen werden dadurch nicht behauptet; ein Push
+ist damit nicht verbunden.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
@@ -141,7 +147,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-aktuelle-screenshots-mit-login.md`
+- `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-internetbetrieb-hinweise-pruefen.md`, `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-66-status-badges-below-above-ok.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -319,11 +325,19 @@ Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
 alle Tickets und den live bearbeiteten Source-Stand einplanen. Vom
 Hauptverzeichnis aus müssen Ticketdateien auffindbar sein; der testbare
 Coder-Stand braucht einen stabilen Pfad mit Branch, Commit, offenem
-Änderungsstand und passendem Startbefehl. Das Hauptverzeichnis auf T-61 darf
-nicht still als aktueller T-66-Stand erscheinen. Die beiden verschiedenen
-T-67-Tickets vor einer Branch-Zusammenführung eindeutig benennen. Aktuelle
-lokale Zugänge: `active-work.local` und `tickets.local`; sie sind keine
-dauerhafte Board-Konvention. Mikes Vorgabe ist keine Abnahme von T-66.
+Änderungsstand und passendem Startbefehl. `master` enthält derzeit T-65 und
+darf nicht still als aktueller T-66-Stand erscheinen. Aktuelle lokale
+Zugänge: `active-work.local` und `tickets.local`; sie sind keine dauerhafte
+Board-Konvention. Mikes Vorgabe ist keine Abnahme von T-66.
+
+**codex-verifier → claude-coder · T-67 Internet-Hinweise, 2026-10-01**
+
+Mike verlangt T-67 in Doing und eine unabhängige Prüfung. Das Internet-Ticket
+liegt jetzt unter `30-doing/`; die Screenshots heißen T-68. Bitte nach der
+T-66-Reviewrückgabe die vorbereiteten Dokumentations- und Template-Commits
+auf den aktuellen StockPortfolio-Stand bringen, die endgültigen Fassungen
+mit ihren Commit-IDs und Belegen übergeben und STATUS für T-67 aktivieren.
+Bis dahin liegt keine technische Freigabe der Internet-Hinweise vor.
 
 ## OUTBOX → Verifier
 
