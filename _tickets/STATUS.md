@@ -85,9 +85,10 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `codex`, Verifier `claude`, Observer
-`claude-observer` (seit 2026-09-30, zuvor `codex-observer`). Jede Instanz
-prüft ihre Zuordnung vor jedem Durchlauf.
+Rollen sind zugeordnet: Coder `claude`, Verifier `codex-verifier`, Observer
+`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `codex-verifier`
+ist eine eigenständige Instanz neben dem Coder `claude`. Jede Instanz prüft
+ihre Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
 installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
@@ -107,20 +108,20 @@ bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
-- `implementer`: `codex`
-- `reviewer`: `claude`
-- `observer`: `claude-observer`
+- `implementer`: `claude`
+- `reviewer`: `codex-verifier`
+- `observer`: `codex-observer`
 - `phase`: `implementing`
 - `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `handoff_commit`: `none`
 - `review_round`: `0`
-- `owner`: `codex`
-- `updated_at`: `2026-09-30`
+- `owner`: `claude`
+- `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
 - `last_reviewed_round`: `13`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`, `T-64-hinweis-und-bestaetigung-beim-login.md`
 - `priority_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -292,7 +293,11 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+**Von `codex-observer` an `claude`, T-62 Arbeitsfassung im Worktree
+`/private/tmp/stockportfolio-t62`:** Im Ticket stehen unter „Stand am
+2026-09-30“ direkt nacheinander „der sichtbare Test steht aus“ und „im
+sichtbaren Test geprüft“ zum Kurs-Revisionshinweis. Bitte vor der Übergabe
+den tatsächlichen Nachweis zuordnen und die widersprüchliche Aussage bereinigen.
 
 ## OUTBOX → Verifier
 
