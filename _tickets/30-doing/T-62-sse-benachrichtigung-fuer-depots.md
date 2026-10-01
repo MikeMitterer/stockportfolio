@@ -260,6 +260,59 @@ entschieden. Der Proxy muss Streaming ohne Pufferung und ein längeres
 Idle-Timeout erlauben. Die Konzeptprüfung unten hält den früher offenen
 Stand fest; die Produktnachweise stehen im Prüfstand oben.
 
+## Technische Prüfung Runde 1
+
+`codex-verifier`, 2026-10-01, Übergabefassung `625e22d28f33dcfc75fdc72327ede4ec7c4d1073`.
+Nachfolgende Commits bis zur Prüfung änderten nur Ticket und STATUS; der
+Produktstand blieb stabil. **Urteil: Nacharbeit erforderlich.** Keine
+menschliche Abnahme und kein Ticketabschluss.
+
+**Eigene Prüfungen:** `make test` mit 825 Frontend- und 19 API-Tests,
+beide Lints, beide Typprüfungen, `npm --prefix frontend run build` und
+`git diff --check 749743b..625e22d` mit Exitcode 0. Der Build meldet die
+bekannte Warnung zum großen UI-Chunk. API-Ereignisweg, Sitzungsprüfung beim
+Keep-Alive, Frontend-Wiederverbindung, 30-Sekunden-Ersatzabruf,
+Konfliktanzeige und die zugehörigen Tests wurden am Quellstand geprüft.
+`README.md`, `docker/README.md`, `unraid/README.md` und die zentrale
+Unraid-Vorlage wurden inhaltlich verglichen; die Aussagen zum Stream und
+Proxy widersprechen sich nicht. Die offene Übernahme der Board-Konventionen
+bleibt in STATUS sichtbar; daraus wurde kein zusätzlicher Auftrag abgeleitet.
+
+**Grenze des eigenen Nachweises:** Der sichtbare Browser-Smoketest und die
+KPI-Darstellung bei 390/1440 px stammen aus den ausdrücklich zugeordneten
+Coder-Belegen; ich habe sie in dieser Runde nicht selbst im Browser
+wiederholt. Die Playwright-Fenster waren über die verfügbare Browseransicht
+nicht erreichbar. Ein echter nginx-/Unraid-Proxy und ein im Browser
+herbeigeführter Sitzungsablauf sind auch in den Coder-Belegen nicht geprüft.
+Die statische KPI-Prüfung bestätigt Knopf, `aria-expanded` und den getrennten
+Info-Hinweis; sie ersetzt keinen eigenen visuellen Vergleich nach SP-R-03.
+
+### Befund 1 · Kurs-Hinweis verliert nach erlaubtem Löschen seine Revision
+
+Die neue Ressource `quote-refresh/current` läuft durch den generischen
+DELETE-Weg in `api/src/routers/api.ts:267` und darf mit gültiger Revision
+gelöscht werden. Ein späterer PUT legt sie mit Revision 1 neu an. Ein bereits
+offenes Fenster merkt sich in `frontend/src/stores/liveSync.ts:42` und `:90`
+die frühere höhere Revision. Sowohl das SSE-Ereignis als auch der regelmäßige
+Abruf des Hinweises werden bei `:47` und `:88` verworfen, solange die neue
+Revision nicht höher ist. Der 30-Sekunden-Ersatzabruf lädt Kurse dann nur
+nach der normalen Schonfrist (Vorgabe: 60 Minuten), obwohl ein anderes
+Fenster ausdrücklich **Aktualisieren** gedrückt hat.
+
+**Gegenprobe:** Isolierter API-Aufruf mit temporärer SQLite-Datenbank:
+`PUT` erzeugte Revision 1, der nächste `PUT` Revision 2, `DELETE` antwortete
+200, und ein neuer `PUT` erzeugte wieder Revision 1. Der Lauf gab
+`{"first":1,"second":2,"deleteStatus":200,"recreated":1}` aus. Keine
+Produktdatei wurde für diese Probe geändert.
+
+**Erwartete Korrektur:** Das Löschen des internen Kurs-Hinweises verhindern
+oder seine Revisionsfolge auch nach Löschen monoton halten. Eine Gegenprobe
+soll DELETE und anschließenden Refresh sowie die Reaktion eines bereits
+offenen Fensters abdecken. Der Fehlerpfad ist über die Konto-API tatsächlich
+erreichbar; gemäß SP-R-04 bleibt er blockierend, auch wenn die aktuelle
+Oberfläche keinen Löschen-Knopf dafür anbietet. Der Befund gehört zum
+bestehenden Muster SP-R-04 (Stand 2026-09-30); keine neue Lesson-ID.
+
 ## Konzeptprüfung Runde 1
 
 `claude`, 2026-09-28, an Handoff-Commit `6a33e6fb72a27cb46edcaa82361004b9b0854b9e`.
