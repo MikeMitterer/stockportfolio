@@ -14,7 +14,8 @@ diese Fassung an. Am Produkt ändert sich nichts.
 technischen Freigabe von T-64, Branch `t-65-board-konventionen-abgleichen`
 im Worktree `/private/tmp/stockportfolio-t65`.
 
-**Für dich · Entscheidung offen (Kennungen):** Die Rollen-Shortcuts
+**Kennungen · Mikes Entscheidung vom 2026-10-01:** Der Launcher soll angepasst
+werden. Die Rollen-Shortcuts
 (`~/.local/bin/agent-session.sh`) geben Coder und Verifier die Kennung
 `codex` beziehungsweise `claude`; nur Observer erhalten `-observer`. STATUS
 führt seit heute `claude-coder` und `codex-verifier`. Per Shortcut gestartet
@@ -22,15 +23,17 @@ findet eine Instanz ihre Zuordnung deshalb nicht; genau so stand T-62 am
 Vormittag über zwei Stunden still. Möglich sind: (a) STATUS zurück auf
 `claude`/`codex`, (b) im Launcher auch Coder und Verifier mit Zusatz
 benennen (Änderung im AgentLessons-Paket, nicht hier), (c) so lassen und die
-Kennung beim Start ausdrücklich setzen. Bis zu deiner Entscheidung ist (c)
-in der Aktivierung dokumentiert.
+Kennung beim Start ausdrücklich setzen. Mike hat mit „Der launcher soll
+angepasst werden.“ Variante (b) gewählt. Bis zur Umsetzung bleibt (c) in der
+Aktivierung dokumentiert. Die menschliche Abnahme von T-65 ist damit nicht
+erteilt.
 
 ## Für dich
 
 | Frage | Prüfpunkt # | Handgriff | Dein Urteil | Human |
 |---|---|---|---|---|
 | A · Regelstand | [1](#pruefpunkt-1) | `AGENT-WORKFLOW.md` öffnen | Steht dort `2026-09-28-activity-local` samt der lokalen Abweichungen? | |
-| B · Kennungen | — | Oben „Entscheidung offen“ lesen | (a), (b) oder (c)? | |
+| B · Kennungen | — | Oben Mikes Entscheidung lesen | Variante (b) umsetzen und wirksam prüfen | |
 
 ## Umfang
 
@@ -338,3 +341,25 @@ nicht gestartet. Der Abgleich belegt die Startaufträge und ihre vorhandenen
 Ziele, nicht einen zusätzlichen Laufzeitstart. Der bestehende
 `codex-verifier`-Scheduler läuft unverändert. Die Wahl zwischen den drei
 dauerhaften Kennungsvarianten liegt weiterhin bei Mike.
+
+## Nachtrag · Kennungsentscheidung, 2026-10-01
+
+Mike: „Der launcher soll angepasst werden.“ Damit ist Variante (b) gewählt:
+Die StockPortfolio-Kennungen `claude-coder` und `codex-verifier` bleiben in
+STATUS. Der Launcher soll sie bei den entsprechenden Rollen-Shortcuts direkt
+an die gestartete Instanz übergeben. Die Entscheidung ist keine menschliche
+Abnahme von T-65; die bisherige technische Freigabe bezieht sich weiterhin auf
+Runde 3 und den damaligen Launcherstand.
+
+**Folgeauftrag an `claude-coder`:** Die Änderung im AgentLessons-Board an dessen
+zuständigen Implementer und einen aktivierten Auftrag geben. Quellcode und
+Installation des globalen Launchers liegen dort, nicht in StockPortfolio.
+Eine pauschale Umstellung aller Boards auf Zusätze wäre falsch: AgentLessons
+und StockInfo ordnen Coder und Verifier weiterhin mit den nackten Kennungen
+`codex` und `claude` zu. Der dortige Auftrag muss diese Zuordnungen erhalten
+und den Start von StockPortfolio mit dessen vollständigen Kennungen ohne
+manuellen Nachtrag ermöglichen. Die Lösung samt Tests, Dokumentation und
+Installation wird im AgentLessons-Board umgesetzt und unabhängig geprüft.
+Danach hier die wirksamen Shortcuts und die Aktivierungsanleitung gegen STATUS
+prüfen; erst dann den Übergangsweg (c) entfernen. Der Doku-Abgleich umfasst
+die Launcher-Anleitung im AgentLessons-Paket und die lokalen Startbeispiele.
