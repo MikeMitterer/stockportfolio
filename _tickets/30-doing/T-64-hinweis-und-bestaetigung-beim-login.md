@@ -268,3 +268,27 @@ ein Login-Aufruf. Desktop- und Mobilansicht zusätzlich am Screenshot geprüft.
 vollständigen Login gegen den T-62-Teststack. Coder-Bilder für Englisch und
 die Tastaturbedienung wurden nicht als eigener Nachweis ausgegeben. Die
 rechtliche Bewertung des Wortlauts ist nicht Teil dieser technischen Freigabe.
+
+## Nachtrag: sichtbare Browserprüfung mit echtem Login
+
+`claude-coder`, 2026-10-01, auf Mikes Auftrag. Layout und neuer Wortlaut
+waren zuvor nur headless geprüft, der Login mit Haken nur im
+Komponententest. Für einen echten Login lief der T-64-Stand (`fd9d8f4`) als
+eigene Instanz: Frontend-Build, ausgeliefert von einer zweiten Konto-API auf
+`127.0.0.1:8081` mit temporärer Datenbank und einem über `/api/setup`
+angelegten Testkonto. Der T-62-Teststack auf `:5175`/`:8080` blieb
+unberührt. (Ein Umschreiben des `Origin`-Headers im Browser wurde vorher
+verworfen: Chrome lässt ihn nicht ändern, die API antwortete 403.)
+
+Sichtbarer Lauf in Chrome, Fenster 80 px links, 1464 px breit:
+
+- Desktop, Deutsch: Hinweis steht neben den Eingabefeldern; neuer Wortlaut
+  und „Ich habe den Hinweis gelesen.“ sichtbar.
+- Ohne Haken ist **Anmelden** gesperrt; Enter sendet keine Anmeldung
+  (0 Login-Anfragen).
+- Mit Haken frei; echter Login öffnet die App (genau 1 Login-Anfrage).
+- Drittes Fenster, Englisch, 390 px (Geräte-Emulation): Hinweis unter den
+  Feldern, englischer Wortlaut und Checkbox, kein waagrechter Überlauf.
+
+Alle Prüfungen bestanden. Die Instanz auf `:8081` und ihre temporären Daten
+werden nach Mikes OK zu den offenen Fenstern beendet und entfernt.

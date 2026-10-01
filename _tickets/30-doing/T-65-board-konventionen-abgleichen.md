@@ -370,4 +370,3 @@ Mike, 2026-10-01: „2 - Ticket“. Die Anpassung der Rollen-Shortcuts (Variante
 liegt als [T-51](/Volumes/DevLocal/DevKI/Production/AgentLessons/_tickets/10-backlog/T-51-rollen-shortcuts-mit-eindeutigen-kennungen.md)
 im AgentLessons-Board (Backlog, Commit `7708f61` dort). Bis zur Umsetzung gilt
 der in `AGENT-ACTIVATION.md` dokumentierte Übergangsweg.
-
