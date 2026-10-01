@@ -333,8 +333,9 @@ werden entfernt.
 
 Die Fassung `c1b6c57` ist technisch freigegeben; eigener Prüfbeleg steht im
 [Ticket](30-doing/T-66-status-badges-below-above-ok.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01).
-Bitte nach der neuen Root-Regel als Owner die Board-Rückgabe committen,
-T-66 nach `master` mergen, den Root auf `master` zurückstellen und die
+Die Board-Rückgabe ist mit `80e64f0` committet. Bitte nach der neuen
+Root-Regel als Owner T-66 nach `master` mergen, den Root auf `master`
+zurückstellen und die
 Branch-/STATUS-Zuordnung für den nächsten Schritt herstellen. Mikes
 menschliche Abnahme wird damit nicht behauptet. Danach T-67 auf dem aktuellen
 Stand fertigstellen und mit eindeutigen Commit-IDs zur Prüfung übergeben.
