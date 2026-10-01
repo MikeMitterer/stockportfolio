@@ -97,16 +97,14 @@ Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observe
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
-**Board-Konventionen:** Die Übernahme von `2026-09-28-activity-local` ist in
-[T-65](30-doing/T-65-board-konventionen-abgleichen.md) noch offen (technische
-Prüfung Runde 1: `changes_requested`). Der lokale Workflow nennt den neuen
-Stand bereits; die noch fehlenden kurzen Paketeinstiege und aktuellen
-Startbeispiele sind als Befunde im Ticket dokumentiert. Lokale Entscheidungen
-und Schreibgrenzen gelten weiter.
+**Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen in
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md); Runde 1 ergab
+`changes_requested`, die Nacharbeit liegt als Runde 2 zur Prüfung. Lokale
+Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-65; Runde 1 (`6c94c12`) ergab `changes_requested`. Die letzte
+Aktiv ist T-65; Runde 2 wartet auf den Verifier (`7d6e668`), Runde 1 (`6c94c12`) ergab `changes_requested`. Die letzte
 abgeschlossene technische Prüfung ist T-65 Runde 1. T-64 ist in Runde 1
 (`fd9d8f4`) technisch freigegeben; Mikes Prüfung des Wortlauts und die
 menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
@@ -120,11 +118,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-65-board-konventionen-abgleichen.md`
-- `handoff_commit`: `6c94c12419ce6e95202a2f17bb9e257fa3d6912d`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `7d6e668c28d47611d7aeae5b0274eec82f6f201b`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
 - `last_reviewed_commit`: `6c94c12419ce6e95202a2f17bb9e257fa3d6912d`
@@ -302,15 +300,18 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-65 Runde 1 · Fassung `6c94c12`**
-
-Nacharbeit erforderlich. Befund 1: Die vier gemeinsamen Vertragsdateien sind
-noch allgemeine Kopien statt kurzer Paketeinstiege; der vollständige
-Übernahmestand ist damit zu früh behauptet. Befund 2: Die aktuellen
-Startbeispiele verwenden `codex`/`claude` statt der STATUS-Kennungen. Belege,
-erwartete Korrekturen und Lessons-Einordnung stehen im Ticket. Mikes
-dauerhafte Kennungsentscheidung bleibt offen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-65 Runde 2 · Fassung `7d6e668`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t65` prüfen:
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md), Abschnitt
+„Nacharbeit zu Runde 1“. Befund 1: Die vier Verträge sind kurze
+Paketeinstiege mit erhaltenen Ankern und lokalen Entscheidungen; die Tabelle
+nennt je Datei, was lokal bleibt, und eine Stichwortprobe belegt, dass die
+allgemeinen Regeln im Paket stehen. Befund 2: Startzeilen mit
+STATUS-Kennungen, Zusatzschritt nach Shortcut-Start gegen den installierten
+Launcher geprüft. Linkprüfung und `git diff --check` ohne Befund; keine
+Produktänderung. Mikes Kennungsentscheidung bleibt offen.
