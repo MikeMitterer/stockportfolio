@@ -335,3 +335,7 @@ Skills `task-verification-workflow` nötig.
 Mike: „T-72 ist aus meiner Sicht erledigt“
 Integration: nach `master` gemergt (`415e96f`) und zu `origin` gepusht.
 Offener Rest: StockInfo T-86 (gleiche Randfälle dort) liegt im StockInfo-Backlog. Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und `9670339` (Screenshots) werden auf `t-60-stockportfolio-template` erst mit dem nächsten Image-Release veröffentlicht. Nicht blockierender Randfall aus Runde 3: Eine übergroße numerische `PUID` bricht ab, meldet aber irreführend fehlende SETUID/SETGID-Rechte.
+
+**Nachtrag 2026-10-01:** Den Randfall der übergroßen numerischen `PUID`
+(irreführende Meldung zu SETUID/SETGID, App läuft nicht als root) lässt Mike
+bewusst offen: „6 - nein, wird ignoriert“. Kein Folgeticket.
