@@ -22,6 +22,8 @@ Das sichtbare Prüffenster bleibt bis zu deinem OK offen.
 
 - Eigenes Ticket, in der Kette nach T-62. Begonnen wird erst nach der
   Übergabe von T-62.
+- Layout (Nachtrag 2026-10-01): Mobil bleibt der Hinweis unter den
+  Eingabefeldern; auf dem Desktop steht er daneben.
 - Die Checkbox wird **bei jedem Login** bestätigt. Gespeichert wird nichts;
   ohne Haken bleibt **Anmelden** gesperrt. Bei bestehender Sitzung erscheint
   der Hinweis nicht.
@@ -108,6 +110,12 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
   Passwortwechsel und Altbestand sind unverändert.
 - `frontend/src/i18n/de.ts`, `en.ts`: Wortlaut wie im Entwurf, Englisch
   sinngleich.
+- **Layout nach Mikes Nachtrag:** Unter 768 px (`md`) stehen Felder, Hinweis,
+  Haken und Knopf untereinander. Ab `md` wird das Login-Panel bis 54 rem
+  breit; links die Felder, rechts der Hinweis, darunter über die ganze
+  Breite Haken und Knopf (CSS-Grid mit benannten Bereichen). Setup und
+  Passwortwechsel behalten die schmale Breite. Die erste Übergabe
+  (`1eab2fd`) wurde dafür vor Prüfbeginn zurückgenommen.
 - **Scout Rule (SP-R-04):** `var(--space-5)` existiert im Fundament nicht
   (Abstände 1, 2, 3, 4, 6, 8); der Browser verwarf die Regeln still. Betroffen
   waren der neue Abstand unter der Checkbox, `.legacy-list` in `AuthRoot.vue`
@@ -124,12 +132,14 @@ Hinweis per Checkbox bestätigt wurde“: Hinweis sichtbar, Checkbox
 nicht auf; mit Haken genau ein Aufruf und Wechsel in die App. Vor der
 Umsetzung rot. Der bestehende Login-Test setzt jetzt den Haken.
 
-**Prüfstand:** `make test` mit 829 Frontend- und 20 API-Tests grün; beide
+**Prüfstand (nach Layout-Nachtrag):** `make test` mit 829 Frontend- und 20 API-Tests grün; beide
 Lints und beide Typprüfungen ohne Befund; Build grün (bekannte
 Chunk-Warnung); `git diff --check` ohne Befund.
 
-**Browser:** Headless-Bilder der Login-Seite bei 1440 px (Deutsch, Englisch)
-und 390 px (Deutsch): Hinweis vollständig lesbar, Checkbox und Knopf darunter.
+**Browser:** Headless-Bilder der Login-Seite bei 1440 px (Deutsch, Englisch),
+800 px und 767 px (je Deutsch, direkt über und unter `md`) und 390 px: ab
+800 px zwei Spalten mit dem Hinweis neben den Feldern, bei 767 und 390 px
+untereinander; Hinweis überall vollständig lesbar.
 Tastatur: Die Checkbox ist per Tab erreichbar, Leertaste setzt den Haken und
 gibt **Anmelden** frei. Sichtbarer Lauf in Chrome (Deutsch): ohne Haken
 gesperrt, Enter ohne Haken bleibt auf der Login-Seite, mit Haken frei.

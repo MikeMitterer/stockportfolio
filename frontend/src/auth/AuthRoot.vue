@@ -223,7 +223,7 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
   <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
     <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
     <main v-else-if="view !== 'loading' || showStartupStatus" class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
-      <section class="auth-panel">
+      <section class="auth-panel" :class="{ 'auth-panel--wide': view === 'login' }">
         <header class="auth-panel__header">
           <h1 class="auth-panel__brand">
             <img class="auth-panel__logo" src="/favicon.svg" alt="" aria-hidden="true" width="48" height="48">
@@ -251,14 +251,22 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
         </template>
         <template v-else-if="view === 'login'">
           <h2 class="auth-panel__title">{{ t('auth.loginTitle') }}</h2>
-          <form class="auth-panel__form" @submit.prevent="submitLogin">
-            <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
-            <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="current-password" /></NFormItem>
-            <p id="auth-investment-notice" class="auth-panel__notice">{{ t('auth.investmentNotice') }}</p>
-            <div class="auth-panel__confirm">
+          <!--
+            Mobil steht der Hinweis unter den Eingabefeldern, ab `md` daneben.
+            Haken und Knopf folgen immer darunter über die ganze Breite.
+          -->
+          <form class="auth-panel__form auth-login" @submit.prevent="submitLogin">
+            <div class="auth-login__fields">
+              <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
+              <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="current-password" /></NFormItem>
+            </div>
+            <p id="auth-investment-notice" class="auth-login__notice">{{ t('auth.investmentNotice') }}</p>
+            <div class="auth-login__confirm">
               <NCheckbox v-model:checked="noticeAccepted" aria-describedby="auth-investment-notice">{{ t('auth.investmentConfirm') }}</NCheckbox>
             </div>
-            <NButton type="primary" attr-type="submit" :loading="busy" :disabled="!noticeAccepted">{{ t('auth.login') }}</NButton>
+            <div class="auth-login__action">
+              <NButton type="primary" attr-type="submit" :loading="busy" :disabled="!noticeAccepted">{{ t('auth.login') }}</NButton>
+            </div>
           </form>
         </template>
         <template v-else-if="view === 'change'">
@@ -369,15 +377,37 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
   &__field-label { display: inline-flex; align-items: center; gap: var(--space-2); }
   &__password-field { margin-bottom: var(--space-4); }
   &__field-hint { margin: 0; color: rgb(var(--text-secondary)); font-size: 0.8125rem; }
+
+  // Login mit Hinweis braucht auf breiten Bildschirmen Platz für zwei Spalten.
+  &--wide { @include up(md) { width: min(100%, 54rem); } }
+  p { line-height: 1.5; }
+}
+
+.auth-login {
+  display: grid;
+  grid-template-areas: "fields" "notice" "confirm" "action";
+
+  @include up(md) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "fields notice" "confirm confirm" "action action";
+    column-gap: var(--space-8);
+    align-items: start;
+  }
+
+  &__fields { grid-area: fields; }
   &__notice {
+    grid-area: notice;
     margin: 0 0 var(--space-3);
     padding: var(--space-3) var(--space-4);
     border-left: 3px solid rgb(var(--border-default));
     color: rgb(var(--text-secondary));
     font-size: 0.8125rem;
+
+    // Neben den Feldern beginnt der Hinweis auf Höhe der ersten Beschriftung.
+    @include up(md) { margin: 0 0 var(--space-6); }
   }
-  &__confirm { margin-bottom: var(--space-4); }
-  p { line-height: 1.5; }
+  &__confirm { grid-area: confirm; margin-bottom: var(--space-4); }
+  &__action { grid-area: action; }
 }
 
 .auth-actions { margin-top: var(--space-6); }
