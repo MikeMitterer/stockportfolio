@@ -110,6 +110,7 @@ Start with `docker compose up -d`.
 | `/data` volume | Persistent SQLite accounts and sessions. Reuse it when recreating the container. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port. Required behind a reverse proxy. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | Set to `true` when the browser uses HTTPS. Local HTTP testing uses `false`. |
+| `PUID` / `PGID` | User and group the app runs as; default `99` / `100`. Must not be `0`. |
 | `TZ` | Container log timezone; defaults to `UTC`. The interface uses the browser's timezone. |
 
 Restart the container after changing its environment variables.
@@ -122,7 +123,18 @@ checks the server periodically for missed changes. Concurrent edits still use
 revision conflicts.
 If a reverse proxy fronts the container, pass the SSE stream without buffering
 and allow an idle timeout longer than its 15-second keep-alive interval.
-The image runs as user `node` (UID/GID 1000), without privileged mode.
+The container starts as root only to prepare `/data`: it gives the directory
+to `PUID`/`PGID` (default **99:100**, Unraid's `nobody:users`) and then starts
+the app with those IDs, never as root. This also fixes a host directory that
+Docker created as root. Data written by older images (UID 1000) is taken over
+on the first start. If ownership cannot be changed, for example on a network
+share, the container logs a warning and starts as long as that user can
+create files in `/data` and read and write an existing database
+(`stockportfolio.sqlite` and its `-wal`, `-shm` and `-journal` files); other
+files there do not matter. Otherwise it stops with a message naming the
+blocked path and the IDs.
+With `--user`, no switch happens and `/data` must already be writable for that
+user.
 Its healthcheck calls the local `/healthz` endpoint; it does not test StockInfo.
 The default build targets `linux/amd64`.
 
