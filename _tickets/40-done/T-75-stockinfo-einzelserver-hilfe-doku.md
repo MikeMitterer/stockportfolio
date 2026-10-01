@@ -1,5 +1,7 @@
 # T-75 · README: StockInfo-Einzelserver zeigt die gemeinsame CLI-Hilfe
 
+**Abgeschlossen am 2026-10-01** durch Mike: „Ja, ist erledigt“ Offener Rest: keiner; der direkte Aufruf ohne Farben ist in T-76 behandelt. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** `README.md` (Abschnitt zum lokalen Teststack, Zeile
 426–427) sagt, der StockInfo-Einzelserver nutze mit StockInfos Python-Umgebung
 eine schlichte Hilfe („uses plain help“). Seit StockInfo T-82 installiert
@@ -101,3 +103,9 @@ Der direkte Aufruf über System-Python ist ein eigener Folgefall und
 
 **Lessons-Einordnung:** Kein neuer Befund und keine geänderte
 Board-Konvention. Für `task-verification-workflow` ist kein Nachtrag nötig.
+
+## Abschluss · 2026-10-01
+
+Mike: „Ja, ist erledigt“
+Integration: nach `master` gemergt (`453b7f9`) und zu `origin` gepusht.
+Offener Rest: keiner.

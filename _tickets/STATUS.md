@@ -14,9 +14,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 auf Branch `t-76-teststack-wrapper`, im Root ausgecheckt (Mike, 2026-10-01:
 „Baue in bashscript dass den Aufruf des Script korrekt ausführt“; „ein
 Einzeiler ist in dem Fall OK“).
-[T-75 · Einzelserver-Hilfe in der Doku](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md)
-ist in Runde 1 (`8b6358d`) technisch freigegeben und lokal nach `master`
-gemergt (kein Push); Mikes Abnahme steht aus.
+[T-75 · Einzelserver-Hilfe in der Doku](40-done/T-75-stockinfo-einzelserver-hilfe-doku.md)
+ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „Ja, ist erledigt“).
 [T-74 · requirements-dev.txt](40-done/T-74-requirements-dev-umbenennen.md) ist
 am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
 abgeschlossen, gemergt und gepusht.
@@ -131,8 +130,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-76; Runde 1 (`b1e58cb`) liegt zur Prüfung bei `codex-verifier`. T-75 Runde 1 (`8b6358d`) ist technisch freigegeben
-und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-74 ist am 2026-10-01 abgeschlossen, nach
+Aktiv ist T-76; Runde 1 (`b1e58cb`) liegt zur Prüfung bei `codex-verifier`. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
