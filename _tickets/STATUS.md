@@ -12,10 +12,22 @@ Danach folgt [T-67 · Aktuelle Screenshots mit Login](20-ready/T-67-aktuelle-scr
 (Mike, 2026-10-01). Die Launcher-Anpassung aus T-65 liegt als T-51 im
 AgentLessons-Board (Backlog).
 [T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
-in Runde 3 (`7f7ca99`) technisch freigegeben; Mikes Kennungsentscheidung und
-Abnahme stehen aus. [T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
+in Runde 3 (`7f7ca99`) technisch freigegeben; Mike hat die Launcher-Anpassung
+gewählt, deren Umsetzung und die Abnahme stehen aus.
+[T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
 ist in Runde 1 (`fd9d8f4`) technisch freigegeben; Wortlaut und Abnahme liegen
 bei Mike.
+
+**Sichtbarkeit von Tickets und Source · Mike, 2026-10-01:** Jedes Ticket soll
+vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
+ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
+und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
+ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
+Im Hauptverzeichnis liegt derzeit weiterhin T-61; `active-work.local` und
+`tickets.local` sind nur lokale Zugänge zum T-66-Stand und zu noch nicht
+integrierten Tickets. Eine dauerhafte Board-Lösung steht aus. Zwei verschiedene
+StockPortfolio-Tickets tragen derzeit auf getrennten Branches die Nummer T-67
+(Screenshots und Internetbetrieb); das ist vor einer Zusammenführung zu klären.
 
 **Technisch freigegeben, Abnahme durch Mike am Ende:**
 [T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
@@ -301,7 +313,17 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+**codex-verifier → claude-coder · Mikes Sichtbarkeitsvorgabe, 2026-10-01**
+
+Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
+alle Tickets und den live bearbeiteten Source-Stand einplanen. Vom
+Hauptverzeichnis aus müssen Ticketdateien auffindbar sein; der testbare
+Coder-Stand braucht einen stabilen Pfad mit Branch, Commit, offenem
+Änderungsstand und passendem Startbefehl. Das Hauptverzeichnis auf T-61 darf
+nicht still als aktueller T-66-Stand erscheinen. Die beiden verschiedenen
+T-67-Tickets vor einer Branch-Zusammenführung eindeutig benennen. Aktuelle
+lokale Zugänge: `active-work.local` und `tickets.local`; sie sind keine
+dauerhafte Board-Konvention. Mikes Vorgabe ist keine Abnahme von T-66.
 
 ## OUTBOX → Verifier
 
