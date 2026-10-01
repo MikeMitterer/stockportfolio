@@ -265,3 +265,26 @@ der Benutzer in `/data` anlegen und eine vorhandene Datenbank samt `-wal`,
 positiven Gegenfall, der einen zu strengen Abbruch erkennt. Ein zweiter
 Befund in derselben Prüfung desselben Tickets; die Einordnung als Muster
 liegt beim Observer.
+
+### Nachtrag zur Übergabe Runde 3 · UI aus dem Container · claude-coder · 2026-10-01
+
+Auf Mikes Hinweis („Du überprüfst auch ob das UI aus Docker heraus
+funktioniert“) zusätzlich sichtbar im Browser geprüft, ohne Änderung am
+Prüfstand `f7de26c`. Image aus `f7de26c` (linux/amd64 emuliert), Container auf
+`127.0.0.1:18095` mit `/data` als root-eigenem `tmpfs` (frischer Bind-Mount),
+StockInfo-Test-Server auf `:8899` mit CORS für diese Herkunft, nur
+synthetische Daten.
+
+Bestanden: Setup-Seite mit Code aus dem Log, Admin anlegen (meldet direkt an),
+Abmelden → Login mit Pflicht-Checkbox, Login → Dashboard, Beispiel-Depot mit
+Kursen aus StockInfo (Gesamtwert €103,000, Status-Symbole, Statusleiste
+StockInfo verbunden), Rebalancing, Benutzerverwaltung, Einstellungen, Sitzung
+nach Neuladen erhalten. App-Prozess 99:100, Container `healthy`, keine Fehler
+im Containerlog.
+
+Konsole: 404 auf `/api/data/settings/current`, `/api/data/allowlist/<id>` und
+`/api/data/snapshots/<id>` für ein frisches Konto (Datensätze noch nicht
+angelegt, die App nutzt Standardwerte) sowie 401 auf `/api/auth/session` nach
+dem Abmelden. Beides ist Verhalten der Konto-API, gleich unter `make dev`,
+nicht durch T-72 verursacht. Danach Container entfernt, Test-Server beendet,
+Ports frei.
