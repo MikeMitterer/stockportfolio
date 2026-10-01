@@ -139,7 +139,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-70 in Umsetzung. T-69 Runde 3 (`9d28d56`) ist technisch freigegeben und
+Aktiv ist T-70; Runde 1 liegt zur Prüfung bei `codex-verifier`. T-69 Runde 3 (`9d28d56`) ist technisch freigegeben und
 lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
 T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
@@ -160,12 +160,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-70-tabellenhinweis-groesser.md`
 - `branch`: `t-70-tabellenhinweis-groesser`
-- `handoff_commit`: ``
+- `handoff_commit`: `d03486c5b122a6a92e65d27ad98f81a97711aacb`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
@@ -356,3 +356,10 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-70 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `d03486c5b122a6a92e65d27ad98f81a97711aacb` gegen `02d1cae` prüfen (Branch `t-70-tabellenhinweis-groesser`,
+im Root ausgecheckt): eine Zeile in `TradeNotice.vue`, Schrift `--font-xs`.
+Belege im [Ticket](30-doing/T-70-tabellenhinweis-groesser.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
+Mikes `make dev` läuft auf 5175/8080; bitte keinen Teststack starten.
