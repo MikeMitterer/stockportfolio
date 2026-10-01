@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, provide, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { NButton, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
+import { NButton, NCheckbox, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
 import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
 import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
 import { readStoredTheme } from '@/stores/theme'
@@ -29,6 +29,11 @@ const setupCode = ref('')
 const username = ref('')
 const password = ref('')
 const newPassword = ref('')
+/*
+ * Bestätigung des Hinweises zu Anlageentscheidungen. Sie gilt nur für diesen
+ * einen Login und wird nicht gespeichert (Mike, 2026-10-01).
+ */
+const noticeAccepted = ref(false)
 const baseUrl = ref('')
 const legacyStore = useLegacyStore()
 const { legacyData } = storeToRefs(legacyStore)
@@ -117,11 +122,14 @@ async function submitSetup(): Promise<void> {
 }
 
 async function submitLogin(): Promise<void> {
+  // Enter im Formular umgeht den gesperrten Knopf; deshalb auch hier prüfen.
+  if (!noticeAccepted.value) return
   busy.value = true
   errorCode.value = ''
   try {
     await acceptUser((await client.login(username.value, password.value)).user)
     password.value = ''
+    noticeAccepted.value = false
   } catch (error) {
     reportError(error)
   } finally {
@@ -246,7 +254,11 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
           <form class="auth-panel__form" @submit.prevent="submitLogin">
             <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
             <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="current-password" /></NFormItem>
-            <NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.login') }}</NButton>
+            <p id="auth-investment-notice" class="auth-panel__notice">{{ t('auth.investmentNotice') }}</p>
+            <div class="auth-panel__confirm">
+              <NCheckbox v-model:checked="noticeAccepted" aria-describedby="auth-investment-notice">{{ t('auth.investmentConfirm') }}</NCheckbox>
+            </div>
+            <NButton type="primary" attr-type="submit" :loading="busy" :disabled="!noticeAccepted">{{ t('auth.login') }}</NButton>
           </form>
         </template>
         <template v-else-if="view === 'change'">
@@ -357,6 +369,14 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
   &__field-label { display: inline-flex; align-items: center; gap: var(--space-2); }
   &__password-field { margin-bottom: var(--space-4); }
   &__field-hint { margin: 0; color: rgb(var(--text-secondary)); font-size: 0.8125rem; }
+  &__notice {
+    margin: 0 0 var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid rgb(var(--border-default));
+    color: rgb(var(--text-secondary));
+    font-size: 0.8125rem;
+  }
+  &__confirm { margin-bottom: var(--space-4); }
   p { line-height: 1.5; }
 }
 
@@ -365,7 +385,7 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
 .legacy-facts { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); margin: var(--space-6) 0; }
 .legacy-facts dt { color: rgb(var(--text-secondary)); }
 .legacy-facts dd { margin: 0; }
-.legacy-list { display: grid; gap: var(--space-2); margin: 0 0 var(--space-6); padding-left: var(--space-5); }
+.legacy-list { display: grid; gap: var(--space-2); margin: 0 0 var(--space-6); padding-left: var(--space-6); }
 .legacy-list li { padding-left: var(--space-1); }
 .legacy-actions { margin-top: var(--space-6); }
 </style>

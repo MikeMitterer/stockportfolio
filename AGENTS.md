@@ -165,7 +165,7 @@ Vollständige Konventionen samt Namensschema je Sprache: Skill `code-standards`.
 
 ## Wächter-Tests prüfen das Muster, nicht die Fundstelle
 
-Vier Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Baum statisch:
+Fünf Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Baum statisch:
 
 | Test | Riegel |
 |---|---|
@@ -173,6 +173,7 @@ Vier Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Baum
 | `componentStyles.spec.ts` | Kein eigenes CSS auf Naive-Komponenten — Größe über `size`, Bedeutung über `type` |
 | `utilityClasses.spec.ts` | Keine Utility-Klassen im Markup und keine Utility-Selektoren im Stil; Tailwind ist ausgebaut |
 | `caretUsage.spec.ts` | Kein handgezeichneter Pfeil; die gemeinsame Komponente verwenden |
+| `designTokens.spec.ts` | Jede verwendete CSS-Variable ist im Fundament oder in `src/` definiert |
 
 Sie fangen die Sorte Fehler, die nichts wirft: eine tote Klasse, eine Regel, die
 still ausfällt, die vierte Kopie desselben SVG-Pfads. Einen Riegel für eine

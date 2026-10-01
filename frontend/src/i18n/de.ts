@@ -51,6 +51,8 @@ export const de = {
     createAdmin: 'Admin-Konto anlegen',
     loginTitle: 'Anmelden',
     login: 'Anmelden',
+    investmentNotice: 'StockPortfolio rechnet mit deinen eigenen Eingaben und mit Kursdaten aus externen Quellen. Angezeigte Werte sowie Kauf- und Verkaufsbeträge dienen nur der Orientierung. Sie sind keine Anlageberatung, keine Handlungsempfehlung und keine Aufforderung zum Kauf oder Verkauf von Finanzinstrumenten. Kurse und berechnete Werte können verzögert, unvollständig oder fehlerhaft sein. Prüfe alle Angaben selbst, bevor du handelst. Deine Anlageentscheidungen triffst und verantwortest du selbst.',
+    investmentConfirm: 'Ich habe den Hinweis gelesen und treffe meine Anlageentscheidungen eigenverantwortlich.',
     logout: 'Abmelden',
     accountMenu: 'Konto {username}: Menü öffnen',
     changeTitle: 'Passwort ändern',

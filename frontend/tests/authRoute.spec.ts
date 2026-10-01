@@ -41,6 +41,7 @@ describe('Adresse nach der Anmeldung', () => {
     const [usernameInput, passwordInput] = wrapper.findAll('input')
     await usernameInput!.setValue('mike')
     await passwordInput!.setValue('Example123!')
+    await wrapper.get('[role="checkbox"]').trigger('click')
     await wrapper.get('form').trigger('submit')
     await flushPromises()
     expect(wrapper.get('h2').text()).toMatch(/Passwort ändern|Change password/)
@@ -50,6 +51,49 @@ describe('Adresse nach der Anmeldung', () => {
 
     expect(wrapper.find('authenticated-app-stub').exists()).toBe(true)
     expect(router.currentRoute.value.path).toBe('/')
+    wrapper.unmount()
+  })
+})
+
+describe('Hinweis zu Anlageentscheidungen beim Login', () => {
+  it('meldet erst an, nachdem der Hinweis per Checkbox bestätigt wurde', async () => {
+    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: 'https://stockinfo.example' }
+    const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', name: 'dashboard', component: { template: '<div />' } }] })
+    await router.push('/')
+    await router.isReady()
+    const fetcher = vi.fn(async (input: string) => {
+      const path = String(input)
+      if (path === '/api/setup/status') return Response.json({ required: false })
+      if (path === '/api/auth/session') return Response.json({ error: 'unauthorized' }, { status: 401 })
+      if (path === '/api/auth/login') {
+        return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: false, isSetupAccount: false, legacyImported: false } })
+      }
+      throw new Error(`Unexpected request: ${path}`)
+    })
+    vi.stubGlobal('fetch', fetcher)
+    const loginCalls = () => fetcher.mock.calls.filter(([path]) => String(path) === '/api/auth/login').length
+
+    const wrapper = mount(AuthRoot, { global: { plugins: [createPinia(), router], stubs: { AuthenticatedApp: true } } })
+    await flushPromises()
+    expect(wrapper.text()).toMatch(/keine Anlageberatung|not investment advice/)
+    const checkbox = wrapper.get('[role="checkbox"]')
+    expect(checkbox.attributes('aria-checked')).toBe('false')
+    const [usernameInput, passwordInput] = wrapper.findAll('input')
+    await usernameInput!.setValue('mike')
+    await passwordInput!.setValue('Example123!')
+
+    // Ohne Haken: Knopf gesperrt, und auch Enter im Formular meldet nicht an.
+    expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeDefined()
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(loginCalls()).toBe(0)
+
+    await checkbox.trigger('click')
+    expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeUndefined()
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(loginCalls()).toBe(1)
+    expect(wrapper.find('authenticated-app-stub').exists()).toBe(true)
     wrapper.unmount()
   })
 })

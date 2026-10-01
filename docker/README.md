@@ -44,6 +44,8 @@ Read the latest setup code with `docker logs stockportfolio`, then open
 closes after that account is created. There are no default credentials or
 public self-registration. New passwords need 12 to 1024 characters, including
 an uppercase letter, a number and a special character.
+Each login requires confirming a short notice that the app gives no
+investment advice; the confirmation is not stored.
 
 The port mapping above accepts connections on the Docker host's network
 interfaces. The web interface has a login; still protect the host through

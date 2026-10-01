@@ -52,6 +52,8 @@ export const en: MessageSchema = {
     createAdmin: 'Create admin account',
     loginTitle: 'Sign in',
     login: 'Sign in',
+    investmentNotice: 'StockPortfolio calculates with your own entries and with price data from external sources. Displayed values as well as buy and sell amounts are for orientation only. They are not investment advice, not a recommendation to act and not an invitation to buy or sell financial instruments. Prices and calculated values may be delayed, incomplete or wrong. Check all information yourself before you act. You make your investment decisions and you are responsible for them.',
+    investmentConfirm: 'I have read this notice and make my investment decisions on my own responsibility.',
     logout: 'Sign out',
     accountMenu: 'Account {username}: open menu',
     changeTitle: 'Change password',

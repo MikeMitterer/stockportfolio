@@ -712,9 +712,9 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
   &__loading-kpi, &__loading-table {
     @include stack(var(--space-4));
 
-    padding: var(--space-5);
+    padding: var(--space-4);
     border: 1px solid token(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
   }
 
   &__loading-kpi { min-height: 7rem; }
