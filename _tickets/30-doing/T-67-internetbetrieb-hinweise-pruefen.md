@@ -11,14 +11,10 @@ freigeben. Anleitung und Vorlage sollen ihn davor warnen und zugleich
 erklären, dass StockPortfolios Login die separat erreichbare StockInfo-API
 nicht schützt.
 
-**Stand:** Mike hat am 2026-10-01 den Reviewauftrag erneut priorisiert und
-dieses Ticket nach `30-doing/` beordert. Der Dokumentations-Commit `18c3776`
-und der zentrale Template-Commit `ca7ae2d` sind lokal vorbereitet; eine
-unabhängige Review-Übergabe oder Freigabe hat noch nicht stattgefunden.
-T-66 bleibt bis zu seiner Reviewrückgabe das aktive Ticket in STATUS. Der Coder
-muss danach den T-67-Textstand auf die aktuelle Source-Basis bringen und mit
-den endgültigen Commit-IDs übergeben. T-67 ist in Doing, aber noch nicht als
-geprüfte Fassung ausgewiesen.
+**Stand:** Mike hat am 2026-10-01 T-67 als nächstes Ticket freigegeben
+(„OK T-67“). Die Dokumentationsfassung liegt als `50a6924` auf dem aktuellen
+Stand (`master` mit T-66) und ist an `codex-verifier` übergeben. Der zentrale
+Template-Commit `ca7ae2d` ist unverändert.
 
 Für Mike steht jetzt kein Handgriff an. Nach der technischen Prüfung bleiben
 Abschluss und Veröffentlichung getrennte Entscheidungen; Docker Hub und das
@@ -28,13 +24,13 @@ Unraid-Listing zeigen die neue Fassung derzeit nicht.
 
 | Repo | Time-box | Scope | GH-Issue |
 |---|---|---|---|
-| StockPortfolio | 0,5–1 h | `README.md`, `docker/README.md`, `unraid/README.md`; Commit `18c3776e6a03380e5d07fb61493e6b85ca80b2c3` gegen `e1be8daacd25220336792609bd73ddc5edc32fa3` | — |
+| StockPortfolio | 0,5–1 h | `README.md`, `docker/README.md`, `unraid/README.md`; Commit `50a6924fb13e36a6a9b8467c880ac14f84413608` gegen `fd0b22a1419b220a94ad0106612f7fc3503e5a9e` | — |
 | Unraid-Templates | 0,5 h | ausschließlich `templates/stockportfolio.xml` aus Commit `ca7ae2d7b15331bf84a0fa344f436c37e3863e9c` gegen `c828e24671a81fd53824f67e3fea21b4e35b280b` | — |
 
-Beide Commits liegen auf dem jeweiligen Branch `docs/internet-zugriff-hinweis`.
-Die StockPortfolio-Fassung liegt nur noch als Branch
-`docs/internet-zugriff-hinweis` vor; ihr Worktree wurde am 2026-10-01 entfernt
-(Arbeitsort ist der Projekt-Root). Die Unraid-Fassung liegt weiter in
+Die StockPortfolio-Fassung liegt auf `t-67-internetbetrieb-hinweise-pruefen`
+im Projekt-Root; der frühere Branch `docs/internet-zugriff-hinweis` (`18c3776`)
+ist überholt. Der Template-Commit liegt auf `docs/internet-zugriff-hinweis`
+im Templates-Repository. Die Unraid-Fassung liegt weiter in
 `/private/tmp/unraid-internet-hinweis` (Templates-Repository, gemeinsam mit
 StockInfo T-84; nicht von dieser Regel erfasst). Das Gegenstück für StockInfo wird im
 dortigen T-84 mit dessen Rollen geprüft. Der gemeinsame Template-Commit wird
@@ -84,3 +80,35 @@ Reviewauftrags. Kein Produktcode wird durch das Ticket geändert.
 
 Offen. Das Ticket liegt auf Mikes Anweisung in Doing; die formelle
 Coder-Übergabe auf dem aktuellen Stand und das unabhängige Prüfurteil fehlen.
+
+## Coder-Übergabe · Runde 1 · claude-coder · 2026-10-01
+
+**Prüfstand:** StockPortfolio `50a6924fb13e36a6a9b8467c880ac14f84413608` gegen `fd0b22a1419b220a94ad0106612f7fc3503e5a9e`
+(`master` mit gemergtem T-66), Branch `t-67-internetbetrieb-hinweise-pruefen`.
+Templates `ca7ae2d` gegen `c828e24`, nur `templates/stockportfolio.xml`.
+
+**Übertrag:** `18c3776` per Cherry-Pick übernommen. Einziger Konflikt im
+Projekt-README, Abschnitt Docker: Der neue Login-Satz („does not protect
+StockInfo“, beide Dienste schützen) ersetzt den alten; der SSE-Absatz zu
+`/api/data/events` aus T-62 bleibt unverändert dahinter. `docker/README.md`
+und `unraid/README.md` ließen sich ohne Konflikt übernehmen; ihre
+SSE-Abschnitte stehen unberührt weiter unten. Der Template-Commit braucht
+keinen Übertrag, weil `c828e24` weiterhin die Spitze von
+`t-60-stockportfolio-template` ist.
+
+**Belege:** `git diff --check fd0b22a` ohne Befund; `xmllint --noout` für
+`ca7ae2d:templates/stockportfolio.xml` erfolgreich; Docker-Hub-Vorschau
+(`--ref master`) 11.112 UTF-8-Bytes, unter 25.000. Reine Dokumentation, kein
+Produktcode, deshalb kein `make test`/Lint/Typecheck-Lauf.
+
+**Doku-Abgleich:** `README.md` (Docker-Abschnitt), `docker/README.md`
+(Kopfhinweis, Portbindung, Browserzugriff) und `unraid/README.md`
+(Installation) nennen dieselbe Grenze: Port nicht direkt freigeben, VPN oder
+vertrauenswürdiges Netz, beim HTTPS-Proxy genaue Origin und sichere Cookies,
+StockInfo eigens schützen. Die Unraid-Vorlage sagt dasselbe in Overview,
+Description und Portfeld. `docs/` nennt Reverse-Proxy-Einstellungen nur in der
+Architektur-Spezifikation (Cookies, Origin), ohne Aussage zur Portfreigabe;
+unverändert.
+
+**Lessons:** CLAUDE-LESSONS gelesen; SP-CL-01 angewendet (Branch im Root).
+Keine neue Lesson.
