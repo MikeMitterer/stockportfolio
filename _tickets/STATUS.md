@@ -10,8 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
-Als Nächstes steht [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
+**Aktuelle Arbeit:** [T-70 · Hinweis unter den Tabellen größer](30-doing/T-70-tabellenhinweis-groesser.md)
+auf Branch `t-70-tabellenhinweis-groesser`, im Root ausgecheckt (Mike,
+2026-10-01). Danach steht [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
 an. Offen ist Mikes Antwort, ob vorher ein Hinweis „keine Anlageberatung“ in
 Login, Tabellenhinweis, About und Methodenseite kommt (Vorschlag des Coders
 vom 2026-10-01), damit der Login-Screenshot den endgültigen Text zeigt.
@@ -138,7 +139,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-69 Runde 3 (`9d28d56`) ist technisch freigegeben und
+Aktiv ist T-70 in Umsetzung. T-69 Runde 3 (`9d28d56`) ist technisch freigegeben und
 lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
 T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
@@ -159,19 +160,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
+- `phase`: `implementing`
+- `ticket`: `T-70-tabellenhinweis-groesser.md`
+- `branch`: `t-70-tabellenhinweis-groesser`
 - `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
+- `review_round`: `1`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-68-aktuelle-screenshots-mit-login.md`
-- `priority_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
+- `priority_chain`: `T-70-tabellenhinweis-groesser.md`, `T-68-aktuelle-screenshots-mit-login.md`
+- `priority_ticket`: `T-70-tabellenhinweis-groesser.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
