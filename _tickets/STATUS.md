@@ -5,20 +5,20 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktuelle Arbeit:** [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
-auf dem eigenen Branch `t-62-sse-benachrichtigung-fuer-depots`. Es schließt
-die Kette T-60 → T-63 → T-61 → T-62 ab. Danach folgt
-[T-64 · Login-Hinweis](20-ready/T-64-hinweis-und-bestaetigung-beim-login.md),
-das Mike am 2026-10-01 eingeplant hat; es beginnt erst nach T-62.
+**Aktuelle Arbeit:** [T-64 · Login-Hinweis](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
+auf Branch `t-64-hinweis-und-bestaetigung-beim-login` im Worktree
+`/private/tmp/stockportfolio-t64`, aufbauend auf dem freigegebenen T-62-Stand.
 
 **Technisch freigegeben, Abnahme durch Mike am Ende:**
 [T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
 (von Mike abgenommen), [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
 (Runde 13) und [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
-(Runde 6). Mike prüft T-61 und T-63 erst, wenn T-62 fertig ist: „T-61 teste
-ich wenn t-62 auch fertig ist“, „Auch T-63 nehme ich erst ganz am Ende ab“.
-Bis dahin bleiben alle vier Tickets in `30-doing/`; Merge nach `master` und
-Push folgen erst danach. StockInfo wurde nicht geändert.
+(Runde 6) sowie [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+(Runde 2, `299852a`). Mike prüft T-61 und T-63 erst, wenn T-62 fertig ist:
+„T-61 teste ich wenn t-62 auch fertig ist“, „Auch T-63 nehme ich erst ganz am
+Ende ab“. T-62 ist jetzt technisch freigegeben; die Testinstanz steht im
+Ticket. Bis zu Mikes Abnahme bleiben alle vier Tickets in `30-doing/`; Merge
+nach `master` und Push folgen erst danach. StockInfo wurde nicht geändert.
 
 Die Mehradmin-Regel ist in T-61 Konzept Runde 2 entschieden: Jedes Konto hat
 eigene Daten, die Vorschau des alten Browserbestands gehört nur dem
@@ -102,12 +102,11 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-62; Runde 2 (`299852a`) ist durch `codex-verifier` technisch
-freigegeben. Die menschliche Abnahme und der Ticketabschluss bleiben offen.
-Technisch freigegeben sind außerdem
+Aktiv ist T-64 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+T-62 Runde 2 (`299852a`, `approved`). Technisch freigegeben sind außerdem
 T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
 T-63 Runde 6. Die Prüfgeschichte
-aller Runden steht in den jeweiligen Tickets. Für T-60, T-61 und T-63 erfolgen
+aller Runden steht in den jeweiligen Tickets. Für T-60 bis T-63 erfolgen
 bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
@@ -115,18 +114,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
-- `handoff_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
-- `review_round`: `2`
+- `phase`: `implementing`
+- `ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `last_reviewed_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`, `T-64-hinweis-und-bestaetigung-beim-login.md`
-- `priority_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_chain`: `T-64-hinweis-und-bestaetigung-beim-login.md`
+- `priority_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -297,11 +296,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-62 Runde 2 · Fassung `299852a`**
-
-Technisch freigegeben. Befund 1 ist behoben; eigene Gegenprüfungen und die
-Grenzen des Browsernachweises stehen im Ticket. Menschliche Abnahme und
-Ticketabschluss bleiben offen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
