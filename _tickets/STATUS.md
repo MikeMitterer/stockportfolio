@@ -13,6 +13,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-75 · Einzelserver-Hilfe in der Doku](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md)
 auf Branch `t-75-einzelserver-hilfe-doku`, im Root ausgecheckt (Mike,
 2026-10-01: „danach gleich t-75“).
+Danach folgt [T-76 · Teststack-Wrapper](10-backlog/T-76-teststack-wrapper-skript.md)
+(Mike, 2026-10-01: „Baue in bashscript dass den Aufruf des Script korrekt ausführt“).
 [T-74 · requirements-dev.txt](40-done/T-74-requirements-dev-umbenennen.md) ist
 am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
 abgeschlossen, gemergt und gepusht.
@@ -152,7 +154,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`, `T-76-teststack-wrapper-skript.md`
 - `priority_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
