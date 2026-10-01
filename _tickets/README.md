@@ -110,13 +110,17 @@ nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
 
 [↑ Übersicht](#übersicht)
 
-## Aktive Kette: private Depots auf dem StockPortfolio-Server
+## Serverdepots und laufende Folgearbeit
 
 Mike hat die serverseitige Synchronisation mit getrennten privaten
 Benutzerkonten und SSE am 2026-09-28 beauftragt. T-60 und der vorgezogene
 lokale Teststack T-63 sind technisch freigegeben. Mike hat T-60 für sich
 abgeschlossen; T-63 wartet noch auf seine menschliche Abschlussentscheidung.
-T-61 ist auf Mikes Auftrag aktiv, T-62 baut darauf auf.
+T-61, T-62, T-64 und T-65 sind ebenfalls technisch freigegeben und auf Mikes
+Auftrag lokal nach `master` integriert. Die offenen menschlichen Abnahmen
+bleiben davon getrennt. T-66 liegt dem Verifier vor. T-67 prüft die
+Internet-Hinweise nach einer aktualisierten Coder-Übergabe; T-68 mit den
+Screenshots steht bereit.
 Verbindlich ist die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
 
 1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
@@ -133,8 +137,8 @@ Verbindlich ist die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand
    daraufhin per REST neu laden.
 
 StockInfo bleibt für Kurse und Instrumente zuständig; diese Kette ändert dort
-nichts. Konten und Teststack sind verfügbar; private Serverdepots und
-Live-Abgleich folgen mit T-61 und T-62.
+nichts. Der jeweils aktive Auftrag, die Rolle am Zug und der Worktree stehen
+in STATUS.
 
 [↑ Übersicht](#übersicht)
 

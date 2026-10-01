@@ -1,4 +1,4 @@
-# T-67 · Aktuelle Screenshots, dazu ein Bild vom Login-Dialog
+# T-68 · Aktuelle Screenshots, dazu ein Bild vom Login-Dialog
 
 **Warum dieses Ticket:** Das Dashboard-Bild in README, Docker-Hub-Beschreibung
 und Unraid-Vorlage ist veraltet. Es zeigt Version 0.2.0, die alte
