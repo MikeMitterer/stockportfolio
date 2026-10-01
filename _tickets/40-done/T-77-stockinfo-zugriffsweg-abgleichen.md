@@ -19,12 +19,11 @@ ins Internet, nur im Heimnetz, von außen per VPN (WireGuard oder Tailscale);
 kein Reverse Proxy mehr als Zugriffsweg. Claude hat unsere vier Stellen
 daran angeglichen; Runde 1 ist durch `codex-verifier` technisch freigegeben.
 
-Claude hat die Freigabe lokal nach `master` gemergt (`eab7095`, kein Push).
-
-**Für Mike:** T-77 abschließen, wenn die Texte passen. Danach folgen Push von
-`master` und die Integration der Vorlage `b250a2c`
-(Templates-Branch `t-77-stockportfolio-zugriffsweg`) nach dem
-Templates-`master` mit T-84/T-87.
+**Abgeschlossen am 2026-10-01** durch Mike: „T-77 ist erledigt, push es“.
+StockPortfolio-Merge `eab7095` und die Vorlage `b250a2c` sind nach `master`
+integriert und zu `origin` gepusht. Docker Hub zeigt die neue
+`docker/README.md` erst nach dem nächsten Image-Push; ein Live-Test über VPN
+oder auf Unraid fand nicht statt.
 
 T-87 verlangt keine Codeänderung in StockPortfolio: Im Heimnetz und per VPN
 erreicht der Browser StockInfo ohne Anmeldung davor.

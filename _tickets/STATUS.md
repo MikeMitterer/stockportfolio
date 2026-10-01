@@ -10,13 +10,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-77 · Zugriffsweg für StockInfo abgleichen](30-doing/T-77-stockinfo-zugriffsweg-abgleichen.md)
-(Mike, 2026-10-01: „Erledige das neue Ticket dann gleich“). Runde 1 ist durch
-`codex-verifier` technisch freigegeben und lokal nach `master` gemergt
-(`eab7095`, kein Push); der Root steht auf `master`. **Für Mike offen:**
-Abschluss von T-77. Danach Push von `master`; die Vorlage `b250a2c` liegt auf
-Templates-Branch `t-77-stockportfolio-zugriffsweg` und wird nach dem
-Templates-`master` mit T-84/T-87 integriert und gepusht.
+**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+[T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
+ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
+push es“); die Vorlage `b250a2c` ist auf Templates-`origin/master`.
 [T-73 · Interne Rechtevereinbarung](30-doing/T-73-interne-rechtevereinbarung.md)
 liegt in Doing als Mikes eigene Aufgabe (2026-10-01: „das ist für mich“); kein
 Agentenauftrag.
@@ -41,9 +38,8 @@ Unraid-Vorlage (`9670339`) sind veröffentlicht.
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
 `40-done/`. Offene Reste stehen im jeweiligen Abschluss: T-65 → AgentLessons
-T-51; T-67 → die Vorlagenhinweise aus StockInfo T-84 und T-87 (beide
-abgeschlossen) sind im Templates-`master` lokal gemergt (`25d395c`), aber
-noch nicht gepusht; StockPortfolios Angleichung folgt mit T-77; T-70 ohne
+T-51; T-67 → mit T-77 erledigt, die Vorlagenhinweise beider Apps sind
+veröffentlicht; T-70 ohne
 unabhängige technische Prüfung; T-64 ohne rechtliche Prüfung des Wortlauts.
 
 **Sichtbarkeit von Tickets und Source · Mike, 2026-10-01:** Jedes Ticket soll
@@ -137,7 +133,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-T-77 ist in Runde 1 technisch freigegeben und lokal nach `master` gemergt (`eab7095`, kein Push); Mikes Abschluss steht aus. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Kein Ticket aktiv. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -152,19 +148,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
+- `phase`: `idle`
+- `ticket`: `none`
 - `branch`: `master`
-- `handoff_commit`: `c2f2cf2163515696525c600c1cf13b999ffefff3`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: ``
+- `review_round`: ``
+- `owner`: `none`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
 - `last_reviewed_commit`: `c2f2cf2163515696525c600c1cf13b999ffefff3`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-77`
-- `priority_ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
