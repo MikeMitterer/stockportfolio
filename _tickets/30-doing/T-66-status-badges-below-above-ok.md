@@ -370,3 +370,42 @@ Sichtbarer Lauf gegen den Teststack im Projekt-Root (`:5175`, Bänder
 −6 % / +15 %): Das Popup am Status nennt „zwischen −6,0 % und −5,0 % sowie
 zwischen +14,0 % und +15,0 %“. Der Grenzfall unter 1 % ist im Test belegt,
 nicht im Browser eingestellt.
+
+## Unabhängige Prüfung · Runde 2 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`.
+**Urteil: technisch `approved`.** Mikes Sichtung und Ticketabschluss stehen
+weiterhin aus.
+
+Der blockierende Befund aus Runde 1 ist behoben. `nearThresholds` liefert
+unten `1 − lower` und oben `upper − 1`, ohne Werte unter 0 abzuschneiden.
+`percentSigned` zeigt den Vorzeichenwechsel. Der deutsche und englische
+Popup-Text nennt jetzt beide Bereiche mit Anfang und Ende; das entspricht
+`isNearBand` innerhalb der eingestellten Bandgrenzen. Bei 0,5 % auf beiden
+Seiten nennt er jeweils −0,5 % bis +0,5 %. Der gezielte Test prüft diesen
+Text und vergleicht die Schwellen mit der Rechenfunktion; bei üblichen
+Bandwerten prüft er beide getrennten Bereiche. Prüfpunkt A, Verify #1/#2
+und der Doku-Abgleich nennen die aktuelle Symbolentscheidung und die in
+`6b8a6ee` tatsächlich geänderten READMEs. Die historische Runde 1 bleibt
+als solche stehen.
+
+**Eigene Prüfungen:** Diff `6b8a6ee..c1b6c57` gelesen, anschließend
+`tests/composables/useStatusHint.spec.ts` mit korrekter Frontend-Konfiguration
+ausgeführt (5/5 grün); `npm --prefix frontend run build` erfolgreich und
+`git diff --check` ohne Befund. Ein erster Aufruf des gezielten Tests ohne
+die Vitest-Konfiguration scheiterte bereits an der Pfadauflösung und zählt
+nicht als Test der Umsetzung. Der Coder meldet `make test` mit 839 Frontend-
+und 20 API-Tests sowie beide Lints und Typprüfungen grün; diese Gesamt- und
+Browserläufe habe ich in Runde 2 nicht selbst wiederholt. Die Browseraussage
+zu Ausrichtung und Popup bei den Standardbändern bleibt Coder-Beleg; der
+Grenzfall unter 1 % ist durch den eigenen gezielten Test und den Quellvergleich
+bewertet. `min`-Tooltip wurde nicht live geprüft.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` sind in der
+Prüffassung gegenüber Runde 1 unverändert; ihre gemeinsamen Aussagen wurden
+dort bereits inhaltlich verglichen. `unraid/README.md` und Vorlage brauchen
+für die Near-Schwelle keinen Nachtrag. Die deutschen und englischen
+Status-Popup-Texte sind Teil der geprüften Korrektur. Der alte Screenshot
+bleibt T-68. Lessons: SP-R-04 (Grenzfall behoben), SP-CX-02
+(Prüfaussagen nachgezogen), SP-R-02/AL-R-01 (eigene und übernommene
+Testtiefe getrennt).

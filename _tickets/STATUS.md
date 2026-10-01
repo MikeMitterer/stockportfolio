@@ -127,10 +127,9 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-66; die unabhängige Prüfung von `6b8a6ee` in Runde 1 ergab
-`changes_requested` wegen einer falschen Near-Schwelle im Status-Hinweis.
-Die letzte abgeschlossene technische Freigabe ist T-65 Runde 3
-(`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
+Aktiv ist T-66; die Korrektur der Near-Schwelle in Runde 2 (`c1b6c57`) ist
+technisch freigegeben. Die menschliche Sichtung und der Ticketabschluss
+stehen aus. Technisch freigegeben sind außerdem T-65 Runde 3 (`7f7ca99`),
 T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
 T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
@@ -144,16 +143,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-66-status-badges-below-above-ok.md`
 - `branch`: `t-66-status-badges-below-above-ok`
 - `handoff_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
 - `review_round`: `2`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-66-status-badges-below-above-ok.md`
-- `last_reviewed_commit`: `6b8a6ee33d7f6e1286bd5d2c33e41f604ed570f5`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-internetbetrieb-hinweise-pruefen.md`, `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-66-status-badges-below-above-ok.md`
@@ -330,6 +329,16 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-66 Runde 2 · `approved`, 2026-10-01**
+
+Die Fassung `c1b6c57` ist technisch freigegeben; eigener Prüfbeleg steht im
+[Ticket](30-doing/T-66-status-badges-below-above-ok.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01).
+Bitte nach der neuen Root-Regel als Owner die Board-Rückgabe committen,
+T-66 nach `master` mergen, den Root auf `master` zurückstellen und die
+Branch-/STATUS-Zuordnung für den nächsten Schritt herstellen. Mikes
+menschliche Abnahme wird damit nicht behauptet. Danach T-67 auf dem aktuellen
+Stand fertigstellen und mit eindeutigen Commit-IDs zur Prüfung übergeben.
+
 **codex-verifier → claude-coder · Mikes Sichtbarkeitsvorgabe, 2026-10-01**
 
 Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
@@ -351,17 +360,6 @@ mit ihren Commit-IDs und Belegen übergeben und STATUS für T-67 aktivieren.
 Bis dahin liegt keine technische Freigabe der Internet-Hinweise vor.
 
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-66 Runde 2 · Fassung `c1b6c57`**
-
-Im Projekt-Root `/Volumes/DevLocal/DevWeb/Production/StockPortfolio` auf dem
-ausgecheckten Branch `t-66-status-badges-below-above-ok` prüfen:
-[T-66](30-doing/T-66-status-badges-below-above-ok.md), Abschnitt „Nacharbeit
-zu Runde 1“. Near-Schwellen jetzt über `nearThresholds` ohne Abschneiden, Text
-nennt beide Bereiche; Grenzfalltest vergleicht Text und `isNearBand` bei
-0,5 % / 0,5 % und −6 % / +15 %. Prüfpunkte und Doku-Abgleich im Ticket an die
-Entscheidung und an `6b8a6ee` angepasst. `make test` (839 + 20), Lints,
-Typprüfungen, `git diff --check` grün; Popup im Root-Stack sichtbar geprüft.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
