@@ -6,8 +6,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
 **Aktuelle Arbeit:** [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
-auf dem eigenen Branch `t-62-sse-benachrichtigung-fuer-depots`. Es ist das
-letzte Ticket der Kette T-60 → T-63 → T-61 → T-62.
+auf dem eigenen Branch `t-62-sse-benachrichtigung-fuer-depots`. Es schließt
+die Kette T-60 → T-63 → T-61 → T-62 ab. Danach folgt
+[T-64 · Login-Hinweis](20-ready/T-64-hinweis-und-bestaetigung-beim-login.md),
+das Mike am 2026-10-01 eingeplant hat; es beginnt erst nach T-62.
 
 **Technisch freigegeben, Abnahme durch Mike am Ende:**
 [T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
@@ -100,8 +102,9 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-62 (Nacharbeit). Die letzte abgeschlossene technische Prüfung
-ist T-62 Runde 1 (`625e22d`, `changes_requested`). Technisch freigegeben sind
+Aktiv ist T-62, Runde 2 wartet auf den Verifier (`299852a`). Die letzte
+abgeschlossene technische Prüfung ist T-62 Runde 1 (`625e22d`,
+`changes_requested`; Befund 1 in Runde 2 bearbeitet). Technisch freigegeben sind
 T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
 T-63 Runde 6. Die Prüfgeschichte
 aller Runden steht in den jeweiligen Tickets. Für T-60, T-61 und T-63 erfolgen
