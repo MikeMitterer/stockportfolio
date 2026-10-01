@@ -23,20 +23,23 @@ am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
 abgeschlossen, gemergt und gepusht.
 [T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am
 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-72 ist aus meiner Sicht erledigt“). Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
-`9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
-nächsten Image-Release. StockInfo T-86 liegt dort im Backlog.
+`9670339` (Screenshots) sind auf Templates-`origin/master` veröffentlicht;
+das Image `0.6.0` liegt seit 2026-10-01 auf Docker Hub.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-68 und T-71 sind erledigt, push es“
 [T-68 · Aktuelle Screenshots mit Login](40-done/T-68-aktuelle-screenshots-mit-login.md)
 und [T-71 · Keine Standard-Platzhalter](40-done/T-71-keine-standard-platzhalter.md)
 sind abgeschlossen, gemergt und gepusht. Die drei neuen Screenshots der
-Unraid-Vorlage (`9670339`) warten auf `t-60-stockportfolio-template` auf den
-nächsten Image-Release.
+Unraid-Vorlage (`9670339`) sind veröffentlicht.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
 `40-done/`. Offene Reste stehen im jeweiligen Abschluss: T-65 → AgentLessons
-T-51; T-67 → Template-Commit `ca7ae2d` wartet auf StockInfo T-84; T-70 ohne
+T-51; T-67 → Template-Branch `docs/internet-zugriff-hinweis` (`ca7ae2d`,
+`fdeb4fd`) ist auf beiden Seiten technisch freigegeben und wartet auf Mikes
+Abschluss von StockInfo T-84 sowie Merge und Push im Templates-Repo;
+StockInfo [T-87](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/10-backlog/T-87-login-proxy-sperrt-stockportfolio-aus.md)
+(Backlog) meldet, dass der dort empfohlene Login-Proxy StockPortfolio aussperrt; T-70 ohne
 unabhängige technische Prüfung; T-64 ohne rechtliche Prüfung des Wortlauts.
 
 **Sichtbarkeit von Tickets und Source · Mike, 2026-10-01:** Jedes Ticket soll
@@ -45,10 +48,8 @@ ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
-Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-75-einzelserver-hilfe-doku`-Branch ausgecheckt; die Doku-Fassung
-`8b6358d` ist dort sichtbar. Runde 1 ist technisch freigegeben und liegt
-zur Verarbeitung beim Coder. T-72 und T-74 sind auf `master` integriert.
+Tickets und ist zu `origin` gepusht. Im Root ist `master` ausgecheckt;
+T-72, T-74 und T-75 sind dort integriert.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
