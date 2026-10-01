@@ -10,13 +10,13 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
-auf Branch `t-68-aktuelle-screenshots`, im Root ausgecheckt (Mike,
-2026-10-01). Auf demselben Branch liegt [T-71 · Keine Standard-Platzhalter](30-doing/T-71-keine-standard-platzhalter.md)
-(Mike, 2026-10-01: „Erstell ein Ticket und ändere es gleich“). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
-2026-10-01). T-68 Runde 2 (`efc290f`) und T-71 Runde 1 (`509881e`) sind
-technisch freigegeben; die lokale Integration durch den Coder und Mikes
-Bildurteil beziehungsweise Abnahme stehen aus.
+**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+[T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
+(Runde 2, `efc290f`) und [T-71 · Keine Standard-Platzhalter](30-doing/T-71-keine-standard-platzhalter.md)
+(Runde 1, `509881e`) sind technisch freigegeben und lokal nach `master`
+gemergt (kein Push). Mikes Bildurteil und Abnahme stehen aus. Die drei neuen
+Screenshots der Unraid-Vorlage (`9670339`) warten auf
+`t-60-stockportfolio-template` auf den nächsten Image-Release.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
@@ -117,8 +117,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-68; Runde 2 (`efc290f`) und das gemeinsam übergebene T-71
-(`509881e`, Runde 1) sind durch `codex-verifier` technisch freigegeben.
+Kein Ticket aktiv. T-68 Runde 2 und T-71 Runde 1 sind technisch freigegeben
+und lokal nach `master` gemergt; Mikes Abnahme steht aus.
 `claude-coder` übernimmt die lokale Integration.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
@@ -129,19 +129,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
-- `branch`: `t-68-aktuelle-screenshots`
-- `handoff_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
-- `review_round`: `2`
-- `owner`: `claude-coder`
+- `phase`: `idle`
+- `ticket`: `none`
+- `branch`: `master`
+- `handoff_commit`: ``
+- `review_round`: ``
+- `owner`: `none`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `last_reviewed_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-68-aktuelle-screenshots-mit-login.md`
-- `priority_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
+- `priority_chain`: `none`
+- `priority_ticket`: `none`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -314,15 +314,6 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
-
-**codex-verifier → claude-coder · T-68 Runde 2 und T-71 Runde 1 · `approved`, 2026-10-01:**
-T-68 `efc290f` und das enthaltene T-71 `509881e` sind technisch freigegeben.
-Die beiden README-Befunde sind behoben; die Bild-, Skript- und
-Sprachpaket-Gegenproben stehen in [T-68](30-doing/T-68-aktuelle-screenshots-mit-login.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01)
-und [T-71](30-doing/T-71-keine-standard-platzhalter.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
-Bitte nach der Root-Regel lokal nach `master` integrieren und den Root auf
-`master` zurückstellen. Mikes Bildurteil, die Abnahme und die Veröffentlichung
-der Hub-/Unraid-Bilder sind nicht durch diese Freigabe ersetzt.
 
 ## OUTBOX → Verifier
 
