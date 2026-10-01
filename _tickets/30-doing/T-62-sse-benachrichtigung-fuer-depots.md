@@ -1,5 +1,14 @@
 # T-62 · Offene Browser über Depotänderungen benachrichtigen
 
+**Rollenwechsel am 2026-10-01:** Mike hat `claude` als Coder und Owner,
+`codex-verifier` als Verifier und `codex-observer` als Observer festgelegt.
+Claude übernimmt Codex' unfertigen Stand im Worktree
+`/private/tmp/stockportfolio-t62` auf Branch
+`t-62-sse-benachrichtigung-fuer-depots`. **Die Arbeit hat damit gemischte
+Autorenschaft:** API-Ereignisse, Store-Abgleich, Ladeanzeigen und die ersten
+Browsertests stammen von `codex`; die Korrekturen und Ergänzungen vom
+2026-10-01 unten von `claude`.
+
 Serverseitige Speicherung allein aktualisiert eine bereits geöffnete Seite
 nicht. **StockPortfolio meldet Änderungen per SSE** an andere Browser
 desselben Benutzers. Die Seite lädt die Daten danach per REST neu; SSE
@@ -9,12 +18,89 @@ transportiert keine Depotinhalte. StockInfo ist an diesem Weg nicht beteiligt.
 geöffnete Tablet erhält ein Ereignis, ruft den neuen Stand beim
 StockPortfolio-Server ab und zeigt die Quote ohne manuelles Neuladen.
 
-**Stand am 2026-09-28:** Es gibt noch keinen StockPortfolio-Datendienst.
-T-60 liefert Konten und Server, T-61 die maßgeblichen REST-Daten und
-Revisionen. Dieses Ticket folgt darauf; Produktcode ist noch nicht geändert.
+**Stand am 2026-10-01:** Umsetzung abgeschlossen und an den Verifier
+übergeben. Der sichtbare Smoketest `npm --prefix frontend run smoke:live-sync`
+besteht alle Schritte: Live-Abgleich A → B, Kontentrennung zu C samt
+erzwungenem Passwortwechsel, Backup und Restore, Unterbrechung und
+Wiederverbindung, Keep-Alive über den Proxy, Konflikt und Logout.
 
-**Für dich:** Jetzt ist kein Handgriff nötig. Die spätere Abnahme prüft zwei
-gleichzeitig geöffnete Browser mit demselben Konto.
+**Für dich:** Die Fenster des bestandenen Smoketests sind noch offen und
+schließen sich nach deinem OK. Der Teststack mit synthetischen Konten läuft
+weiter auf 5175/8080/8899; die Zugangsdaten liegen nur im temporären
+Testverzeichnis.
+
+### Änderungen von `codex` bis 2026-09-30
+
+- API: Ereignisverteiler je Konto, Route `/api/data/events` mit
+  Sitzungsprüfung bei jedem Ereignis und 15-Sekunden-Keep-Alive; Ereignisse
+  nach Commit von Speichern, Löschen, Altimport und Restore (`0bbf80b`).
+- Frontend: `LiveEventsClient`, Store `liveSync` mit gezieltem REST-Nachladen,
+  Abgleich bei Verbindung, Tab-Rückkehr und alle 30 s; eigenes Ereignis wird
+  über die geschriebene Revision erkannt; Statuszeile meldet getrennte
+  Verbindung.
+- Kurs-Hinweis: Nach **Aktualisieren** in einem Fenster schreibt die App die
+  Ressource `quote-refresh`; andere Fenster holen daraufhin selbst Kurse.
+- Auf Mikes Rückmeldungen: Fortschrittsleiste 4 px ohne Verschieben des
+  Inhalts, kein Spinner im Aktualisieren-Knopf, Platzhalter statt Spinner beim
+  ersten Laden, Anmeldeprüfung erst nach 350 ms sichtbar, Trennlinien der
+  Kennzahlen bei zwei Spalten.
+- Nebenbei: `docker/build.sh` ohne Bash-4-Syntax `${VAR,,}`, Teststack startet
+  Vite über `node …/vite.js`, Beispieldepot-Kurse als Fixture
+  `scripts/fixtures/demo-quotes.json` mit Abgleichtest.
+
+### Änderungen von `claude` am 2026-10-01
+
+1. **Testbruch behoben:** Die HMR-Korrektur von Codex las
+   `import.meta.hot.data` ohne Prüfung; in Vitest fehlt `data`, 14 Testdateien
+   brachen ab.
+2. **HMR-Fehler „PrivateDataClient fehlt“ behoben:** Vite lädt abhängige
+   Module wie `settings.ts` neu, ohne für `client.ts` den Dispose-Aufruf
+   auszulösen. Der aktive Client steht jetzt bei jeder Änderung in
+   `import.meta.hot.data`. Headless-Nachtest: drei Module per HMR ersetzt,
+   danach Speichern mit PUT 200, keine Navigation, kein Seitenfehler.
+3. **Wiederverbindung nach endgültig geschlossenem Stream (SP-R-04):**
+   Antwortet der Server beim Wiederverbinden mit einem Fehler, etwa 502 des
+   Proxys bei einem Neustart, schließt der Browser die `EventSource`
+   endgültig. Bisher blieb dann nur der 30-Sekunden-Ersatzabruf bis zum
+   Neuladen der Seite. `LiveEventsClient` baut den Stream jetzt nach 5 s neu
+   auf, bei weiteren Fehlern mit verdoppelter Pause bis höchstens 30 s.
+   Test: `tests/data/liveEvents.spec.ts`.
+4. **Teststack erkannte eigene Prozesse nicht (SP-R-04, SP-R-05):** Die
+   Prozesskennung enthält `ps -o lstart`, dessen Format der Spracheinstellung
+   folgt. Codex startete den Stack mit englischer, Claudes Shell nutzt
+   `de_AT`. `--status` meldete laufende Prozesse als beendet, `--stop` hätte
+   sie stehen lassen. `ps` läuft jetzt mit `LC_ALL=C`. Die doppelte Kopie der
+   Funktion in `stockinfo-test-server.py` ist entfernt; sie nutzt die aus
+   `local_test_stack.py`. Der verwaiste Katalogeintrag ist mitentfernt.
+   Gegenprobe: `--status` mit `de_AT` und `en_US` meldet alle drei Prozesse
+   laufend.
+5. **Smoketest dauerhaft im Projekt (SP-CX-04):**
+   `frontend/scripts/live-sync-smoke.mjs`, Aufruf über
+   `npm --prefix frontend run smoke:live-sync`. `playwright-core` ist
+   Dev-Abhängigkeit des Frontends und nutzt das installierte Chrome. Fenster:
+   links 80 px frei, Rest 50:50 auf dem Hauptbildschirm (Screen-Details-API;
+   `window.screen` meldete den kleineren Zweitmonitor). Die Fenster bleiben
+   bis Enter offen.
+6. **Gesamtwert-Kennzahl auf Mikes Rückmeldung:** Die Verlaufsgrafik steht
+   rechts neben dem Betrag; statt „Basiswährung: EUR“ steht „EUR“ mit
+   Fragezeichen. Dessen Hinweis verweist auf **Einstellungen → Daten**, wo
+   die Basiswährung je Depot gesetzt wird. Die Karte ist kein `<button>` mehr,
+   weil ein Verweis darin verschachtelte Bedienung wäre; Knopf ist die Gruppe
+   aus Grafik und Pfeil, ein Klick auf die Karte klappt weiterhin auf.
+   Headless geprüft bei 1440, 1024, 768 und 390 px: Hover öffnet den Hinweis
+   ohne Aufklappen, Klick und Enter schalten `aria-expanded`.
+
+**Springender Inhalt nach Enter (Mikes Beobachtung):** Mit Layout-Shift-Messung
+in A und B nicht reproduzierbar. Sechs gespeicherte Stückzahländerungen
+ergaben je Fenster höchstens 0,0003 (sichtbar störend ab etwa 0,1).
+Wahrscheinliche Ursache waren Claudes gleichzeitige Codeänderungen, die Vite
+per HMR in die offenen Fenster übertrug. Bleibt das Springen in frisch
+geöffneten Fenstern, ist es neu zu untersuchen.
+
+**Native Datei-Dialoge:** Der Smoketest bedient sie nicht. Der Download wird
+von Playwright direkt abgefangen, die Datei für den Restore direkt in das
+Dateifeld gesetzt. Geprüft ist der App-Weg von der Datei bis zur Anzeige in
+B, nicht der Dialog des Betriebssystems.
 
 ## Für dich
 
@@ -82,20 +168,74 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | <a id="pruefpunkt-1"></a>In Browser A schreiben, Browser B offen lassen | Ereignis nach Commit; B lädt gezielt per REST und zeigt den neuen Wert | ➖ |
-| 2 | <a id="pruefpunkt-2"></a>Mit anderem Konto C mithören und A ändern | C bekommt weder Ereignis noch fremde Kennung oder Daten | ➖ |
-| 3 | SSE trennen, währenddessen ändern, wieder verbinden und Keep-Alive hinter dem Proxy prüfen | B lädt den neuesten Stand; verpasste Ereignisse gehen nicht als Zustand verloren; Verbindung bleibt auch ohne Nutzereignisse offen | ➖ |
-| 4 | Schreibkonflikt, Logout und Sitzungsablauf während offenem Stream prüfen | Konflikt sichtbar; privater Stream endet oder weist spätestens beim nächsten Keep-Alive Zugriff ab | ➖ |
-| 5 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ➖ |
+| 1 | <a id="pruefpunkt-1"></a>In Browser A schreiben, Browser B offen lassen | Ereignis nach Commit; B lädt gezielt per REST und zeigt den neuen Wert | ✅ |
+| 2 | <a id="pruefpunkt-2"></a>Mit anderem Konto C mithören und A ändern | C bekommt weder Ereignis noch fremde Kennung oder Daten | ✅ |
+| 3 | SSE trennen, währenddessen ändern, wieder verbinden und Keep-Alive hinter dem Proxy prüfen | B lädt den neuesten Stand; verpasste Ereignisse gehen nicht als Zustand verloren; Verbindung bleibt auch ohne Nutzereignisse offen | ✅ |
+| 4 | Schreibkonflikt, Logout und Sitzungsablauf während offenem Stream prüfen | Konflikt sichtbar; privater Stream endet oder weist spätestens beim nächsten Keep-Alive Zugriff ab | ⚠️ |
+| 5 | `make test`, `npm --prefix frontend run lint`, `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`, Build, Browser- und Doku-Abgleich | Ergebnisse und mögliche Bestandsfehler sind konkret dokumentiert | ✅ |
+| 6 | In A sichern, die Hälfte der Positionen löschen, Sicherung wieder einspielen | B zeigt erst den reduzierten, dann den vollständigen Stand ohne Seiten-Refresh | ✅ |
+
+**Prüfstand 2026-10-01 (`claude`, Worktree `/private/tmp/stockportfolio-t62`):**
+
+- `make test`: 825 Frontend- und 19 API-Tests grün.
+- `npm --prefix frontend run lint`, `npm --prefix api run lint`: ohne Befund.
+- `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck`: ohne Befund.
+- `npm --prefix frontend run build`: grün (bekannte Chunk-Größen-Warnung).
+- Sichtbarer Smoketest, dritter Lauf, alle Schritte bestanden:
+  Prüfpunkt 1/2 (A → B ohne Refresh, C ohne Ereignis und Daten),
+  Backup/Restore (B zeigt 3 statt 6, danach wieder 6 Positionen),
+  Prüfpunkt 3 (B zeigt die Unterbrechung, verbindet sich nach 502 selbst
+  wieder und lädt den verpassten Stand; Stream über den Vite-Proxy 35 s mit
+  2 Keep-Alives offen), Prüfpunkt 4 (veralteter Schreibstand → 409 und
+  sichtbarer Konflikt, der nach dem Nachladen stehen bleibt; Stream endet
+  15,0 s nach Logout, Datenabruf danach 401).
+- **Grenze zu Prüfpunkt 4:** Den Sitzungsablauf prüft nur der API-Weg; er
+  läuft über dieselbe Sitzungsprüfung bei Ereignis und Keep-Alive wie der
+  Logout. Ein abgelaufener Sitzungszeitpunkt wurde im Browser nicht erzeugt.
+- **Grenze zu Prüfpunkt 3:** Der Proxy ist Vites Entwicklungsproxy, kein
+  nginx oder Unraid-Proxy. Die Konfiguration eines echten Reverse-Proxys ist
+  dokumentiert, nicht geprüft.
 
 ### Doku-Abgleich
 
-`README.md` (**Where the data lives**, **Docker**) und `docker/README.md`
-(**Configuration**, **Data and backups**) gemeinsam auf den tatsächlichen
-Live-Abgleich und seine Grenzen prüfen. `unraid/README.md` und die zentrale
-Vorlage prüfen, falls der Stream Reverse-Proxy- oder Port-Anforderungen
-ändert. Kein StockInfo-Dokument und keine StockInfo-API-Änderung. Keine
-Board-/Lessons-Konventionsänderung; kein Nachtrag im zentralen Ticket-Skill.
+Inventar: `README.md`, `docker/README.md`, `unraid/README.md`, `AGENTS.md`,
+`docs/`, zentrale Unraid-Vorlage.
+
+- `README.md` **Where the data lives**: Live-Abgleich, Kurs-Hinweis und jetzt
+  auch Restore in anderen Fenstern. **Setup**: neuer Absatz zum Smoketest
+  samt Aufruf und Umfang. **Docker**: Reverse-Proxy-Anforderung für den Stream.
+- `docker/README.md` **Configuration**: Live-Abgleich und Proxy wie oben.
+  **Data and backups**: Restore erscheint in anderen offenen Browsern ohne
+  Neuladen. Die gemeinsamen Aussagen beider READMEs stimmen überein; der
+  Smoketest steht nur im Projekt-README, weil er Entwicklern dient.
+  Hub-Vorschau geprüft: 10.423 Bytes, unter der Grenze von 25.000.
+- `unraid/README.md` **Configuration**: Proxy-Hinweis für den Stream (Codex).
+- `AGENTS.md` **Bauen und prüfen**: Smoketest-Aufruf und Fensteranordnung.
+- `docs/`: keine Aussage zum Live-Abgleich betroffen.
+- **Offen:** Die zentrale Vorlage
+  `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
+  nennt den Reverse-Proxy, aber nicht, dass der SSE-Stream ungepuffert
+  durchgereicht werden muss. Sie liegt in einem eigenen Repository; die
+  Ergänzung ist nicht vorgenommen und braucht Mikes Entscheidung.
+- Keine Board- oder Lessons-Konventionsänderung; kein Nachtrag im Skill
+  `task-verification-workflow`.
+
+### Lessons
+
+Gelesen vor Umsetzung und Übergabe: alle lokalen Lessons unter
+`.agents/lessons/` (Stand 2026-10-01). Einschlägig:
+[SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md)
+(Wiederverbindung nach `CLOSED`, `ps`-Sprache als potenzielle Fehler behoben, Punkte 3 und 4),
+[SP-R-05](../.agents/lessons/SP-R-05-nach-dem-stopp-alle-reste-der-gestarteten-prozesse-pruefen.md)
+(Statusprüfung in zwei Sprachen),
+[SP-CX-04](../.agents/lessons/SP-CX-04-wiederverwendete-pruefhilfen-vom-ticket-lebenszyklus-loesen.md)
+(Smoketest unter `frontend/scripts/`, nicht im Ticket- oder Temp-Ordner),
+[SP-CX-07](../.agents/lessons/SP-CX-07-entfernen-mit-aufruferinventar-abschliessen.md)
+(entfernte `process_identity`-Kopie: keine weiteren Aufrufer, Katalogeintrag
+„Process inspection failed“ mitentfernt; `dispose`-Weg in `client.ts` ohne
+Restaufrufer),
+[SP-CX-01](../.agents/lessons/SP-CX-01-einfache-startbefehle-nicht-zu-einem-eigenen-system-ausbauen.md)
+(ein Skript, ein npm-Aufruf, keine eigene Testsuite). Kein neuer Lessons-Eintrag.
 
 ### Side-Effects
 
@@ -108,7 +248,7 @@ Das Keep-Alive-Intervall und die Sitzungsprüfung sind in der
 [T-60-Architekturspezifikation](../../docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md#verbindliche-grenzen-für-t-61-und-t-62)
 entschieden. Der Proxy muss Streaming ohne Pufferung und ein längeres
 Idle-Timeout erlauben. Die Konzeptprüfung unten hält den früher offenen
-Stand fest; für T-62 liegt noch kein Produktnachweis vor.
+Stand fest; die Produktnachweise stehen im Prüfstand oben.
 
 ## Konzeptprüfung Runde 1
 

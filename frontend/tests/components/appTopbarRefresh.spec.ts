@@ -1,9 +1,6 @@
 /**
- * Der Aktualisieren-Knopf in der Kopfzeile zeigt, dass er arbeitet.
- *
- * Den Zustand gab es im Quotes-Store längst (`loading`), sichtbar war er nur
- * daran, dass die Altersangabe daneben zu „…" wurde — was etwas anderes sagt,
- * nämlich dass die Angabe gerade nicht stimmt.
+ * Der Aktualisieren-Knopf ist während des Abrufs gesperrt. Den Fortschritt
+ * zeigt die Leiste am oberen Seitenrand.
  */
 
 import { mount } from '@vue/test-utils'
@@ -16,22 +13,22 @@ import type { PortfolioUser } from '@/auth/client'
 import AppTopbar from '@/components/AppTopbar.vue'
 
 /** Die Kopfzeile löst Adressen für ihre Menüpunkte auf und braucht dafür Routen. */
-function attrappenRouter(): Router {
-  const leer = { template: '<div />' }
+function mockRouter(): Router {
+  const empty = { template: '<div />' }
   return createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: 'dashboard', component: leer },
-      { path: '/rebalancing', name: 'rebalancing', component: leer },
-      { path: '/instruments', name: 'instruments', component: leer },
-      { path: '/settings', name: 'settings', component: leer },
-      { path: '/admin/users', name: 'admin-users', component: leer },
+      { path: '/', name: 'dashboard', component: empty },
+      { path: '/rebalancing', name: 'rebalancing', component: empty },
+      { path: '/instruments', name: 'instruments', component: empty },
+      { path: '/settings', name: 'settings', component: empty },
+      { path: '/admin/users', name: 'admin-users', component: empty },
     ],
   })
 }
 
 async function topbar(refreshing: boolean, role: PortfolioUser['role'] = 'user') {
-  const router = attrappenRouter()
+  const router = mockRouter()
   await router.push('/')
   await router.isReady()
 
@@ -51,24 +48,24 @@ async function topbar(refreshing: boolean, role: PortfolioUser['role'] = 'user')
 }
 
 /** Aktualisieren steht vor dem Konto-Menü. */
-function aktualisieren(wrapper: Awaited<ReturnType<typeof topbar>>) {
+function refreshButton(wrapper: Awaited<ReturnType<typeof topbar>>) {
   return wrapper.find('button')
 }
 
 describe('Kopfzeile — Aktualisieren', () => {
-  it('dreht und nimmt keinen Klick an, solange die Kurse geholt werden', async () => {
-    const knopf = aktualisieren(await topbar(true))
+  it('zeigt keinen Spinner und nimmt während des Kursabrufs keinen Klick an', async () => {
+    const button = refreshButton(await topbar(true))
 
-    expect(knopf.classes()).toContain('n-button--loading')
-    expect(knopf.attributes('disabled')).toBeDefined()
+    expect(button.classes()).not.toContain('n-button--loading')
+    expect(button.attributes('disabled')).toBeDefined()
   })
 
   it('steht sonst normal da und meldet den Klick nach oben', async () => {
     const wrapper = await topbar(false)
-    const knopf = aktualisieren(wrapper)
+    const button = refreshButton(wrapper)
 
-    expect(knopf.classes()).not.toContain('n-button--loading')
-    await knopf.trigger('click')
+    expect(button.classes()).not.toContain('n-button--loading')
+    await button.trigger('click')
 
     expect(wrapper.emitted('refresh')).toHaveLength(1)
   })

@@ -64,6 +64,14 @@ describe('private Depotereignisse', () => {
     const event = await readFrame(reader)
     expect(event).toContain('event: resource')
     expect(event).toContain('"kind":"portfolio","resourceId":"depot","revision":1')
+    expect((await app.request(`${origin}/api/data/quote-refresh/current`, {
+      method: 'PUT',
+      headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ revision: 0, value: { refreshedAt: '2026-09-30T20:00:00.000Z' } }),
+    })).status).toBe(200)
+    const quoteEvent = await readFrame(reader)
+    expect(quoteEvent).toContain('"kind":"quote-refresh","resourceId":"current","revision":1')
+    expect(quoteEvent).not.toContain('refreshedAt')
     await reader.cancel()
     repository.close()
   })

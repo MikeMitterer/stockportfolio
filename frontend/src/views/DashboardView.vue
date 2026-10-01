@@ -5,7 +5,7 @@ import GroupActionIcon from '@/components/GroupActionIcon.vue'
 import { UxCaret } from '@mmit/ux-foundation'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { NSpin, NEmpty, NButton } from 'naive-ui'
+import { NEmpty, NButton } from 'naive-ui'
 import InfoHint from '@/components/InfoHint.vue'
 import KpiCard from '@/components/KpiCard.vue'
 import PortfolioValueChart from '@/components/PortfolioValueChart.vue'
@@ -31,6 +31,7 @@ import { useQuotesStore } from '@/stores/quotes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { newId } from '@/db/seed'
+import { quoteKey } from '@/domain/rebalancing'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { InstrumentSummary } from '@/api/types'
 import type { AssetGroup, Position } from '@/types/portfolio'
@@ -54,10 +55,12 @@ const isCompact = useIsCompact()
 const loading = computed(() => quotesStore.loading)
 const failures = computed(() => quotesStore.failures)
 
-const ready = computed(() => portfolioStore.loaded && settingsStore.loaded)
+const initialLoading = ref(true)
+const demoLoading = ref(false)
+const ready = computed(() =>
+  portfolioStore.loaded && settingsStore.loaded && !initialLoading.value,
+)
 const hasHoldings = computed(() => portfolioStore.hasHoldings)
-
-const demoLoading = ref<boolean>(false)
 
 /** Lädt das Beispiel-Depot und holt gleich die passenden Kurse. */
 async function onLoadDemo(): Promise<void> {
@@ -126,7 +129,12 @@ const foreignCurrencyRows = computed(() =>
  * das Papier notiert in fremder Währung. In beiden Fällen fehlt der Position
  * ein Marktwert in der Basiswährung, und sie zählt in keine Summe.
  */
-const incompleteCount = computed(() => failures.value.length + foreignCurrencyRows.value.length)
+const incompleteCount = computed(() => new Set([
+  ...failures.value.map(failure => failure.key),
+  ...(result.value?.rows ?? [])
+    .filter(row => row.position.enabled && row.excludedReason !== null)
+    .map(row => quoteKey(row.position)),
+]).size)
 
 /*
  * Positiv formuliert: Der Normalfall ist „Vollständig", nicht „keine
@@ -372,7 +380,7 @@ onMounted(async () => {
   await portfolioStore.load()
   await settingsStore.load(portfolioStore.portfolio?.id ?? '')
 
-  // Zuerst den persistierten Cache zeigen, dann im Hintergrund aktualisieren.
+  // Den Cache laden, bevor die erste Bewertung sichtbar wird.
   await quotesStore.hydrate()
 
   /*
@@ -400,6 +408,7 @@ onMounted(async () => {
 
   // Der Tageswert wird festgehalten, sobald die Kurse stehen — einmal je Tag.
   await loadFx()
+  initialLoading.value = false
   await loadValueHistory()
 })
 
@@ -428,12 +437,22 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 </script>
 
 <template>
-  <div class="dashboard">
-    <FxNotice :result="result" :loading="fx.loading" @retry="loadFx" />
-    <p v-if="needsHistoricalFx" class="dashboard__history-note">{{ t('fx.historyUnavailable') }}</p>
-    <!-- Erst-Ladezustand -->
-    <div v-if="!ready" class="dashboard__loading">
-      <NSpin size="large" />
+  <div class="dashboard" :aria-busy="!ready">
+    <FxNotice v-if="ready" :result="result" :loading="fx.loading" @retry="loadFx" />
+    <p v-if="ready && needsHistoricalFx" class="dashboard__history-note">{{ t('fx.historyUnavailable') }}</p>
+    <!-- Platzhalter halten den Aufbau stabil, bis Depot und Bewertung geladen sind. -->
+    <div v-if="!ready" class="dashboard__loading" role="status" :aria-label="t('dashboard.loading')">
+      <div class="dashboard__loading-kpis" aria-hidden="true">
+        <div v-for="index in 4" :key="index" class="dashboard__loading-kpi">
+          <span class="dashboard__loading-line dashboard__loading-line--short" />
+          <span class="dashboard__loading-line dashboard__loading-line--value" />
+        </div>
+      </div>
+      <div class="dashboard__loading-table" aria-hidden="true">
+        <span class="dashboard__loading-line dashboard__loading-line--short" />
+        <span v-for="index in 4" :key="index" class="dashboard__loading-line" />
+      </div>
+      <span class="dashboard__loading-caption">{{ t('dashboard.loading') }}</span>
     </div>
 
     <!--
@@ -468,7 +487,9 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
         <KpiCard
           :label="t('kpi.total')"
           :value="formatMoney(result.total)"
-          :hint="`${t('fx.baseCurrency')}: ${baseCurrency}`"
+          :hint="baseCurrency"
+          :hint-explanation="t('hints.baseCurrency')"
+          hint-settings-tab="data"
           :trend="trendPoints"
           expandable
           :expanded="valueChartOpen"
@@ -677,11 +698,40 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
   @include content-frame;
 
   &__loading {
-    @include row(0);
-
-    justify-content: center;
-    padding: var(--space-8) 0;
+    @include stack(var(--space-4));
   }
+
+  &__loading-kpis {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    @include up(sm) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include up(lg) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  &__loading-kpi, &__loading-table {
+    @include stack(var(--space-4));
+
+    padding: var(--space-5);
+    border: 1px solid token(--border-subtle);
+    border-radius: var(--radius-md);
+  }
+
+  &__loading-kpi { min-height: 7rem; }
+  &__loading-table { min-height: 16rem; }
+
+  &__loading-line {
+    display: block;
+    width: 100%;
+    height: 0.75rem;
+    border-radius: var(--radius-sm);
+    background-color: token(--border-subtle);
+
+    &--short { width: 35%; }
+    &--value { width: 65%; height: 1.5rem; }
+  }
+
+  &__loading-caption { color: token(--text-secondary); font-size: var(--font-sm); }
 
   &__empty { padding: var(--space-8) 0; }
 

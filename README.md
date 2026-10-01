@@ -261,6 +261,15 @@ and master data and learns nothing about holdings.
 That has consequences worth knowing:
 
 - The same account loads its portfolios on another browser or device after login.
+- Open browsers signed in to the same account receive change notices and reload
+  the affected data from the account API. The status bar warns when the live
+  connection is unavailable. After a connection loss, the app fetches the
+  current data on reconnection and checks the server periodically to catch
+  missed changes.
+  When one browser uses **Refresh** for prices, the others fetch the current
+  prices from StockInfo without reloading their pages. Restoring a backup in
+  one browser updates the others in the same way. A stale edit still
+  produces a conflict instead of overwriting another browser's change.
 - A new account, including an additional admin, starts with an empty portfolio.
 - Clearing browser site data removes market caches and browser preferences,
   but server portfolios remain. Keep and back up the same `/data` volume when
@@ -391,6 +400,22 @@ continue to use StockInfo's Python environment directly:
 
 That single-server mode imports StockInfo in the same process and uses plain
 help with the current StockInfo environment.
+
+The live sync between browsers has a visible browser smoke test. It needs the
+test stack started with `--demo-accounts` and a local Google Chrome
+(`CHROME_PATH` overrides the default macOS path):
+
+```bash
+npm --prefix frontend run smoke:live-sync -- <temporary-dir>/demo-accounts.json
+```
+
+It opens two windows of one account side by side and a third window of the
+second account. It checks that a change in one window appears in the other
+without a page reload, that the other account sees nothing, that a backup
+restore reaches the second window, reconnection after an interrupted stream,
+the 15-second keep-alive through the Vite proxy, conflict handling and
+logout. A forced password change of a new test account is handled
+automatically. The windows stay open until you press Enter.
 
 ## Commands
 
@@ -523,6 +548,10 @@ The web interface has a login. For access through an HTTPS reverse proxy, set
 `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
 `STOCKPORTFOLIO_SECURE_COOKIES=true`. Keep the service behind an appropriate
 network or proxy boundary as well.
+The same account's open browsers use a long-lived `/api/data/events` stream
+for change notices. A reverse proxy must pass that stream without buffering
+and keep idle connections open for more than the server's 15-second keep-alive
+interval. Portfolio data still travels through authenticated REST requests.
 
 The container listens on **8080** and the API runs without root. Older images
 used port 80: update an existing port mapping when switching to this version.

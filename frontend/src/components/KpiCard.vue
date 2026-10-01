@@ -15,6 +15,10 @@ defineProps<{
   anchor?: string
   /** Reiter in den Einstellungen, in dem der zugehörige Wert steht. */
   settingsTab?: string
+  /** Kurzerklärung zur Erläuterung neben der Zahl; zeigt dort ein Fragezeichen. */
+  hintExplanation?: string
+  /** Reiter in den Einstellungen, in dem der Wert der Erläuterung steht. */
+  hintSettingsTab?: string
   /**
    * Kleine Verlaufslinie neben der Zahl.
    *
@@ -43,12 +47,15 @@ const emit = defineEmits<{
     darunter. Sie ist ohnehin nur Beiwerk und muss keine eigene Zeile Höhe
     kosten — der Kopfbereich stand sonst über der Tabelle wie ein Block.
   -->
-  <component
-    :is="expandable ? 'button' : 'div'"
+  <!--
+    Aufklappbar ist die ganze Fläche, der eigentliche Knopf ist aber nur die
+    Gruppe aus Verlauf und Pfeil. Die Karte selbst darf kein Knopf sein: Ein
+    Fragezeichen mit Verweisen darin wäre verschachtelte Bedienung, und jeder
+    Klick darauf klappte das Diagramm mit auf.
+  -->
+  <div
     class="kpi"
     :class="{ 'kpi--expandable': expandable }"
-    :type="expandable ? 'button' : undefined"
-    :aria-expanded="expandable ? expanded : undefined"
     @click="expandable && emit('toggle')"
   >
     <div class="kpi__label">
@@ -58,6 +65,7 @@ const emit = defineEmits<{
         :text="explanation"
         :anchor="anchor"
         :settings-tab="settingsTab"
+        @click.stop
       />
     </div>
 
@@ -65,23 +73,45 @@ const emit = defineEmits<{
       <span class="kpi__value tabular-nums" :class="`kpi__value--${tone ?? 'default'}`">
         {{ value }}
       </span>
-      <span v-if="hint" class="kpi__hint" :title="hint">{{ hint }}</span>
-
-      <PriceSparkline
-        v-if="trend && trend.length > 1"
-        class="kpi__trend"
-        :points="trend"
-        :width="64"
-        :height="18"
-      />
 
       <!--
-        `flip`: zu zeigt nach unten, offen nach oben — „hier geht etwas auf".
-        Die Karte selbst ist der Knopf, der Pfeil nur ihr Merkmal.
+        Verlauf und Pfeil stehen direkt am Wert. Wird die Spalte schmal, bricht
+        zuerst die Erläuterung um, nicht die Grafik. Der Knopf löst kein eigenes
+        Ereignis aus: Sein Klick erreicht die Karte, auch per Tastatur.
       -->
-      <UxCaret v-if="expandable" class="kpi__chevron" :open="!!expanded" size="sm" />
+      <component
+        :is="expandable ? 'button' : 'span'"
+        v-if="(trend && trend.length > 1) || expandable"
+        class="kpi__aside"
+        :type="expandable ? 'button' : undefined"
+        :aria-expanded="expandable ? expanded : undefined"
+        :aria-label="expandable ? label : undefined"
+      >
+        <PriceSparkline
+          v-if="trend && trend.length > 1"
+          class="kpi__trend"
+          :points="trend"
+          :width="64"
+          :height="18"
+        />
+
+        <!--
+          `flip`: zu zeigt nach unten, offen nach oben — „hier geht etwas auf".
+        -->
+        <UxCaret v-if="expandable" class="kpi__chevron" :open="!!expanded" size="sm" />
+      </component>
+
+      <span v-if="hint" class="kpi__hint" :title="hint">
+        {{ hint }}
+        <InfoHint
+          v-if="hintExplanation"
+          :text="hintExplanation"
+          :settings-tab="hintSettingsTab"
+          @click.stop
+        />
+      </span>
     </div>
-  </component>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -105,13 +135,22 @@ const emit = defineEmits<{
     border-bottom: 0;
     border-left: 1px solid token(--border-default);
 
-    &:first-child {
+    // Bei zwei Spalten beginnt die dritte Kennzahl eine neue Zeile.
+    &:nth-child(odd) {
       padding-left: 0;
       border-left: 0;
     }
 
     &:last-child {
       padding-bottom: 0.375rem;
+    }
+  }
+
+  @include up(lg) {
+    // Ab vier Spalten gehört die Trennlinie wieder vor die dritte Kennzahl.
+    &:nth-child(odd):not(:first-child) {
+      padding-left: var(--space-4);
+      border-left: 1px solid token(--border-default);
     }
   }
 
@@ -144,8 +183,6 @@ const emit = defineEmits<{
   }
 
   &--expandable {
-    width: 100%;
-    text-align: left;
     cursor: pointer;
 
     &:hover .kpi__chevron { opacity: 1; }
@@ -159,9 +196,19 @@ const emit = defineEmits<{
    * Unterkante: Verlauf und Pfeil sackten damit an den unteren Zeilenrand,
    * statt neben dem Wert zu stehen.
    */
-  &__trend,
-  &__chevron {
+  &__aside {
+    @include row(var(--space-2));
+    flex-shrink: 0;
     align-self: center;
+    // Als Knopf ohne eigene Fläche: Er gehört optisch zur Karte.
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: inherit;
+
+    &:focus-visible { outline: 2px solid token(--accent); outline-offset: 2px; }
   }
 
   &__trend { flex-shrink: 0; }
@@ -183,6 +230,7 @@ const emit = defineEmits<{
   }
 
   &__hint {
+    @include row(var(--space-1));
     flex-shrink: 0;
     max-width: 100%;
     font-size: 0.6875rem;

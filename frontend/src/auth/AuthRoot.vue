@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, provide, ref } from 'vue'
+import { computed, onMounted, onUnmounted, provide, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -21,6 +21,8 @@ const router = useRouter()
 const client = new PortfolioAuthClient()
 const user = ref<PortfolioUser | null>(null)
 const view = ref<View>('loading')
+const showStartupStatus = ref(false)
+let startupTimer: ReturnType<typeof setTimeout> | null = null
 const busy = ref(false)
 const errorCode = ref('')
 const setupCode = ref('')
@@ -75,6 +77,9 @@ function reportError(error: unknown): void {
 
 async function initialize(): Promise<void> {
   view.value = 'loading'
+  showStartupStatus.value = false
+  if (startupTimer !== null) clearTimeout(startupTimer)
+  startupTimer = setTimeout(() => { showStartupStatus.value = true }, 350)
   try {
     const setup = await client.setupStatus()
     if (setup.required) {
@@ -90,6 +95,9 @@ async function initialize(): Promise<void> {
   } catch (error) {
     console.error('StockPortfolio auth initialization failed', error)
     view.value = 'unavailable'
+  } finally {
+    if (startupTimer !== null) clearTimeout(startupTimer)
+    startupTimer = null
   }
 }
 
@@ -200,12 +208,13 @@ onMounted(() => {
   naiveOverrides.value = buildNaiveOverrides()
   void initialize()
 })
+onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
 </script>
 
 <template>
   <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
     <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
-    <main v-else class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
+    <main v-else-if="view !== 'loading' || showStartupStatus" class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
       <section class="auth-panel">
         <header class="auth-panel__header">
           <h1 class="auth-panel__brand">

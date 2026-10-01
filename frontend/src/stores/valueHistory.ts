@@ -76,6 +76,8 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     if (!portfolioId || !Number.isFinite(total) || total <= 0 || !isCurrency(currency)) return
 
     const date = isoDay(now)
+    if (activePortfolio === portfolioId && activeCurrency === currency &&
+      snapshots.value.some((entry) => entry.date === date && entry.currency === currency && entry.total === total)) return
     try {
       await repository.put(portfolioId, date, total, currency)
       if (activePortfolio !== portfolioId || activeCurrency !== currency) return

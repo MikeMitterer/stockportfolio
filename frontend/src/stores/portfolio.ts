@@ -87,6 +87,14 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     await refreshList()
   }
 
+  /** Übernimmt den Serverstand ohne die Erststart-Vorgabe erneut anzulegen. */
+  async function refreshFromServer(): Promise<void> {
+    const entries = await repository.findAll()
+    portfolio.value = entries.find((entry) => entry.id === portfolio.value?.id) ?? entries[0] ?? null
+    showList(entries)
+    loaded.value = true
+  }
+
   // ─── Verwaltung mehrerer Depots ───────────────────────────────────────────
 
   /**
@@ -262,8 +270,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
    * stimmen — eine veraltete Liste wäre schlimmer als keine, weil man ihr
    * ansieht, dass sie sich nicht bewegt.
    */
-  async function refreshList(): Promise<void> {
-    const entries = await repository.findAll()
+  function showList(entries: Portfolio[]): void {
     all.value = entries
       .map((entry) => ({
         id: entry.id,
@@ -274,6 +281,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
         hasCurrencyAmounts: hasCurrencyAmounts(entry),
       }))
       .sort((a, b) => a.name.localeCompare(b.name, 'de'))
+  }
+
+  async function refreshList(): Promise<void> {
+    showList(await repository.findAll())
   }
 
   /**
@@ -359,6 +370,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     all,
     loaded,
     load,
+    refreshFromServer,
     refreshList,
     createPortfolio,
     setBaseCurrency,

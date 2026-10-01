@@ -2,10 +2,8 @@
 /**
  * Schmale Fortschrittsleiste am oberen Seitenrand.
  *
- * Zeigt, dass im Hintergrund Kurse geholt werden — gleich, wer es angestoßen
- * hat. Der Spinner am Knopf gehört dagegen allein der Handlung: Beide Anzeigen
- * beantworten verschiedene Fragen, „passiert gerade etwas?" und „ist mein Klick
- * angekommen?".
+ * Zeigt Kursabrufe und Depotabgleiche, ohne das Seitenlayout zu verschieben.
+ * Bei Depotabgleichen gibt es keinen messbaren Prozentwert.
  *
  * Bewusst **nicht** `NProgress`: Dessen Spur und Füllung müssten für die Lage
  * am Seitenrand umgestylt werden, und eigenes CSS auf einer Naive-Komponente
@@ -18,25 +16,26 @@
 const props = defineProps<{
   /** Läuft gerade etwas? Nur dann steht die Leiste im Dokument. */
   active: boolean
-  /** Stand in Prozent, 0–100. */
-  percent: number
+  /** Stand in Prozent, 0–100; null bei einem Abruf ohne messbaren Fortschritt. */
+  percent: number | null
   /** Beschriftung für Hilfstechnik — fertig übersetzt. */
   label: string
 }>()
 
 /** Nie ganz bei null anfangen: Ein unsichtbarer Balken sieht aus wie keiner. */
-const width = () => `${Math.max(2, Math.min(100, props.percent))}%`
+const width = () => props.percent === null ? undefined : `${Math.max(2, Math.min(100, props.percent))}%`
 </script>
 
 <template>
   <div
     v-if="active"
     class="progressbar"
+    :class="{ 'progressbar--indeterminate': percent === null }"
     role="progressbar"
     :aria-label="label"
-    :aria-valuenow="percent"
-    aria-valuemin="0"
-    aria-valuemax="100"
+    :aria-valuenow="percent ?? undefined"
+    :aria-valuemin="percent === null ? undefined : 0"
+    :aria-valuemax="percent === null ? undefined : 100"
   >
     <div class="progressbar__fill" :style="{ width: width() }" />
   </div>
@@ -53,7 +52,7 @@ const width = () => `${Math.max(2, Math.min(100, props.percent))}%`
    * darunter und wäre genau dort unsichtbar, wo er hingehört.
    */
   z-index: 3000;
-  height: 2px;
+  height: 4px;
   background-color: token(--accent, 0.15);
 
   &__fill {
@@ -62,5 +61,19 @@ const width = () => `${Math.max(2, Math.min(100, props.percent))}%`
     // Der Sprung von Papier zu Papier soll fließen, nicht hüpfen.
     transition: width 0.2s ease;
   }
+
+  &--indeterminate &__fill {
+    width: 30%;
+    animation: progressbar-scan 1.3s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes progressbar-scan {
+  from { transform: translateX(0); }
+  to { transform: translateX(233%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressbar--indeterminate .progressbar__fill { animation: none; }
 }
 </style>

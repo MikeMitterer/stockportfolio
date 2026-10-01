@@ -3,18 +3,16 @@ import { onScopeDispose, ref, watch, type Ref } from 'vue'
 /**
  * Vorgabe für die Mindestdauer.
  *
- * Lang genug, dass das Auge den Spinner mitbekommt, kurz genug, dass niemand
- * auf ihn wartet. Stand zuerst auf 400 ms und fühlte sich zäh an — bei einer
- * Aktion, die ohnehin sofort fertig ist, reicht ein Aufblitzen als Quittung.
+ * Lang genug, dass die Fortschrittsleiste wahrnehmbar ist, kurz genug, dass
+ * niemand auf sie wartet. 400 ms fühlten sich bei schnellen Abrufen zäh an.
  */
 export const MIN_VISIBLE_MS = 200
 
 /**
  * Hält einen Zustand mindestens so lange, wie er zu sehen sein soll.
  *
- * Anlass ist der Aktualisieren-Knopf in der Kopfzeile: Der globale Abruf liest
- * den Cache des Dienstes und ist nach Millisekunden fertig — der Spinner
- * blitzte auf, ohne dass ihn jemand wahrnahm, und der Knopf wirkte tot.
+ * Anlass ist die Fortschrittsleiste: Ein Abruf aus dem Speicher des Dienstes
+ * kann nach Millisekunden fertig sein und die Anzeige sonst nur aufblitzen.
  *
  * Bewusst nicht im Store: Dort steht, ob tatsächlich etwas läuft. Ob eine
  * Anzeige dem Auge noch einen Moment länger standhält, ist eine Frage der

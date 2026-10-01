@@ -114,9 +114,6 @@ msgstr "StockInfo, Konto-API und Vite gemeinsam verwalten"
 msgid "Create synthetic accounts in the temporary stack"
 msgstr "Synthetische Konten im temporären Stack anlegen"
 
-msgid "Process inspection failed: {error}"
-msgstr "Prozessprüfung fehlgeschlagen: {error}"
-
 msgid "The state file does not belong to this test server: {path}"
 msgstr "Die Zustandsdatei gehört nicht zu diesem Testserver: {path}"
 

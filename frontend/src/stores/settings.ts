@@ -128,6 +128,13 @@ export const useSettingsStore = defineStore('settings', () => {
     loaded.value = true
   }
 
+  /** Liest eine fremde Änderung, ohne dabei selbst einen Schreibvorgang auszulösen. */
+  async function refreshFromServer(): Promise<void> {
+    const stored = await repository.load()
+    settings.value = stored ? withDefaults(stored) : defaultSettings(settings.value.activePortfolioId)
+    loaded.value = true
+  }
+
   /** Ersetzt die Liste der externen Verweise. */
   async function setLinks(links: ExternalLink[]): Promise<void> {
     await patch({ links })
@@ -158,6 +165,7 @@ export const useSettingsStore = defineStore('settings', () => {
     settings,
     loaded,
     load,
+    refreshFromServer,
     patch,
     setBands,
     setActivePortfolio,

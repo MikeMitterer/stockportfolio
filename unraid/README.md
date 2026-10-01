@@ -104,6 +104,13 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 | Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
 | Timezone | Container log timezone; defaults to UTC |
 
+Open browsers with the same account receive portfolio change notices through
+`/api/data/events` and reload the data from the account API. If Unraid is
+behind a reverse proxy, pass this SSE stream without buffering and set its
+idle timeout above the 15-second keep-alive interval. The status bar warns
+when the live connection is unavailable; the app checks the server periodically
+for missed changes.
+
 **Older images listened on port 80.** For an existing container, change the
 mapping to container port 8080. Keep the same host address and host port:
 the browser associates its data with that web address. A different host port

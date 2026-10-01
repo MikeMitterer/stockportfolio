@@ -76,6 +76,17 @@ describe('withDefaults', () => {
 })
 
 describe('useSettingsStore — load', () => {
+  it('übernimmt fremde Einstellungen ohne sie erneut zu speichern', async () => {
+    const store = useSettingsStore()
+    await store.load('p1')
+    const repository = new SettingsRepository()
+    await repository.save({ ...store.settings, bands: { lowerPercent: 4, upperPercent: 12 } })
+
+    await store.refreshFromServer()
+
+    expect(store.settings.bands).toEqual({ lowerPercent: 4, upperPercent: 12 })
+  })
+
   it('legt beim Erststart die Vorgaben an', async () => {
     const store = useSettingsStore()
     await store.load('p1')

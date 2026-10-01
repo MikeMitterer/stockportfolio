@@ -1,0 +1,27 @@
+[
+  {
+    "identity": { "kind": "listed", "ticker": "VGWL", "mic": "XETR", "isin": "IE00B3RBWM25" },
+    "symbol": "VGWL.DE", "name": "Vanguard FTSE All-World", "type": "etf",
+    "price": 120.0, "currency": "EUR"
+  },
+  {
+    "identity": { "kind": "listed", "ticker": "EQQQ", "mic": "XETR", "isin": "IE0032077012" },
+    "symbol": "EQQQ.DE", "name": "Invesco Nasdaq-100", "type": "etf",
+    "price": 400.0, "currency": "EUR"
+  },
+  {
+    "identity": { "kind": "listed", "ticker": "IUSN", "mic": "XETR", "isin": "IE00BF4RFH31" },
+    "symbol": "IUSN.DE", "name": "iShares MSCI World Small Cap", "type": "etf",
+    "price": 7.5, "currency": "EUR"
+  },
+  {
+    "identity": { "kind": "listed", "ticker": "IS3M", "mic": "XETR", "isin": "IE00BCRY6557" },
+    "symbol": "IS3M.DE", "name": "iShares $ Treasury Bond 7-10yr", "type": "etf",
+    "price": 5.0, "currency": "EUR"
+  },
+  {
+    "identity": { "kind": "listed", "ticker": "4GLD", "mic": "XETR", "isin": "DE000A0S9GB0" },
+    "symbol": "4GLD.DE", "name": "Xetra-Gold", "type": "stock",
+    "price": 90.0, "currency": "EUR", "ter": null, "accumulating": null
+  }
+]

@@ -35,10 +35,15 @@ translate = gettext.translation(
 
 
 def process_identity(pid: int) -> str:
+    """Startzeit und Kommando eines Prozesses; PID allein wird wiederverwendet.
+
+    `lstart` folgt der Spracheinstellung. Ohne festes `LC_ALL=C` erkennt ein
+    Aufruf aus einer anderen Shell-Sprache den eigenen Prozess nicht wieder.
+    """
     try:
         result = subprocess.run(
             ["ps", "-p", str(pid), "-o", "stat=", "-o", "lstart=", "-o", "command="],
-            capture_output=True, text=True, check=False,
+            capture_output=True, text=True, check=False, env={**os.environ, "LC_ALL": "C"},
         )
     except OSError as error:
         raise RuntimeError(translate("Process inspection requires ps access: {error}").format(error=error)) from error
@@ -75,7 +80,7 @@ def preflight(project_root: Path, stockinfo_root: Path, stockinfo_port: int) -> 
         ))
     for executable in (
         project_root / "api/node_modules/.bin/tsx",
-        project_root / "frontend/node_modules/.bin/vite",
+        project_root / "frontend/node_modules/vite/bin/vite.js",
     ):
         if not executable.is_file():
             raise RuntimeError(translate("Missing {path}; install the declared npm packages first").format(
@@ -98,10 +103,12 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
         stockinfo_command.append("--demo-details")
     if detail_fixtures:
         stockinfo_command.extend(("--detail-fixtures", str(detail_fixtures.resolve())))
+    node = shutil.which("node") or "node"
     commands = {
         "stockinfo": stockinfo_command,
-        "api": [shutil.which("node") or "node", "--import", "tsx", "src/index.ts"],
-        "frontend": [str(project_root / "frontend/node_modules/.bin/vite"), "--config", str(project_root / "frontend/vite.config.ts"),
+        "api": [node, "--import", "tsx", "src/index.ts"],
+        "frontend": [node, str(project_root / "frontend/node_modules/vite/bin/vite.js"),
+                     "--config", str(project_root / "frontend/vite.config.ts"),
                      "--host", "127.0.0.1", "--port", str(FRONTEND_PORT), "--strictPort"],
     }
     environments = {

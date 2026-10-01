@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch, onMounted, onUnmounted } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   NConfigProvider,
@@ -24,12 +24,14 @@ import { useRelativeTime } from '@/composables/useRelativeTime'
 import { useMinimumDuration } from '@/composables/useMinimumDuration'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
+import { useLiveSyncStore } from '@/stores/liveSync'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
 import { buildNaiveOverrides, UxAppShell, UxNotificationProvider } from '@mmit/ux-foundation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import { DATA_ERROR_EVENT, PrivateDataError } from '@/data/client'
+import { DATA_ERROR_EVENT, DATA_RECOVERED_EVENT, PrivateDataError } from '@/data/client'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
@@ -38,7 +40,10 @@ if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 const { t } = useI18n()
 
 const portfolioStore = usePortfolioStore()
+const settingsStore = useSettingsStore()
+const route = useRoute()
 const quotesStore = useQuotesStore()
+const liveSync = useLiveSyncStore()
 const apiStatus = useApiStatusStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
@@ -48,8 +53,18 @@ function onDataFailure(event: Event): void {
   dataFailure.value = (event as CustomEvent<PrivateDataError>).detail
 }
 
+function onDataRecovered(): void {
+  if (dataFailure.value?.status === 0 || (dataFailure.value?.status ?? 0) >= 500) {
+    dataFailure.value = null
+  }
+}
+
 window.addEventListener(DATA_ERROR_EVENT, onDataFailure)
-onUnmounted(() => window.removeEventListener(DATA_ERROR_EVENT, onDataFailure))
+window.addEventListener(DATA_RECOVERED_EVENT, onDataRecovered)
+onUnmounted(() => {
+  window.removeEventListener(DATA_ERROR_EVENT, onDataFailure)
+  window.removeEventListener(DATA_RECOVERED_EVENT, onDataRecovered)
+})
 
 const dataFailureMessage = computed(() => {
   if (dataFailure.value?.status === 409) return t('privateData.conflict')
@@ -72,17 +87,13 @@ const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
 
 /*
- * Zwei Anzeigen, zwei verschiedene Fragen.
- *
- * Der Balken oben sagt „im Hintergrund passiert etwas" und hängt deshalb an
- * jedem Kursabruf. Der Spinner am Knopf sagt „dein Klick ist angekommen" und
- * hängt allein am erzwungenen Abruf — sonst drehte er beim Seitenaufruf mit,
- * ohne dass ihn jemand gedrückt hat, und wäre dabei gesperrt.
- *
- * Beide mit Mindestdauer: Ohne sie blitzen sie bei einem Abruf, der aus dem
- * Speicher des Dienstes kommt, unbemerkt auf.
+ * Der Balken oben zeigt Kursabrufe und länger dauernde Depotabgleiche.
+ * Die Mindestdauer verhindert, dass er bei schnellen Abrufen nur aufblitzt.
+ * Der Knopf bleibt während eines eigenen Kursabrufs gesperrt.
  */
-const progressVisible = useMinimumDuration(computed(() => quotesStore.busy))
+const progressVisible = useMinimumDuration(computed(() =>
+  (route.name === 'dashboard' && (!portfolioStore.loaded || !settingsStore.loaded)) || quotesStore.busy || liveSync.syncing,
+))
 const refreshing = useMinimumDuration(computed(() => quotesStore.forcing))
 
 /*
@@ -92,11 +103,13 @@ const refreshing = useMinimumDuration(computed(() => quotesStore.forcing))
  * steht wegen der Mindestdauer aber noch einen Moment. Ohne diese Zeile fiele
  * sie in diesem Moment von 80 % auf den Anfang zurück und verschwände dann.
  */
-const progressPercent = computed(() => (quotesStore.busy ? quotesStore.progressPercent : 100))
+const progressPercent = computed(() => (
+  quotesStore.busy ? quotesStore.progressPercent : liveSync.syncing ? null : 100
+))
 
 // Die Altersangabe hängt am tatsächlichen Laden, nicht am Klick: Sie sagt, dass
 // die Zahl daneben gerade nicht stimmt — und das gilt in beiden Fällen.
-const refreshLabel = computed(() => (progressVisible.value ? '…' : ageLabel.value))
+const refreshLabel = computed(() => (quotesStore.busy ? '…' : ageLabel.value))
 
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
@@ -170,7 +183,9 @@ async function refresh(): Promise<void> {
     if (apiStatus.state === 'offline') return
   }
 
+  const previousRefreshAt = quotesStore.lastRefreshAt
   await quotesStore.loadQuotes(client, portfolioStore.positions, { force: true })
+  if (quotesStore.lastRefreshAt !== previousRefreshAt) await liveSync.announceQuoteRefresh()
 }
 </script>
 
@@ -211,7 +226,7 @@ async function refresh(): Promise<void> {
             <AppProgressBar
               :active="progressVisible"
               :percent="progressPercent"
-              :label="t('status.quotesLoading')"
+              :label="t(liveSync.syncing && !quotesStore.busy ? 'status.syncLoading' : 'status.quotesLoading')"
             />
 
             <UxAppShell>
@@ -225,8 +240,10 @@ async function refresh(): Promise<void> {
 
               <div v-if="dataFailure" class="private-data-alert">
                 <NAlert type="error" :title="t('privateData.title')">
-                  <p>{{ dataFailureMessage }}</p>
-                  <NButton type="primary" @click="reloadServerData">{{ t('privateData.reload') }}</NButton>
+                  <div class="private-data-alert__content">
+                    <p>{{ dataFailureMessage }}</p>
+                    <NButton type="primary" @click="reloadServerData">{{ t('privateData.reload') }}</NButton>
+                  </div>
                 </NAlert>
               </div>
               <RouterView v-else />
@@ -244,4 +261,5 @@ async function refresh(): Promise<void> {
 
 <style scoped lang="scss">
 .private-data-alert { padding: var(--space-6); }
+.private-data-alert__content { @include stack(var(--space-4)); }
 </style>

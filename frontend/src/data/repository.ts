@@ -70,7 +70,7 @@ class ServerValueSnapshotRepository {
       const entries = current ?? []
       const next = entries.filter((entry) => entry.date !== date || entry.currency !== currency)
       return [...next, { key: `${portfolioId}::${currency}::${date}`, portfolioId, date, total, currency }]
-    })
+    }, { conflictRetries: 2, reportConflict: false })
   }
 
   async clearPortfolio(portfolioId: string): Promise<void> {

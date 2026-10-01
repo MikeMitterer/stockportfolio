@@ -547,6 +547,7 @@ export const de = {
   },
 
   dashboard: {
+    loading: 'Depot und Kurse werden geladen …',
     empty: 'Noch keine Wertpapiere im Depot',
     positionsHeading: 'Positionen — Bestand und Ziel sind direkt änderbar',
     positionsShort: 'Positionen',
@@ -705,6 +706,8 @@ export const de = {
   },
 
   hints: {
+    baseCurrency:
+      'Währung, in der das aktive Depot bewertet wird. Positionen in anderen Währungen rechnet die App mit aktuellen Devisenkursen um. Jedes Depot hat seine eigene Basiswährung.',
     bands:
       'Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das Band abweicht, entsteht Handlungsbedarf. Kleine Ausschläge bleiben unbeachtet — sie kosten sonst Gebühren für eine Genauigkeit, die nicht hält.',
     investmentReserve:
@@ -763,6 +766,9 @@ export const de = {
     apiChecking: 'API wird geprüft',
     apiOnline: 'API erreichbar',
     apiOffline: 'API nicht erreichbar',
+    syncConnecting: 'Live-Abgleich verbindet …',
+    syncDisconnected: 'Live-Verbindung unterbrochen',
+    syncLoading: 'Depotänderungen werden geladen …',
   },
   about: {
     title: 'Über StockPortfolio',

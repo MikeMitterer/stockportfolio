@@ -8,7 +8,7 @@ import { AUTH_LOGOUT, AUTH_USER } from '@/auth/context'
 
 defineProps<{
   lastRefreshLabel?: string
-  /** Solange die Kurse geholt werden — der Knopf dreht und nimmt keinen zweiten Klick an. */
+  /** Solange die Kurse geholt werden, nimmt der Knopf keinen zweiten Klick an. */
   refreshing?: boolean
 }>()
 
@@ -133,16 +133,10 @@ const isActive = (name: string): boolean => route.name === name
         {{ lastRefreshLabel }}
       </span>
 
-      <!--
-        `loading` ersetzt das Symbol durch den Spinner und lässt die
-        Beschriftung stehen — unterhalb `md` fällt die ohnehin weg, dann dreht
-        an derselben Stelle der Pfeil. `disabled` dazu, sonst lässt sich
-        derselbe Abruf mehrfach anstoßen.
-      -->
+      <!-- Der Fortschritt steht am Seitenrand; der Knopf verhindert Doppelabrufe. -->
       <NButton
         size="small"
         secondary
-        :loading="refreshing"
         :disabled="refreshing"
         @click="emit('refresh')"
       >

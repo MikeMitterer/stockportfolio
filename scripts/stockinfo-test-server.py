@@ -63,7 +63,7 @@ from types import FrameType
 from typing import Any
 
 from cli_theme import HelpFormatter, has_theme, print_message
-from local_test_stack import run_stack_cli, translate
+from local_test_stack import process_identity, run_stack_cli, translate
 from test_state import OwnedStateFile
 
 
@@ -119,21 +119,6 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     """Startet oder verwaltet den isolierten StockInfo-Testserver."""
     origin = args.origin or "http://127.0.0.1:5189"
     state_path = Path(tempfile.gettempdir()) / f"stockportfolio-test-server-{args.port}.json"
-
-
-    def process_identity(pid: int) -> str:
-        """PID allein reicht wegen Wiederverwendung nicht; Startzeit und Kommando prüfen."""
-        result = subprocess.run(["ps", "-p", str(pid), "-o", "stat=", "-o", "lstart=", "-o", "command="],
-                                capture_output=True, text=True, check=False)
-        if result.stderr.strip():
-            raise RuntimeError(
-                translate("Process inspection failed: {error}").format(error=result.stderr.strip())
-            )
-        identity = result.stdout.strip()
-        if result.returncode or not identity or identity.startswith("Z"):
-            return ""
-        # Der Prozessstatus ändert sich laufend, Startzeit und Kommando bleiben gleich.
-        return identity.split(None, 1)[1]
 
 
     def read_owned_state() -> dict[str, Any] | None:
@@ -248,6 +233,9 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         {**BASE, "identity": {"kind": "listed", "ticker": "AAPL", "mic": "XNAS", "isin": "US0378331005"}, "symbol": "AAPL", "name": "Apple Inc.", "type": "stock", "currency": "USD", "price": 225.0, "ter": None, "accumulating": None},
         {**BASE, "identity": {"kind": "listed", "ticker": "PEN", "mic": "XLON"}, "symbol": "PEN.L", "name": "T39 Pence Listing", "currency": "GBp", "price": 1234.5},
         *[{**BASE, "identity": {"kind": "listed", "ticker": "DUAL", "mic": mic}, "symbol": "DUAL", "name": f"T39 Mehrdeutig {mic}", "type": "stock", "currency": "USD"} for mic in ["XNAS", "XNYS"]],
+        # Das versionierte Fixture deckt das Beispieldepot ab. Der Frontend-Test
+        # prüft die Übereinstimmung bei späteren Änderungen der Positionen.
+        *[{**BASE, **item} for item in json.loads((Path(__file__).resolve().parent / "fixtures" / "demo-quotes.json").read_text())],
     ]
     state = {"mode": "normal", "symbol": "NOSI.DE"}
 

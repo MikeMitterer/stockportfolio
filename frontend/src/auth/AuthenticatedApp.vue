@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { provide } from 'vue'
+import { onMounted, onUnmounted, provide } from 'vue'
 import App from '@/App.vue'
 import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
+import { LiveEventsClient } from '@/data/liveEvents'
+import { useLiveSyncStore } from '@/stores/liveSync'
 
 const props = defineProps<{ baseUrl: string }>()
-provide(STOCK_INFO_CLIENT, new StockInfoClient(props.baseUrl))
+const stockInfoClient = new StockInfoClient(props.baseUrl)
+provide(STOCK_INFO_CLIENT, stockInfoClient)
+
+const liveSync = useLiveSyncStore()
+onMounted(() => liveSync.start(new LiveEventsClient(), 30_000, stockInfoClient))
+onUnmounted(() => liveSync.stop())
 </script>
 
 <template>

@@ -36,7 +36,7 @@ function readRevision(value: unknown): number {
 }
 
 function readResourceKind(value: string): ResourceKind {
-  if (value !== 'portfolio' && value !== 'settings' && value !== 'allowlist' && value !== 'snapshots') {
+  if (value !== 'portfolio' && value !== 'settings' && value !== 'allowlist' && value !== 'snapshots' && value !== 'quote-refresh') {
     throw new ServiceError(404, 'not_found')
   }
   return value
@@ -51,6 +51,9 @@ function validateResource(kind: ResourceKind, id: string, value: unknown): void 
     return
   }
   const record = readObject(value)
+  if (kind === 'quote-refresh' && (id !== 'current' || typeof record.refreshedAt !== 'string' || !Number.isFinite(Date.parse(record.refreshedAt)))) {
+    throw new ServiceError(400, 'invalid_data')
+  }
   if (kind === 'portfolio' && (record.id !== id || typeof record.name !== 'string' || !Array.isArray(record.positions))) {
     throw new ServiceError(400, 'invalid_data')
   }

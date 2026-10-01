@@ -42,6 +42,16 @@ export default [
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
+    // Node-Skripte wie der Browser-Smoketest; Teile davon laufen per
+    // Playwright im Browser und brauchen dessen Globals ebenfalls.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...browserGlobals, process: 'readonly', TextDecoder: 'readonly', EventSource: 'readonly' },
+    },
+  },
+  {
     files: ['**/*.{ts,tsx,vue}'],
     languageOptions: {
       parser: vueParser,

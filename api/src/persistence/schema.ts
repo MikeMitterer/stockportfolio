@@ -28,7 +28,7 @@ export const loginAttempts = sqliteTable('login_attempts', {
 
 export const privateResources = sqliteTable('private_resources', {
   ownerId: text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  kind: text('kind', { enum: ['portfolio', 'settings', 'allowlist', 'snapshots'] }).notNull(),
+  kind: text('kind', { enum: ['portfolio', 'settings', 'allowlist', 'snapshots', 'quote-refresh'] }).notNull(),
   resourceId: text('resource_id').notNull(),
   revision: integer('revision').notNull(),
   value: text('value').notNull(),

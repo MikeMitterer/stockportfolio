@@ -535,6 +535,7 @@ export const en: MessageSchema = {
   },
 
   dashboard: {
+    loading: 'Loading portfolio and prices …',
     empty: 'No securities in this portfolio yet',
     positionsHeading: 'Positions — holdings and targets are editable in place',
     positionsShort: 'Positions',
@@ -694,6 +695,8 @@ export const en: MessageSchema = {
   },
 
   hints: {
+    baseCurrency:
+      'Currency in which the active portfolio is valued. Positions in other currencies are converted with current exchange rates. Each portfolio has its own base currency.',
     bands:
       'Action is only called for once a share deviates from its target by more than the band. Small swings are ignored — otherwise they cost fees for a precision that does not hold.',
     investmentReserve:
@@ -752,6 +755,9 @@ export const en: MessageSchema = {
     apiChecking: 'API being checked',
     apiOnline: 'API reachable',
     apiOffline: 'API unreachable',
+    syncConnecting: 'Connecting live updates …',
+    syncDisconnected: 'Live connection interrupted',
+    syncLoading: 'Loading portfolio changes …',
   },
   about: {
     title: 'About StockPortfolio',

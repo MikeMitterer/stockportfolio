@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { NButton } from 'naive-ui'
 import { UxStatusBar } from '@mmit/ux-foundation'
 import { useApiStatusStore } from '@/stores/apiStatus'
+import { useLiveSyncStore } from '@/stores/liveSync'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useRelativeTime } from '@/composables/useRelativeTime'
@@ -32,6 +33,7 @@ const router = useRouter()
 const aboutHref = computed(() => router.resolve({ path: '/settings', query: { tab: 'about' } }).href)
 
 const apiStatus = useApiStatusStore()
+const liveSync = useLiveSyncStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
 
@@ -152,6 +154,9 @@ const failures = computed(() =>
       <span v-if="dataAge" class="status__separator status__separator--age" aria-hidden="true">·</span>
       <span v-if="dataAge">{{ dataAge }}</span>
       <span v-if="failures" class="status__failures">{{ failures }}</span>
+      <span v-if="liveSync.status !== 'connected'" class="status__sync" :class="{ 'status__sync--offline': liveSync.status === 'disconnected' }" role="status" aria-live="polite">
+        {{ liveSync.status === 'connecting' ? t('status.syncConnecting') : t('status.syncDisconnected') }}
+      </span>
     </template>
   </UxStatusBar>
 </template>
@@ -178,5 +183,7 @@ const failures = computed(() =>
   &__separator--age { @include below(sm) { display: none; } }
 
   &__failures { color: token(--status-out); }
+  &__sync { color: token(--text-bar-secondary); }
+  &__sync--offline { color: token(--status-out); }
 }
 </style>

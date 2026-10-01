@@ -100,6 +100,15 @@ Start with `docker compose up -d`.
 | `TZ` | Container log timezone; defaults to `UTC`. The interface uses the browser's timezone. |
 
 Restart the container after changing its environment variables.
+Open browsers signed in to the same account receive change notices through
+`/api/data/events` and reload changed portfolio data from the account API.
+After a manual price refresh, the other open browsers fetch current prices
+from StockInfo without reloading their pages.
+The status bar warns when the live connection is unavailable. The app also
+checks the server periodically for missed changes. Concurrent edits still use
+revision conflicts.
+If a reverse proxy fronts the container, pass the SSE stream without buffering
+and allow an idle timeout longer than its 15-second keep-alive interval.
 The image runs as user `node` (UID/GID 1000), without privileged mode.
 Its healthcheck calls the local `/healthz` endpoint; it does not test StockInfo.
 The default build targets `linux/amd64`.
@@ -124,7 +133,8 @@ accounts without access to other accounts' portfolios.
 Use **Settings → Backup** to download a JSON backup or restore one. Downloads
 are saved by your browser, normally in its Downloads folder. A second browser
 loads the same server data after login with the same account. A restored file
-is applied in one server transaction after confirmation.
+is applied in one server transaction after confirmation. Other open browsers
+of the same account show the restored data without a page reload.
 In an empty portfolio, **Restore backup …** opens **Settings → Backup** directly.
 
 Keep the same `/data` mapping when updating. If the account API is unavailable,

@@ -209,7 +209,9 @@ temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
 das verlinkte ProjectTools-Paket aus `requirements.txt`, wenn es fehlt.
 Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
-wiederverwendet. Aus diesem Repository aufrufen:
+wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
+2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
+Aus diesem Repository aufrufen:
 
 ```bash
 .venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
@@ -221,6 +223,12 @@ Die lokale `.venv` stellt `projecttools.ui.colors` für `MAKE_THEME` bereit;
 `NO_COLOR` und umgeleitete Ausgabe bleiben schlicht. Der StockInfo-Kindprozess
 verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
 diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
+
+Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen
+diesen Stack mit `--demo-accounts`:
+`npm --prefix frontend run smoke:live-sync -- <Testverzeichnis>/demo-accounts.json`.
+Er ordnet zwei Fenster 50:50 auf dem Hauptbildschirm an, links bleiben 80
+Pixel frei, und lässt die Fenster bis Enter offen.
 
 Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
 Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale

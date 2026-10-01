@@ -40,6 +40,22 @@ function makePosition(overrides: Partial<Position> = {}): Position {
 }
 
 describe('usePortfolioStore — load', () => {
+  it('übernimmt eine fremde Änderung und legt nach fremdem Löschen kein neues Depot an', async () => {
+    const store = usePortfolioStore()
+    await store.load()
+    const id = store.portfolio!.id
+    const repository = new PortfolioRepository()
+    await repository.save({ ...store.portfolio!, name: 'Anderer Browser' })
+
+    await store.refreshFromServer()
+    expect(store.portfolio?.name).toBe('Anderer Browser')
+
+    await repository.remove(id)
+    await store.refreshFromServer()
+    expect(store.portfolio).toBeNull()
+    expect(await repository.count()).toBe(0)
+  })
+
   it('legt beim Erststart ein leeres Depot an — ohne fremde Bestände', async () => {
     const store = usePortfolioStore()
     await store.load()

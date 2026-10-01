@@ -8,7 +8,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import { loginAttempts, privateResources, sessions, users } from './schema.js'
 
-export type ResourceKind = 'portfolio' | 'settings' | 'allowlist' | 'snapshots'
+export type ResourceKind = 'portfolio' | 'settings' | 'allowlist' | 'snapshots' | 'quote-refresh'
 
 export interface PrivateResource {
   resourceId: string
