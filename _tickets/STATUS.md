@@ -97,8 +97,10 @@ installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d8457
 (Konventionsstand `2026-09-28-activity-local`). `ACTIVITY.md` bleibt nach
 Mikes Beschluss vom 2026-09-28 lokal und wird bereits über die Root-`.gitignore`
 ignoriert; die Paketvorlage sieht dafür eine noch fehlende
-`_tickets/.gitignore` vor. Die allgemeine Übernahme ist nicht beauftragt und
-bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
+`_tickets/.gitignore` vor. Die Übernahme ist seit 2026-10-01 als
+[T-65](20-ready/T-65-board-konventionen-abgleichen.md) eingeplant und folgt
+nach T-64; bis dahin gelten Mikes Entscheidung und die bestehenden
+Schreibgrenzen.
 
 ## Maschinenlesbarer Zustand
 
@@ -124,7 +126,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-64-hinweis-und-bestaetigung-beim-login.md`
+- `priority_chain`: `T-64-hinweis-und-bestaetigung-beim-login.md`, `T-65-board-konventionen-abgleichen.md`
 - `priority_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
