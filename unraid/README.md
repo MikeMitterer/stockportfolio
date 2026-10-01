@@ -45,6 +45,11 @@ If Community Applications is not installed, follow the
 [Unraid setup instructions](https://docs.unraid.net/community-applications/#installing-the-plugin).
 For an existing container, see [Updating](#updating).
 
+**Do not forward the WebUI port directly to the internet.** Use a trusted
+network or VPN. If remote access uses an HTTPS reverse proxy, set the exact
+public origin and enable secure cookies. Protect StockInfo separately: the
+browser connects to its API directly, outside StockPortfolio's login.
+
 The image includes WebUI and icon labels for Unraid. Its healthcheck reports
 the container's health in the Docker tab.
 

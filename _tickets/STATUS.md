@@ -10,12 +10,16 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-66 · Status-Badges](30-doing/T-66-status-badges-below-above-ok.md)
-auf Branch `t-66-status-badges-below-above-ok`, im Root ausgecheckt.
-Danach folgt [T-67 · Internet-Hinweise unabhängig prüfen](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
-(Mike, 2026-10-01). Das Ticket ist in Doing; die Dokumentationsfassung muss
-der Coder auf den aktuellen Stand bringen und mit endgültigen Commits zur
-Prüfung übergeben. [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
+**Aktuelle Arbeit:** [T-67 · Internet-Hinweise unabhängig prüfen](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
+ist in Runde 1 (`50a6924`) technisch freigegeben. Der Branch
+`t-67-internetbetrieb-hinweise-pruefen` ist noch im Root ausgecheckt; der
+Coder integriert ihn nach `master`. Die Abnahme durch Mike steht aus. Der
+StockPortfolio-Teil des Unraid-Template-Commits `ca7ae2d` ist geprüft;
+dessen StockInfo-Teil bleibt dem dortigen T-84-Review vorbehalten.
+[T-66 · Status-Badges](30-doing/T-66-status-badges-below-above-ok.md)
+ist in Runde 2 (`c1b6c57`) technisch freigegeben und lokal nach `master`
+gemergt (`fd0b22a`, kein Push); Mikes Abnahme steht aus.
+[T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
 folgt danach. Die Launcher-Anpassung aus T-65 liegt als T-51 im
 AgentLessons-Board (Backlog).
 [T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
@@ -30,9 +34,9 @@ vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
 ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
-`master` enthält seit Mikes Mergeauftrag den technisch freigegebenen Stand
-bis T-65. Im Hauptverzeichnis ist derzeit der T-66-Branch ausgecheckt; dort
-liegt der aktuelle Source samt der bisherigen lokalen Konfiguration und Daten.
+`master` enthält den technisch freigegebenen Stand bis T-66. Im
+Hauptverzeichnis ist derzeit der T-67-Branch ausgecheckt; dort liegt der
+aktuelle Source samt der bisherigen lokalen Konfiguration und Daten.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -127,16 +131,20 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-66; die Korrektur der Near-Schwelle in Runde 2 (`c1b6c57`) ist
-technisch freigegeben. Die menschliche Sichtung und der Ticketabschluss
-stehen aus. Technisch freigegeben sind außerdem T-65 Runde 3 (`7f7ca99`),
+Aktiv ist T-67; die Dokumentationsfassung `50a6924` und der
+StockPortfolio-Teil von `ca7ae2d` sind in Runde 1 technisch freigegeben.
+Der lokale Merge des StockPortfolio-Branches nach `master` steht beim Coder
+an; der ganze Template-Commit benötigt noch das StockInfo-Prüfergebnis.
+T-66 Runde 2 (`c1b6c57`) ist technisch freigegeben und
+lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
+Technisch freigegeben sind außerdem T-65 Runde 3 (`7f7ca99`),
 T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
 T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
 jeweiligen Tickets. Auf Mikes ausdrücklichen Auftrag vom 2026-10-01 sind die
 technisch freigegebenen Stände T-60 bis T-65 lokal nach `master` gemergt.
-Die offenen menschlichen Abnahmen werden dadurch nicht behauptet; ein Push
-ist damit nicht verbunden.
+T-66 folgt mit `fd0b22a`. Die offenen menschlichen Abnahmen werden dadurch
+nicht behauptet; ein Push ist damit nicht verbunden.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
@@ -144,18 +152,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
 - `phase`: `approved`
-- `ticket`: `T-66-status-badges-below-above-ok.md`
-- `branch`: `t-66-status-badges-below-above-ok`
-- `handoff_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
-- `review_round`: `2`
+- `ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
+- `branch`: `t-67-internetbetrieb-hinweise-pruefen`
+- `handoff_commit`: `50a6924fb13e36a6a9b8467c880ac14f84413608`
+- `review_round`: `1`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-66-status-badges-below-above-ok.md`
-- `last_reviewed_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
+- `last_reviewed_commit`: `50a6924fb13e36a6a9b8467c880ac14f84413608`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-internetbetrieb-hinweise-pruefen.md`, `T-68-aktuelle-screenshots-mit-login.md`
-- `priority_ticket`: `T-66-status-badges-below-above-ok.md`
+- `priority_chain`: `T-67-internetbetrieb-hinweise-pruefen.md`, `T-68-aktuelle-screenshots-mit-login.md`
+- `priority_ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -329,36 +337,17 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-66 Runde 2 · `approved`, 2026-10-01**
+**codex-verifier → claude-coder · T-67 Runde 1 · `approved`, 2026-10-01**
 
-Die Fassung `c1b6c57` ist technisch freigegeben; eigener Prüfbeleg steht im
-[Ticket](30-doing/T-66-status-badges-below-above-ok.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01).
-Die Board-Rückgabe ist mit `80e64f0` committet. Bitte nach der neuen
-Root-Regel als Owner T-66 nach `master` mergen, den Root auf `master`
-zurückstellen und die
-Branch-/STATUS-Zuordnung für den nächsten Schritt herstellen. Mikes
-menschliche Abnahme wird damit nicht behauptet. Danach T-67 auf dem aktuellen
-Stand fertigstellen und mit eindeutigen Commit-IDs zur Prüfung übergeben.
-
-**codex-verifier → claude-coder · Mikes Sichtbarkeitsvorgabe, 2026-10-01**
-
-Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
-alle Tickets und den live bearbeiteten Source-Stand einplanen. Vom
-Hauptverzeichnis aus müssen Ticketdateien auffindbar sein; der testbare
-Coder-Stand braucht einen stabilen Pfad mit Branch, Commit, offenem
-Änderungsstand und passendem Startbefehl. `master` enthält derzeit T-65 und
-darf nicht still als aktueller T-66-Stand erscheinen. Aktuelle lokale
-Zugänge: `active-work.local` und `tickets.local`; sie sind keine dauerhafte
-Board-Konvention. Mikes Vorgabe ist keine Abnahme von T-66.
-
-**codex-verifier → claude-coder · T-67 Internet-Hinweise, 2026-10-01**
-
-Mike verlangt T-67 in Doing und eine unabhängige Prüfung. Das Internet-Ticket
-liegt jetzt unter `30-doing/`; die Screenshots heißen T-68. Bitte nach der
-T-66-Reviewrückgabe die vorbereiteten Dokumentations- und Template-Commits
-auf den aktuellen StockPortfolio-Stand bringen, die endgültigen Fassungen
-mit ihren Commit-IDs und Belegen übergeben und STATUS für T-67 aktivieren.
-Bis dahin liegt keine technische Freigabe der Internet-Hinweise vor.
+StockPortfolio `50a6924` und ausschließlich der StockPortfolio-Teil der
+Unraid-Vorlage aus `ca7ae2d` sind technisch freigegeben; Prüftiefe und
+Veröffentlichungsgrenze stehen im
+[Ticket](30-doing/T-67-internetbetrieb-hinweise-pruefen.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Bitte als Owner den StockPortfolio-T-67-Branch nach `master` mergen und den
+Root auf `master` zurückstellen. Den gemeinsamen
+Template-Commit erst nach dem eigenen StockInfo-T-84-Prüfurteil integrieren.
+Mikes Abnahme und Veröffentlichung sind damit nicht behauptet. Anschließend
+T-68 nach der vereinbarten Kette aktivieren.
 
 ## OUTBOX → Verifier
 
