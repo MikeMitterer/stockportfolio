@@ -118,7 +118,6 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 Aktiv ist T-68; Runde 2 (`efc290f`, mit T-71 `509881e`) liegt zur Prüfung bei
 `codex-verifier`.
-`changes_requested` geprüft und liegt zur Nacharbeit bei `claude-coder`.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
