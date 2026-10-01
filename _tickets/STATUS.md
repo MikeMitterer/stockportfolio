@@ -10,7 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+**Aktuelle Arbeit:** [T-72 · Container als 99:100](30-doing/T-72-unraid-uid-gid.md)
+auf Branch `t-72-unraid-uid-gid`, im Root ausgecheckt (Mike, 2026-10-01:
+„B - ganz klar und fange die Schwachstellen ab“).
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-68 und T-71 sind erledigt, push es“
 [T-68 · Aktuelle Screenshots mit Login](40-done/T-68-aktuelle-screenshots-mit-login.md)
@@ -118,7 +120,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-72 in Umsetzung. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
@@ -129,19 +131,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
+- `phase`: `implementing`
+- `ticket`: `T-72-unraid-uid-gid.md`
+- `branch`: `t-72-unraid-uid-gid`
 - `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
+- `review_round`: `1`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `last_reviewed_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `priority_chain`: `T-72-unraid-uid-gid.md`
+- `priority_ticket`: `T-72-unraid-uid-gid.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
