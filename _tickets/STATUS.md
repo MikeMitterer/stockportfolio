@@ -13,10 +13,9 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-69 · Dashboard ohne Neuladen](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md)
 auf Branch `t-69-dashboard-ohne-neuladen`, im Root ausgecheckt. Mike meldete
 am 2026-10-01 die Wartezeit beim Zurückwechseln aufs Dashboard; der Coder hat
-T-69 vor T-68 angekündigt, ohne Einwand. Runde 2 (`2bdf21b`) ist mit
-`changes_requested` an den Coder zurückgegeben: Bei blockiertem
-`localStorage` verschiebt ein Teilabruf nach dem Ansichtswechsel weiter die
-Schonfrist der übrigen Kurse.
+T-69 vor T-68 angekündigt, ohne Einwand. Runde 3 (`9d28d56`) ist technisch
+freigegeben; die lokale Integration nach `master` durch den Coder und Mikes
+Abnahme stehen aus.
 [T-67 · Internet-Hinweise](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
 ist in Runde 1 (`50a6924`) technisch freigegeben und lokal nach `master`
 gemergt (`1b6a49e`, kein Push); Mikes Abnahme steht aus. Der Template-Commit
@@ -41,7 +40,7 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 `master` enthält den technisch freigegebenen Stand bis T-67 (`1b6a49e`). Im
 Hauptverzeichnis ist derzeit `t-69-dashboard-ohne-neuladen` ausgecheckt;
-dort liegen die T-69-Produktübergabe `2bdf21b`, die dokumentierten
+dort liegen die T-69-Produktübergabe `9d28d56`, die dokumentierten
 Review-Rückgaben sowie die bisherige lokale Konfiguration und Daten.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
@@ -137,8 +136,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-69; Runde 3 (`9d28d56`) liegt nach `changes_requested` in
-Runde 2 zur Prüfung bei `codex-verifier`.
+Aktiv ist T-69; Runde 3 (`9d28d56`) ist durch `codex-verifier` technisch
+freigegeben und liegt zur lokalen Integration bei `claude-coder`.
 T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
 `ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
@@ -158,16 +157,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `branch`: `t-69-dashboard-ohne-neuladen`
 - `handoff_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
 - `review_round`: `3`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
-- `last_reviewed_commit`: `2bdf21beb8f0e511d149faf86a68d956782524bb`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`, `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
@@ -344,6 +343,13 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-69 Runde 3 · `approved`, 2026-10-01:**
+`9d28d56b05db0428beb2f19c96efce097427bd31` ist technisch freigegeben.
+Die Gegenprobe mit blockiertem `localStorage` ist grün; Urteil und Grenzen
+stehen im [Review](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#unabhängige-prüfung--runde-3--codex-verifier--2026-10-01).
+Bitte nach der Root-Regel lokal nach `master` integrieren und den Root auf
+`master` zurückstellen. Mikes Abnahme und Ticketabschluss bleiben offen.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -354,11 +360,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-69 Runde 3 · `ready_for_review`, 2026-10-01**
-
-Befund „selber Tab ohne `localStorage`“ bestätigt und korrigiert:
-`9d28d56b05db0428beb2f19c96efce097427bd31` gegen `2bdf21b` (Branch
-`t-69-dashboard-ohne-neuladen`, im Root ausgecheckt). Gegenprobe mit
-blockiertem Speicher im
-[Ticket](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#coder-übergabe--runde-3--claude-coder--2026-10-01).

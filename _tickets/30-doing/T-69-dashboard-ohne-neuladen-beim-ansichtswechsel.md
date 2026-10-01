@@ -11,12 +11,10 @@ erneut über das Netz beantwortet sind. Danach: Die Tabelle steht sofort mit
 den zwischengespeicherten Werten; eine Aktualisierung läuft nur, wenn die
 eingestellte Schonfrist abgelaufen ist, und dann im Hintergrund.
 
-**Stand:** Runde 1 (`f8bbe20`) kam mit `changes_requested` wegen der
-Schonfrist nach einem Teilabruf zurück. Runde 2 (`2bdf21b`) wurde durch
-`codex-verifier` ebenfalls mit `changes_requested` zurückgegeben: Bei
-blockiertem `localStorage` ging der im selben Tab noch vorhandene Zeitpunkt
-des vollständigen Abrufs beim nächsten Ansichtswechsel verloren. Die
-Korrektur `9d28d56` liegt als Runde 3 zur Prüfung bei `codex-verifier`. Beim
+**Stand:** Runde 3 (`9d28d56`) ist durch `codex-verifier` technisch
+freigegeben. Die Schonfrist bleibt nach Teilabruf und Ansichtswechsel auch
+bei blockiertem `localStorage` im selben Tab erhalten. Mikes Abnahme und der
+Ticketabschluss stehen aus. Beim
 Zurückwechseln stellt das Dashboard im sichtbaren Coder-Browsertest keine
 Anfrage mehr an Konto-API oder StockInfo.
 Mike, 2026-10-01: „Kurse können gecached werden.“
@@ -84,7 +82,7 @@ erst Mikes Prüfung. Das Testdepot ist in EUR, ein FX-Abruf kommt darin nicht vo
 
 - [x] Der Ansichtswechsel lädt Depot, Einstellungen und Tageswerte nicht neu, wenn sie geladen sind.
 - [x] Devisenkurse werden zum selben Kursstand wiederverwendet; neue Kurse oder „Erneut versuchen“ holen sie neu.
-- [ ] Netzabrufe nach der Schonfrist oder für einzelne fehlende Kurse blockieren die Anzeige nicht, sobald Kurse im Cache liegen. Die Anzeige ist belegt; bei blockiertem `localStorage` bleibt der Zeitpunkt des letzten vollständigen Abrufs nach Teilabruf und erneutem Aufbau noch nicht korrekt erhalten (Review Runde 2).
+- [x] Netzabrufe nach der Schonfrist oder für einzelne fehlende Kurse blockieren die Anzeige nicht, sobald Kurse im Cache liegen. Die Anzeige und die ursprüngliche Frist nach Teilabruf sind mit den genannten Grenzen belegt.
 - [x] Live-Abgleich über SSE liefert weiterhin den aktuellen Stand; Depotwechsel lädt die Tageswerte des neuen Depots.
 
 ### Side-Effects
@@ -272,3 +270,33 @@ wie in Runde 2.
 **Doku-Abgleich:** unverändert, kein Bedarf.
 
 **Lessons:** Derselbe Ablaufbefund wie in Runde 1; Einordnung beim Observer.
+
+## Unabhängige Prüfung · Runde 3 · `codex-verifier` · 2026-10-01
+
+**Prüffassung:** `9d28d56b05db0428beb2f19c96efce097427bd31` gegen
+`2bdf21beb8f0e511d149faf86a68d956782524bb`; bis zum Review-HEAD
+`84187d0` keine spätere Änderung unter `frontend/src`, `frontend/tests`,
+`README.md` oder `docker/README.md`. **Urteil: technisch `approved`.**
+Das ist weder Mikes Abnahme noch ein Ticketabschluss.
+
+**Gegenprobe:** `hydrate()` nimmt nach einem gespeicherten Vollabruf-Zeitpunkt
+den noch vorhandenen Zeitpunkt des laufenden Stores und erst danach das
+jüngste `fetchedAt`. Der zusätzliche Test lässt den Zugriff auf
+`window.localStorage` mit `SecurityError` scheitern. Er prüft denselben
+60-Minuten-Ablauf wie Runde 2 mit Vollabruf 10:00, Teilabruf 10:30 und
+erneutem Hydrieren 10:31; um 11:01 werden beide Kurse geladen. Die beiden
+Varianten mit verfügbarem Speicher bleiben erhalten.
+
+**Eigene Nachweise:** Gezielter Vitest-Lauf für `quotes.spec.ts` und
+`dashboardRemount.spec.ts`: 46 Tests grün. Der Coder dokumentiert zusätzlich
+`make test` mit 848 Frontend- und 20 API-Tests sowie beide Lints und
+Typprüfungen ohne Befund. Den sichtbaren Browserlauf aus Runde 1 habe ich
+nicht wiederholt; er bildet den Ablauf über 60 Minuten nicht ab. Nach einem
+vollständigen Browser-Neustart ohne verfügbaren Speicher gilt weiter der im
+Coder-Übergabetext benannte Rückfall auf den jüngsten Kurszeitpunkt.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` machen keine Aussage
+zum Ansichtswechsel; die Einstellungen zur Schonfrist bleiben für den
+geprüften Ablauf zutreffend. `unraid/README.md` und `docs/` benötigen keine
+Änderung. Die Lessons-Einordnung des einen Ablaufbefunds bleibt beim
+Observer sichtbar; keine neue lokale Lesson durch den Verifier.
