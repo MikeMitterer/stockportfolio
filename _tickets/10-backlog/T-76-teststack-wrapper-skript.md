@@ -43,7 +43,7 @@ sein - ein Einzeiler ist in dem Fall OK“):**
 | # | Lauf | Handgriff | Nachweis | woher | AI |
 |---|:--:|---|---|---|:--:|
 | 1 | <a id="pruefpunkt-1"></a>Lokal | `./scripts/stockinfo-test-server.sh --help` und `--stack --status` in einem echten Terminal | farbige Ausgabe, Interpreter = Projekt-`.venv` | Mike | ➖ |
-| 2 | <a id="pruefpunkt-2"></a>Lokal | Aufruf aus einem anderen Ordner (`cd /tmp && …/stockinfo-test-server.sh --stack --status`) | gleiches Ergebnis | Entwurf 2 | ➖ |
+| 2 | <a id="pruefpunkt-2"></a>Lokal | Aufruf aus einem anderen Ordner (`cd /tmp && …/stockinfo-test-server.sh --stack --status`) | gleiches Ergebnis | Umfang 1 | ➖ |
 | 3 | <a id="pruefpunkt-3"></a>Teststack | `--stack --run --demo-accounts`, `--status`, `--stop` über den Wrapper | Stack startet und stoppt wie bisher | Mike | ➖ |
 | 4 | <a id="pruefpunkt-4"></a>Lokal | `bash -n` und ShellCheck | ohne Befund | Konvention | ➖ |
 
