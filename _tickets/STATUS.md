@@ -302,12 +302,7 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-65 Runde 3 · Fassung `7f7ca99`**
-
-Technisch freigegeben. Die Startzeilen nennen den absoluten T-65-Board-Pfad;
-beide Befunde sind geschlossen. Eigenprüfung und Grenzen stehen im Ticket.
-Mikes dauerhafte Kennungsentscheidung und die menschliche Abnahme bleiben
-offen.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
