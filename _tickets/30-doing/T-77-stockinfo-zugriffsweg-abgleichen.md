@@ -17,10 +17,9 @@ tatsächlich funktioniert, oder benennen die Grenze klar.
 **Stand:** StockInfo hat T-87 am 2026-10-01 abgeschlossen: StockInfo nicht
 ins Internet, nur im Heimnetz, von außen per VPN (WireGuard oder Tailscale);
 kein Reverse Proxy mehr als Zugriffsweg. Claude hat unsere vier Stellen
-daran angeglichen und Runde 1 an `codex-verifier` übergeben.
+daran angeglichen; Runde 1 ist durch `codex-verifier` technisch freigegeben.
 
-Für Mike steht aktuell kein Handgriff an. Abschluss und Veröffentlichung
-folgen nach der technischen Prüfung.
+Mikes Abschlussentscheidung und die Veröffentlichung stehen noch aus.
 
 T-87 verlangt keine Codeänderung in StockPortfolio: Im Heimnetz und per VPN
 erreicht der Browser StockInfo ohne Anmeldung davor.
@@ -95,11 +94,11 @@ ohne Befund.
 
 ### Akzeptanzkriterien
 
-- [ ] Unsere Texte empfehlen keinen Zugriffsweg, der StockPortfolio ausschließt.
-- [ ] `README.md`, `docker/README.md`, `unraid/README.md` und
+- [x] Unsere Texte empfehlen keinen Zugriffsweg, der StockPortfolio ausschließt.
+- [x] `README.md`, `docker/README.md`, `unraid/README.md` und
       `templates/stockportfolio.xml` stimmen untereinander und mit StockInfos
       Ergebnis aus T-87 überein.
-- [ ] Der Doku-Abgleich nennt alle betroffenen Dateien und Abschnitte.
+- [x] Der Doku-Abgleich nennt alle betroffenen Dateien und Abschnitte.
 
 ### Side-Effects
 
@@ -116,3 +115,34 @@ angepasst; beide READMEs sagen dasselbe. Unverändert und weiter richtig:
 SSE-Hinweise hinter einem Proxy, Tabellen zu Public origin und Secure
 cookies. `docs/` enthält keine betroffene Aussage. Die zentrale
 Unraid-Vorlage ist die Templates-Datei; eine zweite Kopie gibt es nicht.
+
+## Unabhängige Prüfung · Runde 1 · codex-verifier · 2026-10-01
+
+**Urteil: technisch freigegeben.** Prüfstand StockPortfolio
+`c2f2cf2163515696525c600c1cf13b999ffefff3` gegen `8d69837` und
+Unraid-Templates `b250a2c` gegen `25d395c`. Die Diffs ändern nur die drei
+Anleitungen, die zentrale Vorlage und dieses Ticket; kein Produktcode ist
+betroffen. Im Projekt-Root war der in STATUS genannte Ticketbranch aktiv;
+`git worktree list` zeigte nur den Root.
+
+| Prüfpunkt | Unabhängiger Beleg |
+|---|---|
+| #1 | ✅ StockInfo T-87 ist abgeschlossen (`e04a116`). Dessen drei Anleitungen und `25d395c:templates/stockinfo.xml` nennen Heimnetz und VPN, mit WireGuard oder Tailscale als Beispielen. |
+| #2 | ✅ Die drei StockPortfolio-Anleitungen und `b250a2c:templates/stockportfolio.xml` sagen dasselbe. Ein Reverse Proxy wird nur als HTTPS-Weg im Heimnetz für StockPortfolio beschrieben; der frühere Hinweis „Protect StockInfo separately and verify …“ ist entfernt. Das Inventar aktueller Markdown-, HTML- und XML-Dateien außerhalb von `_tickets/`, `CHANGELOG.md` und historischen Specs ergab nur die drei geänderten Anleitungen als relevante Treffer. |
+| #3 | ➖ Kein VPN- oder Unraid-Live-Test. Der Browserzugriff auf StockInfo über einen eingerichteten VPN-Pfad wurde nicht praktisch geprüft. Die Freigabe bestätigt den Doku-Abgleich, keinen Live-Betrieb. |
+| #4 | ✅ `xmllint --noout` auf `b250a2c:templates/stockportfolio.xml` und `git diff --check` in beiden Repositories bestanden. Die Docker-Hub-Vorschau wurde aus `docker/README.md` erzeugt: 12.141 von höchstens 25.000 UTF-8-Bytes. |
+| #5 | ✅ `make test`: Frontend 82 Dateien/852 Tests, API 5 Dateien/20 Tests. Lint und Typecheck beider Pakete endeten mit Exit 0. |
+
+**Doku-Abgleich:** `README.md` (Docker), `docker/README.md` (Network access,
+Quick start) und `unraid/README.md` (Installing through Unraid Apps) stimmen
+mit der zentralen Unraid-Vorlage (Overview, Description, WebUI Port) und
+StockInfo T-87 überein. Die bestehenden Proxy-Hinweise zu HTTPS-Konfiguration
+und SSE bleiben auf den lokalen Einsatz bezogen. Unter `docs/` fand sich
+keine weitere aktuelle Aussage zum Zugriffsweg.
+
+**Lessons-Einordnung:** SP-CL-01 wurde mit Branch- und Worktree-Prüfung
+angewendet. Es gab keinen neuen fachlichen Befund und deshalb keine neue
+Lesson. Die Board-Konventionen tragen lokal und im Paket denselben Stand
+`2026-09-28-activity-local`; die in STATUS dokumentierte offene Übernahme
+T-65 → AgentLessons T-51 bleibt davon unberührt. Für den Skill
+`task-verification-workflow` ist aus diesem Review kein Nachtrag nötig.
