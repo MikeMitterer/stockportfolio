@@ -19,7 +19,12 @@ ins Internet, nur im Heimnetz, von außen per VPN (WireGuard oder Tailscale);
 kein Reverse Proxy mehr als Zugriffsweg. Claude hat unsere vier Stellen
 daran angeglichen; Runde 1 ist durch `codex-verifier` technisch freigegeben.
 
-Mikes Abschlussentscheidung und die Veröffentlichung stehen noch aus.
+Claude hat die Freigabe lokal nach `master` gemergt (`eab7095`, kein Push).
+
+**Für Mike:** T-77 abschließen, wenn die Texte passen. Danach folgen Push von
+`master` und die Integration der Vorlage `b250a2c`
+(Templates-Branch `t-77-stockportfolio-zugriffsweg`) nach dem
+Templates-`master` mit T-84/T-87.
 
 T-87 verlangt keine Codeänderung in StockPortfolio: Im Heimnetz und per VPN
 erreicht der Browser StockInfo ohne Anmeldung davor.
