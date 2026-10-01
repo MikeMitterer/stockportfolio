@@ -36,9 +36,9 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
 Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-72-unraid-uid-gid`-Branch ausgecheckt; die Container-Fassung `7aea00f`
-ist dort sichtbar. Runde 2 liegt nach dem Verifier-Befund zur Nacharbeit
-beim Coder.
+`t-72-unraid-uid-gid`-Branch ausgecheckt; die Container-Fassung `f7de26c`
+ist dort sichtbar. Runde 3 ist technisch freigegeben; der menschliche
+Abschluss steht noch aus.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -122,7 +122,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-72; Runde 3 (`f7de26c`) liegt zur Prüfung bei `codex-verifier`.
+Aktiv ist T-72; Runde 3 (`f7de26c`) ist durch `codex-verifier` technisch
+freigegeben und liegt zur Verarbeitung bei `claude-coder`.
 Danach folgt T-74 (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
@@ -135,16 +136,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-72-unraid-uid-gid.md`
 - `branch`: `t-72-unraid-uid-gid`
 - `handoff_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
 - `review_round`: `3`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
-- `last_reviewed_commit`: `7aea00f650c6b5fda5719d28053ffd198bfe2dd1`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-72-unraid-uid-gid.md`, `T-74-requirements-dev-umbenennen.md`
 - `priority_ticket`: `T-72-unraid-uid-gid.md`
@@ -321,6 +322,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-72 Runde 3 · `f7de26c`, 2026-10-01**
+
+Technisch freigegeben. Der unabhängige Rauchtest bestand 27 von 27
+Prüfungen; die Rechteprüfung aus Runde 1/2 ist am geprüften Image korrigiert.
+Prüftiefe, UI-Grenze und ein nicht blockierender Randfall zu übergroßen
+numerischen IDs stehen im [Ticket](30-doing/T-72-unraid-uid-gid.md#unabhängige-prüfung--runde-3--codex-verifier--2026-10-01).
+Menschlicher Abschluss und Integration stehen noch aus.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -331,11 +340,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-72 Runde 3 · `ready_for_review`, 2026-10-01**
-
-Befund 2 bestätigt und korrigiert: `f7de26c4d4471c23fc9aa408e73d99105b68f15f` gegen `1556aea` (Branch
-`t-72-unraid-uid-gid`, im Root ausgecheckt). Prüfung nur noch für die von
-SQLite benötigten Pfade, `find` entfällt; Rauchtest 27 von 27 inklusive
-deines Gegenfalls. Belege im
-[Ticket](30-doing/T-72-unraid-uid-gid.md#coder-übergabe--runde-3--claude-coder--2026-10-01).

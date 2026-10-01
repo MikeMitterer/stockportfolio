@@ -11,9 +11,9 @@ richten“; Entscheidung „B - ganz klar und fange die Schwachstellen ab“.
 `/mnt/user/appdata/stockportfolio` → bisher Absturz beim Start. Danach: Der
 Container richtet `/data` für 99:100 ein und startet.
 
-**Stand:** Runde 1 und 2 kamen mit Befunden zur Schreibprüfung zurück. Runde 3
-(`f7de26c`) prüft genau die Pfade, die SQLite braucht, und liegt bei
-`codex-verifier`. Der Rauchtest besteht 27 von 27 Prüfungen.
+**Stand:** Runde 3 (`f7de26c`) ist durch `codex-verifier` technisch
+freigegeben. Der Rauchtest besteht 27 von 27 Prüfungen. Der menschliche
+Abschluss steht noch aus.
 
 Für dich steht jetzt nichts an.
 
@@ -55,9 +55,8 @@ Root-Rechte. Abzufangen:
 
 - [x] Frischer Appdata-Ordner unter Unraid-Bedingungen startet ohne Eingriff.
 - [x] Die App läuft als 99:100, änderbar über `PUID`/`PGID`.
-- [ ] Alle fünf Schwachstellen sind abgefangen und im Rauchtest belegt:
-  Bei gescheitertem `chown` verhindert eine für die App unbeteiligte,
-  unbeschreibbare Datei noch den Start trotz beschreibbarem Datenpfad.
+- [x] Alle fünf Schwachstellen sind für die im Ticket geprüften Fälle
+  abgefangen und im Rauchtest belegt.
 - [x] `README.md`, `docker/README.md`, `unraid/README.md` und die Unraid-Vorlage nennen den neuen Stand.
 
 ### Side-Effects
@@ -288,3 +287,43 @@ angelegt, die App nutzt Standardwerte) sowie 401 auf `/api/auth/session` nach
 dem Abmelden. Beides ist Verhalten der Konto-API, gleich unter `make dev`,
 nicht durch T-72 verursacht. Danach Container entfernt, Test-Server beendet,
 Ports frei.
+
+## Unabhängige Prüfung · Runde 3 · codex-verifier · 2026-10-01
+
+**Urteil: technisch freigegeben.** Prüfstand
+`f7de26c4d4471c23fc9aa408e73d99105b68f15f` gegen `1556aea`.
+Der `linux/amd64`-Image-Entrypoint ist bytegleich mit der geprüften Datei
+(SHA-256 `b7b699ea8032de87cbe2e8901fdbf768f800acecda7bd400bb6b2648e6093cb3`).
+`./docker/smoke-test.sh` bestand unabhängig mit **27 von 27** Prüfungen.
+Insbesondere startet die App ohne `CHOWN` trotz gesperrter, unbeteiligter
+Datei und eines gesperrten Unterordners; eine gesperrte SQLite- oder
+WAL-Datei wird vor dem App-Start mit Pfad und UID/GID gemeldet. Die
+Quellprüfung bestätigt, dass der `find`-Scan entfällt und die geprüften
+Dateinamen zum Pfad in `api/src/index.ts` passen.
+
+**UI-Prüftiefe:** Ein eigener temporärer Container mit root-eigenem `/data`
+lieferte `/healthz` mit `ok`; im Browser erschien die Setup-Seite aus dem
+Container mit Code-, Benutzer- und Passwortfeld. Die Browsersteuerung
+wurde beim Ausfüllen durch einen Dialog unterbrochen; Setup, Login und
+Dashboard habe ich dort nicht selbst durchgeklickt. Der Rauchtest prüfte
+Setup und Login über HTTP; der Coder dokumentierte zusätzlich den sichtbaren
+UI-Ablauf bis Dashboard, Rebalancing und Einstellungen. Mein Testcontainer
+wurde gestoppt und entfernt. Kein Test auf echtem Unraid.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` nennen nun übereinstimmend
+den Datenordner, die SQLite-Datei und ihre Neben-Dateien als relevante
+Schreibpfade; unbeteiligte Dateien blockieren nicht. `unraid/README.md` und
+die zentrale XML wurden in Runde 3 nicht geändert; der in Runde 1 geprüfte
+Stand mit Vorgabe 99:100 bleibt maßgeblich. T-74 ist ein Folgeauftrag im
+Backlog, nicht Teil dieser Freigabe.
+
+**Nicht blockierender Randfall:** Eine extrem große rein numerische `PUID`
+bricht ab, meldet aber nach `Illegal number` irreführend fehlende
+SETUID/SETGID-Rechte. Der Prozess läuft dabei nicht als root. Die
+Prüfung ungültiger Werte im Ticket umfasst `abc` und `0`; eine präzisere
+Meldung für Werte außerhalb des UID-Bereichs bleibt offen.
+
+**Lessons-Einordnung:** SI-P-04/08 ist mit negativem SQLite-/WAL-Fall und
+positivem Fremddatei-Fall angewendet. Die Runde-1/2-Befunde bleiben als
+Originalbelege im Ticket. Keine neue Board-Konvention; kein Abgleich des
+Skills `task-verification-workflow` nötig.
