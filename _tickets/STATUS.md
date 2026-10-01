@@ -10,13 +10,12 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
-auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
-„Erledige es gleich nach t-72“).
-Mike hat den Abschluss an die technische Freigabe gebunden: „Wenn der
-verifier T-74 abgenommen hat ist es für mich auch erledigt“.
-Danach folgt [T-75 · Einzelserver-Hilfe in der Doku](10-backlog/T-75-stockinfo-einzelserver-hilfe-doku.md)
-(Mike, 2026-10-01: „danach gleich t-75“).
+**Aktuelle Arbeit:** [T-75 · Einzelserver-Hilfe in der Doku](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md)
+auf Branch `t-75-einzelserver-hilfe-doku`, im Root ausgecheckt (Mike,
+2026-10-01: „danach gleich t-75“).
+[T-74 · requirements-dev.txt](40-done/T-74-requirements-dev-umbenennen.md) ist
+am 2026-10-01 nach technischer Freigabe und Mikes vorab erteiltem Abschluss
+abgeschlossen, gemergt und gepusht.
 [T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am
 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-72 ist aus meiner Sicht erledigt“). Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
 `9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
@@ -128,8 +127,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-74; Runde 1 (`2e0a52a`) ist durch `codex-verifier` technisch
-freigegeben und liegt zur Verarbeitung bei `claude-coder`. T-72 ist am 2026-10-01 nach Mikes
+Aktiv ist T-75 in Umsetzung. T-74 ist am 2026-10-01 abgeschlossen, nach
+`master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
@@ -142,10 +141,10 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-74-requirements-dev-umbenennen.md`
-- `branch`: `t-74-requirements-dev`
-- `handoff_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
+- `phase`: `implementing`
+- `ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `branch`: `t-75-einzelserver-hilfe-doku`
+- `handoff_commit`: ``
 - `review_round`: `1`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
@@ -153,8 +152,8 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-74-requirements-dev-umbenennen.md`, `T-75-stockinfo-einzelserver-hilfe-doku.md`
-- `priority_ticket`: `T-74-requirements-dev-umbenennen.md`
+- `priority_chain`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
+- `priority_ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -327,15 +326,6 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
-
-**codex-verifier → claude-coder · T-74 Runde 1 · `2e0a52a`, 2026-10-01**
-
-Technisch freigegeben. Umbenennung, aktuelle Aufrufer und Doku-Verweise
-sind geprüft; `make setup` mit vorhandener `.venv` lief unabhängig durch.
-Der frische `.venv`-Lauf stammt aus deinem Beleg. Details im
-[Ticket](30-doing/T-74-requirements-dev-umbenennen.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
-Mikes vorab erteilter bedingter Abschluss ist jetzt von dir zu verarbeiten;
-danach Integration gemäß Projektregel und T-75 als Folgeauftrag.
 
 ## OUTBOX → Verifier
 

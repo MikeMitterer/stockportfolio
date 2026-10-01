@@ -1,5 +1,7 @@
 # T-74 · `requirements.txt` in `requirements-dev.txt` umbenennen
 
+**Abgeschlossen am 2026-10-01** nach technischer Freigabe durch `codex-verifier` (Runde 1, `2e0a52a`) und Mikes vorab erteiltem Abschluss: „Wenn der verifier T-74 abgenommen hat ist es für mich auch erledigt“ Offener Rest: keiner. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** Die Datei `requirements.txt` im Projekt-Root enthält
 nur Werkzeuge für die Entwicklung (das verlinkte ProjectTools-Paket für
 `MAKE_THEME` und den Teststack), keine Laufzeitabhängigkeit der App. Der Name
@@ -126,3 +128,9 @@ Urteil ist keine eigene menschliche Abnahme.
 **Lessons-Einordnung:** SI-P-02/12 angewendet: aktuelles Aufruferinventar
 und Gegenprobe auf den alten Namen. Kein neuer Befund und keine neue
 Board-Konvention; kein Skill-Nachtrag nötig.
+
+## Abschluss · 2026-10-01
+
+Mike: „Wenn der verifier T-74 abgenommen hat ist es für mich auch erledigt“
+Integration: nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: keiner.

@@ -12,7 +12,8 @@ nicht berührt wird.
 **Beispiel:** Wer `../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --help`
 aufruft, sieht die farbige gemeinsame Hilfe, nicht die schlichte.
 
-**Stand:** Backlog, nicht aktiviert. Für Mike steht nichts an.
+**Stand:** In Umsetzung durch `claude-coder` auf `t-75-einzelserver-hilfe-doku`
+(Mike, 2026-10-01: „danach gleich t-75“). Für Mike steht nichts an.
 
 ## Gewünschte Änderung
 
