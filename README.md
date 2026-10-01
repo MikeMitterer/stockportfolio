@@ -599,6 +599,16 @@ interval. Portfolio data still travels through authenticated REST requests.
 
 The container listens on **8080** and the API runs without root. Older images
 used port 80: update an existing port mapping when switching to this version.
+
+The container starts as root only to prepare `/data`: it gives the directory
+to `PUID`/`PGID` (default **99:100**, Unraid's `nobody:users`) and then starts
+the app with those IDs, never as root. This also fixes a host directory that
+Docker created as root. Data written by older images (UID 1000) is taken over
+on the first start. If ownership cannot be changed, for example on a network
+share, the container logs a warning and starts as long as the directory is
+writable; otherwise it stops with a message naming the directory and IDs.
+With `--user`, no switch happens and `/data` must already be writable for that
+user.
 Keep the host address/port stable so the browser retains the same storage origin.
 
 ### With Docker Compose
@@ -660,6 +670,11 @@ As in StockInfo, building and publishing are separate steps: test the built
 container before running `make push`. `make build` defaults to linux/amd64,
 independently of the host architecture. Package builds remain available
 through their npm scripts.
+
+`./docker/smoke-test.sh` checks the built image with throw-away containers:
+setup and login, a root-owned `/data`, data from older images, `--user`,
+a share without `chown`, missing capabilities and `PUID`/`PGID` values. It
+removes everything it created.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
 `STRICT=2` allows commits after a tag; `STRICT=1` requires the tagged commit.

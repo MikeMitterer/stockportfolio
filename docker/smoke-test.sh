@@ -16,13 +16,14 @@ readonly PORT=18090
 readonly ORIGIN="http://127.0.0.1:${PORT}"
 readonly PASSWORD='Smoke-Test-Pass1!'
 readonly JAR="$(mktemp)"
+# Alles, was dieser Lauf anlegt, trägt dieses Label. Die Hilfsfunktionen
+# laufen in $(…)-Subshells; eine Liste in Variablen käme dort nie an.
+readonly LABEL="stockportfolio-smoke=$$"
 FAILURES=0
-CONTAINERS=()
-VOLUMES=()
 
 cleanup() {
-    for CONTAINER in "${CONTAINERS[@]}"; do docker rm -f "${CONTAINER}" >/dev/null 2>&1; done
-    for VOLUME in "${VOLUMES[@]}"; do docker volume rm "${VOLUME}" >/dev/null 2>&1; done
+    docker ps -aq --filter "label=${LABEL}" | xargs docker rm -fv >/dev/null 2>&1
+    docker volume ls -q --filter "label=${LABEL}" | xargs docker volume rm >/dev/null 2>&1
     rm -f "${JAR}"
 }
 trap cleanup EXIT
@@ -31,18 +32,16 @@ pass() { echo "OK      $*"; }
 failed() { echo "FEHLER  $*"; FAILURES=$((FAILURES + 1)); }
 expect() { if [[ "$2" == "$3" ]]; then pass "$1"; else failed "$1: erwartet '$3', erhalten '$2'"; fi; }
 
-# Startet einen Container im Hintergrund und merkt ihn sich fürs Aufräumen.
+# Startet einen Container im Hintergrund, mit dem Label dieses Laufs.
 start() {
-    local -r ID=$(docker run -d --platform linux/amd64 -p "127.0.0.1:${PORT}:8080" \
+    docker run -d --label "${LABEL}" --platform linux/amd64 -p "127.0.0.1:${PORT}:8080" \
         -e STOCKPORTFOLIO_PUBLIC_ORIGIN="${ORIGIN}" -e STOCKINFO_API_URL=http://127.0.0.1:8899 \
-        "$@" "${IMAGE}" 2>/dev/null)
-    CONTAINERS+=("${ID}")
-    echo "${ID}"
+        "$@" "${IMAGE}" 2>/dev/null
 }
 
-stop() { docker rm -f "$1" >/dev/null 2>&1; }
+stop() { docker rm -fv "$1" >/dev/null 2>&1; }
 
-newVolume() { local -r ID=$(docker volume create); VOLUMES+=("${ID}"); echo "${ID}"; }
+newVolume() { docker volume create --label "${LABEL}"; }
 
 # Wartet auf /healthz; unter Emulation dauert der Start einige Sekunden.
 waitReady() {
@@ -104,7 +103,10 @@ stop "${C}"
 # 2 · Vorhandene Daten mit UID 1000 (alte Images) und 3 · Start mit --user.
 echo "-- 2/3 · Altbestand mit UID 1000, Start mit --user"
 V=$(newVolume)
-docker run --rm --platform linux/amd64 --entrypoint chown -v "${V}:/data" "${IMAGE}" 1000:1000 /data 2>/dev/null
+# Ein leeres Volume bekäme beim Einhängen wieder die Rechte aus dem Image;
+# echte Altdaten sind nie leer, deshalb eine Datei anlegen.
+docker run --rm --platform linux/amd64 --entrypoint sh -v "${V}:/data" "${IMAGE}" \
+    -c 'touch /data/.legacy && chown -R 1000:1000 /data' 2>/dev/null
 C=$(start --user 1000:1000 -v "${V}:/data")
 if waitReady "${C}"; then
     expect "--user: Setup" "$(setupAdmin "${C}")" 201
