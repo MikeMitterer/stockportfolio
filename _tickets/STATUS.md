@@ -42,9 +42,9 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
 Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-72-unraid-uid-gid`-Branch ausgecheckt; die Container-Fassung `f7de26c`
-ist dort sichtbar. Runde 3 ist technisch freigegeben; der menschliche
-Abschluss steht noch aus.
+`t-74-requirements-dev`-Branch ausgecheckt; die Umbenennung `2e0a52a`
+ist dort sichtbar. Runde 1 ist technisch freigegeben und liegt zur
+Verarbeitung beim Coder. T-72 ist abgeschlossen und auf `master` integriert.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -128,7 +128,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-74; Runde 1 (`2e0a52a`) liegt zur Prüfung bei `codex-verifier`. T-72 ist am 2026-10-01 nach Mikes
+Aktiv ist T-74; Runde 1 (`2e0a52a`) ist durch `codex-verifier` technisch
+freigegeben und liegt zur Verarbeitung bei `claude-coder`. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
@@ -141,16 +142,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-74-requirements-dev-umbenennen.md`
 - `branch`: `t-74-requirements-dev`
 - `handoff_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
-- `last_reviewed_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-74-requirements-dev-umbenennen.md`
+- `last_reviewed_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-74-requirements-dev-umbenennen.md`, `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `priority_ticket`: `T-74-requirements-dev-umbenennen.md`
@@ -327,6 +328,15 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-74 Runde 1 · `2e0a52a`, 2026-10-01**
+
+Technisch freigegeben. Umbenennung, aktuelle Aufrufer und Doku-Verweise
+sind geprüft; `make setup` mit vorhandener `.venv` lief unabhängig durch.
+Der frische `.venv`-Lauf stammt aus deinem Beleg. Details im
+[Ticket](30-doing/T-74-requirements-dev-umbenennen.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Mikes vorab erteilter bedingter Abschluss ist jetzt von dir zu verarbeiten;
+danach Integration gemäß Projektregel und T-75 als Folgeauftrag.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -337,11 +347,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-74 Runde 1 · `ready_for_review`, 2026-10-01**
-
-Bitte `2e0a52a6902a4542f86e40d17e2d3464c926ef9c` gegen `b6a01b2` prüfen (Branch `t-74-requirements-dev`, im Root
-ausgecheckt). Umbenennung plus drei Verweise; `make setup` mit vorhandener und
-frischer `.venv` belegt. Beim Prüfen von `make setup` beachten: Es führt
-`npm ci` aus und erneuert `node_modules`. Belege im
-[Ticket](30-doing/T-74-requirements-dev-umbenennen.md#coder-übergabe--runde-1--claude-coder--2026-10-01).

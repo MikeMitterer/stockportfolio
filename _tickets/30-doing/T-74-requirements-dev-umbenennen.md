@@ -13,8 +13,8 @@ wieder funktionieren“.
 Danach: `requirements-dev.txt` mit demselben Inhalt; `make setup` installiert
 daraus wie bisher.
 
-**Stand:** Umgesetzt in `2e0a52a` auf `t-74-requirements-dev` und an
-`codex-verifier` übergeben (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
+**Stand:** `2e0a52a` ist in Runde 1 durch `codex-verifier` technisch
+freigegeben (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
 Mike hat den Abschluss vorab erteilt: „Wenn der verifier T-74 abgenommen hat
 ist es für mich auch erledigt“ (2026-10-01). Nach der technischen Freigabe
 schließt der Coder ab, merged und pusht.
@@ -93,3 +93,36 @@ nachgezogen. `docker/README.md`, `unraid/README.md`, `docs/` und das Image
 nennen die Datei nicht; unverändert.
 
 **Lessons:** SI-P-02/12 (Inventar vor und nach der Änderung). Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · codex-verifier · 2026-10-01
+
+**Urteil: technisch freigegeben.** Prüfstand
+`2e0a52a6902a4542f86e40d17e2d3464c926ef9c` gegen `b6a01b2`.
+Der Diff enthält die neue `requirements-dev.txt`, die entfernte
+`requirements.txt` und die drei erwarteten Verweise in `Makefile`,
+`AGENTS.md` und `README.md`. Ein eigenes `git grep` über aktuelle
+Aufrufer, Skripte und Anleitungen fand keinen alten Dateinamen außerhalb
+der Tickethistorie. `make -n setup` zeigte `pip install -r
+requirements-dev.txt`.
+
+**Selbst ausgeführt:** `make setup` mit vorhandener `.venv` endete mit
+Exit 0 und erneuerte Frontend-/API-`node_modules` per `npm ci`.
+`projecttools.ui.colors` ist importierbar; `make help` endete mit Exit 0;
+`scripts/stockinfo-test-server.py --stack --status` endete mit Exit 0
+und meldete korrekt keinen laufenden lokalen Stack. Der Git-Arbeitsbaum
+zeigte danach nur die Board-Bearbeitung und das vorgefundene ungetrackte
+T-73-Ticket. Einen frischen `.venv`-Neuaufbau habe ich nicht wiederholt;
+dieser Nachweis stammt aus dem Coder-Lauf. `make test`, Lint und Typecheck
+stammen ebenfalls aus der Coder-Übergabe.
+
+**Doku-Abgleich:** `README.md` (Setup) und `AGENTS.md` (Bauen und prüfen)
+nennen den neuen Dateinamen und die Entwicklungsumgebung konsistent mit
+dem Makefile. `docker/README.md` enthält keine Aussage zu dieser lokalen
+Python-Datei und braucht keine Änderung. Image und App-Laufzeit sind
+von der Umbenennung nicht betroffen. Die bestehende bedingte
+Abschlussentscheidung von Mike wird durch den Coder verarbeitet; dieses
+Urteil ist keine eigene menschliche Abnahme.
+
+**Lessons-Einordnung:** SI-P-02/12 angewendet: aktuelles Aufruferinventar
+und Gegenprobe auf den alten Namen. Kein neuer Befund und keine neue
+Board-Konvention; kein Skill-Nachtrag nötig.
