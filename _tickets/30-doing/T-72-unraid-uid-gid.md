@@ -11,9 +11,10 @@ richten“; Entscheidung „B - ganz klar und fange die Schwachstellen ab“.
 `/mnt/user/appdata/stockportfolio` → bisher Absturz beim Start. Danach: Der
 Container richtet `/data` für 99:100 ein und startet.
 
-**Stand:** Runde 1 wurde von `codex-verifier` mit einem reproduzierten
-Randfall an `claude-coder` zurückgegeben. Der vorhandene Rauchtest besteht
-seine 22 Prüfungen; der Randfall ist darin noch nicht enthalten.
+**Stand:** Runde 1 (`e7cda36`) kam mit einem Befund zurück: Eine vorhandene,
+root-eigene Datenbank nach gescheitertem `chown`. Runde 2 (`7aea00f`) prüft
+vorhandene Dateien vor dem Start und liegt bei `codex-verifier`. Der Rauchtest
+besteht 24 von 24 Prüfungen.
 
 Für dich steht jetzt nichts an.
 
@@ -152,3 +153,41 @@ Korrektur beide Aussagen mit dem tatsächlichen Verhalten abgleichen.
 zweiter Beleg für ein wiederkehrendes Fehlermuster. SI-P-04/08 als
 Gegenprobe angewendet: Der bestehende positive CHOWN-Fall unterscheidet
 den fehlerhaften Zustand einer vorhandenen Datenbank nicht.
+
+## Coder-Übergabe · Runde 2 · claude-coder · 2026-10-01
+
+**Prüfstand:** `7aea00f650c6b5fda5719d28053ffd198bfe2dd1` gegen `7783de6`, Branch `t-72-unraid-uid-gid`.
+Templates unverändert `bb83dfa`.
+
+**Befund bestätigt:** Die Probedatei zeigte nur, dass in `/data` neue Dateien
+entstehen können. Eine vorhandene `stockportfolio.sqlite` im Besitz von root
+mit Modus 600 blieb unentdeckt, im Root-Pfad ohne `CHOWN` wie mit `--user`.
+
+**Korrektur (`aa67e82`):** Eine gemeinsame Prüfung läuft als Zielbenutzer, im
+Root-Pfad über `setpriv`, mit `--user` direkt. Sie legt die Probedatei an und
+sucht dann mit `find` den ersten Pfad unter `/data`, der als Ordner nicht
+schreib- oder betretbar beziehungsweise als Datei nicht les- oder schreibbar
+ist. Ein Treffer beendet den Start mit „<Pfad> is not writable for UID … /
+GID …“. Die bisherigen Meldungen für `/data` selbst bleiben wortgleich.
+
+**Rauchtest:** zwei neue Fälle mit vorbereitetem Volume (Ordner 0777,
+Datenbank `0:0` mit Modus 0600): ohne `CHOWN` → Meldung für
+`/data/stockportfolio.sqlite` mit 99/100; mit `--user 1000:1000` → Meldung
+mit 1000/1000. Der Test zählt jetzt selbst: **24 von 24** bestanden (vorher
+22 Prüfungen; die Angabe „24“ in Runde 1 war falsch). Lauf auf dem Image aus
+`aa67e82` (`make build`, linux/amd64 emuliert); danach 0 Container mit
+Lauf-Label, Volumes vorher und nachher 8. Gegenprobe zur alten Fassung ist
+die Reproduktion des Verifiers (Start, dann `SQLITE_CANTOPEN`); den alten
+Stand habe ich nicht erneut gebaut.
+
+**Belege:** `make test` 852 Frontend- und 20 API-Tests grün; Lint und
+Typecheck ohne Befund; Docker-Hub-Vorschau 12.139 Bytes.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md`: der Satz zum Start ohne
+`chown` nennt jetzt „directory and every file in it … readable and writable“
+und „blocked path“, in beiden wortgleich. `unraid/README.md` und Vorlage
+machen dazu keine Aussage; unverändert.
+
+**Lessons:** SI-P-04/08 (Gegenprobe muss den Fehlerzustand treffen: der neue
+Fall unterscheidet vorhandene von neuen Dateien), SI-P-01/10 (Prüfungszahl
+zählt das Skript jetzt selbst statt Handzählung). Keine neue Lesson.
