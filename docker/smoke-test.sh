@@ -155,6 +155,27 @@ expect "ohne CHOWN, Datenbank root-eigen: klare Meldung" "$(exitLog "${C}" | gre
 C=$(start --user 1000:1000 -v "${V}:/data")
 expect "--user, Datenbank root-eigen: klare Meldung" "$(exitLog "${C}" | grep -c '/data/stockportfolio.sqlite is not writable for UID 1000 / GID 1000')" 1
 
+# Gesperrte WAL-Datei neben einer sonst passenden Datenbank.
+V=$(newVolume)
+docker run --rm --platform linux/amd64 --entrypoint sh -v "${V}:/data" "${IMAGE}" \
+    -c 'chmod 0777 /data && touch /data/stockportfolio.sqlite-wal && chown 0:0 /data/stockportfolio.sqlite-wal && chmod 0600 /data/stockportfolio.sqlite-wal' 2>/dev/null
+C=$(start --cap-drop CHOWN -v "${V}:/data")
+expect "ohne CHOWN, WAL-Datei root-eigen: klare Meldung" "$(exitLog "${C}" | grep -c '/data/stockportfolio.sqlite-wal is not writable for UID 99 / GID 100')" 1
+
+# Gegenfall (Review Runde 2): Eine fremde, gesperrte Datei in /data betrifft
+# die App nicht und darf den Start nicht verhindern.
+V=$(newVolume)
+docker run --rm --platform linux/amd64 --entrypoint sh -v "${V}:/data" "${IMAGE}" \
+    -c 'chmod 0777 /data && touch /data/old-note.txt && chown 0:0 /data/old-note.txt && chmod 0400 /data/old-note.txt && mkdir -m 0555 /data/locked-dir' 2>/dev/null
+C=$(start --cap-drop CHOWN -v "${V}:/data")
+if waitReady "${C}"; then
+    expect "ohne CHOWN, fremde gesperrte Datei: Setup" "$(setupAdmin "${C}")" 201
+    expect "ohne CHOWN, fremde gesperrte Datei: App-Prozess 99:100" "$(appIds "${C}")" "99:100"
+else
+    failed "ohne CHOWN, fremde gesperrte Datei: Start verweigert: $(docker logs "${C}" 2>&1 | tail -2)"
+fi
+stop "${C}"
+
 C=$(start --cap-drop SETUID --cap-drop SETGID --mount type=tmpfs,destination=/data,tmpfs-mode=0755)
 expect "ohne SETUID/SETGID: klare Meldung" "$(exitLog "${C}" | grep -c 'lacks the SETUID/SETGID capability')" 1
 

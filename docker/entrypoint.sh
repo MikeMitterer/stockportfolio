@@ -43,18 +43,23 @@ writeFileSync(process.env.CONFIG_FILE,
 JS
 }
 
-# Läuft als Zielbenutzer und prüft, ob SQLite im Datenordner arbeiten kann:
-# Es legt neben der Datenbank weitere Dateien an (eine Probedatei), und jede
-# vorhandene Datei muss les- und schreibbar, jeder Ordner betretbar sein.
-# Eine Datenbank, die nach gescheitertem chown noch root gehört, fiele sonst
-# erst beim Öffnen auf (T-72, Review Runde 1). Gibt den ersten gesperrten Pfad
-# aus und endet dann mit 1.
+# Läuft als Zielbenutzer und prüft genau das, was SQLite braucht: neue Dateien
+# im Datenordner anlegen (WAL, Shared Memory, Journal) und vorhandene
+# Datenbankdateien lesen und schreiben. Eine Datenbank, die nach gescheitertem
+# chown noch root gehört, fiele sonst erst beim Öffnen auf (T-72, Review
+# Runde 1). Andere Dateien in /data gehen die App nichts an und blockieren den
+# Start nicht (Review Runde 2). Die API öffnet <DATA_DIR>/stockportfolio.sqlite
+# (api/src/index.ts). Gibt den ersten gesperrten Pfad aus und endet mit 1.
 CHECK_SCRIPT='
 PROBE_FILE="$1/.stockportfolio-write-test"
 if ! touch "$PROBE_FILE" 2>/dev/null; then echo "$1"; exit 1; fi
 rm -f "$PROBE_FILE"
-BLOCKED=$(find "$1" \( -type d \( ! -writable -o ! -executable \) \) -o \( ! -type d \( ! -readable -o ! -writable \) \) -print -quit 2>/dev/null)
-if [ -n "$BLOCKED" ]; then echo "$BLOCKED"; exit 1; fi
+for SUFFIX in "" -wal -shm -journal; do
+    DB_FILE="$1/stockportfolio.sqlite$SUFFIX"
+    if [ -e "$DB_FILE" ] && { [ ! -r "$DB_FILE" ] || [ ! -w "$DB_FILE" ]; }; then
+        echo "$DB_FILE"; exit 1
+    fi
+done
 '
 
 if [ "$(id -u)" != "0" ]; then
