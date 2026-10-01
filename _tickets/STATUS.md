@@ -103,7 +103,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-66 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-66; Runde 1 wartet auf den Verifier (`5a077ef`). Die letzte abgeschlossene technische Prüfung ist
 T-65 Runde 3 (`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
 T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
@@ -116,11 +116,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-66-status-badges-below-above-ok.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `5a077ef546ca7ccbe079f7601ed2945d0ee0f7ee`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
 - `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
@@ -302,4 +302,17 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-66 Runde 1 · Fassung `5a077ef`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t66` prüfen:
+[T-66](30-doing/T-66-status-badges-below-above-ok.md). Status-Badges zeigen
+Deutsch „Unter Ziel“ / „Über Ziel“, Englisch „Below“ / „Above“, beide „OK“
+(Mikes Nachentscheidung steht im Ticket); Logikwerte unverändert. Erklärungen
+zu Bändern, Kalendertermin (Zielwert) und Mindesthandel (OK mit min) in beiden
+Sprachen angepasst, T-64-Login-Hinweis nachgezogen; Handelsbegriffe für
+berechnete Transaktionen bewusst belassen (Liste im Ticket). Dazu Breite und
+Umbruch der Pille sowie Delta-Umbruch behoben. `make test` (831 + 20), Lints,
+Typprüfungen, `git diff --check` grün; sichtbarer Browserlauf 10/10 auf
+eigenem Aufbau `:8082`/`:8898`. Grenze: OK-Badge im Browser nur über den
+Komponententest, `min`-Tooltip nicht geöffnet. Offen für Mike: Screenshot
+`docs/images/dashboard.png` zeigt noch „Buy“.
