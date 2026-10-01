@@ -697,7 +697,7 @@ export const en: MessageSchema = {
 
   hints: {
     statusBands:
-      '↓ below, ↑ above target, each outside your bands ({lower} / {upper} relative to target). ✓ within the bands. → still inside the band but close to the limit: from {nearLower} or {nearUpper}. ✓ with “min”: outside the band, amount below the minimum trade size.',
+      '↓ below, ↑ above target, each outside your bands ({lower} / {upper} relative to target). ✓ within the bands. → still inside the band but close to the limit: between {lower} and {nearLower} and between {nearUpper} and {upper}. ✓ with “min”: outside the band, amount below the minimum trade size.',
     statusDueDate:
       'On a due date any deviation from the target counts.',
     statusCalendar:

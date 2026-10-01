@@ -27,7 +27,7 @@ technischer Freigabe, Branch `t-66-status-badges-below-above-ok` im Worktree
 
 | Frage | Prüfpunkt # | Handgriff | Dein Urteil | Human |
 |---|---|---|---|---|
-| A · Badges | [1](#pruefpunkt-1) | Dashboard in Deutsch und Englisch öffnen | Deutsch „Unter Ziel“ / „Über Ziel“ / „OK“, Englisch „Below“ / „Above“ / „OK“, einzeilig? | |
+| A · Badges | [1](#pruefpunkt-1) | Dashboard in Deutsch und Englisch öffnen | Nur Symbol und Farbe (↓ ↑ ✓ →), Gruppenkopf und Zeilen bündig, Tooltip nennt die Bedeutung? | |
 | B · Erklärungen | [2](#pruefpunkt-2) | Fragezeichen, Methodenseite und Login-Hinweis lesen | Erklären sie die Anzeigen richtig, auch Kalendertermin und Mindesthandel? | |
 
 ## Umfang
@@ -265,8 +265,8 @@ sell figures“) bleibt zutreffend. Offen: Screenshot `docs/images/dashboard.png
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | <a id="pruefpunkt-1"></a>Dashboard und Rebalancing in `de`/`en` | Badges `Below`/`Above`/`OK`, keine Buy/Sell-Badges mehr | ⚠️ |
-| 2 | <a id="pruefpunkt-2"></a>Hilfen, Methodenseite, Login-Hinweis lesen | Kalendertermin und Mindesthandel (`min`) korrekt erklärt; Handelsbegriffe nur für berechnete Transaktionen | ◑ |
+| 1 | <a id="pruefpunkt-1"></a>Dashboard und Rebalancing in `de`/`en` | Badges nur mit Symbol und Farbe (↓ ↑ ✓ →), zugänglicher Name und Tooltip „Unter Ziel“/„Below“ usw.; keine Buy/Sell-Texte; Gruppenkopf und Zeilen bündig | ⚠️ |
+| 2 | <a id="pruefpunkt-2"></a>Fragezeichen am Status, Methodenseite, Login-Hinweis lesen | Erklärung mit den eingestellten Bändern; Near-Schwellen stimmen mit `isNearBand` überein, auch bei Bändern unter 1 %; Kalendertermin und Mindesthandel (`min`) korrekt; Handelsbegriffe nur für berechnete Transaktionen | ◑ |
 | 3 | Inventar aller sichtbaren `Buy`/`Sell`-Vorkommen und betroffenen Doku | Jede Fundstelle geändert oder begründet belassen | ✅ |
 | 4 | `make test`, beide Lints und Typprüfungen, Build, sichtbarer Browserlauf | Ergebnisse dokumentiert | ✅ |
 
@@ -275,10 +275,13 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 
 ### Doku-Abgleich
 
-`README.md`, `docker/README.md`, `unraid/README.md`: beschreiben nur
-berechnete Kauf- und Verkaufswerte, nicht die Status-Spalte; unverändert.
-Unraid-Vorlage: kein Status-Bezug; unverändert. Die Methodenseite ist Teil der
-App-Texte (oben). Offen: Screenshot `docs/images/dashboard.png` (siehe oben).
+`README.md` und `docker/README.md` wurden in `6b8a6ee` angepasst: Der Hinweis
+unter den Tabellen ist sinngleich zu Login und About beschrieben (Beträge aus
+den eigenen Zielen, keine Eignungsprüfung, keine Orders). Die Status-Spalte
+selbst beschreiben beide nicht; die Symbole brauchen dort keinen Nachtrag.
+`unraid/README.md` („short note about the calculated buy and sell figures“)
+und die Unraid-Vorlage bleiben zutreffend und unverändert. Die Methodenseite
+ist Teil der App-Texte (oben). Der alte Screenshot ist als T-68 vorgemerkt.
 
 ### Lessons-Einordnung
 
@@ -331,3 +334,39 @@ Katalogtexte bleiben wegen des Near-Befunds offen. Der alte Screenshot ist
 als T-68 getrennt vorgemerkt. Lessons: SP-R-02/AL-R-01 für die belegte
 Prüftiefe, SP-CX-02 für den aktuellen Tickettext, SP-R-04 für die
 blockierende Einstufung eines real möglichen Grenzfalls.
+
+## Nacharbeit zu Runde 1
+
+`claude-coder`, 2026-10-01, im Projekt-Root auf
+`t-66-status-badges-below-above-ok`.
+
+**Befund Near-Schwelle:** Ursache war `Math.max(lower − 1, 0)` und
+`Math.max(upper − 1, 0)` in `useStatusHint`. `isNearBand` meldet Near im
+letzten Prozentpunkt vor jeder Bandgrenze; als relative Abweichung reicht Near
+unten von `−lower` bis `1 − lower`, oben von `upper − 1` bis `+upper`. Bei
+Bändern unter 1 % wechseln diese Werte das Vorzeichen. Neu ist die reine
+Funktion `nearThresholds(lower, upper)` ohne Abschneiden; der Text nennt beide
+Bereiche („zwischen −0,5 % und +0,5 % sowie zwischen −0,5 % und +0,5 %“ bei
+0,5 %; „zwischen −6,0 % und −5,0 % sowie zwischen +14,0 % und +15,0 %“ bei
+den Vorgaben). `de` und `en` gleich angepasst.
+
+**Grenzfalltest:** `useStatusHint.spec.ts` prüft bei 0,5 % / 0,5 % den Text
+und vergleicht für jede relative Abweichung von −0,5 % bis +0,5 % in
+0,1-Schritten das Ergebnis von `isNearBand` mit den beschriebenen Bereichen;
+dasselbe bei −6 % / +15 % in 0,5-Schritten. Vor der Korrektur rot
+(„ab −0,0 % bzw. +0,0 %“).
+
+**Ticket-Abgleich:** Prüfpunkt A und Verify-Zeilen 1 und 2 beschreiben jetzt
+Mikes maßgebliche Entscheidung (nur Symbole) und die Near-Schwellen; der
+Doku-Abgleich nennt die tatsächliche README-Änderung in `6b8a6ee`.
+
+**Lessons:** SP-R-04 angewendet (real möglicher Grenzfall als Fehler behoben,
+mit Test für beide Seiten), SP-CX-02 (aktuelle Ticketaussagen nachgezogen).
+Keine neue Lesson.
+
+**Prüfungen:** `make test` mit 839 Frontend- und 20 API-Tests grün; beide
+Lints und beide Typprüfungen ohne Befund; `git diff --check` ohne Befund.
+Sichtbarer Lauf gegen den Teststack im Projekt-Root (`:5175`, Bänder
+−6 % / +15 %): Das Popup am Status nennt „zwischen −6,0 % und −5,0 % sowie
+zwischen +14,0 % und +15,0 %“. Der Grenzfall unter 1 % ist im Test belegt,
+nicht im Browser eingestellt.

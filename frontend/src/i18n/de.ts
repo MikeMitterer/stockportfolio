@@ -709,7 +709,7 @@ export const de = {
 
   hints: {
     statusBands:
-      '↓ unter, ↑ über dem Ziel, jeweils außerhalb deiner Bänder ({lower} / {upper} relativ zum Ziel). ✓ innerhalb der Bänder. → noch im Band, aber nahe der Grenze: ab {nearLower} bzw. {nearUpper}. ✓ mit „min“: außerhalb des Bands, Betrag unter dem Mindest-Handelsvolumen.',
+      '↓ unter, ↑ über dem Ziel, jeweils außerhalb deiner Bänder ({lower} / {upper} relativ zum Ziel). ✓ innerhalb der Bänder. → noch im Band, aber nahe der Grenze: zwischen {lower} und {nearLower} sowie zwischen {nearUpper} und {upper}. ✓ mit „min“: außerhalb des Bands, Betrag unter dem Mindest-Handelsvolumen.',
     statusDueDate:
       'An einem fälligen Termin zählt jede Abweichung vom Ziel.',
     statusCalendar:
