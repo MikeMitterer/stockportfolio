@@ -9,6 +9,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 import { consola } from 'consola'
+import { safeStorage } from '@mmit/ux-foundation'
 import { translate } from '@/i18n'
 import { ApiError, describeFailure } from '@/api/errors'
 import { toQuoteCacheEntry } from '@/api/mappers'
@@ -20,6 +21,14 @@ import type { Position, QuoteCacheEntry, QuoteMap } from '@/types/portfolio'
 
 /** Maximale Anzahl gleichzeitiger Kursabfragen — schont die API. */
 const MAX_CONCURRENT_REQUESTS = 6
+
+/**
+ * Zeitpunkt des letzten vollständigen Durchgangs, über Seitenaufbauten hinweg.
+ *
+ * Aus den Kursen selbst lässt er sich nicht ablesen: Ein nachgeladener
+ * Einzelkurs ist jünger als die übrigen und verlängerte sonst deren Frist.
+ */
+const LAST_REFRESH_KEY = 'stockportfolio.quotes.lastRefreshAt'
 
 /** Fehlgeschlagene Kursabfrage einer einzelnen Position. */
 export interface QuoteFailure {
@@ -111,7 +120,7 @@ export const useQuotesStore = defineStore('quotes', () => {
     if (cached.size === 0) return
 
     quotes.value = cached
-    lastRefreshAt.value = newestFetchedAt(cached)
+    lastRefreshAt.value = safeStorage.read(LAST_REFRESH_KEY) ?? newestFetchedAt(cached)
   }
 
   /** Prüft einen Aufnahmekandidaten; Fehler gehen vor jeder Depotänderung zurück. */
@@ -179,7 +188,10 @@ export const useQuotesStore = defineStore('quotes', () => {
   ): Promise<void> {
     quotes.value = nextQuotes
     failures.value = nextFailures
-    if (stamped) lastRefreshAt.value = new Date().toISOString()
+    if (stamped) {
+      lastRefreshAt.value = new Date().toISOString()
+      safeStorage.write(LAST_REFRESH_KEY, lastRefreshAt.value)
+    }
     await repository.replaceAll(nextQuotes)
   }
 

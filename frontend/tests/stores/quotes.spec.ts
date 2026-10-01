@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
 import { useQuotesStore } from '@/stores/quotes'
+import { installFakeStorage } from '../fixtures/storage'
 import { QuoteCacheRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { ApiError } from '@/api/errors'
@@ -15,12 +16,14 @@ import type { QuoteResponse } from '@/api/types'
 import type { Position } from '@/types/portfolio'
 
 beforeEach(async () => {
+  installFakeStorage()
   setActivePinia(createPinia())
   await closeDb()
   await deleteDB(DB_NAME)
 })
 
 afterEach(async () => {
+  vi.useRealTimers()
   await closeDb()
 })
 
@@ -444,6 +447,43 @@ describe('useQuotesStore — loadQuotesIfStale', () => {
     )
 
     expect(store.quotes.has('IE0000000002')).toBe(true)
+  })
+
+  /**
+   * Befund T-69 Runde 1: `hydrate()` bildete den Zeitpunkt aus dem jüngsten
+   * Einzelkurs. Ein Teilabruf um 10:30 verlängerte so die Frist der übrigen,
+   * um 10:00 geholten Kurse bis 11:30.
+   */
+  it.each([
+    ['im selben Tab', false],
+    ['nach neuem Seitenaufbau', true],
+  ])('hält die ursprüngliche Frist nach Teilabruf und erneutem hydrate — %s', async (_label, reload) => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-01T10:00:00Z'))
+    const client = mockClient({
+      getQuoteByIsin: vi.fn(async (isin: string) => ({
+        ...makeQuoteResponse('AAA.DE', 100, isin),
+        fetched_at: new Date().toISOString(),
+      })),
+    } as Partial<StockInfoClient>)
+    const first = makePosition({ id: 'a', isin: 'IE0000000001' })
+    const added = makePosition({ id: 'b', isin: 'IE0000000002' })
+    await useQuotesStore().loadQuotes(client, [first])
+
+    vi.setSystemTime(new Date('2026-10-01T10:30:00Z'))
+    await useQuotesStore().loadQuotesIfStale(client, [first, added], 60)
+
+    vi.setSystemTime(new Date('2026-10-01T10:31:00Z'))
+    if (reload) setActivePinia(createPinia())
+    const store = useQuotesStore()
+    await store.hydrate()
+    expect(store.lastRefreshAt).toBe('2026-10-01T10:00:00.000Z')
+
+    vi.setSystemTime(new Date('2026-10-01T11:01:00Z'))
+    vi.mocked(client.getQuoteByIsin).mockClear()
+    await store.loadQuotesIfStale(client, [first, added], 60)
+    expect(vi.mocked(client.getQuoteByIsin).mock.calls.map(([isin]) => isin).sort())
+      .toEqual(['IE0000000001', 'IE0000000002'])
   })
 
   /** Eine dauerhaft fehlende Position löste vorher bei jedem Wechsel einen vollen Durchgang aus. */
