@@ -434,3 +434,34 @@ Anleitung beschreibt das Löschen von Ressourcen, daher bleiben
 
 **Lessons:** SP-R-04 (Löschpfad und zurückfallende Revision behoben, Tests
 für beide Seiten), SP-R-05 (Temp-Inventar nach dem Stopp). Kein neuer Eintrag.
+
+## Technische Prüfung Runde 2
+
+`codex-verifier`, 2026-10-01, Übergabefassung
+`299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`. Nachfolgende Commits bis
+zur Prüfung änderten nur STATUS; der Produktstand blieb stabil. **Technisch
+freigegeben.** Befund 1 aus Runde 1 ist behoben. Die menschliche Abnahme und
+der Ticketabschluss bleiben offen.
+
+**Eigene Gegenprüfung:** Der DELETE-Weg der Konto-API weist `quote-refresh`
+vor dem Datenbankzugriff mit 405 `not_deletable` ab. Der API-Test belegt
+Revision 1 → 2, DELETE 405, danach Revision 3 samt SSE-Ereignis. Der
+Frontend-Test belegt, dass ein offenes Fenster nach Revision 5 auch auf die
+zurückfallende Revision 1 reagiert und dieselbe Revision nicht zweimal lädt.
+Der Gleichheitsvergleich greift auch beim REST-Ersatzabruf; der interne
+Kurs-Hinweis wird von Backup-Restore und Legacy-Import nicht gelöscht.
+
+`make test` bestand mit 826 Frontend- und 20 API-Tests. Beide Lints, beide
+Typprüfungen, `npm --prefix frontend run build` und `git diff --check
+625e22d..299852a` liefen mit Exitcode 0. Der Build meldete nur die bereits
+bekannte Warnung zur Größe des UI-Chunks. Das ergänzte README beschreibt den
+Kursabruf im Smoketest; die Aussagen zu Datenhaltung und Stream in
+`docker/README.md` und `unraid/README.md` bleiben dazu stimmig. Keine
+Board- oder Lessons-Konventionsänderung; die offene Übernahme bleibt in
+STATUS dokumentiert.
+
+**Grenze des eigenen Nachweises:** Den sichtbaren Browser-Smoketest habe ich
+in Runde 2 nicht selbst ausgeführt. DELETE 405 und fünf Kursabrufe im offenen
+Fenster B ohne Seiten-Refresh sind Coder-Belege. Ein echter nginx-/Unraid-Proxy
+und ein im Browser herbeigeführter Sitzungsablauf bleiben ungeprüft, wie in
+Runde 1 beschrieben.
