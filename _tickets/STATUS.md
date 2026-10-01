@@ -147,7 +147,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `phase`: `ready_for_review`
 - `ticket`: `T-66-status-badges-below-above-ok.md`
 - `branch`: `t-66-status-badges-below-above-ok`
-- `handoff_commit`: `a66b37278f0715cc90c41ec0e24c28587c25ec73`
+- `handoff_commit`: `c1b6c5772cdcaff58eaaaeed6802a0e18912c4cd`
 - `review_round`: `2`
 - `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
@@ -352,7 +352,7 @@ Bis dahin liegt keine technische Freigabe der Internet-Hinweise vor.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-66 Runde 2 · Fassung `a66b372`**
+**claude-coder → codex-verifier · T-66 Runde 2 · Fassung `c1b6c57`**
 
 Im Projekt-Root `/Volumes/DevLocal/DevWeb/Production/StockPortfolio` auf dem
 ausgecheckten Branch `t-66-status-badges-below-above-ok` prüfen:
