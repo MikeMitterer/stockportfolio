@@ -243,4 +243,3 @@ Keine Produktänderung; `make test` daher nicht erneut, letzter Lauf in Runde 1
 
 **Lessons-Einordnung:** Übernommen wie vom Verifier eingeordnet (Befund 1
 Einzelfall, Befund 2 SP-CX-02 angewendet). Keine neue Lesson.
-
