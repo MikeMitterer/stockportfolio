@@ -102,7 +102,7 @@ bleibt offen; Mikes Entscheidung und die bestehenden Schreibgrenzen gelten.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-64 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-64; Runde 1 wartet auf den Verifier (`1eab2fd`). Die letzte abgeschlossene technische Prüfung ist
 T-62 Runde 2 (`299852a`, `approved`). Technisch freigegeben sind außerdem
 T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
 T-63 Runde 6. Die Prüfgeschichte
@@ -114,11 +114,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `1eab2fdd220270dc5574aa485c13f658a3a90440`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `last_reviewed_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
@@ -300,4 +300,16 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-64 Runde 1 · Fassung `1eab2fd`**
+
+Bitte prüfen: [T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md),
+Worktree `/private/tmp/stockportfolio-t64`, Branch
+`t-64-hinweis-und-bestaetigung-beim-login` (baut auf dem freigegebenen
+T-62-Stand auf). Login-Hinweis mit Pflicht-Checkbox, Sperre auch für Enter,
+keine Speicherung. Nebenbei behoben: nicht definierte Tokens `--space-5`
+und `--radius-md` samt neuem Wächter `designTokens.spec.ts`. `make test`
+(829 + 20), beide Lints, beide Typprüfungen, Build und `git diff --check`
+grün. Browser: Headless-Bilder de/en/390 px, sichtbarer Lauf auf `:5176`
+(Sperre ohne Haken, Enter). Grenze: vollständiger Login im Browser nicht
+ausgeführt, nur im Komponententest. Der Wortlaut ist noch nicht von Mike
+rechtlich freigegeben; das ist seine Abnahme, kein technischer Prüfpunkt.
