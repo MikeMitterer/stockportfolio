@@ -104,7 +104,7 @@ Schreibgrenzen.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-64 (Umsetzung; Übergabe `6d6dbfd` vor Prüfbeginn zurückgenommen, Wortlaut wird nach Observer-Hinweis überarbeitet). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-64; Runde 1 wartet auf den Verifier (`fd9d8f4`). Die letzte abgeschlossene technische Prüfung ist
 T-62 Runde 2 (`299852a`, `approved`). Technisch freigegeben sind außerdem
 T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
 T-63 Runde 6. Die Prüfgeschichte
@@ -116,11 +116,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `last_reviewed_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
@@ -302,4 +302,17 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-64 Runde 1 · Fassung `fd9d8f4`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t64` prüfen (Branch
+`t-64-hinweis-und-bestaetigung-beim-login`; nur dort liegt das Ticket unter
+`30-doing/`): [T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md).
+Login-Hinweis mit Pflicht-Checkbox, Sperre auch für Enter, keine Speicherung;
+mobil untereinander, ab `md` Hinweis neben den Feldern. Wortlaut nach der von
+Mike bestätigten Observer-Einschätzung überarbeitet (Abschnitt „Wortlaut“).
+Nebenbei: nicht definierte Tokens `--space-5`/`--radius-md` ersetzt, neuer
+Wächter `designTokens.spec.ts`. `make test` (829 + 20), beide Lints, beide
+Typprüfungen, Build, `git diff --check` grün; Bilder bei 1440/800/767/390 px.
+Grenze: vollständiger Login im Browser nicht ausgeführt, nur im
+Komponententest. Die frühere Übergabe `6d6dbfd` wurde vor Prüfbeginn
+zurückgenommen.
