@@ -13,6 +13,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
 auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
 „Erledige es gleich nach t-72“).
+Mike hat den Abschluss an die technische Freigabe gebunden: „Wenn der
+verifier T-74 abgenommen hat ist es für mich auch erledigt“.
 Danach folgt [T-75 · Einzelserver-Hilfe in der Doku](10-backlog/T-75-stockinfo-einzelserver-hilfe-doku.md)
 (Mike, 2026-10-01: „danach gleich t-75“).
 [T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am

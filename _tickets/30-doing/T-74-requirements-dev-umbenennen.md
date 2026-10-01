@@ -15,6 +15,9 @@ daraus wie bisher.
 
 **Stand:** Umgesetzt in `2e0a52a` auf `t-74-requirements-dev` und an
 `codex-verifier` übergeben (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
+Mike hat den Abschluss vorab erteilt: „Wenn der verifier T-74 abgenommen hat
+ist es für mich auch erledigt“ (2026-10-01). Nach der technischen Freigabe
+schließt der Coder ab, merged und pusht.
 
 Für dich steht jetzt nichts an.
 
