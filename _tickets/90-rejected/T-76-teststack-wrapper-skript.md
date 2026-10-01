@@ -1,5 +1,7 @@
 # T-76 · Bash-Wrapper startet den Teststack mit der richtigen Python
 
+**Verworfen am 2026-10-01** durch Mike: „Du kannst stockinfo-test-server.sh doch wieder löschen“ Die Umsetzung `b1e58cb` ist mit `9707e58` zurückgenommen, bevor die Prüfung begann; der dokumentierte Aufruf bleibt `.venv/bin/python scripts/stockinfo-test-server.py …`. Die folgenden Abschnitte beschreiben den Stand vor der Entscheidung.
+
 **Warum dieses Ticket:** `scripts/stockinfo-test-server.py` ist ausführbar und
 beginnt mit `#!/usr/bin/env python3`. Wer es direkt aufruft
 (`./scripts/stockinfo-test-server.py …` oder `python3 …`), bekommt die
@@ -78,3 +80,9 @@ wie oben; `docker/README.md`, `unraid/README.md` und `docs/` beschreiben den
 Teststack nicht.
 
 **Lessons:** keine Befunde, keine neue Lesson.
+
+## Verworfen · 2026-10-01
+
+Mike: „Du kannst stockinfo-test-server.sh doch wieder löschen“
+Zurückgenommen mit `9707e58` (Revert von `b1e58cb`); `codex-verifier` hatte
+die Prüfung noch nicht begonnen. Kein Rest im Code.
