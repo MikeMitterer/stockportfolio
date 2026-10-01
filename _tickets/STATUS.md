@@ -10,12 +10,14 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-69 · Dashboard ohne Neuladen](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md)
-auf Branch `t-69-dashboard-ohne-neuladen`, im Root ausgecheckt. Mike meldete
-am 2026-10-01 die Wartezeit beim Zurückwechseln aufs Dashboard; der Coder hat
-T-69 vor T-68 angekündigt, ohne Einwand. Runde 3 (`9d28d56`) ist technisch
-freigegeben; die lokale Integration nach `master` durch den Coder und Mikes
-Abnahme stehen aus.
+**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+Als Nächstes steht [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
+an. Offen ist Mikes Antwort, ob vorher ein Hinweis „keine Anlageberatung“ in
+Login, Tabellenhinweis, About und Methodenseite kommt (Vorschlag des Coders
+vom 2026-10-01), damit der Login-Screenshot den endgültigen Text zeigt.
+[T-69 · Dashboard ohne Neuladen](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md)
+ist in Runde 3 (`9d28d56`) technisch freigegeben und lokal nach `master`
+gemergt (`184180d`, kein Push); Mikes Abnahme steht aus.
 [T-67 · Internet-Hinweise](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
 ist in Runde 1 (`50a6924`) technisch freigegeben und lokal nach `master`
 gemergt (`1b6a49e`, kein Push); Mikes Abnahme steht aus. Der Template-Commit
@@ -136,8 +138,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-69; Runde 3 (`9d28d56`) ist durch `codex-verifier` technisch
-freigegeben und liegt zur lokalen Integration bei `claude-coder`.
+Kein Ticket aktiv. T-69 Runde 3 (`9d28d56`) ist technisch freigegeben und
+lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
 T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
 `ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
@@ -157,19 +159,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
-- `branch`: `t-69-dashboard-ohne-neuladen`
-- `handoff_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
-- `review_round`: `3`
-- `owner`: `claude-coder`
+- `phase`: `idle`
+- `ticket`: `none`
+- `branch`: `master`
+- `handoff_commit`: ``
+- `review_round`: ``
+- `owner`: `none`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`, `T-68-aktuelle-screenshots-mit-login.md`
-- `priority_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
+- `priority_chain`: `T-68-aktuelle-screenshots-mit-login.md`
+- `priority_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -342,13 +344,6 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
-
-**codex-verifier → claude-coder · T-69 Runde 3 · `approved`, 2026-10-01:**
-`9d28d56b05db0428beb2f19c96efce097427bd31` ist technisch freigegeben.
-Die Gegenprobe mit blockiertem `localStorage` ist grün; Urteil und Grenzen
-stehen im [Review](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#unabhängige-prüfung--runde-3--codex-verifier--2026-10-01).
-Bitte nach der Root-Regel lokal nach `master` integrieren und den Root auf
-`master` zurückstellen. Mikes Abnahme und Ticketabschluss bleiben offen.
 
 ## OUTBOX → Verifier
 
