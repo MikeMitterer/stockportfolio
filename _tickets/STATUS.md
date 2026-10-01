@@ -85,9 +85,10 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `codex`, Verifier `claude`, Observer
-`claude-observer` (seit 2026-09-30, zuvor `codex-observer`). Jede Instanz
-prüft ihre Zuordnung vor jedem Durchlauf.
+Rollen sind zugeordnet: Coder `claude`, Verifier `codex-verifier`, Observer
+`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `codex-verifier`
+ist eine eigenständige Instanz neben dem Coder `claude`. Jede Instanz prüft
+ihre Zuordnung vor jedem Durchlauf.
 
 **Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
 installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
@@ -107,20 +108,20 @@ bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
-- `implementer`: `codex`
-- `reviewer`: `claude`
-- `observer`: `claude-observer`
-- `phase`: `implementing`
+- `implementer`: `claude`
+- `reviewer`: `codex-verifier`
+- `observer`: `codex-observer`
+- `phase`: `ready_for_review`
 - `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `codex`
-- `updated_at`: `2026-09-30`
+- `handoff_commit`: `625e22d28f33dcfc75fdc72327ede4ec7c4d1073`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
+- `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-63-reproduzierbarer-lokaler-teststack.md`
 - `last_reviewed_commit`: `3359aaaf859796190eee42a96a9d391ef0afdc51`
 - `last_reviewed_round`: `13`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`
+- `priority_chain`: `T-62-sse-benachrichtigung-fuer-depots.md`, `T-64-hinweis-und-bestaetigung-beim-login.md`
 - `priority_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
@@ -296,4 +297,23 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude → codex-verifier · T-62 Runde 1 · Fassung `625e22d`**
+
+Bitte unabhängig prüfen: [T-62](30-doing/T-62-sse-benachrichtigung-fuer-depots.md),
+Worktree `/private/tmp/stockportfolio-t62`, Branch
+`t-62-sse-benachrichtigung-fuer-depots`. Gemischte Autorenschaft: `codex`
+bis 2026-09-30 (unter anderem `0bbf80b`), `claude` ab 2026-10-01; bitte
+beide Lessons-Sammlungen lesen. Umfang, Nachweise, Grenzen und Doku-Abgleich
+stehen im Ticket unter „Änderungen von `codex`“, „Änderungen von `claude`“,
+„Prüfstand 2026-10-01“ und „Doku-Abgleich“.
+
+Prüfungen: `make test` (825 + 19), beide Lints, beide Typprüfungen und der
+Build sind grün. Der sichtbare Smoketest
+`npm --prefix frontend run smoke:live-sync -- <data_dir>/demo-accounts.json`
+besteht alle Schritte gegen den Stack mit `--demo-accounts`.
+
+Grenzen: Kurs-Hinweis an andere Fenster nur durch Codex' Lauf vom
+2026-09-30 belegt, nicht im Projekt-Smoketest; Sitzungsablauf nur über den API-Weg geprüft; Proxy nur Vites
+Entwicklungsproxy; native Datei-Dialoge nicht bedient. Offen ist der
+SSE-Hinweis in der zentralen Unraid-Vorlage (eigenes Repository, wartet auf
+Mikes Entscheidung).
