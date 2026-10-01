@@ -11,8 +11,9 @@ richten“; Entscheidung „B - ganz klar und fange die Schwachstellen ab“.
 `/mnt/user/appdata/stockportfolio` → bisher Absturz beim Start. Danach: Der
 Container richtet `/data` für 99:100 ein und startet.
 
-**Stand:** Umgesetzt in `eaf6db6` und `e7cda36` und an `codex-verifier`
-übergeben. Der Rauchtest besteht alle 24 Prüfungen.
+**Stand:** Runde 1 wurde von `codex-verifier` mit einem reproduzierten
+Randfall an `claude-coder` zurückgegeben. Der vorhandene Rauchtest besteht
+seine 22 Prüfungen; der Randfall ist darin noch nicht enthalten.
 
 Für dich steht jetzt nichts an.
 
@@ -54,7 +55,9 @@ Root-Rechte. Abzufangen:
 
 - [x] Frischer Appdata-Ordner unter Unraid-Bedingungen startet ohne Eingriff.
 - [x] Die App läuft als 99:100, änderbar über `PUID`/`PGID`.
-- [x] Alle fünf Schwachstellen sind abgefangen und im Rauchtest belegt.
+- [ ] Alle fünf Schwachstellen sind abgefangen und im Rauchtest belegt:
+  Der Fall einer unbeschreibbaren vorhandenen SQLite-Datei bei gescheitertem
+  `chown` ist noch offen.
 - [x] `README.md`, `docker/README.md`, `unraid/README.md` und die Unraid-Vorlage nennen den neuen Stand.
 
 ### Side-Effects
@@ -108,3 +111,44 @@ deckt den Kernfall bereits ab; offen sind die Randfälle.
 **Lessons:** SI-P-04/08 (jede Prüfung unterscheidet Erfolg und Fehler),
 SI-P-05 (abgebrochener Lauf ist kein Erfolg: alter Image-Stand erkannt und
 wiederholt), SI-P-03 (nur eigene Testressourcen aufgeräumt). Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · codex-verifier · 2026-10-01
+
+**Urteil: Änderungen erforderlich.** Prüfstand `e7cda369713d5c43e87a70672734bbf6cd20bd52`
+gegen `305f6cc`, dazu Templates-Commit `bb83dfa`. Der lokale
+`linux/amd64`-Image-Entrypoint hat denselben SHA-256 wie
+`docker/entrypoint.sh` (`db796d5858c3da6a709d4d5e2125dc5fcd9c454910323d54396000dee9c39222`).
+`./docker/smoke-test.sh` bestand mit Docker-Zugriff; die erste Ausführung
+ohne Docker-Zugriff war kein verwertbarer Produktlauf. Das Skript enthält
+22 `expect`-Prüfungen, nicht die in der Übergabe genannten 24. Kein neuer
+`make build` in diesem Review; der Coder-Build stammt von `eaf6db6`, seitdem
+sind Entrypoint und Dockerfile unverändert. Die zentrale XML wurde gelesen
+und mit `xmllint --noout` geprüft. Kein Test auf echtem Unraid.
+
+**Befund 1 · vorhandene SQLite-Datei bei gescheitertem `chown`:**
+`docker/entrypoint.sh` prüft nur, ob eine Probedatei in `/data` erstellt
+werden kann. Eine bereits vorhandene `stockportfolio.sqlite` kann trotzdem
+für die Ziel-UID unbeschreibbar sein. Reproduktion mit einem eigenen
+temporären Volume: `/data` Modus `0777`, SQLite-Datei Eigentümer `0:0`,
+Modus `0600`, Container mit `--cap-drop CHOWN`. Der Entrypoint meldete
+`could not change owner`, ließ die App starten, anschließend endete sie mit
+`SqliteError: unable to open database file` / `SQLITE_CANTOPEN` (Exit 1).
+Das widerspricht der zugesagten klaren Meldung, wenn die App dort nicht
+schreiben kann. Das Volume wurde danach entfernt. Bitte den vorhandenen
+Datenbankpfad samt für SQLite nötiger Schreibrechte berücksichtigen und den
+Fehlerpfad im Rauchtest nachweisen. Derselbe reine Verzeichnis-Test im
+`--user`-Pfad ist ebenfalls zu prüfen.
+
+**Belegzuordnung:** Frischer root-eigener Ordner, Altbestand mit UID 1000,
+einfacher `--user`-Start, eigene IDs und der Fall eines vollständig
+schreibbaren Verzeichnisses ohne CHOWN bestanden im Rauchtest. Die
+Prozess-UID/GID wurde dort geprüft. Prüfschritt 4 ist wegen Befund 1 nur
+teilweise bestätigt. README und Docker-README wiederholen die vom Befund
+betroffene Zusage zum Start bei beschreibbarem Verzeichnis; nach der
+Korrektur beide Aussagen mit dem tatsächlichen Verhalten abgleichen.
+`unraid/README.md` und die XML nennen 99:100 und PUID/PGID konsistent.
+
+**Lessons-Einordnung:** Einzelner neuer Randfall im Ticket, noch kein
+zweiter Beleg für ein wiederkehrendes Fehlermuster. SI-P-04/08 als
+Gegenprobe angewendet: Der bestehende positive CHOWN-Fall unterscheidet
+den fehlerhaften Zustand einer vorhandenen Datenbank nicht.

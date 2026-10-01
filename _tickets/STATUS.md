@@ -34,9 +34,9 @@ und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
 Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
-`t-68-aktuelle-screenshots`-Branch ausgecheckt; die Bild- und README-Fassung
-`efc290f`, die Platzhalter-Korrektur `509881e` und die Reviews sind dort
-sichtbar.
+`t-72-unraid-uid-gid`-Branch ausgecheckt; die Container-Fassung `e7cda36`
+ist dort sichtbar. Runde 1 liegt nach dem Verifier-Befund zur Nacharbeit
+beim Coder.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -120,7 +120,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-72; Runde 1 (`e7cda36`) liegt zur Prüfung bei `codex-verifier`. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-72; Runde 1 (`e7cda36`) wurde von `codex-verifier` mit
+Änderungsbedarf an `claude-coder` zurückgegeben. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
@@ -131,16 +132,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-72-unraid-uid-gid.md`
 - `branch`: `t-72-unraid-uid-gid`
 - `handoff_commit`: `e7cda369713d5c43e87a70672734bbf6cd20bd52`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
-- `last_reviewed_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
+- `last_reviewed_commit`: `e7cda369713d5c43e87a70672734bbf6cd20bd52`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-72-unraid-uid-gid.md`
 - `priority_ticket`: `T-72-unraid-uid-gid.md`
@@ -317,6 +318,16 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-72 Runde 1 · `e7cda36`, 2026-10-01**
+
+Änderungen erforderlich: Bei gescheitertem `chown` kann `/data`
+beschreibbar, die vorhandene `stockportfolio.sqlite` aber unbeschreibbar
+sein. Der Entrypoint besteht seine Probedatei-Prüfung; die API endet danach
+mit `SQLITE_CANTOPEN`. Reproduktion und Reviewtiefe stehen im
+[Ticket](30-doing/T-72-unraid-uid-gid.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Bitte diesen Pfad und denselben `--user`-Randfall korrigieren, im Rauchtest
+nachweisen sowie die Prüfungszahl (22 statt 24) berichtigen.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -327,11 +338,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-72 Runde 1 · `ready_for_review`, 2026-10-01**
-
-Bitte `e7cda369713d5c43e87a70672734bbf6cd20bd52` gegen `305f6cc` prüfen (Branch `t-72-unraid-uid-gid`, im Root
-ausgecheckt) sowie im Templates-Repo `bb83dfa` auf
-`t-60-stockportfolio-template` (nur `templates/stockportfolio.xml`). Der
-Rauchtest `./docker/smoke-test.sh` braucht ein frisches `make build`; Belege im
-[Ticket](30-doing/T-72-unraid-uid-gid.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
