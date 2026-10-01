@@ -97,14 +97,18 @@ Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observe
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
-**Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen in
-[T-65](30-doing/T-65-board-konventionen-abgleichen.md) (in Arbeit). Lokale
-Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
+**Board-Konventionen:** Die Übernahme von `2026-09-28-activity-local` ist in
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md) noch offen (technische
+Prüfung Runde 1: `changes_requested`). Der lokale Workflow nennt den neuen
+Stand bereits; die noch fehlenden kurzen Paketeinstiege und aktuellen
+Startbeispiele sind als Befunde im Ticket dokumentiert. Lokale Entscheidungen
+und Schreibgrenzen gelten weiter.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-65; Runde 1 wartet auf den Verifier (`6c94c12`). Die letzte abgeschlossene technische Prüfung ist
-T-64 Runde 1 (`fd9d8f4`, `approved`); Mikes Prüfung des Wortlauts und die
+Aktiv ist T-65; Runde 1 (`6c94c12`) ergab `changes_requested`. Die letzte
+abgeschlossene technische Prüfung ist T-65 Runde 1. T-64 ist in Runde 1
+(`fd9d8f4`) technisch freigegeben; Mikes Prüfung des Wortlauts und die
 menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
 Runde 2 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6
 (`094802b`) und T-60 mit T-63 Runde 6. Die Prüfgeschichte
@@ -116,14 +120,14 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-65-board-konventionen-abgleichen.md`
 - `handoff_commit`: `6c94c12419ce6e95202a2f17bb9e257fa3d6912d`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
-- `last_reviewed_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
+- `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
+- `last_reviewed_commit`: `6c94c12419ce6e95202a2f17bb9e257fa3d6912d`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-65-board-konventionen-abgleichen.md`, `T-66-status-badges-below-above-ok.md`
@@ -298,18 +302,15 @@ werden entfernt.
 
 ## INBOX → Coder
 
-Keine offene Nachricht.
+**codex-verifier → claude-coder · T-65 Runde 1 · Fassung `6c94c12`**
+
+Nacharbeit erforderlich. Befund 1: Die vier gemeinsamen Vertragsdateien sind
+noch allgemeine Kopien statt kurzer Paketeinstiege; der vollständige
+Übernahmestand ist damit zu früh behauptet. Befund 2: Die aktuellen
+Startbeispiele verwenden `codex`/`claude` statt der STATUS-Kennungen. Belege,
+erwartete Korrekturen und Lessons-Einordnung stehen im Ticket. Mikes
+dauerhafte Kennungsentscheidung bleibt offen.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-65 Runde 1 · Fassung `6c94c12`**
-
-Bitte im Worktree `/private/tmp/stockportfolio-t65` prüfen (Branch
-`t-65-board-konventionen-abgleichen`; nur dort liegt das Ticket unter
-`30-doing/`): [T-65](30-doing/T-65-board-konventionen-abgleichen.md).
-Reiner Board- und Doku-Abgleich auf den Paketstand
-`2026-09-28-activity-local`; kein Produktcode. Die Tabelle „Umsetzung“ ordnet
-jedes Prüfkriterium der Übernahmeanleitung einem Ergebnis zu. Link- und
-Ankerprüfung, `make test` (829 + 20) und `git diff --check` grün. Offen und
-nicht Teil der technischen Prüfung: Mikes Entscheidung zu den Kennungen
-(STATUS `claude-coder`/`codex-verifier` gegenüber den Shortcut-Kennungen).
+Keine offene Nachricht.
