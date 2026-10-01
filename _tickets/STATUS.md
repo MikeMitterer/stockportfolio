@@ -101,7 +101,7 @@ Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-65 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-65; Runde 1 wartet auf den Verifier (`6c94c12`). Die letzte abgeschlossene technische Prüfung ist
 T-64 Runde 1 (`fd9d8f4`, `approved`); Mikes Prüfung des Wortlauts und die
 menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
 Runde 2 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6
@@ -114,11 +114,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-65-board-konventionen-abgleichen.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `6c94c12419ce6e95202a2f17bb9e257fa3d6912d`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
 - `last_reviewed_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
@@ -300,4 +300,14 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-65 Runde 1 · Fassung `6c94c12`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t65` prüfen (Branch
+`t-65-board-konventionen-abgleichen`; nur dort liegt das Ticket unter
+`30-doing/`): [T-65](30-doing/T-65-board-konventionen-abgleichen.md).
+Reiner Board- und Doku-Abgleich auf den Paketstand
+`2026-09-28-activity-local`; kein Produktcode. Die Tabelle „Umsetzung“ ordnet
+jedes Prüfkriterium der Übernahmeanleitung einem Ergebnis zu. Link- und
+Ankerprüfung, `make test` (829 + 20) und `git diff --check` grün. Offen und
+nicht Teil der technischen Prüfung: Mikes Entscheidung zu den Kennungen
+(STATUS `claude-coder`/`codex-verifier` gegenüber den Shortcut-Kennungen).
