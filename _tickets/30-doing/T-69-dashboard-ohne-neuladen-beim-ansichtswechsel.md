@@ -11,8 +11,9 @@ erneut über das Netz beantwortet sind. Danach: Die Tabelle steht sofort mit
 den zwischengespeicherten Werten; eine Aktualisierung läuft nur, wenn die
 eingestellte Schonfrist abgelaufen ist, und dann im Hintergrund.
 
-**Stand:** Runde 1 (`f8bbe20`) durch `codex-verifier` geprüft;
-`changes_requested` wegen der Schonfrist nach einem Teilabruf. Beim
+**Stand:** Runde 1 (`f8bbe20`) kam mit `changes_requested` wegen der
+Schonfrist nach einem Teilabruf zurück; die Korrektur `2bdf21b` liegt als
+Runde 2 zur Prüfung bei `codex-verifier`. Beim
 Zurückwechseln stellt das Dashboard im sichtbaren Coder-Browsertest keine
 Anfrage mehr an Konto-API oder StockInfo.
 Mike, 2026-10-01: „Kurse können gecached werden.“
@@ -171,3 +172,39 @@ Korrektur des Zeitstempels zuverlässig.
 belegte Wiederholung. Keine lokale Lesson angelegt. Der Observer prüft beim
 Rücklauf, ob ein vorhandener Eintrag zu ergänzen ist; der offene Schritt
 bleibt hier sichtbar.
+
+## Coder-Übergabe · Runde 2 · claude-coder · 2026-10-01
+
+**Prüfstand:** `2bdf21beb8f0e511d149faf86a68d956782524bb` gegen `f8bbe20`
+(Gesamtstand gegen `1b6a49e`), Branch `t-69-dashboard-ohne-neuladen`.
+
+**Befund Schonfrist:** bestätigt. Ursache: `hydrate()` setzte `lastRefreshAt`
+immer auf das jüngste `fetchedAt` im Cache; der Zeitpunkt des letzten
+vollständigen Durchgangs war nirgends gespeichert. Der Fehler bestand auch vor
+T-69 beim Neuladen der Seite nach einem Einzel-Refresh, T-69 machte ihn durch
+`loadMissing()` und das Hydrieren bei jedem Wechsel häufig.
+
+**Korrektur:** `commit()` schreibt den Zeitpunkt eines vollständigen
+Durchgangs zusätzlich über `safeStorage` (`stockportfolio.quotes.lastRefreshAt`);
+`hydrate()` liest ihn dort und nimmt nur ohne gespeicherten Wert wie bisher das
+jüngste `fetchedAt`. Teilabruf und Einzel-Refresh schreiben ihn nicht. Grenze:
+Blockiert der Browser `localStorage`, gilt der alte Rückfall.
+
+**Gegenprobe:** neuer Test in `quotes.spec.ts`, zweifach (selber Tab und neuer
+Seitenaufbau) mit dem Rechenbeispiel aus dem Review: Vollabruf 10:00,
+Teilabruf 10:30, `hydrate()` 10:31 → Zeitpunkt bleibt 10:00; um 11:01 holt
+`loadQuotesIfStale` beide Kurse. Mit der Fassung `f8bbe20` beide rot
+(„expected 10:30 to be 10:00“), mit `2bdf21b` grün. `quotes.spec.ts` nutzt
+dafür den vorhandenen Ersatzspeicher `installFakeStorage()`, weil die
+jsdom-Umgebung keinen `localStorage` hat.
+
+**Belege:** `make test` 847 Frontend- und 20 API-Tests grün; Lint und
+Typecheck für `frontend` und `api` ohne Befund. Keinen neuen Browserlauf:
+Die Korrektur betrifft nur den Ablauf über die 60-Minuten-Frist, den der
+sichtbare Test nicht abbildet; Prüfpunkt 2 bleibt Unit-belegt.
+
+**Doku-Abgleich:** unverändert wie in Runde 1; der Einstellungshinweis zur
+Schonfrist ist mit der Korrektur zutreffend.
+
+**Lessons:** SI-P-04/08 angewendet (Gegenprobe mit dem Review-Beispiel).
+Keine neue Lesson; Einordnung beim Observer wie im Review vermerkt.
