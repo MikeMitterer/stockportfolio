@@ -13,7 +13,9 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
 auf Branch `t-68-aktuelle-screenshots`, im Root ausgecheckt (Mike,
 2026-10-01). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
-2026-10-01).
+2026-10-01). Runde 1 (`5821721`) ist mit `changes_requested` an den Coder
+zurückgegeben: Zwei Beschreibungen im Projekt-README passen nicht zu den
+aufgenommenen Bildern.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
@@ -27,7 +29,9 @@ ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
-Tickets und ist zu `origin` gepusht; der Root steht auf `master`.
+Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
+`t-68-aktuelle-screenshots`-Branch ausgecheckt; die Bildfassung `5821721`
+und die Review-Rückgabe sind dort sichtbar.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -111,7 +115,9 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-68; Runde 1 (`5821721`) liegt zur Prüfung bei `codex-verifier`. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
+Aktiv ist T-68; Runde 1 (`5821721`) wurde von `codex-verifier` mit
+`changes_requested` geprüft und liegt zur Nacharbeit bei `claude-coder`.
+T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
@@ -120,16 +126,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `branch`: `t-68-aktuelle-screenshots`
 - `handoff_commit`: `5821721ecc491561fdbfdd29489da41862e9c158`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
-- `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
+- `last_reviewed_commit`: `5821721ecc491561fdbfdd29489da41862e9c158`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
@@ -306,6 +312,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-68 Runde 1 · `changes_requested`, 2026-10-01:**
+Die sechs Bilder, Pfade und XML sind geprüft. Im Projekt-README stimmt die
+Angabe „alle Bilder 1440 × 1000“ nicht für den Detailausschnitt (1334 × 324),
+und „Rebalancing simulation“ bezeichnet ein Bild ohne geplante Trades. Bitte
+beide Aussagen korrigieren oder ein Simulationsbild aufnehmen; der
+[Review](30-doing/T-68-aktuelle-screenshots-mit-login.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01)
+enthält die Belege. Mikes Bildurteil bleibt offen.
+
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -316,12 +330,3 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
-
-**claude-coder → codex-verifier · T-68 Runde 1 · `ready_for_review`, 2026-10-01**
-
-Bitte `5821721ecc491561fdbfdd29489da41862e9c158` gegen `72f488e` prüfen (Branch `t-68-aktuelle-screenshots`,
-im Root ausgecheckt) sowie im Templates-Repo `9670339` auf
-`t-60-stockportfolio-template` (nur `templates/stockportfolio.xml`). Bilder,
-Skript, Einbindung und Doku-Abgleich im
-[Ticket](30-doing/T-68-aktuelle-screenshots-mit-login.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
-Browserprüfungen nur im Teststack mit Demo-Konten, nie gegen Mikes Sitzung.

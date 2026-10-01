@@ -8,7 +8,8 @@ Login-Dialog mit Hinweis und Pflicht-Checkbox (T-64) zeigt bisher kein Bild.
 **Beispiel:** Wer StockPortfolio über Docker Hub oder Unraid findet, sieht
 heute Badges mit „Buy“ und keinen Login, obwohl die App beides anders zeigt.
 
-**Stand:** Umgesetzt in `5821721` und an `codex-verifier` übergeben; Branch
+**Stand:** Runde 1 (`5821721`) von `codex-verifier` geprüft;
+`changes_requested` wegen zweier unzutreffender README-Beschreibungen. Branch
 `t-68-aktuelle-screenshots`
 (Mike, 2026-10-01: „Dann T-68“). Mike hat ergänzt: „Bei T-68 - mach auch einen
 Screenshot vom Login-Dialog und von der Benutzerverwaltung“. Ein Hinweis
@@ -59,7 +60,12 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 
 ### Doku-Abgleich
 
-Noch offen: `README.md`, `docker/README.md`, `unraid/README.md`, Unraid-Vorlage.
+`README.md` und `docker/README.md` binden die passenden Bilder ein und stimmen
+bei den gemeinsamen Dashboard-, Login- und Kontohinweisen überein.
+`unraid/README.md` nennt keine Bilder und bleibt zutreffend. Die
+StockPortfolio-Unraid-Vorlage verweist auf vier vorhandene Bildpfade; die
+Raw-URLs werden erst nach Veröffentlichung der Bilder auf `master` wirksam.
+Offen sind die beiden README-Beschreibungen aus Review Runde 1.
 
 ## Coder-Übergabe · Runde 1 · claude-coder · 2026-10-01
 
@@ -105,3 +111,39 @@ behoben). Hinweis am Rand: Die Eingabefelder zeigen Naive UIs Platzhalter
 
 **Lessons:** SP-CX-07 angewendet (unbenutzte Bilder entschieden: nach Mikes
 Vorgabe aktualisiert und eingebunden). Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 1 · `codex-verifier` · 2026-10-01
+
+**Prüffassungen:** StockPortfolio `5821721ecc491561fdbfdd29489da41862e9c158`
+gegen `72f488e`, Unraid-Templates `96703391dd6ceee9e00fcdfd8125f2725b6dec66`
+nur für `templates/stockportfolio.xml`. Bis zum Review-HEAD `60152c2`
+keine spätere Änderung an Bildern, Skript, READMEs oder Produktcode.
+**Urteil: `changes_requested` für die README-Beschreibungen.** Keine
+menschliche Abnahme oder Freigabe anderer Template-Dateien.
+
+**Bilder und Verweise:** Alle sechs PNGs visuell geprüft: englische
+Oberfläche, MangoLila, Beispiel-Depot und synthetische Konten; Dashboard
+zeigt Symbol-Badges und den aktuellen Status. Login-Hinweis und Checkbox
+sowie Benutzerverwaltung sind sichtbar. Fünf Bilder sind 1440 × 1000 Pixel,
+`drilldown.png` ist ein Ausschnitt mit 1334 × 324 Pixeln. Die sechs README-,
+drei Docker-README- und vier XML-Bildverweise zeigen auf vorhandene Dateien.
+Das Aufnahmeskript nutzt Demo-Konten und einen sichtbaren Browser; ich habe
+es gelesen, syntaktisch geprüft und keinen eigenen Browserlauf gestartet.
+
+**Zu korrigieren:** Im Projekt-README behauptet der Absatz zum
+Aufnahmeskript, es speichere alle sechs Bilder mit 1440 × 1000 Pixeln. Das
+Detailbild wird vom Skript als Ausschnitt aufgenommen und ist 1334 × 324
+Pixel groß. Die Bildunterschrift „Rebalancing simulation“ steht außerdem
+über einem Bild mit „Nothing planned yet“ und leeren Buy-/Sell-Spalten; es
+zeigt die Rebalancing-Ansicht, aber keine geplante Simulation. Bitte die
+beiden README-Aussagen an die tatsächlichen Bilder anpassen oder ein
+passendes Simulationsbild aufnehmen. Die Bilder selbst müssen dafür nicht
+erneut erzeugt werden, wenn die Texte berichtigt werden.
+
+**Eigene Nachweise:** `node --check` für das Skript und `xmllint --noout`
+für die StockPortfolio-Vorlage erfolgreich; `git diff --check` ohne Befund.
+Die Docker-Hub-Vorschau konvertiert die drei Bildpfade korrekt und misst
+11.439 UTF-8-Bytes (Grenze 25.000). Die anderen Vorlagendateien und eine
+veröffentlichte Hub-/Unraid-Ansicht wurden nicht geprüft. Die
+Lessons-Einordnung bleibt beim Observer; dies sind zwei konkrete
+Textfehler, keine neue allgemeine Regel.
