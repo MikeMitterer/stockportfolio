@@ -8,7 +8,8 @@ Login-Dialog mit Hinweis und Pflicht-Checkbox (T-64) zeigt bisher kein Bild.
 **Beispiel:** Wer StockPortfolio über Docker Hub oder Unraid findet, sieht
 heute Badges mit „Buy“ und keinen Login, obwohl die App beides anders zeigt.
 
-**Stand:** In Umsetzung durch `claude-coder` auf `t-68-aktuelle-screenshots`
+**Stand:** Umgesetzt in `5821721` und an `codex-verifier` übergeben; Branch
+`t-68-aktuelle-screenshots`
 (Mike, 2026-10-01: „Dann T-68“). Mike hat ergänzt: „Bei T-68 - mach auch einen
 Screenshot vom Login-Dialog und von der Benutzerverwaltung“. Ein Hinweis
 „keine Anlageberatung“ kommt nicht in die Texte (Mike, 2026-10-01).
@@ -49,9 +50,9 @@ aktualisiert. Ein Veröffentlichungsauftrag folgt daraus nicht.
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | <a id="pruefpunkt-1"></a>Bilder ansehen | Aktueller Stand, englische Oberfläche, keine echten Daten | ➖ |
-| 2 | Alle Verweise in README, Docker-README, Unraid-Vorlage prüfen | Pfade existieren; Hub-Vorschau unter 25.000 Bytes | ➖ |
-| 3 | Unbenutzte Bilder | aktualisiert und eingebunden oder entfernt, begründet | ➖ |
+| 1 | <a id="pruefpunkt-1"></a>Bilder ansehen | Aktueller Stand, englische Oberfläche, keine echten Daten | ✅ Coder: alle sechs Bilder angesehen; MangoLila, Beispiel-Depot, Konten `test-admin`/`test-user` |
+| 2 | Alle Verweise in README, Docker-README, Unraid-Vorlage prüfen | Pfade existieren; Hub-Vorschau unter 25.000 Bytes | ✅ Coder: 9 Verweise, alle Dateien vorhanden; Vorschau 11.439 Bytes; XML gültig |
+| 3 | Unbenutzte Bilder | aktualisiert und eingebunden oder entfernt, begründet | ✅ Mike: „drilldown + settings-calculation updaten“ — neu aufgenommen und im README eingebunden |
 
 Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 ➖ noch kein Nachweis.
@@ -59,3 +60,48 @@ Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 ### Doku-Abgleich
 
 Noch offen: `README.md`, `docker/README.md`, `unraid/README.md`, Unraid-Vorlage.
+
+## Coder-Übergabe · Runde 1 · claude-coder · 2026-10-01
+
+**Prüfstand:** `5821721ecc491561fdbfdd29489da41862e9c158` gegen `72f488e`, Branch `t-68-aktuelle-screenshots`.
+Unraid-Templates: `9670339` auf `t-60-stockportfolio-template`, nur
+`templates/stockportfolio.xml`.
+
+**Bilder** (`docs/images/`, 1440 × 1000 außer `drilldown.png` als Ausschnitt
+der aufgeklappten Position, englisch, Theme MangoLila nach Mikes Vorgabe):
+`login.png` (neu), `dashboard.png`, `drilldown.png`, `rebalancing.png`,
+`settings-calculation.png`, `user-admin.png` (neu, Mikes Nachtrag). Daten:
+eingebautes Beispiel-Depot und die synthetischen Konten des Teststacks.
+
+**Skript:** `frontend/scripts/capture-screenshots.mjs`, Aufruf
+`npm --prefix frontend run screenshots -- <dir>/demo-accounts.json` bei
+laufendem Teststack (`--stack --run --demo-accounts`); sichtbarer Browser,
+`CHROME_PATH` wie beim Live-Sync-Test. Zweimal vollständig gelaufen, danach
+Teststack gestoppt.
+
+**Einbindung:** README: Dashboard (Kopf), Einstellungen „Calculation“ (bei
+den Auslösern), Detailansicht (Price history), Rebalancing (Simulation),
+Login und Benutzerverwaltung (Where the data lives). `docker/README.md`:
+Dashboard, Login (beim Login-Hinweis), Benutzerverwaltung (Data and backups).
+Unraid-Vorlage: zusätzlich Rebalancing, Login, Benutzerverwaltung. Die
+Vorlagenänderung liegt wie die übrigen StockPortfolio-Änderungen seit T-60 auf
+`t-60-stockportfolio-template` und wird erst mit dem nächsten Image-Release
+veröffentlicht (Unraid-Reihenfolge: Image vor Vorlage).
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` gemeinsam geprüft: die
+Bildunterschrift zum Dashboard ist wortgleich; Login-Hinweis („tick … not
+stored“) in beiden gleichbedeutend; die Benutzerverwaltung steht in beiden beim
+Kontomodell. Detail-, Rebalancing- und Einstellungsbild nur im Projekt-README,
+weil die Container-Anleitung Funktionen nicht im Einzelnen beschreibt. Das
+README beschreibt außerdem das Aufnahmeskript beim Live-Sync-Test.
+`unraid/README.md` nennt keine Bilder; unverändert. Wirksam werden die Bilder
+in Docker Hub und Unraid erst nach Push (Raw-URLs auf `master`) bzw. dem
+nächsten README-Upload.
+
+**Belege:** `make test` 848 Frontend- und 20 API-Tests grün; Lint und
+Typecheck für `frontend` und `api` ohne Befund (zwei `no-undef` im Skript
+behoben). Hinweis am Rand: Die Eingabefelder zeigen Naive UIs Platzhalter
+„Please Input“; das ist bestehendes Verhalten, nicht Teil dieses Tickets.
+
+**Lessons:** SP-CX-07 angewendet (unbenutzte Bilder entschieden: nach Mikes
+Vorgabe aktualisiert und eingebunden). Keine neue Lesson.

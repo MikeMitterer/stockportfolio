@@ -111,7 +111,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-68 in Umsetzung. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
+Aktiv ist T-68; Runde 1 (`5821721`) liegt zur Prüfung bei `codex-verifier`. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
@@ -120,12 +120,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
 - `branch`: `t-68-aktuelle-screenshots`
-- `handoff_commit`: ``
+- `handoff_commit`: `5821721ecc491561fdbfdd29489da41862e9c158`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
@@ -316,3 +316,12 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-68 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `5821721ecc491561fdbfdd29489da41862e9c158` gegen `72f488e` prüfen (Branch `t-68-aktuelle-screenshots`,
+im Root ausgecheckt) sowie im Templates-Repo `9670339` auf
+`t-60-stockportfolio-template` (nur `templates/stockportfolio.xml`). Bilder,
+Skript, Einbindung und Doku-Abgleich im
+[Ticket](30-doing/T-68-aktuelle-screenshots-mit-login.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
+Browserprüfungen nur im Teststack mit Demo-Konten, nie gegen Mikes Sitzung.
