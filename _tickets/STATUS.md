@@ -103,7 +103,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-66 (Umsetzung; Übergabe `5a077ef` vor Prüfbeginn zurückgenommen, Hinweistexte werden angeglichen). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-66; Runde 1 wartet auf den Verifier (`6b8a6ee`). Die letzte abgeschlossene technische Prüfung ist
 T-65 Runde 3 (`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
 T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
@@ -116,11 +116,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-66-status-badges-below-above-ok.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `6b8a6ee33d7f6e1286bd5d2c33e41f604ed570f5`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
 - `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
@@ -302,4 +302,14 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-66 Runde 1 · Fassung `6b8a6ee`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t66` prüfen:
+[T-66](30-doing/T-66-status-badges-below-above-ok.md), maßgeblich ist der
+Abschnitt „Stand nach Mikes weiteren Entscheidungen“. Badges nur Symbol und
+Farbe (↓ ↑ ✓ →) mit zugänglichem Namen; Fragezeichen am Status erklärt sie mit
+den eingestellten Bändern; Gruppenkopf und Zeilen bündig; Login, Tabellenhinweis,
+About und Methodenseite stimmig; Login gegliedert und hervorgehoben; falsche
+Aussage zur Datenablage korrigiert. `make test` (837 + 20), Lint, Typprüfung,
+`git diff --check` grün; sichtbare Läufe 16/16 und 10/10. Grenzen: ✓/→ und
+`min`-Tooltip nur im Komponententest; Popup-Gliederung braucht ux-foundation.
