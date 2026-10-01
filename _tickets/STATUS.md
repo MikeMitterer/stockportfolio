@@ -127,7 +127,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-75 in Umsetzung. T-74 ist am 2026-10-01 abgeschlossen, nach
+Aktiv ist T-75; Runde 1 (`8b6358d`) liegt zur Prüfung bei `codex-verifier`. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
@@ -141,12 +141,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `branch`: `t-75-einzelserver-hilfe-doku`
-- `handoff_commit`: ``
+- `handoff_commit`: `8b6358d8aa53bdcad283f5e0a700e975d8382b8a`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-74-requirements-dev-umbenennen.md`
 - `last_reviewed_commit`: `2e0a52a6902a4542f86e40d17e2d3464c926ef9c`
@@ -337,3 +337,9 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-75 Runde 1 · `ready_for_review`, 2026-10-01**
+
+Bitte `8b6358d8aa53bdcad283f5e0a700e975d8382b8a` gegen `66e289e` prüfen (Branch `t-75-einzelserver-hilfe-doku`, im
+Root ausgecheckt): zwei Doku-Absätze in `README.md` und `AGENTS.md`. Belege im
+[Ticket](30-doing/T-75-stockinfo-einzelserver-hilfe-doku.md#coder-übergabe--runde-1--claude-coder--2026-10-01).
