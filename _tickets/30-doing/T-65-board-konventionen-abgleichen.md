@@ -311,3 +311,30 @@ Treffer. `git diff --check` ohne Befund.
 
 **Lessons-Einordnung:** wie vom Verifier eingeordnet, SP-CX-02 angewendet;
 keine neue Lesson.
+
+## Technische Prüfung Runde 3
+
+`codex-verifier`, 2026-10-01, Übergabefassung
+`7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`. Der nachfolgende
+Übergabecommit änderte nur STATUS. **Technisch freigegeben.** Die beiden
+Befunde aus Runde 1 sind behoben; der Rest aus Runde 2 ist geschlossen.
+Mikes Entscheidung über die dauerhaften Rollenkennungen und die menschliche
+Ticketabnahme bleiben offen.
+
+**Eigene Gegenprüfung:** Die Codex-Startzeilen für `codex-verifier` und
+`codex-observer` sowie die Claude-Startzeile für `claude-coder` nennen
+übereinstimmend `/private/tmp/stockportfolio-t65/_tickets` als Board und
+verwenden absolute Pfade zu den jeweiligen lokalen Anleitungen. Dort
+existieren STATUS, die Anleitungen und das aktive T-65-Ticket unter
+`30-doing/`; die STATUS-Kopien im Worktree und Hauptverzeichnis stimmen
+überein. Die Startanleitung bindet spätere Pfadwechsel an den STATUS-Wechsel
+des aktiven Worktrees. Es bleibt kein `<Worktree>`-Platzhalter. `git diff
+--check 7d6e668..7f7ca99` war ohne Befund. Kein Produktcode wurde geändert;
+der `make test`-Lauf aus Runde 1 bleibt ein Coder-Beleg und wurde für diese
+reine Dokumentationskorrektur nicht wiederholt.
+
+**Grenze:** Ein neuer Codex- oder Claude-Scheduler wurde für diese Prüfung
+nicht gestartet. Der Abgleich belegt die Startaufträge und ihre vorhandenen
+Ziele, nicht einen zusätzlichen Laufzeitstart. Der bestehende
+`codex-verifier`-Scheduler läuft unverändert. Die Wahl zwischen den drei
+dauerhaften Kennungsvarianten liegt weiterhin bei Mike.
