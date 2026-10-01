@@ -11,10 +11,11 @@ richten“; Entscheidung „B - ganz klar und fange die Schwachstellen ab“.
 `/mnt/user/appdata/stockportfolio` → bisher Absturz beim Start. Danach: Der
 Container richtet `/data` für 99:100 ein und startet.
 
-**Stand:** Runde 1 (`e7cda36`) kam mit einem Befund zurück: Eine vorhandene,
-root-eigene Datenbank nach gescheitertem `chown`. Runde 2 (`7aea00f`) prüft
-vorhandene Dateien vor dem Start und liegt bei `codex-verifier`. Der Rauchtest
-besteht 24 von 24 Prüfungen.
+**Stand:** Runde 2 (`7aea00f`) wurde mit einem neuen, reproduzierten
+Randfall an `claude-coder` zurückgegeben. Die Datenbankprüfung aus Runde 1
+funktioniert; die Prüfung aller übrigen Dateien verhindert aber einen Start,
+obwohl die App ihre Daten schreiben könnte. Der Rauchtest besteht seine
+24 Prüfungen und deckt diesen Fall noch nicht ab.
 
 Für dich steht jetzt nichts an.
 
@@ -57,8 +58,8 @@ Root-Rechte. Abzufangen:
 - [x] Frischer Appdata-Ordner unter Unraid-Bedingungen startet ohne Eingriff.
 - [x] Die App läuft als 99:100, änderbar über `PUID`/`PGID`.
 - [ ] Alle fünf Schwachstellen sind abgefangen und im Rauchtest belegt:
-  Der Fall einer unbeschreibbaren vorhandenen SQLite-Datei bei gescheitertem
-  `chown` ist noch offen.
+  Bei gescheitertem `chown` verhindert eine für die App unbeteiligte,
+  unbeschreibbare Datei noch den Start trotz beschreibbarem Datenpfad.
 - [x] `README.md`, `docker/README.md`, `unraid/README.md` und die Unraid-Vorlage nennen den neuen Stand.
 
 ### Side-Effects
@@ -191,3 +192,40 @@ machen dazu keine Aussage; unverändert.
 **Lessons:** SI-P-04/08 (Gegenprobe muss den Fehlerzustand treffen: der neue
 Fall unterscheidet vorhandene von neuen Dateien), SI-P-01/10 (Prüfungszahl
 zählt das Skript jetzt selbst statt Handzählung). Keine neue Lesson.
+
+## Unabhängige Prüfung · Runde 2 · codex-verifier · 2026-10-01
+
+**Urteil: Änderungen erforderlich.** Prüfstand `7aea00f650c6b5fda5719d28053ffd198bfe2dd1`
+gegen `7783de6`. Der `linux/amd64`-Image-Entrypoint ist bytegleich mit der
+geprüften Datei (SHA-256
+`5a4ede0a7601cf52ed4e23f63676e9544f2b5eb475ef43ceff35810c76c7dce5`).
+Der neue Rauchtest bestand **24 von 24** Prüfungen. Die Fälle einer
+unbeschreibbaren vorhandenen SQLite-Datei mit fehlendem `CHOWN` und mit
+`--user` liefern jetzt vor dem App-Start eine klare Pfad- und UID/GID-Meldung.
+README und Docker-README beschreiben die neue Prüfung übereinstimmend;
+`unraid/README.md` und die Vorlage wurden in Runde 2 nicht geändert.
+
+**Befund 2 · unbeteiligte Datei blockiert den Start:** Die gemeinsame
+`find`-Prüfung verlangt Lese- und Schreibrecht für **jede** Datei unter
+`/data`. Die Ticketentscheidung verlangt dagegen einen Start, wenn die App
+dort schreiben kann. Reproduktion mit eigenem temporären Docker-Volume:
+`/data` Modus `0777`, nur `/data/old-note.txt` gehört `0:0` mit Modus `0400`,
+keine SQLite-Datei, Container mit `--cap-drop CHOWN`. Ergebnis: Exit 1 vor
+App-Start mit „`/data/old-note.txt is not writable for UID 99 / GID 100`“.
+Der positive Fall mit beschreibbarem `/data` ohne CHOWN besteht im Rauchtest;
+die unbeteiligte Datei ist der einzige Unterschied. Das Test-Volume wurde
+entfernt. Bitte die Startprüfung auf die tatsächlich von SQLite benötigten
+Pfade begrenzen und den positiven Gegenfall im Rauchtest nachweisen. Die
+README-Aussage „every file“ ist danach an das tatsächliche Verhalten
+anzupassen.
+
+**Quellhinweis:** In der aktuellen `find`-Formel hängt `-print -quit` nur am
+rechten `-o`-Zweig. Ein verschachtelter unbeschreibbarer Ordner mit Modus
+`0555` ergab im Container trotz linkem Treffer keine Ausgabe. Wird die
+rekursive Prüfung beibehalten, muss auch diese Verzweigung stimmen; wird sie
+auf App-Pfade begrenzt, entfällt diese breite Zusage.
+
+**Lessons-Einordnung:** SI-P-04/08 erneut angewendet. Die neuen Negativtests
+unterscheiden den alten SQLite-Fehler, aber keinen unnötig verweigerten
+Start bei schreibbaren App-Daten. Der konkrete Randfall bleibt im Ticket;
+die Einordnung eines wiederkehrenden Musters liegt beim Observer.
