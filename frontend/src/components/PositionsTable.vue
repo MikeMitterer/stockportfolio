@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { NDataTable, type DataTableColumns } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
 import InfoHint from '@/components/InfoHint.vue'
+import { useStatusHint } from '@/composables/useStatusHint'
 import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
@@ -51,6 +52,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
+const statusHint = useStatusHint()
 const quoteIssue = useQuoteIssue()
 const fieldsStore = useFieldsStore()
 
@@ -262,7 +264,10 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
     title: t('table.position'),
     key: 'symbol',
     stockInfoFields: row => row.position.group === 'cash' ? [] : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
-    width: 280,
+    // Nur Mindestbreite: Diese Spalte nimmt übrigen Platz auf. Die übrigen
+    // Spalten behalten ihre Breite, und die Status-Spalte liegt damit genau
+    // unter dem Statusfeld des Gruppenkopfs.
+    minWidth: 280,
     render: (row) =>
       h('div', { class: 'cell-stack' }, [
         // Kürzel und Verweis-Symbole in einer Zeile — die Links gehören zum
@@ -481,13 +486,19 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         : h('span', { class: 'cell-empty' }, '—'),
   },
   {
-    title: t('table.status'),
+    // Die Badges zeigen nur Symbole; ihre Bedeutung erklärt das Fragezeichen.
+    title: () =>
+      h('span', { class: 'cell-head' }, [
+        t('table.status'),
+        h(InfoHint, { text: statusHint.value, anchor: 'bands', settingsTab: 'calc' }),
+      ]),
     key: 'status',
     // Zentriert ist wieder möglich, seit das Badge eine feste Breite hat.
     // Vorher wanderte es bei wechselnden Beschriftungen von Zeile zu Zeile.
     align: 'center',
-    // Pille (6,5 rem) plus das „min“-Zeichen rechts daneben.
-    width: 150,
+    // Pille (2,75 rem), „min“-Zeichen daneben und Kopf mit Fragezeichen.
+    // Der Gruppenkopf (PositionGroupHeader) nutzt dieselbe Breite.
+    width: 110,
     render: (row) => {
       if (row.isActive) {
         return h(SuggestionBadge, {

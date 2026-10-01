@@ -1,4 +1,4 @@
-# T-66 · Status-Badges „Below / Above / OK“ statt „Buy / Sell / OK“
+# T-66 · Status-Badges als Symbole statt „Buy / Sell / OK“ und stimmige Hinweistexte
 
 **Auftrag von Mike, 2026-10-01**, über `codex-observer` (INBOX-Nachricht
 „Mikes Nachtrag zu T-64“, geprüfte Fassung `fd9d8f4`; hier vollständig
@@ -160,6 +160,106 @@ einzeilig; mobil 390 px Englisch 6 Badges einzeilig. 10 von 10 bestanden.
 
 **Prüfstand:** `make test` mit 831 Frontend- und 20 API-Tests grün; beide
 Lints und beide Typprüfungen ohne Befund; `git diff --check` ohne Befund.
+
+## Stand nach Mikes weiteren Entscheidungen (2026-10-01)
+
+Die vorherigen Abschnitte bleiben als Verlauf stehen. **Maßgeblich ist dieser
+Abschnitt.** Die Übergabe `5a077ef` wurde vor Prüfbeginn zurückgenommen.
+
+**Entscheidungen von Mike:**
+
+1. Badges **ganz ohne Text, nur Symbol und Farbe**: ↓ rot (unter Ziel),
+   ↑ rot (über Ziel), ✓ grün (OK), → gelb (knapp an der Grenze, „Near“).
+2. Neben „Status“ ein **Fragezeichen**, das die Symbole erklärt, und zwar mit
+   den **eingestellten Bändern** statt Beispielwerten.
+3. **Near bleibt** als gelbes →. Bestätigt: Near ist der letzte Prozentpunkt
+   der relativen Abweichung vor der Bandgrenze (`isNearBand`), bei
+   −5 % / +10 % also −5 % bis −4 % und +9 % bis +10 %. Den Zustand gibt es seit
+   `28b3053` (2026-08-07); er war wegen des schmalen Fensters selten sichtbar.
+4. Hinweise **unter den Tabellen, bei About und im Login stimmig**; Login mit
+   **Absätzen** und **Fettdruck**, dezenterer senkrechter Strich.
+5. Gruppenköpfe: Symbol ohne Pille ist gewollt (ruhiger Kopf), muss aber
+   **genau über den Zeilen** stehen.
+
+**Umsetzung:**
+
+- `SuggestionBadge.vue`: Pille nur mit Punkt und Symbol (2,75 rem, fest),
+  `role="img"`, `aria-label` und `title` mit dem Katalogtext (Deutsch „Unter
+  Ziel“ / „Über Ziel“ / „OK“ / „Knapp an der Grenze“, Englisch „Below“ /
+  „Above“ / „OK“ / „Near the limit“). Punkt und Symbol schrumpfen nicht
+  (`flex-shrink: 0`), kein Umbruch. Die ruhige Gruppenkopf-Variante behält
+  das Kastenmaß der Pille (transparenter Rand).
+- `composables/useStatusHint.ts`: Erklärtext aus den Einstellungen. Bei
+  aktiven Bändern mit `−lower` / `+upper` und den Near-Schwellen
+  (`lower−1`, `upper−1`); bei „Bänder und Termin“ zusätzlich der Satz zum
+  fälligen Termin; beim reinen Kalendertermin ein eigener Text ohne Bänder
+  und ohne →. Eingebunden im Spaltenkopf „Status“ von Positionstabelle und
+  Rebalancing (`InfoHint`, Verweis auf Methode und Einstellung).
+- Ausrichtung Gruppenkopf/Zeile: Ursache war, dass die Tabelle übrige Breite
+  auf alle Spalten verteilte (Status-Zelle 116 statt 110 px) und das
+  Kopffeld anders breit war. Jetzt nimmt nur die Positionsspalte (`minWidth`)
+  übrigen Platz auf; das Status-Feld im Gruppenkopf hat dieselbe Breite wie
+  die Spalte (6,875 rem = 110 px) und ist um den Innenabstand verschoben.
+  Gemessen bei 1464, 1920 und 2900 px: Symbolmitte in Kopf und Zeilen
+  identisch (0,0 px Abweichung).
+- `components/EmphasizedText.vue`: Leerzeilen → Absätze, `**…**` → fett,
+  über Textknoten ohne `v-html`. Login-Hinweis in drei Absätzen; fett:
+  „rechnerisch“, „prüft nicht“, „führt keine Orders aus“, „Prüfe Daten,
+  Kurse, Kosten und Risiken, bevor du handelst.“ Strich 2 px in
+  `--border-subtle` statt 3 px `--border-default`.
+- **Stimmige Texte** aus denselben Sätzen: Login (`auth.investmentNotice`),
+  unter den Tabellen (`tradeNotice`), About (`about.use`), Methodenseite
+  (`method.limitsAdvice`). Gemeinsamer Kern: „Die Statussymbole ↓ und ↑
+  zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten“,
+  „Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen
+  rechnerisch nötig wären …“, „Die App prüft nicht, ob ein Geschäft oder ein
+  Finanzinstrument für dich geeignet ist, und führt keine Orders aus“,
+  „Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst“. Kein
+  „keine Anlageberatung / keine Empfehlung“ mehr.
+- **Scout Rule:** `method.limitsData` behauptete „Sie speichert nichts
+  außerhalb des Browsers. Kein Server kennt die Bestände“ – seit T-60/T-61
+  falsch. Jetzt: Depots, Einstellungen und Tageswerte liegen im Konto auf dem
+  StockPortfolio-Server, getrennt je Konto; StockInfo erfährt nur die
+  abgefragten Papiere.
+- Erklärungen in de/en, die den Status benennen, nennen jetzt die Symbole
+  (↓ / ↑ / ✓ mit „min“).
+
+**Grenze · Popup-Formatierung:** `UxInfoHint` aus ux-foundation gibt reinen
+Text aus, ohne Zeilenumbrüche, Fettdruck oder Slot. Der Popup-Text ist
+deshalb gekürzt, aber nicht mit Leerzeilen oder Fettdruck gegliedert. Das
+braucht eine Änderung im Fundament; nach AGENTS.md dort und nicht als lokale
+Kopie. Offen für Mike.
+
+**Tests:** `suggestionBadge.spec.ts` (nur Symbole, zugänglicher Name in
+de/en, ✓ auch mit `min`), `useStatusHint.spec.ts` (eingestellte Bänder samt
+Near-Schwellen, Satz zum Termin, Kalendertext ohne Bänder),
+`i18nNotices.spec.ts` (Login, Tabellenhinweis, About gleich in Kern- und
+Prüfsatz, Login in drei Absätzen, kein alter Ausschluss; schlug gegen die
+alte Fassung fehl), `emphasizedText.spec.ts` (Absätze, Fettdruck, HTML wird
+nicht ausgeführt).
+
+**Prüfstand:** `make test` mit 837 Frontend- und 20 API-Tests grün; Lint und
+Typprüfung ohne Befund; `git diff --check` ohne Befund.
+
+**Sichtbare Browserläufe** (`:8082`/`:8898`, Fenster 80 px links, 50:50;
+Fensterplatzierung ohne Screen-Details-API, die je Adresse einen
+Freigabedialog auslöste und frühere Läufe blockierte):
+
+- Hinweistexte, 16/16: Login in drei Absätzen mit Kern- und Prüfsatz, Badges
+  nur mit Symbol und einzeilig, Fragezeichen am Status, Hinweis unter
+  Dashboard- und Rebalancing-Tabelle, About, Methodenseite (Datenablage
+  richtig, kein alter Ausschluss); jeweils de und en.
+- Abschluss, 10/10: Login drei Absätze und Fettdruck, Strich 2 px, Symbole in
+  Gruppenkopf und Zeilen bündig (0,0 px), Popup kurz und mit den
+  eingestellten Bändern (−6,0 % / +15,0 %); de und en.
+- Grenze: OK (✓) und Near (→) im Browser nicht erzeugt; beide sind im
+  Komponententest belegt. `min`-Tooltip nicht geöffnet.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` beschreiben den
+Tabellenhinweis jetzt sinngleich (Beträge aus eigenen Zielen, keine
+Eignungsprüfung, keine Orders; Login und About gleichlautend). Hub-Vorschau
+10.614 Bytes. `unraid/README.md` („short note about the calculated buy and
+sell figures“) bleibt zutreffend. Offen: Screenshot `docs/images/dashboard.png`.
 
 ## Verify
 

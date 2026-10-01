@@ -21,8 +21,9 @@ reusable browser test portfolio with sample quotes, in English._
 - Value positions in your portfolio's base currency, with currency conversion.
 - View price history, asset information and your own position notes.
 - Plan rebalancing trades using tolerance bands or a schedule.
-- Read the short note below both tables: buy and sell figures are calculated
-  guides, not recommendations to trade.
+- Read the short note below both tables: buy and sell amounts are calculated
+  from your own targets; the app does not check whether a trade suits you and
+  places no orders.
 - Use the responsive interface in English or German, with light and dark themes.
 - Export and restore portfolios and settings as JSON backups.
 

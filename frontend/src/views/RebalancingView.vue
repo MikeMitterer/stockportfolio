@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NIcon, NSpin, NTooltip } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
 import InfoHint from '@/components/InfoHint.vue'
+import { useStatusHint } from '@/composables/useStatusHint'
 import { UxInlineNumber } from '@mmit/ux-foundation'
 import { useAppNotification } from '@/composables/useAppNotification'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
@@ -30,6 +31,7 @@ import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import type { AssetGroup } from '@/types/portfolio'
 
 const { t } = useI18n()
+const statusHint = useStatusHint()
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 
@@ -415,7 +417,12 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                       <div class="reb__tooltip">{{ t('rebalancing.deviationTooltip') }}</div>
                     </NTooltip>
                   </th>
-                  <th class="reb__th reb__th--center reb__th--wide reb__th--w32">{{ t('table.status') }}</th>
+                  <th class="reb__th reb__th--center reb__th--wide reb__th--w32">
+                    <span class="reb__status-head">
+                      {{ t('table.status') }}
+                      <InfoHint :text="statusHint" anchor="bands" settings-tab="calc" />
+                    </span>
+                  </th>
                 </tr>
               </thead>
 
@@ -811,6 +818,12 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     &--w28 { width: 7rem; }
     &--w32 { width: 8rem; }
     &--w56 { width: 14rem; }
+  }
+
+  &__status-head {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
   }
 
   &__hinted {

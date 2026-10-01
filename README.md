@@ -38,7 +38,9 @@ amount in the portfolio currency or a percentage; its default is zero (off).
 Changing units converts the current value. Buffer and minimum trade settings
 are saved with the active portfolio.
 The note below the dashboard table and Rebalancing table explains that buy and
-sell figures are calculated guides, not recommendations to trade.
+sell amounts show what would be needed, by calculation, to reach your own
+targets, and that the app neither checks whether a trade suits you nor places
+orders. Login and About use the same wording.
 
 ### Portfolio base currency
 

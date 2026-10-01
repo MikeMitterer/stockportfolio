@@ -12,24 +12,29 @@ afterEach(() => {
 })
 
 describe('Status-Badge', () => {
-  // Mike, 2026-10-01: Die Badges beschreiben eine Lage, keinen Auftrag.
-  // Deutsch „Unter Ziel“ / „Über Ziel“, Englisch „Below“ / „Above“, beide „OK“.
-  // Die Werte der Logik (`buy`, `sell`, `ok`) bleiben.
+  // Mike, 2026-10-01: Die Badges zeigen nur Symbol und Farbe, keinen Text:
+  // ↓ unter Ziel, ↑ über Ziel, ✓ OK, → knapp an der Grenze. Die Bedeutung
+  // steht als zugänglicher Name und Tooltip am Badge.
   it.each([
     ['de', 'Unter Ziel', 'Über Ziel'],
     ['en', 'Below', 'Above'],
-  ] as const)('zeigt in „%s" die Lage zum Ziel statt Buy und Sell', (locale, below, above) => {
+  ] as const)('zeigt in „%s" nur Symbole und benennt sie zugänglich', (locale, below, above) => {
     setActivePinia(createPinia())
     useLocaleStore().setLocale(locale)
-    const label = (suggestion: Suggestion, extra: Record<string, unknown> = {}) =>
-      mount(SuggestionBadge, { props: { suggestion, ...extra } }).text()
+    const badge = (suggestion: Suggestion, extra: Record<string, unknown> = {}) =>
+      mount(SuggestionBadge, { props: { suggestion, ...extra } }).get('.badge__pill')
 
-    expect(label('buy')).toContain(below)
-    expect(label('sell')).toContain(above)
-    expect(label('ok')).toContain('OK')
-    expect(label('ok', { belowMinTrade: true })).toContain('OK')
+    expect(badge('buy').text()).toBe('↓')
+    expect(badge('buy').attributes('aria-label')).toBe(below)
+    expect(badge('sell').text()).toBe('↑')
+    expect(badge('sell').attributes('aria-label')).toBe(above)
+    expect(badge('ok').text()).toBe('✓')
+    expect(badge('ok').attributes('aria-label')).toBe('OK')
+    expect(badge('ok', { near: true }).text()).toBe('→')
+    expect(badge('ok', { belowMinTrade: true }).text()).toBe('✓')
     for (const suggestion of ['buy', 'sell', 'ok'] as const) {
-      expect(label(suggestion)).not.toMatch(/\b(Buy|Sell)\b/)
+      expect(badge(suggestion).text()).not.toMatch(/[A-Za-zÄÖÜäöü]/)
+      expect(badge(suggestion).attributes('title')).toBe(badge(suggestion).attributes('aria-label'))
     }
   })
 })
