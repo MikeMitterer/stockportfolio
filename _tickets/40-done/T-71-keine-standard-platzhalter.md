@@ -1,5 +1,7 @@
 # T-71 · Keine Standard-Platzhalter in Eingabefeldern
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-68 und T-71 sind erledigt, push es“ Offener Rest: Kein offener Rest. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** Eingabefelder ohne eigenen Platzhalter zeigen den
 Standardtext von Naive UI: „Please Input“ / „Please Select“ bzw. „Bitte
 ausfüllen“ / „Bitte auswählen“. Der Text steht direkt unter einer Beschriftung
@@ -96,3 +98,9 @@ Frontend- und 20 API-Tests sowie Lint und Typecheck ohne Befund. Keine
 eigene vollständige Teststack-Wiederholung. Doku-Abgleich: Beide READMEs
 enthalten keine Verhaltenszusage zu Standard-Platzhaltern; die aktualisierten
 Bilder sind in T-68 geprüft. Keine neue Lesson durch den Verifier.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-68 und T-71 sind erledigt, push es“
+Integration: nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Kein offener Rest.

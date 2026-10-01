@@ -1,5 +1,7 @@
 # T-68 · Aktuelle Screenshots, dazu ein Bild vom Login-Dialog
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-68 und T-71 sind erledigt, push es“ Offener Rest: Die drei zusätzlichen Screenshots der Unraid-Vorlage (`9670339` auf `t-60-stockportfolio-template`) werden erst mit dem nächsten Image-Release veröffentlicht; die Docker-Hub-Beschreibung zeigt die neuen Bilder nach dem nächsten README-Upload. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** Das Dashboard-Bild in README, Docker-Hub-Beschreibung
 und Unraid-Vorlage ist veraltet. Es zeigt Version 0.2.0, die alte
 Kennzahlzeile und ein „Buy“-Badge, das es nach T-66 nicht mehr gibt. Den
@@ -210,3 +212,9 @@ inhaltlich gleich; die neuen Angaben zu Bildmaßen und Rebalancing stehen nur
 im Projekt-README, wo das Skript und die Funktion erklärt werden.
 `unraid/README.md` benötigt keine Änderung. Die Lessons-Einordnung der
 beiden Textbefunde aus Runde 1 bleibt beim Observer; kein neuer Befund.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-68 und T-71 sind erledigt, push es“
+Integration: nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Die drei zusätzlichen Screenshots der Unraid-Vorlage (`9670339` auf `t-60-stockportfolio-template`) werden erst mit dem nächsten Image-Release veröffentlicht; die Docker-Hub-Beschreibung zeigt die neuen Bilder nach dem nächsten README-Upload.

@@ -11,12 +11,13 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
-[T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
-(Runde 2, `efc290f`) und [T-71 · Keine Standard-Platzhalter](30-doing/T-71-keine-standard-platzhalter.md)
-(Runde 1, `509881e`) sind technisch freigegeben und lokal nach `master`
-gemergt (kein Push). Mikes Bildurteil und Abnahme stehen aus. Die drei neuen
-Screenshots der Unraid-Vorlage (`9670339`) warten auf
-`t-60-stockportfolio-template` auf den nächsten Image-Release.
+
+**Abgeschlossen am 2026-10-01:** Mike: „T-68 und T-71 sind erledigt, push es“
+[T-68 · Aktuelle Screenshots mit Login](40-done/T-68-aktuelle-screenshots-mit-login.md)
+und [T-71 · Keine Standard-Platzhalter](40-done/T-71-keine-standard-platzhalter.md)
+sind abgeschlossen, gemergt und gepusht. Die drei neuen Screenshots der
+Unraid-Vorlage (`9670339`) warten auf `t-60-stockportfolio-template` auf den
+nächsten Image-Release.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
@@ -117,8 +118,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-68 Runde 2 und T-71 Runde 1 sind technisch freigegeben
-und lokal nach `master` gemergt; Mikes Abnahme steht aus.
+Kein Ticket aktiv. T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
+abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
