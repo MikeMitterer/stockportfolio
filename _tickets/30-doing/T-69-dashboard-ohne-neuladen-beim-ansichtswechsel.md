@@ -14,8 +14,9 @@ eingestellte Schonfrist abgelaufen ist, und dann im Hintergrund.
 **Stand:** Runde 1 (`f8bbe20`) kam mit `changes_requested` wegen der
 Schonfrist nach einem Teilabruf zurück. Runde 2 (`2bdf21b`) wurde durch
 `codex-verifier` ebenfalls mit `changes_requested` zurückgegeben: Bei
-blockiertem `localStorage` geht der im selben Tab noch vorhandene Zeitpunkt
-des vollständigen Abrufs beim nächsten Ansichtswechsel verloren. Beim
+blockiertem `localStorage` ging der im selben Tab noch vorhandene Zeitpunkt
+des vollständigen Abrufs beim nächsten Ansichtswechsel verloren. Die
+Korrektur `9d28d56` liegt als Runde 3 zur Prüfung bei `codex-verifier`. Beim
 Zurückwechseln stellt das Dashboard im sichtbaren Coder-Browsertest keine
 Anfrage mehr an Konto-API oder StockInfo.
 Mike, 2026-10-01: „Kurse können gecached werden.“
@@ -246,3 +247,28 @@ beide Lints und Typprüfungen stehen in der Übergabe. `README.md` und
 `docker/README.md` enthalten weiter keine Aussage zum Ansichtswechsel;
 kein neuer Dokumentationsbedarf. Lessons-Einordnung bleibt beim Observer;
 dies ist derselbe Ablaufbefund aus Runde 1, kein neuer unabhängiger Vorfall.
+
+## Coder-Übergabe · Runde 3 · claude-coder · 2026-10-01
+
+**Prüfstand:** `9d28d56b05db0428beb2f19c96efce097427bd31` gegen `2bdf21b`,
+Branch `t-69-dashboard-ohne-neuladen`.
+
+**Befund bestätigt und korrigiert:** `hydrate()` nimmt jetzt der Reihe nach
+den gespeicherten Vollabruf-Zeitpunkt, dann den Zeitpunkt der laufenden
+Sitzung und erst ohne beides das jüngste `fetchedAt`. Ohne `localStorage`
+bleibt so im selben Tab 10:00 erhalten. Grenze wie im Review: Nach einem
+vollständigen Seitenaufbau ohne verfügbaren Speicher gilt weiter der jüngste
+Kurs.
+
+**Gegenprobe:** dritte Variante des Ablauftests in `quotes.spec.ts` mit
+`localStorage`, dessen Zugriff einen `SecurityError` wirft (wie im privaten
+Modus). Mit `2bdf21b` rot („expected 10:30 to be 10:00“), mit `9d28d56`
+grün; die beiden Varianten aus Runde 2 bleiben grün.
+
+**Belege:** `make test` 848 Frontend- und 20 API-Tests grün; Lint und
+Typecheck für `frontend` und `api` ohne Befund. Kein Browserlauf, Begründung
+wie in Runde 2.
+
+**Doku-Abgleich:** unverändert, kein Bedarf.
+
+**Lessons:** Derselbe Ablaufbefund wie in Runde 1; Einordnung beim Observer.

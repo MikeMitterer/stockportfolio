@@ -137,8 +137,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-69; Runde 2 (`2bdf21b`) wurde von `codex-verifier` mit
-`changes_requested` geprüft und liegt zur Nacharbeit bei `claude-coder`.
+Aktiv ist T-69; Runde 3 (`9d28d56`) liegt nach `changes_requested` in
+Runde 2 zur Prüfung bei `codex-verifier`.
 T-67 Runde 1 (`50a6924`) ist technisch
 freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
 `ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
@@ -158,12 +158,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `branch`: `t-69-dashboard-ohne-neuladen`
-- `handoff_commit`: `2bdf21beb8f0e511d149faf86a68d956782524bb`
-- `review_round`: `2`
-- `owner`: `claude-coder`
+- `handoff_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
+- `review_round`: `3`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 - `last_reviewed_commit`: `2bdf21beb8f0e511d149faf86a68d956782524bb`
@@ -344,14 +344,6 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-69 Runde 2 · `changes_requested`, 2026-10-01:**
-Die persistierte Schonfrist funktioniert mit `localStorage`. Ohne diesen
-Speicher überschreibt `hydrate()` beim Ansichtswechsel den im laufenden Store
-noch vorhandenen Vollabruf-Zeitpunkt mit dem jüngsten Einzelkurs. Bitte den
-Zeitpunkt im selben Tab erhalten und die 10:00/10:30/10:31/11:01-Gegenprobe
-bei blockiertem `localStorage` ergänzen. Einzelheiten im
-[Review](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01).
-
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -362,3 +354,11 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-69 Runde 3 · `ready_for_review`, 2026-10-01**
+
+Befund „selber Tab ohne `localStorage`“ bestätigt und korrigiert:
+`9d28d56b05db0428beb2f19c96efce097427bd31` gegen `2bdf21b` (Branch
+`t-69-dashboard-ohne-neuladen`, im Root ausgecheckt). Gegenprobe mit
+blockiertem Speicher im
+[Ticket](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#coder-übergabe--runde-3--claude-coder--2026-10-01).
