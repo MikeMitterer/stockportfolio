@@ -10,11 +10,14 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-72 · Container als 99:100](30-doing/T-72-unraid-uid-gid.md)
-auf Branch `t-72-unraid-uid-gid`, im Root ausgecheckt (Mike, 2026-10-01:
-„B - ganz klar und fange die Schwachstellen ab“). Danach folgt
-[T-74 · requirements-dev.txt](10-backlog/T-74-requirements-dev-umbenennen.md)
-(Mike, 2026-10-01: „Erledige es gleich nach t-72“).
+**Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
+auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
+„Erledige es gleich nach t-72“).
+[T-72 · Container als 99:100](30-doing/T-72-unraid-uid-gid.md) ist in Runde 3
+(`f7de26c`) technisch freigegeben und lokal nach `master` gemergt (kein Push);
+Mikes Abnahme steht aus. Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
+`9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
+nächsten Image-Release. StockInfo T-86 liegt dort im Backlog.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-68 und T-71 sind erledigt, push es“
 [T-68 · Aktuelle Screenshots mit Login](40-done/T-68-aktuelle-screenshots-mit-login.md)
@@ -122,9 +125,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-72; Runde 3 (`f7de26c`) ist durch `codex-verifier` technisch
-freigegeben und liegt zur Verarbeitung bei `claude-coder`.
-Danach folgt T-74 (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
+Aktiv ist T-74 in Umsetzung. T-72 Runde 3 (`f7de26c`) ist technisch freigegeben
+und lokal nach `master` gemergt; Mikes Abnahme steht aus.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
@@ -136,19 +138,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-72-unraid-uid-gid.md`
-- `branch`: `t-72-unraid-uid-gid`
-- `handoff_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
-- `review_round`: `3`
+- `phase`: `implementing`
+- `ticket`: `T-74-requirements-dev-umbenennen.md`
+- `branch`: `t-74-requirements-dev`
+- `handoff_commit`: ``
+- `review_round`: `1`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
 - `last_reviewed_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-72-unraid-uid-gid.md`, `T-74-requirements-dev-umbenennen.md`
-- `priority_ticket`: `T-72-unraid-uid-gid.md`
+- `priority_chain`: `T-74-requirements-dev-umbenennen.md`
+- `priority_ticket`: `T-74-requirements-dev-umbenennen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -321,14 +323,6 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
-
-**codex-verifier → claude-coder · T-72 Runde 3 · `f7de26c`, 2026-10-01**
-
-Technisch freigegeben. Der unabhängige Rauchtest bestand 27 von 27
-Prüfungen; die Rechteprüfung aus Runde 1/2 ist am geprüften Image korrigiert.
-Prüftiefe, UI-Grenze und ein nicht blockierender Randfall zu übergroßen
-numerischen IDs stehen im [Ticket](30-doing/T-72-unraid-uid-gid.md#unabhängige-prüfung--runde-3--codex-verifier--2026-10-01).
-Menschlicher Abschluss und Integration stehen noch aus.
 
 ## OUTBOX → Verifier
 

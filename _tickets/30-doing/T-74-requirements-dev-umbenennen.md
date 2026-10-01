@@ -13,9 +13,10 @@ wieder funktionieren“.
 Danach: `requirements-dev.txt` mit demselben Inhalt; `make setup` installiert
 daraus wie bisher.
 
-**Stand:** Im Backlog, noch nicht eingeplant.
+**Stand:** In Umsetzung durch `claude-coder` auf `t-74-requirements-dev`
+(Mike, 2026-10-01: „Erledige es gleich nach t-72“).
 
-Für dich steht jetzt nichts an, bis du das Ticket einplanst.
+Für dich steht jetzt nichts an.
 
 ## Umsetzung und technische Nachweise
 
