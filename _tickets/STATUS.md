@@ -5,9 +5,12 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
-**Aktuelle Arbeit:** [T-64 · Login-Hinweis](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
-auf Branch `t-64-hinweis-und-bestaetigung-beim-login` im Worktree
-`/private/tmp/stockportfolio-t64`, aufbauend auf dem freigegebenen T-62-Stand.
+**Aktuelle Arbeit:** [T-65 · Board-Konventionen abgleichen](30-doing/T-65-board-konventionen-abgleichen.md)
+auf Branch `t-65-board-konventionen-abgleichen` im Worktree
+`/private/tmp/stockportfolio-t65`, aufbauend auf dem freigegebenen T-64-Stand.
+[T-64 · Login-Hinweis](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
+ist in Runde 1 (`fd9d8f4`) technisch freigegeben; Wortlaut und Abnahme liegen
+bei Mike.
 
 **Technisch freigegeben, Abnahme durch Mike am Ende:**
 [T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
@@ -98,18 +101,16 @@ installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d8457
 Mikes Beschluss vom 2026-09-28 lokal und wird bereits über die Root-`.gitignore`
 ignoriert; die Paketvorlage sieht dafür eine noch fehlende
 `_tickets/.gitignore` vor. Die Übernahme ist seit 2026-10-01 als
-[T-65](20-ready/T-65-board-konventionen-abgleichen.md) eingeplant und folgt
-nach T-64; bis dahin gelten Mikes Entscheidung und die bestehenden
-Schreibgrenzen.
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md) in Umsetzung.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-64; Runde 1 (`fd9d8f4`) ist durch `codex-verifier` technisch
-freigegeben. Mikes Prüfung des Wortlauts und die menschliche Abnahme bleiben
-offen. Technisch freigegeben sind außerdem
-T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
-T-63 Runde 6. Die Prüfgeschichte
-aller Runden steht in den jeweiligen Tickets. Für T-60 bis T-63 erfolgen
+Aktiv ist T-65 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+T-64 Runde 1 (`fd9d8f4`, `approved`); Mikes Prüfung des Wortlauts und die
+menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
+Runde 2 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6
+(`094802b`) und T-60 mit T-63 Runde 6. Die Prüfgeschichte
+aller Runden steht in den jeweiligen Tickets. Für T-60 bis T-64 erfolgen
 bis zu Mikes Abnahme am Ende weder Abschluss noch Merge oder Push.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
@@ -117,18 +118,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
-- `handoff_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
-- `review_round`: `1`
+- `phase`: `implementing`
+- `ticket`: `T-65-board-konventionen-abgleichen.md`
+- `handoff_commit`: `none`
+- `review_round`: `0`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
 - `last_reviewed_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-64-hinweis-und-bestaetigung-beim-login.md`, `T-65-board-konventionen-abgleichen.md`
-- `priority_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
+- `priority_chain`: `T-65-board-konventionen-abgleichen.md`
+- `priority_ticket`: `T-65-board-konventionen-abgleichen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
