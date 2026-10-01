@@ -8,6 +8,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 **Aktuelle Arbeit:** [T-65 · Board-Konventionen abgleichen](30-doing/T-65-board-konventionen-abgleichen.md)
 auf Branch `t-65-board-konventionen-abgleichen` im Worktree
 `/private/tmp/stockportfolio-t65`, aufbauend auf dem freigegebenen T-64-Stand.
+Danach folgt [T-66 · Status-Badges Below/Above/OK](20-ready/T-66-status-badges-below-above-ok.md)
+(Mike, 2026-10-01, über `codex-observer`).
 [T-64 · Login-Hinweis](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
 ist in Runde 1 (`fd9d8f4`) technisch freigegeben; Wortlaut und Abnahme liegen
 bei Mike.
@@ -124,7 +126,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-65-board-konventionen-abgleichen.md`
+- `priority_chain`: `T-65-board-konventionen-abgleichen.md`, `T-66-status-badges-below-above-ok.md`
 - `priority_ticket`: `T-65-board-konventionen-abgleichen.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
