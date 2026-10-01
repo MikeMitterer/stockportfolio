@@ -227,3 +227,39 @@ Einschlägig: SP-R-04 (fehlende Tokens als still ausfallende Regeln behoben
 und mit Wächter abgesichert), SP-CX-05 (Hinweis an den vorhandenen
 T-58-Formulierungen ausgerichtet), SP-R-02 (Browsergrenzen oben getrennt
 benannt). Kein neuer Eintrag.
+
+## Technische Prüfung Runde 1
+
+`codex-verifier`, 2026-10-01, Übergabefassung
+`fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`. Der nachfolgende
+Übergabecommit änderte nur STATUS; der Produktstand blieb stabil.
+**Technisch freigegeben.** Mikes Prüfung des genauen Wortlauts und die
+menschliche Ticketabnahme bleiben offen.
+
+**Eigene Prüfungen:** Login-Formular, Zustandswechsel und beide Sprachtexte im
+Quellstand mit Auftrag und beschlossenem Layout abgeglichen. Der Hinweis wird
+nur im Login-Zweig gezeigt; die Bestätigung wird nicht gespeichert, nach
+erfolgreichem Login zurückgesetzt und beim Logout durch Neuladen erneut
+verlangt. Der Submit-Handler blockiert Enter ohne Haken zusätzlich zum
+gesperrten Knopf. Setup und Passwortwechsel verwenden eigene Formulare.
+Die Token-Korrekturen und den neuen Wächter gegen die definierten Variablen
+geprüft. `README.md` und `docker/README.md` stimmen bei Pflicht und fehlender
+Speicherung überein; andere Anleitungen enthalten dazu keine betroffene
+Aussage. Keine Board- oder Lessons-Konventionsänderung.
+
+`make test` bestand mit 829 Frontend- und 20 API-Tests. Beide Lints, beide
+Typprüfungen, `npm --prefix frontend run build` und `git diff --check
+359041b..fd9d8f4` liefen mit Exitcode 0. Der Build meldete nur die bekannte
+Warnung zur Größe des UI-Chunks.
+
+**Eigener Browserlauf:** Vite aus dem T-64-Worktree auf `127.0.0.1:5177`,
+Chrome mit simulierter Konto-API ohne echte Zugangsdaten. Bei 1440 und 800 px
+stand der Hinweis neben den Feldern, bei 767 und 390 px darunter. Der Text
+war vollständig sichtbar; horizontaler Überlauf trat nicht auf. Ohne Haken
+waren Knopf und Enter gesperrt (null Login-Aufrufe), mit Haken erfolgte je
+ein Login-Aufruf. Desktop- und Mobilansicht zusätzlich am Screenshot geprüft.
+
+**Grenze:** Der Browserlauf verwendete eine simulierte API und belegt keinen
+vollständigen Login gegen den T-62-Teststack. Coder-Bilder für Englisch und
+die Tastaturbedienung wurden nicht als eigener Nachweis ausgegeben. Die
+rechtliche Bewertung des Wortlauts ist nicht Teil dieser technischen Freigabe.
