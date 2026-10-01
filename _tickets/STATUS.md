@@ -144,12 +144,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-66-status-badges-below-above-ok.md`
 - `branch`: `t-66-status-badges-below-above-ok`
-- `handoff_commit`: `6b8a6ee33d7f6e1286bd5d2c33e41f604ed570f5`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `a66b37278f0715cc90c41ec0e24c28587c25ec73`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-66-status-badges-below-above-ok.md`
 - `last_reviewed_commit`: `6b8a6ee33d7f6e1286bd5d2c33e41f604ed570f5`
@@ -330,15 +330,6 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-66 Review Runde 1 · `changes_requested`, 2026-10-01**
-
-Bitte den blockierenden Near-Schwellenbefund und die überholten aktuellen
-Verify-/Doku-Zeilen im [Reviewbericht](30-doing/T-66-status-badges-below-above-ok.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01)
-bearbeiten. Danach Produktfassung, gezielten Grenzfalltest und Pflichtprüfungen
-mit neuem Commit als Runde 2 übergeben. T-66 ist noch nicht technisch
-freigegeben und wird deshalb nicht auf `master` gemergt. Anschließend T-67
-mit aktuellem Dokumentationsstand zur Prüfung vorbereiten.
-
 **codex-verifier → claude-coder · Mikes Sichtbarkeitsvorgabe, 2026-10-01**
 
 Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
@@ -361,18 +352,22 @@ Bis dahin liegt keine technische Freigabe der Internet-Hinweise vor.
 
 ## OUTBOX → Verifier
 
-Keine offene Übergabe.
+**claude-coder → codex-verifier · T-66 Runde 2 · Fassung `a66b372`**
+
+Im Projekt-Root `/Volumes/DevLocal/DevWeb/Production/StockPortfolio` auf dem
+ausgecheckten Branch `t-66-status-badges-below-above-ok` prüfen:
+[T-66](30-doing/T-66-status-badges-below-above-ok.md), Abschnitt „Nacharbeit
+zu Runde 1“. Near-Schwellen jetzt über `nearThresholds` ohne Abschneiden, Text
+nennt beide Bereiche; Grenzfalltest vergleicht Text und `isNearBand` bei
+0,5 % / 0,5 % und −6 % / +15 %. Prüfpunkte und Doku-Abgleich im Ticket an die
+Entscheidung und an `6b8a6ee` angepasst. `make test` (839 + 20), Lints,
+Typprüfungen, `git diff --check` grün; Popup im Root-Stack sichtbar geprüft.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
-Mikes Entscheidung: Es gibt keine Worktrees mehr. Board und Code liegen nur im
-Projekt-Root `/Volumes/DevLocal/DevWeb/Production/StockPortfolio`; STATUS
-nennt den dort ausgecheckten Branch im neuen Feld `branch`. Vor jedem
-Durchlauf `git branch --show-current` gegen `branch` prüfen; nur der Owner
-schaltet den Branch. Regel: [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
+Board und Code liegen nur im Projekt-Root; STATUS nennt den ausgecheckten
+Branch im Feld `branch`. Vor jedem Durchlauf `git branch --show-current`
+gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
+[AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
-Alte Startzeilen mit `/private/tmp/stockportfolio-*` bitte durch die neuen aus
-[AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler) ersetzen. Der
-T-66-Produktstand ist unverändert (`git diff 6b8a6ee HEAD` ohne `_tickets/`
-leer); `master` wurde nur in den Branch zusammengeführt. Der Teststack läuft
-jetzt aus dem Root (`:5175`/`:8080`/`:8899`).
+Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
