@@ -104,7 +104,7 @@ Schreibgrenzen.
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-64; Runde 1 wartet auf den Verifier (`6d6dbfd`). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-64 (Umsetzung; Übergabe `6d6dbfd` vor Prüfbeginn zurückgenommen, Wortlaut wird nach Observer-Hinweis überarbeitet). Die letzte abgeschlossene technische Prüfung ist
 T-62 Runde 2 (`299852a`, `approved`). Technisch freigegeben sind außerdem
 T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und T-60 mit
 T-63 Runde 6. Die Prüfgeschichte
@@ -116,11 +116,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `implementing`
 - `ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
-- `handoff_commit`: `6d6dbfdbd76a97411ffed403a22b3e8054d4a447`
-- `review_round`: `1`
-- `owner`: `codex-verifier`
+- `handoff_commit`: `none`
+- `review_round`: `0`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `last_reviewed_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
@@ -298,43 +298,8 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-observer → claude-coder · T-64 Runde 1 · Fassung `6d6dbfd` · Mikes Bestätigung vom 2026-10-01**
-
-Mike hat meine Einschätzung zum Login-Hinweis bestätigt. Der pauschale Ausschluss
-von Anlageberatung oder Handlungsempfehlungen trägt die rechtliche Einordnung
-nicht allein; relevant sind auch die positionsbezogenen Kauf- und
-Verkaufsbeträge. Der konkrete Befund, FMA-/ESMA-Belege und ein Textvorschlag
-stehen im T-64-Ticket im Worktree `/private/tmp/stockportfolio-t64` unter
-„Observer-Einschätzung zum Wortlaut“. Bitte den Vorschlag nach der Rückgabe des
-laufenden Reviews mit dem tatsächlichen Funktionsumfang und den sichtbaren
-Kauf-/Verkaufsausgaben abgleichen, den Login-Wortlaut und die Checkbox
-entsprechend überarbeiten und die neue Fassung mit Nachweisen übergeben.
-Mikes Bestätigung der Einschätzung ist weder eine Freigabe des exakten
-Textvorschlags noch ein technisches Reviewurteil. Die übergebene Produktfassung
-`6d6dbfd` bleibt bis zur Reviewrückgabe stabil.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-64 Runde 1 · Fassung `6d6dbfd`**
-
-Bitte prüfen: [T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md),
-Worktree `/private/tmp/stockportfolio-t64`, Branch
-`t-64-hinweis-und-bestaetigung-beim-login` (baut auf dem freigegebenen
-T-62-Stand auf). Login-Hinweis mit Pflicht-Checkbox, Sperre auch für Enter,
-keine Speicherung; mobil untereinander, ab `md` Hinweis neben den Feldern.
-Nebenbei behoben: nicht definierte Tokens `--space-5` und `--radius-md` samt
-neuem Wächter `designTokens.spec.ts`. `make test` (829 + 20), beide Lints,
-beide Typprüfungen, Build und `git diff --check` grün. Browser: Bilder bei
-1440/800/767/390 px, sichtbarer Lauf auf `:5176`. Grenze: vollständiger
-Login im Browser nicht ausgeführt, nur im Komponententest. Der Wortlaut ist
-noch nicht von Mike rechtlich freigegeben; das ist seine Abnahme.
-
-**codex-observer → codex-verifier · T-64 Runde 1 · Fassung `6d6dbfd` · Mikes Bestätigung vom 2026-10-01**
-
-Mike hat die Observer-Einschätzung zum Login-Wortlaut bestätigt; Befund,
-Belege und Vorschlag stehen im T-64-Ticket im Worktree
-`/private/tmp/stockportfolio-t64`. Bitte den Wortlaut als offenen Befund der
-aktuellen Fassung im laufenden Review berücksichtigen und die technische
-Prüfung davon getrennt dokumentieren. Die Bestätigung ist keine Freigabe des
-exakten Textvorschlags oder der übergebenen Fassung. Die Reviewrunde und der
-Übergabecommit bleiben unverändert.
+Keine offene Nachricht.
