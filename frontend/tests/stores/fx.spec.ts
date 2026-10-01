@@ -20,6 +20,28 @@ describe('Devisenkurse in der Sitzung', () => {
     expect(calls).toBe(2)
   })
 
+  it('verwendet den Kurs zum selben Kursstand wieder und lädt bei neuem Stand oder nach Fehler', async () => {
+    let calls = 0
+    let failed = false
+    const client = new StockInfoClient('https://fx.test', async () => {
+      calls++
+      return failed ? new Response('{}', { status: 502 }) : new Response(JSON.stringify(response))
+    })
+    const store = useFxStore()
+    await store.load(client, 'USD', 'EUR', '2026-09-10T10:00:00Z')
+    await store.load(client, 'USD', 'EUR', '2026-09-10T10:00:00Z')
+    expect(calls).toBe(1)
+    await store.load(client, 'USD', 'EUR', '2026-09-10T11:00:00Z')
+    expect(calls).toBe(2)
+    failed = true
+    await store.load(client, 'USD', 'EUR', '2026-09-10T12:00:00Z')
+    expect(calls).toBe(3)
+    failed = false
+    await store.load(client, 'USD', 'EUR', '2026-09-10T12:00:00Z')
+    expect(calls).toBe(4)
+    expect(store.errors.has('USD/EUR')).toBe(false)
+  })
+
   it('verwendet nach Fehler nur einen vorher gültigen Wert und markiert ihn veraltet', async () => {
     let failed = false
     const client = new StockInfoClient('https://fx.test', async () => failed ? new Response('{}', { status: 502 }) : new Response(JSON.stringify(response)))

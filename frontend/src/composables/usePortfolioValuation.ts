@@ -24,14 +24,27 @@ export function usePortfolioValuation() {
       .filter(quote => quote && majorCurrency(quote.currency) !== target)
       .map(quote => ({ base: majorCurrency(quote!.currency), target, fetchedAt: quote!.fetchedAt }))
   })
-  async function loadFx(): Promise<void> {
+  /**
+   * Holt die nötigen Devisenkurse. Ohne `force` bleibt ein Kurs zum selben
+   * Kursstand erhalten, damit ein Ansichtswechsel StockInfo nicht erneut fragt.
+   */
+  async function loadFx(force = false): Promise<void> {
     if (!client) return
-    const pairs = new Map(needed.value.map(pair => [pair.base, pair]))
-    await Promise.all([...pairs.values()].map(pair => fx.load(client, pair.base, pair.target)))
+    // Je Währung ein Abruf; der Stempel umfasst alle Kurse dieser Währung.
+    const stamps = new Map<string, { target: string; fetchedAt: string[] }>()
+    for (const pair of needed.value) {
+      const entry = stamps.get(pair.base) ?? { target: pair.target, fetchedAt: [] }
+      entry.fetchedAt.push(pair.fetchedAt)
+      stamps.set(pair.base, entry)
+    }
+    await Promise.all([...stamps].map(([base, entry]) =>
+      fx.load(client, base, entry.target, force ? undefined : entry.fetchedAt.sort().join('|'))))
   }
-  watch(() => `${portfolio.portfolio?.id}|${baseCurrencyOf(portfolio.portfolio)}|${needed.value.map(pair => `${pair.base}:${pair.fetchedAt}`).join('|')}`, loadFx, { immediate: true })
+  watch(() => `${portfolio.portfolio?.id}|${baseCurrencyOf(portfolio.portfolio)}|${needed.value.map(pair => `${pair.base}:${pair.fetchedAt}`).join('|')}`, () => loadFx(), { immediate: true })
   const result = computed(() => portfolio.portfolio
     ? computeRebalancing(portfolio.portfolio, quotes.quotes, settings.settings, new Date(), fx.rates)
     : null)
-  return { result, fx, loadFx }
+  /** „Erneut versuchen“: fragt StockInfo auch bei vorhandenem Kurs. */
+  const retryFx = (): Promise<void> => loadFx(true)
+  return { result, fx, loadFx, retryFx }
 }

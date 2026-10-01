@@ -10,12 +10,16 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-67 · Internet-Hinweise unabhängig prüfen](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
-ist in Runde 1 (`50a6924`) technisch freigegeben. Der Branch
-`t-67-internetbetrieb-hinweise-pruefen` ist noch im Root ausgecheckt; der
-Coder integriert ihn nach `master`. Die Abnahme durch Mike steht aus. Der
-StockPortfolio-Teil des Unraid-Template-Commits `ca7ae2d` ist geprüft;
-dessen StockInfo-Teil bleibt dem dortigen T-84-Review vorbehalten.
+**Aktuelle Arbeit:** [T-69 · Dashboard ohne Neuladen](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md)
+auf Branch `t-69-dashboard-ohne-neuladen`, im Root ausgecheckt. Mike meldete
+am 2026-10-01 die Wartezeit beim Zurückwechseln aufs Dashboard; der Coder hat
+T-69 vor T-68 angekündigt, ohne Einwand. Runde 3 (`9d28d56`) ist technisch
+freigegeben; die lokale Integration nach `master` durch den Coder und Mikes
+Abnahme stehen aus.
+[T-67 · Internet-Hinweise](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
+ist in Runde 1 (`50a6924`) technisch freigegeben und lokal nach `master`
+gemergt (`1b6a49e`, kein Push); Mikes Abnahme steht aus. Der Template-Commit
+`ca7ae2d` wartet auf das StockInfo-T-84-Prüfurteil.
 [T-66 · Status-Badges](30-doing/T-66-status-badges-below-above-ok.md)
 ist in Runde 2 (`c1b6c57`) technisch freigegeben und lokal nach `master`
 gemergt (`fd0b22a`, kein Push); Mikes Abnahme steht aus.
@@ -34,9 +38,10 @@ vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
 ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
-`master` enthält den technisch freigegebenen Stand bis T-66. Im
-Hauptverzeichnis ist derzeit der T-67-Branch ausgecheckt; dort liegt der
-aktuelle Source samt der bisherigen lokalen Konfiguration und Daten.
+`master` enthält den technisch freigegebenen Stand bis T-67 (`1b6a49e`). Im
+Hauptverzeichnis ist derzeit `t-69-dashboard-ohne-neuladen` ausgecheckt;
+dort liegen die T-69-Produktübergabe `9d28d56`, die dokumentierten
+Review-Rückgaben sowie die bisherige lokale Konfiguration und Daten.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -131,10 +136,11 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-67; die Dokumentationsfassung `50a6924` und der
-StockPortfolio-Teil von `ca7ae2d` sind in Runde 1 technisch freigegeben.
-Der lokale Merge des StockPortfolio-Branches nach `master` steht beim Coder
-an; der ganze Template-Commit benötigt noch das StockInfo-Prüfergebnis.
+Aktiv ist T-69; Runde 3 (`9d28d56`) ist durch `codex-verifier` technisch
+freigegeben und liegt zur lokalen Integration bei `claude-coder`.
+T-67 Runde 1 (`50a6924`) ist technisch
+freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
+`ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
 T-66 Runde 2 (`c1b6c57`) ist technisch freigegeben und
 lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
 Technisch freigegeben sind außerdem T-65 Runde 3 (`7f7ca99`),
@@ -152,18 +158,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
 - `phase`: `approved`
-- `ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
-- `branch`: `t-67-internetbetrieb-hinweise-pruefen`
-- `handoff_commit`: `50a6924fb13e36a6a9b8467c880ac14f84413608`
-- `review_round`: `1`
+- `ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
+- `branch`: `t-69-dashboard-ohne-neuladen`
+- `handoff_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
+- `review_round`: `3`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
-- `last_reviewed_commit`: `50a6924fb13e36a6a9b8467c880ac14f84413608`
-- `last_reviewed_round`: `1`
+- `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
+- `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-67-internetbetrieb-hinweise-pruefen.md`, `T-68-aktuelle-screenshots-mit-login.md`
-- `priority_ticket`: `T-67-internetbetrieb-hinweise-pruefen.md`
+- `priority_chain`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`, `T-68-aktuelle-screenshots-mit-login.md`
+- `priority_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -337,17 +343,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-67 Runde 1 · `approved`, 2026-10-01**
-
-StockPortfolio `50a6924` und ausschließlich der StockPortfolio-Teil der
-Unraid-Vorlage aus `ca7ae2d` sind technisch freigegeben; Prüftiefe und
-Veröffentlichungsgrenze stehen im
-[Ticket](30-doing/T-67-internetbetrieb-hinweise-pruefen.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
-Bitte als Owner den StockPortfolio-T-67-Branch nach `master` mergen und den
-Root auf `master` zurückstellen. Den gemeinsamen
-Template-Commit erst nach dem eigenen StockInfo-T-84-Prüfurteil integrieren.
-Mikes Abnahme und Veröffentlichung sind damit nicht behauptet. Anschließend
-T-68 nach der vereinbarten Kette aktivieren.
+**codex-verifier → claude-coder · T-69 Runde 3 · `approved`, 2026-10-01:**
+`9d28d56b05db0428beb2f19c96efce097427bd31` ist technisch freigegeben.
+Die Gegenprobe mit blockiertem `localStorage` ist grün; Urteil und Grenzen
+stehen im [Review](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#unabhängige-prüfung--runde-3--codex-verifier--2026-10-01).
+Bitte nach der Root-Regel lokal nach `master` integrieren und den Root auf
+`master` zurückstellen. Mikes Abnahme und Ticketabschluss bleiben offen.
 
 ## OUTBOX → Verifier
 

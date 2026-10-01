@@ -74,7 +74,7 @@ async function onLoadDemo(): Promise<void> {
   }
 }
 
-const { result, fx, loadFx } = usePortfolioValuation()
+const { result, fx, loadFx, retryFx } = usePortfolioValuation()
 const visibleGroups = computed(() => (result.value?.groups ?? []).filter(
   group => group.actualPercent !== 0 || group.targetPercent !== 0,
 ))
@@ -349,7 +349,7 @@ async function loadValueHistory(): Promise<void> {
 
   valueHistoryLoading.value = true
   try {
-    await valueHistory.load(portfolio.id, baseCurrencyOf(portfolio))
+    await valueHistory.ensure(portfolio.id, baseCurrencyOf(portfolio))
 
     await Promise.all(
       portfolioStore.positions
@@ -377,11 +377,29 @@ onMounted(async () => {
     groupsCollapsed.value = stored === '1'
   }
 
-  await portfolioStore.load()
-  await settingsStore.load(portfolioStore.portfolio?.id ?? '')
+  /*
+   * Nur beim ersten Aufbau laden. Ein Ansichtswechsel baut die Seite neu auf;
+   * Depot und Einstellungen stehen dann schon in den Stores, und fremde
+   * Änderungen kommen über den Live-Abgleich herein. An- und Abmelden laden
+   * die ganze Seite neu und beginnen mit leeren Stores.
+   */
+  if (!portfolioStore.loaded) await portfolioStore.load()
+  if (!settingsStore.loaded) await settingsStore.load(portfolioStore.portfolio?.id ?? '')
 
   // Den Cache laden, bevor die erste Bewertung sichtbar wird.
   await quotesStore.hydrate()
+
+  /*
+   * Liegen für das Depot schon Kurse im Cache, steht die Tabelle sofort.
+   * Health-Check, fehlende Kurse und die Aktualisierung nach der Schonfrist
+   * laufen dann mit Fortschrittsanzeige hinter der sichtbaren Tabelle. Nur
+   * beim kalten Start ohne jeden Kurs bleibt die Ladeanzeige, bis der erste
+   * Durchgang Werte geholt hat.
+   */
+  const priced = portfolioStore.positions.filter((position) => position.enabled && position.group !== 'cash')
+  if (priced.length === 0 || priced.some((position) => quotesStore.quotes.has(quoteKey(position)))) {
+    initialLoading.value = false
+  }
 
   /*
    * Erst fragen, dann laden.
@@ -438,7 +456,7 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
 <template>
   <div class="dashboard" :aria-busy="!ready">
-    <FxNotice v-if="ready" :result="result" :loading="fx.loading" @retry="loadFx" />
+    <FxNotice v-if="ready" :result="result" :loading="fx.loading" @retry="retryFx" />
     <p v-if="ready && needsHistoricalFx" class="dashboard__history-note">{{ t('fx.historyUnavailable') }}</p>
     <!-- Platzhalter halten den Aufbau stabil, bis Depot und Bewertung geladen sind. -->
     <div v-if="!ready" class="dashboard__loading" role="status" :aria-label="t('dashboard.loading')">

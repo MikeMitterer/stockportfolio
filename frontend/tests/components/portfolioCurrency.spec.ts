@@ -46,9 +46,9 @@ describe('Depotwährung in der Oberfläche', () => {
       return new Response(JSON.stringify({ base: 'USD', quote: 'EUR', rate: 0.8, quote_time: '2026-09-01T10:00:00Z', fetched_at: '2026-09-01T10:01:00Z', cached: true, stale: true }))
     })
     const View = defineComponent({ setup() {
-      const { result, fx, loadFx } = usePortfolioValuation()
+      const { result, fx, retryFx } = usePortfolioValuation()
       const { formatMoney } = usePortfolioCurrency()
-      return () => h('div', [h('output', formatMoney(result.value?.rows[1]?.marketValue ?? 0)), h(FxNotice, { result: result.value, loading: fx.loading, onRetry: loadFx })])
+      return () => h('div', [h('output', formatMoney(result.value?.rows[1]?.marketValue ?? 0)), h(FxNotice, { result: result.value, loading: fx.loading, onRetry: retryFx })])
     } })
     const wrapper = mount(View, { global: { provide: { [STOCK_INFO_CLIENT as symbol]: client } } })
     await flushPromises()

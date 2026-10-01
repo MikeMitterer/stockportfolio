@@ -14,21 +14,36 @@ export const useFxStore = defineStore('fx', () => {
   const pendingCount = ref(0)
   const loading = computed(() => pendingCount.value > 0)
   const pending = new Map<string, Promise<void>>()
+  /** Kursstand je Paar, zu dem der gespeicherte Devisenkurs geholt wurde. */
+  const loadedFor = new Map<string, string>()
   let generation = 0
 
-  function load(client: StockInfoClient, base: string, quote: string): Promise<void> {
+  /**
+   * Holt einen Devisenkurs.
+   *
+   * Mit `sourceStamp` — dem Abrufzeitpunkt der zugehörigen Kurse — wird ein
+   * fehlerfrei geladener Wert zum selben Stand wiederverwendet. Kehrt eine
+   * Ansicht zurück, ohne dass sich die Kurse geändert haben, fragt sie
+   * StockInfo nicht erneut; neue Kurse holen auch den Devisenkurs neu. Nach
+   * einem Fehler und ohne `sourceStamp` lädt jeder Aufruf.
+   */
+  function load(client: StockInfoClient, base: string, quote: string, sourceStamp?: string): Promise<void> {
     if (apiUrl.value !== client.url) {
       generation++
       apiUrl.value = client.url
       rates.value.clear()
       errors.value.clear()
       pending.clear()
+      loadedFor.clear()
       pendingCount.value = 0
     }
     if (base === quote) return Promise.resolve()
     const key = fxKey(base, quote)
     const existing = pending.get(key)
     if (existing) return existing
+    if (sourceStamp !== undefined && loadedFor.get(key) === sourceStamp && rates.value.has(key) && !errors.value.has(key)) {
+      return Promise.resolve()
+    }
     const current = generation
     pendingCount.value++
     const request = (async () => {
@@ -37,6 +52,8 @@ export const useFxStore = defineStore('fx', () => {
         if (current !== generation) return
         rates.value.set(key, toFxRate(response))
         errors.value.delete(key)
+        if (sourceStamp === undefined) loadedFor.delete(key)
+        else loadedFor.set(key, sourceStamp)
       } catch (cause) {
         if (current !== generation) return
         errors.value.set(key, describeFailure(cause))

@@ -63,6 +63,16 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
   }
 
   /**
+   * Lädt die Tageswerte nur, wenn dieses Depot in dieser Währung noch nicht
+   * geladen ist. Ein Ansichtswechsel fragt den Server so nicht erneut; fremde
+   * Änderungen bringt der Live-Abgleich über `load`.
+   */
+  async function ensure(portfolioId: string, currency: string): Promise<void> {
+    if (loaded.value && activePortfolio === portfolioId && activeCurrency === currency) return
+    await load(portfolioId, currency)
+  }
+
+  /**
    * Hält den heutigen Gesamtwert fest.
    *
    * Nur wenn er sinnvoll ist: Ohne geladene Kurse steht dort eine 0, und die
@@ -114,6 +124,7 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     loaded,
     truthFrom,
     load,
+    ensure,
     record,
     computeBacktest,
     exportAll,
