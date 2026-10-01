@@ -29,17 +29,21 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends tzdata \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /data /app/public \
-    && chown -R node:node /data /app/public
-COPY --from=api-build --chown=node:node /app/api/package.json /app/api/package-lock.json ./
-COPY --from=api-build --chown=node:node /app/api/node_modules ./node_modules
-COPY --from=api-build --chown=node:node /app/api/dist ./dist
-COPY --from=api-build --chown=node:node /app/api/drizzle ./drizzle
-COPY --from=frontend-build --chown=node:node /app/dist /app/public
+    && chown 99:100 /data
+COPY --from=api-build /app/api/package.json /app/api/package-lock.json ./
+COPY --from=api-build /app/api/node_modules ./node_modules
+COPY --from=api-build /app/api/dist ./dist
+COPY --from=api-build /app/api/drizzle ./drizzle
+COPY --from=frontend-build /app/dist /app/public
 COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-USER node
+# Der Entrypoint startet als root, richtet /data für PUID/PGID (Vorgabe 99/100,
+# Unraid) ein und startet die App dann ohne Root-Rechte (T-72). config.js
+# bleibt für jeden beschreibbar, damit auch ein Start mit --user sie schreibt.
+RUN chmod +x /entrypoint.sh && chmod 666 /app/public/config.js
 
 ENV STOCKINFO_API_URL="" \
+    PUID="99" \
+    PGID="100" \
     STOCKPORTFOLIO_DATA_DIR="/data" \
     STOCKPORTFOLIO_PUBLIC_DIR="/app/public" \
     STOCKPORTFOLIO_SECURE_COOKIES="false" \

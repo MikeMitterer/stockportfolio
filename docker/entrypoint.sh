@@ -1,22 +1,90 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
-# entrypoint.sh — Laufzeit-Konfiguration schreiben, dann eigene API starten
+# entrypoint.sh — Laufzeit-Konfiguration schreiben, Datenordner einrichten,
+# dann die eigene API ohne Root-Rechte starten
 #
 # Die Vue-App ist ein statisches Bündel: Alles, was Vite zur Bauzeit kennt,
 # steckt darin fest. Die Adresse der StockInfo-API darf aber nicht feststecken — sonst
 # bräuchte jede Umgebung ein eigenes Abbild. Unter Unraid wird sie im
 # Container-Template als Variable gesetzt; hier landet sie in config.js, von wo
 # die App sie liest (siehe apiBaseUrl() in frontend/src/api/client.ts).
+#
+# Benutzer (T-72): Unraid erwartet für Dienste mit Daten UID 99 / GID 100.
+# Docker legt einen fehlenden Bind-Mount-Ordner aber als root an — die App
+# konnte ihre SQLite-Datei dort nicht öffnen. Deshalb startet der Container als
+# root, richtet den Datenordner für PUID/PGID ein und startet die App erst dann
+# mit genau diesen IDs. Wer mit `--user` startet, bekommt keinen Wechsel; dann
+# muss der Ordner für diesen Benutzer bereits beschreibbar sein.
 #------------------------------------------------------------------------------
-set -e
+set -eu
+
+DATA_DIR="${STOCKPORTFOLIO_DATA_DIR:-/data}"
+CONFIG_FILE="${STOCKPORTFOLIO_PUBLIC_DIR:-/app/public}/config.js"
+
+log() { echo "entrypoint: $*" >&2; }
+fail() { log "$*"; exit 1; }
+
+# Nur Ziffern; leer, Vorzeichen oder Buchstaben gelten nicht.
+isNumericId() {
+    case "$1" in
+        ''|*[!0-9]*) return 1 ;;
+        *) return 0 ;;
+    esac
+}
 
 # JSON.stringify erhält auch Quotes, Backslashes und Steuerzeichen korrekt.
 # Node gehört bereits zur eigenen API; keine zweite Serialisierung bauen.
-node --input-type=commonjs <<'JS'
+writeConfig() {
+    CONFIG_FILE="${CONFIG_FILE}" node --input-type=commonjs <<'JS'
 const { writeFileSync } = require('node:fs')
 const config = { apiUrl: process.env.STOCKINFO_API_URL || '', container: true }
-writeFileSync('/app/public/config.js',
+writeFileSync(process.env.CONFIG_FILE,
   'window.__STOCKPORTFOLIO_CONFIG__ = ' + JSON.stringify(config) + ';\n')
 JS
+}
 
-exec "$@"
+# SQLite legt neben der Datenbank weitere Dateien an; ein bloßes `test -w`
+# auf den Ordner reicht deshalb nicht, es wird wirklich eine Datei angelegt.
+probeWrite() {
+    PROBE_FILE="${DATA_DIR}/.stockportfolio-write-test"
+    touch "${PROBE_FILE}" 2>/dev/null && rm -f "${PROBE_FILE}"
+}
+
+if [ "$(id -u)" != "0" ]; then
+    # Start mit --user: kein Rechtewechsel möglich und nicht gewollt.
+    if ! writeConfig 2>/dev/null; then
+        log "warning: could not write ${CONFIG_FILE}; STOCKINFO_API_URL is not applied"
+    fi
+    probeWrite || fail "${DATA_DIR} is not writable for UID $(id -u) / GID $(id -g). Make the host directory writable for this user or start without --user."
+    exec "$@"
+fi
+
+PUID="${PUID:-99}"
+PGID="${PGID:-100}"
+isNumericId "${PUID}" || fail "PUID must be a number, got '${PUID}'."
+isNumericId "${PGID}" || fail "PGID must be a number, got '${PGID}'."
+if [ "${PUID}" -eq 0 ] || [ "${PGID}" -eq 0 ]; then
+    fail "PUID and PGID must not be 0; the app does not run as root."
+fi
+
+writeConfig
+mkdir -p "${DATA_DIR}"
+
+# Nur anfassen, was nicht schon passt — ein vollständiges chown bei jedem
+# Start wäre bei großen Ordnern langsam und auf Netzlaufwerken laut.
+if [ -n "$(find "${DATA_DIR}" \( ! -user "${PUID}" -o ! -group "${PGID}" \) -print -quit 2>/dev/null)" ]; then
+    if chown -R "${PUID}:${PGID}" "${DATA_DIR}" 2>/dev/null; then
+        log "set owner of ${DATA_DIR} to ${PUID}:${PGID}"
+    else
+        log "warning: could not change owner of ${DATA_DIR} to ${PUID}:${PGID} (network share or missing capability); continuing if it is writable"
+    fi
+fi
+
+# Ohne CAP_SETUID/CAP_SETGID schlägt der Wechsel fehl; dann lieber klar melden.
+SWITCH="setpriv --reuid=${PUID} --regid=${PGID} --clear-groups --inh-caps=-all"
+${SWITCH} true 2>/dev/null || fail "cannot switch to UID ${PUID} / GID ${PGID}; the container lacks the SETUID/SETGID capability. Start it with --user ${PUID}:${PGID} instead."
+
+DATA_DIR="${DATA_DIR}" ${SWITCH} sh -c 'PROBE_FILE="$DATA_DIR/.stockportfolio-write-test"; touch "$PROBE_FILE" 2>/dev/null && rm -f "$PROBE_FILE"' \
+    || fail "${DATA_DIR} is not writable for UID ${PUID} / GID ${PGID}. Make the host directory writable for this user or set PUID/PGID to its owner."
+
+exec ${SWITCH} -- "$@"
