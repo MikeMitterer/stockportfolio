@@ -64,9 +64,9 @@ Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
 Prüfaussage zum Abbruchpfad gemäß Observer-Hinweis begrenzt; kein Produktbefund.
-[T-53 · Medienproduktion](/Volumes/Daten/Projekte/MangoLila_000000_SocialMedia/StockApps/_tickets/30-doing/T-53-blogposts-und-erklaervideo-fuer-beide-apps.md)
+[T-53 · Medienproduktion](/Volumes/Daten/Projekte/MangoLila_000000_SocialMedia/StockApps/_tickets/30-doing/T-01-blogposts-und-erklaervideo-fuer-beide-apps.md)
 wurde auf Mikes Auftrag am 2026-09-27 mit allen Nachweisen in das eigenständige
-StockApps-Board unter `Daten` übertragen. Die Produktion bleibt dort pausiert;
+StockApps-Board unter `Daten` übertragen und heißt dort T-01. Die Produktion bleibt dort pausiert;
 hier wird keine zweite Ticketfassung weitergeführt.
 
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
@@ -95,17 +95,13 @@ Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observe
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
-**Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
-installiertes AgentLessons-Paket `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
-(Konventionsstand `2026-09-28-activity-local`). `ACTIVITY.md` bleibt nach
-Mikes Beschluss vom 2026-09-28 lokal und wird bereits über die Root-`.gitignore`
-ignoriert; die Paketvorlage sieht dafür eine noch fehlende
-`_tickets/.gitignore` vor. Die Übernahme ist seit 2026-10-01 als
-[T-65](30-doing/T-65-board-konventionen-abgleichen.md) in Umsetzung.
+**Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen in
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md) (in Arbeit). Lokale
+Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-65 (Umsetzung). Die letzte abgeschlossene technische Prüfung ist
+Aktiv ist T-65; Runde 1 wartet auf den Verifier (`6c94c12`). Die letzte abgeschlossene technische Prüfung ist
 T-64 Runde 1 (`fd9d8f4`, `approved`); Mikes Prüfung des Wortlauts und die
 menschliche Abnahme bleiben offen. Technisch freigegeben sind außerdem T-62 in
 Runde 2 (`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6
@@ -118,11 +114,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-65-board-konventionen-abgleichen.md`
-- `handoff_commit`: `none`
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `6c94c12419ce6e95202a2f17bb9e257fa3d6912d`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-64-hinweis-und-bestaetigung-beim-login.md`
 - `last_reviewed_commit`: `fd9d8f4501c5c2185fb08d73fdfc0ada0d24fbdb`
@@ -304,4 +300,14 @@ Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-65 Runde 1 · Fassung `6c94c12`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t65` prüfen (Branch
+`t-65-board-konventionen-abgleichen`; nur dort liegt das Ticket unter
+`30-doing/`): [T-65](30-doing/T-65-board-konventionen-abgleichen.md).
+Reiner Board- und Doku-Abgleich auf den Paketstand
+`2026-09-28-activity-local`; kein Produktcode. Die Tabelle „Umsetzung“ ordnet
+jedes Prüfkriterium der Übernahmeanleitung einem Ergebnis zu. Link- und
+Ankerprüfung, `make test` (829 + 20) und `git diff --check` grün. Offen und
+nicht Teil der technischen Prüfung: Mikes Entscheidung zu den Kennungen
+(STATUS `claude-coder`/`codex-verifier` gegenüber den Shortcut-Kennungen).
