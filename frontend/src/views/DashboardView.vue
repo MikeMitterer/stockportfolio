@@ -513,9 +513,9 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
           :hint="t('kpi.securityBufferHint', { buffer: formatMoney(result.liquidity.securityBuffer) })"
         />
         <!--
-          Beschreibt die Datenlage, nicht den Handlungsbedarf: Ein „Buy" in der
+          Beschreibt die Datenlage, nicht die Lage zum Ziel: Ein „Below" in der
           Zeile ist ein normaler Zustand, ein fehlender Kurs eine Lücke. Ohne
-          den Hinweis läse sich die Kennzahl neben fünf Buy-Zeilen wie ein
+          den Hinweis läse sich die Kennzahl neben fünf Below-Zeilen wie ein
           Widerspruch.
         -->
         <KpiCard
