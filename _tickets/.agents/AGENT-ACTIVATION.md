@@ -12,7 +12,7 @@ bestätigt die jeweilige Instanz den tatsächlichen Mechanismus und seine Kennun
 
 - [Codex-Scheduler](#codex-scheduler)
 - [Claude-Scheduler](#claude-scheduler)
-- [Observer-Shortcuts im Terminal](#observer-shortcuts-im-terminal)
+- [Rollen-Shortcuts im Terminal](#rollen-shortcuts-im-terminal)
 - [Observer-Durchlauf](#observer-durchlauf)
 - [Stoppen und Wiedereinstieg](#stoppen-und-wiedereinstieg)
 
@@ -81,35 +81,38 @@ seiner ID beendet; andere Jobs bleiben bestehen.
    über `agent-activity` festhalten; ACTIVITY nicht als Kontext lesen.
    Ein unveränderter Leerdurchlauf braucht keine Meldung.
 
-## Observer-Shortcuts im Terminal
+## Rollen-Shortcuts im Terminal
 
-Die beiden Befehle sind eigenständige Bash-Dateien direkt in `~/.local/bin/`,
-jeweils mit einer `exec`-Zeile plus Shebang. Sie enthalten keinen festen
-Projektpfad und sind keine Symlinks in StockPortfolio. Dieselben Befehle
-funktionieren aus jedem Projekt mit passender Board-Zuordnung und
-Observer-Anleitung, etwa StockPortfolio oder StockInfo. Es wird kein
-Launcher-Code in die Projekte kopiert.
+Alle acht Aufrufe verwenden dieselbe ausführbare Basis
+`~/.local/bin/agent-session.sh`; die Namen sind relative Symlinks im selben
+Verzeichnis. Keine Projektpfade oder Launcher-Kopien im Projekt. Aus dem
+Projekt oder einem Unterordner starten:
 
-Aus dem Projektverzeichnis oder einem Unterordner aufrufen:
+| Rolle | Codex | Claude | Farbvariable |
+|---|---|---|---|
+| Observer | `codex-observer` | `claude-observer` | `OBSERVER_BACKGROUND` |
+| Verifier | `codex-verifier` | `claude-verifier` | `VERIFIER_BACKGROUND` |
+| Coder | `codex-coder` | `claude-coder` | `CODER_BACKGROUND` |
+| Neutral (ohne Board-Rolle) | `codex-neutral` | `claude-neutral` | `NEUTRAL_BACKGROUND` |
 
-```bash
-codex-observer
-claude-observer
-```
+Die Farben stehen zentral in `~/.local/bin/.agent-session.conf.sh`.
+`agent-session.sh --help` erklärt den Basis-Aufruf, `agent-session.sh --colors`
+probiert Farben ohne KI-Start. Neutrale Aufrufe starten nur die CLI ohne
+Rollenauftrag oder Scheduler. Der Bash-Befehl liest oder verändert STATUS nicht;
+Rollenprüfung und Scheduler liegen beim Agenten. Vollständige Beschreibung:
+`templates/board/.agents/AGENT-ACTIVATION.md` im gemeinsamen Paket.
 
-Die Zeile startet die CLI mit ihrer Instanzkennung und dem Auftrag, die
-Board-Regeln zu lesen und den passenden Observer-Scheduler zu starten.
-Der Agent prüft die Zuordnung in STATUS vor der Beobachtung und bei jedem
-Durchlauf. Der Bash-Befehl selbst liest oder verändert STATUS nicht.
+**Kennungen:** Die Shortcuts geben Coder und Verifier die Kennung `codex`
+beziehungsweise `claude`; nur Observer erhalten den Zusatz `-observer`.
+STATUS führt in StockPortfolio seit 2026-10-01 abweichend `claude-coder` und
+`codex-verifier` (Mike). Wer per Shortcut startet, muss die Kennung im ersten
+Prompt deshalb ausdrücklich auf den STATUS-Wert setzen; sonst findet die Instanz
+ihre Zuordnung nicht und beginnt nicht. Die Entscheidung, Kennungen oder
+Shortcuts anzugleichen, liegt bei Mike (offen in T-65).
 
-Zusätzliche CLI-Optionen werden durch `"$@"` weitergereicht. Arbeitsverzeichnis,
-Exit-Code und vorhandene CLI-Konfiguration bleiben erhalten. Die Shortcuts
-haben keine eigenen Optionen und keine Prozesssperre; vorhandene eigene
-Scheduler werden nach den Regeln oben durch die Agenten geprüft.
-
-Für den Wechsel den bisherigen Observer beenden, `observer` in STATUS auf
-die neue Kennung setzen und deren Shortcut starten. Keine zweite Instanz
-mit derselben Kennung parallel starten.
+Für einen Rollenwechsel die bisherige Instanz beenden, die Kennung in STATUS
+setzen und die neue Instanz starten. Keine zweite Instanz mit derselben
+Kennung parallel starten.
 
 ## Observer-Durchlauf
 
@@ -118,7 +121,10 @@ mit derselben Kennung parallel starten.
    fehlendem Feld oder Kollision den eigenen Scheduler beenden.
 2. Unabhängig vom Owner den Stand seit dem letzten Durchlauf prüfen:
    STATUS, Ticketablage, `.agents/`, Git-Stand und relevante Dokumentationsänderungen.
-   Ohne relevante Änderung endet der fachliche Durchlauf.
+   Bei Wiederaufnahme außerdem die letzte Reviewrückgabe auf eine offene
+   [Lessons-Einordnung](AGENT-WORKFLOW.md#lessons-einordnung-bei-neuen-befunden)
+   prüfen. Ohne relevante Änderung und ohne offenen Übernahmeschritt endet der
+   fachliche Durchlauf.
 3. Die betroffenen Inhalte nach dem Abschnitt [Observer](AGENT-WORKFLOW.md#observer)
    lesen. Bei Bedarf Coder und Verifier über INBOX beziehungsweise OUTBOX
    koordinieren; Fassung, Beleg und erwartete Handlung nennen. Wesentliche

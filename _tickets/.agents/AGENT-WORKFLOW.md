@@ -7,9 +7,16 @@ die Umstellung des Boards aktiviert keine Umsetzung und keinen Review.
 Ein optionaler Observer ist eine dritte, eigenständige Instanz. Seine Zuordnung
 steht im Feld `observer` derselben STATUS-Datei; sein Auftrag ist unten definiert.
 
-**Übernahmestand der Board-Konventionen: `2026-09-11-activity-feed`.**
-Am 2026-09-11 inhaltlich abgeglichen: ACTIVITY, Observer-Koordination und
-installierter Rollen-Launcher. Zentraler ACTIVITY-Helfer; keine lokale Abweichung.
+**Übernahmestand der Board-Konventionen: `2026-09-28-activity-local`.**
+Am 2026-10-01 in [T-65](../30-doing/T-65-board-konventionen-abgleichen.md)
+gegen das installierte Paket abgeglichen: Paketeinstieg in `AGENTS.md`,
+`_tickets/.gitignore` für ACTIVITY, Lessons-Einordnung bei neuen Befunden,
+Rollen-Shortcuts. Die gemeinsamen Regeln liegen im Paket unter
+`${XDG_DATA_HOME:-$HOME/.local/share}/agent-workflow/current/`.
+**Lokale Abweichungen:** Mikes dauerhafte Freigabe von Merge **und Push** nach
+Ticketabschluss (AGENTS.md, 2026-09-27); die Rollenkennungen in STATUS
+(`claude-coder`, `codex-verifier`) weichen von den Standardkennungen der
+Shortcuts ab, siehe [Aktivierung](AGENT-ACTIVATION.md#rollen-shortcuts-im-terminal).
 
 ## Einstieg und Rollen
 
@@ -52,7 +59,8 @@ Grenze. Ohne andere Vereinbarung gilt 50.
 Die Datei dient ausschließlich dem Nutzer. Nur der Helfer liest intern die
 bisherigen Einträge, um sie beim Schreiben zu erhalten und zu begrenzen.
 Auf Mikes Beschluss vom 2026-09-28 bleibt `ACTIVITY.md` in diesem Projekt
-lokal und ist über `.gitignore` von Git ausgenommen. Der globale Helfer
+lokal und ist über `_tickets/.gitignore` (und weiterhin die Root-`.gitignore`)
+von Git ausgenommen. Der globale Helfer
 schreibt sie weiterhin wie bisher.
 Kein manuelles Lesen-Ändern-Schreiben neben dem Helfer, sonst greift seine
 Sperre nicht. Fehlt er oder scheitert der Aufruf, den Fehler im Chat melden
@@ -143,6 +151,32 @@ ergänzen. Unklare Autorenschaft offenlassen, nicht aus dem aktuellen Owner able
   vergleichen und daraus konkrete Vorbeugungs- und Prüfregeln ableiten. Bei
   Wiederholung prüfen, ob eine Regel fehlt, unklar ist oder nicht angewendet
   wurde; genau diese Lücke verbessern und im Chat mit Beleg benennen.
+
+### Lessons-Einordnung bei neuen Befunden
+
+**Auslöser sind neue Reviewrückgaben, bestätigte Befunde während der Umsetzung
+oder Beobachtung sowie entsprechende Nutzerhinweise.** Der Observer ordnet
+sie im selben fachlichen Durchlauf ein, ohne auf Ticketabschluss oder eine
+Nachfrage zu warten. Bei einem Kontextneustart prüft er auch, ob die letzte
+Rückgabe eine noch fehlende Einordnung enthält.
+
+Im Ticket je Befund oder klar benannter Gruppe in der Tabelle
+„Lessons-Einordnung“ der [Ticketvorlage](TICKET-TEMPLATE.md) festhalten:
+
+- **Neu aufgenommen:** Lesson-ID, Link und Aufnahmegrund nach den obigen
+  Bedingungen.
+- **Vorhandene Lesson ergänzt oder angewendet:** ID und Fassung; bei
+  Wiederholung die Lücke benennen (fehlende, unklare oder nicht angewendete Regel).
+- **Einzelfall:** konkreter Grund, weshalb keine Aufnahmebedingung erfüllt ist.
+  Nicht pauschal „keine Lessons“ schreiben.
+
+Bewertung und tatsächliche Übernahme sind getrennt: Ist eine Aufnahme fällig,
+aber nicht möglich, bleiben Nachtrag, Ziel und zuständige Instanz als offene
+Übernahme sichtbar. Der Implementer gleicht die Einordnung beim Verarbeiten
+einer Rückgabe und vor der nächsten Übergabe ab, der Verifier vor seiner
+Rückgabe; vor Ticketabschluss wird derselbe Nachweis auf offenen Rest gelesen.
+Fehlt ein Observer, dokumentiert der Implementer die Einordnung. Kein Befund,
+keine künstliche Lesson; abgeschlossene Reviews werden dafür nicht wiederholt.
 
 **Lokale Lessons liegen einzeln unter `lessons/`; gemeinsame Regeln in
 AgentLessons.** [Zugriff, Herkunft und Pflege](LESSONS-ACCESS.md) regeln die

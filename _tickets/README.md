@@ -11,7 +11,7 @@ dieselbe Board-Struktur wie StockInfo und der Skill `task-verification-workflow`
 Tätigkeitsmeldungen, neueste oben. Coder, Verifier und Observer schreiben sie über `agent-activity` nach dem
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit); das gilt für alle Tickets.
 Die Datei bleibt lokal und wird auf Mikes Beschluss vom 2026-09-28 nicht in
-Git versioniert. Der Helfer legt sie bei Bedarf an.
+Git versioniert (`_tickets/.gitignore`). Der Helfer legt sie bei Bedarf an.
 
 ## Übersicht
 
@@ -37,7 +37,8 @@ _tickets/
 ├── 90-rejected/   # bewusst verworfen
 ├── README.md      # Board-Anleitung
 ├── STATUS.md      # Rollen, Reihenfolge, Phase und Mailbox
-├── ACTIVITY.md    # kurze Tätigkeitsmeldungen, neueste oben
+├── ACTIVITY.md    # kurze Tätigkeitsmeldungen, neueste oben (nicht in Git)
+├── .gitignore     # nimmt ACTIVITY.md von Git aus
 └── QUESTIONS.md   # kurzfristige Fragen
 ```
 
@@ -93,7 +94,9 @@ Die Linkeinstiege [Claude](.agents/CLAUDE-LESSONS.md) und
 [Codex](.agents/CODEX-LESSONS.md) verweisen auf lokale Einzeldateien.
 [Zugriff und Pflege](.agents/LESSONS-ACCESS.md) beschreiben das vollständige
 Verzeichnisinventar und den gemeinsamen Bestand in AgentLessons. Der Workflow
-regelt Vorbeugung, unabhängige Gegenprüfung und Lessons-Pflege.
+regelt Vorbeugung, unabhängige Gegenprüfung und Lessons-Pflege. Neue Befunde
+werden nach der [Lessons-Einordnung](.agents/AGENT-WORKFLOW.md#lessons-einordnung-bei-neuen-befunden)
+im Ticket zugeordnet; neue Tickets folgen der [Ticketvorlage](.agents/TICKET-TEMPLATE.md).
 
 Der optionale Observer beaufsichtigt Coder und Verifier unabhängig vom Owner.
 Er koordiniert bei Bedarf über die STATUS-Mailboxen und berichtet wesentliche

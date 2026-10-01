@@ -10,15 +10,27 @@ Installiert ist das gemeinsame Regelpaket mit Stand
 `~/.local/share/agent-workflow/current`). Das Ticket gleicht das Board an
 diese Fassung an. Am Produkt ändert sich nichts.
 
-**Einordnung in die Kette:** nach T-64. STATUS führt immer nur ein aktives
-Ticket; T-65 beginnt, wenn T-64 freigegeben oder zurückgegeben ist und Mike
-nichts anderes festlegt.
+**Einordnung in die Kette:** nach T-64. Aktiviert am 2026-10-01 nach der
+technischen Freigabe von T-64, Branch `t-65-board-konventionen-abgleichen`
+im Worktree `/private/tmp/stockportfolio-t65`.
+
+**Für dich · Entscheidung offen (Kennungen):** Die Rollen-Shortcuts
+(`~/.local/bin/agent-session.sh`) geben Coder und Verifier die Kennung
+`codex` beziehungsweise `claude`; nur Observer erhalten `-observer`. STATUS
+führt seit heute `claude-coder` und `codex-verifier`. Per Shortcut gestartet
+findet eine Instanz ihre Zuordnung deshalb nicht; genau so stand T-62 am
+Vormittag über zwei Stunden still. Möglich sind: (a) STATUS zurück auf
+`claude`/`codex`, (b) im Launcher auch Coder und Verifier mit Zusatz
+benennen (Änderung im AgentLessons-Paket, nicht hier), (c) so lassen und die
+Kennung beim Start ausdrücklich setzen. Bis zu deiner Entscheidung ist (c)
+in der Aktivierung dokumentiert.
 
 ## Für dich
 
 | Frage | Prüfpunkt # | Handgriff | Dein Urteil | Human |
 |---|---|---|---|---|
 | A · Regelstand | [1](#pruefpunkt-1) | `AGENT-WORKFLOW.md` öffnen | Steht dort `2026-09-28-activity-local` samt der lokalen Abweichungen? | |
+| B · Kennungen | — | Oben „Entscheidung offen“ lesen | (a), (b) oder (c)? | |
 
 ## Umfang
 
@@ -52,18 +64,71 @@ Grundlage: `references/board-conventions.md` des Pakets, Abschnitt
 Geltende Rollen, Phasen, aktive Aufträge, Nachrichten, Nachweise und
 Nutzerentscheidungen bleiben erhalten.
 
+## Umsetzung (`claude-coder`, 2026-10-01)
+
+| Prüfkriterium (Übernahmeanleitung) | Ergebnis |
+|---|---|
+| `AGENTS.md` bindet das Paket und `PROJECT-RULES.md` ein | Neuer Absatz unter **Vor Arbeitsbeginn**: Paketpfad, `VERSION`-Prüfung, `PACKAGE.md`/`PROJECT-RULES.md`; lokale Entscheidungen haben Vorrang, Merge **und Push** bleiben ausdrücklich freigegeben. |
+| `_tickets/.gitignore` mit `/ACTIVITY.md` | Angelegt; `git check-ignore -v _tickets/ACTIVITY.md` trifft die neue Datei. Die Root-Regel bleibt zusätzlich bestehen. AGENTS, Workflow und Board-README nennen sie. |
+| Pflege durch alle drei Rollen, globaler Helfer | Bereits erfüllt (Stand 2026-09-11); unverändert. |
+| STATUS als alleinige Rollenquelle, sichtbarer ACTIVITY-Link | Bereits erfüllt; „Offene Übernahme“ durch den Stand samt Verweis auf T-65 ersetzt. |
+| Observer koordiniert über Mailboxen | Bereits erfüllt; Observer-Durchlauf prüft bei Wiederaufnahme jetzt zusätzlich eine offene Lessons-Einordnung. |
+| Lessons-Einordnung | Neuer Abschnitt „Lessons-Einordnung bei neuen Befunden“ im Workflow (Kurzfassung der Paketregel); `.agents/TICKET-TEMPLATE.md` aus dem Paket übernommen, sie verweist auf die zentrale Vorlage mit der Einordnungstabelle; Board-README verlinkt beides. |
+| Rollen-Launcher | Geprüft: acht Symlinks auf `~/.local/bin/agent-session.sh`, Prompt ohne pauschales Nur-Lese-/Mailboxverbot. Aktivierung beschrieb noch zwei Einzeiler; Abschnitt „Rollen-Shortcuts im Terminal“ ersetzt ihn. Kennungsabweichung siehe oben. |
+| Stand im Workflow | `Übernahmestand der Board-Konventionen: 2026-09-28-activity-local`, Datum, Verweis auf T-65 und die zwei lokalen Abweichungen (Push-Freigabe, Kennungen). |
+| Skill `task-verification-workflow` | Gelesen (`PersonalSkills`, HEAD `1bf670d`): reiner Einstieg ins Paket ohne eigene Regelkopie; keine Änderung nötig. |
+
+**Nebenbei (Scout Rule):** Der Verweis in STATUS auf das nach StockApps
+übertragene T-53 zeigte auf eine nicht mehr vorhandene Datei; dort heißt das
+Ticket `T-01-blogposts-und-erklaervideo-fuer-beide-apps.md`. Link korrigiert.
+Der Link in SP-CX-01 auf den alten Anker `observer-shortcuts-im-terminal` zeigt
+jetzt auf `rollen-shortcuts-im-terminal`; der Inhalt der Lesson bleibt
+unverändert.
+
+**Erhalten:** Rollen, Phasen, aktive Aufträge, Mailboxen, Nachweise und
+Nutzerentscheidungen. Keine Paketvorlage wurde über eine bestehende Datei
+kopiert; neu sind nur `.gitignore` und `TICKET-TEMPLATE.md`.
+
 ## Verify
 
 | # | Handgriff | Nachweis | AI |
 |---|---|---|:--:|
-| 1 | <a id="pruefpunkt-1"></a>Workflow, AGENTS, Ticketvorlage und STATUS gegen die Prüfkriterien der Übernahmeanleitung lesen | Jedes Kriterium umgesetzt oder als lokale Abweichung begründet | ➖ |
-| 2 | Vorhandene Links und Anker in den geänderten Dateien prüfen | Keine toten Verweise | ➖ |
-| 3 | `make test` (keine Produktänderung erwartet) | Unverändert grün | ➖ |
+| 1 | <a id="pruefpunkt-1"></a>Workflow, AGENTS, Ticketvorlage und STATUS gegen die Prüfkriterien der Übernahmeanleitung lesen | Jedes Kriterium umgesetzt oder als lokale Abweichung begründet | ✅ |
+| 2 | Vorhandene Links und Anker in den geänderten Dateien prüfen | Keine toten Verweise | ✅ |
+| 3 | `make test` (keine Produktänderung erwartet) | Unverändert grün | ✅ |
+
+**Nachweise:** (1) Tabelle oben. (2) Skript über alle relativen Links und
+Anker in `AGENTS.md`, `AGENT-WORKFLOW.md`, `AGENT-ACTIVATION.md`,
+`TICKET-TEMPLATE.md`, Board-README, STATUS und SP-CX-01: ein toter Link
+(T-53, korrigiert), danach keiner. (3) `make test`: 829 Frontend- und 20
+API-Tests grün; `git diff --check` ohne Befund.
 
 Legende: ✅ live bestätigt · ⚠️ mit Einschränkung · ◑ teilweise ·
 ➖ noch kein Nachweis.
 
 ### Doku-Abgleich
 
-Noch offen. Betroffen: `AGENTS.md`, `_tickets/.agents/`, Ticketvorlage,
-`_tickets/README.md`, Skill `task-verification-workflow`.
+Inventar: `AGENTS.md`, `CLAUDE.md`, `_tickets/README.md`, `_tickets/STATUS.md`,
+`_tickets/.agents/*`, Skill `task-verification-workflow`, `README.md`,
+`docker/README.md`.
+
+- `AGENTS.md` **Vor Arbeitsbeginn**: Paketeinstieg ergänzt; ACTIVITY-Zeile
+  nennt `_tickets/.gitignore`.
+- `_tickets/.agents/AGENT-WORKFLOW.md`: Übernahmestand, ACTIVITY-Absatz,
+  neuer Abschnitt zur Lessons-Einordnung.
+- `_tickets/.agents/AGENT-ACTIVATION.md`: Übersicht, Abschnitt
+  „Rollen-Shortcuts im Terminal“, Observer-Durchlauf Schritt 2.
+- `_tickets/.agents/TICKET-TEMPLATE.md`: neu (Paketeinstieg).
+- `_tickets/README.md`: ACTIVITY/`.gitignore`, Baum, Verweise auf Einordnung
+  und Vorlage.
+- `_tickets/STATUS.md`: Stand statt offener Übernahme; T-53-Link.
+- `CLAUDE.md`: verweist nur auf AGENTS.md; unverändert.
+- Skill `task-verification-workflow`: reiner Paketeinstieg; keine Änderung.
+- `README.md`, `docker/README.md`: beschreiben kein Board; unverändert.
+
+### Lessons-Einordnung
+
+| Befund oder Gruppe | Einordnung | Lesson-ID/Fassung oder konkreter Einzelfallgrund | Tatsächliche Übernahme / offener Rest und Zuständigkeit |
+|---|---|---|---|
+| Kennungen in STATUS weichen von den Shortcut-Kennungen ab; T-62 stand dadurch über zwei Stunden still | Einzelfall | Ein Vorfall; Ursache ist eine Namensentscheidung, kein wiederholtes Arbeitsmuster. Bei Wiederholung als Lesson aufnehmen. | In der Aktivierung dokumentiert; Entscheidung (a/b/c) bei Mike |
+| Toter Link nach Ticketumzug (T-53) | Vorhandene Lesson angewendet | [SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md), Stand 2026-09-28: Entscheidungen in allen aktuellen Aussagen nachziehen | Link korrigiert; keine Ergänzung der Lesson nötig |
