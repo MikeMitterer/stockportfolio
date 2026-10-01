@@ -8,6 +8,7 @@ PROJECT_NAME := $(notdir $(WORKSPACE))
 BASH_LIBS ?= $(WORKSPACE)/.libs/BashLib/src
 PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
 PYTHON ?= python3
+PYTHON_BOOTSTRAP ?= python3.11
 DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
 export BASH_LIBS PROJECT_TOOLS
 
@@ -84,15 +85,13 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)URLs$(RESET)"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Dev-Server" ""   "http://localhost:5175"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Preview" ""      "http://localhost:4175"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "StockInfo API" "" "https://stockinfo.int.mikemitterer.at/docs"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Docker Hub" ""   "https://hub.docker.com/r/mangolila/stockportfolio"
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Setup$(RESET)"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Symlinks" ""  "make setup"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Setup" ""  "make setup"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "2. Env" ""       "cp .env.example .env"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Deps" ""      "npm install"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "4. Start" ""     "make dev"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Start" ""     "make dev"
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Docker$(RESET)"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Server (x86)" ""  "make build                  # nur bauen, danach prüfen"
@@ -112,9 +111,14 @@ precheck: ## Benötigte Bibliotheksdateien prüfen
 ##@ Setup
 
 .PHONY: setup
-setup: ## Symlinks (.libs/) + Deps installieren
+setup: ## Symlinks, Python-venv und npm-Abhängigkeiten einrichten
 	@./scripts/setup-libs.sh --install
-	@npm install --no-audit --no-fund
+	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
+	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
+	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
+	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -r requirements.txt
+	@npm ci --prefix frontend --no-audit --no-fund
+	@npm ci --prefix api --no-audit --no-fund
 
 # ─── Status ──────────────────────────────────────────────────────────────────
 
@@ -128,45 +132,24 @@ status: ## Git-Status des Repos + offene Blocker-Issues
 
 ##@ Entwicklung
 
+STOCKPORTFOLIO_DATA_DIR ?= $(WORKSPACE)/.local-data
+
 .PHONY: dev
-dev: ## Vite Dev-Server starten (Port 5175)
-	@npm run dev
-
-.PHONY: build-frontend
-build-frontend: ## Production-Build (typecheck + vite build → dist/)
-	@npm run build
-
-.PHONY: preview
-preview: ## Preview des Prod-Builds (Port 4175)
-	@npm run preview
-
-.PHONY: lint
-lint: ## ESLint über src/, tests/
-	@npm run lint
-
-.PHONY: format
-format: ## Prettier — Code formatieren
-	@npm run format
-
-.PHONY: typecheck
-typecheck: ## vue-tsc --noEmit
-	@npm run typecheck
+dev: ## Vite und Konto-API gemeinsam starten (Ports 5175/8080)
+	@command -v overmind >/dev/null || { echo "overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
+	@command -v tmux >/dev/null || { echo "tmux fehlt; tmux installieren." >&2; exit 1; }
+	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -N -f Procfile.dev
 
 .PHONY: test
-test: ## Vitest — einmalig
-	@npm run test
-
-.PHONY: test-watch
-test-watch: ## Vitest — Watch-Modus
-	@npm run test:watch
-
-.PHONY: coverage
-coverage: ## Vitest mit Coverage-Report
-	@npm run test:coverage
+test: ## Frontend- und API-Tests einmalig ausführen
+	@npm run test --prefix frontend
+	@npm run test --prefix api
 
 .PHONY: clean
-clean: ## dist/, coverage/, .vite/ löschen
-	@rm -rf dist coverage .vite .eslintcache
+clean: ## Build-, Test- und Cache-Dateien löschen; Python-venv behalten
+	@npm --prefix frontend run clean
+	@npm --prefix api run clean
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__
 	@echo "$(GREEN)✓$(RESET) aufgeräumt"
 
 # ─── Docker ──────────────────────────────────────────────────────────────────
@@ -187,10 +170,6 @@ build: ## Docker-Image lokal bauen (PLATFORM=x86|arm, Default x86)
 push: ## Geprüften lokalen Build veröffentlichen, danach README (TARGET=dockerhub)
 	@./docker/build.sh --push
 
-.PHONY: docker-update
-docker-update: ## Explizites Basis-Image aktualisieren (BASE_IMAGE=<Referenz>)
-	@./docker/build.sh --update
-
 .PHONY: docker-images
 docker-images: ## Lokale Images des Projekts anzeigen
 	@./docker/build.sh --images
@@ -204,9 +183,9 @@ docker-samples: ## Beispiel-`docker run`-Kommandos zeigen
 ##@ Versionierung
 
 .PHONY: version
-version: ## Aktuelle Version anzeigen (package.json + git tag)
+version: ## Aktuelle Version anzeigen (frontend/package.json + git tag)
 	@echo
-	@VER=$$(source "$${BASH_LIBS}/version.lib.sh" 2>/dev/null && readProjectVersion 2>/dev/null); \
+	@VER=$$(source "$${BASH_LIBS}/version.lib.sh" 2>/dev/null && readProjectVersion auto frontend 2>/dev/null); \
 	 [[ -z "$$VER" ]] && VER='nicht gesetzt'; \
 	 TAG=$$(git describe --tags --abbrev=0 2>/dev/null || echo 'kein Tag'); \
 	 echo "    $(YELLOW)version$(RESET)  = $(BLUE)$$VER$(RESET)"; \
@@ -231,5 +210,5 @@ tag-patch: ## Version committen, taggen UND pushen — Patch; danach Changelog [
 tag-major tag-minor tag-patch: precheck
 	@test -r "$(PROJECT_TOOLS)/python/changelog.py"
 	@test -z "$$(git status --porcelain)"
-	@source "$${BASH_LIBS}/version.lib.sh" && semVerBump "$(patsubst tag-%,%,$@)" auto "" "$${MSG:-}"
+	@cd frontend && source "$${BASH_LIBS}/version.lib.sh" && semVerBump "$(patsubst tag-%,%,$@)" auto "" "$${MSG:-}"
 	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --publish

@@ -1,0 +1,347 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { NButton, NPopconfirm } from 'naive-ui'
+import { consola } from 'consola'
+import {
+  backupFileName,
+  buildBackup,
+  parseBackup,
+  type Backup,
+} from '@/domain/backup'
+import { money, formatterLocale, integer } from '@/domain/formatters'
+import { usePortfolioStore } from '@/stores/portfolio'
+import { baseCurrencyOf } from '@/domain/fx'
+import type { Portfolio } from '@/types/portfolio'
+import { useSettingsStore } from '@/stores/settings'
+import { useAppNotification } from '@/composables/useAppNotification'
+import { useInstrumentsStore } from '@/stores/instruments'
+import { useValueHistoryStore } from '@/stores/valueHistory'
+import { useBackupStore } from '@/stores/backup'
+
+/**
+ * Backup und Wiederherstellung.
+ *
+ * Bei angemeldeten Konten liegt der maßgebliche Stand auf dem Server. Der
+ * Dateiexport bleibt als selbst verwahrte Sicherung erhalten.
+ *
+ * Das Einspielen läuft absichtlich in zwei Schritten: erst Datei lesen und
+ * zeigen, was drinsteht, dann bestätigen. Ein Dateidialog, der beim Loslassen
+ * sofort das Depot überschreibt, wäre bei einem Fehlgriff nicht mehr
+ * zurückzuholen.
+ */
+
+const { t } = useI18n()
+
+const portfolioStore = usePortfolioStore()
+const settingsStore = useSettingsStore()
+const instrumentsStore = useInstrumentsStore()
+const valueHistory = useValueHistoryStore()
+const backupStore = useBackupStore()
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+/** Eingelesene, geprüfte Datei — wartet auf die Bestätigung. */
+const pending = ref<Backup | null>(null)
+const error = ref<string | null>(null)
+const done = ref<string | null>(null)
+
+const historyDayCount = computed(() => new Set(pending.value?.valueHistory.map(entry => entry.date)).size)
+
+const positionCount = computed(() => pending.value?.portfolio.positions.length ?? 0)
+
+/** Zeitpunkt des Backups, lesbar. */
+const exportedAtLabel = computed(() => {
+  const raw = pending.value?.exportedAt
+  if (!raw) return 'unbekannt'
+  const date = new Date(raw)
+  return Number.isNaN(date.getTime())
+    ? t('backup.unknown')
+    : date.toLocaleString(formatterLocale())
+})
+
+// ─── Sichern ────────────────────────────────────────────────────────────────
+
+async function exportBackup(): Promise<void> {
+  const portfolio = portfolioStore.portfolio
+  if (!portfolio) return
+
+  try {
+    await exportNow(portfolio)
+  } catch (cause) {
+    const reason = cause instanceof Error ? cause.message : String(cause)
+    error.value = t('backup.exportFailed', { reason })
+    consola.error('backup: Sichern fehlgeschlagen', { reason })
+  }
+}
+
+async function exportNow(portfolio: Portfolio): Promise<void> {
+  const exportedAt = new Date().toISOString()
+  // Die Tageswerte gehören dazu: Sie lassen sich nicht neu berechnen, sie
+  // entstehen nur dadurch, dass die App über Monate benutzt wird.
+  const history = await valueHistory.exportAll(portfolio.id)
+
+  const backup = buildBackup(
+    portfolio,
+    settingsStore.settings,
+    instrumentsStore.allowlist,
+    __APP_VERSION__,
+    exportedAt,
+    history,
+  )
+
+  // Eingerückt geschrieben: Die Datei soll sich im Zweifel auch von Hand lesen
+  // und reparieren lassen.
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {
+    type: 'application/json',
+  })
+  const url = URL.createObjectURL(blob)
+
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = backupFileName(portfolio.name, exportedAt)
+  anchor.click()
+  URL.revokeObjectURL(url)
+
+  done.value = t('backup.saved', { file: anchor.download })
+  error.value = null
+}
+
+// ─── Einspielen ─────────────────────────────────────────────────────────────
+
+function pickFile(): void {
+  error.value = null
+  done.value = null
+  fileInput.value?.click()
+}
+
+async function onFileChosen(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  // Zurücksetzen, damit dieselbe Datei erneut gewählt werden kann — sonst
+  // bleibt `change` beim zweiten Versuch stumm.
+  input.value = ''
+  if (!file) return
+
+  const result = parseBackup(await file.text())
+  if (!result.ok) {
+    // Die Domäne nennt nur den Schlüssel — den Satz baut die Anzeige, in der
+    // Sprache des Nutzers.
+    error.value = t(`backupErrors.${result.error.key}`, result.error.params ?? {})
+    done.value = null
+    pending.value = null
+    consola.warn('backup: Datei abgelehnt', { reason: result.error.key })
+    return
+  }
+
+  pending.value = result.backup
+  error.value = null
+  done.value = null
+}
+
+/**
+ * Spielt das geprüfte Backup ein.
+ *
+ * Schlägt die Server-Wiederherstellung fehl, zeigt die Oberfläche den Grund.
+ * Nach Erfolg lädt sie den maßgeblichen Serverstand neu.
+ */
+async function applyPending(): Promise<void> {
+  const backup = pending.value
+  if (!backup) return
+
+  try {
+    await backupStore.restore(backup)
+    window.location.reload()
+  } catch (cause) {
+    const reason = cause instanceof Error ? cause.message : String(cause)
+    error.value = t('backup.importFailed', { reason })
+    consola.error('backup: Einspielen fehlgeschlagen', { reason })
+    pending.value = null
+  }
+}
+
+function discardPending(): void {
+  pending.value = null
+}
+
+// Meldungen als Toast, wie überall sonst. Sie erscheinen nach einem Klick und
+// sollen die Karte darunter nicht auseinanderschieben.
+const { notify } = useAppNotification()
+
+notify(computed(() => error.value !== null), {
+  title: t('notify.backupTitle'),
+  type: 'error',
+  content: () => error.value ?? '',
+})
+
+notify(computed(() => done.value !== null), {
+  title: t('notify.doneTitle'),
+  type: 'info',
+  content: () => done.value ?? '',
+})
+
+/**
+ * Wie viele Assets das Backup ausblendet.
+ *
+ * Nur die abgeschalteten sind eine Entscheidung — ein Eintrag mit `true`
+ * entspricht dem Normalfall und sagt nichts.
+ */
+const hiddenCount = computed(
+  () => Object.values(pending.value?.allowlist ?? {}).filter((enabled) => !enabled).length,
+)
+
+/** Summe der Bestände zur groben Kontrolle vor dem Überschreiben. */
+const pendingCashTotal = computed(() =>
+  (pending.value?.portfolio.positions ?? [])
+    .filter((position) => position.group === 'cash')
+    .reduce((sum, position) => sum + position.units, 0),
+)
+</script>
+
+<template>
+  <div class="backup">
+    <p class="backup__intro">
+      {{ t('backup.intro') }}
+    </p>
+
+    <div class="backup__actions">
+      <NButton type="primary" :disabled="!portfolioStore.portfolio" @click="exportBackup">
+        {{ t('backup.download') }}
+      </NButton>
+
+      <NButton secondary @click="pickFile">{{ t('backup.restore') }}</NButton>
+
+      <!-- Unsichtbar: Der Knopf daneben ist das Bedienelement. -->
+      <input
+        ref="fileInput"
+        type="file"
+        accept="application/json,.json"
+        class="backup__file"
+        @change="onFileChosen"
+      />
+    </div>
+
+    <!--
+      Vorschau vor dem Überschreiben. Genannt wird, woran man eine falsche
+      Datei erkennt: Name, Alter und Umfang — und was verloren geht.
+    -->
+    <div v-if="pending" class="backup__preview">
+      <span class="backup__heading">{{ t('backup.confirmHeading') }}</span>
+
+      <dl class="backup__facts">
+        <dt class="backup__term">{{ t('backup.portfolio') }}</dt>
+        <dd>{{ pending.portfolio.name }}</dd>
+        <dt>{{ t('fx.baseCurrency') }}</dt>
+        <dd>{{ baseCurrencyOf(pending.portfolio) }}</dd>
+
+        <dt class="backup__term">{{ t('backup.positions') }}</dt>
+        <dd class="tabular-nums">{{ positionCount }}</dd>
+
+        <dt v-if="pendingCashTotal > 0" class="backup__term">{{ t('backup.ofWhichCash') }}</dt>
+        <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ money(pendingCashTotal, baseCurrencyOf(pending.portfolio)) }}</dd>
+
+        <dt v-if="hiddenCount > 0" class="backup__term">{{ t('backup.hidden') }}</dt>
+        <dd v-if="hiddenCount > 0" class="tabular-nums">
+          {{ t('units.assets', hiddenCount, { named: { count: integer(hiddenCount) } }) }}
+        </dd>
+
+        <!--
+          Einspielen ersetzt die Tageswerte, es führt sie nicht zusammen —
+          also gehört vorher hierher, wie viele in der Datei stehen.
+        -->
+        <dt v-if="pending.valueHistory.length > 0" class="backup__term">
+          {{ t('backup.valueHistory') }}
+        </dt>
+        <dd v-if="pending.valueHistory.length > 0" class="tabular-nums">
+          {{ t('units.days', historyDayCount, {
+            named: { count: integer(historyDayCount) },
+          }) }}
+        </dd>
+
+        <dt class="backup__term">{{ t('backup.savedAt') }}</dt>
+        <dd>{{ exportedAtLabel }}</dd>
+
+        <dt class="backup__term">{{ t('backup.appVersion') }}</dt>
+        <dd class="tabular-nums">{{ pending.appVersion }}</dd>
+      </dl>
+
+      <p class="backup__warning">
+        {{
+          t('backup.replaceWarning', {
+            positions: t('units.positions', portfolioStore.positions.length, {
+              named: { count: integer(portfolioStore.positions.length) },
+            }),
+          })
+        }}
+      </p>
+
+      <div class="backup__confirm">
+        <NPopconfirm @positive-click="applyPending">
+          <template #trigger>
+            <NButton type="error" size="small">{{ t('backup.replaceNow') }}</NButton>
+          </template>
+          {{ t('backup.confirmReplace') }}
+        </NPopconfirm>
+        <NButton size="small" quaternary @click="discardPending">{{ t('actions.cancel') }}</NButton>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.backup {
+  @include stack(var(--space-4));
+
+  &__intro {
+    font-size: var(--font-sm);
+    line-height: 1.625;
+    color: token(--text-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* Die Dateiauswahl bedient der Knopf daneben — sichtbar wäre sie doppelt. */
+  &__file { display: none; }
+
+  /*
+   * Was hineinkommt, steht vor dem Einspielen da: Überschrieben wird nichts,
+   * ohne dass man den Inhalt gesehen und bestätigt hat.
+   */
+  &__preview {
+    @include stack(var(--space-3));
+    padding: var(--space-4);
+    border: 1px solid token(--border-default);
+    border-radius: var(--radius-lg);
+    background-color: token(--surface-raised);
+  }
+
+  &__heading {
+    font-size: var(--font-sm);
+    font-weight: 500;
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 0.375rem var(--space-4);
+    font-size: var(--font-sm);
+  }
+
+  &__term { @include muted(null); }
+
+  &__warning {
+    font-size: var(--font-xs);
+    line-height: 1.625;
+    color: token(--status-out);
+  }
+
+  &__confirm {
+    @include row(var(--space-2));
+  }
+}
+</style>

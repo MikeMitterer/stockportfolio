@@ -5,6 +5,47 @@ neueste oben. Alle drei Rollen schreiben über den globalen `agent-activity`;
 ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 
+**Aktuelle Arbeit:** [T-66 · Status-Badges Below/Above/OK](30-doing/T-66-status-badges-below-above-ok.md)
+auf Branch `t-66-status-badges-below-above-ok` im Worktree
+`/private/tmp/stockportfolio-t66`, aufbauend auf dem freigegebenen T-65-Stand.
+Danach folgt [T-67 · Aktuelle Screenshots mit Login](20-ready/T-67-aktuelle-screenshots-mit-login.md)
+(Mike, 2026-10-01). Die Launcher-Anpassung aus T-65 liegt als T-51 im
+AgentLessons-Board (Backlog).
+[T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
+in Runde 3 (`7f7ca99`) technisch freigegeben; Mike hat die Launcher-Anpassung
+gewählt, deren Umsetzung und die Abnahme stehen aus.
+[T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
+ist in Runde 1 (`fd9d8f4`) technisch freigegeben; Wortlaut und Abnahme liegen
+bei Mike.
+
+**Sichtbarkeit von Tickets und Source · Mike, 2026-10-01:** Jedes Ticket soll
+vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
+ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
+und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
+ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
+Im Hauptverzeichnis liegt derzeit weiterhin T-61; `active-work.local` und
+`tickets.local` sind nur lokale Zugänge zum T-66-Stand und zu noch nicht
+integrierten Tickets. Eine dauerhafte Board-Lösung steht aus. Zwei verschiedene
+StockPortfolio-Tickets tragen derzeit auf getrennten Branches die Nummer T-67
+(Screenshots und Internetbetrieb); das ist vor einer Zusammenführung zu klären.
+
+**Technisch freigegeben, Abnahme durch Mike am Ende:**
+[T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+(von Mike abgenommen), [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+(Runde 13) und [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+(Runde 6) sowie [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+(Runde 2, `299852a`). Mike prüft T-61 und T-63 erst, wenn T-62 fertig ist:
+„T-61 teste ich wenn t-62 auch fertig ist“, „Auch T-63 nehme ich erst ganz am
+Ende ab“. T-62 ist jetzt technisch freigegeben; die Testinstanz steht im
+Ticket. Bis zu Mikes Abnahme bleiben alle vier Tickets in `30-doing/`; Merge
+nach `master` und Push folgen erst danach. StockInfo wurde nicht geändert.
+
+Die Mehradmin-Regel ist in T-61 Konzept Runde 2 entschieden: Jedes Konto hat
+eigene Daten, die Vorschau des alten Browserbestands gehört nur dem
+serverseitig markierten Setup-Konto. Die Architektur-Spezifikation liegt unter
+`docs/superpowers/specs/`. Die Projektstruktur bleibt bei `frontend/` und
+`api/`, je mit eigenem Manifest; die Version steht in `frontend/package.json`.
+
 **Abgeschlossener Auftrag:** [T-58 · About und Datenhinweise](40-done/T-58-about-data-use-notice.md)
 ist am 2026-09-28 nach Claudes technischer Freigabe in Runde 1 und Mikes
 Bestätigung „Von mir aus ist das Ticket durch“ abgeschlossen. Die Fassung
@@ -40,9 +81,9 @@ Mikes Bestätigung „T-55 sollte erledigt sein“ abgeschlossen.
 ist am 2026-09-27 in Runde 1 durch `claude` technisch freigegeben und nach
 Mikes bedingter Abschlussentscheidung abgeschlossen. Der Coder hat die
 Prüfaussage zum Abbruchpfad gemäß Observer-Hinweis begrenzt; kein Produktbefund.
-[T-53 · Medienproduktion](/Volumes/Daten/Projekte/MangoLila_000000_SocialMedia/StockApps/_tickets/30-doing/T-53-blogposts-und-erklaervideo-fuer-beide-apps.md)
+[T-53 · Medienproduktion](/Volumes/Daten/Projekte/MangoLila_000000_SocialMedia/StockApps/_tickets/30-doing/T-01-blogposts-und-erklaervideo-fuer-beide-apps.md)
 wurde auf Mikes Auftrag am 2026-09-27 mit allen Nachweisen in das eigenständige
-StockApps-Board unter `Daten` übertragen. Die Produktion bleibt dort pausiert;
+StockApps-Board unter `Daten` übertragen und heißt dort T-01. Die Produktion bleibt dort pausiert;
 hier wird keine zweite Ticketfassung weitergeführt.
 
 [T-52 · API-Link direkt zum Status-Tab](40-done/T-52-statuszeile-api-link-zum-status-tab.md)
@@ -66,36 +107,42 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen bleiben zugeordnet: Coder `codex`, Verifier `claude`, Observer
-`codex-observer`. Der bestehende Rollen-Scheduler beobachtet das Board;
-er prüft die Zuordnung vor jedem Durchlauf.
+Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observer
+`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `codex-verifier`
+ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
+ihre Zuordnung vor jedem Durchlauf.
 
-**Offene Übernahme:** lokaler Board-Stand `2026-09-11-activity-feed`,
-Paketstand `2026-09-27-central-package`. Allgemeine Übernahme weiterhin
-nur mit entsprechendem Board-Auftrag; bestehende Schreibgrenzen gelten.
-Lokale Ausnahme nach Mikes Beschluss vom 2026-09-28: `ACTIVITY.md` bleibt
-unversioniert und wird von Git ignoriert.
+**Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen und
+in [T-65](30-doing/T-65-board-konventionen-abgleichen.md) Runde 3 technisch
+freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-T-58 ist technisch freigegeben, durch Mike abgeschlossen und archiviert.
-Keine aktive Ticketarbeit; die letzte abgeschlossene Reviewreferenz bleibt erhalten.
+Aktiv ist T-66; Runde 1 wartet auf den Verifier (`6b8a6ee`). Die letzte abgeschlossene technische Prüfung ist
+T-65 Runde 3 (`7f7ca99`, `approved`). Technisch freigegeben sind außerdem
+T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
+(`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
+T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
+jeweiligen Tickets. Für T-60 bis T-65 erfolgen bis zu Mikes Abnahme am Ende
+weder Abschluss noch Merge oder Push.
+ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
+kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
-- `implementer`: `codex`
-- `reviewer`: `claude`
+- `implementer`: `claude-coder`
+- `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `none`
-- `updated_at`: `2026-09-28`
-- `last_reviewed_ticket`: `T-58-about-data-use-notice.md`
-- `last_reviewed_commit`: `c8e0ea3d0d3c1fa8a9ab208d9e8298fa4087f8ef`
-- `last_reviewed_round`: `1`
-- `workstream`: ``
-- `priority_chain`: ``
-- `priority_ticket`: ``
+- `phase`: `ready_for_review`
+- `ticket`: `T-66-status-badges-below-above-ok.md`
+- `handoff_commit`: `6b8a6ee33d7f6e1286bd5d2c33e41f604ed570f5`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
+- `updated_at`: `2026-10-01`
+- `last_reviewed_ticket`: `T-65-board-konventionen-abgleichen.md`
+- `last_reviewed_commit`: `7f7ca99f4d6a6d4bd80ad8cc86710517d608e32a`
+- `last_reviewed_round`: `3`
+- `workstream`: `stockportfolio-server-sync`
+- `priority_chain`: `T-66-status-badges-below-above-ok.md`, `T-67-aktuelle-screenshots-mit-login.md`
+- `priority_ticket`: `T-66-status-badges-below-above-ok.md`
 
 `unassigned` und `none` sind ausdrücklich inaktive Werte, keine Instanznamen
 oder Ticketdateien. Vor einer Agentenübergabe Rollen und Auftrag ausdrücklich
@@ -266,14 +313,28 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**Observer · T-58 · 2026-09-28:** Nach Claudes technischer Freigabe und deiner
-Korrektur von Umsetzungsschritt 1 widerspricht der aktuelle Einstieg des
-aktiven Tickets weiter STATUS und dem Review: Unter „Stand am 2026-09-28“
-steht „es gibt weiterhin keine technische Freigabe“, und „Nächster Schritt“
-fordert noch Claudes unabhängige Prüfung. Bitte diese beiden aktuellen
-Aussagen vor einer Abschlussvorlage berichtigen. Historische Übergaben und
-Reviewbelege erhalten; Phase, Freigabe und Mikes ausstehende
-Abschlussentscheidung bleiben maßgeblich (SP-CX-02).
+**codex-verifier → claude-coder · Mikes Sichtbarkeitsvorgabe, 2026-10-01**
 
-T-47 (Verrechnungskonto wieder hinzufügen) und T-46 (Detailansicht) sind
-technisch freigegeben und durch Mike abgeschlossen.
+Bitte nach der laufenden T-66-Übergabe einen dauerhaften Projektzugang für
+alle Tickets und den live bearbeiteten Source-Stand einplanen. Vom
+Hauptverzeichnis aus müssen Ticketdateien auffindbar sein; der testbare
+Coder-Stand braucht einen stabilen Pfad mit Branch, Commit, offenem
+Änderungsstand und passendem Startbefehl. Das Hauptverzeichnis auf T-61 darf
+nicht still als aktueller T-66-Stand erscheinen. Die beiden verschiedenen
+T-67-Tickets vor einer Branch-Zusammenführung eindeutig benennen. Aktuelle
+lokale Zugänge: `active-work.local` und `tickets.local`; sie sind keine
+dauerhafte Board-Konvention. Mikes Vorgabe ist keine Abnahme von T-66.
+
+## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-66 Runde 1 · Fassung `6b8a6ee`**
+
+Bitte im Worktree `/private/tmp/stockportfolio-t66` prüfen:
+[T-66](30-doing/T-66-status-badges-below-above-ok.md), maßgeblich ist der
+Abschnitt „Stand nach Mikes weiteren Entscheidungen“. Badges nur Symbol und
+Farbe (↓ ↑ ✓ →) mit zugänglichem Namen; Fragezeichen am Status erklärt sie mit
+den eingestellten Bändern; Gruppenkopf und Zeilen bündig; Login, Tabellenhinweis,
+About und Methodenseite stimmig; Login gegliedert und hervorgehoben; falsche
+Aussage zur Datenablage korrigiert. `make test` (837 + 20), Lint, Typprüfung,
+`git diff --check` grün; sichtbare Läufe 16/16 und 10/10. Grenzen: ✓/→ und
+`min`-Tooltip nur im Komponententest; Popup-Gliederung braucht ux-foundation.

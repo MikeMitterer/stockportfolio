@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1790665572453,
+      "tag": "0000_majestic_shooting_star",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1790773525235,
+      "tag": "0001_military_inertia",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790773807529,
+      "tag": "0002_busy_sebastian_shaw",
+      "breakpoints": true
+    }
+  ]
+}

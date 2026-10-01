@@ -8,7 +8,7 @@ run yourself.
 **Docker:** [Container setup and configuration](docker/README.md) ·
 [Docker Hub repository](https://hub.docker.com/r/mangolila/stockportfolio)
 
-![Version](https://img.shields.io/github/package-json/v/MikeMitterer/stockportfolio)
+![Version](https://img.shields.io/github/package-json/v/MikeMitterer/stockportfolio?filename=frontend%2Fpackage.json)
 
 ![Dashboard](docs/images/dashboard.png)
 
@@ -250,22 +250,67 @@ keyboard navigation.
 Question-mark tooltips explain the method and link to the relevant setting
 or _The Method_ reference page.
 
+The login page explains what the app does: it calculates deviations from
+the targets you set, buy and sell values are arithmetic results, it does not
+check whether a trade suits you, and it places no orders. Signing in requires
+ticking "I have read the notice". The tick applies to that login only and is
+not stored.
+
 ## Where the data lives
 
-**Only in the browser** (IndexedDB), on the device you work on. No server stores
-portfolio data — the StockInfo API only delivers prices and master data and
-learns nothing about holdings.
+The StockPortfolio API stores accounts, sessions, portfolios, settings, asset
+selection and recorded daily values in SQLite under `/data`. Each account has
+its own data, including additional admin accounts. An admin can manage accounts
+but cannot open another account's portfolios. StockInfo only delivers prices
+and master data and learns nothing about holdings.
 
 That has consequences worth knowing:
 
-- A different browser or device shows an empty portfolio.
-- "Clear site data" in the browser deletes the portfolio too.
-- A container update costs nothing — the data was never in the container.
+- The same account loads its portfolios on another browser or device after login.
+- Open browsers signed in to the same account receive change notices and reload
+  the affected data from the account API. The status bar warns when the live
+  connection is unavailable. After a connection loss, the app fetches the
+  current data on reconnection and checks the server periodically to catch
+  missed changes.
+  When one browser uses **Refresh** for prices, the others fetch the current
+  prices from StockInfo without reloading their pages. Restoring a backup in
+  one browser updates the others in the same way. A stale edit still
+  produces a conflict instead of overwriting another browser's change.
+- A new account, including an additional admin, starts with an empty portfolio.
+- Clearing browser site data removes market caches and browser preferences,
+  but server portfolios remain. Keep and back up the same `/data` volume when
+  updating the container.
+- If the server is unavailable, changes cannot be saved. Concurrent changes
+  from another browser produce a conflict instead of silently overwriting data.
+
+Existing IndexedDB portfolios from before accounts are **not imported
+automatically**. Only the original setup account can preview them in the old
+browser profile and import them once, with confirmation. Until import or
+explicit discard, they remain readable through that browser profile's
+developer tools, even after sign-out. Other accounts do not see their names or
+contents. After the one-time import, further old browser profiles offer a file
+export for each portfolio; restore those files through the regular backup flow.
+
+An account database created before the setup-account marker was introduced
+cannot prove which admin owns that old browser data. For a disposable local
+test installation, remove its **StockPortfolio API database**, restart setup,
+and sign in with the newly created setup account in the browser containing the
+old data. Preserve or export the browser data first. Do not reset a database
+containing data you need.
 
 _Settings → Backup_ offers backup and restore: a JSON file with the
 portfolio, the settings and the list of hidden assets. Prices are not included —
 the app fetches those anyway. On restore the file is checked and its contents are
-shown first; nothing is overwritten without confirmation.
+shown first; nothing is overwritten without confirmation. The server applies
+the confirmed restore as one transaction for that account.
+Admins open **User management** directly from the people icon in the top bar.
+The account list keeps actions for other accounts behind each row; an admin's
+own row has no reset or deactivate action.
+The top-right account button shows your username and opens the sign-out action.
+On narrow screens it shows only the account icon; its accessible name retains
+the username. The logo opens the dashboard, and the other navigation targets
+remain available. Rebalancing keeps its text on phones where it fits; on the
+smallest screens it uses an icon with an accessible name.
 An empty portfolio also offers **Restore backup …**, which opens the Backup tab
 directly, alongside adding a position or loading a sample portfolio.
 
@@ -286,15 +331,98 @@ selection.
 ## Setup
 
 ```bash
-make setup                 # .libs/ symlinks + npm install
+make setup                 # .libs/ links, local Python venv, frontend and API dependencies
 cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
-make dev                   # http://localhost:5175
+make dev                   # Vue app on :5175 and account API on :8080
 ```
 
-`make setup` links existing BashLib, MakeLib and ProjectTools repositories.
+`make setup` links existing BashLib, MakeLib and ProjectTools repositories,
+creates StockPortfolio's `.venv` with Python 3.11+, and installs the local
+ProjectTools Python package there from `requirements.txt`. `PYTHON_BOOTSTRAP`
+selects the interpreter if `python3.11` is unavailable. Setup checks the
+version before creating a venv; later runs reuse the venv and install the
+package only when its UI module is missing. `make clean` keeps the venv.
 For the first setup, set `BASH_LIBS`, `DEV_MAKE` and `PROJECT_TOOLS` to their
-locations; later commands can use the links under `.libs/`. For frontend-only
-development, `npm install` works without these shared tools.
+locations; later commands can use the links under `.libs/`. To install only
+the frontend and API dependencies manually, use `npm ci --prefix frontend` plus
+`npm ci --prefix api` works
+without these shared tools. Each subproject keeps its own package lockfile.
+`make dev` uses Overmind and tmux to run both servers in one terminal. Install
+them first (on macOS: `brew install overmind tmux`); Ctrl-C stops both.
+`npm run dev --prefix frontend` starts only Vite. To start only the API from
+the repository root, use
+`STOCKPORTFOLIO_DATA_DIR="$PWD/.local-data" STOCKPORTFOLIO_PUBLIC_ORIGIN=http://localhost:5175 npm run dev --prefix api`.
+With `make dev`, the API stores local accounts under `.local-data` unless
+`STOCKPORTFOLIO_DATA_DIR` is set.
+Until an admin exists, each API start prints a new code after
+`StockPortfolio setup code:` in the `make dev` terminal output. The setup page
+closes after the first admin account is created. New passwords need 12 to 1024
+characters, including an
+uppercase letter, a number and a special character.
+StockInfo is a separate service; `make dev` does not start it.
+If the login page says the account service is unreachable, check that the
+account API is running on port 8080. Vite alone serves the page but cannot
+handle login requests; `make dev` starts both servers.
+
+For browser checks with local StockInfo prices and an isolated account API,
+run `make setup`, then start the complete test stack with StockPortfolio's
+Python environment:
+
+```bash
+.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+.venv/bin/python scripts/stockinfo-test-server.py --stack --status
+.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
+```
+
+The local venv provides `projecttools.ui.colors` for themed help and status.
+Select a theme with `MAKE_THEME=ocean`. `NO_COLOR`, redirected output and
+`TERM=dumb` disable ANSI colors. The script uses no machine-specific
+ProjectTools source path. The StockInfo child process still uses
+`../StockInfo/.venv/bin/python`; `make setup` does not change that environment.
+
+The start command returns after the three processes are ready. It prints Vite
+(`127.0.0.1:5175`), the account API (`127.0.0.1:8080`), StockInfo fixtures
+(`127.0.0.1:8899`), and the path to the one-time setup code in the isolated
+API log. Add `--demo-accounts` to create a synthetic admin and user instead;
+their generated credentials are stored only in the printed temporary file.
+Both generated passwords meet the account API's password rules.
+The stop command removes these test accounts and temporary databases. It does
+not use Docker, change `.env` or `.local-data`, or call a Make target. The
+script sets Vite's StockInfo URL directly and checks the URL actually served
+to the browser, so a value in `.env` cannot silently replace the fixture URL.
+
+Ports 5175 and 8080 are fixed to match Vite's proxy; use `--port PORT` when
+starting to change only the StockInfo fixture port. Status and stop read the
+registered port. A port conflict or missing
+dependency stops startup with an error and leaves other processes alone. The
+script checks process identity with `ps`; restricted agent environments must
+allow that read rather than bypass it. In a worktree outside the sibling layout,
+pass an absolute path for `--stockinfo-root`. For the StockInfo-only server,
+continue to use StockInfo's Python environment directly:
+
+```bash
+../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run --stockinfo-root ../StockInfo
+```
+
+That single-server mode imports StockInfo in the same process and uses plain
+help with the current StockInfo environment.
+
+The live sync between browsers has a visible browser smoke test. It needs the
+test stack started with `--demo-accounts` and a local Google Chrome
+(`CHROME_PATH` overrides the default macOS path):
+
+```bash
+npm --prefix frontend run smoke:live-sync -- <temporary-dir>/demo-accounts.json
+```
+
+It opens two windows of one account side by side and a third window of the
+second account. It checks that a change in one window appears in the other
+without a page reload, that the other account sees nothing, that a price
+refresh in one window makes the other fetch prices, that a backup restore
+reaches the second window, reconnection after an interrupted stream,
+the 15-second keep-alive through the Vite proxy, conflict handling and
+logout. A forced password change of a new test account is handled
+automatically. The windows stay open until you press Enter.
 
 ## Commands
 
@@ -302,17 +430,19 @@ development, `npm install` works without these shared tools.
 
 | Command                        | Purpose                                     |
 | ------------------------------ | ------------------------------------------- |
-| `make dev`                     | Vite dev server (port 5175)                 |
-| `make build-frontend`          | Typecheck + production build into `dist/`   |
-| `make preview`                 | Preview of the production build (port 4175) |
-| `make test`                    | Vitest, single run                          |
-| `make lint` / `make typecheck` | ESLint / `vue-tsc --noEmit`                 |
+| `make dev`                     | Vite and account API (ports 5175/8080)     |
+| `make test`                    | Frontend and API tests, single run          |
+| `make clean`                   | Remove generated files; keep the local Python venv |
 | `make build`                  | Build and load the Docker image for testing |
 | `make push`                   | Publish the tested image, then Docker Hub README |
 | `make tag-minor MSG="…"`      | Bump, commit, tag and push; then publish the changelog |
 | `make changelog`              | Regenerate `CHANGELOG.md` without committing |
 
-Frontend commands are also available as `npm run …`.
+The root Makefile covers whole-project workflows. Its Development group contains
+`make dev`, `make test` and `make clean`; the latter two cover both packages.
+Run lint and typechecks per package with `npm --prefix frontend run lint`,
+`npm --prefix api run lint`, `npm --prefix frontend run typecheck`, and
+`npm --prefix api run typecheck`. Package builds and preview remain npm scripts.
 
 ### Command-line themes
 
@@ -346,8 +476,13 @@ install packages.
 
 ## Layout
 
-`src/api/` owns HTTP access, `src/db/` IndexedDB, `src/stores/` application state,
-`src/domain/` calculations, and `src/components/` and `src/views/` presentation.
+`frontend/src/api/` owns StockInfo requests, `frontend/src/auth/` calls the
+StockPortfolio account API, `frontend/src/data/` owns private REST access,
+`frontend/src/db/` owns legacy IndexedDB data and market caches, and
+`frontend/src/stores/` holds application state. The account service lives under
+`api/`, with HTTP routes in `api/src/routers/` and SQLite access in
+`api/src/persistence/`. `frontend/package.json` is the project version source
+and declares frontend dependencies; `api/package.json` declares API dependencies.
 The router uses hash URLs (`/#/rebalancing`); settings tabs are addressable as
 `/#/settings?tab=calc`. The server needs no application-route rewrites.
 
@@ -360,7 +495,7 @@ mistake: an English label above a number in German format.
 Without an explicit choice the browser's language decides; anything other than
 German gets English. The choice is stored in the browser.
 
-Visible text lives in the message catalogue ([`src/i18n/`](src/i18n/)), without
+Visible text lives in the message catalogue ([`frontend/src/i18n/`](frontend/src/i18n/)), without
 exception. An ESLint rule turns a hard-coded string in a template into an error,
 and the typecheck reports every key missing in one of the languages.
 
@@ -391,20 +526,22 @@ remain reachable without scrolling through a wide row of tabs.
 
 The Docker Hub image name is
 [`mangolila/stockportfolio`](https://hub.docker.com/r/mangolila/stockportfolio).
-It contains the finished bundle and a static Node server (`serve`) — no nginx,
-no application API, database or volumes.
+It contains the finished Vue bundle and the StockPortfolio account API on one
+Node server. Accounts and sessions need a persistent `/data` volume.
 
 ### Run it
 
 ```bash
 docker run -d --name stockportfolio \
     -p 8080:8080 \
+    --mount type=volume,source=stockportfolio-data,target=/data \
     -e STOCKINFO_API_URL=https://stockinfo.example.com \
     --restart unless-stopped \
     mangolila/stockportfolio:latest
 ```
 
-Then open <http://localhost:8080>. `STOCKINFO_API_URL` is the address of **your
+Then read the one-time setup code from `docker logs stockportfolio` and open
+<http://localhost:8080> to create the first admin account. `STOCKINFO_API_URL` is the address of **your
 own** [StockInfo](https://github.com/MikeMitterer/stockinfo) instance — the app
 has no public backend to fall back on. See [API address](#api-address) below.
 
@@ -414,11 +551,16 @@ browser's computer; Docker's internal service names are usually unsuitable.
 StockInfo must allow the web app's origin through CORS. An HTTPS page needs
 an HTTPS API to avoid mixed-content blocking.
 
-The web interface has no built-in login. Control access through your network
-or reverse proxy; [the container guide](docker/README.md#quick-start) also shows
-how to bind the published port to localhost only.
+The web interface has a login. For access through an HTTPS reverse proxy, set
+`STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
+`STOCKPORTFOLIO_SECURE_COOKIES=true`. Keep the service behind an appropriate
+network or proxy boundary as well.
+The same account's open browsers use a long-lived `/api/data/events` stream
+for change notices. A reverse proxy must pass that stream without buffering
+and keep idle connections open for more than the server's 15-second keep-alive
+interval. Portfolio data still travels through authenticated REST requests.
 
-The container listens on **8080** and the static server runs without root. Older images
+The container listens on **8080** and the API runs without root. Older images
 used port 80: update an existing port mapping when switching to this version.
 Keep the host address/port stable so the browser retains the same storage origin.
 
@@ -431,9 +573,13 @@ services:
     container_name: stockportfolio
     ports:
       - '8080:8080'
+    volumes:
+      - stockportfolio-data:/data
     environment:
       STOCKINFO_API_URL: https://stockinfo.example.com
     restart: unless-stopped
+volumes:
+  stockportfolio-data:
 ```
 
 ```bash
@@ -448,19 +594,20 @@ docker rm -f stockportfolio
 # then run the command above again — or: docker compose up -d
 ```
 
-Nothing is lost in the process. Portfolios live in the browser, not in the
-container, so an update is a plain pull & restart.
+Reuse and back up the same `/data` volume so accounts and portfolios survive
+recreation. Keep the browser address stable for its preferences and any old
+IndexedDB portfolios awaiting import.
 
 ### Checking it works
 
 ```bash
 docker ps                          # STATUS should say "healthy" after a few seconds
-docker logs stockportfolio         # check startup and static server output
+docker logs stockportfolio         # first-start setup code and API output
 ```
 
-The app itself shows the address in use under _Settings → Status_ and in the
+The app itself shows the address in use on the separate _Status_ page and in the
 status bar at the bottom. Click the API address in the status bar to open
-_Settings → Status_ directly. If prices stay empty, that page is the place to look:
+_Status_ directly. If prices stay empty, that page is the place to look:
 it distinguishes "not reachable" from "reachable but refused" (CORS).
 
 ### Building and publishing
@@ -474,8 +621,8 @@ make build PLATFORM=arm       # optional local ARM build
 
 As in StockInfo, building and publishing are separate steps: test the built
 container before running `make push`. `make build` defaults to linux/amd64,
-independently of the host architecture. `make build-frontend`
-runs only the frontend production build.
+independently of the host architecture. Package builds remain available
+through their npm scripts.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
 `STRICT=2` allows commits after a tag; `STRICT=1` requires the tagged commit.
@@ -502,7 +649,8 @@ The build uses `node:22-bookworm-slim` for build and runtime, with locked `serve
 
 `TARGET=dockerhub` is the default; GHCR and ECR remain optional. `make push`
 uses the immutable image ID saved by the local build, including for `latest`.
-Failed or incomplete builds cannot reuse an old build marker. `make docker-update BASE_IMAGE=node:22-bookworm-slim` pulls an explicit base reference.
+Failed or incomplete builds cannot reuse an old build marker. For an explicit
+base-image refresh, run `BASE_IMAGE=node:22-bookworm-slim ./docker/build.sh --update`.
 
 After a successful Docker Hub image push, the common **ProjectTools** helper
 updates the repository overview from [docker/README.md](docker/README.md) and

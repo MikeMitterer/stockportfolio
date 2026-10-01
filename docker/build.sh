@@ -88,10 +88,12 @@ case "${TARGET}" in
             exit 1
         fi
         readonly GITHUB_OWNER
+        GITHUB_OWNER_LOWER=$(printf '%s' "${GITHUB_OWNER}" | tr '[:upper:]' '[:lower:]')
+        readonly GITHUB_OWNER_LOWER
         readonly REGISTRY="ghcr.io"
         # Docker/OCI-Image-Referenzen müssen lowercase sein — GITHUB_OWNER kommt
-        # i.d.R. in GitHub-Schreibweise (z.B. "MikeMitterer"), daher ${VAR,,}.
-        readonly IMAGE="${REGISTRY}/${GITHUB_OWNER,,}/${NAMESPACE}-${NAME}"
+        # i.d.R. in GitHub-Schreibweise (z.B. "MikeMitterer").
+        readonly IMAGE="${REGISTRY}/${GITHUB_OWNER_LOWER}/${NAMESPACE}-${NAME}"
     ;;
     dockerhub)
         readonly REGISTRY="docker.io"
@@ -204,7 +206,7 @@ pushImage() {
     local -r _TAG=${1:?}
 
     case "${TARGET}" in
-        ghcr)      pushImage2GHCR      "${GITHUB_OWNER,,}"  "${NAMESPACE}-${NAME}" "${_TAG}" ;;
+        ghcr)      pushImage2GHCR      "${GITHUB_OWNER_LOWER}" "${NAMESPACE}-${NAME}" "${_TAG}" ;;
         dockerhub) pushImage2DockerHub "${NAMESPACE}"       "${NAME}"              "${_TAG}" ;;
         ecr)       pushImage2Amazon    "${AMAZON_REPO_URI}" "${NAME}" "${_TAG}" "${AWS_REGION}" ;;
     esac

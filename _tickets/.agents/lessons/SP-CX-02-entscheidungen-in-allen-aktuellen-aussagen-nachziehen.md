@@ -131,3 +131,31 @@ stehen blieb.
 
 Ergänzung und Entdeckung durch `codex-observer`; Autor der übergebenen Fassung
 `codex`. Die bisherige Herkunft bleibt erhalten.
+
+## Ergänzung · 2026-09-30 · T-63
+
+Die Codex-Fassung `6459dca` von
+[T-63](../../30-doing/T-63-reproduzierbarer-lokaler-teststack.md) entfernte
+auf Mikes Vorgabe die Root-Ziele `make lint` und `make typecheck`. Der
+Doku-Abgleich nannte `AGENTS.md`, `README.md`, Spezifikation, Plan und
+Board-Vorlagen, nicht aber die Verify-Tabellen der aktiven Tickets. Dort
+verlangen T-60 #5, T-61 #6 und T-62 #5 weiter die entfernten Ziele. Claude
+fand in Runde 2 T-61 und T-62; der Observer fand zusätzlich T-60 #5. Diese
+Zeile gilt für die noch offene erneute Prüfung von T-60.
+
+**Lücke:** Wie bei T-55 endete das Inventar der Aufrufer bei den ausdrücklich
+genannten Dokumenten. Die Verify-Zeilen offener Tickets sind aktuelle
+Anweisungen und keine historischen Belege.
+
+**Ergänzte Implementer-Regel:** Bei entfernten oder umbenannten Befehlen
+`_tickets/30-doing/` vollständig nach dem alten Namen durchsuchen. Dabei
+offene Prüfpunkte von historischen Belegabsätzen trennen und die Prüfpunkte
+im selben Auftrag umstellen.
+
+**Ergänzte Verifier-Gegenprobe:** Dieselbe Suche über alle Tickets in
+`30-doing/` selbst ausführen und jede gefundene Stelle einordnen. Einzelne
+Funde reichen nicht als Nachweis, dass die Liste vollständig ist.
+
+Ergänzung und Entdeckung von T-60 #5 durch `claude-observer`; T-61/T-62 durch
+`claude`; Autor der untersuchten Fassung `codex`. Die bisherige Herkunft bleibt
+erhalten.

@@ -1,5 +1,9 @@
 # Dependencies
 node_modules/
+.venv/
+__pycache__/
+*.pyc
+.local-data/
 .pnp/
 .pnp.js
 
@@ -64,3 +68,4 @@ docker/preview/
 
 # Claude Code (lokale Werkzeug-Konfiguration)
 .claude/
+.overmind.sock

@@ -99,7 +99,17 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 | Repository | `mangolila/stockportfolio:latest` |
 | WebUI Port | Default host port 8088, container port **8080** |
 | StockInfo API | Required: your StockInfo instance's URL, reachable from the **browser** |
+| App data | Map `/mnt/user/appdata/stockportfolio` to container path `/data` for accounts and private portfolios. Back up this directory. |
+| Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy. |
+| Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
 | Timezone | Container log timezone; defaults to UTC |
+
+Open browsers with the same account receive portfolio change notices through
+`/api/data/events` and reload the data from the account API. If Unraid is
+behind a reverse proxy, pass this SSE stream without buffering and set its
+idle timeout above the 15-second keep-alive interval. The status bar warns
+when the live connection is unavailable; the app checks the server periodically
+for missed changes.
 
 **Older images listened on port 80.** For an existing container, change the
 mapping to container port 8080. Keep the same host address and host port:
@@ -109,9 +119,10 @@ uses separate browser storage, which is initially empty.
 ## Updating
 
 For an existing container, choose **Docker → stockportfolio → Force Update**.
-Keep its settings and the same web address and host port so the browser
-continues to use the same stored portfolio. Export a backup under
-**Settings → Backup** before updating.
+Keep its settings and the same `/data` mapping so accounts and portfolios
+survive. Export a backup under **Settings → Backup** before updating. Without
+the volume, the container starts a new, independent setup. The browser address
+still identifies its preferences and any old local portfolios awaiting import.
 
 An image update does not require downloading the template again. Do not
 overwrite `my-stockportfolio.xml`, which contains your saved container settings.
@@ -123,6 +134,7 @@ as described under [Configuration](#configuration).
 ```bash
 docker run -d --name stockportfolio \
     -p 8088:8080 \
+    --mount type=bind,source=/mnt/user/appdata/stockportfolio,target=/data \
     -e STOCKINFO_API_URL=https://stockinfo.example.com \
     -e TZ=Europe/Vienna \
     --restart unless-stopped \
@@ -131,21 +143,33 @@ docker run -d --name stockportfolio \
 
 ## Data, API and verification
 
-**No volume required:** portfolios and settings are stored in the browser
-(IndexedDB). Container updates leave them intact. Clearing browser data removes
-them, and a different device has separate storage. Export backups under
-**Settings → Backup**; the file is saved to your Downloads folder. A server
-backup does not include this data.
+**Map and back up `/data`:** Accounts, sessions, portfolios, settings, asset
+selection and recorded daily values are stored there in SQLite. On first
+start, read the one-time setup code from the container log and create the first
+admin account in the browser. Each account, including another admin, has a
+private portfolio. The same account loads its server data in a second browser.
+Export individual portfolios under **Settings → Backup** as an additional
+file backup. If the account API is unavailable, changes cannot be saved.
+
+Only the original setup account may preview and import old IndexedDB depots
+from a browser profile, once and after confirmation. Until import or explicit
+discard, those data remain readable through that browser's developer tools
+even after sign-out. Another account sees no old names or values. After the
+one-time import, export further old depots individually and restore their
+files in the app. An account database created before the setup-account marker
+cannot establish this entitlement; reset a disposable test database and repeat
+setup while keeping the old browser data.
 
 At startup, the API address from `STOCKINFO_API_URL` is written to `config.js`.
 It must be reachable from the browser; `localhost` refers to the browser's
-computer, not a Docker service. The active URL is shown under
-**Settings → Status**. Restart the container after changing the address.
+computer, not a Docker service. The active URL is shown on the separate
+**Status** page, opened from the bottom status bar. Restart the container
+after changing the address.
 
 StockInfo must allow the web app's origin, such as `http://unraid:8088`, through
 CORS. An HTTPS web interface requires an HTTPS API.
 
-The static Node server runs without root privileges. The healthcheck verifies
-that the local web page is served; it does not test the separate API. API errors
+The StockPortfolio API runs without root privileges. Its `/healthz` endpoint
+is checked locally; it does not test StockInfo. StockInfo errors
 are shown in the app. A local Docker test does not replace testing on an actual
 Unraid instance.

@@ -59,7 +59,7 @@ Einrichtung melden.
 - Mike ordnete die Aufnahme ausdrücklich an: „Das Problem kannst du gleich
   in Codex-Lessons festhalten - absolute Over-Construction“.
 
-Aktuelle Verwendung: [Observer-Shortcuts](../AGENT-ACTIVATION.md#observer-shortcuts-im-terminal).
+Aktuelle Verwendung: [Rollen-Shortcuts](../AGENT-ACTIVATION.md#rollen-shortcuts-im-terminal).
 
 **Implementer-Regel:** Vorhandene CLI direkt aufrufen; jede zusätzliche
 Komponente mit einem konkreten Bedarf begründen.

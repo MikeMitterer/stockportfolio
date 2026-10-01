@@ -11,13 +11,14 @@ dieselbe Board-Struktur wie StockInfo und der Skill `task-verification-workflow`
 Tätigkeitsmeldungen, neueste oben. Coder, Verifier und Observer schreiben sie über `agent-activity` nach dem
 [Workflow](.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit); das gilt für alle Tickets.
 Die Datei bleibt lokal und wird auf Mikes Beschluss vom 2026-09-28 nicht in
-Git versioniert. Der Helfer legt sie bei Bedarf an.
+Git versioniert (`_tickets/.gitignore`). Der Helfer legt sie bei Bedarf an.
 
 ## Übersicht
 
 - [Ablage](#ablage)
 - [Von der Aufnahme bis zum Abschluss](#von-der-aufnahme-bis-zum-abschluss)
 - [Nachweise und Agentenregeln](#nachweise-und-agentenregeln)
+- [Aktive Kette: private Depots auf dem StockPortfolio-Server](#aktive-kette-private-depots-auf-dem-stockportfolio-server)
 - [Roadmap (MVP-Reihenfolge)](#roadmap-mvp-reihenfolge)
 - [Offen](#offen)
 - [Neu erfasste Integrationsbewertung](#neu-erfasste-integrationsbewertung)
@@ -36,7 +37,8 @@ _tickets/
 ├── 90-rejected/   # bewusst verworfen
 ├── README.md      # Board-Anleitung
 ├── STATUS.md      # Rollen, Reihenfolge, Phase und Mailbox
-├── ACTIVITY.md    # kurze Tätigkeitsmeldungen, neueste oben
+├── ACTIVITY.md    # kurze Tätigkeitsmeldungen, neueste oben (nicht in Git)
+├── .gitignore     # nimmt ACTIVITY.md von Git aus
 └── QUESTIONS.md   # kurzfristige Fragen
 ```
 
@@ -92,7 +94,9 @@ Die Linkeinstiege [Claude](.agents/CLAUDE-LESSONS.md) und
 [Codex](.agents/CODEX-LESSONS.md) verweisen auf lokale Einzeldateien.
 [Zugriff und Pflege](.agents/LESSONS-ACCESS.md) beschreiben das vollständige
 Verzeichnisinventar und den gemeinsamen Bestand in AgentLessons. Der Workflow
-regelt Vorbeugung, unabhängige Gegenprüfung und Lessons-Pflege.
+regelt Vorbeugung, unabhängige Gegenprüfung und Lessons-Pflege. Neue Befunde
+werden nach der [Lessons-Einordnung](.agents/AGENT-WORKFLOW.md#lessons-einordnung-bei-neuen-befunden)
+im Ticket zugeordnet; neue Tickets folgen der [Ticketvorlage](.agents/TICKET-TEMPLATE.md).
 
 Der optionale Observer beaufsichtigt Coder und Verifier unabhängig vom Owner.
 Er koordiniert bei Bedarf über die STATUS-Mailboxen und berichtet wesentliche
@@ -103,6 +107,34 @@ Wiedereinstieg. Eine technische Abnahme bleibt Aufgabe des Verifiers.
 
 [QUESTIONS.md](QUESTIONS.md) sammelt kurzfristige Fragen. Erledigte Einträge
 nach Übertragung in Ticket, Dokumentation oder GitHub-Issue entfernen.
+
+[↑ Übersicht](#übersicht)
+
+## Aktive Kette: private Depots auf dem StockPortfolio-Server
+
+Mike hat die serverseitige Synchronisation mit getrennten privaten
+Benutzerkonten und SSE am 2026-09-28 beauftragt. T-60 und der vorgezogene
+lokale Teststack T-63 sind technisch freigegeben. Mike hat T-60 für sich
+abgeschlossen; T-63 wartet noch auf seine menschliche Abschlussentscheidung.
+T-61 ist auf Mikes Auftrag aktiv, T-62 baut darauf auf.
+Verbindlich ist die Zuordnung in [STATUS.md](STATUS.md#maschinenlesbarer-zustand).
+
+1. [T-60 · Server und Benutzerkonten](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
+   liefert App und eigene API im StockPortfolio-Container sowie Setup,
+   Anmeldung und Admin-Verwaltung.
+2. [T-63 · Lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
+   verbindet StockInfos vorhandene Testkurse, die Konto-API und Vite
+   reproduzierbar ohne Docker.
+3. [T-61 · Private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
+   macht den Server zur Datenquelle und übernimmt vorhandene Browserdaten
+   ausdrücklich in das richtige Konto.
+4. [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
+   meldet gespeicherte Änderungen an andere Browser desselben Kontos, die
+   daraufhin per REST neu laden.
+
+StockInfo bleibt für Kurse und Instrumente zuständig; diese Kette ändert dort
+nichts. Konten und Teststack sind verfügbar; private Serverdepots und
+Live-Abgleich folgen mit T-61 und T-62.
 
 [↑ Übersicht](#übersicht)
 

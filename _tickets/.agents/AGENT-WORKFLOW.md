@@ -1,225 +1,98 @@
-# Coder-/Verifier-Workflow
+# Coder-/Verifier-Workflow · StockPortfolio
 
-Die Rollen und der aktive Auftrag stehen ausschließlich in
-[STATUS.md](../STATUS.md). Dieser Vertrag gilt für StockPortfolio;
-die Umstellung des Boards aktiviert keine Umsetzung und keinen Review.
+**Diese Datei ist ein kurzer Einstieg.** Der gemeinsame Vertrag für Coder,
+Verifier und Observer liegt im installierten Paket:
+`${XDG_DATA_HOME:-$HOME/.local/share}/agent-workflow/current/templates/board/.agents/AGENT-WORKFLOW.md`.
+Ein leerer XDG-Wert verwendet den Home-Standard, ein relativer ist ungültig.
+Vor jedem fachlichen Durchlauf `current/VERSION` prüfen und den Vertrag nach
+einer Änderung neu lesen. Fehlt das Paket, das melden; keine ältere Kopie als
+Ersatz verwenden. Rollen, Auftrag, Phase und Übergaben stehen ausschließlich
+in [STATUS](../STATUS.md).
 
-Ein optionaler Observer ist eine dritte, eigenständige Instanz. Seine Zuordnung
-steht im Feld `observer` derselben STATUS-Datei; sein Auftrag ist unten definiert.
+Hier stehen nur StockPortfolios lokale Entscheidungen und Ergänzungen. Die
+Überschriften bleiben als Sprungziele bestehender Verweise erhalten; jede nennt
+den passenden Abschnitt des Paketvertrags.
 
-**Übernahmestand der Board-Konventionen: `2026-09-11-activity-feed`.**
-Am 2026-09-11 inhaltlich abgeglichen: ACTIVITY, Observer-Koordination und
-installierter Rollen-Launcher. Zentraler ACTIVITY-Helfer; keine lokale Abweichung.
+**Übernahmestand der Board-Konventionen: `2026-09-28-activity-local`.**
+Am 2026-10-01 in [T-65](../30-doing/T-65-board-konventionen-abgleichen.md)
+übernommen: Paketeinstieg in `AGENTS.md`, `_tickets/.gitignore` für ACTIVITY,
+Lessons-Einordnung, Rollen-Shortcuts, kurze Einstiege für Workflow,
+Aktivierung, Codex-Scheduler und Lessons-Zugriff.
+**Lokale Abweichungen:** Mikes dauerhafte Freigabe von Merge **und Push** nach
+Ticketabschluss (AGENTS.md, 2026-09-27); die Rollenkennungen in STATUS
+(`claude-coder`, `codex-verifier`) weichen von den Standardkennungen der
+Shortcuts ab, siehe [Aktivierung](AGENT-ACTIVATION.md#rollen-shortcuts-im-terminal).
 
 ## Einstieg und Rollen
 
-Vor fachlicher Arbeit [README.md](../README.md), STATUS und das betreffende
-Ticket lesen. Die sechs Statusordner ersetzen die frühere Ablage im Root
-und in `solved/`. Bei Änderungen Links und Begleitdateien mitführen.
-Für Ticketformate gilt `task-verification-workflow`, für Produktcode
-`code-standards` samt den zur Aufgabe passenden Hausregeln.
+Paket: Abschnitt „Rollen und Arbeitsbeginn“.
 
-`implementer` bezeichnet den Coder, `reviewer` den unabhängigen Verifier und
-`owner` die aktuell zuständige Instanz. Rolle und Produktname sind getrennt.
-Der Autor kann seine eigene Fassung nicht unabhängig abnehmen. Eine nicht
-zugeordnete Rolle oder inaktive Phase erzeugt keinen Arbeitsauftrag.
+Lokal: Vor fachlicher Arbeit [README](../README.md), STATUS und das Ticket
+lesen. Neue Tickets folgen der [Ticketvorlage](TICKET-TEMPLATE.md); für
+Produktcode gelten der Skill `code-standards` und die passenden Hausregeln.
+Das Board wurde am 2026-09-10 aus StockInfo übernommen und wird seither
+eigenständig geführt; keine Rollen oder Übergaben von dort übernehmen.
 
 ## Aktuelle Tätigkeit
 
-Für alle Tickets melden Coder, Verifier und Observer jeweils nur die eigene
-Tätigkeit: eine Zeile mit ein bis zwei kurzen Sätzen. Neueste Meldungen stehen
-oben; vorherige Einträge bleiben bis zur eingestellten Begrenzung erhalten.
-Bei Arbeitsbeginn, wesentlichem Fortschritt, Übergabe oder Wechsel ins Warten
-melden, nicht allein wegen eines Scheduler-Takts. Eine ältere Meldung belegt
-keine weiterhin laufende Tätigkeit.
+Paket: Abschnitt „Aktuelle Tätigkeit“.
 
-Aus dem Projekt oder einem Unterordner den globalen Helfer aufrufen:
-
-```bash
-agent-activity claude "prüft die übergebene Fassung"
-```
-
-`claude` durch die eigene vollständige Instanzkennung ersetzen. Der Helfer liegt
-einmal unter `~/.local/bin/agent-activity`, findet das nächste `_tickets`-Board
-mit STATUS und legt eine fehlende ACTIVITY an. Keine Skriptkopie unter
-`.agents/bin` oder in anderen Projektverzeichnissen. Gleichzeitige Aufrufe
-werden mit einer Sperre und atomarem Dateiersatz verarbeitet. Standardmäßig
-bleiben 50 Einträge; `-k N` beziehungsweise `--keep N` setzt die Grenze für
-diesen Aufruf. Alle Schreiber eines Boards verwenden dieselbe vereinbarte
-Grenze. Ohne andere Vereinbarung gilt 50.
-
-**Agenten schreiben ACTIVITY, lesen sie aber nicht als Kontext oder Auftrag.**
-Die Datei dient ausschließlich dem Nutzer. Nur der Helfer liest intern die
-bisherigen Einträge, um sie beim Schreiben zu erhalten und zu begrenzen.
-Auf Mikes Beschluss vom 2026-09-28 bleibt `ACTIVITY.md` in diesem Projekt
-lokal und ist über `.gitignore` von Git ausgenommen. Der globale Helfer
-schreibt sie weiterhin wie bisher.
-Kein manuelles Lesen-Ändern-Schreiben neben dem Helfer, sonst greift seine
-Sperre nicht. Fehlt er oder scheitert der Aufruf, den Fehler im Chat melden
-und die zentrale Einrichtung nachholen; keine Projektkopie als Ersatz bauen.
-Ein ausdrücklicher Nur-Lese-Auftrag verbietet auch diesen Schreibaufruf.
-
-STATUS bleibt allein verbindlich für Rollen, Auftrag, Phase und Übergaben
-und verlinkt [ACTIVITY.md](../ACTIVITY.md) sichtbar am Anfang. Die Rollenprüfung
-vor jedem Durchlauf bleibt nötig. Dauerhafte Ergebnisse und Prüfnachweise
-gehören ins Ticket. Keine Tätigkeit einer anderen Instanz behaupten.
+Lokal (Mike, 2026-09-28): `ACTIVITY.md` bleibt lokal und ist über
+`_tickets/.gitignore` sowie weiterhin über die Root-`.gitignore` von Git
+ausgenommen. Alle Schreiber verwenden die Vorgabe von 50 Einträgen.
 
 ## Ticketpfade und Arbeitsbeginn
 
-Nur ausdrücklich eingeplante Arbeit aus `20-ready/` beginnen. Vor dem ersten
-Produktedit Ticket und Begleitdateien nach `30-doing/` verschieben und
-`ticket`, `priority_ticket`, `priority_chain`, Arbeitsphase und Owner setzen.
-Diese Änderungen gehören in denselben Commit. Neue Tickets beginnen mit
-Reviewrunde 0; vorhandene Nachweise und Runden bleiben erhalten.
+Paket: Abschnitt „Rollen und Arbeitsbeginn“.
 
-Vor jedem Arbeitsschritt muss `30-doing/<ticket>` existieren und das Ticket
-dem Prioritätsticket sowie einem Eintrag in der Prioritätskette entsprechen.
-Bei widersprüchlichem Zustand den Konflikt melden und keine fachliche Arbeit
-aus dem vermuteten Auftrag ableiten. Andere Doing-Tickets sind nicht automatisch
-aktiv. Backlog, Done, Iced und Rejected starten keine Arbeit.
+Lokal: Die sechs Statusordner `10-backlog` bis `90-rejected` ersetzen die
+frühere Ablage im Root und in `solved/` ([Ablage](../README.md#ablage)).
+Ein aktives Ticket liegt in dem Worktree, dessen Branch es bearbeitet; STATUS
+nennt Worktree und Branch, und die STATUS-Kopie im Hauptverzeichnis zeigt
+dieselbe Zuordnung.
 
 ## Übergabe und Review
 
-Der Coder bearbeitet den vereinbarten Umfang und dokumentiert prüfbare Belege
-im Ticket. Bereits vor der Umsetzung und erneut vor der Übergabe die Sammlung
-zur eigenen Autorenschaft lesen:
-[Claude](CLAUDE-LESSONS.md), [Codex](CODEX-LESSONS.md), bei gemischter Arbeit beide.
-Vorhandene menschliche Antworten, Kennungen und historische Befunde erhalten.
+Paket: Abschnitt „Umsetzung, Review und Abschluss“.
 
-Für einen ausdrücklich beauftragten unabhängigen Review den Produktstand
-committen, die OUTBOX mit Umfang, Prüfungen und Einschränkungen füllen und
-zuletzt `handoff_commit`, `review_round`, `phase: ready_for_review` und Owner
-auf den Verifier setzen. Danach bleibt der Produktstand bis zum Review stabil.
-
-Der Verifier liest das Ticket und die Sammlung des Autors, setzt `reviewing`
-und prüft die übergebene Fassung. Er ändert keinen Produktcode, keine
-Human-Antworten und keinen Archivstatus. Ergebnis und Belege kommen ins Ticket,
-die knappe Rückgabe in die INBOX. Danach `approved` oder `changes_requested`
-setzen und Owner an den Coder zurückgeben; verarbeitete OUTBOX entfernen.
-
-Abgeschlossene Reviews werden anhand von Ticket, Übergabecommit, Runde und
-Prüferidentität erkannt und nicht erneut ausgeführt. Rollenwechsel erhalten
-offene Befunde und verbrauchte Runden. Die `last_reviewed_*`-Felder nach einem
-abgeschlossenen Review aktualisieren; Prüferidentität im Ticket festhalten.
+Lokal: Vor einer Übergabe laufen die Pflichtprüfungen aus
+[AGENTS.md](../../AGENTS.md#bauen-und-prüfen) samt Doku-Abgleich; die
+Ergebnisse stehen im Ticket. Browsertests laufen sichtbar. Die
+Lessons-Linkeinstiege für die Autorenschaft sind
+[Claude](CLAUDE-LESSONS.md) und [Codex](CODEX-LESSONS.md).
 
 ## Abschluss und Mailbox
 
-Technische Freigabe, menschliche Abschlussentscheidung und offene Nacharbeit
-auseinanderhalten. Vor Abschluss das ganze Ticket auf Widersprüche prüfen.
-Erst nach den erforderlichen Prüfungen und der menschlichen Bestätigung
-Ticket samt Begleitdateien nach `40-done/` verschieben. Eine nötige fehlende
-Abnahme bleibt offen; keine Human-Antworten ergänzen.
+Paket: Abschnitte „Umsetzung, Review und Abschluss“ und „Mailbox und
+Erfahrungen“.
 
-Verarbeitete Nachrichten entfernen; Befunde bleiben im Ticket. Es gibt keine
-Mailbox-Historie neben Git. Nach dem letzten Auftrag die aktiven Ticket- und
-Prioritätsfelder leeren und `idle` setzen; die letzte Reviewreferenz erhalten.
-Neue Arbeit braucht eine ausdrückliche Einplanung.
+Lokal: Nach technischer Freigabe und Mikes Abschluss werden die Änderungen
+sofort committet, nach `master` gemergt und gepusht (AGENTS.md, Mike
+2026-09-27). Die Kette T-60 bis T-64 nimmt Mike gesammelt am Ende ab; bis
+dahin kein Abschluss, Merge oder Push dieser Tickets.
 
 ## Belegte Erfahrungen
 
-Die Lessons-Dateien benennen die Autorenschaft untersuchter Arbeit, keine
-festen Rollen. Ein Muster mit zwei konkreten Belegen oder bei einer ausdrücklich
-falschen Vollständigkeitsbehauptung aufnehmen. Eine ausdrücklich vom Nutzer
-beauftragte Einzelfall-Lehre ebenfalls erfassen und als solche kennzeichnen;
-keine weiteren Vorfälle erfinden. Sonstige einzelne Fehler bleiben im Ticket.
+Paket: Abschnitte „Mailbox und Erfahrungen“ und „Inhalt und Anwendung der
+Lessons“.
 
-**Aus jeder Erkenntnis folgt eine Handlung für beide Arbeitsrollen.** Ein neuer
-oder wesentlich ergänzter Eintrag enthält Herkunft und Geltungsbereich,
-Erkennungsregel, eine konkrete Implementer-Regel zur Vorbeugung, eine
-Verifier-Prüfung samt erwartbarem Beleg sowie die ursprünglichen Fundstellen.
-Allgemeine Zuständigkeiten stehen hier, Projektvorgaben in AGENTS.md; Lessons
-verweisen darauf und halten den Anlass fest. Bestehende passende Einträge
-ergänzen. Unklare Autorenschaft offenlassen, nicht aus dem aktuellen Owner ableiten.
+Lokal: Lessons liegen einzeln unter [`lessons/`](lessons/); Zugriff und Pflege
+nach [LESSONS-ACCESS](LESSONS-ACCESS.md). Belegte Fehlermuster pflegt der
+Observer direkt in den Lessons (Mike, 2026-09-10: „Wenn du Fehlermuster
+entdeckst - die gehören in die jeweiligen -Lessons.md-Files“).
 
-- **Implementer:** Vor Beginn die einschlägigen Muster auswählen und ihre
-  Vorbeugung in die Arbeit einbeziehen. Bei Übergabe knapp im Ticket nennen,
-  welche Lessons einschlägig waren und welche Prüfung sie abdeckt; vorhandene
-  Prüfnachweise verlinken. Daraus entsteht kein zusätzlicher pauschaler Testlauf.
-- **Verifier:** Die Sammlung des Autors vor dem Review lesen und die passenden
-  Gegenproben an der übergebenen Fassung prüfen. Eine zitierte Lesson oder ein
-  grüner Gesamtlauf allein beweist ihre Einhaltung nicht. Ergebnis oder Lücke
-  bei den betreffenden Ticketbefunden festhalten.
-- **Observer:** Beide Sammlungen kennen, neue Befunde mit vorhandenen Mustern
-  vergleichen und daraus konkrete Vorbeugungs- und Prüfregeln ableiten. Bei
-  Wiederholung prüfen, ob eine Regel fehlt, unklar ist oder nicht angewendet
-  wurde; genau diese Lücke verbessern und im Chat mit Beleg benennen.
+### Lessons-Einordnung bei neuen Befunden
 
-**Lokale Lessons liegen einzeln unter `lessons/`; gemeinsame Regeln in
-AgentLessons.** [Zugriff, Herkunft und Pflege](LESSONS-ACCESS.md) regeln die
-Lesepflicht einschließlich Verzeichnisinventar, fehlender Sammlung und neuer
-Fassungen. Die früheren Sammeldateien sind nur Linkeinstiege. Der Ticket-Skill
-liefert das Format und die Einrichtung, keine eigene Kopie des Wissens.
-Die übernommene [Verfahrensempfehlung](LESSONS-PROCESS.md) bleibt als solche
-gekennzeichnet. Globale Pflege braucht einen Auftrag; keine automatische
-Synchronisation oder Übernahme fremder Rollen und Betriebsvorgaben.
+Paket: gleichnamiger Abschnitt.
+
+Lokal: Die Einordnung steht im Ticket in der Tabelle „Lessons-Einordnung“ der
+Ticketvorlage.
 
 ## Observer
 
-Der Observer betrachtet den Ticketablauf, widersprüchliche aktuelle Aussagen,
-fehlende Übergaben, Unterschiede zwischen Dokumentation und belegtem Stand
-sowie wiederkehrende Probleme über mehrere Tickets hinweg. Bei Folgetickets
-vergleicht er außerdem Reihenfolge, Abhängigkeiten und gemeinsam betroffene
-Funktionen: Dieselbe Validierung, Datenhaltung oder Anzeige darf nicht in
-mehreren Tickets unabhängig neu entstehen.
+Paket: Abschnitt „Observer“.
 
-**Der Observer beaufsichtigt und koordiniert Coder und Verifier** (Mike,
-2026-09-11). Er darf bei Bedarf beiden Hinweise und konkrete Anweisungen im
-bestehenden Auftrag geben, Rückmeldungen anfordern, die Arbeitsreihenfolge
-innerhalb des vereinbarten Umfangs klären und auf fehlende Fortschrittsmeldungen,
-Übergaben oder Nachweise hinweisen. Dafür braucht er keine erneute Erlaubnis
-für jede Nachricht. Umsetzung bleibt beim Coder, unabhängige Abnahme beim
-Verifier; Mikes Entscheidungen haben Vorrang.
-
-Seine vollständige Kennung steht in `observer` in STATUS. Sie muss von
-`implementer`, `reviewer` und `owner` verschieden sein. Die Standardnamen für
-Arbeitsinstanzen bleiben `codex` und `claude`; zusätzliche Instanzen erhalten
-einen eindeutigen Zusatz. Ein Produktname allein bestimmt keine Rolle.
-
-Der Observer liest unabhängig vom Owner und auch bei `phase: idle`. Vor jedem
-Durchlauf vergleicht er die eigene Kennung exakt mit der aktuellen Zuordnung.
-Fehlt sie, wurde sie geändert oder kollidiert sie mit einer Arbeitsrolle,
-beendet er seinen eigenen Scheduler. Er wechselt nicht selbst in eine andere Rolle.
-
-Er kommuniziert über die vorhandenen Mailboxen in STATUS: INBOX an den Coder,
-OUTBOX an den Verifier. Nachrichten nennen Absender, Empfänger, Ticket/Fassung,
-Beleg und die erwartete Handlung. Bestehende unverarbeitete Nachrichten bleiben
-erhalten; verarbeitete Nachrichten entfernt der Empfänger. Dauerhafte Befunde
-und Entscheidungen darf der Observer im Ticket festhalten. Wesentliche
-Eingriffe und Hinweise berichtet er zusätzlich in seinem eigenen Chat.
-
-Eine Koordinationsnachricht erzeugt keine neue Reviewrunde. Der Observer
-ändert keine Produktdateien, menschlichen Antworten, Rollenzuordnungen,
-Phasen, Prioritätsfelder, Freigaben oder Reviewzähler. Er aktiviert keine
-unbeauftragten Tickets und startet keine zusätzlichen Verifier. Ein fehlender
-oder beendeter Observer blockiert die übrige Arbeit nicht und schafft keine
-neue Abnahmestufe. Konkrete weitergehende Aufträge von Mike bleiben möglich.
-
-**Belegte Fehlermuster pflegt der Observer direkt in den Lessons-Dateien**
-(Mike, 2026-09-10: „Wenn du Fehlermuster entdeckst - die gehören in die
-jeweiligen -Lessons.md-Files“). Die Datei richtet sich nach der belegten
-Autorenschaft der untersuchten Arbeit, nicht nach der Rolle des Entdeckers.
-Bestehende Einträge ergänzen statt doppelte Regeln anzulegen. Es gelten die
-[Belegregeln und Rollenpflichten](#belegte-erfahrungen). Der Auftrag umfasst
-ausdrücklich das Erkennen und Erfassen von Fehlermustern sowie das Aufstellen
-konkreter Regeln für Implementer und Verifier zur Vermeidung weiterer Fehler
-(Mike, 2026-09-10). Diese Regeln bleiben innerhalb des vereinbarten Umfangs;
-sie vergeben keine neue Arbeit und ersetzen kein unabhängiges Review.
-
-Lessons-Pflege und die oben beschriebene Koordination sind laufend erlaubt.
-Weitere Board- oder Produktänderungen brauchen einen entsprechenden Auftrag
-von Mike. Im Chat den neuen oder ergänzten Lessons-Eintrag kurz nennen.
-Ein ausdrücklich engerer Nur-Lese-Auftrag hat Vorrang: dann Hinweise und
-Nachträge ausschließlich im Chat melden, keine Dateien oder Mailboxen ändern.
-
-Der eigene Loop läuft im Abstand von fünf Minuten. Zuerst Zuordnung und
-Änderungen am Board einschließlich `.agents/`, Git-Stand und relevanten
-Dokumentationsverweisen prüfen. Nur betroffene Inhalte vertiefen. Ein
-unveränderter Stand erzeugt keinen neuen vollständigen Review und keine
-wiederholte Meldung. Ein verstrichener Takt allein belegt keinen Stillstand.
-
-Bereits gemeldete Beobachtungen bleiben im eigenen Chatkontext. Bei Compaction
-Identität, letzter beobachteter Stand, offene Hinweise und Timerkennung erhalten.
-Nach einem bewussten Neustart den ersten Befund als neue Ausgangsaufnahme
-kennzeichnen; ohne alten Kontext keine lückenlose Deduplizierung behaupten.
-Die konkrete Aktivierung und das Stoppen stehen in
-[AGENT-ACTIVATION.md](AGENT-ACTIVATION.md#observer-durchlauf).
+Lokal (Mike, 2026-09-11): Der Observer beaufsichtigt und koordiniert Coder
+und Verifier und braucht dafür keine erneute Erlaubnis je Nachricht. Sein
+Loop läuft im Abstand von fünf Minuten. Der Codex-Observer nutzt den
+[lokalen Filecheck](CODEX-IN-CONTEXT-SCHEDULER.md#lokaler-filecheck).
