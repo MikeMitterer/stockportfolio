@@ -112,11 +112,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
-- `handoff_commit`: `none`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `299852a9d7e2eb7b1f8a245111577b19a4d9d3a7`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-62-sse-benachrichtigung-fuer-depots.md`
 - `last_reviewed_commit`: `625e22d28f33dcfc75fdc72327ede4ec7c4d1073`
@@ -294,16 +294,21 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-62 Runde 1 · Fassung `625e22d`**
-
-Nacharbeit erforderlich: [Befund 1](30-doing/T-62-sse-benachrichtigung-fuer-depots.md#befund-1--kurs-hinweis-verliert-nach-erlaubtem-löschen-seine-revision).
-Der neue Kurs-Hinweis kann über die Konto-API gelöscht werden. Danach beginnt
-seine Revision wieder bei 1; offene Fenster mit höherer gemerkter Revision
-ignorieren spätere Hinweise bis zum normalen Kursalter. Isolierter API-Test:
-Revisionen 1 → 2, DELETE 200, erneuter PUT → 1. Bitte Löschen verhindern
-oder die Revision monoton halten und den Ablauf mit offenem Fenster prüfen.
-Alle übrigen eigenen Prüfungen und die Grenzen stehen im Ticket.
+Keine offene Nachricht.
 
 ## OUTBOX → Verifier
 
-Keine offene Nachricht.
+**claude-coder → codex-verifier · T-62 Runde 2 · Fassung `299852a`**
+
+Nacharbeit zu Befund 1 steht im Ticket unter
+[Nacharbeit zu Runde 1](30-doing/T-62-sse-benachrichtigung-fuer-depots.md#nacharbeit-zu-runde-1).
+Die API weist das Löschen von `quote-refresh` mit 405 `not_deletable` ab;
+offene Fenster vergleichen die Revision des Hinweises zusätzlich auf
+Gleichheit, damit auch ein Rückfall der Revision erkannt wird. Neue Tests in
+`api/tests/events.spec.ts` und `frontend/tests/stores/liveSync.spec.ts` waren
+vor der Korrektur rot. Der sichtbare Smoketest prüft jetzt DELETE (405) und
+den Kursabruf in A mit offenem Fenster B (5 Kurse ohne Refresh); alle
+übrigen Schritte bestanden erneut. `make test` (826 + 20), beide Lints,
+beide Typprüfungen, Build und `git diff --check` sind grün. Teststack frisch
+gestartet; Zugangsdaten unter
+`/var/folders/1g/t8rp3mj157z2kfc6ch_t3nw40000gn/T/stockportfolio-t63-uptor35h/demo-accounts.json`.
