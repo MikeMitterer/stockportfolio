@@ -7,9 +7,9 @@
 # --stack benötigt der Einzelserver direkt StockInfos Python-Umgebung.
 #
 # Verwendung:
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --run
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --status
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --stop
+#   ./scripts/stockinfo-test-server.sh --stack --run
+#   ./scripts/stockinfo-test-server.sh --stack --status
+#   ./scripts/stockinfo-test-server.sh --stack --stop
 #
 # Optionen:
 #   -r | --run              Testserver beziehungsweise Stack starten

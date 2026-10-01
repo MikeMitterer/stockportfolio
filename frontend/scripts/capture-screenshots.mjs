@@ -1,7 +1,7 @@
 // Nimmt die Bilder für README, Docker Hub und Unraid gleichbleibend auf.
 //
 // Voraussetzung ist der lokale Teststack mit synthetischen Konten:
-//   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
+//   ./scripts/stockinfo-test-server.sh --stack --run --demo-accounts --stockinfo-root ../StockInfo
 //   npm --prefix frontend run screenshots -- <data_dir>/demo-accounts.json
 //
 // Englische Oberfläche, Theme MangoLila, Bildgröße 1440 × 1000; die
