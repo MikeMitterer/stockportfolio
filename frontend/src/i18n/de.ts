@@ -51,7 +51,7 @@ export const de = {
     createAdmin: 'Admin-Konto anlegen',
     loginTitle: 'Anmelden',
     login: 'Anmelden',
-    investmentNotice: 'StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen, deinen selbst festgelegten Zielen und Toleranzbändern sowie externen Kursdaten. Die Statusanzeigen Below und Above zeigen, dass eine Position von deinen selbst gesetzten Zielen und Grenzwerten abweicht. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Kurse und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. Prüfe Daten, Kosten und Risiken, bevor du handelst.',
+    investmentNotice: 'StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen, deinen selbst festgelegten Zielen und Toleranzbändern sowie externen Kursdaten. Die Statusanzeigen „Unter Ziel“ und „Über Ziel“ zeigen, dass eine Position von deinen selbst gesetzten Zielen und Grenzwerten abweicht. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Kurse und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. Prüfe Daten, Kosten und Risiken, bevor du handelst.',
     investmentConfirm: 'Ich habe den Hinweis gelesen.',
     logout: 'Abmelden',
     accountMenu: 'Konto {username}: Menü öffnen',
@@ -125,9 +125,9 @@ export const de = {
     moneymarket: 'Geldmarkt',
     cash: 'Cash',
   },
-  // Bewusst englische Kürzel, auch im deutschen UI: Deutsche Wörter wären
-  // unterschiedlich lang und ließen die Spalte von Zeile zu Zeile wandern.
-  // Below/Above/OK beschreiben eine Lage, keinen Auftrag (Mike, 2026-10-01).
+  // Die Badges beschreiben eine Lage zum eigenen Ziel, keinen Auftrag
+  // (Mike, 2026-10-01): „Unter Ziel“ / „Über Ziel“ / „OK“. Die Pille hat eine
+  // feste Breite für das längste Etikett, damit die Spalte nicht wandert.
   startup: {
     noApiUrlTitle: 'Keine API-Adresse gesetzt',
     noApiUrlBody:
@@ -182,8 +182,8 @@ export const de = {
   },
 
   suggestion: {
-    buy: 'Below',
-    sell: 'Above',
+    buy: 'Unter Ziel',
+    sell: 'Über Ziel',
     ok: 'OK',
     near: 'Near',
     belowMinTradeMark: 'min',
@@ -378,8 +378,8 @@ export const de = {
     dueSince: 'Seit {days} Tagen fällig.',
     dueIn: 'Noch {days} Tage — nächster Termin {date}.',
     bandsHeading: 'Toleranzbänder',
-    lowerHint: 'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Below.',
-    upperHint: 'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Above.',
+    lowerHint: 'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Unter Ziel.',
+    upperHint: 'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Über Ziel.',
     metricsHeading: 'Liquidität',
     securityBuffer: 'Sicherheitspuffer',
     minTradeSize: 'Mindest-Handelsvolumen',
@@ -653,7 +653,7 @@ export const de = {
     bandsBody:
       'Ein Depot soll eine bestimmte Aufteilung haben. Kurse verschieben sie laufend, aber nicht jede Abweichung ist ein Handlungsbedarf: Wer bei jedem Prozentpunkt umschichtet, zahlt Gebühren und Steuern für eine Genauigkeit, die am nächsten Tag wieder dahin ist.',
     bandsBody2:
-      'Die Bänder ziehen eine Grenze. Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das untere oder obere Band abweicht, springt der Status auf Below oder Above. Relativ heißt: Bei einem Ziel von 10 % und einem unteren Band von 6 % beginnt Below bei 9,4 % — nicht bei 4 %.',
+      'Die Bänder ziehen eine Grenze. Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das untere oder obere Band abweicht, springt der Status auf „Unter Ziel“ oder „Über Ziel“. Relativ heißt: Bei einem Ziel von 10 % und einem unteren Band von 6 % beginnt „Unter Ziel“ bei 9,4 % — nicht bei 4 %.',
     bandsDelta:
       'Die Delta-Spalte zeigt diese Abweichung — relativ zum Ziel, nicht in Prozentpunkten. Der Unterschied ist keine Spitzfindigkeit: Bei einem Ziel von 10 % heißt −10 % nicht „bei null angekommen", sondern ein Zehntel unter dem Zielwert, also 9 %. In Prozentpunkten gerechnet wären −10 dagegen tatsächlich null.',
     bandsDelta2:
@@ -666,11 +666,11 @@ export const de = {
     bandsMinTrade:
       'Dass die Bänder relativ zum Ziel gelten, hat eine Kehrseite. Es löst zwar die Blindheit bei kleinen Positionen — 6 % von 2 % sind 6 % von 2 %, egal wie klein der Anteil ist —, macht sie in Euro aber überempfindlich: Bei einem Depot von 100.000 € meldet sich ein Ziel von 2 % schon bei 120 € Abweichung. Für diesen Betrag lohnt keine Order; die Gebühr frisst den Nutzen.',
     bandsMinTrade2:
-      'Dagegen steht das Mindest-Handelsvolumen in den Einstellungen. Liegt eine Position außerhalb ihres Bandes, ist die fehlende Summe aber kleiner als diese Grenze, bleibt der Status auf „OK" und die Zeile bekommt ein kleines „min". Die Abweichung verschwindet nicht — sie steht weiter in der Delta-Spalte —, nur die Anzeige Below oder Above unterbleibt. Vorgabe ist 0, also aus.',
+      'Dagegen steht das Mindest-Handelsvolumen in den Einstellungen. Liegt eine Position außerhalb ihres Bandes, ist die fehlende Summe aber kleiner als diese Grenze, bleibt der Status auf „OK" und die Zeile bekommt ein kleines „min". Die Abweichung verschwindet nicht — sie steht weiter in der Delta-Spalte —, nur die Anzeige „Unter Ziel“ oder „Über Ziel“ unterbleibt. Vorgabe ist 0, also aus.',
 
     triggerHeading: 'Bänder, Termin — oder beides',
     triggerBody:
-      'Die App kennt drei Auslöser. „Toleranzbänder" ist das oben Beschriebene: Es geschieht etwas, wenn etwas zu tun ist. „Fester Termin" ist das verbreitete Kalender-Rebalancing: einmal im Jahr, unabhängig davon, wie die Anteile stehen — dafür dann jede Abweichung, nicht nur die großen. Am fälligen Termin richtet sich der Status deshalb nach dem Zielwert: Below oder Above erscheint dann schon bei jeder Abweichung, nicht erst außerhalb der Bänder.',
+      'Die App kennt drei Auslöser. „Toleranzbänder" ist das oben Beschriebene: Es geschieht etwas, wenn etwas zu tun ist. „Fester Termin" ist das verbreitete Kalender-Rebalancing: einmal im Jahr, unabhängig davon, wie die Anteile stehen — dafür dann jede Abweichung, nicht nur die großen. Am fälligen Termin richtet sich der Status deshalb nach dem Zielwert: „Unter Ziel“ oder „Über Ziel“ erscheint dann schon bei jeder Abweichung, nicht erst außerhalb der Bänder.',
     triggerBody2:
       'Reines Kalender-Rebalancing hat eine bekannte Schwäche: Bricht der Markt im März ein, verschiebt sich die Aufteilung sofort, der Termin aber liegt im Dezember. Neun Monate lang passiert nichts. Umgekehrt kann ein Jahr so ruhig verlaufen, dass am Termin nur Rundungsreste umzuschichten wären.',
     triggerBody3:
@@ -711,7 +711,7 @@ export const de = {
     baseCurrency:
       'Währung, in der das aktive Depot bewertet wird. Positionen in anderen Währungen rechnet die App mit aktuellen Devisenkursen um. Jedes Depot hat seine eigene Basiswährung.',
     bands:
-      'Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das Band abweicht, zeigt die Position Below oder Above. Kleine Ausschläge bleiben unbeachtet — sie kosten sonst Gebühren für eine Genauigkeit, die nicht hält.',
+      'Erst wenn ein Anteil relativ zu seinem Ziel um mehr als das Band abweicht, zeigt die Position „Unter Ziel“ oder „Über Ziel“. Kleine Ausschläge bleiben unbeachtet — sie kosten sonst Gebühren für eine Genauigkeit, die nicht hält.',
     investmentReserve:
       'Geldmarkt und Cash abzüglich Sicherheitspuffer. Sagt, wie viel bei einem Rückgang höchstens eingesetzt werden könnte — nicht, wie viel eingesetzt werden soll.',
     securityBuffer:

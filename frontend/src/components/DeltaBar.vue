@@ -141,7 +141,10 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
 
   &__value {
     flex-shrink: 0;
-    width: 3.5rem;
+    // Mindestbreite hält die Spalte bündig; dreistellige Werte wie
+    // „+107,4 %“ bekommen mehr Platz, statt das Prozentzeichen umzubrechen.
+    min-width: 3.5rem;
+    white-space: nowrap;
     font-size: var(--font-xs);
     text-align: right;
     color: token(--text-secondary);

@@ -126,9 +126,9 @@ export const en: MessageSchema = {
     moneymarket: 'Money market',
     cash: 'Cash',
   },
-  // Bewusst englische Kürzel, auch im deutschen UI: Deutsche Wörter wären
-  // unterschiedlich lang und ließen die Spalte von Zeile zu Zeile wandern.
-  // Below/Above/OK beschreiben eine Lage, keinen Auftrag (Mike, 2026-10-01).
+  // Die Badges beschreiben eine Lage zum eigenen Ziel, keinen Auftrag
+  // (Mike, 2026-10-01): „Below“ / „Above“ / „OK“, im Deutschen „Unter Ziel“ /
+  // „Über Ziel“. Die Pille hat eine feste Breite für das längste Etikett.
   startup: {
     noApiUrlTitle: 'No API address configured',
     noApiUrlBody:

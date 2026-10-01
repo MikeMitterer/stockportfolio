@@ -486,7 +486,8 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
     // Zentriert ist wieder möglich, seit das Badge eine feste Breite hat.
     // Vorher wanderte es bei wechselnden Beschriftungen von Zeile zu Zeile.
     align: 'center',
-    width: 130,
+    // Pille (6,5 rem) plus das „min“-Zeichen rechts daneben.
+    width: 150,
     render: (row) => {
       if (row.isActive) {
         return h(SuggestionBadge, {

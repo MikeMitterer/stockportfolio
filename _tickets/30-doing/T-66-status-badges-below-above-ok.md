@@ -13,6 +13,12 @@
   Wortwahl ändern.
 - Gesondert eingeplant; T-65 bleibt eine reine Board-Prüfung.
 
+**Nachentscheidung von Mike, 2026-10-01:** Nach Sichtung („Probiere des doch
+mit den Begriffen „Darüber“ + „Darunter“ oder schlag was besseres vor“) hat
+Mike für **Deutsch „Unter Ziel“ / „Über Ziel“** entschieden; **Englisch bleibt
+„Below“ / „Above“**, beide „OK“. Das ersetzt für Deutsch die ursprüngliche
+Vorgabe „in beiden Sprachen genau Below / Above / OK“.
+
 **Einordnung in die Kette:** nach T-65; aktiviert am 2026-10-01 nach dessen
 technischer Freigabe, Branch `t-66-status-badges-below-above-ok` im Worktree
 `/private/tmp/stockportfolio-t66`.
@@ -21,7 +27,7 @@ technischer Freigabe, Branch `t-66-status-badges-below-above-ok` im Worktree
 
 | Frage | Prüfpunkt # | Handgriff | Dein Urteil | Human |
 |---|---|---|---|---|
-| A · Badges | [1](#pruefpunkt-1) | Dashboard in Deutsch und Englisch öffnen | Stehen dort `Below` / `Above` / `OK`? | |
+| A · Badges | [1](#pruefpunkt-1) | Dashboard in Deutsch und Englisch öffnen | Deutsch „Unter Ziel“ / „Über Ziel“ / „OK“, Englisch „Below“ / „Above“ / „OK“, einzeilig? | |
 | B · Erklärungen | [2](#pruefpunkt-2) | Fragezeichen, Methodenseite und Login-Hinweis lesen | Erklären sie die Anzeigen richtig, auch Kalendertermin und Mindesthandel? | |
 
 ## Umfang
@@ -119,6 +125,41 @@ beiden; kein Badge zeigt Buy oder Sell; Methodenseite beider Sprachen erklärt
 Bänder und Kalendertermin. **Grenze:** Im extremen Szenario stand keine
 Position auf „OK“; „OK“ (auch mit „min“) ist im Komponententest belegt, nicht
 im Browserlauf. Der `min`-Tooltip wurde im Browser nicht geöffnet.
+
+## Nacharbeit nach Mikes Sichtung (vor der Übergabe)
+
+1. **Umbruch in der Tabelle** (Mike: „Die Texte Above + Below brechen in der
+   Tabelle falsch um“): Die Pille hatte eine feste Breite von 4,5 rem; Punkt,
+   Pfeil und „Below“ brauchen gemessen 4,7 rem. Jetzt 6,5 rem (gemessen:
+   „↓ Unter Ziel“ 6,0 rem, „↑ Über Ziel“ 5,8 rem) und `white-space: nowrap`.
+   Die Status-Spalte der Positionstabelle ist 150 statt 130 px breit, damit
+   das „min“-Zeichen daneben Platz hat.
+2. **Senkrechter Strich vor dem Pfeil** in den Depotgruppen (Mike): Der Punkt
+   war ein Flex-Element ohne `flex-shrink: 0` und wurde in der zu engen Pille
+   zu einem Strich zusammengedrückt, bei „Above“ verschwand er ganz. Vorher-
+   Bild der alten Fassung bestätigt das. Punkt und Pfeil schrumpfen jetzt
+   nicht mehr.
+3. **Deutsche Etiketten** „Unter Ziel“ / „Über Ziel“ samt aller deutschen
+   Erklärungen (Bandhinweise, Methodenseite, Mindesthandel, Kalendertermin,
+   Hilfen, Login-Hinweis „Die Statusanzeigen „Unter Ziel“ und „Über Ziel“
+   zeigen …“). Englische Texte unverändert mit Below/Above.
+4. **Scout Rule:** In der Delta-Spalte brach „+107,4 %“ zwischen Zahl und
+   Prozentzeichen um (feste Breite 3,5 rem, unabhängig von T-66). Jetzt
+   Mindestbreite und `white-space: nowrap`.
+
+**Test:** `suggestionBadge.spec.ts` prüft `de` auf „Unter Ziel“/„Über Ziel“
+und `en` auf „Below“/„Above“, beide „OK“ (auch mit `min`), kein Buy/Sell.
+Vor der Umstellung rot.
+
+**Sichtbarer Browserlauf nach der Nacharbeit** (Aufbau `:8082`/`:8898` wie
+oben, zwei Fenster 80 px links, 50:50): Dashboard Deutsch 14 Badges
+einzeilig („↑ Über Ziel“, „↓ Unter Ziel“), Englisch 14 („↑ Above“,
+„↓ Below“); alle Punkte rund (Breite = Höhe); kein waagrechter Überlauf;
+Delta-Werte einzeilig bis „+107,4 %“; Rebalancing Deutsch 6 Badges
+einzeilig; mobil 390 px Englisch 6 Badges einzeilig. 10 von 10 bestanden.
+
+**Prüfstand:** `make test` mit 831 Frontend- und 20 API-Tests grün; beide
+Lints und beide Typprüfungen ohne Befund; `git diff --check` ohne Befund.
 
 ## Verify
 

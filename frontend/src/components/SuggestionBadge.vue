@@ -98,8 +98,11 @@ const arrow = computed(() => {
     align-items: center;
     justify-content: center;
     gap: var(--space-1);
-    width: 4.5rem;
+    // Platz für Punkt, Pfeil und das längste Etikett („↓ Unter Ziel“ braucht
+    // gemessen 6 rem); ein Umbruch innerhalb der Pille ist nie gewollt.
+    width: 6.5rem;
     padding: 0.125rem var(--space-2);
+    white-space: nowrap;
     border: 1px solid color-mix(in srgb, rgb(var(--badge-color)) 45%, transparent);
     border-radius: var(--radius-full);
     background-color: color-mix(in srgb, rgb(var(--badge-color)) 14%, transparent);
@@ -113,6 +116,13 @@ const arrow = computed(() => {
       border: 0;
       background: none;
     }
+  }
+
+  // Punkt und Pfeil dürfen nicht schrumpfen: Wird die Pille eng, drückte
+  // Flexbox den Punkt sonst zu einem senkrechten Strich zusammen.
+  &__dot,
+  &__arrow {
+    flex-shrink: 0;
   }
 
   &__dot {
