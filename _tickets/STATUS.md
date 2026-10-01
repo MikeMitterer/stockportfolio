@@ -13,6 +13,8 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 **Aktuelle Arbeit:** [T-74 · requirements-dev.txt](30-doing/T-74-requirements-dev-umbenennen.md)
 auf Branch `t-74-requirements-dev`, im Root ausgecheckt (Mike, 2026-10-01:
 „Erledige es gleich nach t-72“).
+Danach folgt [T-75 · Einzelserver-Hilfe in der Doku](10-backlog/T-75-stockinfo-einzelserver-hilfe-doku.md)
+(Mike, 2026-10-01: „danach gleich t-75“).
 [T-72 · Container als 99:100](40-done/T-72-unraid-uid-gid.md) ist am
 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-72 ist aus meiner Sicht erledigt“). Die Vorlagen-Commits `bb83dfa` (PUID/PGID) und
 `9670339` (Screenshots) warten auf `t-60-stockportfolio-template` auf den
@@ -148,7 +150,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
 - `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-74-requirements-dev-umbenennen.md`
+- `priority_chain`: `T-74-requirements-dev-umbenennen.md`, `T-75-stockinfo-einzelserver-hilfe-doku.md`
 - `priority_ticket`: `T-74-requirements-dev-umbenennen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
