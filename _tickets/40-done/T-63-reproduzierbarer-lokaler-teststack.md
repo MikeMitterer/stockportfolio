@@ -1,5 +1,7 @@
 # T-63 · Lokalen Teststack für StockPortfolio reproduzierbar starten
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Kein offener Rest. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 Für Browserprüfungen werden StockInfo, die StockPortfolio-Konto-API und Vite
 derzeit von Hand verbunden. Dabei wird leicht eine falsche StockInfo-Adresse
 oder Browser-Herkunft verwendet. Ein Test kann dann an der Testumgebung
@@ -1596,3 +1598,9 @@ Inventar über alle `stockportfolio-*` im System-Temp und die Ports 5175,
 und Stoppweg wurde in Runde 12 geprüft und ist seitdem nur an dieser Stelle
 geändert. Mike nimmt T-63 nach seiner Entscheidung erst nach T-61/T-62 ab.
 Seine Abschlussentscheidung sowie Merge und Push von T-60/T-63 stehen aus.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Kein offener Rest.

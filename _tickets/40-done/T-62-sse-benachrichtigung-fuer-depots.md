@@ -1,5 +1,7 @@
 # T-62 · Offene Browser über Depotänderungen benachrichtigen
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Kein offener Rest. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Rollenwechsel am 2026-10-01:** Mike hat `claude-coder` als Coder und Owner,
 `codex-verifier` als Verifier und `codex-observer` als Observer festgelegt.
 Claude übernimmt Codex' unfertigen Stand im Worktree
@@ -493,3 +495,9 @@ der Regel in AGENTS.md. Sichtbarer Lauf in Chrome gegen den Teststack
 
 Der HMR-Nachtest bleibt ein Headless-Nachweis; er betrifft nur den
 Entwicklungsserver.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Kein offener Rest.

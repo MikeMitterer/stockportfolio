@@ -1,5 +1,7 @@
 # T-64 · Hinweis zu Anlageentscheidungen beim Login bestätigen
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Eine rechtliche Prüfung des Wortlauts wird damit nicht behauptet. Ob ein ausdrücklicher Satz „keine Anlageberatung“ dazukommt, ist eine offene Frage an Mike und wird bei Bedarf ein eigenes Ticket. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Auftrag von Mike, 2026-10-01:** Der Login-Dialog bekommt einen Hinweis,
 dass die angezeigten Daten weder Handlungsempfehlung noch Anlageberatung
 sind. Wer die App nutzt, prüft die Daten selbst und verantwortet seine
@@ -292,3 +294,9 @@ Sichtbarer Lauf in Chrome, Fenster 80 px links, 1464 px breit:
 
 Alle Prüfungen bestanden. Die Instanz auf `:8081` und ihre temporären Daten
 werden nach Mikes OK zu den offenen Fenstern beendet und entfernt.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Eine rechtliche Prüfung des Wortlauts wird damit nicht behauptet. Ob ein ausdrücklicher Satz „keine Anlageberatung“ dazukommt, ist eine offene Frage an Mike und wird bei Bedarf ein eigenes Ticket.

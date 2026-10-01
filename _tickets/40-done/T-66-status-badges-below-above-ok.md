@@ -1,5 +1,7 @@
 # T-66 · Status-Badges als Symbole statt „Buy / Sell / OK“ und stimmige Hinweistexte
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Kein offener Rest. Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Auftrag von Mike, 2026-10-01**, über `codex-observer` (INBOX-Nachricht
 „Mikes Nachtrag zu T-64“, geprüfte Fassung `fd9d8f4`; hier vollständig
 übernommen, die Nachricht ist damit verarbeitet):
@@ -409,3 +411,9 @@ Status-Popup-Texte sind Teil der geprüften Korrektur. Der alte Screenshot
 bleibt T-68. Lessons: SP-R-04 (Grenzfall behoben), SP-CX-02
 (Prüfaussagen nachgezogen), SP-R-02/AL-R-01 (eigene und übernommene
 Testtiefe getrennt).
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Kein offener Rest.

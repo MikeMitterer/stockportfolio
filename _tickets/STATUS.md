@@ -15,50 +15,24 @@ Als Nächstes steht [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktue
 an. Offen ist Mikes Antwort, ob vorher ein Hinweis „keine Anlageberatung“ in
 Login, Tabellenhinweis, About und Methodenseite kommt (Vorschlag des Coders
 vom 2026-10-01), damit der Login-Screenshot den endgültigen Text zeigt.
-[T-69 · Dashboard ohne Neuladen](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md)
-ist in Runde 3 (`9d28d56`) technisch freigegeben und lokal nach `master`
-gemergt (`184180d`, kein Push); Mikes Abnahme steht aus.
-[T-67 · Internet-Hinweise](30-doing/T-67-internetbetrieb-hinweise-pruefen.md)
-ist in Runde 1 (`50a6924`) technisch freigegeben und lokal nach `master`
-gemergt (`1b6a49e`, kein Push); Mikes Abnahme steht aus. Der Template-Commit
-`ca7ae2d` wartet auf das StockInfo-T-84-Prüfurteil.
-[T-66 · Status-Badges](30-doing/T-66-status-badges-below-above-ok.md)
-ist in Runde 2 (`c1b6c57`) technisch freigegeben und lokal nach `master`
-gemergt (`fd0b22a`, kein Push); Mikes Abnahme steht aus.
-[T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
-folgt danach. Die Launcher-Anpassung aus T-65 liegt als T-51 im
-AgentLessons-Board (Backlog).
-[T-65 · Board-Konventionen](30-doing/T-65-board-konventionen-abgleichen.md) ist
-in Runde 3 (`7f7ca99`) technisch freigegeben; Mike hat die Launcher-Anpassung
-gewählt, deren Umsetzung und die Abnahme stehen aus.
-[T-64](30-doing/T-64-hinweis-und-bestaetigung-beim-login.md)
-ist in Runde 1 (`fd9d8f4`) technisch freigegeben; Wortlaut und Abnahme liegen
-bei Mike.
+
+**Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
+`40-done/`. Offene Reste stehen im jeweiligen Abschluss: T-65 → AgentLessons
+T-51; T-67 → Template-Commit `ca7ae2d` wartet auf StockInfo T-84; T-70 ohne
+unabhängige technische Prüfung; T-64 ohne rechtliche Prüfung des Wortlauts.
 
 **Sichtbarkeit von Tickets und Source · Mike, 2026-10-01:** Jedes Ticket soll
 vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
 ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
-`master` enthält den technisch freigegebenen Stand bis T-67 (`1b6a49e`). Im
-Hauptverzeichnis ist derzeit `t-69-dashboard-ohne-neuladen` ausgecheckt;
-dort liegen die T-69-Produktübergabe `9d28d56`, die dokumentierten
-Review-Rückgaben sowie die bisherige lokale Konfiguration und Daten.
+Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
+Tickets und ist zu `origin` gepusht; der Root steht auf `master`.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
 Screenshot-Ticket heißt T-68.
-
-**Technisch freigegeben, Abnahme durch Mike am Ende:**
-[T-60 · Konten und eigene API](30-doing/T-60-stockportfolio-server-und-benutzerkonten.md)
-(von Mike abgenommen), [T-63 · lokaler Teststack](30-doing/T-63-reproduzierbarer-lokaler-teststack.md)
-(Runde 13) und [T-61 · private Depotdaten per REST](30-doing/T-61-benutzergebundene-depotdaten-per-rest.md)
-(Runde 6) sowie [T-62 · SSE-Benachrichtigung](30-doing/T-62-sse-benachrichtigung-fuer-depots.md)
-(Runde 2, `299852a`). Mike prüft T-61 und T-63 erst, wenn T-62 fertig ist:
-„T-61 teste ich wenn t-62 auch fertig ist“, „Auch T-63 nehme ich erst ganz am
-Ende ab“. T-62 ist jetzt technisch freigegeben; die Testinstanz steht im
-Ticket. Bis zu Mikes Abnahme bleiben alle vier Tickets in `30-doing/`; Merge
-nach `master` und Push folgen erst danach. StockInfo wurde nicht geändert.
 
 Die Mehradmin-Regel ist in T-61 Konzept Runde 2 entschieden: Jedes Konto hat
 eigene Daten, die Vorschau des alten Browserbestands gehört nur dem
@@ -133,26 +107,14 @@ ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz pr�
 ihre Zuordnung vor jedem Durchlauf.
 
 **Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen und
-in [T-65](30-doing/T-65-board-konventionen-abgleichen.md) Runde 3 technisch
+in [T-65](40-done/T-65-board-konventionen-abgleichen.md) Runde 3 technisch
 freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-69 Runde 3 (`9d28d56`) ist technisch freigegeben und
-lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
-T-67 Runde 1 (`50a6924`) ist technisch
-freigegeben und lokal nach `master` gemergt; der ganze Template-Commit
-`ca7ae2d` benötigt noch das StockInfo-Prüfergebnis.
-T-66 Runde 2 (`c1b6c57`) ist technisch freigegeben und
-lokal nach `master` gemergt; Mikes Sichtung und Ticketabschluss stehen aus.
-Technisch freigegeben sind außerdem T-65 Runde 3 (`7f7ca99`),
-T-64 in Runde 1 (`fd9d8f4`; Wortlaut und Abnahme bei Mike), T-62 in Runde 2
-(`299852a`), T-63 in Runde 13 (`3359aaa`), T-61 in Runde 6 (`094802b`) und
-T-60 mit T-63 Runde 6. Die Prüfgeschichte aller Runden steht in den
-jeweiligen Tickets. Auf Mikes ausdrücklichen Auftrag vom 2026-10-01 sind die
-technisch freigegebenen Stände T-60 bis T-65 lokal nach `master` gemergt.
-T-66 folgt mit `fd0b22a`. Die offenen menschlichen Abnahmen werden dadurch
-nicht behauptet; ein Push ist damit nicht verbunden.
+Kein Ticket aktiv. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
+Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
+Prüfgeschichte steht in den archivierten Tickets.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 

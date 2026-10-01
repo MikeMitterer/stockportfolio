@@ -1,7 +1,7 @@
 # T-60 · Umsetzungsplan
 
 Spec: `docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md`
-Auftrag: `_tickets/30-doing/T-60-stockportfolio-server-und-benutzerkonten.md`
+Auftrag: `_tickets/40-done/T-60-stockportfolio-server-und-benutzerkonten.md`
 
 ## 1. Serverkern und Datenbank
 

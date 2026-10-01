@@ -1,5 +1,7 @@
 # T-69 · Dashboard ohne Neuladen beim Ansichtswechsel
 
+**Abgeschlossen am 2026-10-01** durch Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“ Offener Rest: Der Ablauf über die 60-Minuten-Frist ist nur durch Unit-Tests belegt (Prüfpunkt 2). Die folgenden Abschnitte beschreiben den Stand vor dem Abschluss.
+
 **Warum dieses Ticket:** Wer vom Dashboard zu Rebalancing und wieder zurück
 wechselt, wartet jedes Mal, bis die Tabelle wieder erscheint. Kurse, Depot und
 Einstellungen sind zu diesem Zeitpunkt längst geladen; der Wechsel zwischen
@@ -300,3 +302,9 @@ zum Ansichtswechsel; die Einstellungen zur Schonfrist bleiben für den
 geprüften Ablauf zutreffend. `unraid/README.md` und `docs/` benötigen keine
 Änderung. Die Lessons-Einordnung des einen Ablaufbefunds bleibt beim
 Observer sichtbar; keine neue lokale Lesson durch den Verifier.
+
+## Abschluss · 2026-10-01
+
+Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
+Integration: Abschluss nach `master` gemergt und zu `origin` gepusht.
+Offener Rest: Der Ablauf über die 60-Minuten-Frist ist nur durch Unit-Tests belegt (Prüfpunkt 2).
