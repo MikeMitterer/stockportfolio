@@ -75,7 +75,7 @@ Nutzerentscheidungen bleiben erhalten.
 | Observer koordiniert über Mailboxen | Bereits erfüllt; Observer-Durchlauf prüft bei Wiederaufnahme jetzt zusätzlich eine offene Lessons-Einordnung. |
 | Lessons-Einordnung | Neuer Abschnitt „Lessons-Einordnung bei neuen Befunden“ im Workflow (Kurzfassung der Paketregel); `.agents/TICKET-TEMPLATE.md` aus dem Paket übernommen, sie verweist auf die zentrale Vorlage mit der Einordnungstabelle; Board-README verlinkt beides. |
 | Rollen-Launcher | Geprüft: acht Symlinks auf `~/.local/bin/agent-session.sh`, Prompt ohne pauschales Nur-Lese-/Mailboxverbot. Aktivierung beschrieb noch zwei Einzeiler; Abschnitt „Rollen-Shortcuts im Terminal“ ersetzt ihn. Kennungsabweichung siehe oben. |
-| Stand im Workflow | `Übernahmestand der Board-Konventionen: 2026-09-28-activity-local`, Datum, Verweis auf T-65 und die zwei lokalen Abweichungen (Push-Freigabe, Kennungen). |
+| Stand im Workflow | `Übernahmestand der Board-Konventionen: 2026-09-28-activity-local`, Datum, Verweis auf T-65 und die zwei lokalen Abweichungen (Push-Freigabe, Kennungen). Seit der Nacharbeit zu Runde 1 zusätzlich: die vier gemeinsamen Verträge als kurze Paketeinstiege. |
 | Skill `task-verification-workflow` | Gelesen (`PersonalSkills`, HEAD `1bf670d`): reiner Einstieg ins Paket ohne eigene Regelkopie; keine Änderung nötig. |
 
 **Nebenbei (Scout Rule):** Der Verweis in STATUS auf das nach StockApps
@@ -198,3 +198,49 @@ nicht vorwegnehmen.
 |---|---|---|---|
 | Befund 1 · Vollständige Übernahme zu früh behauptet | Einzelfall | Ein erster belegter Abgleich dieses Boards; keine wiederholte Fehlergruppe | Nacharbeit in T-65 bei `claude-coder`; keine neue Lesson |
 | Befund 2 · Aktuelle Startbeispiele und STATUS widersprechen sich | Vorhandene Lesson angewendet | [SP-CX-02](../.agents/lessons/SP-CX-02-entscheidungen-in-allen-aktuellen-aussagen-nachziehen.md), Stand 2026-09-30: aktuelle Anweisungen gegen wirksamen Zustand halten | Nacharbeit in T-65 bei `claude-coder`; Mikes Kennungsentscheidung bleibt offen |
+
+## Nacharbeit zu Runde 1
+
+`claude-coder`, 2026-10-01.
+
+**Befund 1 · Kurze Paketeinstiege.** Die vier gemeinsamen Verträge sind jetzt
+kurze lokale Einstiege nach `references/board-setup.md`: Paketpfad mit
+XDG-Regel, `VERSION`-Prüfung, Verweis auf die gleichnamige Datei unter
+`templates/board/.agents/`, Meldung bei fehlendem Paket. Jede bisherige
+Überschrift bleibt als Sprungziel und nennt den passenden Paketabschnitt;
+darunter stehen nur lokale Entscheidungen.
+
+| Datei | Zeilen vorher → nachher | Erhaltene lokale Inhalte |
+|---|---|---|
+| `AGENT-WORKFLOW.md` | 259 → 98 | Übernahmestand und Abweichungen; README/STATUS/Ticket lesen, Ticketvorlage, `code-standards`; ACTIVITY lokal mit `.gitignore` (Mike, 2026-09-28), Grenze 50; Statusordner und Worktree-Praxis; Pflichtprüfungen aus AGENTS.md, sichtbare Browsertests, Lessons-Linkeinstiege; sofortige Integration samt Push (Mike, 2026-09-27) und Endabnahme der Kette T-60–T-64; Lessons-Pflege durch den Observer (Mike, 2026-09-10); Observer-Koordination (Mike, 2026-09-11), Fünf-Minuten-Takt, Filecheck |
+| `AGENT-ACTIVATION.md` | 154 → 92 | Startzeilen mit den STATUS-Kennungen; Board-Pfad im Worktree; Abgleich mit der STATUS-Kopie im Hauptverzeichnis; Shortcut-Abweichung samt Zusatzschritt; Lessons-Pflege im Observer-Durchlauf; Wiedereinstieg nach `/clear` |
+| `CODEX-IN-CONTEXT-SCHEDULER.md` | 107 → 48 | Kennung exakt wie STATUS; lokaler Filecheck vollständig; Fünf-Minuten-Takt |
+| `LESSONS-ACCESS.md` | 134 → 57 | Inventarpflicht für `lessons/`, eingefrorene Linkeinstiege, `subject_author`; ID-Präfix `SP-` (bisher `SP-CX-`, `SP-R-`, als Beobachtung, nicht als neue Regel); Abschnitt „Lokale Einordnung · StockPortfolio“ unverändert |
+
+**Gegenprobe, dass nichts verloren geht:** Markante allgemeine Regeln der
+alten Fassungen gegen die Paketverträge gesucht (u. a. Abnahmestufe,
+Nur-Lese, Produktdateien, technische Freigabe, Prüferidentität, zwei Belege,
+Kontextneustart, `CronDelete`, sieben Tage, `yield_control`, 300 Sekunden,
+Compaction, `subject_author`, `core.precomposeUnicode`, `needs_review`). Alle
+stehen im Paket; „Rollenwechsel erhalten offene Befunde“ und „keine
+Mailbox-Historie“ sinngleich („offene Befunde und Runden erhalten“, „keine
+zweite Historie neben Git“).
+
+**Befund 2 · Startbeispiele.** `AGENT-ACTIVATION.md` startet jetzt mit
+`codex-verifier`, `codex-observer` und `claude-coder`, mit Board-Pfad im
+Worktree. Gegen den installierten Launcher geprüft: Dessen Prompt beginnt mit
+„Du bist codex“ beziehungsweise „claude“ und verlangt bei fehlender exakter
+Zuordnung den Abbruch ohne Scheduler. Der dokumentierte Weg (c) beschreibt
+genau das: Nach `codex-verifier` oder `claude-coder` meldet die Instanz den
+Konflikt; danach im selben Chat die Startzeile mit der STATUS-Kennung senden.
+So lief heute der Start dieser Coder-Instanz. Mikes dauerhafte Entscheidung
+(a/b/c) bleibt offen.
+
+**Prüfungen:** Linkprüfung über alle versionierten Markdown-Dateien außerhalb
+von `40-done/` mit Verweisen von oder zu den vier Einstiegen: ohne Befund.
+Keine Produktänderung; `make test` daher nicht erneut, letzter Lauf in Runde 1
+(829 + 20). `git diff --check` ohne Befund.
+
+**Lessons-Einordnung:** Übernommen wie vom Verifier eingeordnet (Befund 1
+Einzelfall, Befund 2 SP-CX-02 angewendet). Keine neue Lesson.
+

@@ -97,12 +97,10 @@ Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observe
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
-**Board-Konventionen:** Die Übernahme von `2026-09-28-activity-local` ist in
-[T-65](30-doing/T-65-board-konventionen-abgleichen.md) noch offen (technische
-Prüfung Runde 1: `changes_requested`). Der lokale Workflow nennt den neuen
-Stand bereits; die noch fehlenden kurzen Paketeinstiege und aktuellen
-Startbeispiele sind als Befunde im Ticket dokumentiert. Lokale Entscheidungen
-und Schreibgrenzen gelten weiter.
+**Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen in
+[T-65](30-doing/T-65-board-konventionen-abgleichen.md); Runde 1 ergab
+`changes_requested`, die Nacharbeit liegt als Runde 2 zur Prüfung. Lokale
+Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md).
 
 ## Maschinenlesbarer Zustand
 
