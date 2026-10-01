@@ -119,7 +119,6 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 Kein Ticket aktiv. T-68 Runde 2 und T-71 Runde 1 sind technisch freigegeben
 und lokal nach `master` gemergt; Mikes Abnahme steht aus.
-`claude-coder` übernimmt die lokale Integration.
 T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
