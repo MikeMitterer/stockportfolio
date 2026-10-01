@@ -116,7 +116,7 @@ setup: ## Symlinks, Python-venv und npm-Abhängigkeiten einrichten
 	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
 	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
 	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
-	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -r requirements.txt
+	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -r requirements-dev.txt
 	@npm ci --prefix frontend --no-audit --no-fund
 	@npm ci --prefix api --no-audit --no-fund
 

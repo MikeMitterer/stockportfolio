@@ -357,7 +357,7 @@ make dev                   # Vue app on :5175 and account API on :8080
 
 `make setup` links existing BashLib, MakeLib and ProjectTools repositories,
 creates StockPortfolio's `.venv` with Python 3.11+, and installs the local
-ProjectTools Python package there from `requirements.txt`. `PYTHON_BOOTSTRAP`
+ProjectTools Python package there from `requirements-dev.txt`. `PYTHON_BOOTSTRAP`
 selects the interpreter if `python3.11` is unavailable. Setup checks the
 version before creating a venv; later runs reuse the venv and install the
 package only when its UI module is missing. `make clean` keeps the venv.
