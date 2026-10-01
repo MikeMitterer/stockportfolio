@@ -10,11 +10,13 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
-Als Nächstes steht [T-68 · Aktuelle Screenshots mit Login](20-ready/T-68-aktuelle-screenshots-mit-login.md)
-an. Offen ist Mikes Antwort, ob vorher ein Hinweis „keine Anlageberatung“ in
-Login, Tabellenhinweis, About und Methodenseite kommt (Vorschlag des Coders
-vom 2026-10-01), damit der Login-Screenshot den endgültigen Text zeigt.
+**Aktuelle Arbeit:** [T-68 · Aktuelle Screenshots mit Login](30-doing/T-68-aktuelle-screenshots-mit-login.md)
+auf Branch `t-68-aktuelle-screenshots`, im Root ausgecheckt (Mike,
+2026-10-01). Auf demselben Branch liegt [T-71 · Keine Standard-Platzhalter](30-doing/T-71-keine-standard-platzhalter.md)
+(Mike, 2026-10-01: „Erstell ein Ticket und ändere es gleich“). Ein Hinweis „keine Anlageberatung“ kommt nicht hinein (Mike,
+2026-10-01). T-68 Runde 2 (`efc290f`) und T-71 Runde 1 (`509881e`) sind
+technisch freigegeben; die lokale Integration durch den Coder und Mikes
+Bildurteil beziehungsweise Abnahme stehen aus.
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-70 passt und ist erledigt - so wie alle anderen Tickets in doing auch.“
 Damit sind T-60 bis T-67, T-69 und T-70 abgeschlossen und liegen unter
@@ -28,7 +30,10 @@ ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
 Seit dem Abschluss vom 2026-10-01 enthält `master` alle abgeschlossenen
-Tickets und ist zu `origin` gepusht; der Root steht auf `master`.
+Tickets und ist zu `origin` gepusht. Im Root ist jetzt der aktive
+`t-68-aktuelle-screenshots`-Branch ausgecheckt; die Bild- und README-Fassung
+`efc290f`, die Platzhalter-Korrektur `509881e` und die Reviews sind dort
+sichtbar.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -112,7 +117,10 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
+Aktiv ist T-68; Runde 2 (`efc290f`) und das gemeinsam übergebene T-71
+(`509881e`, Runde 1) sind durch `codex-verifier` technisch freigegeben.
+`claude-coder` übernimmt die lokale Integration.
+T-60 bis T-67, T-69 und T-70 sind am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht. Die
 Prüfgeschichte steht in den archivierten Tickets.
 ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
@@ -121,16 +129,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
-- `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
+- `phase`: `approved`
+- `ticket`: `T-68-aktuelle-screenshots-mit-login.md`
+- `branch`: `t-68-aktuelle-screenshots`
+- `handoff_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
+- `review_round`: `2`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md`
-- `last_reviewed_commit`: `9d28d56b05db0428beb2f19c96efce097427bd31`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
+- `last_reviewed_commit`: `efc290f4e25c0b5852261f6bd613012a6b55c748`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-68-aktuelle-screenshots-mit-login.md`
 - `priority_ticket`: `T-68-aktuelle-screenshots-mit-login.md`
@@ -306,6 +314,15 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
+
+**codex-verifier → claude-coder · T-68 Runde 2 und T-71 Runde 1 · `approved`, 2026-10-01:**
+T-68 `efc290f` und das enthaltene T-71 `509881e` sind technisch freigegeben.
+Die beiden README-Befunde sind behoben; die Bild-, Skript- und
+Sprachpaket-Gegenproben stehen in [T-68](30-doing/T-68-aktuelle-screenshots-mit-login.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01)
+und [T-71](30-doing/T-71-keine-standard-platzhalter.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
+Bitte nach der Root-Regel lokal nach `master` integrieren und den Root auf
+`master` zurückstellen. Mikes Bildurteil, die Abnahme und die Veröffentlichung
+der Hub-/Unraid-Bilder sind nicht durch diese Freigabe ersetzt.
 
 ## OUTBOX → Verifier
 

@@ -12,11 +12,10 @@ import {
   darkTheme,
   dateDeDE,
   dateEnUS,
-  deDE,
-  enUS,
   type GlobalThemeOverrides,
 } from 'naive-ui'
 import AppStatusBar from '@/components/AppStatusBar.vue'
+import { naiveLocales } from '@/i18n/naiveLocale'
 import AppTopbar from '@/components/AppTopbar.vue'
 import AppProgressBar from '@/components/AppProgressBar.vue'
 import AppApiAlert from '@/components/AppApiAlert.vue'
@@ -118,7 +117,7 @@ const naiveOverrides = ref<GlobalThemeOverrides>({})
  * „Abbrechen" in jeder Rückfrage — kämen sonst deutsch heraus, während die
  * Oberfläche englisch ist.
  */
-const naiveLocale = computed(() => (localeStore.current === 'en' ? enUS : deDE))
+const naiveLocale = computed(() => naiveLocales[localeStore.current])
 const naiveDateLocale = computed(() => (localeStore.current === 'en' ? dateEnUS : dateDeDE))
 
 // Das Theme steht schon vor dem ersten Bildaufbau fest — sonst blitzt kurz

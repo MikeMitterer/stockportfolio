@@ -13,8 +13,9 @@ run yourself.
 ![Dashboard](docs/images/dashboard.png)
 
 _The dashboard: portfolio groups at the top, positions below. Holdings and targets
-are editable in place and through the position dialog. The screenshot shows the
-reusable browser test portfolio with sample quotes, in English._
+are editable in place and through the position dialog. Arrows mark positions
+below (↓) or above (↑) their band. The screenshot shows the built-in sample
+portfolio with test quotes, in English with the MangoLila theme._
 
 ## What it does
 
@@ -31,6 +32,8 @@ Bands are relative to the target: a 10% target with a 6% lower band triggers
 at 9.4%. Lower and upper bands are separate. Scheduled rebalancing uses an
 interval in months and the portfolio's last rebalance date, which you set after
 placing orders yourself.
+
+![Settings → Calculation](docs/images/settings-calculation.png)
 
 Each position shows its delta in units. An optional minimum trade size suppresses
 small trade suggestions without hiding the deviation. The limit can be a fixed
@@ -147,6 +150,8 @@ shows date, price and change for that day. The larger chart and its history
 request start when the position is opened; the small row sparkline loads on its
 own.
 
+![Opened position with price history](docs/images/drilldown.png)
+
 Daily closing prices change once a day, so they are cached in IndexedDB and
 fetched at most once per day per security.
 
@@ -231,6 +236,11 @@ resulting allocations and bands. _Cover from_ offers liquid positions when a
 plan is underfunded. **Nothing is booked.** Place orders at your bank, then
 update holdings on the dashboard.
 
+![Rebalancing simulation](docs/images/rebalancing.png)
+
+_Two suggested trades taken over from the Delta column: the plan shows the
+amounts, the resulting shares and whether the plan adds up._
+
 The bar and the separate _Rel. %_ column show the relative deviation from the target after
 the planned trade, using the same format as the dashboard. The resulting
 portfolio share appears below the bar; the _Off target_ column shows the difference
@@ -265,6 +275,13 @@ selection and recorded daily values in SQLite under `/data`. Each account has
 its own data, including additional admin accounts. An admin can manage accounts
 but cannot open another account's portfolios. StockInfo only delivers prices
 and master data and learns nothing about holdings.
+
+![Login with notice and confirmation](docs/images/login.png)
+
+_Each login asks you to confirm a short notice on what the calculated values
+mean. Admins manage accounts under **Users**:_
+
+![User management](docs/images/user-admin.png)
 
 That has consequences worth knowing:
 
@@ -425,6 +442,19 @@ reaches the second window, reconnection after an interrupted stream,
 the 15-second keep-alive through the Vite proxy, conflict handling and
 logout. A forced password change of a new test account is handled
 automatically. The windows stay open until you press Enter.
+
+The images under `docs/images/` come from a script, so a later release can
+take them again in the same way. With the same test stack running:
+
+```bash
+npm --prefix frontend run screenshots -- <temporary-dir>/demo-accounts.json
+```
+
+It signs in as the synthetic admin, loads the sample portfolio and saves
+`login.png`, `dashboard.png`, `drilldown.png`, `rebalancing.png`,
+`settings-calculation.png` and `user-admin.png` in English with the MangoLila
+theme. Full pages are 1440 × 1000; `drilldown.png` is a cut-out of the opened
+position. No real portfolio data is involved.
 
 ## Commands
 

@@ -16,8 +16,9 @@ It does not connect to a brokerage or place orders.
 ![StockPortfolio dashboard](../docs/images/dashboard.png)
 
 _The dashboard: portfolio groups at the top, positions below. Holdings and targets
-are editable in place and through the position dialog. The screenshot shows the
-reusable browser test portfolio with sample quotes, in English._
+are editable in place and through the position dialog. Arrows mark positions
+below (↓) or above (↑) their band. The screenshot shows the built-in sample
+portfolio with test quotes, in English with the MangoLila theme._
 
 ## Features
 
@@ -51,6 +52,8 @@ public self-registration. New passwords need 12 to 1024 characters, including
 an uppercase letter, a number and a special character.
 Each login requires ticking that you have read a short notice on what the
 calculated buy and sell values mean; the tick is not stored.
+
+![StockPortfolio login](../docs/images/login.png)
 
 The port mapping above accepts connections on the Docker host's network
 interfaces. The web interface has a login, but that login does not protect
@@ -139,6 +142,8 @@ connection errors, also check **Status** from the bottom status bar.
 values live in SQLite under `/data`.** Back up the Docker volume. Each account,
 including each admin, sees only its own portfolios. An admin can manage
 accounts without access to other accounts' portfolios.
+
+![StockPortfolio user management](../docs/images/user-admin.png)
 
 Use **Settings → Backup** to download a JSON backup or restore one. Downloads
 are saved by your browser, normally in its Downloads folder. A second browser

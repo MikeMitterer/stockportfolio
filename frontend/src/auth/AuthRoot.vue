@@ -3,9 +3,10 @@ import { computed, onMounted, onUnmounted, provide, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { NButton, NCheckbox, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, deDE, enUS, type GlobalThemeOverrides } from 'naive-ui'
+import { NButton, NCheckbox, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, type GlobalThemeOverrides } from 'naive-ui'
 import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
 import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
+import { naiveLocales } from '@/i18n/naiveLocale'
 import { readStoredTheme } from '@/stores/theme'
 import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
 import { clearMarketCaches } from '@/db/cache'
@@ -221,7 +222,7 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
 </script>
 
 <template>
-  <NConfigProvider :locale="locale === 'de' ? deDE : enUS" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
+  <NConfigProvider :locale="locale === 'de' ? naiveLocales.de : naiveLocales.en" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
     <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
     <main v-else-if="view !== 'loading' || showStartupStatus" class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
       <section class="auth-panel" :class="{ 'auth-panel--wide': view === 'login' }">
