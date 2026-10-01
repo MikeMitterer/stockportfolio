@@ -11,11 +11,9 @@ richten“; Entscheidung „B - ganz klar und fange die Schwachstellen ab“.
 `/mnt/user/appdata/stockportfolio` → bisher Absturz beim Start. Danach: Der
 Container richtet `/data` für 99:100 ein und startet.
 
-**Stand:** Runde 2 (`7aea00f`) wurde mit einem neuen, reproduzierten
-Randfall an `claude-coder` zurückgegeben. Die Datenbankprüfung aus Runde 1
-funktioniert; die Prüfung aller übrigen Dateien verhindert aber einen Start,
-obwohl die App ihre Daten schreiben könnte. Der Rauchtest besteht seine
-24 Prüfungen und deckt diesen Fall noch nicht ab.
+**Stand:** Runde 1 und 2 kamen mit Befunden zur Schreibprüfung zurück. Runde 3
+(`f7de26c`) prüft genau die Pfade, die SQLite braucht, und liegt bei
+`codex-verifier`. Der Rauchtest besteht 27 von 27 Prüfungen.
 
 Für dich steht jetzt nichts an.
 
@@ -229,3 +227,41 @@ auf App-Pfade begrenzt, entfällt diese breite Zusage.
 unterscheiden den alten SQLite-Fehler, aber keinen unnötig verweigerten
 Start bei schreibbaren App-Daten. Der konkrete Randfall bleibt im Ticket;
 die Einordnung eines wiederkehrenden Musters liegt beim Observer.
+
+## Coder-Übergabe · Runde 3 · claude-coder · 2026-10-01
+
+**Prüfstand:** `f7de26c4d4471c23fc9aa408e73d99105b68f15f` gegen `1556aea`, Branch `t-72-unraid-uid-gid`.
+Templates unverändert `bb83dfa`.
+
+**Befund 2 bestätigt:** Die Prüfung aus Runde 2 verlangte Rechte für jede
+Datei unter `/data` und wies so den Start wegen einer fremden Datei ab. Der
+Quellhinweis zur `find`-Formel stimmt ebenfalls (`-print -quit` nur am
+rechten Zweig).
+
+**Korrektur:** `find` entfällt. Der Zielbenutzer prüft nur noch, was die App
+braucht: Anlegen einer Probedatei in `/data` sowie Lese- und Schreibrecht für
+vorhandene `stockportfolio.sqlite`, `-wal`, `-shm` und `-journal`. Der
+Dateiname folgt `api/src/index.ts` (`resolve(dataDirectory,
+'stockportfolio.sqlite')`). Fremde Dateien und Ordner in `/data` spielen
+keine Rolle.
+
+**Rauchtest:** neu eine root-eigene `-wal`-Datei (klare Meldung) und der
+Gegenfall aus dem Review: `/data` 0777 mit `old-note.txt` (`0:0`, 0400) und
+Ordner `locked-dir` (0555), ohne `CHOWN` → Start, Setup 201, Prozess 99:100.
+**27 von 27** bestanden, gezählt vom Skript; Image aus `f7de26c`
+(`make build`, linux/amd64 emuliert). Danach 0 Container mit Lauf-Label,
+Volumes vorher und nachher 8. Gegenprobe zur alten Fassung ist die
+Reproduktion des Verifiers auf `7aea00f`.
+
+**Belege:** `make test` 852 Frontend- und 20 API-Tests grün; Lint und
+Typecheck ohne Befund; Docker-Hub-Vorschau 12.245 Bytes.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` wortgleich: Start, wenn
+der Benutzer in `/data` anlegen und eine vorhandene Datenbank samt `-wal`,
+`-shm`, `-journal` lesen und schreiben kann; andere Dateien zählen nicht.
+`unraid/README.md` und Vorlage ohne Aussage dazu; unverändert.
+
+**Lessons:** SI-P-04/08: Diesmal gibt es zu jedem Negativtest einen
+positiven Gegenfall, der einen zu strengen Abbruch erkennt. Ein zweiter
+Befund in derselben Prüfung desselben Tickets; die Einordnung als Muster
+liegt beim Observer.

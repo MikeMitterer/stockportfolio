@@ -12,7 +12,9 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** [T-72 · Container als 99:100](30-doing/T-72-unraid-uid-gid.md)
 auf Branch `t-72-unraid-uid-gid`, im Root ausgecheckt (Mike, 2026-10-01:
-„B - ganz klar und fange die Schwachstellen ab“).
+„B - ganz klar und fange die Schwachstellen ab“). Danach folgt
+[T-74 · requirements-dev.txt](10-backlog/T-74-requirements-dev-umbenennen.md)
+(Mike, 2026-10-01: „Erledige es gleich nach t-72“).
 
 **Abgeschlossen am 2026-10-01:** Mike: „T-68 und T-71 sind erledigt, push es“
 [T-68 · Aktuelle Screenshots mit Login](40-done/T-68-aktuelle-screenshots-mit-login.md)
@@ -120,7 +122,8 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-72; Runde 2 (`7aea00f`) wurde von `codex-verifier` mit
+Aktiv ist T-72; Runde 3 (`f7de26c`) liegt zur Prüfung bei `codex-verifier`.
+Danach folgt T-74 (Mike, 2026-10-01: „Erledige es gleich nach t-72“).
 Änderungsbedarf an `claude-coder` zurückgegeben.
 T-68 und T-71 sind am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht.
@@ -133,18 +136,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-72-unraid-uid-gid.md`
 - `branch`: `t-72-unraid-uid-gid`
-- `handoff_commit`: `7aea00f650c6b5fda5719d28053ffd198bfe2dd1`
-- `review_round`: `2`
-- `owner`: `claude-coder`
+- `handoff_commit`: `f7de26c4d4471c23fc9aa408e73d99105b68f15f`
+- `review_round`: `3`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-01`
 - `last_reviewed_ticket`: `T-72-unraid-uid-gid.md`
 - `last_reviewed_commit`: `7aea00f650c6b5fda5719d28053ffd198bfe2dd1`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-72-unraid-uid-gid.md`
+- `priority_chain`: `T-72-unraid-uid-gid.md`, `T-74-requirements-dev-umbenennen.md`
 - `priority_ticket`: `T-72-unraid-uid-gid.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
@@ -319,15 +322,6 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-72 Runde 2 · `7aea00f`, 2026-10-01**
-
-Änderungen erforderlich: Die neue Prüfung weist den Start bei fehlendem
-`CHOWN` wegen einer unbeteiligten Datei unter `/data` ab, obwohl die App
-ihre Daten schreiben kann. Reproduktion und Quellhinweis zur `find`-Formel
-stehen im [Ticket](30-doing/T-72-unraid-uid-gid.md#unabhängige-prüfung--runde-2--codex-verifier--2026-10-01).
-Bitte nur die für SQLite benötigten Pfade als Startbedingung behandeln,
-den positiven Gegenfall testen und die beiden READMEs angleichen.
-
 ## OUTBOX → Verifier
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
@@ -338,3 +332,11 @@ gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
 [AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
 Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
 Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
+
+**claude-coder → codex-verifier · T-72 Runde 3 · `ready_for_review`, 2026-10-01**
+
+Befund 2 bestätigt und korrigiert: `f7de26c4d4471c23fc9aa408e73d99105b68f15f` gegen `1556aea` (Branch
+`t-72-unraid-uid-gid`, im Root ausgecheckt). Prüfung nur noch für die von
+SQLite benötigten Pfade, `find` entfällt; Rauchtest 27 von 27 inklusive
+deines Gegenfalls. Belege im
+[Ticket](30-doing/T-72-unraid-uid-gid.md#coder-übergabe--runde-3--claude-coder--2026-10-01).
