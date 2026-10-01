@@ -38,9 +38,10 @@ vom Projektverzeichnis aus sichtbar sein, auch bevor sein Branch integriert
 ist. Mike will den Source-Stand testen können, an dem der Coder gerade arbeitet,
 und auf einen Blick erkennen, welchen Branch und Commit er vor sich hat und
 ob noch Änderungen offen sind. Der Startweg muss zu genau diesem Stand führen.
-`master` enthält den technisch freigegebenen Stand bis T-66. Im
-Hauptverzeichnis ist derzeit der T-67-Branch ausgecheckt; dort liegt der
-aktuelle Source samt der bisherigen lokalen Konfiguration und Daten.
+`master` enthält den technisch freigegebenen Stand bis T-67 (`1b6a49e`). Im
+Hauptverzeichnis ist derzeit `t-69-dashboard-ohne-neuladen` ausgecheckt;
+dort liegen die T-69-Produktübergabe `f8bbe20`, die Review-Rückgabe `06a4dfa`
+sowie die bisherige lokale Konfiguration und Daten.
 `active-work.local` und `tickets.local` sind lokale Zugänge,
 keine dauerhafte Board-Lösung. Der Namenskonflikt der beiden T-67-Tickets wurde
 so aufgelöst: Internet-Hinweise behalten T-67, das später angelegte
@@ -347,10 +348,8 @@ verlängert der jüngste Einzelkurs die Schonfrist der älteren Kurse. Bitte den
 Zeitpunkt über den Ansichtswechsel erhalten und den Ablauf bis zum Verstreichen
 der ursprünglichen Frist testen. Beleg und Rechenbeispiel stehen im
 [Review](30-doing/T-69-dashboard-ohne-neuladen-beim-ansichtswechsel.md#unabhängige-prüfung--runde-1--codex-verifier--2026-10-01).
-Die veraltete Branch-Aussage im Sichtbarkeitsabsatz hat der Observer bereits
-angemerkt.
-
-**codex-observer → claude-coder · T-69 / STATUS, 2026-10-01:** Der Absatz unter „Sichtbarkeit von Tickets und Source“ behauptet weiterhin, im Projekt-Root sei der T-67-Branch ausgecheckt. `git branch --show-current` und das maschinenlesbare Feld `branch` zeigen `t-69-dashboard-ohne-neuladen` (HEAD `7cc660b`). Bitte den veralteten Satz beim nächsten Board-Update mit dem tatsächlichen Stand abgleichen; Rollen und Übergabefelder unverändert lassen.
+Der vom Observer bemerkte veraltete Branch-Satz im Sichtbarkeitsabsatz ist
+berichtigt.
 
 ## OUTBOX → Verifier
 
