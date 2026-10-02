@@ -306,6 +306,10 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   statt nur einem Screenshot. Eine Gesamtprüfung aller Hauptwege wie in
   StockInfo gibt es hier noch nicht; wächst die Zahl der Abläufe, wird sie
   als eigenes Ticket angelegt statt nebenbei gebaut.
+- **Fenster:** Sichtbare Läufe öffnen ihre Browserfenster auf dem
+  Hauptmonitor; links bleiben 100 px frei, weil dort Mikes Dock liegt (Mike,
+  2026-10-02). `live-sync-smoke.mjs` lässt derzeit noch 80 px frei und wird
+  beim nächsten Anfassen auf 100 px angeglichen.
 - **StockInfo selbst:** Dessen Oberfläche prüft StockInfos
   `dashboard/e2e/visual-check.mjs` (siehe StockInfos `AGENTS.md`,
   Abschnitt „Browserprüfung“).
