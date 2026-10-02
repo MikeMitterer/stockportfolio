@@ -10,7 +10,7 @@ dafür, dass StockPortfolio nach beiden StockInfo-Tickets richtig anzeigt.
   Die Fondsgröße kam in Millionen, war aber als absoluter Betrag
   deklariert (`unit: absolute`). Neu: überall `unit: millions`, Währung
   aus der Quelle (justETF: EUR) oder aus der manuellen Eingabe.
-- [StockInfo T-89](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/20-ready/T-89-volatilitaet-fuer-alle-typen.md):
+- [StockInfo T-89](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/30-doing/T-89-volatilitaet-fuer-alle-typen.md):
   StockInfo berechnet die Volatilität für alle Instrumente, deklariert sie
   in `GET /fields` aber nur für `etf` und `etc` (über justETF). Neu:
   StockInfo deklariert `volatility` selbst für alle Typen mit Kursen.
