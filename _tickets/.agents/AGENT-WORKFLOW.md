@@ -62,6 +62,16 @@ Ergebnisse stehen im Ticket. Browsertests laufen sichtbar. Die
 Lessons-Linkeinstiege für die Autorenschaft sind
 [Claude](CLAUDE-LESSONS.md) und [Codex](CODEX-LESSONS.md).
 
+Lokal, **Pflicht bei neuen oder geänderten Prüfskripten und Testwächtern**
+(Mike, 2026-10-02; gilt, bis das Paket es übernimmt:
+[AgentLessons T-54](../../../../../DevKI/Production/AgentLessons/_tickets/10-backlog/T-54-agenten-workflow-vereinfachen-und-durchsetzen.md)):
+Jeder Fehlerfall ist vor der Übergabe einmal absichtlich rot gelaufen und
+endete mit Exit-Code ≠ 0; das Ticket nennt je Fall den eingebauten Fehler
+und den beobachteten Exit-Code. Ausnahmen gelten nur für einen geprüften
+Wert, nie für einen Feld- oder Funktionsnamen. Fehlt der Beleg, ist es keine
+Übergabe; der Verifier gibt formal zurück. Herkunft: StockInfo
+[SI-P-16](../../../StockInfo/_tickets/.agents/lessons/SI-P-16-ein-pruefskript-wird-nur-im-erfolgsfall-gelaufen.md).
+
 Lokal, **Review-Verlauf neueste Runde zuerst** (Mike, 2026-10-02; gilt, bis
 das Paket es übernimmt:
 [AgentLessons T-53](../../../../../DevKI/Production/AgentLessons/_tickets/20-ready/T-53-review-verlauf-neueste-runde-zuerst.md)).
