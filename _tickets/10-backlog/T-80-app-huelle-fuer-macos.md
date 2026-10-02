@@ -43,6 +43,21 @@ prüfen, Logs, sauber beenden): zuerst in StockInfo T-96 bauen und hier erst
 übernehmen, wenn es sich bewährt hat. Keine gemeinsame Bibliothek auf
 Vorrat.
 
+### Windows später (Ausblick, nicht Teil dieses Tickets)
+
+`deno desktop` baut auch für Windows; ein normales Fenster funktioniert
+dort ebenso, `Deno.dock` steuert die Taskleiste. StockPortfolio selbst ist
+TypeScript: Läuft die Hono-Konto-API direkt unter Deno, braucht Windows
+keine weitere Laufzeit. Sonst ist das vorhandene Docker-Image die
+Alternative.
+
+Die eigentliche Windows-Hürde liegt bei StockInfo (Python). Dessen Abwägung
+steht in StockInfo T-96, Abschnitt „Windows später“: bevorzugt ein
+App-Ordner mit `uv`, Docker als Alternative, PyInstaller verworfen. Für
+StockPortfolio zählt nur, dass der Health-Check gegen die konfigurierte
+StockInfo-Adresse unabhängig davon funktioniert, wie StockInfo gestartet
+wurde. Datenort unter Windows: `%LOCALAPPDATA%\StockPortfolio\`.
+
 ### Offene Fragen vor der Aktivierung
 
 - Ports im App-Betrieb (bisher Vite 5175, Konto-API 8080 im Entwicklerbetrieb).
