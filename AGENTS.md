@@ -19,6 +19,7 @@ Fehler im falschen Repository.
 - [Bezeichner sind englisch. Ausnahmslos.](#bezeichner-sind-englisch-ausnahmslos)
 - [Wächter-Tests prüfen das Muster, nicht die Fundstelle](#wächter-tests-prüfen-das-muster-nicht-die-fundstelle)
 - [Bauen und prüfen](#bauen-und-prüfen)
+- [Browserprüfung](#browserprüfung)
 - [Oberfläche und Theme kommen aus ux-foundation](#oberfläche-und-theme-kommen-aus-ux-foundation)
 - [Tatsächlicher Entwicklungsstand](#tatsächlicher-entwicklungsstand)
 - [Dokumentation gehört zur Änderung](#dokumentation-gehört-zur-änderung)
@@ -285,6 +286,29 @@ StockInfo und muss direkt mit StockInfos `.venv/bin/python` aufgerufen werden,
 weil es dessen `app` im selben Prozess importiert. StockInfos `make setup`
 installiert ProjectTools in dessen `.venv`; die Hilfe nutzt dort deshalb
 ebenfalls das gemeinsame CLI-Theme. Details stehen in `README.md` (**Setup**).
+
+[↑ Übersicht](#übersicht)
+
+## Browserprüfung
+
+**Browserbelege kommen aus den Werkzeugen im Repo, nicht aus eigenen
+Skripten je Ticket** (Mike, 2026-10-02). Keine Kopie außerhalb des Repos
+und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
+
+- **Umgebung:** der Teststack aus [Bauen und prüfen](#bauen-und-prüfen)
+  (`scripts/stockinfo-test-server.py --stack`), nie die Arbeitsdaten.
+- **Vorhandene Abläufe:** Playwright-Skripte unter `frontend/scripts/`,
+  derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern) und
+  `capture-screenshots.mjs` (Bilder für die Anleitungen). Der Aufruf steht
+  jeweils im Kopfkommentar.
+- **Neuer sichtbarer Ablauf:** Er wird als wiederverwendbarer Schritt in
+  einem Skript unter `frontend/scripts/` ergänzt, mit geprüften Inhalten
+  statt nur einem Screenshot. Eine Gesamtprüfung aller Hauptwege wie in
+  StockInfo gibt es hier noch nicht; wächst die Zahl der Abläufe, wird sie
+  als eigenes Ticket angelegt statt nebenbei gebaut.
+- **StockInfo selbst:** Dessen Oberfläche prüft StockInfos
+  `dashboard/e2e/visual-check.mjs` (siehe StockInfos `AGENTS.md`,
+  Abschnitt „Browserprüfung“).
 
 [↑ Übersicht](#übersicht)
 
