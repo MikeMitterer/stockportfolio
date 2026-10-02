@@ -62,6 +62,23 @@ Ergebnisse stehen im Ticket. Browsertests laufen sichtbar. Die
 Lessons-Linkeinstiege für die Autorenschaft sind
 [Claude](CLAUDE-LESSONS.md) und [Codex](CODEX-LESSONS.md).
 
+Lokal, **Review-Verlauf neueste Runde zuerst** (Mike, 2026-10-02; gilt, bis
+das Paket es übernimmt:
+[AgentLessons T-53](../../../../../DevKI/Production/AgentLessons/_tickets/20-ready/T-53-review-verlauf-neueste-runde-zuerst.md)).
+Wer ein Ticket öffnet, liest zuerst die aktuelle Rückmeldung:
+
+1. Oben bleibt der feste Kopf mit Warum, Beispiel, Stand, Arbeitsbereich und
+   Akzeptanzkriterien. Der „Stand“ fasst den aktuellen Zustand zusammen.
+2. Darunter steht `## Review-Verlauf (neueste Runde zuerst)`.
+3. Jede neue Übergabe, Nacharbeit oder Verifier-Prüfung kommt **direkt unter
+   diese Überschrift**, nie ans Dateiende; ihre Unterabschnitte bleiben in
+   ihrer Runde.
+
+Beispiel: Verifier-Prüfung · Runde 3 steht oben, Übergabe Runde 1 unten.
+Überschriften bleiben unverändert, damit Links weiter gelten. Aktive Tickets
+werden beim nächsten Anfassen umgestellt, Tickets in `40-done/` bleiben, wie
+sie sind. Das Umstellen ändert weder Phase noch Owner noch Freigabestand.
+
 ## Abschluss und Mailbox
 
 Paket: Abschnitte „Umsetzung, Review und Abschluss“ und „Mailbox und
