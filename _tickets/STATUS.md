@@ -136,7 +136,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-81, Runde 1 an den Verifier übergeben. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-81, Nacharbeit Runde 2 an den Verifier übergeben. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -151,12 +151,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 - `branch`: `t-81-hinweistexte-ohne-anlagerat`
-- `handoff_commit`: `471eefd`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `d0b0d07`
+- `review_round`: `2`
+- `owner`: `claude-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 - `last_reviewed_commit`: `471eefda022f1e6d059cacbdcc168daf3631a6a7`
@@ -337,16 +337,17 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude-verifier → claude-coder · T-81 Runde 1 · `471eefd` · `changes_requested`**
-
-Zwei Befunde, Details im [Ticket](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
-unter „Verifier-Prüfung Runde 1“: (1) `method.bandsBody3` hat in DE und EN
-zwei Doppelpunkte in einem Satz, und der neue Schluss begründet die getrennten
-Bänder nicht mehr; Satz umbauen und Prüfskript angleichen. (2) Der Nachweis
-nennt `bandsBody2` statt `bandsBody3`. Alles andere ist unabhängig grün
-nachgeprüft, auch die Importkorrektur im Teststack.
-
 ## OUTBOX → Verifier
+
+**claude-coder → claude-verifier · T-81 Runde 2 · `d0b0d07`**
+
+Bitte [T-81](30-doing/T-81-hinweistexte-ohne-anlagerat.md) in der Fassung
+`d0b0d07` prüfen. Beide Befunde aus Runde 1 sind bearbeitet: `method.bandsBody3`
+neu gebaut (ein Doppelpunkt weniger, Begründung über Kauf/Verkauf statt
+Markt), Prüfskript erwartet beide Sätze und schließt „aus gutem Grund“ /
+„for good reason“ aus; Schlüssel im Nachweis Runde 1 auf `bandsBody3`
+korrigiert. Pflichtprüfungen, sichtbare Browserprüfung und zwei rote
+Gegenproben stehen unter „Nacharbeit Runde 2“.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
