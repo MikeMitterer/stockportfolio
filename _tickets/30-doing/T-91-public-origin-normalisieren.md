@@ -1,4 +1,4 @@
-# T-91 · Public Origin normalisieren und prüfen
+# T-91 · Public Origin normalisieren und Hinweis zum Einrichtungscode
 
 **Warum dieses Ticket:** Die Konto-API vergleicht den `Origin`-Header des
 Browsers zeichengenau mit `STOCKPORTFOLIO_PUBLIC_ORIGIN`. Ein Schrägstrich am
@@ -22,6 +22,15 @@ Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
 hatte einen Schrägstrich am Ende - das muss unbeding abgefangen werden“.
 Direkt als aktiver Auftrag angelegt.
 
+**Erweiterung (Mike, 2026-10-03):** „Das Fragezeichen beim Einrichtungsdialog
+wo denn der Setup-Code herkommt ist zu spezifisch auf die Lokale
+Entwicklungsumgebung ausgerichtet. […] Bei Unraid ist das der Log-Ansicht des
+Docker-Containers“. Vorschlag mit Liste vorgelegt; Mike: „Liste ist gut,
+Entwicklungshinweis raus – bau es ein“. `UxInfoHint` kann nur Fließtext;
+Mike hat entschieden: „Jetzt Fließtext, Liste später“ — dafür
+ux-foundation [T-21](/Volumes/DevLocal/DevWeb/Production/ux-foundation/_tickets/T-21-infohint-mit-gegliedertem-inhalt.md)
+(lokaler Commit `a6084c5`, nicht gepusht).
+
 ## Umsetzung und technische Nachweise
 
 | Repo | Time-box | Scope | GH-Issue |
@@ -39,6 +48,11 @@ Direkt als aktiver Auftrag angelegt.
   Fehler nur die Meldung auf stderr, Exit-Code 1, kein Setup-Code und keine
   SQLite-Datei. Bei gültigem Wert loggt der Start `Public origin: <wert>`.
 - Die Origin-Prüfung in `api/src/routers/api.ts` bleibt unverändert.
+- `frontend/src/i18n/de.ts`, `en.ts` — `auth.setupCodeHelp` nennt die
+  Log-Zeile, den Weg unter Unraid (Reiter „Docker“ → Symbol → „Logs“) und
+  `docker logs`, dazu den neuen Code nach jedem Neustart. `make dev-up` und
+  `overmind connect api` sind entfernt; sie stehen in `README.md`
+  (Abschnitt zur lokalen Konto-API).
 
 ### Verify
 
@@ -51,6 +65,7 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 | 3 | lokal | <a id="pruefpunkt-3"></a>`node dist/index.js` mit `…/app` | Ausgabe `STOCKPORTFOLIO_PUBLIC_ORIGIN "https://portfolio.example.com/app" is invalid: must not contain a path. …`, `exit=1`, Datenordner leer | Mike | ✅ |
 | 4 | lokal | <a id="pruefpunkt-4"></a>`node dist/index.js` mit `http://127.0.0.1:18391/` | Log `Public origin: http://127.0.0.1:18391`; `POST /api/setup` mit fremdem Origin 403, mit passendem Origin 401 `invalid_credentials` (Origin-Prüfung bestanden) | Mike | ✅ |
 | 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | `make test` Exit 0 (Frontend 84/868, API 7/41); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
+| 7 | Pflicht | <a id="pruefpunkt-7"></a>Hilfetext Einrichtungscode | Texte in DE und EN ersetzt; danach `make test` Exit 0 (84/868, 7/41), Frontend-Lint und -Typecheck Exit 0. Keine Sichtprüfung im Browser: der Tooltip rendert den Text unverändert über `UxInfoHint` | Mike | ➖ |
 | 6 | Doku | <a id="pruefpunkt-6"></a>Docker-Hub-Vorschau | `dockerhub-readme.sh --preview --ref master` Exit 0, 13.939 Byte (< 25.000) | AGENTS.md | ➖ |
 
 Docker-Image und Unraid-Instanz sind nicht geprüft; das Verhalten liegt
@@ -64,6 +79,8 @@ ausschließlich in `node dist/index.js`, das der Container unverändert startet.
       Start mit verständlicher Meldung, bevor ein Setup-Code entsteht.
 - [x] `README.md`, `docker/README.md`, `unraid/README.md` und die
       Unraid-Vorlage beschreiben das Format übereinstimmend.
+- [x] Der Hinweis am Einrichtungscode erklärt Unraid und Docker und nennt
+      keine Entwicklungsbefehle mehr (DE und EN).
 - [x] Pflichtprüfungen grün.
 
 ### Side-Effects
@@ -88,6 +105,9 @@ Push dort folgen mit dem Abschluss.
 - `.env.example`, `docs/`, App-Texte: kein Vorkommen der Variable, keine
   Änderung. Die Fehlermeldung `invalid_origin` bleibt; sie tritt jetzt nur noch
   bei einer tatsächlich anderen Adresse auf.
+- Hinweis Einrichtungscode: `docker/README.md` (`docker logs stockportfolio`)
+  und `unraid/README.md` („container log“) sagen bereits dasselbe; `README.md`
+  behält den Entwicklungsweg. Keine Änderung nötig.
 - Skill `task-verification-workflow`: keine Board-Konvention geändert, keine
   Übernahme nötig.
 
@@ -95,7 +115,8 @@ Push dort folgen mit dem Abschluss.
 
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
-Prüffassung siehe STATUS `handoff_commit` auf `t-91-public-origin-normalisieren`.
-Belege oben unter Verify. Zu prüfen: Vollständigkeit der Ablehnungsfälle,
-Übereinstimmung der drei Anleitungen und der Vorlage, Startabbruch ohne
-Seiteneffekte im Datenordner.
+Prüffassung siehe STATUS `handoff_commit` auf `t-91-public-origin-normalisieren`
+(vor Prüfbeginn um den Hinweis zum Einrichtungscode erweitert). Belege oben
+unter Verify. Zu prüfen: Vollständigkeit der Ablehnungsfälle, Übereinstimmung
+der drei Anleitungen und der Vorlage, Startabbruch ohne Seiteneffekte im
+Datenordner, Wortlaut des Hinweises in DE und EN.

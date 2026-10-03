@@ -45,7 +45,7 @@ export const en: MessageSchema = {
     setupTitle: 'Set up the first admin account',
     setupHint: 'Create the first admin account for this installation.',
     setupCode: 'Setup code',
-    setupCodeHelp: 'Until an admin account exists, each account API start generates a new code. After make dev-up, open the window of the account API with overmind connect api and find it after “StockPortfolio setup code:” (leave with Ctrl-B, then D); in a container, use docker logs stockportfolio. After creating the admin account, this page will no longer appear.',
+    setupCodeHelp: 'You will find the code in the StockPortfolio log, on the line “StockPortfolio setup code: …”. On Unraid: open the “Docker” tab, click the StockPortfolio icon, choose “Logs”. With Docker: docker logs <container name>, for example docker logs stockportfolio. Until an admin account exists, every restart creates a new code; always use the latest one. After creating the admin account, this page no longer appears.',
     username: 'Username',
     password: 'Password',
     newPassword: 'New password',
