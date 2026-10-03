@@ -15,7 +15,10 @@
 //      Schritt wartet deshalb gut eine halbe Minute. „Aktualisieren“ klickt er
 //      bewusst nicht: Ein echter Kursabruf ersetzt im Teststack die
 //      Demo-Detailwerte durch leere Werte.
-//   5. Der Browser fragt während des ganzen Laufs nur StockPortfolio an, nie
+//   5. Die Statusseite nennt die StockInfo-Adresse, die der Server nutzt
+//      (Umgebungsvariable STOCKINFO_URL, Vorgabe http://127.0.0.1:8899), und meldet den
+//      Dienst als erreichbar.
+//   6. Der Browser fragt während des ganzen Laufs nur StockPortfolio an, nie
 //      StockInfo direkt (T-82: Weiterleitung über den eigenen Server).
 // Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
@@ -39,6 +42,7 @@ const fixtureDir = resolve(scriptDir, '../../scripts/fixtures')
 const backupPath = resolve(scriptDir, '../tests/fixtures/browser/demo-details.backup.json')
 const credentialsPath = process.argv[2]
 const imageDir = process.argv[3] ? resolve(process.argv[3]) : undefined
+const stockInfoUrl = process.env.STOCKINFO_URL ?? 'http://127.0.0.1:8899'
 if (!credentialsPath) {
   console.error(
     'Aufruf: npm --prefix frontend run check:demo-data -- <data_dir>/demo-accounts.json [Bildordner]',
@@ -78,6 +82,9 @@ function parseGerman(text) {
   return Number((text.match(/[\d.]+,\d+/)?.[0] ?? '').replaceAll('.', '').replace(',', '.'))
 }
 
+/** Anfragen an andere Herkünfte als StockPortfolio (Schritt 6). */
+const foreignRequests = new Set()
+
 const browser = await chromium.launch({
   executablePath: chromePath,
   headless: false,
@@ -87,8 +94,7 @@ try {
   const context = await browser.newContext({ viewport, locale: 'de-AT' })
   await context.addInitScript(() => localStorage.setItem('stockportfolio.locale', 'de'))
   const page = await context.newPage()
-  // Jede Anfrage des Browsers, die nicht an StockPortfolio geht (Schritt 5).
-  const foreignRequests = new Set()
+  // Jede Anfrage des Browsers, die nicht an StockPortfolio geht (Schritt 6).
   page.on('request', (request) => {
     const url = new URL(request.url())
     if ((url.protocol === 'http:' || url.protocol === 'https:') && url.origin !== origin) {
@@ -309,15 +315,36 @@ try {
     fail(tabLabel, `Ablauf abgebrochen: ${String(error.message).split('\n')[0]}`)
   }
 
-  // 5 · Nur Anfragen an StockPortfolio.
-  const requestLabel = 'Anfragen des Browsers'
-  for (const entry of foreignRequests) fail(requestLabel, `nicht an StockPortfolio: ${entry}`)
-  if (passed(requestLabel)) console.log(`OK  ${requestLabel}: nur ${origin}`)
+  // 5 · Statusseite: Adresse des Servers, Dienst erreichbar.
+  const statusLabel = 'Statusseite'
+  try {
+    await page.goto(`${origin}/#/status`)
+    const address = page.locator('.status-page__address')
+    await address.waitFor({ timeout: 20000 })
+    await page
+      .locator('.status-page__state-label', { hasText: 'erreichbar' })
+      .first()
+      .waitFor({ timeout: 20000 })
+    const shown = (await address.innerText()).trim()
+    if (shown !== stockInfoUrl) fail(statusLabel, `Adresse „${shown}“ statt „${stockInfoUrl}“`)
+    const state = (await page.locator('.status-page__state-label').first().innerText()).trim()
+    if (state !== 'erreichbar') fail(statusLabel, `Zustand „${state}“ statt „erreichbar“`)
+    if (passed(statusLabel)) console.log(`OK  ${statusLabel}: ${shown}, erreichbar`)
+    if (imageDir) await page.screenshot({ path: resolve(imageDir, 'status.png') })
+  } catch (error) {
+    fail(statusLabel, `Ablauf abgebrochen: ${String(error.message).split('\n')[0]}`)
+  }
 } catch (error) {
   fail('Ablauf', String(error.message).split('\n')[0])
 } finally {
   await browser.close()
 }
+
+// 6 · Nur Anfragen an StockPortfolio — auch nach einem Abbruch ausgewertet,
+// denn gerade eine direkte StockInfo-Anfrage lässt die Seite scheitern.
+const requestLabel = 'Anfragen des Browsers'
+for (const entry of foreignRequests) fail(requestLabel, `nicht an StockPortfolio: ${entry}`)
+if (passed(requestLabel)) console.log(`OK  ${requestLabel}: nur ${origin}`)
 
 if (failures.length > 0) {
   for (const failure of failures) console.error(`FEHLER  ${failure}`)
