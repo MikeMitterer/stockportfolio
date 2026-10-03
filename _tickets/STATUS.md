@@ -25,7 +25,7 @@ Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
 | [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
-| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 2 mit einem blockierenden Befund an den Coder zurückgegeben |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 3 beim Verifier |
 | [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | folgt nach T-85, mit Korrektur des Setup-Code-Hinweises (Mike: „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -161,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85, Runde 2 mit Nacharbeit an den Coder zurückgegeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Nacharbeit Runde 3 an den Verifier übergeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -176,12 +176,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
-- `handoff_commit`: `67706f2`
-- `review_round`: `2`
-- `owner`: `claude-coder`
+- `handoff_commit`: `e1a948f`
+- `review_round`: `3`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `last_reviewed_commit`: `67706f2`
@@ -362,15 +362,13 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-85 Runde 2 · `67706f2`**
-
-Die technische Prüfung ist mit einem blockierenden Befund zurückgegeben:
-Nach einem fehlgeschlagenen Datenabgleich löscht ein irrelevantes
-Allowlist-Ereignis die Warnung, ohne Daten neu zu laden. Die gezielte
-Gegenprobe endete mit Exit 1; die zehn vorhandenen Live-Abgleich-Tests sind
-grün. Befund und erwartete Nacharbeit stehen in
-[T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md). Die beiden Befunde aus
-Runde 1 sind behoben. T-86 und die uncommitteten App-Hilfetexte bleiben
-außerhalb dieses Reviews.
-
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-85 Runde 3 · `e1a948f`**
+
+Bitte [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) in der Fassung
+`e1a948f` prüfen. Befund 3: Die Warnung hebt nur noch ein erfolgreicher
+Gesamtabgleich (`refreshAll`) bei offenem Strom auf; ein No-op-Ereignis
+(Allowlist eines fremden Depots) und ein einzelnes Depot-Ereignis tun es
+nicht. Regressionstest um beide Fälle erweitert, vorher rot an Zeile 121.
+Smoketest grün in 83 s. T-86 und die App-Hilfetexte bleiben außerhalb.
