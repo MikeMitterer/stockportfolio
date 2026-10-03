@@ -10,9 +10,9 @@ import { useQuotesStore } from '@/stores/quotes'
 import { installFakeStorage } from '../fixtures/storage'
 import { QuoteCacheRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
-import { ApiError } from '@/api/errors'
-import type { StockInfoClient } from '@/api/client'
-import type { QuoteResponse } from '@/api/types'
+import { ApiError } from '@/api/stockinfo/errors'
+import type { StockInfoClient } from '@/api/stockinfo/client'
+import type { QuoteResponse } from '@/api/stockinfo/types'
 import type { Position } from '@/types/portfolio'
 
 beforeEach(async () => {

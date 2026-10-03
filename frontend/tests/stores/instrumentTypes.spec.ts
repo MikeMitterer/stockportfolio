@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { StockInfoClient } from '@/api/client'
+import { StockInfoClient } from '@/api/stockinfo/client'
 import { useInstrumentTypesStore } from '@/stores/instrumentTypes'
 import fixture from '../fixtures/stockinfo/instrument-types-200.json'
 

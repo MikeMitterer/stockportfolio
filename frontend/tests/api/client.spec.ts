@@ -1,11 +1,11 @@
 /**
- * Unit-Tests für src/api/client.ts.
+ * Unit-Tests für src/api/stockinfo/client.ts.
  * Kein echtes Netzwerk — `fetch` wird injiziert.
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { StockInfoClient, type FetchFn } from '@/api/client'
-import { ApiError } from '@/api/errors'
+import { StockInfoClient, type FetchFn } from '@/api/stockinfo/client'
+import { ApiError } from '@/api/stockinfo/errors'
 import quoteFixture from '../fixtures/stockinfo/quote-200.json'
 import catalogFixture from '../fixtures/stockinfo/instruments-200.json'
 

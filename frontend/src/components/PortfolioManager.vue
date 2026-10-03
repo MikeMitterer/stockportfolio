@@ -8,7 +8,7 @@ import { integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { ISO_CURRENCIES, fxKey } from '@/domain/fx'
-import { STOCK_INFO_CLIENT } from '@/api/client'
+import { STOCK_INFO_CLIENT } from '@/api/stockinfo/client'
 import { useFxStore } from '@/stores/fx'
 import type { FxRate } from '@/types/fx'
 

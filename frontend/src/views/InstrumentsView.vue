@@ -16,8 +16,8 @@ import { useFieldsStore } from '@/stores/fields'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { usePortfolioStore } from '@/stores/portfolio'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import type { InstrumentSummary } from '@/api/types'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
+import type { InstrumentSummary } from '@/api/stockinfo/types'
 
 const { t } = useI18n()
 

@@ -6,8 +6,8 @@ import { buildSparkline } from '@/domain/sparkline'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
 import { formatterLocale, money, percentSigned } from '@/domain/formatters'
 import { useHistoryStore } from '@/stores/history'
-import type { Period } from '@/api/types'
-import type { StockInfoClient } from '@/api/client'
+import type { Period } from '@/api/stockinfo/types'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { Position } from '@/types/portfolio'
 
 /**

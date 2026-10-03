@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { LiveEventsClient } from '@/data/liveEvents'
+import { LiveEventsClient } from '@/api/data/liveEvents'
 
 class FakeEventStream extends EventTarget {
   closed = false

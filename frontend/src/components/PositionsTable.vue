@@ -23,7 +23,7 @@ import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 import { useHistoryStore, type HistorySeries } from '@/stores/history'
 import { HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
 import { useSettingsStore } from '@/stores/settings'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 
 type RowKey = string | number
 type PositionColumn = DataTableColumns<PositionResult>[number] & {

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
-import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
+import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/api/data/client'
 import { AllowlistRepository, PortfolioRepository, SettingsRepository, ValueSnapshotRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { useLegacyStore } from '@/stores/legacy'

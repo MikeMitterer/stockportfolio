@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { StockInfoClient } from '@/api/client'
+import { StockInfoClient } from '@/api/stockinfo/client'
 import complete from '../fixtures/stockinfo/instrument-types-200.json'
 import empty from '../fixtures/stockinfo/instrument-types-200-empty.json'
 import incomplete from '../fixtures/stockinfo/instrument-types-200-incomplete.json'

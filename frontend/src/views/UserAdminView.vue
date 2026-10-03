@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { NButton, NFormItem, NInput, NPopconfirm, NSelect, NSpace } from 'naive-ui'
 import { UxInfoHint } from '@mmit/ux-foundation'
 import { AUTH_CLIENT, AUTH_USER } from '@/auth/context'
-import { PortfolioApiError, type PortfolioAuthClient, type PortfolioUser } from '@/auth/client'
+import { PortfolioApiError, type PortfolioAuthClient, type PortfolioUser } from '@/api/account/client'
 
 const injectedClient = inject(AUTH_CLIENT)
 if (!injectedClient) throw new Error('PortfolioAuthClient wurde nicht bereitgestellt')

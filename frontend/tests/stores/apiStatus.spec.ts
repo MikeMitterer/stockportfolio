@@ -9,8 +9,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useApiStatusStore } from '@/stores/apiStatus'
-import { StockInfoClient } from '@/api/client'
-import { ApiError } from '@/api/errors'
+import { StockInfoClient } from '@/api/stockinfo/client'
+import { ApiError } from '@/api/stockinfo/errors'
 import { i18n } from '@/i18n'
 
 /** Client, dessen `/health` antwortet wie vorgegeben. */

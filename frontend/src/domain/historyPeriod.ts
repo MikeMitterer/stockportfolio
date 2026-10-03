@@ -7,7 +7,7 @@
  * dieselbe Zuordnung — und eine davon wäre irgendwann anders.
  */
 
-import type { Period } from '@/api/types'
+import type { Period } from '@/api/stockinfo/types'
 import type { HistoryPeriod } from '@/types/portfolio'
 
 export interface HistoryPeriodInfo {

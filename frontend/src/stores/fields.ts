@@ -1,9 +1,9 @@
 /** Felddefinitionen gehören zur Sitzung und zur jeweiligen API-Adresse. */
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
-import { describeFailure } from '@/api/errors'
-import { toFieldCatalog } from '@/api/mappers'
-import type { StockInfoClient } from '@/api/client'
+import { describeFailure } from '@/api/stockinfo/errors'
+import { toFieldCatalog } from '@/api/stockinfo/mappers'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { FieldCatalog } from '@/types/details'
 
 export const useFieldsStore = defineStore('fields', () => {

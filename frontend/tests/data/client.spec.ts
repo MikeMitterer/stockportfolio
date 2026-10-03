@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { PrivateDataClient, PrivateDataError } from '@/data/client'
+import { PrivateDataClient, PrivateDataError } from '@/api/data/client'
 
 describe('private REST-Daten', () => {
   it('merkt die zuletzt geladene Revision für den Ereignisabgleich', async () => {

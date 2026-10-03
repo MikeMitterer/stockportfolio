@@ -2,7 +2,7 @@
 import { computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton } from 'naive-ui'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { useApiStatusStore } from '@/stores/apiStatus'
 

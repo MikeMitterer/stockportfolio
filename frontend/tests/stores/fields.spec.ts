@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { StockInfoClient } from '@/api/client'
+import { StockInfoClient } from '@/api/stockinfo/client'
 import { useFieldsStore } from '@/stores/fields'
 import catalog from '../fixtures/stockinfo/detail-catalog.json'
 

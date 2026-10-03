@@ -10,8 +10,8 @@ import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
 import { historyKey, isFromToday, useHistoryStore } from '@/stores/history'
 import { closeDb, DB_NAME } from '@/db/schema'
-import { ApiError } from '@/api/errors'
-import type { StockInfoClient } from '@/api/client'
+import { ApiError } from '@/api/stockinfo/errors'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { Position } from '@/types/portfolio'
 
 beforeEach(async () => {

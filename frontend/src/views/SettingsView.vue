@@ -40,7 +40,7 @@ import { HISTORY_PERIODS, HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
 import type { AmountSetting, HistoryPeriod, RebalancingTrigger } from '@/types/portfolio'
 import { THEME_IDS, THEMES } from '@mmit/ux-foundation'
 import { useInstrumentTypesStore } from '@/stores/instrumentTypes'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 
 const { t } = useI18n()
 const route = useRoute()

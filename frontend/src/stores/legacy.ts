@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
-import { privateDataClient } from '@/data/client'
+import { privateDataClient } from '@/api/data/client'
 import { clearLegacyData, readLegacyData, type LegacyData } from '@/db/legacy'
 import { backupFileName, buildBackup, type Backup } from '@/domain/backup'
 import { defaultSettings } from './settings'
