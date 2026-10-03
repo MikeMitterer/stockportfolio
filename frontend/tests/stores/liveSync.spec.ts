@@ -41,6 +41,54 @@ afterEach(async () => {
 })
 
 describe('Live-Abgleich der Stores', () => {
+  it('nutzt den Ersatzabruf nur, solange keine SSE-Verbindung steht (T-85)', async () => {
+    const portfolio = usePortfolioStore()
+    await portfolio.load()
+    const refresh = vi.spyOn(portfolio, 'refreshFromServer')
+    const stream = new FakeEventStream()
+    const live = useLiveSyncStore()
+    // Kurzer Takt statt 30 s; das Verhalten hängt nur vom Zustand ab.
+    const fallbackMs = 20
+    live.start(new LiveEventsClient(() => stream), fallbackMs)
+    // Bricht der Test ab, darf kein 20-ms-Takt in den nächsten Test laufen.
+    let afterReconnect = 0
+    try {
+      // Vor dem ersten Verbinden springt der Ersatzabruf ein.
+      await vi.waitFor(() => expect(refresh).toHaveBeenCalled())
+      stream.dispatchEvent(new Event('open'))
+      expect(live.status).toBe('connected')
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 2))
+      await flushPromises()
+      const afterConnect = refresh.mock.calls.length
+
+      // Steht die Verbindung, lädt nur noch ein SSE-Ereignis neu.
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 6))
+      await flushPromises()
+      expect(refresh).toHaveBeenCalledTimes(afterConnect)
+
+      // Reißt sie ab, springt der Ersatzabruf wieder ein.
+      stream.dispatchEvent(new Event('error'))
+      expect(live.status).toBe('disconnected')
+      await vi.waitFor(() => expect(refresh.mock.calls.length).toBeGreaterThan(afterConnect + 1))
+
+      // Nach dem Wiederverbinden lädt die App einmal neu, danach ist Ruhe.
+      stream.dispatchEvent(new Event('open'))
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 2))
+      await flushPromises()
+      afterReconnect = refresh.mock.calls.length
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 6))
+      await flushPromises()
+      expect(refresh).toHaveBeenCalledTimes(afterReconnect)
+    } finally {
+      live.stop()
+    }
+
+    // Nach dem Abmelden läuft nichts weiter.
+    await new Promise((resolve) => setTimeout(resolve, fallbackMs * 4))
+    await flushPromises()
+    expect(refresh).toHaveBeenCalledTimes(afterReconnect)
+  })
+
   it('ignoriert das eigene Ereignis, auch wenn es vor der Schreibantwort ankommt', async () => {
     const portfolio = usePortfolioStore()
     await portfolio.load()
@@ -182,7 +230,9 @@ describe('Live-Abgleich der Stores', () => {
     live.stop()
   })
 
-  it('holt auch bei scheinbar verbundenem Stream verpasste Änderungen ab', async () => {
+  it('holt eine bei stehendem Stream verpasste Änderung bei der Rückkehr zum Tab ab', async () => {
+    // Mike, 2026-10-03 (T-85): Bei stehender Verbindung gilt SSE; ein fester
+    // Ersatzabruf läuft dann nicht mehr. Die Rückkehr zum Tab prüft weiterhin.
     const portfolio = usePortfolioStore()
     await portfolio.load()
     const repository = new PortfolioRepository()
@@ -195,6 +245,11 @@ describe('Live-Abgleich der Stores', () => {
     expect(refresh).toHaveBeenCalled()
     await repository.save({ ...portfolio.portfolio!, name: 'Verpasste Änderung' })
 
+    await new Promise((resolve) => setTimeout(resolve, 120))
+    await flushPromises()
+    expect(portfolio.portfolio?.name).not.toBe('Verpasste Änderung')
+
+    document.dispatchEvent(new Event('visibilitychange'))
     await vi.waitFor(() => expect(portfolio.portfolio?.name).toBe('Verpasste Änderung'), { timeout: 500 })
     expect(live.status).toBe('connected')
     live.stop()

@@ -21,6 +21,7 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
   let client: LiveEventsClient | null = null
   let quoteClient: StockInfoClient | null = null
   let fallbackTimer: ReturnType<typeof setInterval> | null = null
+  let fallbackMs = 30_000
   let pending: Promise<void> = Promise.resolve()
   let visiblePending = 0
   let generation = 0
@@ -110,7 +111,7 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
       if (queuedGeneration === generation) await action()
     }).catch((error: unknown) => {
       if (queuedGeneration !== generation) return
-      status.value = 'disconnected'
+      setStatus('disconnected')
       console.error('Private data synchronization failed', error)
     }).finally(() => {
       if (loaderTimer !== null) clearTimeout(loaderTimer)
@@ -119,6 +120,23 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
         syncing.value = visiblePending > 0
       }
     })
+  }
+
+  /*
+   * Der Ersatzabruf überbrückt nur eine fehlende SSE-Verbindung (T-85). Steht
+   * sie, meldet sie jede Änderung selbst; nach jedem Verbinden lädt die App
+   * ohnehin einmal neu. Früher lief er fest alle 30 Sekunden und lieferte auch
+   * bei stehender Verbindung ständig neue Zeilen.
+   */
+  function setStatus(next: typeof status.value): void {
+    status.value = next
+    const wanted = client !== null && next !== 'connected'
+    if (wanted && fallbackTimer === null) {
+      fallbackTimer = setInterval(() => queue(refreshAll, true), fallbackMs)
+    } else if (!wanted && fallbackTimer !== null) {
+      clearInterval(fallbackTimer)
+      fallbackTimer = null
+    }
   }
 
   function onVisibilityChange(): void {
@@ -132,22 +150,22 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     queue(() => refreshResource(event), event.kind === 'portfolio' || event.kind === 'settings' || event.kind === 'quote-refresh')
   }
 
-  function start(eventsClient = new LiveEventsClient(), fallbackMs = 30_000, stockInfoClient?: StockInfoClient): void {
+  function start(eventsClient = new LiveEventsClient(), fallbackIntervalMs = 30_000, stockInfoClient?: StockInfoClient): void {
     stop()
     client = eventsClient
     quoteClient = stockInfoClient ?? null
     lastQuoteRevision = 0
-    status.value = 'connecting'
+    fallbackMs = fallbackIntervalMs
+    setStatus('connecting')
     eventsClient.start({
       connected: () => {
-        status.value = 'connected'
+        setStatus('connected')
         queue(refreshAll, true)
       },
-      disconnected: () => { status.value = 'disconnected' },
+      disconnected: () => { setStatus('disconnected') },
       resource: (event) => { void onResource(event, eventsClient) },
     })
     document.addEventListener('visibilitychange', onVisibilityChange)
-    fallbackTimer = setInterval(() => queue(refreshAll, true), fallbackMs)
   }
 
   function stop(): void {
@@ -155,12 +173,11 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     client?.stop()
     client = null
     quoteClient = null
-    if (fallbackTimer !== null) clearInterval(fallbackTimer)
-    fallbackTimer = null
     document.removeEventListener('visibilitychange', onVisibilityChange)
     visiblePending = 0
     syncing.value = false
-    status.value = 'disconnected'
+    // Ohne Client endet auch der Ersatzabruf.
+    setStatus('disconnected')
   }
 
   return { status, syncing, start, stop, announceQuoteRefresh }

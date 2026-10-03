@@ -88,7 +88,7 @@ den Dev-Server:
 
 ```bash
 make dev          # in StockInfo: Backend auf http://localhost:8000, Swagger unter /docs
-make dev          # in StockPortfolio: Vite auf :5175 und Konto-API auf :8080
+make dev-up       # in StockPortfolio: Vite auf :5175 und Konto-API auf :8080
 ```
 
 Die gehostete Instanz steht unter `https://stockinfo.int.mikemitterer.at`; sie
@@ -228,7 +228,8 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ## Bauen und prüfen
 
 ```bash
-make dev        # Vite und Konto-API gemeinsam, Ports 5175 und 8080
+make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
+make dev-down   # den Hintergrund-Stack über Overmind stoppen
 make test       # Frontend- und API-Tests, einmalig
 make clean      # generierte Dateien in Root, Frontend und API entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
@@ -237,8 +238,8 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 
 `make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
-stehen `make dev`, `make test` und `make clean`. Befehle für ein einzelnes Paket
-laufen über dessen npm-Skripte.
+stehen `make dev-up`, `make dev-down`, `make test` und
+`make clean`. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
 Vor einer Übergabe laufen mindestens `make test`, `npm --prefix frontend run lint`,
 `npm --prefix api run lint`, `npm --prefix frontend run typecheck` und
 `npm --prefix api run typecheck`. Das Ergebnis gehört als Beleg ins Ticket.
@@ -267,7 +268,7 @@ diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
 Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen
 diesen Stack mit `--demo-accounts`:
 `npm --prefix frontend run smoke:live-sync -- <Testverzeichnis>/demo-accounts.json`.
-Er ordnet zwei Fenster 50:50 auf dem Hauptbildschirm an, links bleiben 80
+Er ordnet zwei Fenster 50:50 auf dem Hauptbildschirm an, links bleiben 100
 Pixel frei, und lässt die Fenster bis Enter offen.
 
 Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
@@ -322,8 +323,7 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   als eigenes Ticket angelegt statt nebenbei gebaut.
 - **Fenster:** Sichtbare Läufe öffnen ihre Browserfenster auf dem
   Hauptmonitor; links bleiben 100 px frei, weil dort Mikes Dock liegt (Mike,
-  2026-10-02). `live-sync-smoke.mjs` lässt derzeit noch 80 px frei und wird
-  beim nächsten Anfassen auf 100 px angeglichen.
+  2026-10-02).
 - **StockInfo selbst:** Dessen Oberfläche prüft StockInfos
   `dashboard/e2e/visual-check.mjs` (siehe StockInfos `AGENTS.md`,
   Abschnitt „Browserprüfung“).

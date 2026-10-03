@@ -293,9 +293,10 @@ That has consequences worth knowing:
 - The same account loads its portfolios on another browser or device after login.
 - Open browsers signed in to the same account receive change notices and reload
   the affected data from the account API. The status bar warns when the live
-  connection is unavailable. After a connection loss, the app fetches the
-  current data on reconnection and checks the server periodically to catch
-  missed changes.
+  connection is unavailable. While the connection is up, the app relies on
+  these notices and does not poll. While it is down, the app checks the server
+  every 30 seconds; after reconnecting, and when you return to the tab, it
+  fetches the current data once.
   When one browser uses **Refresh** for prices, the others fetch the current
   prices from StockInfo without reloading their pages. Restoring a backup in
   one browser updates the others in the same way. A stale edit still
@@ -357,8 +358,12 @@ selection.
 ```bash
 make setup                 # .libs/ links, local Python venv, frontend and API dependencies
 cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
-make dev                   # Vue app on :5175 and account API on :8080
+make dev-up                # Vue app on :5175 and account API on :8080
 ```
+
+`make dev-up` runs both development servers in the background through Overmind.
+Stop that session with `make dev-down`; this stops both servers and releases
+their ports unless another process is using them.
 
 `make setup` links existing BashLib, MakeLib and ProjectTools repositories,
 creates StockPortfolio's `.venv` with Python 3.11+, and installs the local
@@ -371,22 +376,23 @@ locations; later commands can use the links under `.libs/`. To install only
 the frontend and API dependencies manually, use `npm ci --prefix frontend` plus
 `npm ci --prefix api` works
 without these shared tools. Each subproject keeps its own package lockfile.
-`make dev` uses Overmind and tmux to run both servers in one terminal. Install
-them first (on macOS: `brew install overmind tmux`); Ctrl-C stops both.
+The development targets use Overmind and tmux. Install them first (on macOS:
+`brew install overmind tmux`).
 `npm run dev --prefix frontend` starts only Vite. To start only the API from
 the repository root, use
 `STOCKPORTFOLIO_DATA_DIR="$PWD/.local-data" STOCKPORTFOLIO_PUBLIC_ORIGIN=http://localhost:5175 npm run dev --prefix api`.
-With `make dev`, the API stores local accounts under `.local-data` unless
+With either start command, the API stores local accounts under `.local-data` unless
 `STOCKPORTFOLIO_DATA_DIR` is set.
 Until an admin exists, each API start prints a new code after
-`StockPortfolio setup code:` in the `make dev` terminal output. The setup page
+`StockPortfolio setup code:` in the API output. With `make dev-up`, read it
+using `overmind echo api`. The setup page
 closes after the first admin account is created. New passwords need 12 to 1024
 characters, including an
 uppercase letter, a number and a special character.
-StockInfo is a separate service; `make dev` does not start it.
+StockInfo is a separate service; `make dev-up` does not start it.
 If the login page says the account service is unreachable, check that the
 account API is running on port 8080. Vite alone serves the page but cannot
-handle login requests; `make dev` starts both servers.
+handle login requests; `make dev-up` starts both servers.
 
 For browser checks with local StockInfo prices and an isolated account API,
 run `make setup`, then start the complete test stack with StockPortfolio's
@@ -482,7 +488,8 @@ position. No real portfolio data is involved.
 
 | Command                        | Purpose                                     |
 | ------------------------------ | ------------------------------------------- |
-| `make dev`                     | Vite and account API (ports 5175/8080)     |
+| `make dev-up`                  | Start both development servers in the background |
+| `make dev-down`                | Stop the background Overmind session       |
 | `make test`                    | Frontend and API tests, single run          |
 | `make clean`                   | Remove generated files; keep the local Python venv |
 | `make build`                  | Build and load the Docker image for testing |
@@ -491,7 +498,8 @@ position. No real portfolio data is involved.
 | `make changelog`              | Regenerate `CHANGELOG.md` without committing |
 
 The root Makefile covers whole-project workflows. Its Development group contains
-`make dev`, `make test` and `make clean`; the latter two cover both packages.
+`make dev-up`, `make dev-down`, `make test` and `make clean`;
+the latter two cover both packages.
 Run lint and typechecks per package with `npm --prefix frontend run lint`,
 `npm --prefix api run lint`, `npm --prefix frontend run typecheck`, and
 `npm --prefix api run typecheck`. Package builds and preview remain npm scripts.
