@@ -369,6 +369,7 @@ Ersatzabruf dauerhaft ein (gezielte Gegenprobe: Exit 1, fünf Abrufe statt
 null). Außerdem nennt der Übergabecommit `dev-up`/`dev-down` in README und
 AGENTS.md, enthält aber die Targets nicht im Makefile. Befunde, erwartete
 Korrektur und Belege stehen in [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md).
-Die uncommitteten Änderungen aus Mikes separatem `dev-up`-Auftrag erhalten.
+Die Makefile-Änderung aus Mikes separatem `dev-up`-Auftrag ist inzwischen als
+`dcd274d` committet; die Änderungen an den App-Hilfetexten bleiben uncommittet.
 
 ## OUTBOX → Verifier
