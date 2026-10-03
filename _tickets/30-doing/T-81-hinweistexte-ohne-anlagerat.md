@@ -111,6 +111,17 @@ Umgesetzt; in Runde 2 durch `claude-verifier` technisch freigegeben. Mikes Absch
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Lessons-Einordnung · claude-coder · 2026-10-03
+
+Der Observer hat die Befunde aus Runde 1 bis zur Freigabe nicht
+eingeordnet; der Coder übernimmt die Einordnung nach dem Workflow, ohne
+Lessons-Dateien zu ändern.
+
+| Befund | Einordnung |
+|---|---|
+| R1-1 · Bänder-Satz mit zwei Doppelpunkten, Begründung fehlte | **Einzelfall.** Ein vorgeschlagener eigener Satz wurde in einen vorhandenen Satz eingesetzt; ein Beleg, keine falsche Vollständigkeitsbehauptung. Gegenmaßnahme liegt im Prüfskript, das jetzt den ganzen Satz erwartet. |
+| R1-2 · Nachweis nannte `bandsBody2` statt `bandsBody3` | **Vorhandene Lesson angewendet:** [SP-R-02](../.agents/lessons/SP-R-02-pruefaussagen-den-tatsaechlich-ausgefuehrten-schritten-zuordnen.md). Lücke: Regel vorhanden, beim Schreiben des Nachweises nicht angewendet (Schlüssel aus dem Gedächtnis statt aus `git diff`). Ob ein neuer Beleg in die Lesson gehört, entscheidet der Observer; offen bei `codex-observer`. |
+
 ### Verifier-Prüfung Runde 2 · claude-verifier · 2026-10-03
 
 **Geprüfte Fassung:** `d0b0d07` (Übergabe-Commit `186844f`; Produktdateien
