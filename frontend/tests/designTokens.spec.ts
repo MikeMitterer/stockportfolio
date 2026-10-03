@@ -14,9 +14,10 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
-const SRC = resolve(process.cwd(), 'frontend/src')
-const FOUNDATION = resolve(process.cwd(), 'frontend/node_modules/@mmit/ux-foundation/src')
+const SRC = resolve(PROJECT_ROOT, 'frontend/src')
+const FOUNDATION = resolve(PROJECT_ROOT, 'frontend/node_modules/@mmit/ux-foundation/src')
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

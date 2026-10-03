@@ -22,8 +22,9 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
-const SRC = resolve(process.cwd(), 'frontend/src')
+const SRC = resolve(PROJECT_ROOT, 'frontend/src')
 
 /**
  * Tailwind-Muster: Kürzel mit Skalenwert (`mt-4`, `w-1/2`, `text-sm`),
@@ -103,7 +104,7 @@ describe('Utility-Klassen', () => {
   it('gibt es nicht mehr — Tailwind ist ausgebaut', () => {
     const alle = quellDateien().flatMap((pfad) => {
       const quelle = readFileSync(pfad, 'utf8')
-      const datei = relative(process.cwd(), pfad)
+      const datei = relative(PROJECT_ROOT, pfad)
       return [...ausMarkup(quelle, datei), ...ausStil(quelle, datei)]
     })
 
