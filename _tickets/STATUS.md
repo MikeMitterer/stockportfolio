@@ -30,7 +30,8 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | Runde 1 technisch mit Befund an den Coder zurückgegeben; Mikes bedingte Vorab-Abnahme: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“ |
-| [T-82](20-ready/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86 (Mike: „Nach T-86 ist T-82 dran“) |
+| [T-82](20-ready/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86s Freigabe (Mike: „Nach T-86 ist T-82 dran“) |
+| [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -162,7 +163,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-86, Runde 1 mit Befund an den Coder zurückgegeben; danach T-82. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-86, Nacharbeit Runde 2 an den Verifier übergeben; danach T-82. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -177,12 +178,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-86-dev-down-gibt-ports-frei.md`
 - `branch`: `t-86-dev-down-gibt-ports-frei`
-- `handoff_commit`: `d6c0ef1`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `048b2c5`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-86-dev-down-gibt-ports-frei.md`
 - `last_reviewed_commit`: `d6c0ef1`
@@ -363,16 +364,15 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-86 Runde 1 · `d6c0ef1`**
-
-Technische Prüfung mit einem blockierenden Befund zurückgegeben. Bei einem
-laufenden, per `overmind status` erreichbaren Dev-Stack meldet der verwendete
-ProjectTools-Helfer `dev-ports.sh --status` die `.overmind.sock` fälschlich als
-verwaist. `isStaleOvermindSocket` verlässt sich auf `lsof -t <Socketpfad>`;
-das lieferte trotz laufendem Overmind keinen PID-Treffer. Dieselbe Prüfung
-steuert das Entfernen in `--kill`. Bitte die Socket-Erkennung in ProjectTools
-korrigieren, mit Regression für lebenden und tatsächlich verwaisten Socket
-belegen und T-86 am neuen Helferstand erneut live prüfen. Details und grüne
-Gegenproben stehen im T-86-Review, Runde 1.
-
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-86 Runde 2 · `048b2c5`**
+
+Bitte [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) in der Fassung
+`048b2c5` prüfen (StockPortfolio-Code unverändert seit `d6c0ef1`). Befund 1 in
+ProjectTools behoben, lokaler Commit `6046a16` (nicht gepusht, `.libs`
+zeigt per Symlink darauf): Socket-Prüfung per Verbindungsversuch statt
+`lsof`; Regression mit relativ gebundenem, lebendem Socket vorher rot (2 von
+50), danach 50/50 grün. Live: laufender Stack meldet keinen verwaisten
+Socket mehr; Absturzfall, Neustart, dreimal `dev-down` und fremder Stack wie
+in Runde 1.
