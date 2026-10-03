@@ -27,7 +27,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
-| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 1 technisch mit zwei Befunden an den Coder zurückgegeben (`81180d0`): rumpflose HTTP-Antwort und widersprüchliche Unraid-Hinweise |
+| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Nacharbeit zu beiden Befunden aus Runde 1, Runde 2 an den Verifier übergeben (`9409be1`) |
 | [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-82 (Mike: „Eigenes Ticket direkt nach T-82“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
@@ -176,12 +176,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
 - `branch`: `t-82-stockinfo-ueber-eigenen-server`
-- `handoff_commit`: `81180d0`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `9409be1`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
 - `last_reviewed_commit`: `81180d0`
