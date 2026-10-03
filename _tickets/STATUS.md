@@ -29,7 +29,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-88](40-done/T-88-rest-clients-an-einem-ort.md) | abgeschlossen (Mike: „T-88 ist abgenommen, push es“) |
-| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`601bc58`), nach `master` gemergt; menschlicher Abschluss offen |
+| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`601bc58`), nach `master` gemergt (`cce832d`); menschlicher Abschluss offen |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
