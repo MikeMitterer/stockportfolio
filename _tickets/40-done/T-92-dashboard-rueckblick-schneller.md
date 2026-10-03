@@ -1,5 +1,7 @@
 # T-92 · Dashboard: Rückblick ohne Wartezeit
 
+**Abgeschlossen am 2026-10-03** (Mike: „T-92 ist freigegeben“). Technisch freigegeben in Runde 1 (`fac7055`), nach `master` gemergt und zu `origin` gepusht.
+
 **Warum dieses Ticket:** Beim Wechsel von Rebalancing zum Dashboard zeigte
 die App auf Mikes Server rund eine Sekunde lang graue Platzhalter. Das Netz
 war daran nicht beteiligt. Der Browser rechnete in dieser Zeit den Rückblick
@@ -11,11 +13,11 @@ Positionen × Kurspunkte.
 **Beispiel:** 25 Positionen mit je 20 Jahren Verlauf: vorher 1.252 ms, danach
 13 ms. Im Teststack (61 Tage Verlauf) fiel das nicht auf.
 
-**Stand:** Runde 1 durch `codex-verifier` technisch freigegeben. Mikes
-Sichtprüfung auf dem Server und der Abschluss stehen noch aus.
+**Stand:** Abgeschlossen. Technische Freigabe in Runde 1 durch
+`codex-verifier`, Freigabe durch Mike am 2026-10-03. Eine Messung auf Mikes
+Server ist nicht belegt; die Wirkung dort zeigt sich mit dem nächsten Image.
 
-Nach der technischen Freigabe: Abnahme durch Mike auf seinem Server, sobald
-ein Image mit dieser Fassung läuft.
+Kein offener menschlicher Schritt.
 
 **Herkunft:** Mike, 2026-10-03: „Wenn ich bei der Installation über Unraid von
 Rebalancing auf Dashboard schalte dauert es eine Weile bis der Content
@@ -56,8 +58,9 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 
 - [x] `buildBacktest()` liefert dieselben Werte wie bisher (Vergleichstest).
 - [x] 25 Positionen × 20 Jahre unter 250 ms (gemessen 13 ms).
-- [ ] Mike sieht auf seinem Server beim Wechsel zum Dashboard keine
-      spürbaren Platzhalter mehr (nach dem nächsten Image).
+- [x] Mike sieht auf seinem Server beim Wechsel zum Dashboard keine
+      spürbaren Platzhalter mehr (nach dem nächsten Image). Durch Mikes
+      Freigabe ersetzt; eine Prüfung auf dem Server ist nicht belegt.
 
 ### Side-Effects
 
