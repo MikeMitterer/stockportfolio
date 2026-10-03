@@ -30,7 +30,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`343de5d`), nach `master` gemergt (`57c89fc`); menschlicher Abschluss offen |
-| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | in Umsetzung auf `t-90-puid-pgid-nicht-in-nutzerdoku` (Mike: „Dein Vorschlag ist OK“) |
+| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | Runde 1 an den Verifier übergeben (`601bc58`) (Mike: „Dein Vorschlag ist OK“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -178,12 +178,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
 - `branch`: `t-90-puid-pgid-nicht-in-nutzerdoku`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `601bc58`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-88-rest-clients-an-einem-ort.md`
 - `last_reviewed_commit`: `343de5d`
