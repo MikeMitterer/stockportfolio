@@ -11,8 +11,9 @@
  *
  * Der Pfad wird am Rohwert geprüft, nicht an `URL.pathname`: `new URL()` löst
  * Punktsegmente wie `/.`, `/%2e` oder `/a/..` zu `/` auf, und ein solcher Wert
- * sähe sonst gültig aus. Enthält der Wert ein `@`, erscheint er nicht in der
- * Meldung — sie landet im Container-Log, und ein Passwort gehört nicht dorthin.
+ * sähe sonst gültig aus. Der Rohwert erscheint nie in der Meldung: Sie landet
+ * im Container-Log, und Zugangsdaten, Tokens in Query oder Fragment gehören
+ * nicht dorthin. Grund und Beispiel reichen, um den Wert zu korrigieren.
  *
  * @param value Rohwert aus der Umgebung; leer oder fehlend bedeutet „nicht gesetzt“.
  * @returns Der normalisierte Origin, oder `undefined`, wenn nichts gesetzt ist.
@@ -22,9 +23,8 @@ export function normalizePublicOrigin(value: string | undefined): string | undef
   const trimmed = value?.trim()
   if (!trimmed) return undefined
 
-  const shown = trimmed.includes('@') ? '' : ` "${trimmed}"`
   const invalid = (reason: string) =>
-    new Error(`STOCKPORTFOLIO_PUBLIC_ORIGIN${shown} is invalid: ${reason}. Expected the browser address without a path, for example https://portfolio.example.com or http://192.168.1.10:8088`)
+    new Error(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}. Expected the browser address without a path, for example https://portfolio.example.com or http://192.168.1.10:8088`)
 
   let url: URL
   try {

@@ -48,7 +48,7 @@ describe('STOCKPORTFOLIO_PUBLIC_ORIGIN', () => {
     ['https://portfolio.example.com/#top', 'must not contain a fragment'],
     ['https://portfolio.example.com#', 'must not contain a fragment'],
   ])('bricht bei %s mit klarer Meldung ab', (value, reason) => {
-    expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN "${value}" is invalid: ${reason}`)
+    expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`)
   })
 
   it.each([
@@ -56,7 +56,11 @@ describe('STOCKPORTFOLIO_PUBLIC_ORIGIN', () => {
     ['https://:synthetic-password@portfolio.example.com/app', 'must not contain user credentials'],
     ['https://user:synthetic-password/x@portfolio.example.com', 'not a URL'],
     ['user:synthetic-password@portfolio.example.com', 'scheme must be http or https'],
-  ])('schreibt bei %s kein Passwort in die Meldung', (value, reason) => {
+    ['https://portfolio.example.com?token=synthetic-password', 'must not contain a query'],
+    ['https://portfolio.example.com/?token=synthetic-password', 'must not contain a query'],
+    ['https://portfolio.example.com/#access_token=synthetic-password', 'must not contain a fragment'],
+    ['https://portfolio.example.com/app?token=synthetic-password', 'must not contain a path'],
+  ])('schreibt bei %s kein Geheimnis in die Meldung', (value, reason) => {
     expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`)
     expect(() => normalizePublicOrigin(value)).not.toThrow(/synthetic-password/)
   })

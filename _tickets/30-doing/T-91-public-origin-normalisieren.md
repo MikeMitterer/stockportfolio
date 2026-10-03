@@ -13,8 +13,8 @@ Nutzer sah nur „Die Browseradresse stimmt nicht mit der Serverkonfiguration
 zurückgeführt, und die Einrichtung läuft durch. Ein Wert mit Pfad
 (`…/app`) beendet den Start mit einer klaren Meldung im Container-Log.
 
-**Stand:** Runde 2 vom Verifier mit einem Rest des Log-Befunds zur Nacharbeit
-zurückgegeben. Pfadprüfung und sichtbarer Einrichtungshinweis sind geprüft.
+**Stand:** Rest des Log-Befunds aus Runde 2 behoben: Die Meldung nennt den
+Rohwert nie. In Runde 3 an `codex-verifier` übergeben.
 
 Kein menschlicher Schritt bis zur technischen Freigabe. Danach: Abnahme durch
 Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
@@ -61,9 +61,9 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 
 | # | Lauf | Handgriff | Nachweis | woher | AI |
 |---|:--:|---|---|---|:--:|
-| 1 | Unit | <a id="pruefpunkt-1"></a>`api/tests/public-origin.spec.ts` | 21 Tests grün: leer, Schrägstrich, Groß-/Kleinschreibung, Standardport, 13 Ablehnungsfälle mit Meldung (darunter `/.`, `/%2e`, `/a/..`, `/./`, Backslash), vier Werte mit Zugangsdaten ohne Passwort in der Meldung, Setup mit `…/`-Konfiguration → 201 | Mike | ➖ |
+| 1 | Unit | <a id="pruefpunkt-1"></a>`api/tests/public-origin.spec.ts` | 25 Tests grün (Runde 3): leer, Schrägstrich, Groß-/Kleinschreibung, Standardport, 13 Ablehnungsfälle mit Meldung (darunter `/.`, `/%2e`, `/a/..`, `/./`, Backslash), acht Werte mit Zugangsdaten oder Token in Query/Fragment ohne Geheimnis in der Meldung, Setup mit `…/`-Konfiguration → 201 | Mike | ➖ |
 | 2 | Unit rot | <a id="pruefpunkt-2"></a>`return url.origin` testweise durch `return trimmed` ersetzt | 3 Tests rot (Schrägstrich, Normalisierung, Setup), Exit 1; danach zurückgesetzt. Runde 2: Rohpfadprüfung entfernt → 4 Punktsegment-Fälle rot, Exit 1; Ausblenden bei `@` entfernt → 4 Zugangsdaten-Fälle rot, Exit 1; danach zurückgesetzt (`cmp` gleich), 49/49 grün | Pflicht Gegenprobe | ➖ |
-| 3 | lokal | <a id="pruefpunkt-3"></a>`node dist/index.js` mit `…/app` | Ausgabe `STOCKPORTFOLIO_PUBLIC_ORIGIN "https://portfolio.example.com/app" is invalid: must not contain a path. …`, `exit=1`, Datenordner leer | Mike | ✅ |
+| 3 | lokal | <a id="pruefpunkt-3"></a>`node dist/index.js` mit `…/app` | Ausgabe (Fassung Runde 3, ohne Rohwert) `STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: must not contain a path. …`, `exit=1`, Datenordner leer | Mike | ✅ |
 | 4 | lokal | <a id="pruefpunkt-4"></a>`node dist/index.js` mit `http://127.0.0.1:18391/` | Log `Public origin: http://127.0.0.1:18391`; `POST /api/setup` mit fremdem Origin 403, mit passendem Origin 401 `invalid_credentials` (Origin-Prüfung bestanden) | Mike | ✅ |
 | 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | `make test` Exit 0 (Frontend 84/868, API 7/49); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
 | 7 | Pflicht | <a id="pruefpunkt-7"></a>Hilfetext Einrichtungscode | Texte in DE und EN ersetzt; danach `make test` Exit 0 (84/868, 7/41), Frontend-Lint und -Typecheck Exit 0. Keine Sichtprüfung im Browser: der Tooltip rendert den Text unverändert über `UxInfoHint` | Mike | ➖ |
@@ -114,6 +114,30 @@ Push dort folgen mit dem Abschluss.
   Übernahme nötig.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Übergabe Runde 3 · claude-coder · 2026-10-03
+
+Nacharbeit zum Befund der Verifier-Prüfung Runde 2. Prüffassung siehe STATUS
+`handoff_commit`.
+
+- **Korrektur:** `normalizePublicOrigin()` gibt den Rohwert in keiner
+  Meldung mehr aus, unabhängig vom Grund. Die Meldung nennt Grund und
+  Beispieladresse: `STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: <Grund>. Expected …`.
+- **Tests:** Geheimnisfälle um `?token=…`, `/?token=…`, `/#access_token=…`
+  und `/app?token=…` erweitert (je Grund und kein `synthetic-password` in der
+  Meldung); die `@`-Fälle bleiben. 25 Tests in der Datei, API 7/53.
+- **Gegenprobe:** Ausblendung testweise auf das Verhalten aus Runde 2
+  zurückgesetzt (nur bei `@`): die vier neuen Query-/Fragment-Fälle rot,
+  Exit 1; danach zurückgesetzt (`cmp` gleich), 53/53 grün.
+- **Live:** gebaute API mit `https://portfolio.example.com?token=synthetic-secret`
+  und `…/#access_token=synthetic-secret` → je Exit 1, Query- bzw.
+  Fragment-Meldung, 0 Treffer für `synthetic-secret`, Datenordner leer.
+- **Pflicht:** `make test` Exit 0 (84/868, 7/53), Lint und Typecheck für
+  Frontend und API je Exit 0, `git diff --check` sauber.
+- **Doku-Abgleich:** Die Anleitungen zitieren die Meldung nicht; keine
+  Änderung nötig. Browserprüfung aus Runde 2 unverändert gültig (kein
+  Frontend-Code geändert).
+- **Lessons-Einordnung:** Rest desselben Befunds, keine neue Lesson.
 
 ### Verifier-Prüfung Runde 2 · codex-verifier · 2026-10-03
 
