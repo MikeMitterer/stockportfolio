@@ -66,7 +66,10 @@ function selectSection(key: string | number): void {
   if (selected) section.value = selected
 }
 
-watch(() => [props.row.position.id, props.row.position.group], () => {
+// Zwei einzelne Quellen statt eines Getters mit neuem Array: Vue vergleicht
+// dann die Werte. Sonst setzte jede Aktualisierung des Live-Abgleichs, die die
+// Zeile neu liefert, den gewählten Reiter zurück (T-83).
+watch([() => props.row.position.id, () => props.row.position.group], () => {
   section.value = isCash.value ? 'portfolio' : 'history'
 })
 watch(() => props.historyRequest, request => {
@@ -76,7 +79,8 @@ watch(sections, available => {
   if (!available.includes(section.value)) section.value = available[0] ?? 'portfolio'
 })
 // Der Katalog muss verfügbar sein, bevor über den Zusatzinfos-Tab entschieden wird.
-watch(() => [props.row.quote?.symbol, props.row.quote?.fetchedAt], () => {
+// Nur ein neuer Kurs lädt ihn erneut, nicht jede neu gelieferte Zeile.
+watch([() => props.row.quote?.symbol, () => props.row.quote?.fetchedAt], () => {
   if (client && props.row.quote) void fields.load(client)
 }, { immediate: true })
 </script>

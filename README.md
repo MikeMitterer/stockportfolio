@@ -417,7 +417,10 @@ Stock Market, Apple, the DWS Vermögensbildungsfonds I fund and a German federal
 bond. Type and detail values come from `scripts/fixtures/demo-details.json`
 and follow StockInfo's own declarations: TER, fund size in millions, provider
 and accumulating for ETFs and ETCs, volatility for every listing. Vanguard
-Total Stock Market carries a manual fund size in USD. Without
+Total Stock Market carries a manual fund size in USD. **Refresh** fetches
+prices from the fixture source, which has no detail values: afterwards the
+demo details are empty and volatility is recalculated from the synthetic
+price series. Restart the stack to get them back. Without
 `--demo-details`, the fixture server keeps its test cases instead: a crypto
 pair, an OTC bond without listing, one symbol on two exchanges, a pence
 listing and a listing without ISIN.

@@ -117,6 +117,45 @@ describe('Positionsdetails nach Aufgabe', () => {
     wrapper.unmount()
   })
 
+  it('lässt den gewählten Reiter stehen, wenn eine Aktualisierung dieselbe Position neu liefert', async () => {
+    const row = makeRow()
+    if (!row.quote) throw new Error('Kurs fehlt')
+    const wrapper = mount(PositionDrilldown, { props: { row, total: 1000, links: [] } })
+    await buttonWithText(wrapper, translate('drilldown.sectionAsset')).trigger('click')
+    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(true)
+    // Der Live-Abgleich liefert nach dem Neuladen neue Objekte mit gleichem Inhalt.
+    await wrapper.setProps({
+      row: { ...row, position: { ...row.position }, quote: { ...row.quote, fetchedAt: '2026-10-03T12:00:00Z' } },
+    })
+    expect(wrapper.find('[data-position-section="asset"]').exists()).toBe(true)
+    // Eine andere Position setzt den Reiter weiterhin zurück.
+    await wrapper.setProps({ row: { ...row, position: { ...row.position, id: 'b' } } })
+    expect(wrapper.find('[data-position-section="history"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('lädt den Feldkatalog nur bei neuem Kurs, nicht bei jeder neu gelieferten Zeile', async () => {
+    const row = makeRow()
+    if (!row.quote) throw new Error('Kurs fehlt')
+    let catalogRequests = 0
+    const client = new StockInfoClient('https://details.test', async (input) => {
+      if (String(input).endsWith('/fields')) catalogRequests += 1
+      return new Response(JSON.stringify(catalogFixture))
+    })
+    const wrapper = mount(PositionDrilldown, {
+      props: { row, total: 1000, links: [] }, global: { provide: { [STOCK_INFO_CLIENT]: client } },
+    })
+    await flushPromises()
+    expect(catalogRequests).toBe(1)
+    await wrapper.setProps({ row: { ...row, position: { ...row.position }, quote: { ...row.quote } } })
+    await flushPromises()
+    expect(catalogRequests).toBe(1)
+    await wrapper.setProps({ row: { ...row, quote: { ...row.quote, fetchedAt: '2026-10-03T12:00:00Z' } } })
+    await flushPromises()
+    expect(catalogRequests).toBe(2)
+    wrapper.unmount()
+  })
+
   it('lädt den Katalog ohne Tab-Klick und erhält Nein als einzigen Zusatzwert', async () => {
     const row = makeRow()
     if (!row.quote) throw new Error('Kurs fehlt')

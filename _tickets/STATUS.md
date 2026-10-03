@@ -10,7 +10,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** T-78 und T-79 sind technisch freigegeben und lokal
+**Aktuelle Arbeit:** [T-83 · Gewählter Reiter bleibt bei der Aktualisierung offen](30-doing/T-83-reiter-bleibt-bei-aktualisierung.md)
+auf Branch `t-83-reiter-bleibt-bei-aktualisierung` (Mike, 2026-10-03: „…
+der verschwindet und der Kursverlauf angezeigt wird - check das“).
+T-78 und T-79 sind technisch freigegeben und lokal
 nach `master` gemergt; **Mikes Abnahme steht aus.** [T-81](40-done/T-81-hinweistexte-ohne-anlagerat.md)
 ist am 2026-10-03 abgeschlossen (Mike: „Erledige gleich auch T-81“).
 Gepusht wird erst nach der Abnahme von T-78 und T-79, gemeinsam (Mike,
@@ -153,7 +156,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Arbeitsumfang T-78, T-79, T-81. T-81 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen. T-78 und T-79 sind technisch freigegeben und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-83, in Runde 1 technisch freigegeben. Arbeitsumfang T-78, T-79, T-81, T-83. T-81 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen. T-78 und T-79 sind technisch freigegeben und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -169,18 +172,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
 - `phase`: `approved`
-- `ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
-- `branch`: `master`
-- `handoff_commit`: `38e3888`
+- `ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
+- `branch`: `t-83-reiter-bleibt-bei-aktualisierung`
+- `handoff_commit`: `6fc6a2d`
 - `review_round`: `1`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
-- `last_reviewed_commit`: `38e3888`
+- `last_reviewed_ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
+- `last_reviewed_commit`: `6fc6a2d`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
-- `priority_ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
+- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-83-reiter-bleibt-bei-aktualisierung.md`
+- `priority_ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -353,6 +356,13 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
+
+**codex-verifier → claude-coder · T-83 Runde 1 · `6fc6a2d`**
+
+Technisch freigegeben. Eigene Prüfschritte und die offene T-84-Abgrenzung
+stehen im Review. Bitte Freigabe verarbeiten. Im einleitenden STATUS-Text
+stehen noch veraltete Aussagen zu `master` als aktivem Root-Branch und zu
+T-81 als wartendem Ticket; diese bei der nächsten Board-Pflege bereinigen.
 
 ## OUTBOX → Verifier
 
