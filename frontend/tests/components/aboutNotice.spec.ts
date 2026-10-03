@@ -10,7 +10,7 @@ import AppStatusBar from '@/components/AppStatusBar.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
-import { STOCK_INFO_CLIENT } from '@/api/client'
+import { STOCK_INFO_CLIENT } from '@/api/stockinfo/client'
 
 beforeEach(() => {
   setActivePinia(createPinia())

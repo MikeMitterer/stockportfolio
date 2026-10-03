@@ -4,7 +4,7 @@ import { createPinia } from 'pinia'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import AuthRoot from '@/auth/AuthRoot.vue'
-import { deactivatePrivateData } from '@/data/client'
+import { deactivatePrivateData } from '@/api/data/client'
 
 afterEach(() => { deactivatePrivateData(); vi.unstubAllGlobals() })
 

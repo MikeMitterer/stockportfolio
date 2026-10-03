@@ -48,12 +48,22 @@ von StockInfo: dessen `AGENTS.md`, dessen Board und die Rollen aus dessen
 bleiben getrennt; eine Änderung am Dienst gehört nicht in einen Commit dieses
 Projekts.
 
-- **`frontend/src/api/client.ts` bündelt alle StockInfo-Aufrufe.**
+- **Alle ausgehenden Aufrufe des Frontends liegen unter `frontend/src/api/`**
+  (T-88), je Gegenstelle ein Unterordner: `stockinfo/` (StockInfo über
+  `/api/stockinfo`), `account/` (Setup, Anmeldung, Benutzer) und `data/`
+  (private Depotdaten und der Ereignisstrom `/api/data/events`). Außerhalb
+  davon gibt es kein `fetch`, keine Verbindung und keinen `/api/`-Pfad; das
+  hält der Wächter `networkAccess.spec.ts` fest.
+
+- **`frontend/src/api/stockinfo/client.ts` bündelt alle StockInfo-Aufrufe.**
   Neue StockInfo-Endpunkte kommen dort dazu, mit Typ in
-  `frontend/src/api/types.ts` und Mapper in `frontend/src/api/mappers.ts`.
-  Der Client bekommt `fetch` injiziert; kein Test ruft den echten Dienst.
-  Die eigene Konto-API verwendet getrennt davon
-  `frontend/src/auth/client.ts` und eingehende Routen unter `api/src/routers/`.
+  `frontend/src/api/stockinfo/types.ts` und Mapper in
+  `frontend/src/api/stockinfo/mappers.ts`, dazu ein Muster in der
+  Freigabeliste `api/src/stockinfo/proxy.ts` und ein sichtbarer Schritt, der
+  die Route aufruft. Der Client bekommt `fetch` injiziert; kein Test ruft den
+  echten Dienst. Die eigene Konto-API verwendet getrennt davon
+  `frontend/src/api/account/client.ts` und `frontend/src/api/data/`; ihre
+  eingehenden Routen liegen unter `api/src/routers/`.
 
 - **Der Browser fragt StockInfo nur über den eigenen Server ab** (T-82).
   Der Client ruft `/api/stockinfo/*`; `api/src/stockinfo/proxy.ts` leitet
@@ -78,7 +88,7 @@ Projekts.
   absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
   dasselbe. Damit lassen sich Mapper prüfen, ohne StockInfo zu starten.
   StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
-  `frontend/src/api/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
+  `frontend/src/api/stockinfo/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
   unter `frontend/tests/fixtures/stockinfo/`. Die Bewertung steht in
   [T-37](_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
   Generation und Währung in
@@ -211,7 +221,7 @@ Vollständige Konventionen samt Namensschema je Sprache: Skill `code-standards`.
 
 ## Wächter-Tests prüfen das Muster, nicht die Fundstelle
 
-Fünf Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Baum statisch:
+Sechs Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Baum statisch:
 
 | Test | Riegel |
 |---|---|
@@ -220,6 +230,7 @@ Fünf Tests unter `frontend/tests/` durchsuchen den gesamten `frontend/src/`-Bau
 | `utilityClasses.spec.ts` | Keine Utility-Klassen im Markup und keine Utility-Selektoren im Stil; Tailwind ist ausgebaut |
 | `caretUsage.spec.ts` | Kein handgezeichneter Pfeil; die gemeinsame Komponente verwenden |
 | `designTokens.spec.ts` | Jede verwendete CSS-Variable ist im Fundament oder in `src/` definiert |
+| `networkAccess.spec.ts` | Kein `fetch`, `sendBeacon`, `EventSource`, `XMLHttpRequest`, `WebSocket` und kein `/api/`-Pfad außerhalb von `src/api/`; Suche über die TS-Compiler-API |
 
 Sie fangen die Sorte Fehler, die nichts wirft: eine tote Klasse, eine Regel, die
 still ausfällt, die vierte Kopie desselben SVG-Pfads. Einen Riegel für eine

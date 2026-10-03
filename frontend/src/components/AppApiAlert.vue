@@ -25,7 +25,7 @@ import { useRouter } from 'vue-router'
 import { NButton, NModal, NSpace } from 'naive-ui'
 
 import { useApiStatusStore } from '@/stores/apiStatus'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 
 const SESSION_KEY = 'stockportfolio.apiOfflineShown'
 

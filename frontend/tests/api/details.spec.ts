@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { StockInfoClient } from '@/api/client'
-import { instrumentToQuoteCacheEntry, toQuoteCacheEntry, toFieldCatalog } from '@/api/mappers'
+import { StockInfoClient } from '@/api/stockinfo/client'
+import { instrumentToQuoteCacheEntry, toQuoteCacheEntry, toFieldCatalog } from '@/api/stockinfo/mappers'
 import quoteFixture from '../fixtures/stockinfo/quote-200.json'
 import instrumentFixture from '../fixtures/stockinfo/instruments-200.json'
 import catalog from '../fixtures/stockinfo/detail-catalog.json'

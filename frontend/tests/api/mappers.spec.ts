@@ -1,10 +1,10 @@
 /**
- * Unit-Tests für src/api/mappers.ts — die Grenze zwischen API und Domain.
+ * Unit-Tests für src/api/stockinfo/mappers.ts — die Grenze zwischen API und Domain.
  */
 
 import { describe, expect, it } from 'vitest'
-import { cacheKeyOf, instrumentToQuoteCacheEntry, toQuoteCacheEntry } from '@/api/mappers'
-import type { InstrumentSummary, QuoteResponse } from '@/api/types'
+import { cacheKeyOf, instrumentToQuoteCacheEntry, toQuoteCacheEntry } from '@/api/stockinfo/mappers'
+import type { InstrumentSummary, QuoteResponse } from '@/api/stockinfo/types'
 
 /** Vollständige Antwort wie die API sie für einen ETF liefert. */
 function fullQuote(overrides: Partial<QuoteResponse> = {}): QuoteResponse {

@@ -11,12 +11,12 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { consola } from 'consola'
 import { translate } from '@/i18n'
-import { ApiError, describeFailure } from '@/api/errors'
-import { cacheKeyOf } from '@/api/mappers'
+import { ApiError, describeFailure } from '@/api/stockinfo/errors'
+import { cacheKeyOf } from '@/api/stockinfo/mappers'
 import { createAllowlistRepository } from '@/data/repository'
 import { usePortfolioStore } from '@/stores/portfolio'
-import type { StockInfoClient } from '@/api/client'
-import type { InstrumentSummary } from '@/api/types'
+import type { StockInfoClient } from '@/api/stockinfo/client'
+import type { InstrumentSummary } from '@/api/stockinfo/types'
 
 export const useInstrumentsStore = defineStore('instruments', () => {
   const repository = createAllowlistRepository()

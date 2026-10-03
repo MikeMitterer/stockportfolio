@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { StockInfoClient } from '@/api/client'
+import { StockInfoClient } from '@/api/stockinfo/client'
 
 const response = { base: 'USD', quote: 'EUR', rate: 0.8, quote_time: '2026-09-10T10:00:00Z', fetched_at: '2026-09-10T10:01:00Z', cached: true, stale: false }
 

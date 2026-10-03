@@ -1,12 +1,12 @@
 import { computed, inject, watch } from 'vue'
-import { STOCK_INFO_CLIENT } from '@/api/client'
+import { STOCK_INFO_CLIENT } from '@/api/stockinfo/client'
 import { baseCurrencyOf, majorCurrency } from '@/domain/fx'
 import { computeRebalancing, quoteFor } from '@/domain/rebalancing'
 import { useFxStore } from '@/stores/fx'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useSettingsStore } from '@/stores/settings'
-import type { StockInfoClient } from '@/api/client'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 
 /** Ein Bewertungsweg für Dashboard, Einstellungen und Handelsansicht. */
 export function usePortfolioValuation() {

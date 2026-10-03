@@ -15,9 +15,9 @@ import { useInstrumentsStore } from '@/stores/instruments'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { AllowlistRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
-import { ApiError } from '@/api/errors'
-import type { StockInfoClient } from '@/api/client'
-import type { InstrumentSummary } from '@/api/types'
+import { ApiError } from '@/api/stockinfo/errors'
+import type { StockInfoClient } from '@/api/stockinfo/client'
+import type { InstrumentSummary } from '@/api/stockinfo/types'
 
 beforeEach(async () => {
   setActivePinia(createPinia())

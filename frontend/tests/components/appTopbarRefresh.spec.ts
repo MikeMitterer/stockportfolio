@@ -9,7 +9,7 @@ import { createMemoryHistory, createRouter, type Router } from 'vue-router'
 import { describe, expect, it } from 'vitest'
 
 import { AUTH_LOGOUT, AUTH_USER } from '@/auth/context'
-import type { PortfolioUser } from '@/auth/client'
+import type { PortfolioUser } from '@/api/account/client'
 import AppTopbar from '@/components/AppTopbar.vue'
 
 /** Die Kopfzeile löst Adressen für ihre Menüpunkte auf und braucht dafür Routen. */

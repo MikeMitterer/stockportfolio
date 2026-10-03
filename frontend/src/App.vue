@@ -29,8 +29,8 @@ import { useLiveSyncStore } from '@/stores/liveSync'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
 import { buildNaiveOverrides, UxAppShell, UxNotificationProvider } from '@mmit/ux-foundation'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import { DATA_ERROR_EVENT, DATA_RECOVERED_EVENT, PrivateDataError } from '@/data/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
+import { DATA_ERROR_EVENT, DATA_RECOVERED_EVENT, PrivateDataError } from '@/api/data/client'
 
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT)
 if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')

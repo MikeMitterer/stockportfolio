@@ -1,9 +1,9 @@
 /** Typdeklarationen gehören zur Sitzung und zur jeweiligen API-Adresse. */
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
-import { describeFailure } from '@/api/errors'
-import { toInstrumentTypeCatalog } from '@/api/mappers'
-import type { StockInfoClient } from '@/api/client'
+import { describeFailure } from '@/api/stockinfo/errors'
+import { toInstrumentTypeCatalog } from '@/api/stockinfo/mappers'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { InstrumentTypeCatalog } from '@/types/instrumentTypes'
 
 export const useInstrumentTypesStore = defineStore('instrumentTypes', () => {

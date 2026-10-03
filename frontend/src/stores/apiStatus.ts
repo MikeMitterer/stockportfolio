@@ -17,8 +17,8 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { translate } from '@/i18n'
-import { ApiError, describeFailure } from '@/api/errors'
-import type { StockInfoClient } from '@/api/client'
+import { ApiError, describeFailure } from '@/api/stockinfo/errors'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 
 export type ApiState = 'unknown' | 'checking' | 'online' | 'offline'
 

@@ -2,10 +2,10 @@
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NAlert, NButton, NSpin } from 'naive-ui'
-import { STOCK_INFO_CLIENT } from '@/api/client'
+import { STOCK_INFO_CLIENT } from '@/api/stockinfo/client'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields } from '@/domain/detailFields'
-import type { StockInfoClient } from '@/api/client'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { QuoteCacheEntry } from '@/types/portfolio'
 
 const props = withDefaults(defineProps<{

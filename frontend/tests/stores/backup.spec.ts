@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
+import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/api/data/client'
 import { buildBackup } from '@/domain/backup'
 import { defaultSettings } from '@/stores/settings'
 import { useBackupStore } from '@/stores/backup'

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted } from 'vue'
 import App from '@/App.vue'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import { LiveEventsClient } from '@/data/liveEvents'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
+import { LiveEventsClient } from '@/api/data/liveEvents'
 import { useLiveSyncStore } from '@/stores/liveSync'
 
 const stockInfoClient = inject<StockInfoClient>(STOCK_INFO_CLIENT)

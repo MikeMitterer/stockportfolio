@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { StockInfoClient } from '@/api/client'
-import { ApiError } from '@/api/errors'
+import { StockInfoClient } from '@/api/stockinfo/client'
+import { ApiError } from '@/api/stockinfo/errors'
 import { translate } from '@/i18n'
-import { cacheKeyOf, instrumentToQuoteCacheEntry, toQuoteCacheEntry } from '@/api/mappers'
+import { cacheKeyOf, instrumentToQuoteCacheEntry, toQuoteCacheEntry } from '@/api/stockinfo/mappers'
 import quoteFixture from '../fixtures/stockinfo/quote-200.json'
 import catalogFixture from '../fixtures/stockinfo/instruments-200.json'
 

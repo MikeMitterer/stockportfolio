@@ -17,8 +17,8 @@ import { nextTick } from 'vue'
 
 import AppApiAlert from '@/components/AppApiAlert.vue'
 import { useApiStatusStore } from '@/stores/apiStatus'
-import { ApiError } from '@/api/errors'
-import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
+import { ApiError } from '@/api/stockinfo/errors'
+import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/stockinfo/client'
 
 function attrappenRouter(): Router {
   return createRouter({

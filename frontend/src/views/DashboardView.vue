@@ -32,8 +32,8 @@ import { useApiStatusStore } from '@/stores/apiStatus'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { newId } from '@/db/seed'
 import { quoteKey } from '@/domain/rebalancing'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
-import type { InstrumentSummary } from '@/api/types'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
+import type { InstrumentSummary } from '@/api/stockinfo/types'
 import type { AssetGroup, Position } from '@/types/portfolio'
 
 const { t } = useI18n()

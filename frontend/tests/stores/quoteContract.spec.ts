@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB, openDB } from 'idb'
-import { StockInfoClient } from '@/api/client'
+import { StockInfoClient } from '@/api/stockinfo/client'
 import { useQuotesStore } from '@/stores/quotes'
 import { QuoteCacheRepository } from '@/db/repository'
 import { closeDb, DB_NAME, getDb } from '@/db/schema'

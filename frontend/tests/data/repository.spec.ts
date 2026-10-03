@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
+import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/api/data/client'
 import {
   createAllowlistRepository,
   createPortfolioRepository,

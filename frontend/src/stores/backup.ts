@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { privateDataClient } from '@/data/client'
+import { privateDataClient } from '@/api/data/client'
 import type { Backup } from '@/domain/backup'
 import { usePortfolioStore } from './portfolio'
 

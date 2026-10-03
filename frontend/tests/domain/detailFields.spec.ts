@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { StockInfoClient } from '@/api/client'
-import { toFieldCatalog, toQuoteCacheEntry } from '@/api/mappers'
+import { StockInfoClient } from '@/api/stockinfo/client'
+import { toFieldCatalog, toQuoteCacheEntry } from '@/api/stockinfo/mappers'
 import { projectDetailFields } from '@/domain/detailFields'
 import { setFormatterLocale } from '@/domain/formatters'
 import { i18n, translate } from '@/i18n'

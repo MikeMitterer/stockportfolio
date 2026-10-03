@@ -1,6 +1,6 @@
 import type { ValueSnapshotEntry } from '@/db/schema'
 import type { Portfolio, Settings } from '@/types/portfolio'
-import { PrivateDataClient, privateDataClient } from './client'
+import { PrivateDataClient, privateDataClient } from '@/api/data/client'
 
 function activeClient(): PrivateDataClient {
   const client = privateDataClient()

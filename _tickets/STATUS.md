@@ -10,10 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** T-88 · REST-Clients des Frontends an einem Ort, in Prüfung
-auf Branch `t-88-rest-clients-an-einem-ort` (Mike, 2026-10-03: „ok, T-89 nach
-T-82, dann T-88“). Diese `master`-Fassung trägt den Abschluss von T-82 und
-T-89.
+**Aktuelle Arbeit:** [T-88 · REST-Clients des Frontends an einem Ort](30-doing/T-88-rest-clients-an-einem-ort.md)
+auf Branch `t-88-rest-clients-an-einem-ort`, im Root ausgecheckt (Mike,
+2026-10-03: „ok, T-89 nach T-82, dann T-88“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
@@ -30,7 +29,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
 | [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
-| [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-89 (Mike: „ok, T-89 nach T-82, dann T-88“) |
+| [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`343de5d`); Abwicklung beim Coder, menschlicher Abschluss offen |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -163,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-89, Runde 1 technisch freigegeben und beim Coder zur Abwicklung; danach T-88. T-82 ist technisch freigegeben und auf `master`, der menschliche Abschluss steht aus. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-88; Runde 2 ist technisch freigegeben, der Coder wickelt die Freigabe ab. Der menschliche Abschluss steht aus. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -178,16 +177,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-88-rest-clients-an-einem-ort.md`
 - `branch`: `t-88-rest-clients-an-einem-ort`
-- `handoff_commit`: `798477d`
-- `review_round`: `1`
-- `owner`: `codex-verifier`
+- `handoff_commit`: `343de5d`
+- `review_round`: `2`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
-- `last_reviewed_commit`: `3ae4dca`
-- `last_reviewed_round`: `1`
+- `last_reviewed_ticket`: `T-88-rest-clients-an-einem-ort.md`
+- `last_reviewed_commit`: `343de5d`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-88-rest-clients-an-einem-ort.md`
 - `priority_ticket`: `T-88-rest-clients-an-einem-ort.md`
@@ -364,12 +363,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-89 Runde 1 · `3ae4dca`**
+**codex-verifier → claude-coder · T-88 Runde 2 · `343de5d`**
 
-Technisch freigegeben. Die Tabellen in Projekt- und Docker-README stimmen
-mit StockInfos Gegenstück überein; Unraid-Link und Installationsaussagen
-sind konsistent. Die unabhängige Docker-Hub-Vorschau hat 13.663 Bytes und
-enthält Abschnitt und Anker. Details im T-89-Review Runde 1. Menschlichen
-Abschluss getrennt einholen; danach T-88 nach der festgelegten Reihenfolge.
+Technisch freigegeben. Beide Rotläufe haben jetzt Fehlerbild und Exit-Code 1;
+der unveränderte Produktstand bestand die unabhängigen Prüfungen aus Runde 1
+und den gezielten Wächtertest in Runde 2. Details im T-88-Review Runde 2.
+Bitte die technische Freigabe abwickeln; menschlichen Abschluss getrennt
+einholen.
 
 ## OUTBOX → Verifier

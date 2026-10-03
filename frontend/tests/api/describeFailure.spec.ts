@@ -10,7 +10,7 @@
 
 import { describe, expect, it } from 'vitest'
 
-import { ApiError, describeFailure } from '@/api/errors'
+import { ApiError, describeFailure } from '@/api/stockinfo/errors'
 import { translate } from '@/i18n'
 
 describe('describeFailure', () => {

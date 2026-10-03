@@ -27,7 +27,7 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
 import { useApiStatusStore } from '@/stores/apiStatus'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 import type { AssetGroup } from '@/types/portfolio'
 
 const { t } = useI18n()

@@ -4,15 +4,15 @@ import { flushPromises } from '@vue/test-utils'
 vi.mock('@/data/repository', () => import('../helpers/localRepositories'))
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteDB } from 'idb'
-import { LiveEventsClient } from '@/data/liveEvents'
-import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
+import { LiveEventsClient } from '@/api/data/liveEvents'
+import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/api/data/client'
 import { PortfolioRepository } from '@/db/repository'
 import { closeDb, DB_NAME } from '@/db/schema'
 import { useLiveSyncStore } from '@/stores/liveSync'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
-import type { StockInfoClient } from '@/api/client'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 
 class FakeEventStream extends EventTarget {
   closed = false

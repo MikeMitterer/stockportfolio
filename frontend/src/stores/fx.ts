@@ -1,10 +1,10 @@
 /** StockInfo hält den dauerhaften FX-Cache; hier liegen die benötigten Sitzungskurse. */
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { describeFailure } from '@/api/errors'
-import { toFxRate } from '@/api/mappers'
+import { describeFailure } from '@/api/stockinfo/errors'
+import { toFxRate } from '@/api/stockinfo/mappers'
 import { fxKey } from '@/domain/fx'
-import type { StockInfoClient } from '@/api/client'
+import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { FxRate } from '@/types/fx'
 
 export const useFxStore = defineStore('fx', () => {
