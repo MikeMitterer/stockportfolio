@@ -28,6 +28,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
 | [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | in Umsetzung |
+| [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-82 (Mike: „Eigenes Ticket direkt nach T-82“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -160,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-82 in Umsetzung. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-82 in Umsetzung, danach T-88. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -186,7 +187,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `048b2c5`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-82-stockinfo-ueber-eigenen-server.md`
+- `priority_chain`: `T-82-stockinfo-ueber-eigenen-server.md`, `T-88-rest-clients-an-einem-ort.md`
 - `priority_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
