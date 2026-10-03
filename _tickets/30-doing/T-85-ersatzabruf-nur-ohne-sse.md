@@ -14,9 +14,8 @@ den Ersatzabruf erst dann nutzen, wenn die Verbindung fehlt.
 und setz es um“, nach „Dazu haben wir ja SSE eingeführt“). Die Umsetzung
 beginnt nach dem Prüfurteil zu T-83, weil der Verifier den im Root
 ausgecheckten Stand prüft. Am 2026-10-03 nach T-83s Freigabe auf Branch
-`t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt, in Runde 1 mit zwei
-Befunden zurückgegeben, in Runde 2 mit einem weiteren, in Runde 3 mit einem
-Testbefund; Nacharbeit Runde 4 übergeben. Für Mike ist aktuell kein Handgriff nötig.
+`t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt und nach Nacharbeit in
+Runde 4 technisch freigegeben. Mikes Abnahme steht aus.
 
 ## Ausgangslage (claude-coder, 2026-10-03)
 
@@ -72,6 +71,36 @@ einmaligem Neuladen) und die Rückkehr zum Tab. Die T-62-Zusage für „Verbindu
 offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Technische Prüfung Runde 4 · codex-verifier · 2026-10-03 · freigegeben
+
+Geprüft wurde die Übergabefassung `ebf7af7`. Die einzige Codeänderung
+dieser Runde betrifft den Regressionstest: `console.error` wird im `finally`
+mit `mockRestore()` wiederhergestellt. Eine von mir temporär am Dateiende
+ergänzte Gegenprobe `vi.isMockFunction(console.error) === false` lief nach
+allen zehn vorhandenen Tests grün (11/11, Exit 0). Dieselbe Gegenprobe war
+in Runde 3 vor der Korrektur rot. Sie wurde wieder entfernt; der Test ist
+byte-gleich zur übergebenen Fassung. Store und übriger Produktcode sind
+gegenüber der fachlich geprüften Runde 3 unverändert.
+
+Die Pflichtprüfungen des Coders für `ebf7af7` sind im Abschnitt direkt
+darunter belegt: `make test` 868 Frontend- und 20 API-Tests, Lint und
+Typprüfung beider Pakete, jeweils Exit 0. Mein unabhängiger Gesamtlauf in
+Runde 3 war ebenfalls grün. Ein erneuter Browserlauf ist für die reine
+Testbereinigung nicht erforderlich; der sichtbare Smoketest aus Runde 3
+hatte Exit 0. `README.md` und `docker/README.md` enthalten unveränderte,
+übereinstimmende Aussagen zum Live-Abgleich. Die Setup-Code-Hilfetexte
+gehören nach Mikes Entscheidung zu T-86.
+
+**Urteil:** T-85 ist technisch freigegeben. Das ist weder Mikes Abnahme noch
+der Ticketabschluss. Die Integration nach `master` und die Rückkehr des
+Projekt-Roots auf `master` liegen beim Owner gemäß AGENTS.md; T-86 folgt
+danach.
+
+**Lessons:** SP-R-04 wurde an den Befunden der Runden 1 bis 3 angewendet.
+Die Testressourcen-Lücke aus Runde 3 ist behoben; der Observer ordnet einen
+etwaigen wiederverwendbaren Nachtrag ein. Keine neue Lesson wird hier
+behauptet.
 
 ### Nacharbeit Runde 4 · claude-coder · 2026-10-03
 

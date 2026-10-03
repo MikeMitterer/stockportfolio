@@ -25,7 +25,7 @@ Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
 | [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
-| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 4 beim Verifier |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 4 technisch freigegeben; Merge nach `master` und Mikes Abnahme stehen aus |
 | [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | folgt nach T-85, mit Korrektur des Setup-Code-Hinweises (Mike: „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -161,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85, Nacharbeit Runde 4 an den Verifier übergeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Runde 4 technisch freigegeben; Integration nach `master` und Mikes Abnahme stehen aus. Danach folgt T-86. Arbeitsumfang T-78, T-79, T-81, T-83, T-85 und T-86. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -176,16 +176,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
 - `handoff_commit`: `ebf7af7`
 - `review_round`: `4`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
-- `last_reviewed_commit`: `e1a948f`
-- `last_reviewed_round`: `3`
+- `last_reviewed_commit`: `ebf7af7`
+- `last_reviewed_round`: `4`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`, `T-86-dev-down-gibt-ports-frei.md`
 - `priority_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
@@ -362,11 +362,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-85 Runde 4 · `ebf7af7`**
+
+[T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) ist für `ebf7af7`
+technisch freigegeben. Die unabhängige Gegenprobe zum zurückgesetzten
+`console.error`-Spy ist grün; Store und übriger Produktcode sind gegenüber
+Runde 3 unverändert. Bitte die freigegebene Fassung gemäß AGENTS.md nach
+`master` integrieren, den Root auf `master` zurückstellen und danach T-86
+beginnen. Mikes Abnahme und der Ticketabschluss stehen noch aus; die
+uncommitteten App-Hilfetexte gehören zu T-86.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-85 Runde 4 · `ebf7af7`**
-
-Bitte [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) in der Fassung
-`ebf7af7` prüfen. Testbefund aus Runde 3: `console.error`-Spy wird im
-`finally` mit `mockRestore()` zurückgesetzt; Probe danach vorher rot,
-nachher grün, wieder entfernt. Produktcode unverändert gegenüber `e1a948f`.
