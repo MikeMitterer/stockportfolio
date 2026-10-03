@@ -88,7 +88,11 @@ reachable from the container, for example a Docker-internal name such as
 address. `localhost` means the container itself. StockInfo needs no CORS
 setting for StockPortfolio. If a reverse proxy in your home network serves the
 app over HTTPS, set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin
-and `STOCKPORTFOLIO_SECURE_COOKIES=true`.
+and `STOCKPORTFOLIO_SECURE_COOKIES=true`. Use only scheme, host and port, for example `https://portfolio.example.com`.
+A trailing slash is ignored; a path, query or fragment stops the start
+with an error in the log. If setup or login reports that the browser
+address does not match the server configuration, compare this value with
+the address bar.
 
 The container also serves its own account API at `/api/*`. It is separate from
 StockInfo. Without a StockInfo address, setup and login still work, while the
@@ -129,7 +133,7 @@ Start with `docker compose up -d`.
 | Container port `8080/tcp` | Web interface; map it to your preferred host port. |
 | `STOCKINFO_API_URL` | Your StockInfo API URL, reachable from the container. Set it when starting the container. |
 | `/data` volume | Persistent SQLite accounts and sessions. Reuse it when recreating the container. |
-| `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port. Required behind a reverse proxy. |
+| `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port, without a path (for example `https://portfolio.example.com`). A trailing slash is ignored. Required behind a reverse proxy. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | Set to `true` when the browser uses HTTPS. Local HTTP testing uses `false`. |
 | `TZ` | Container log timezone; defaults to `UTC`. The interface uses the browser's timezone. |
 

@@ -110,7 +110,7 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 | WebUI Port | Default host port 8088, container port **8080** |
 | StockInfo API | Required: your StockInfo instance's URL, reachable from the **container** |
 | App data | Map `/mnt/user/appdata/stockportfolio` to container path `/data` for accounts and private portfolios. Back up this directory. |
-| Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy. |
+| Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy: scheme, host and port only, for example `https://portfolio.example.com`. A trailing slash is ignored; a path stops the start with an error in the container log. If setup or login reports that the browser address does not match the server configuration, compare this field with the address bar. |
 | Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
 | Timezone | Container log timezone; defaults to UTC |
 

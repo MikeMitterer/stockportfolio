@@ -648,7 +648,11 @@ login does not protect StockInfo's own address: anyone who reaches that
 address can use StockInfo.
 If a reverse proxy in your home network serves the app over HTTPS, set
 `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
-`STOCKPORTFOLIO_SECURE_COOKIES=true`.
+`STOCKPORTFOLIO_SECURE_COOKIES=true`. Use only scheme, host and port, for example `https://portfolio.example.com`.
+A trailing slash is ignored; a path, query or fragment stops the start
+with an error in the log. If setup or login reports that the browser
+address does not match the server configuration, compare this value with
+the address bar.
 The same account's open browsers use a long-lived `/api/data/events` stream
 for change notices. A reverse proxy must pass that stream without buffering
 and keep idle connections open for more than the server's 15-second keep-alive
