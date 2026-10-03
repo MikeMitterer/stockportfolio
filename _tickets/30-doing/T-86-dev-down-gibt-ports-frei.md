@@ -115,11 +115,57 @@ Nur der lokale Dev-Stack. Kein Push, kein Docker-Hub- oder Unraid-Update.
 ### Auflösung
 
 Runde 1 mit blockierendem Befund zurückgegeben; Befund in ProjectTools
-(`6046a16`) behoben, Nacharbeit Runde 2 übergeben. Technische Freigabe steht aus.
+(`6046a16`) behoben. Runde 2 von `codex-verifier` technisch freigegeben.
 Mike hat den menschlichen Abschluss für den Fall der Codex-Freigabe vorab
-zugesagt; diese Bedingung ist noch nicht erfüllt.
+zugesagt. Die weitere Abwicklung liegt beim Coder; der ProjectTools-Commit
+ist lokal noch nicht gepusht.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Technische Prüfung Runde 2 · codex-verifier · 2026-10-03
+
+**Prüffassung:** StockPortfolio `048b2c5` auf
+`t-86-dev-down-gibt-ports-frei` mit ProjectTools `6046a16` über den lokalen
+`.libs/ProjectTools`-Link. Rollen, Owner, Branch und Paketversion vor dem
+Review abgeglichen. **Urteil: technisch freigegeben (`approved`).** Keine
+menschliche Abnahme durch den Verifier.
+
+**Befund 1 behoben:** `isStaleOvermindSocket` verbindet sich nun relativ aus
+dem Projektverzeichnis mit dem Unix-Socket. Nur abgewiesene Verbindungen
+gelten als verwaist; bei anderen Fehlern bleibt der Socket erhalten. Die
+Regression prüft einen lebenden, relativ gebundenen Socket für `--status`
+und `--kill` sowie einen tatsächlich verwaisten Socket. Der vollständige
+ProjectTools-Testlauf unter voller Prozess- und Portberechtigung endete mit
+Exit 0: **50/50 Tests**. Ein Versuch in der eingeschränkten Sandbox konnte
+keine lokalen Ports binden und wurde abgebrochen; er ist kein fachliches
+Testergebnis.
+
+**Unabhängige Live-Gegenprobe:** `make dev-up` mit eigenem temporärem
+Datenverzeichnis gestartet; `overmind status` meldete Frontend und API als
+laufend. `dev-ports.sh --status` zeigte Master, tmux und die belegten Ports
+5175/8080, ohne den lebenden Socket als verwaist zu melden. Nach `kill -9`
+des eigenen Overmind-Masters beendete `make dev-down` den tmux-Rest, entfernte
+den nun verwaisten Socket und gab beide Ports frei (Exit 0). Die erfassten
+PIDs waren beendet. Ein sofortiger Neustart gelang; reguläres `dev-down`
+und drei weitere Aufrufe ohne Stack endeten jeweils mit Exit 0. Am Ende:
+kein Socket, kein Overmind, beide Ports frei; das Testdatenverzeichnis ist
+entfernt. Der Schutz eines fremden Port-Lauschers wurde bereits in Runde 1
+unabhängig geprüft und ist im unveränderten StockPortfolio-Code erhalten.
+
+**Umfang und Doku-Abgleich:** Zwischen `d6c0ef1` und `048b2c5` gibt es
+keine Produktänderung; die Pflichtprüfungen der Runde 1 gelten für dieselbe
+Produktfassung. Der neue ProjectTools-Commit ergänzt seine README um die
+Socket-Regel. StockPortfolios `README.md` und `docker/README.md` bleiben
+inhaltlich konsistent; der lokale Dev-Stack betrifft die Container-Anleitung
+nicht. Der Setup-Code-Hinweis in DE/EN bleibt unverändert auf
+`overmind connect api`.
+
+**Lessons und offene Übernahme:** [SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md)
+ist durch Korrektur und Regression erfüllt; [SP-R-05](../.agents/lessons/SP-R-05-nach-dem-stopp-alle-reste-der-gestarteten-prozesse-pruefen.md)
+durch Restekontrolle und sofortigen Neustart. Der ProjectTools-Commit
+`6046a16` ist lokal auf `master`, aber noch nicht auf `origin/master`.
+Veröffentlichung und Projektabschluss bleiben beim `claude-coder` nach den
+geltenden Freigaben; die technische Freigabe hier behauptet keinen Push.
 
 ### Nacharbeit Runde 2 · claude-coder · 2026-10-03
 
