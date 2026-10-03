@@ -103,12 +103,54 @@ eigenen Auftrag.
 
 ### Auflösung
 
-**Runde 1 technisch zurückgegeben (2026-10-03).** Die sichtbaren Routenläufe
-sind unabhängig grün; zwei Befunde zu HTTP-Status und Dokumentation bleiben
-offen. Mike hatte T-82 vor Prüfbeginn zurückgeholt („Hol T-82 zurück und
-ergänze die Prüfungen“); die ältere Übergabe am Ende gilt nicht mehr.
+**Runde 2 technisch freigegeben (2026-10-03).** Die zwei Befunde aus Runde 1
+sind behoben und unabhängig nachgeprüft. Menschlicher Abschluss und
+Veröffentlichung stehen aus. Mike hatte T-82 vor dem ersten Review
+zurückgeholt („Hol T-82 zurück und ergänze die Prüfungen“); die ältere
+Übergabe am Ende gilt nicht mehr.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Technische Prüfung Runde 2 · codex-verifier · 2026-10-03
+
+**Prüffassung:** StockPortfolio `9409be1` auf
+`t-82-stockinfo-ueber-eigenen-server`; Templates-Commit `a205317` lokal auf
+`master`. Rollen, Owner, Branch und Paketversion vor dem Review abgeglichen.
+**Urteil: technisch freigegeben (`approved`).** Keine menschliche Abnahme
+durch den Verifier.
+
+**Befund 1 behoben:** Die Weiterleitung baut bei 204, 205 und 304 eine
+Antwort mit `null` als Rumpf. Dieselbe isolierte Gegenprobe, die in Runde 1
+mit `TypeError` und Exit 1 scheiterte, lieferte jetzt HTTP 204 mit Exit 0.
+Der neue Servertest prüft alle drei Statuscodes, leeren Rumpf, erlaubte
+`cache-control`- und gesperrte interne Kopfzeilen. `make test` endete mit
+Exit 0: Frontend 83 Dateien/865 Tests, API 6/28.
+
+**Befund 2 behoben:** `unraid/README.md` und
+`Templates/templates/stockportfolio.xml` sagen nicht mehr, der Browser
+verbinde sich direkt mit StockInfo. `README.md`, `docker/README.md`,
+`unraid/README.md` und die XML-Vorlage beschreiben nun übereinstimmend:
+Weiterleitung nur für angemeldete Nutzer, Zugriff auf StockInfos eigene
+Adresse gesondert schützen, StockInfo-Adresse vom Container erreichbar,
+kein CORS für StockPortfolio nötig. Die betroffenen Abschnitte und der
+Templates-Commit wurden unabhängig gelesen. Das Templates-Repository ist
+noch vor `origin/master` und wird hier nicht gepusht.
+
+**Weitere Prüfung:** Lint und Typecheck für Frontend und API je Exit 0,
+`git diff --check` ohne Befund. Die in Runde 1 unabhängig grünen sichtbaren
+Teststack- und Containerläufe umfassen alle 12 freigegebenen Routen,
+401/404 sowie den 502-Ausfall. Die Nacharbeit verändert diese Routen und
+den Browserablauf nicht; ein weiterer Browserlauf war für die zwei gezielten
+Korrekturen nicht erforderlich. Kein Teststack wurde in dieser Runde
+gestartet. [SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md)
+ist mit der ausdrücklichen Gegenprobe erfüllt; der Doku-Inventarbefund ist
+in den betroffenen Dateien behoben.
+
+**Board-Hinweis:** Die OUTBOX war bei der Übergabe leer und die INBOX
+enthielt noch die verarbeitete Rückgabe aus Runde 1. STATUS nannte Rolle,
+Owner, Commit und Runde eindeutig; Umfang und Belege standen im Ticket.
+Der Verifier hat die alte Nachricht beim Prüfurteil ersetzt. Bei der nächsten
+Übergabe bitte die Mailbox wieder nach Workflow füllen und abarbeiten.
 
 ### Nacharbeit Runde 1 · claude-coder · 2026-10-03
 
