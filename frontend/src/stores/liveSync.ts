@@ -22,6 +22,8 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
   let quoteClient: StockInfoClient | null = null
   let fallbackTimer: ReturnType<typeof setInterval> | null = null
   let fallbackMs = 30_000
+  /** Zustand des SSE-Stroms selbst, getrennt von Fehlern einzelner Abrufe. */
+  let streamConnected = false
   let pending: Promise<void> = Promise.resolve()
   let visiblePending = 0
   let generation = 0
@@ -108,9 +110,14 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
       syncing.value = true
     }, 250) : null
     pending = pending.catch(() => undefined).then(async () => {
-      if (queuedGeneration === generation) await action()
+      if (queuedGeneration !== generation) return
+      await action()
+      // Ein erfolgreicher Abruf bei offenem Strom hebt eine frühere Warnung auf.
+      if (queuedGeneration === generation && streamConnected && status.value !== 'connected') setStatus('connected')
     }).catch((error: unknown) => {
       if (queuedGeneration !== generation) return
+      // Nur die Warnung: Der Strom steht womöglich weiter, der Ersatzabruf
+      // richtet sich allein nach ihm.
       setStatus('disconnected')
       console.error('Private data synchronization failed', error)
     }).finally(() => {
@@ -126,11 +133,13 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
    * Der Ersatzabruf überbrückt nur eine fehlende SSE-Verbindung (T-85). Steht
    * sie, meldet sie jede Änderung selbst; nach jedem Verbinden lädt die App
    * ohnehin einmal neu. Früher lief er fest alle 30 Sekunden und lieferte auch
-   * bei stehender Verbindung ständig neue Zeilen.
+   * bei stehender Verbindung ständig neue Zeilen. Maßgeblich ist der Strom,
+   * nicht die angezeigte Warnung: Ein fehlgeschlagener Abruf bei offenem Strom
+   * schaltet ihn nicht ein.
    */
   function setStatus(next: typeof status.value): void {
     status.value = next
-    const wanted = client !== null && next !== 'connected'
+    const wanted = client !== null && !streamConnected
     if (wanted && fallbackTimer === null) {
       fallbackTimer = setInterval(() => queue(refreshAll, true), fallbackMs)
     } else if (!wanted && fallbackTimer !== null) {
@@ -156,13 +165,18 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     quoteClient = stockInfoClient ?? null
     lastQuoteRevision = 0
     fallbackMs = fallbackIntervalMs
+    streamConnected = false
     setStatus('connecting')
     eventsClient.start({
       connected: () => {
+        streamConnected = true
         setStatus('connected')
         queue(refreshAll, true)
       },
-      disconnected: () => { setStatus('disconnected') },
+      disconnected: () => {
+        streamConnected = false
+        setStatus('disconnected')
+      },
       resource: (event) => { void onResource(event, eventsClient) },
     })
     document.addEventListener('visibilitychange', onVisibilityChange)
@@ -172,6 +186,7 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     generation += 1
     client?.stop()
     client = null
+    streamConnected = false
     quoteClient = null
     document.removeEventListener('visibilitychange', onVisibilityChange)
     visiblePending = 0

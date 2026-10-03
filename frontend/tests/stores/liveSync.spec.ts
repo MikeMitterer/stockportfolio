@@ -89,6 +89,39 @@ describe('Live-Abgleich der Stores', () => {
     expect(refresh).toHaveBeenCalledTimes(afterReconnect)
   })
 
+  it('startet den Ersatzabruf nicht, wenn bei stehendem Stream ein Datenabruf fehlschlägt (T-85)', async () => {
+    const portfolio = usePortfolioStore()
+    await portfolio.load()
+    const id = portfolio.portfolio!.id
+    const refresh = vi.spyOn(portfolio, 'refreshFromServer')
+    const stream = new FakeEventStream()
+    const live = useLiveSyncStore()
+    const fallbackMs = 20
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    live.start(new LiveEventsClient(() => stream), fallbackMs)
+    try {
+      stream.dispatchEvent(new Event('open'))
+      await vi.waitFor(() => expect(refresh).toHaveBeenCalled())
+      await flushPromises()
+
+      // Ein einzelner Abruf schlägt fehl; der SSE-Stream bleibt offen.
+      refresh.mockRejectedValueOnce(new Error('Konto-API antwortet nicht'))
+      stream.resource(id, 7)
+      await vi.waitFor(() => expect(live.status).toBe('disconnected'))
+      const afterFailure = refresh.mock.calls.length
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 6))
+      await flushPromises()
+      expect(refresh).toHaveBeenCalledTimes(afterFailure)
+
+      // Das nächste Ereignis lädt erfolgreich und zeigt die Verbindung wieder an.
+      stream.resource(id, 8)
+      await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(afterFailure + 1))
+      await vi.waitFor(() => expect(live.status).toBe('connected'))
+    } finally {
+      live.stop()
+    }
+  })
+
   it('ignoriert das eigene Ereignis, auch wenn es vor der Schreibantwort ankommt', async () => {
     const portfolio = usePortfolioStore()
     await portfolio.load()

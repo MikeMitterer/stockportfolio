@@ -14,8 +14,8 @@ den Ersatzabruf erst dann nutzen, wenn die Verbindung fehlt.
 und setz es um“, nach „Dazu haben wir ja SSE eingeführt“). Die Umsetzung
 beginnt nach dem Prüfurteil zu T-83, weil der Verifier den im Root
 ausgecheckten Stand prüft. Am 2026-10-03 nach T-83s Freigabe auf Branch
-`t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt und in Runde 1 an den
-Verifier übergeben. Für Mike ist aktuell kein Handgriff nötig.
+`t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt, in Runde 1 mit zwei
+Befunden zurückgegeben und in Runde 2 erneut übergeben. Für Mike ist aktuell kein Handgriff nötig.
 
 ## Ausgangslage (claude-coder, 2026-10-03)
 
@@ -71,6 +71,75 @@ einmaligem Neuladen) und die Rückkehr zum Tab. Die T-62-Zusage für „Verbindu
 offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Nacharbeit Runde 2 · claude-coder · 2026-10-03
+
+**Befund 1 · Ersatzabruf bei offenem SSE-Stream:** behoben.
+
+- `liveSync.ts`: Neuer Zustand `streamConnected`, gesetzt nur von
+  `LiveEventsClient` (`connected` / `disconnected`), zurückgesetzt bei
+  `start` und `stop`. Der Ersatzabruf richtet sich allein danach
+  (`client !== null && !streamConnected`), nicht mehr nach dem angezeigten
+  `status`.
+- Ein fehlgeschlagener Abruf setzt weiter `status = 'disconnected'` (Warnung
+  in der Statuszeile), schaltet den Ersatzabruf aber nicht ein. Der nächste
+  erfolgreiche Abruf bei offenem Strom stellt `connected` wieder her; bisher
+  blieb die Warnung bis zum nächsten Wiederverbinden stehen.
+- Neuer Regressionstest „startet den Ersatzabruf nicht, wenn bei stehendem
+  Stream ein Datenabruf fehlschlägt (T-85)“: Strom offen, ein Abruf schlägt
+  fehl, 120 ms mit 20-ms-Takt kein weiterer Abruf, das nächste Ereignis lädt
+  erfolgreich und zeigt wieder `connected`.
+
+**Befund 2 · Doku und Makefile widersprüchlich:** Ursache war mein Fehler.
+`2984a96` hatte `README.md` und `AGENTS.md` als ganze Dateien übernommen,
+darin Mikes damals uncommittete `dev-up`/`dev-down`-Texte. Folge:
+
+- `8316c15` nahm Mikes Abschnitte aus dem T-85-Commit heraus; committet
+  blieben nur die T-85-Aussagen (Live-Abgleich, 100 px). Mikes Arbeitsstand
+  wurde danach byte-gleich wiederhergestellt (`cmp -s`).
+- Mike hat inzwischen das `Makefile` selbst committet (`dcd274d`; `dev`
+  entfällt, `dev-up`/`dev-down` kommen dazu). Auf seinen Wunsch („Ja, als
+  eigenen Commit“) stehen seine README-/AGENTS-Texte jetzt als eigener Commit
+  `50f5c4d` („docs(dev): …“), getrennt von T-85. Damit passen Makefile und
+  dokumentierter Startweg in derselben Fassung zusammen.
+- Inventar `git grep "make dev\b"`: übrig sind `AGENTS.md:90` (StockInfos
+  eigenes `make dev`, richtig) und das Backlog-Ticket T-80 (Beschreibung von
+  damals, unverändert).
+- **Bekannter Rest, nicht Teil von T-85:** Der committete Setup-Code-Hinweis
+  in `frontend/src/i18n/de.ts`/`en.ts` (`auth.setupCodeHelp`) nennt noch
+  „make dev“. Mikes uncommittete Änderung ersetzt ihn durch `make dev-up` und
+  `overmind echo api`; sie bleibt nach seiner Entscheidung uncommittet.
+
+**Pflichtprüfungen** (nach letzter Änderung):
+
+| Befehl | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 84 Dateien / 868 Tests (+1), API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check` (eigene Dateien) | ohne Befund |
+
+**Rote Gegenprobe:**
+
+| # | Eingebauter Fehler | Beobachtet | Exit |
+|---|---|---|---|
+| R4 | `liveSync.ts` aus `2984a96` (Runde 1) | nur der neue Regressionstest rot (zu viele Abrufe nach dem Fehler); übrige 9 grün | 1 |
+| R5 | Wiederherstellung von `connected` nach erfolgreichem Abruf entfernt | neuer Regressionstest rot am letzten Schritt | 1 |
+
+Datei danach byte-gleich zurück (`cmp -s`).
+
+**Sichtbare Prüfung:** `smoke:live-sync` gegen frischen Teststack: „Alle
+Prüfschritte bestanden.“, Exit 0, Dauer 82 s (Playwright-Protokoll
+11:45:05–11:46:27 UTC). **Einschränkung:** Ein Lauf davor hing über 10 Minuten
+nach „Anmeldung“, ohne Fehlermeldung; ich habe ihn abgebrochen (eigener
+Prozess, `kill`), Stack gestoppt. Die Ursache ist nicht gefunden; der
+nächste Lauf mit `DEBUG=pw:api` und `timeout 120` lief ohne Hänger durch.
+
+**Doku-Abgleich:** Live-Abgleich-Aussagen in `README.md` und
+`docker/README.md` unverändert gegenüber Runde 1 und weiterhin
+gleichlautend; das neue Verhalten nach einem Abruffehler (Warnung, kein
+Ersatzabruf, Rückkehr nach Erfolg) ändert keine dort gemachte Aussage.
+
 
 ### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03 · Rückgabe
 
