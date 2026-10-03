@@ -67,7 +67,7 @@ kein Handgriff nötig.
 
 ### Verify
 
-Legende: ✅ geprüft (Claude, 2026-10-03, Branch-Stand `0cf50c2`).
+Legende: ✅ geprüft (Claude, 2026-10-03, Branch-Stand `b246305`).
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
@@ -77,7 +77,7 @@ Legende: ✅ geprüft (Claude, 2026-10-03, Branch-Stand `0cf50c2`).
 | 4 | Container mit `STOCKINFO_API_URL` auf einen Docker-internen Namen | Kurse erscheinen | ✅ |
 | 5 | `make test`, `make lint`, `make typecheck` | Grün | ✅ |
 | 6 | Doku-Abgleich der drei READMEs und des Templates | Keine Aussage mehr zu CORS oder Browser-Erreichbarkeit der API | ✅ |
-| 7 | Sichtbare Routenabdeckung mit einem Repo-Skript, gegen Teststack **und** Container | Jede neue Server-Route kommt im Browserlauf vor: `GET /api/stockinfo-target` und jeder freigegebene Pfad unter `/api/stockinfo/*` mit 200; ohne Sitzung 401, außerhalb der Freigabeliste 404; Ausfall als 502 `stockinfo_unreachable` sichtbar gemeldet | ➖ |
+| 7 | Sichtbare Routenabdeckung mit einem Repo-Skript, gegen Teststack **und** Container | Jede neue Server-Route kommt im Browserlauf vor: `GET /api/stockinfo-target` und jeder freigegebene Pfad unter `/api/stockinfo/*` mit 200; ohne Sitzung 401, außerhalb der Freigabeliste 404; Ausfall als 502 `stockinfo_unreachable` sichtbar gemeldet | ✅ |
 
 ### Akzeptanzkriterien
 
@@ -86,7 +86,7 @@ Legende: ✅ geprüft (Claude, 2026-10-03, Branch-Stand `0cf50c2`).
 - [x] Nur die genutzten StockInfo-Pfade sind über die Weiterleitung erreichbar, nur angemeldet.
 - [x] Bestehende Installationen funktionieren mit derselben `STOCKINFO_API_URL`, sofern der Container die Adresse auflösen kann.
 - [x] Doku-Abgleich in StockPortfolio und Templates; Folgeänderung in StockInfo als dortiges Ticket.
-- [ ] Die sichtbaren Prüfungen enthalten alle mit T-82 im StockPortfolio-Server
+- [x] Die sichtbaren Prüfungen enthalten alle mit T-82 im StockPortfolio-Server
       hinzugefügten StockInfo-Routen (Mike, 2026-10-03: „Bei den visuellen
       Checks - wichtig natürlich dass die neuen API-Routen zu StockInfo in den
       Tests enthalten sind - die wurden bei T-82 ja beim StockPortfolio-Server
@@ -107,6 +107,77 @@ eigenen Auftrag.
 ergänze die Prüfungen“. Kursverlauf, Fehlerfall und Container waren nur
 teilweise oder von Hand sichtbar geprüft; Verify #7 und das letzte
 Akzeptanzkriterium kommen dazu. Die Übergabe Runde 1 unten gilt nicht mehr.
+
+**Übergabe Runde 1, neu (claude-coder, 2026-10-03).** Branch
+`t-82-stockinfo-ueber-eigenen-server`, Stand `b246305`. Gegenüber der
+zurückgeholten Fassung:
+
+- **Freigabeliste nur mit genutzten Pfaden** (`50092ac`): Die Ausgangslage
+  nannte `GET /quote/{isin}/history` als genutzt, `getQuoteHistory` hatte aber
+  keinen Aufrufer. Route, Methode und Typ `QuotePoint` sind entfernt; der
+  Servertest erwartet die Abweisung. Rotlauf: Test zuerst umgestellt → `GET
+  /quote/IE00B4L5Y983/history: expected true to be false`; danach grün.
+- **`frontend/scripts/stockinfo-proxy-check.mjs`** (`fef5388`, `a8d2f01`,
+  npm `check:stockinfo-proxy`): spielt
+  `frontend/tests/fixtures/browser/stockinfo-routes.backup.json` ein (ISIN,
+  USD-Papiere, NOSI.DE ohne ISIN) und prüft Verlaufslinien, Kursverlauf einer
+  Position, „Aktualisieren“, Assets-Übersicht, Einstellungen › Links und
+  Statusseite. **Routenabdeckung:** Die Muster liest das Skript aus
+  `api/src/stockinfo/proxy.ts`; jedes muss im Lauf mit 200 vorkommen, dazu
+  `GET /api/stockinfo-target`. **Abweisungen:** `/history` und `/docs` → 404,
+  `/api/stockinfo/health` und `/api/stockinfo-target` ohne Sitzung → 401.
+  Mit `--unreachable`: alle Antworten 502 `stockinfo_unreachable`, Dialog
+  „Dienst nicht erreichbar“ mit dem Grund vom Server, Statusseite „nicht
+  erreichbar“ samt Grund. Immer: keine Browseranfrage an eine fremde
+  Herkunft.
+- **`docker/browser-check.sh`** (`fef5388`): zwei Wegwerf-Container gegen den
+  Teststack, StockInfo über `host.docker.internal` und unter einem Namen, der
+  nicht auflöst; ersetzt die Handprüfung mit der Chrome-Erweiterung aus der
+  zurückgeholten Fassung.
+- **`live-sync-smoke.mjs`** (`b246305`): löschte feste Symbole des
+  Beispiel-Depots und brach ab, wenn ein anderes Skript zuvor ein eigenes
+  Depot ins selbe Konto gespielt hatte (Rotlauf: Timeout bei `EQQQ.DE`). Jetzt
+  die Hälfte der vorhandenen Marktpositionen.
+
+**Belege dieser Fassung.**
+
+1. `make test`: Frontend 83 Dateien / 865 Tests, API 6 / 27, grün. Lint und
+   Typecheck `frontend` und `api`: Exit 0. `git diff --check` sauber.
+2. Teststack (ohne `--demo-details`), `check:stockinfo-proxy`: alle Schritte
+   OK, Routenabdeckung 12 Routen mit 200 (`/api/stockinfo-target`,
+   `/instruments`, `/fields`, `/instrument-types`, `/fx`, `/health`,
+   `/quote`, `/quote/{isin}`, `/quote/{isin}/daily`,
+   `/quote/by-symbol/NOSI.DE/daily`, `POST /refresh/{isin}`,
+   `POST /refresh/by-symbol/NOSI.DE`), Abweisungen wie erwartet, nur
+   Anfragen an `127.0.0.1:5175`.
+   Rotläufe: R1 `--unreachable` gegen erreichbares StockInfo → 5 `FEHLER`
+   (200 statt 502, kein Dialog, Zustand „erreichbar“), Exit 1. R2 falsche
+   `STOCKINFO_URL` → `FEHLER Statusseite: Adresse …`, Exit 1. R3 zusätzliches
+   Muster `/^\/new-route$/` in `proxy.ts` → `FEHLER Routenabdeckung: GET
+   ^\/new-route$: nie aufgerufen`, Exit 1; Datei danach wiederhergestellt.
+   R4 laufender Stack mit alter Serverfassung → `/history → 200 statt 404`
+   (erst nach Neustart grün).
+3. Container (`make build` 2026-10-03 15:12 UTC), `docker/browser-check.sh`:
+   Fall 1 `http://host.docker.internal:8899` alle Schritte OK, dieselben 12
+   Routen, nur `127.0.0.1:18091`. Fall 2 `http://stockinfo-missing.invalid:8000`:
+   502 `stockinfo_unreachable`, Dialog und Statusseite nennen „vom
+   StockPortfolio-Server aus nicht erreichbar“. „Beide Fälle bestanden.“
+   Rotläufe davor: Klick hinter dem Ausfall-Dialog (Fall 2) und Neuladen nach
+   dem Import (Fall 1) brachen ab, beides im Skript behoben (`a8d2f01`).
+4. Gegenprobe der übrigen Abläufe auf dem Endstand: `live-sync-smoke.mjs`
+   alle Prüfschritte bestanden, `notice-texts-check.mjs` grün,
+   `demo-data-check.mjs` (Stack mit `--demo-details`) grün.
+5. `docker/smoke-test.sh` aus der zurückgeholten Fassung (31 von 31) bleibt
+   gültig; das Image hat seither nur die entfernte Route geändert, die
+   `browser-check.sh` mit 404 belegt.
+
+**Doku-Abgleich dieser Fassung.** `README.md` › Building and publishing:
+`smoke-test.sh` nennt die Weiterleitung, neuer Absatz zu `browser-check.sh`
+und `check:stockinfo-proxy`. `AGENTS.md` › Browserprüfung: Skript, Regel
+„neue StockInfo-Route braucht einen sichtbaren Schritt“, Container-Prüfung.
+`frontend/tests/fixtures/browser/README.md`: Abschnitt „StockInfo-Routen
+prüfen“. `docker/README.md` bleibt unverändert: Die Prüfwerkzeuge sind
+Entwicklerwerkzeuge und gehören ins Projekt-README.
 
 **Übergabe Runde 1 an den Verifier (claude-coder, 2026-10-03).** Branch
 `t-82-stockinfo-ueber-eigenen-server`, Code- und Dokustand `0cf50c2`.
