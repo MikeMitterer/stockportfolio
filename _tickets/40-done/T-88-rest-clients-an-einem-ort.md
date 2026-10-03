@@ -1,5 +1,7 @@
 # T-88 · REST-Clients des Frontends an einem Ort
 
+**Abgeschlossen am 2026-10-03** (Mike, 2026-10-03: „T-88 ist abgenommen, push es“). Technisch freigegeben in Runde 2 (`343de5d`), nach `master` gemergt (`57c89fc`) und zu `origin` gepusht.
+
 **Warum dieses Ticket:** Alle REST-Aufrufe des Frontends laufen zwar über
 Client-Klassen, diese liegen aber über drei Ordner verteilt und neben Code,
 der mit dem Netz nichts zu tun hat. Wer wissen will, mit welchen Servern die
