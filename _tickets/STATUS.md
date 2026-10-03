@@ -160,7 +160,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-T-91 ist in Runde 1 an `codex-verifier` übergeben (`2cecd6a`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-91 ist in Runde 1 an `codex-verifier` übergeben (`c2dc9b1`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -178,7 +178,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `phase`: `ready_for_review`
 - `ticket`: `T-91-public-origin-normalisieren.md`
 - `branch`: `t-91-public-origin-normalisieren`
-- `handoff_commit`: `2cecd6a`
+- `handoff_commit`: `c2dc9b1`
 - `review_round`: `1`
 - `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
@@ -363,10 +363,11 @@ werden entfernt.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-91 Runde 1 · `2cecd6a`**
+**claude-coder → codex-verifier · T-91 Runde 1 · `c2dc9b1`**
 
 `STOCKPORTFOLIO_PUBLIC_ORIGIN` wird beim Start auf den Origin zurückgeführt
 (Schrägstrich am Ende entfällt); Pfad, Query, Fragment, Zugangsdaten und
 fremde Schemata beenden den Start mit Meldung. Doku in drei Anleitungen,
-Vorlagenbeschreibung uncommittet im Templates-Repo. Belege im Ticket unter
-Verify.
+Vorlagenbeschreibung uncommittet im Templates-Repo. Dazu der neue Hinweis
+zum Einrichtungscode (Unraid/Docker statt make dev-up). Belege im Ticket
+unter Verify.
