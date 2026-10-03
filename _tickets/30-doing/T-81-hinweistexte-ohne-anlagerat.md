@@ -12,7 +12,8 @@ Am 2026-10-03 aktiviert (Mike: „aktiviere T-81 in StockPortfolio“) auf
 Branch `t-81-hinweistexte-ohne-anlagerat`. Umsetzung Runde 1 am 2026-10-03
 durch `claude-coder` an den Verifier übergeben; Verifier-Prüfung Runde 1
 durch `claude-verifier`: `changes_requested`. Nacharbeit Runde 2 am
-2026-10-03 übergeben (siehe Review-Verlauf).
+2026-10-03 übergeben; Verifier-Prüfung Runde 2: `approved` (technische
+Freigabe, Mikes Abschluss steht aus; siehe Review-Verlauf).
 
 ## Befund (Claude, 2026-10-03)
 
@@ -106,9 +107,49 @@ Paketmetadaten. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
-Umgesetzt, Nacharbeit Runde 2 übergeben; technische Freigabe und Mikes Abschluss stehen aus.
+Umgesetzt; in Runde 2 durch `claude-verifier` technisch freigegeben. Mikes Abschluss steht aus.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 2 · claude-verifier · 2026-10-03
+
+**Geprüfte Fassung:** `d0b0d07` (Übergabe-Commit `186844f`; Produktdateien
+unter `frontend/`, `api/`, `scripts/` im Root identisch mit `d0b0d07`).
+**Urteil: `approved`** – technische Freigabe. Mikes Abschluss steht aus.
+
+**Befund 1 aus Runde 1 erledigt.** `method.bandsBody3` besteht jetzt in DE
+und EN aus drei Sätzen ohne Doppelpunkt. Er nennt einen Grund aus der
+Rechnung: Unter dem Ziel wäre ein Kauf nötig, über dem Ziel ein Verkauf mit
+Steuern und Gebühren. Das passt zu `bandsBody` direkt davor („zahlt Gebühren
+und Steuern“). Eine Markteinschätzung enthält der Satz nicht. DE und EN sagen
+dasselbe. Die Aussage „Viele lassen … nach oben mehr Spielraum“ passt zur
+Vorgabe der App: `settings.ts:53`, `lowerPercent: 6`, `upperPercent: 15`.
+Als Beschreibung üblicher Praxis ist das keine Kauf- oder Verkaufsempfehlung.
+Das Prüfskript erwartet beide Sätze und schließt die Einleitung aus Runde 1
+aus.
+
+**Befund 2 aus Runde 1 erledigt.** Die Übergabe Runde 1 nennt an allen drei
+Stellen `bandsBody3`. Laut `git diff master..d0b0d07` ist im Methodenteil nur
+dieser Schlüssel geändert.
+
+| Prüfung | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 82 / 852, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check 3a10ed9..d0b0d07` | ohne Befund |
+| Sichtbare Browserprüfung, Teststack `--stack --run --demo-accounts` | `check:notice-texts` → vier Mal `OK`, Exit 0. Screenshot der deutschen Methodenseite angesehen: Absatz mit drei Sätzen im Abschnitt „Toleranzbänder“, Layout unverändert. Stack gestoppt, Ports 5175/8080/8899 frei. |
+| Rote Gegenproben A/B | Nicht wiederholt (kein Eingriff in Produktcode). Diesmal je ein Fall allein; Exit 1 hängt allein an `failures`. Als Beleg ausreichend. |
+
+Unverändert gültig aus Runde 1: Textinventar, Lizenzfelder, Teststack-Importe,
+Support-Absatz in beiden READMEs, `AGENTS.md` · Browserprüfung. Seit `471eefd`
+hat sich dort nichts geändert (`git diff 471eefd..d0b0d07` berührt nur
+`de.ts`, `en.ts`, das Prüfskript und das Ticket).
+
+**Lessons:** Die Einordnung der Befunde aus Runde 1 steht im Ticket noch
+nicht. Für den Abschluss bleibt sie offen; zuständig ist der Observer, sonst
+der Coder. Vorschlag: Befund 2 als Anwendung von SP-R-02; Befund 1 als
+Einzelfall (Textbaustein in einen vorhandenen Satz eingesetzt, ein Beleg).
 
 ### Nacharbeit Runde 2 · claude-coder · 2026-10-03
 

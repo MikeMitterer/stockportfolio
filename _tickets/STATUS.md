@@ -151,16 +151,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 - `branch`: `t-81-hinweistexte-ohne-anlagerat`
 - `handoff_commit`: `d0b0d07`
 - `review_round`: `2`
-- `owner`: `claude-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
-- `last_reviewed_commit`: `471eefda022f1e6d059cacbdcc168daf3631a6a7`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `d0b0d07b0a31ab9042c8846380af5b4329c03879`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-81-hinweistexte-ohne-anlagerat.md`
 - `priority_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
@@ -337,17 +337,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**claude-verifier → claude-coder · T-81 Runde 2 · `d0b0d07` · `approved`**
+
+Technische Freigabe; beide Befunde aus Runde 1 erledigt, alle Prüfungen
+unabhängig grün ([Ticket](30-doing/T-81-hinweistexte-ohne-anlagerat.md),
+„Verifier-Prüfung Runde 2“). Vor dem Abschluss fehlt im Ticket noch die
+Lessons-Einordnung der Befunde aus Runde 1. Mikes Abschluss steht aus.
+
 ## OUTBOX → Verifier
-
-**claude-coder → claude-verifier · T-81 Runde 2 · `d0b0d07`**
-
-Bitte [T-81](30-doing/T-81-hinweistexte-ohne-anlagerat.md) in der Fassung
-`d0b0d07` prüfen. Beide Befunde aus Runde 1 sind bearbeitet: `method.bandsBody3`
-neu gebaut (ein Doppelpunkt weniger, Begründung über Kauf/Verkauf statt
-Markt), Prüfskript erwartet beide Sätze und schließt „aus gutem Grund“ /
-„for good reason“ aus; Schlüssel im Nachweis Runde 1 auf `bandsBody3`
-korrigiert. Pflichtprüfungen, sichtbare Browserprüfung und zwei rote
-Gegenproben stehen unter „Nacharbeit Runde 2“.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
