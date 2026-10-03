@@ -59,6 +59,16 @@ nennt keine Lizenz. Beim Lizenzvergleich mit StockInfo am 2026-10-03
 aufgefallen (Mike: „ja, nimm das in T-81 auf“). Rein formal; Lizenz und
 `LICENSING.md` gelten für das ganze Repo.
 
+### 4. Support-Erwartung in den Anleitungen (umgesetzt)
+
+Mike, 2026-10-03: „formulier den Satz für beide Apps - setze das auch gleich
+um“. `README.md` (neuer Abschnitt „Support“) und `docker/README.md`
+(„Unraid and support“) sagen jetzt: StockPortfolio ist für den eigenen
+Bedarf gebaut und kostenlos geteilt; Issues und Pull Requests werden
+gelesen, Antwort, Fix oder Feature sind nicht zugesagt. Gleicher Wortlaut
+wie in StockInfo (`4185767`). `unraid/README.md` nennt keinen Support- oder
+Issue-Weg und bleibt unverändert. Docker-Hub-Vorschau: 12.313 von 25.000 Bytes.
+
 ## Umsetzung und technische Nachweise
 
 | Repo | Time-box | Scope | GH-Issue |

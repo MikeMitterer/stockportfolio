@@ -235,6 +235,10 @@ with its own license. Contact **office@MangoLila.at**.
 
 ## Unraid and support
 
+StockPortfolio is built for its author's own use and shared free of charge.
+Issues and pull requests are read, but there is no promise of a reply, a fix
+or a new feature.
+
 - [Unraid installation, configuration, backups and updates](../unraid/README.md)
 - [Full documentation](../README.md)
 - [Report an issue](https://github.com/MikeMitterer/stockportfolio/issues)

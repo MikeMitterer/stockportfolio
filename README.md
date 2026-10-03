@@ -774,6 +774,12 @@ Details and verify matrices: [ticket board](_tickets/README.md).
 The design this was built against:
 [design spec](docs/superpowers/specs/2026-08-06-rebalancing-webapp-design.md).
 
+## Support
+
+StockPortfolio is built for its author's own use and shared free of charge.
+[Issues](https://github.com/MikeMitterer/stockportfolio/issues) and pull
+requests are read, but there is no promise of a reply, a fix or a new feature.
+
 ## License
 
 Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
