@@ -1,7 +1,9 @@
 # Unraid
 
-StockPortfolio serves a static browser app. Prices and reference data
-come from a separate StockInfo instance. The maintained template lives in the
+StockPortfolio is a web app with its own account API. Prices and reference
+data come from a separate StockInfo instance; install StockInfo first. How the
+two apps fit together is explained in
+[StockInfo: where the prices come from](../README.md#stockinfo-where-the-prices-come-from). The maintained template lives in the
 [MikeMitterer/unraid-templates](https://github.com/MikeMitterer/unraid-templates)
 repository at `templates/stockportfolio.xml`. The local working copy of that
 repository is at `/Volumes/DevLocal/DevUnraid/Production/Templates`.

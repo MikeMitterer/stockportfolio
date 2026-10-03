@@ -20,6 +20,25 @@ are editable in place and through the position dialog. Arrows mark positions
 below (↓) or above (↑) their band. The screenshot shows the built-in sample
 portfolio with test quotes, in English with the MangoLila theme._
 
+### StockInfo first
+
+StockPortfolio was built as a companion to
+[StockInfo](https://github.com/MikeMitterer/stockinfo) and needs it for
+prices, exchange rates and fund metrics. StockInfo also runs on its own,
+without StockPortfolio.
+
+|  | StockInfo | StockPortfolio |
+|---|---|---|
+| Purpose | Quotes, price history, ETF metrics | Portfolios, valuation, rebalancing |
+| Runs without the other app | Yes | No, it needs StockInfo for prices |
+| Docker image | [`mangolila/stockinfo`](https://hub.docker.com/r/mangolila/stockinfo) | [`mangolila/stockportfolio`](https://hub.docker.com/r/mangolila/stockportfolio) |
+
+1. Start the [`mangolila/stockinfo`](https://hub.docker.com/r/mangolila/stockinfo)
+   container and check that it answers.
+2. Start StockPortfolio with `STOCKINFO_API_URL` set to an address of that
+   StockInfo instance which the StockPortfolio container can reach (see
+   [Quick start](#quick-start) and [Configuration](#configuration)).
+
 ## Features
 
 - Track holdings, cash and target allocations in portfolio groups.

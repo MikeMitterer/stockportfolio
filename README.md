@@ -17,6 +17,25 @@ are editable in place and through the position dialog. Arrows mark positions
 below (↓) or above (↑) their band. The screenshot shows the built-in sample
 portfolio with test quotes, in English with the MangoLila theme._
 
+### StockInfo: where the prices come from
+
+StockPortfolio was built as a companion to
+[StockInfo](https://github.com/MikeMitterer/stockinfo). StockInfo supplies
+prices, exchange rates and fund metrics; StockPortfolio turns them into
+portfolio values and rebalancing trades. StockPortfolio does not work
+without a StockInfo instance.
+
+StockInfo also works on its own, for example for scripts or spreadsheets.
+
+|  | StockInfo | StockPortfolio |
+|---|---|---|
+| Purpose | Quotes, price history, ETF metrics | Portfolios, valuation, rebalancing |
+| Runs without the other app | Yes | No, it needs StockInfo for prices |
+| Docker image | [`mangolila/stockinfo`](https://hub.docker.com/r/mangolila/stockinfo) | [`mangolila/stockportfolio`](https://hub.docker.com/r/mangolila/stockportfolio) |
+
+Set up StockInfo first, then point StockPortfolio at it with
+`STOCKINFO_API_URL` (see [Setup](#setup)).
+
 ## What it does
 
 Set a target allocation and choose when to rebalance under
