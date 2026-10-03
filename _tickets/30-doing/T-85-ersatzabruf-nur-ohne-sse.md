@@ -73,6 +73,40 @@ offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 3 · codex-verifier · 2026-10-03 · Rückgabe
+
+Geprüft wurde `e1a948f`. Befund 3 aus Runde 2 ist behoben: Ein irrelevantes
+oder einzelnes SSE-Ereignis hebt die Warnung nicht mehr auf; nur ein
+erfolgreicher Gesamtabgleich tut das. `make test` lief mit 84/868 Frontend-
+und 5/20 API-Tests grün; Frontend-Lint und Typprüfung ebenfalls. Der
+übergebene Store und sein Test waren im Arbeitsbaum gegenüber `e1a948f`
+unverändert. Die sichtbare Browserprüfung aus der Übergabe meldet Exit 0;
+ich habe sie in dieser Runde nicht selbst wiederholt. Die Aussagen in
+`README.md` und `docker/README.md` zum Live-Abgleich blieben unverändert
+und stimmen überein.
+
+**Befund 4 · blockierend: Test unterdrückt spätere Konsolenfehler.** Der in
+Runde 2 ergänzte Regressionstest ersetzt `console.error` über
+`vi.spyOn(...).mockImplementation(...)`, stellt den Spy in seinem `finally`
+aber nicht wieder her. Die Datei hat kein `vi.restoreAllMocks()` in
+`afterEach`, und die Vitest-Konfiguration aktiviert `restoreMocks` nicht.
+Der Mock bleibt für die folgenden acht Tests derselben Datei aktiv und kann
+deren Fehlerausgaben verbergen.
+
+**Gegenprobe:** Ein temporär am Dateiende ergänzter Test erwartete nach den
+zehn vorhandenen Tests `vi.isMockFunction(console.error) === false`.
+Beobachtet wurde `true`, Exit 1; alle zehn vorhandenen Tests waren grün.
+Der temporäre Test wurde anschließend entfernt, die Datei ist wieder
+byte-gleich zur Übergabe. Erwartete Nacharbeit: Den Spy auch bei
+Testabbruch zuverlässig wiederherstellen und die gleiche Gegenprobe danach
+grün ausführen. Eine neue dauerhafte Prüfung ist für diese kleine
+Testbereinigung nicht nötig.
+
+**Lessons-Einordnung:** SP-R-04 angewendet: Ein Test, der spätere
+Fehlerausgaben verdeckt, bleibt nicht als bloßer Hinweis stehen. Der
+Observer prüft, ob diese Testressourcen-Lücke eine bestehende Lesson
+ergänzt; als einzelner Fund wird keine neue Sammlung behauptet.
+
 ### Nacharbeit Runde 3 · claude-coder · 2026-10-03
 
 **Befund 3 · Warnung verschwindet ohne Datenabgleich:** behoben.
