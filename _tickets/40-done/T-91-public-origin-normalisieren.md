@@ -1,5 +1,7 @@
 # T-91 · Public Origin normalisieren und Hinweis zum Einrichtungscode
 
+**Abgeschlossen am 2026-10-03** (Mike: „T-91 ist aus meiner Sicht auch ok“). Technisch freigegeben in Runde 3 (`243f5d2`), nach `master` gemergt und zu `origin` gepusht; Vorlagenbeschreibung im Templates-Repo committet und gepusht.
+
 **Warum dieses Ticket:** Die Konto-API vergleicht den `Origin`-Header des
 Browsers zeichengenau mit `STOCKPORTFOLIO_PUBLIC_ORIGIN`. Ein Schrägstrich am
 Ende genügte, damit schon die Einrichtung des Admin-Kontos scheiterte. Der
@@ -13,11 +15,12 @@ Nutzer sah nur „Die Browseradresse stimmt nicht mit der Serverkonfiguration
 zurückgeführt, und die Einrichtung läuft durch. Ein Wert mit Pfad
 (`…/app`) beendet den Start mit einer klaren Meldung im Container-Log.
 
-**Stand:** In Runde 3 durch `codex-verifier` technisch freigegeben. Mikes
-Abnahme und der Ticketabschluss stehen noch aus.
+**Stand:** Abgeschlossen. Technische Freigabe in Runde 3 durch
+`codex-verifier`, Abnahme durch Mike am 2026-10-03. Docker-Image und
+Unraid-Instanz mit dem neuen Stand sind nicht geprüft; das neue Verhalten
+wirkt dort erst mit dem nächsten Image.
 
-Kein menschlicher Schritt bis zur technischen Freigabe. Danach: Abnahme durch
-Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
+Kein offener menschlicher Schritt.
 
 **Herkunft:** Mike, 2026-10-03, nach Unraid-Einrichtung: „STOCKPORTFOLIO_PUBLIC_ORIGIN
 hatte einen Schrägstrich am Ende - das muss unbeding abgefangen werden“.
