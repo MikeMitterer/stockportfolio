@@ -11,11 +11,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** keine. Der Root steht auf `master`; der Arbeitsumfang vom
-2026-10-03 ist bis auf Mikes T-73 abgeschlossen.
+2026-10-03 ist abgeschlossen.
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
-den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
-eigene Aufgabe; „T-79 + T-81 gehören auch noch den aktuellen
+den Verifier die jeweilige Umsetzung überprüfen“; „T-79 + T-81 gehören auch noch den aktuellen
 Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 
 | Ticket | Stand |
@@ -41,9 +40,6 @@ T-83, T-85 und T-86 zu `origin` gepusht, danach samt Abschluss von T-82 und T-89
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
 ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
 push es“); die Vorlage `b250a2c` ist auf Templates-`origin/master`.
-[T-73 · Interne Rechtevereinbarung](30-doing/T-73-interne-rechtevereinbarung.md)
-liegt in Doing als Mikes eigene Aufgabe (2026-10-01: „das ist für mich“); kein
-Agentenauftrag.
 [T-76 · Teststack-Wrapper](90-rejected/T-76-teststack-wrapper-skript.md) ist
 verworfen und zurückgenommen (Mike, 2026-10-01: „Du kannst stockinfo-test-server.sh doch wieder löschen“).
 [T-75 · Einzelserver-Hilfe in der Doku](40-done/T-75-stockinfo-einzelserver-hilfe-doku.md)
