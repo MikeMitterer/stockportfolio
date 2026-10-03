@@ -66,6 +66,7 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 | 4 | lokal | <a id="pruefpunkt-4"></a>`node dist/index.js` mit `http://127.0.0.1:18391/` | Log `Public origin: http://127.0.0.1:18391`; `POST /api/setup` mit fremdem Origin 403, mit passendem Origin 401 `invalid_credentials` (Origin-Prüfung bestanden) | Mike | ✅ |
 | 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | `make test` Exit 0 (Frontend 84/868, API 7/49); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
 | 7 | Pflicht | <a id="pruefpunkt-7"></a>Hilfetext Einrichtungscode | Texte in DE und EN ersetzt; danach `make test` Exit 0 (84/868, 7/41), Frontend-Lint und -Typecheck Exit 0. Keine Sichtprüfung im Browser: der Tooltip rendert den Text unverändert über `UxInfoHint` | Mike | ➖ |
+| 8 | Browser sichtbar | <a id="pruefpunkt-8"></a>Teststack frisch ohne `--demo-accounts`, dann `npm --prefix frontend run check:setup-dialog` | Info-Fenster per Mauszeiger geöffnet, sichtbarer Text in DE und EN enthält Log-Zeile, Unraid-Weg, `docker logs stockportfolio`, neuen Code nach Neustart, kein `make dev-up`/`overmind`/`Ctrl-B`; Exit 0. Gegenproben: alter DE-Text und geänderter EN-Satz → 7 Fehler, Exit 1; Admin vorher per API angelegt → „Einrichtungsdialog nicht sichtbar“ in DE und EN, Exit 1. Stack danach gestoppt, Ports frei | Mike („Browser-Test?“, nur Info-Fenster) | ✅ |
 | 6 | Doku | <a id="pruefpunkt-6"></a>Docker-Hub-Vorschau | `dockerhub-readme.sh --preview --ref master` Exit 0, 13.939 Byte (< 25.000) | AGENTS.md | ➖ |
 
 Docker-Image und Unraid-Instanz sind nicht geprüft; das Verhalten liegt
@@ -137,6 +138,11 @@ siehe STATUS `handoff_commit`.
 - **Doku-Abgleich:** Die Zusage „a path stops the start“ in `README.md`,
   `docker/README.md` und `unraid/README.md` stimmt jetzt; keine Textänderung
   nötig.
+- **Browserprüfung (Mike: „Browser-Test?“, präzisiert: „im Browser soll nur
+  das Info-Fenster beim Einrichtungsdialog getestet werden“):** neues
+  Prüfskript `frontend/scripts/setup-dialog-check.mjs`
+  (`check:setup-dialog`), in `AGENTS.md` › Browserprüfung eingetragen.
+  Belege unter Verify Nr. 8. Der Teststack bleibt unverändert.
 - **Lessons-Einordnung:** Einzelfall, wie vom Verifier eingeordnet.
 
 ### Verifier-Prüfung Runde 1 · codex-verifier · 2026-10-03
