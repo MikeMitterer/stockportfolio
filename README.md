@@ -658,8 +658,8 @@ The container listens on **8080** and the API runs without root. Older images
 used port 80: update an existing port mapping when switching to this version.
 
 The container starts as root only to prepare `/data`: it gives the directory
-to `PUID`/`PGID` (default **99:100**, Unraid's `nobody:users`) and then starts
-the app with those IDs, never as root. This also fixes a host directory that
+to Unraid's `nobody:users` (99:100) and then starts the app as that user,
+never as root. This also fixes a host directory that
 Docker created as root. Data written by older images (UID 1000) is taken over
 on the first start. If ownership cannot be changed, for example on a network
 share, the container logs a warning and starts as long as that user can
@@ -734,7 +734,7 @@ through their npm scripts.
 
 `./docker/smoke-test.sh` checks the built image with throw-away containers:
 setup and login, a root-owned `/data`, data from older images, `--user`,
-a share without `chown`, missing capabilities, `PUID`/`PGID` values and the
+a share without `chown`, missing capabilities, the user switch at start and the
 StockInfo forwarding to a Docker-internal name. It removes everything it
 created.
 

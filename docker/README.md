@@ -131,7 +131,6 @@ Start with `docker compose up -d`.
 | `/data` volume | Persistent SQLite accounts and sessions. Reuse it when recreating the container. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port. Required behind a reverse proxy. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | Set to `true` when the browser uses HTTPS. Local HTTP testing uses `false`. |
-| `PUID` / `PGID` | User and group the app runs as; default `99` / `100`. Must not be `0`. |
 | `TZ` | Container log timezone; defaults to `UTC`. The interface uses the browser's timezone. |
 
 Restart the container after changing its environment variables.
@@ -147,8 +146,8 @@ still use revision conflicts.
 If a reverse proxy fronts the container, pass the SSE stream without buffering
 and allow an idle timeout longer than its 15-second keep-alive interval.
 The container starts as root only to prepare `/data`: it gives the directory
-to `PUID`/`PGID` (default **99:100**, Unraid's `nobody:users`) and then starts
-the app with those IDs, never as root. This also fixes a host directory that
+to Unraid's `nobody:users` (99:100) and then starts the app as that user,
+never as root. This also fixes a host directory that
 Docker created as root. Data written by older images (UID 1000) is taken over
 on the first start. If ownership cannot be changed, for example on a network
 share, the container logs a warning and starts as long as that user can
