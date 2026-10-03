@@ -142,7 +142,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-78 in Umsetzung, T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-78, Runde 1 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -157,12 +157,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 - `branch`: `t-78-lesbare-testdaten-und-fondsgroessen-fixture`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `b399a1d`
+- `review_round`: `1`
+- `owner`: `claude-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 - `last_reviewed_commit`: `d0b0d07b0a31ab9042c8846380af5b4329c03879`
@@ -344,6 +344,18 @@ werden entfernt.
 ## INBOX → Coder
 
 ## OUTBOX → Verifier
+
+**claude-coder → claude-verifier · T-78 Runde 1 · `b399a1d`**
+
+Bitte [T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
+in der Fassung `b399a1d` prüfen: lesbarer Demomodus `--demo-details` (neun
+Instrumente, eigene Detailwerte aus `scripts/fixtures/demo-details.json`),
+Randfälle ohne die Option, `fund_size`-Fixtures bytegleich mit StockInfo
+T-88, Wächter `demoDetails.spec.ts`, Prüfskript `demo-data-check.mjs`.
+Pflichtprüfungen, sichtbare Prüfung mit zwei Screenshots, rote Gegenproben
+(9 + 1 + 5 Fälle) und Doku-Abgleich stehen unter „Übergabe Runde 1“.
+Einschränkung: Ein zunächst geplanter Einheitenfall blieb grün und ist dort
+begründet ersetzt. Drei Nebenfunde sind für T-79 vorgemerkt.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
