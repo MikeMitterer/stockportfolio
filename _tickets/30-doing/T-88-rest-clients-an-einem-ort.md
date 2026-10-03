@@ -23,7 +23,8 @@ mit Unterordnern je Gegenstelle (`stockinfo/`, `account/`, `data/`).
 **Stand:** Angelegt am 2026-10-03 während T-82 (Mike: „Generell um
 REST-Calls - die dürfen nicht über die gesamte Applikation verstreut sein“,
 danach „Eigenes Ticket direkt nach T-82“). Liegt in `20-ready/`; eingeplant
-direkt nach T-82. Für Mike ist kein Handgriff nötig.
+direkt nach T-82. Für Mike ist kein Handgriff nötig. Reihenfolge laut Mike
+(2026-10-03): „ok, T-89 nach T-82, dann T-88“; aktiviert am 2026-10-03.
 
 ## Umfang
 
@@ -44,8 +45,12 @@ direkt nach T-82. Für Mike ist kein Handgriff nötig.
       Unterordner.
 - [ ] Außerhalb davon gibt es keine Netzwerkaufrufe, Pfade oder Adressen von
       Gegenstellen; belegt per Inventar.
-- [ ] Verhalten unverändert: `make test`, Lint, Typecheck grün; Smoketest
-      Live-Abgleich grün.
+- [ ] Verhalten unverändert: `make test`, Lint, Typecheck grün.
+- [ ] Sichtbar unverändert, weil die Verschiebung alle vier Clients berührt
+      (Mike, 2026-10-03: sichtbare Prüfungen wichtig für T-82 und T-88):
+      `check:stockinfo-proxy` (alle StockInfo-Routen, Fehlerfall),
+      `smoke:live-sync` (Konto-API, Daten, SSE) und `check:demo-data`
+      grün, jeweils gegen den Teststack.
 - [ ] Doku-Abgleich: `AGENTS.md`, `README.md`, Kommentare mit alten Pfaden.
 
 ### Side-Effects
