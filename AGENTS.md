@@ -335,8 +335,10 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   StockInfo über den eigenen Server; Kursverlauf, Aktualisieren,
   Statusseite, jedes Muster der Freigabeliste aus
   `api/src/stockinfo/proxy.ts` mit 200, 401 ohne Sitzung, 404 außerhalb der
-  Liste; mit `--unreachable` der Ausfall als 502). Die drei Prüfskripte
-  enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
+  Liste; mit `--unreachable` der Ausfall als 502) und
+  `setup-dialog-check.mjs` (T-91: Info-Fenster am Einrichtungscode in DE
+  und EN; braucht einen frischen Stack ohne `--demo-accounts`). Die vier
+  Prüfskripte enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
   jeweils im Kopfkommentar. Eine neue StockInfo-Route braucht einen
   sichtbaren Schritt, der sie aufruft; sonst schlägt die Routenabdeckung fehl.
 - **Container:** `docker/browser-check.sh` startet zwei Wegwerf-Container
