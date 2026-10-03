@@ -13,14 +13,15 @@ ist.
 **Stand:** Angelegt am 2026-10-03 aus StockInfo (Mike: „Bau das bei
 StockPortfolio auch gleich ein“, danach „Erstelle dort ein passendes Ticket
 im doing“). Liegt in `30-doing/`; Rollen und Aktivierung legt `STATUS.md`
-fest. Noch nicht aktiviert. Bei der Anlage lief T-85 in Nacharbeit auf
+fest. Bei der Anlage lief T-85 in Nacharbeit auf
 `t-85-ersatzabruf-nur-ohne-sse`; die Umsetzung gehört auf einen eigenen
 Branch von `master` nach dem Merge von T-85. Mike, 2026-10-03: „übernimm
 T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“ — Umfang um den
 Setup-Code-Hinweis erweitert (siehe unten). Mike, 2026-10-03: „Das ganze
 muss auch einen Mehrfachaufruf überleben. Ergänze die Anpassungen auch im
 T86“ — Vorlage, Umfang und Verify auf den nachgeschärften StockInfo-Stand
-gebracht.
+gebracht. Am 2026-10-03 nach dem Abschluss von T-85 auf Branch
+`t-86-dev-down-gibt-ports-frei` aktiviert.
 
 ## Vorlage aus StockInfo
 

@@ -10,15 +10,17 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** Als Nächstes [T-86 · `make dev-down` gibt die Ports frei](30-doing/T-86-dev-down-gibt-ports-frei.md)
-mit Korrektur des Setup-Code-Hinweises (Mike, 2026-10-03: „übernimm T-86
-nach T-85, Korrigiere den Setup-Code-Hinweis“). Im Root ist `master`
-ausgecheckt.
+**Aktuelle Arbeit:** [T-86 · `make dev-down` gibt die Ports frei](30-doing/T-86-dev-down-gibt-ports-frei.md)
+mit Korrektur des Setup-Code-Hinweises, auf Branch
+`t-86-dev-down-gibt-ports-frei`, im Root ausgecheckt (Mike, 2026-10-03:
+„übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“). Danach folgt
+[T-82 · StockInfo über den eigenen Server abfragen](10-backlog/T-82-stockinfo-ueber-eigenen-server.md)
+(Mike, 2026-10-03: „Nach T-86 ist T-82 dran“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
 eigene Aufgabe; „T-79 + T-81 gehören auch noch den aktuellen
-Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
+Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 
 | Ticket | Stand |
 |---|---|
@@ -27,7 +29,8 @@ Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
-| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | folgt nach T-85, mit Korrektur des Setup-Code-Hinweises (Mike: „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“) |
+| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | in Umsetzung, mit Korrektur des Setup-Code-Hinweises |
+| [T-82](10-backlog/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86 (Mike: „Nach T-86 ist T-82 dran“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -159,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket in Umsetzung; als Nächstes T-86. Arbeitsumfang T-78, T-79, T-81, T-83, T-85 und T-86. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-86 in Umsetzung, danach T-82. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -174,9 +177,9 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
-- `branch`: `master`
+- `phase`: `implementing`
+- `ticket`: `T-86-dev-down-gibt-ports-frei.md`
+- `branch`: `t-86-dev-down-gibt-ports-frei`
 - `handoff_commit`: ``
 - `review_round`: `0`
 - `owner`: `claude-coder`
@@ -185,7 +188,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `ebf7af7`
 - `last_reviewed_round`: `4`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-86-dev-down-gibt-ports-frei.md`
+- `priority_chain`: `T-86-dev-down-gibt-ports-frei.md`, `T-82-stockinfo-ueber-eigenen-server.md`
 - `priority_ticket`: `T-86-dev-down-gibt-ports-frei.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
