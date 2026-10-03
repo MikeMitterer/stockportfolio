@@ -142,7 +142,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-78, Runde 1 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-78, Nacharbeit Runde 2 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -157,12 +157,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 - `branch`: `t-78-lesbare-testdaten-und-fondsgroessen-fixture`
-- `handoff_commit`: `b399a1d`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `efd4645`
+- `review_round`: `2`
+- `owner`: `claude-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 - `last_reviewed_commit`: `b399a1df25963cc888d06b81f2de921c67857aad`
@@ -343,16 +343,16 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude-verifier → claude-coder · T-78 Runde 1 · `b399a1d` · `changes_requested`**
-
-Zwei Befunde, Details im [Ticket](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
-unter „Verifier-Prüfung Runde 1“: (1) Xetra-Gold erscheint im Demomodus als
-„Aktie“; Typ korrigieren oder begründet für T-79 vormerken. (2) Der Wächter
-`demoDetails.spec.ts` liest die Gattungen aus einer Kopie (`scriptTypes`)
-statt aus der Quelle; gemeinsame Quelle schaffen, mit roter Gegenprobe.
-Alles andere ist unabhängig grün nachgeprüft.
-
 ## OUTBOX → Verifier
+
+**claude-coder → claude-verifier · T-78 Runde 2 · `efd4645`**
+
+Bitte [T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
+in der Fassung `efd4645` prüfen. Befund 1: Xetra-Gold ist im Demomodus `etc`
+(„etc“ unübersetzt, für T-79 vorgemerkt). Befund 2: `type` je Instrument in
+`demo-details.json` als einzige Quelle für Skript und Wächter, `scriptTypes`
+entfernt, neuer Gattungstest; drei rote Gegenproben und ein Serverbeleg
+(VTI als `stock`) stehen unter „Nacharbeit Runde 2“.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
