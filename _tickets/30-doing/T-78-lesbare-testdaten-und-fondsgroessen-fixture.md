@@ -11,7 +11,7 @@ StockInfo-Vertragsbeispiele ist veraltet.
    sind wertvolle Randfälle für Tests, aber kein verständliches Bild für
    Screenshots oder für Mikes Sichtprüfung.
 2. **Fondsgröße in den Fixtures.** StockInfo führt die Fondsgröße seit
-   [StockInfo T-88](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/30-doing/T-88-fondsgroesse-in-euro.md)
+   [StockInfo T-88](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/40-done/T-88-fondsgroesse-in-euro.md)
    einheitlich in Mio. EUR. StockInfos Vertragsbeispiele stehen dort auf
    `"fund_size": 89123.0`. Unsere Kopie unter
    `frontend/tests/fixtures/stockinfo/` (`instruments-200.json`,

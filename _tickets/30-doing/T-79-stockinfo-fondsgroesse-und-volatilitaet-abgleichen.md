@@ -6,11 +6,11 @@ generisch anzeigt (`frontend/src/domain/detailFields.ts`,
 `projectDetailFields`). Dieses Ticket hält die Auswirkungen fest und sorgt
 dafür, dass StockPortfolio nach beiden StockInfo-Tickets richtig anzeigt.
 
-- [StockInfo T-88](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/30-doing/T-88-fondsgroesse-in-euro.md):
+- [StockInfo T-88](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/40-done/T-88-fondsgroesse-in-euro.md):
   Die Fondsgröße kam in Millionen, war aber als absoluter Betrag
   deklariert (`unit: absolute`). Neu: überall `unit: millions`, Währung
   aus der Quelle (justETF: EUR) oder aus der manuellen Eingabe.
-- [StockInfo T-89](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/30-doing/T-89-volatilitaet-fuer-alle-typen.md):
+- [StockInfo T-89](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/40-done/T-89-volatilitaet-fuer-alle-typen.md):
   StockInfo berechnet die Volatilität für alle Instrumente, deklariert sie
   in `GET /fields` aber nur für `etf` und `etc` (über justETF). Neu:
   StockInfo deklariert `volatility` selbst für alle Typen mit Kursen.
