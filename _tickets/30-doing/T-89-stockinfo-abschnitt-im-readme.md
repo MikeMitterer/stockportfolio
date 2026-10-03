@@ -6,9 +6,9 @@ StockInfo hat dafür seit 2026-10-03 einen eigenen Abschnitt
 „StockPortfolio: the companion app“ (StockInfo `10807c6`). StockPortfolio
 braucht das Gegenstück.
 
-**Stand:** Angelegt am 2026-10-03 von Claude auf Mikes Auftrag. Umsetzung
-nach T-82 auf einem eigenen Branch von `master`, weil T-82 gerade in Prüfung
-ist.
+**Stand:** Angelegt am 2026-10-03 von Claude auf Mikes Auftrag. Nach T-82 auf
+einem eigenen Branch von `master` umgesetzt und in Runde 1 durch
+`codex-verifier` technisch freigegeben. Menschlicher Abschluss steht aus.
 
 ## Aussage (Mike, 2026-10-03)
 
@@ -65,6 +65,34 @@ Seite, zieht die andere mit.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `3ae4dca` auf `t-89-stockinfo-abschnitt-im-readme`.
+Rollen, Owner, Branch und Paketversion
+`df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+abgeglichen. **Urteil: technisch freigegeben (`approved`).** Keine
+menschliche Abnahme durch den Verifier.
+
+**Inhaltsabgleich:** `README.md` und `docker/README.md` haben je eine eigene
+StockInfo-Überschrift nach dem Screenshot. Beide sagen, dass StockInfo
+eigenständig läuft und StockPortfolio für Kurse, Devisenkurse und
+Fondskennzahlen StockInfo braucht. Die drei Tabellenzeilen stimmen wörtlich
+mit StockInfos `README.md` überein. Der Link in `unraid/README.md` trifft
+den neuen Anker `#stockinfo-where-the-prices-come-from`; die Einrichtung
+verweist weiterhin auf die vom Container erreichbare Adresse. Die
+Installationsaussagen in Projekt-, Container- und Unraid-Anleitung sind
+inhaltlich konsistent. `stockportfolio.xml` ist für diesen reinen
+Erklärabschnitt nicht betroffen.
+
+**Prüfnachweis:** Die echte Docker-Hub-Vorschau mit
+`dockerhub-readme.sh --preview --ref master` wurde unabhängig nach
+`/private/tmp` geschrieben: 13.663 UTF-8-Bytes, der neue Abschnitt und die
+Anker `#quick-start`/`#configuration` sind enthalten. Keine Änderung am
+Produktcode. Die vom Coder dokumentierten Tests, Lint und Typecheck waren
+grün; für diese reine Dokuänderung wurden sie nicht nochmals gestartet.
+`git diff --check` auf den Produktdateien ohne Befund. Lessons-Einordnung:
+kein neuer Fehlerbefund, keine Aufnahme fällig.
+
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
 Branch `t-89-stockinfo-abschnitt-im-readme` von `master` (`9c3bff8`, mit
@@ -105,4 +133,3 @@ Abschnitt. Vorlage `stockportfolio.xml` unverändert: Sie nennt StockInfo im
 Overview schon als getrennte API und verlangt sie unter Requires; ein Link auf
 den README-Abschnitt ist dort nicht nötig. `docs/` nicht betroffen. Skill
 `task-verification-workflow`: keine Board-Konvention geändert.
-
