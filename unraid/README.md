@@ -36,7 +36,7 @@ installation:
 
 1. Open **Apps** and search for **StockPortfolio**.
 2. Select the application and click **Install**.
-3. Set **StockInfo API** to an address reachable from your browser and check
+3. Set **StockInfo API** to an address reachable from the container and check
    the host port and other [configuration](#configuration).
 4. Apply the settings to install and start the container, then open its **WebUI**
    from the **Docker** tab.
@@ -105,7 +105,7 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 |---|---|
 | Repository | `mangolila/stockportfolio:latest` |
 | WebUI Port | Default host port 8088, container port **8080** |
-| StockInfo API | Required: your StockInfo instance's URL, reachable from the **browser** |
+| StockInfo API | Required: your StockInfo instance's URL, reachable from the **container** |
 | App data | Map `/mnt/user/appdata/stockportfolio` to container path `/data` for accounts and private portfolios. Back up this directory. |
 | Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy. |
 | Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
@@ -168,14 +168,13 @@ files in the app. An account database created before the setup-account marker
 cannot establish this entitlement; reset a disposable test database and repeat
 setup while keeping the old browser data.
 
-At startup, the API address from `STOCKINFO_API_URL` is written to `config.js`.
-It must be reachable from the browser; `localhost` refers to the browser's
-computer, not a Docker service. The active URL is shown on the separate
-**Status** page, opened from the bottom status bar. Restart the container
-after changing the address.
-
-StockInfo must allow the web app's origin, such as `http://unraid:8088`, through
-CORS. An HTTPS web interface requires an HTTPS API.
+The container calls StockInfo at `STOCKINFO_API_URL`; the browser only talks
+to StockPortfolio. The address must be reachable from the container, such as
+the Unraid server's LAN address or, on a shared custom Docker network, the
+StockInfo container name. `localhost` refers to the StockPortfolio container
+itself. The active URL is shown on the separate **Status** page, opened from
+the bottom status bar. Restart the container after changing the address.
+StockInfo needs no CORS setting for StockPortfolio.
 
 The container prepares `/data` for `PUID`/`PGID` (default 99:100) on start and
 then runs the StockPortfolio API without root privileges. A new appdata

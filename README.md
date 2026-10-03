@@ -357,7 +357,7 @@ selection.
 
 ```bash
 make setup                 # .libs/ links, local Python venv, frontend and API dependencies
-cp .env.example .env       # adjust VITE_STOCKINFO_API_URL if needed
+cp .env.example .env       # adjust STOCKINFO_API_URL if needed
 make dev-up                # Vue app on :5175 and account API on :8080
 ```
 
@@ -439,8 +439,10 @@ pair, an OTC bond without listing, one symbol on two exchanges, a pence
 listing and a listing without ISIN.
 The stop command removes these test accounts and temporary databases. It does
 not use Docker, change `.env` or `.local-data`, or call a Make target. The
-script sets Vite's StockInfo URL directly and checks the URL actually served
-to the browser, so a value in `.env` cannot silently replace the fixture URL.
+script starts the account API without the project's environment file and
+passes the fixture URL as `STOCKINFO_API_URL`, so a value in `.env` cannot
+silently replace it. The status check confirms that Vite forwards
+`/api/stockinfo/*` to the account API.
 
 Ports 5175 and 8080 are fixed to match Vite's proxy; use `--port PORT` when
 starting to change only the StockInfo fixture port. Status and stop read the
@@ -616,11 +618,11 @@ Then read the one-time setup code from `docker logs stockportfolio` and open
 own** [StockInfo](https://github.com/MikeMitterer/stockinfo) instance — the app
 has no public backend to fall back on. See [API address](#api-address) below.
 
-The **browser** calls StockInfo directly. Use an API address reachable from
-that browser, such as the server's LAN hostname. `localhost` refers to the
-browser's computer; Docker's internal service names are usually unsuitable.
-StockInfo must allow the web app's origin through CORS. An HTTPS page needs
-an HTTPS API to avoid mixed-content blocking.
+The **container** calls StockInfo; the browser only talks to StockPortfolio
+under `/api/stockinfo/*`. Use an API address reachable from the container,
+such as the server's LAN hostname or a Docker-internal name on a shared
+network. `localhost` refers to the container itself. StockInfo needs no CORS
+setting for StockPortfolio.
 
 The web interface has a login, but that login does not protect StockInfo.
 If a reverse proxy in your home network serves the app over HTTPS, set
@@ -692,7 +694,8 @@ docker logs stockportfolio         # first-start setup code and API output
 The app itself shows the address in use on the separate _Status_ page and in the
 status bar at the bottom. Click the API address in the status bar to open
 _Status_ directly. If prices stay empty, that page is the place to look:
-it distinguishes "not reachable" from "reachable but refused" (CORS).
+it shows whether the server reached StockInfo and, if not, whether the
+address is missing, unreachable or too slow.
 
 ### Building and publishing
 
@@ -780,15 +783,18 @@ Retry the metadata upload without rebuilding or repushing the image:
 
 ### API address
 
-It is **not** baked into the image. On start the entrypoint writes
-`STOCKINFO_API_URL` into `config.js`, from where the app reads it. The same image
-can therefore point at a different backend without being rebuilt. Without the
-variable, the value baked in at build time from `VITE_STOCKINFO_API_URL` applies.
+It is **not** baked into the image. The account API reads `STOCKINFO_API_URL`
+at start and forwards the browser's StockInfo requests there. Only listed
+StockInfo paths are forwarded, only for signed-in users, and without the
+browser's cookies; a request that takes longer than 60 seconds is aborted. The
+same image can therefore point at a different backend without being rebuilt.
+In development, `make dev` passes the value from the project's environment file
+to the account API.
 
-The address is mandatory. If neither source provides one, the app does not start
-but shows a message saying so — there is no built-in fallback, because a fallback
-address resolves for nobody but its owner and the mistake would only surface as an
-empty price table.
+The address is mandatory. Without it, setup and login still work, but the app
+shows a message saying the address is missing — there is no built-in
+fallback, because a fallback address resolves for nobody but its owner and the
+mistake would only surface as an empty price table.
 
 ### Unraid
 
@@ -801,7 +807,6 @@ backups, updates and local template testing.
 | ------------------------------------ | ------------------------------------------------------------------------------- |
 | Historical FX backtest               | unavailable — current FX rates cannot replace historical rates |
 | Threshold notifications              | deliberately outside the MVP                                                    |
-| CORS against the production API      | unverified — the container's origin has to be allowed                           |
 | Pruning the price-history cache      | open — it only ever grows                                                       |
 
 Details and verify matrices: [ticket board](_tickets/README.md).

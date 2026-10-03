@@ -7,25 +7,22 @@ MSCI World ETF (EUNL.DE), US Total Market ETF (VTI), Apple (AAPL), eine Bundesan
 StockInfo-Testserver einen gültigen Kurs. Die Kurse selbst stehen nicht im
 Backup und werden beim Öffnen frisch geladen.
 
-1. Den lokalen Dienst vom StockPortfolio-Repo aus starten:
+1. Den Teststack vom StockPortfolio-Repo aus starten. Er startet den
+   StockInfo-Testdienst, die Konto-API und Vite; der Browser fragt StockInfo
+   über die Konto-API ab:
 
    ```bash
-   ../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run \
-     --stockinfo-root ../StockInfo \
+   .venv/bin/python scripts/stockinfo-test-server.py --stack --run \
+     --stockinfo-root ../StockInfo --demo-accounts \
      --detail-fixtures frontend/tests/fixtures/stockinfo --demo-details
    ```
 
-2. Die App mit diesem Dienst starten:
+2. In einem frischen Browserkontext `http://127.0.0.1:5175/` öffnen und mit
+   einem Konto aus der gemeldeten `demo-accounts.json` anmelden.
 
-   ```bash
-   VITE_STOCKINFO_API_URL=http://127.0.0.1:8899 npm run dev --prefix frontend -- \
-     --host 127.0.0.1 --port 5189 --strictPort
-   ```
-
-3. In einem frischen Browserkontext `http://127.0.0.1:5189/` öffnen. Unter
-   **Einstellungen → Backup → Backup einspielen** die JSON-Datei wählen
-   und das Ersetzen bestätigen. Der Import ersetzt das aktive Depot und die
-   Einstellungen dieses Browserkontexts.
+3. Unter **Einstellungen → Backup → Backup einspielen** die JSON-Datei wählen
+   und das Ersetzen bestätigen. Der Import ersetzt das aktive Depot dieses
+   Kontos.
 
 Nach dem Laden zeigt das Dashboard **Browser-Testdepot, 5 Positionen** und
 **Datenlage: Vollständig**. VTI prüft die USD/EUR-Umrechnung. Der Testdienst
@@ -41,7 +38,7 @@ Detailwerte (`scripts/fixtures/demo-details.json`); die Anleihe heißt dort
 „Bundesanleihe 2037“. `--detail-fixtures` liefert dann nur noch die
 Typkatalog-Szenarien unten.
 
-Den eigenen Testdienst mit demselben Skript und `--stop --port 8899` beenden.
+Den Teststack mit demselben Skript und `--stack --stop` beenden.
 
 ## Demo-Detailwerte prüfen
 
@@ -78,9 +75,11 @@ können für alle Fälle weiterverwendet werden.
 
 ## Container unabhängig prüfen
 
-Für eine andere Browser-Adresse `--origin` setzen, beispielsweise
-`--port 8901 --origin http://127.0.0.1:55095`. Der Container erhält dazu
-`STOCKINFO_API_URL=http://127.0.0.1:8901` und die Portzuordnung
-`127.0.0.1:55095:8080`. So können Vite-Probe und Container-Probe nebeneinander
-mit getrennten Testservern und Browserbeständen laufen. Dasselbe Backup
-oben importieren. Nur den eigenen Testserver mit `--stop --port 8901` beenden.
+Der Container fragt StockInfo selbst ab, nicht der Browser. `127.0.0.1` wäre
+im Container der Container selbst; der Testdienst auf dem Mac ist dort unter
+`host.docker.internal` erreichbar. Mit dem laufenden Teststack erhält der
+Container `STOCKINFO_API_URL=http://host.docker.internal:8899`,
+`STOCKPORTFOLIO_PUBLIC_ORIGIN=http://127.0.0.1:18091` und die Portzuordnung
+`127.0.0.1:18091:8080`. So laufen Vite-Probe und Container-Probe nebeneinander
+mit getrennten Konten. Den Setup-Code nennt `docker logs`; danach dasselbe
+Backup oben importieren und den Container wieder entfernen.
