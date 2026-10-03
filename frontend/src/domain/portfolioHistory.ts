@@ -40,16 +40,6 @@ export interface BacktestInput {
   constantValue?: number
 }
 
-/** Letzter Kurs am oder vor einem Datum; `null`, wenn es keinen gibt. */
-function closeOnOrBefore(points: HistoryPoint[], date: string): number | null {
-  let found: number | null = null
-  for (const point of points) {
-    if (point.date > date) break
-    found = point.close
-  }
-  return found
-}
-
 /**
  * Rechnet den heutigen Bestand gegen die Kurshistorie zurück.
  *
@@ -61,6 +51,12 @@ function closeOnOrBefore(points: HistoryPoint[], date: string): number | null {
  * Innerhalb der Achse wird der letzte bekannte Kurs fortgeschrieben. Börsen
  * haben unterschiedliche Feiertage; ohne das entstünden Zacken, die nur an
  * einem fehlenden Datum liegen.
+ *
+ * Jede Kursreihe wird dabei genau einmal durchlaufen: Ein Zeiger je Position
+ * rückt mit der aufsteigenden Achse vor (T-92). Vorher suchte jeder Tag die
+ * Reihe von vorn ab; bei 20 Jahren Verlauf und 25 Positionen dauerte das über
+ * eine Sekunde, in der das Dashboard nur Platzhalter zeigte. Die Kursreihen
+ * sind wie bisher aufsteigend nach Datum sortiert.
  *
  * @param inputs Positionen mit Bestand und Kursverlauf.
  * @returns Punkte mit `close` = Gesamtwert; leer, wenn nichts zu rechnen ist.
@@ -86,12 +82,19 @@ export function buildBacktest(inputs: BacktestInput[]): HistoryPoint[] {
     .filter((input) => input.points.length === 0)
     .reduce((sum, input) => sum + (input.constantValue ?? 0), 0)
 
-  return dates.map((date) => ({
-    date,
-    close:
-      constant +
-      priced.reduce((sum, input) => sum + input.units * (closeOnOrBefore(input.points, date) ?? 0), 0),
-  }))
+  const cursors = priced.map(() => -1)
+  return dates.map((date) => {
+    // Summe erst über die Positionen, dann der feste Betrag — dieselbe
+    // Reihenfolge wie zuvor, damit die Werte bitgenau gleich bleiben.
+    let sum = 0
+    priced.forEach((input, index) => {
+      let cursor = cursors[index]!
+      while (cursor + 1 < input.points.length && input.points[cursor + 1]!.date <= date) cursor += 1
+      cursors[index] = cursor
+      sum += input.units * (cursor >= 0 ? input.points[cursor]!.close : 0)
+    })
+    return { date, close: constant + sum }
+  })
 }
 
 /** Schnappschüsse als Punkte für dasselbe Diagramm. */
