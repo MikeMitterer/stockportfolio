@@ -13,7 +13,7 @@ Nutzer sah nur „Die Browseradresse stimmt nicht mit der Serverkonfiguration
 zurückgeführt, und die Einrichtung läuft durch. Ein Wert mit Pfad
 (`…/app`) beendet den Start mit einer klaren Meldung im Container-Log.
 
-**Stand:** Verifier hat Runde 1 mit zwei Befunden zur Nacharbeit zurückgegeben.
+**Stand:** Beide Befunde aus Runde 1 behoben; in Runde 2 an `codex-verifier` übergeben.
 
 Kein menschlicher Schritt bis zur technischen Freigabe. Danach: Abnahme durch
 Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
@@ -60,11 +60,11 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 
 | # | Lauf | Handgriff | Nachweis | woher | AI |
 |---|:--:|---|---|---|:--:|
-| 1 | Unit | <a id="pruefpunkt-1"></a>`api/tests/public-origin.spec.ts` | 13 Tests grün: leer, Schrägstrich, Groß-/Kleinschreibung, Standardport, neun Ablehnungsfälle mit Meldung, Setup mit `…/`-Konfiguration → 201 | Mike | ➖ |
-| 2 | Unit rot | <a id="pruefpunkt-2"></a>`return url.origin` testweise durch `return trimmed` ersetzt | 3 Tests rot (Schrägstrich, Normalisierung, Setup), Exit 1; danach zurückgesetzt, 41/41 grün | Pflicht Gegenprobe | ➖ |
+| 1 | Unit | <a id="pruefpunkt-1"></a>`api/tests/public-origin.spec.ts` | 21 Tests grün: leer, Schrägstrich, Groß-/Kleinschreibung, Standardport, 13 Ablehnungsfälle mit Meldung (darunter `/.`, `/%2e`, `/a/..`, `/./`, Backslash), vier Werte mit Zugangsdaten ohne Passwort in der Meldung, Setup mit `…/`-Konfiguration → 201 | Mike | ➖ |
+| 2 | Unit rot | <a id="pruefpunkt-2"></a>`return url.origin` testweise durch `return trimmed` ersetzt | 3 Tests rot (Schrägstrich, Normalisierung, Setup), Exit 1; danach zurückgesetzt. Runde 2: Rohpfadprüfung entfernt → 4 Punktsegment-Fälle rot, Exit 1; Ausblenden bei `@` entfernt → 4 Zugangsdaten-Fälle rot, Exit 1; danach zurückgesetzt (`cmp` gleich), 49/49 grün | Pflicht Gegenprobe | ➖ |
 | 3 | lokal | <a id="pruefpunkt-3"></a>`node dist/index.js` mit `…/app` | Ausgabe `STOCKPORTFOLIO_PUBLIC_ORIGIN "https://portfolio.example.com/app" is invalid: must not contain a path. …`, `exit=1`, Datenordner leer | Mike | ✅ |
 | 4 | lokal | <a id="pruefpunkt-4"></a>`node dist/index.js` mit `http://127.0.0.1:18391/` | Log `Public origin: http://127.0.0.1:18391`; `POST /api/setup` mit fremdem Origin 403, mit passendem Origin 401 `invalid_credentials` (Origin-Prüfung bestanden) | Mike | ✅ |
-| 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | `make test` Exit 0 (Frontend 84/868, API 7/41); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
+| 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | `make test` Exit 0 (Frontend 84/868, API 7/49); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
 | 7 | Pflicht | <a id="pruefpunkt-7"></a>Hilfetext Einrichtungscode | Texte in DE und EN ersetzt; danach `make test` Exit 0 (84/868, 7/41), Frontend-Lint und -Typecheck Exit 0. Keine Sichtprüfung im Browser: der Tooltip rendert den Text unverändert über `UxInfoHint` | Mike | ➖ |
 | 6 | Doku | <a id="pruefpunkt-6"></a>Docker-Hub-Vorschau | `dockerhub-readme.sh --preview --ref master` Exit 0, 13.939 Byte (< 25.000) | AGENTS.md | ➖ |
 
@@ -112,6 +112,32 @@ Push dort folgen mit dem Abschluss.
   Übernahme nötig.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Übergabe Runde 2 · claude-coder · 2026-10-03
+
+Nacharbeit zu beiden Befunden aus der Verifier-Prüfung Runde 1. Prüffassung
+siehe STATUS `handoff_commit`.
+
+- **Befund 1 · Punktsegmente:** Zusätzlich zu `url.pathname` wird der
+  Rohwert hinter Schema und Host geprüft (bis `?`/`#`, Backslash beendet den
+  Host wie bei `new URL()`); nur leer oder `/` ist erlaubt. `/.`, `/%2e`,
+  `/a/..`, `/./` und `\app` brechen jetzt mit „must not contain a path“ ab;
+  `…/` und ohne Pfad liefern weiter denselben Origin.
+- **Befund 2 · Zugangsdaten:** Enthält der Wert ein `@`, nennt die Meldung
+  ihn nicht (`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: …`). Getestet mit
+  vier synthetischen Werten, auch mit `/` im Passwort und ohne Schema, die
+  vor einer Prüfung auf Zugangsdaten an anderer Stelle scheitern.
+- **Live:** gebaute API mit
+  `https://user:synthetic-password@portfolio.example.com` → Exit 1, Ausgabe
+  ohne `synthetic-password` (0 Treffer); mit `https://portfolio.example.com/.`
+  → Exit 1, Pfad-Meldung; Datenordner jeweils leer.
+- **Pflicht:** `make test` Exit 0 (84/868, 7/49), Lint und Typecheck für
+  Frontend und API je Exit 0, `git diff --check` sauber.
+- **Gegenproben:** siehe Verify Nr. 2.
+- **Doku-Abgleich:** Die Zusage „a path stops the start“ in `README.md`,
+  `docker/README.md` und `unraid/README.md` stimmt jetzt; keine Textänderung
+  nötig.
+- **Lessons-Einordnung:** Einzelfall, wie vom Verifier eingeordnet.
 
 ### Verifier-Prüfung Runde 1 · codex-verifier · 2026-10-03
 

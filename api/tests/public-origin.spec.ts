@@ -36,15 +36,29 @@ describe('STOCKPORTFOLIO_PUBLIC_ORIGIN', () => {
   it.each([
     ['portfolio.example.com', 'not a URL'],
     ['ftp://portfolio.example.com', 'scheme must be http or https'],
-    ['https://user:secret@portfolio.example.com', 'must not contain user credentials'],
     ['https://portfolio.example.com/app', 'must not contain a path'],
     ['https://portfolio.example.com//', 'must not contain a path'],
+    ['https://portfolio.example.com/.', 'must not contain a path'],
+    ['https://portfolio.example.com/%2e', 'must not contain a path'],
+    ['https://portfolio.example.com/a/..', 'must not contain a path'],
+    ['https://portfolio.example.com/./', 'must not contain a path'],
+    ['https://portfolio.example.com\\app', 'must not contain a path'],
     ['https://portfolio.example.com/?x=1', 'must not contain a query'],
     ['https://portfolio.example.com?', 'must not contain a query'],
     ['https://portfolio.example.com/#top', 'must not contain a fragment'],
     ['https://portfolio.example.com#', 'must not contain a fragment'],
   ])('bricht bei %s mit klarer Meldung ab', (value, reason) => {
     expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN "${value}" is invalid: ${reason}`)
+  })
+
+  it.each([
+    ['https://user:synthetic-password@portfolio.example.com', 'must not contain user credentials'],
+    ['https://:synthetic-password@portfolio.example.com/app', 'must not contain user credentials'],
+    ['https://user:synthetic-password/x@portfolio.example.com', 'not a URL'],
+    ['user:synthetic-password@portfolio.example.com', 'scheme must be http or https'],
+  ])('schreibt bei %s kein Passwort in die Meldung', (value, reason) => {
+    expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`)
+    expect(() => normalizePublicOrigin(value)).not.toThrow(/synthetic-password/)
   })
 
   it('lässt die Einrichtung zu, wenn der konfigurierte Wert einen Schrägstrich am Ende hat', async () => {
