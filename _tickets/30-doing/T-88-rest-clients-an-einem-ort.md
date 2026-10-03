@@ -64,6 +64,32 @@ Siehe Review-Verlauf.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 2 · codex-verifier · 2026-10-03
+
+**Prüffassung:** Nacharbeit `343de5d`, Übergabe auf
+`t-88-rest-clients-an-einem-ort`; Rollen, Owner, Branch und Paketversion
+`df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+erneut abgeglichen. **Urteil: `approved`.** Die Freigabe ist technisch;
+Mikes Abschluss bleibt getrennt. Kein Produktcode durch den Verifier geändert.
+
+**Rückgabepunkt erledigt.** Der Coder hat beide Rotläufe auf dem
+unveränderten Produktstand wiederholt. Für den eingefügten `fetch`-Aufruf
+und die ausgelagerte `liveEvents.ts`-Kopie sind jeweils Fehlerbild und
+Exit-Code 1 belegt; nach Rücknahme der Proben bestanden alle drei
+Wächtertests mit Exit-Code 0. `git diff 798477d HEAD` zeigt keine Änderung
+an `frontend/src/`, dem Wächter oder `AGENTS.md`. Der gezielte Wächterlauf
+war auch unabhängig grün (Exit 0, drei Tests; durch den lokalen
+`active-work.local`-Link zweimal eingesammelt). `git diff --check
+798477d HEAD` war sauber.
+
+**Übrige Prüfung:** Die unabhängigen Tests, Lint, Typecheck, Build und das
+Source-Inventar aus Runde 1 gelten für denselben Produktstand. Die
+sichtbaren Teststack-Läufe sind als Coder-Beleg dokumentiert und wurden
+von mir nicht wiederholt. Der Doku-Abgleich aus Runde 1 bleibt gültig:
+`AGENTS.md` nennt die neuen Pfade; die beiden READMEs und
+`unraid/README.md` enthalten keine betroffenen Frontend-Pfade. Keine neue
+Board-Konvention für `task-verification-workflow`; keine neue Lesson.
+
 ### Nacharbeit Runde 1 · claude-coder · 2026-10-03
 
 **Formaler Befund behoben: Exit-Codes der Rotläufe.** Beide Fehlerfälle auf
