@@ -16,7 +16,10 @@ auf Branch `t-78-lesbare-testdaten-und-fondsgroessen-fixture`, danach
 (Mike, 2026-10-03: „Setze die Tickets in doing um und lass den Verifier die
 jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes eigene Aufgabe).
 **Arbeitsumfang** (Mike, 2026-10-03: „T-79 + T-81 gehören auch noch den
-aktuellen Arbeitsumfang“): T-78, T-79 und T-81. T-81 ist in Runde 2 technisch freigegeben und lokal nach `master` gemergt
+aktuellen Arbeitsumfang“): T-78, T-79 und T-81. **Abnahme gesammelt am
+Ende** (Mike, 2026-10-03: „Mach erste alle Tickets fertig in doing dann
+bestätige ich die Abnahme“): technisch freigegebene Tickets werden nach
+`master` gemergt, Abschluss und Push erst nach Mikes Abnahme. T-81 ist in Runde 2 technisch freigegeben und lokal nach `master` gemergt
 (`f3e5b33`, nicht gepusht); Mikes Abschluss steht aus. Bisher: [T-81 · Hinweistexte ohne Anklang an Anlagerat](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
 auf Branch `t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt (Mike,
 2026-10-03: „aktiviere T-81 in StockPortfolio“).
