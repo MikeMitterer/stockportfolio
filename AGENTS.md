@@ -274,7 +274,12 @@ Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
 Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale
 synthetische Konten entstehen mit `--demo-accounts` nur im temporären
 Testverzeichnis. Ohne diese Option steht der einmalige Setup-Code im dortigen
-API-Log. Stop entfernt eigene Prozesse und Testdaten; `.env`, `.local-data`,
+API-Log. `--demo-details` zeigt für Screenshots und Sichtprüfungen nur neun
+lesbare Instrumente mit echten Namen und eigenen Detailwerten aus
+`scripts/fixtures/demo-details.json` (TER, Volatilität, Fondsgröße in Mio.,
+Anbieter, Ausschüttung; eine manuelle Fondsgröße in USD). Ohne die Option
+bleiben die Randfälle: Kryptopaar, OTC-Anleihe, mehrdeutiges Symbol,
+Pence-Listing und Listing ohne ISIN. Stop entfernt eigene Prozesse und Testdaten; `.env`, `.local-data`,
 Makefiles und StockInfo-Dateien bleiben unverändert. Die Portbelegung wird vor
 dem Start geprüft, fremde Prozesse werden nicht beendet. `ps` dient zur
 Identitätsprüfung und benötigt in eingeschränkten Agentenlaufzeiten die
@@ -301,7 +306,9 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
   `capture-screenshots.mjs` (Bilder für die Anleitungen) und
   `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
-  in DE und EN; Exit-Code 1 bei Abweichung). Der Aufruf steht
+  in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
+  `--demo-details` in Assets-Übersicht und Zusatzinformationen); beide
+  enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
   jeweils im Kopfkommentar.
 - **Neuer sichtbarer Ablauf:** Er wird als wiederverwendbarer Schritt in
   einem Skript unter `frontend/scripts/` ergänzt, mit geprüften Inhalten

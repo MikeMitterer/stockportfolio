@@ -14,3 +14,8 @@ Die `instrument-types-200*.json`-HTTP-Fixtures stammen aus StockInfo-Commit
 `8b0f547c699a8bb1bde62e054f652f6fabfe3204` (REST-Typkatalog). Sie enthalten
 einen vollständigen Katalog mit `future-type`, einen bekannten Leerstand und
 einen unvollständigen Katalog. Andere Core-4.3.0-Fixtures bleiben unverändert.
+
+`instruments-200.json` und `quote-200.json` sind seit StockInfo-Commit
+`20b673af3ff175aabf9cdbf069f9199b058949dc` (StockInfo T-88) bytegleich mit
+StockInfos `contract/fixtures/`: `fund_size` steht in Millionen, `89123.0`
+bedeutet 89,123 Mrd. EUR. Sonst hat sich an beiden Dateien nichts geändert.

@@ -405,6 +405,15 @@ The start command returns after the three processes are ready. It prints Vite
 API log. Add `--demo-accounts` to create a synthetic admin and user instead;
 their generated credentials are stored only in the printed temporary file.
 Both generated passwords meet the account API's password rules.
+Add `--demo-details` for screenshots and visual checks. StockInfo then serves
+only nine readable instruments with real names: the five sample-portfolio
+securities, iShares Core MSCI World, Vanguard Total Stock Market and Apple, plus
+a German federal bond. Each has its own detail values (TER, volatility, fund
+size in millions, provider, accumulating) from `scripts/fixtures/demo-details.json`;
+Vanguard Total Stock Market carries a manual fund size in USD. Without
+`--demo-details`, the fixture server keeps its test cases instead: a crypto
+pair, an OTC bond without listing, one symbol on two exchanges, a pence
+listing and a listing without ISIN.
 The stop command removes these test accounts and temporary databases. It does
 not use Docker, change `.env` or `.local-data`, or call a Make target. The
 script sets Vite's StockInfo URL directly and checks the URL actually served

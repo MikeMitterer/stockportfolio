@@ -31,7 +31,7 @@
         "provider": "iShares",
         "ter": 0.2,
         "replication": "Physical",
-        "fund_size": 89123000000.0,
+        "fund_size": 89123.0,
         "fund_domicile": "Ireland",
         "fund_currency": "USD",
         "volatility": 11.4,
