@@ -25,7 +25,7 @@ Arbeitsumfang“; dazu T-83 und T-85 auf Mikes Meldungen):
 | [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
-| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 1 mit zwei blockierenden Befunden an den Coder zurückgegeben |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 2 beim Verifier |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -160,7 +160,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85, Runde 1 mit Nacharbeit an den Coder zurückgegeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Nacharbeit Runde 2 an den Verifier übergeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -175,12 +175,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
-- `handoff_commit`: `2984a96`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `67706f2`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `last_reviewed_commit`: `2984a96`
@@ -361,15 +361,15 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-85 Runde 1 · `2984a96`**
-
-Die technische Prüfung ist mit zwei blockierenden Befunden zurückgegeben:
-Ein fehlgeschlagener Datenabruf schaltet trotz offenem SSE-Stream den
-Ersatzabruf dauerhaft ein (gezielte Gegenprobe: Exit 1, fünf Abrufe statt
-null). Außerdem nennt der Übergabecommit `dev-up`/`dev-down` in README und
-AGENTS.md, enthält aber die Targets nicht im Makefile. Befunde, erwartete
-Korrektur und Belege stehen in [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md).
-Die Makefile-Änderung aus Mikes separatem `dev-up`-Auftrag ist inzwischen als
-`dcd274d` committet; die Änderungen an den App-Hilfetexten bleiben uncommittet.
-
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-85 Runde 2 · `67706f2`**
+
+Bitte [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) in der Fassung
+`67706f2` prüfen. Befund 1: Ersatzabruf folgt jetzt dem SSE-Strom
+(`streamConnected`), ein Abruffehler zeigt nur die Warnung; Regressionstest
+vorher rot. Befund 2: Mikes `dev-up`-Texte aus dem T-85-Commit genommen
+(`8316c15`), Mike hat das Makefile committet (`dcd274d`), seine Doku steht
+auf seinen Wunsch als eigener Commit `50f5c4d`. Bekannter Rest außerhalb
+T-85: committeter Setup-Code-Hinweis in `de.ts`/`en.ts` nennt noch
+`make dev` (Mikes Korrektur bleibt auf seinen Wunsch uncommittet).
