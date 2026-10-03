@@ -56,8 +56,9 @@ calculated buy and sell values mean; the tick is not stored.
 ![StockPortfolio login](../docs/images/login.png)
 
 The port mapping above accepts connections on the Docker host's network
-interfaces. The web interface has a login, but that login does not protect
-StockInfo. Keep the host port off the internet. To allow access only from the
+interfaces. StockPortfolio forwards StockInfo requests only for signed-in
+users, but its login does not protect StockInfo's own address: anyone who
+reaches that address can use StockInfo. Keep the host port off the internet. To allow access only from the
 Docker host, use `-p 127.0.0.1:8080:8080` instead.
 
 **The container talks to StockInfo, not the browser.** The browser only calls

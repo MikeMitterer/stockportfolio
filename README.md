@@ -624,7 +624,9 @@ such as the server's LAN hostname or a Docker-internal name on a shared
 network. `localhost` refers to the container itself. StockInfo needs no CORS
 setting for StockPortfolio.
 
-The web interface has a login, but that login does not protect StockInfo.
+StockPortfolio forwards StockInfo requests only for signed-in users, but its
+login does not protect StockInfo's own address: anyone who reaches that
+address can use StockInfo.
 If a reverse proxy in your home network serves the app over HTTPS, set
 `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin and
 `STOCKPORTFOLIO_SECURE_COOKIES=true`.

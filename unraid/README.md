@@ -47,8 +47,9 @@ For an existing container, see [Updating](#updating).
 
 **Do not put StockPortfolio or StockInfo on the internet.** Use both only in
 your home network. From outside, connect to your home network with a VPN, for
-example WireGuard or Tailscale. The browser connects to StockInfo directly;
-StockPortfolio's login does not protect it. If a reverse proxy in your home
+example WireGuard or Tailscale. StockPortfolio forwards StockInfo requests
+only for signed-in users, but its login does not protect StockInfo's own
+address: anyone who reaches that address can use StockInfo. If a reverse proxy in your home
 network serves the app over HTTPS, set the exact public origin and enable
 secure cookies.
 
