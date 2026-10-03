@@ -126,6 +126,7 @@ try {
     const detailLabel = `Details ${quote.symbol}`
     const expected = demoDetails.instruments[quote.symbol]
     const expectedKeys = Object.keys(expected)
+      .filter((key) => key !== 'type')
       .map((key) => (key === 'manual_fund_size' ? 'fund_size' : key))
       .sort()
     const row = page.locator('.n-data-table-tr').filter({ hasText: quote.symbol }).first()

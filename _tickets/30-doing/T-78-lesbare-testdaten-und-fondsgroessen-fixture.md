@@ -28,7 +28,8 @@ StockPortfolios `STATUS.md` fest. StockInfo T-88 ist abgeschlossen. Am
 2026-10-03 aktiviert (Mike: „Setze die Tickets in doing um und lass den
 Verifier die jeweilige Umsetzung überprüfen“) und in Runde 1 an den Verifier
 übergeben; Verifier-Prüfung Runde 1 durch `claude-verifier`:
-`changes_requested` (siehe Review-Verlauf).
+`changes_requested`. Nacharbeit Runde 2 am 2026-10-03 übergeben (siehe
+Review-Verlauf).
 
 ## Was zu tun ist
 
@@ -63,6 +64,65 @@ StockInfos Screenshots können danach mit dem Teststack entstehen statt mit
 einer eigenen Live-Instanz.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Nacharbeit Runde 2 · claude-coder · 2026-10-03
+
+**Befund 1 · Xetra-Gold als „Aktie“:** Lösung 1 gewählt. Im Demomodus
+ist 4GLD.DE jetzt `etc`; `/instruments` meldet `"type": "etc"`, die
+Assets-Übersicht zeigt „etc“. Das Beispiel-Depot der App (`db/seed.ts`,
+`kind: 'stock'`) und `demo-quotes.json` bleiben unverändert: Außerhalb des
+Demomodus ändert sich nichts, und die App übernimmt die Gattung aus dem
+Kurs (`syncKinds` in `stores/portfolio.ts`). Das unübersetzte „etc“ steht
+bei den Nebenfunden für T-79, zusammen mit „bond“.
+
+**Befund 2 · Gattung nur als Kopie im Test:** `demo-details.json` nennt
+jetzt `type` je Instrument und ist die einzige Quelle für Gattung und
+Detailwerte. Das Skript übernimmt den Typ im Demomodus von dort
+(`stockinfo-test-server.py`, beim Bau von `SEEDS`) und überspringt `type`
+beim Anlegen der Detailwerte; `demo-data-check.mjs` zählt `type` nicht als
+erwartetes Feld. Der Test liest dieselbe Datei; die Liste `scriptTypes` ist
+entfernt. Neu: Test „nennt für jedes Instrument eine Gattung, die StockInfo
+kennt“ (`stock`, `etf`, `etc`, `fund`, `crypto`, `bond` aus
+`QuoteResponse.type`).
+
+Beleg am laufenden Server: Mit VTI als `stock` in `demo-details.json`
+meldet `/instruments` VTI als `stock` mit nur noch `volatility`; TER und
+Fondsgröße verwirft StockInfo, genau das Szenario aus dem Befund. Datei
+danach byte-gleich zurück (`cmp -s`).
+
+**Rote Gegenprobe** (je ein Fall, `demo-details.json` danach
+byte-gleich wiederhergestellt):
+
+| # | Eingebauter Fehler | Fehlschlagender Test | Exit |
+|---|---|---|---|
+| R1 | VTI `type: stock` | „führt TER und Fondsgröße nur bei ETFs“ | 1 |
+| R2 | 4GLD.DE `type: gold` | „nennt für jedes Instrument eine Gattung, die StockInfo kennt“ | 1 |
+| R3 | AAPL ohne `type` | dto. | 1 |
+
+**Pflichtprüfungen** (nach letzter Änderung):
+
+| Befehl | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 83 / 857 (+1 Gattungstest), API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check`, `py_compile` des Testservers | ohne Befund |
+
+**Sichtbare Prüfung** (Stack `--stack --run --demo-accounts --demo-details`):
+`check:demo-data` → `OK` Assets-Übersicht (9 Instrumente) und fünf
+Detailprüfungen, Exit 0. Screenshot `T-78-browser-demo-assets.png` ersetzt;
+er zeigt Xetra-Gold mit Typ „etc“. Stack gestoppt, Ports frei.
+
+**Nebenfunde für T-79** (ergänzt): neben „bond“ erscheint auch „etc“
+unübersetzt in der Spalte „Typ“.
+
+**Doku-Abgleich:** `README.md` und `AGENTS.md` nennen keine Gattungen der
+Demo-Instrumente; der Kommentar im Skript beschreibt `demo-details.json`
+jetzt als einzige Quelle. Keine weitere Anpassung nötig.
+
+**Lessons:** SI-P-04/08 (Befund 2: Der Wächter wird jetzt bei einer
+Änderung der Quelle rot, R1 belegt das). Einordnung der neuen Befunde
+übernimmt laut Verifier der Observer.
 
 ### Verifier-Prüfung Runde 1 · claude-verifier · 2026-10-03
 

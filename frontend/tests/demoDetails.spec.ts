@@ -5,20 +5,17 @@ import quoteFixtures from '../../scripts/fixtures/demo-quotes.json'
 
 /*
  * `--demo-details` im Teststack zeigt genau die Instrumente aus
- * `demo-details.json`. Den Namen liefert `names` oder das Beispieldepot
- * (`demo-quotes.json`); sonst bliebe der Testfallname aus dem Skript stehen.
+ * `demo-details.json`, mit Gattung und Detailwerten aus derselben Datei. Den
+ * Namen liefert `names` oder das Beispieldepot (`demo-quotes.json`); sonst
+ * bliebe der Testfallname aus dem Skript stehen.
  */
 const names = new Map<string, string>([
   ...quoteFixtures.map((quote) => [quote.symbol, quote.name] as [string, string]),
   ...Object.entries(demoDetails.names),
 ])
-const quoteTypes = new Map<string, string>(quoteFixtures.map((quote) => [quote.symbol, quote.type]))
-// Gattung der Demo-Instrumente außerhalb des Beispieldepots, wie im Skript angelegt.
-const scriptTypes: [string, string][] = [['EUNL.DE', 'etf'], ['VTI', 'etf'], ['AAPL', 'stock'], ['DE0001135275', 'bond']]
-for (const [symbol, type] of scriptTypes) {
-  quoteTypes.set(symbol, type)
-}
 const instruments = Object.entries(demoDetails.instruments) as [string, Record<string, unknown>][]
+// Gattungen aus StockInfos `QuoteResponse.type`.
+const stockInfoTypes = ['stock', 'etf', 'etc', 'fund', 'crypto', 'bond']
 
 describe('Lesbare Demodaten des Teststacks', () => {
   it('gibt jedem Instrument einen echten, eindeutigen Namen', () => {
@@ -56,10 +53,15 @@ describe('Lesbare Demodaten des Teststacks', () => {
     }
   })
 
+  it('nennt für jedes Instrument eine Gattung, die StockInfo kennt', () => {
+    for (const [symbol, values] of instruments) {
+      expect(stockInfoTypes, symbol).toContain(values.type)
+    }
+  })
+
   it('führt TER und Fondsgröße nur bei ETFs', () => {
     for (const [symbol, values] of instruments) {
-      expect(quoteTypes.has(symbol), symbol).toBe(true)
-      const isEtf = quoteTypes.get(symbol) === 'etf'
+      const isEtf = values.type === 'etf'
       expect('ter' in values, symbol).toBe(isEtf)
       expect('fund_size' in values || 'manual_fund_size' in values, symbol).toBe(isEtf)
     }

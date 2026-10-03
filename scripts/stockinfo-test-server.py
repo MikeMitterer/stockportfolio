@@ -238,7 +238,9 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         *[{**BASE, **item} for item in json.loads((Path(__file__).resolve().parent / "fixtures" / "demo-quotes.json").read_text())],
     ]
     # --demo-details zeigt nur verständliche Instrumente: echte Namen, keine
-    # Dubletten, je Instrument eigene Werte. Die Randfälle oben (Kryptopaar,
+    # Dubletten, je Instrument eigene Werte. demo-details.json ist dafür die
+    # einzige Quelle für Gattung und Detailwerte; der Vitest-Wächter
+    # demoDetails.spec.ts liest dieselbe Datei. Die Randfälle oben (Kryptopaar,
     # OTC-Anleihe ohne Listing, mehrdeutiges Symbol, Pence-Listing, Listing
     # ohne ISIN) bleiben dem normalen Start vorbehalten.
     DEMO = json.loads((Path(__file__).resolve().parent / "fixtures" / "demo-details.json").read_text())
@@ -248,6 +250,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
             raise SystemExit(f"demo-details.json nennt Instrumente ohne Testkurs: {', '.join(missing)}")
         SEEDS = [
             {**seed, "name": DEMO["names"].get(seed["symbol"], seed["name"]),
+             "type": DEMO["instruments"][seed["symbol"]]["type"],
              "ter": DEMO["instruments"][seed["symbol"]].get("ter"),
              "accumulating": DEMO["instruments"][seed["symbol"]].get("accumulating")}
             for seed in SEEDS if seed["symbol"] in DEMO["instruments"]
@@ -283,6 +286,8 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         for symbol, entries in DEMO["instruments"].items():
             values[symbol] = {}
             for name, value in entries.items():
+                if name == "type":
+                    continue
                 if name == "manual_fund_size":
                     values[symbol]["fund_size"] = {"manual_value": value["value"], "manual_currency": value["currency"]}
                     continue
