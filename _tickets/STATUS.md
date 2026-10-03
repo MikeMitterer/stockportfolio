@@ -27,9 +27,9 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
-| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`9409be1`), nach `master` gemergt (`9c3bff8`); menschlicher Abschluss offen |
-| [T-89](30-doing/T-89-stockinfo-abschnitt-im-readme.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`3ae4dca`), nach `master` gemergt (`c410a4f`); menschlicher Abschluss offen |
-| [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Runde 1 formal zurückgegeben: Exit-Codes der Rotläufe im Übergabebeleg fehlen (`798477d`) |
+| [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
+| [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
+| [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Exit-Codes der Rotläufe nachgereicht, Runde 2 an den Verifier übergeben (`343de5d`) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -162,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-88; Runde 1 wurde wegen fehlender Exit-Codes der Rotläufe formal an den Coder zurückgegeben. T-82 und T-89 sind technisch freigegeben und auf `master`; ihr menschlicher Abschluss steht aus. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-88; die Exit-Codes der Rotläufe sind nachgereicht, Runde 2 liegt beim Verifier. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -177,12 +177,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `changes_requested`
+- `phase`: `ready_for_review`
 - `ticket`: `T-88-rest-clients-an-einem-ort.md`
 - `branch`: `t-88-rest-clients-an-einem-ort`
-- `handoff_commit`: `798477d`
-- `review_round`: `1`
-- `owner`: `claude-coder`
+- `handoff_commit`: `343de5d`
+- `review_round`: `2`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-88-rest-clients-an-einem-ort.md`
 - `last_reviewed_commit`: `798477d`
