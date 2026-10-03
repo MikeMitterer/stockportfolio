@@ -28,7 +28,8 @@ StockPortfolios `STATUS.md` fest. StockInfo T-88 ist abgeschlossen. Am
 2026-10-03 aktiviert (Mike: „Setze die Tickets in doing um und lass den
 Verifier die jeweilige Umsetzung überprüfen“) und in Runde 1 an den Verifier
 übergeben; Verifier-Prüfung Runde 1 durch `claude-verifier`:
-`changes_requested`. Nacharbeit Runde 2 am 2026-10-03 übergeben (siehe
+`changes_requested`. Nacharbeit Runde 2 am 2026-10-03 übergeben; Verifier-Prüfung
+Runde 2: `approved` (technische Freigabe, Mikes Abschluss steht aus; siehe
 Review-Verlauf).
 
 ## Was zu tun ist
@@ -64,6 +65,45 @@ StockInfos Screenshots können danach mit dem Teststack entstehen statt mit
 einer eigenen Live-Instanz.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 2 · claude-verifier · 2026-10-03
+
+**Geprüfte Fassung:** `efd4645` (Übergabe-Commit `b542d96`; Produktdateien
+im Root identisch mit `efd4645`).
+**Urteil: `approved`** – technische Freigabe. Mikes Abschluss steht aus.
+
+**Befund 1 aus Runde 1 erledigt.** Im Demomodus meldet `/instruments`
+4GLD.DE als `etc`. Außerhalb des Demomodus bleibt `demo-quotes.json`
+unverändert. Das unübersetzte „etc“ steht neben „bond“ bei den Nebenfunden
+für T-79. Die App übernimmt die Gattung aus dem Kurs (`syncKinds`,
+`stores/portfolio.ts:333`); die Detailprüfung von 4GLD.DE läuft weiter grün.
+
+**Befund 2 aus Runde 1 erledigt.** `demo-details.json` nennt `type` je
+Instrument. Das Skript übernimmt den Typ von dort beim Bau von `SEEDS`, und
+`demoDetails.spec.ts` liest dieselbe Datei; `scriptTypes` ist entfernt. Die
+Liste im neuen Gattungstest stimmt mit StockInfos `QuoteResponse.type`
+überein (`../StockInfo/app/models.py:378`: `stock | etf | etc | fund |
+crypto | bond`). Mit R1 (VTI als `stock` → Test rot) ist belegt, dass der
+Wächter jetzt an der Quelle hängt.
+
+| Prüfung | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 83 / 857, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check 4cc4eef..efd4645`, `py_compile` | ohne Befund |
+| Sichtbare Prüfung, Stack `--stack --run --demo-accounts --demo-details` | `check:demo-data` → `OK` Assets-Übersicht (9) und fünf Detailprüfungen, Exit 0. `/instruments`: 4GLD.DE `etc`, AAPL `stock`, DE0001135275 `bond`, sechs ETFs. Stack gestoppt, Ports 5175/8080/8899 frei. |
+| Rote Gegenproben R1–R3 | nicht wiederholt (kein Eingriff in Produktcode); je ein Fall allein dokumentiert, Exit 1 |
+
+Unverändert gültig aus Runde 1: Fixture-Abgleich, `.mo`, Randfälle ohne
+`--demo-details` und Doku-Abgleich. `git diff 4cc4eef..efd4645` berührt nur
+`demo-details.json`, den Testserver, das Prüfskript, den Test und das Ticket.
+
+**Lessons:** Die Einordnung der Befunde aus Runde 1 steht im Ticket noch
+nicht und ist vor dem Abschluss offen; zuständig ist der Observer, sonst der
+Coder. Vorschlag: Befund 2 als Anwendung von SI-P-04/08 (Wächter an der
+Quelle). Befund 1 als Einzelfall (alter Datenwert wird durch neuen Zweck
+sichtbar, ein Beleg).
 
 ### Nacharbeit Runde 2 · claude-coder · 2026-10-03
 

@@ -157,16 +157,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 - `branch`: `t-78-lesbare-testdaten-und-fondsgroessen-fixture`
 - `handoff_commit`: `efd4645`
 - `review_round`: `2`
-- `owner`: `claude-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
-- `last_reviewed_commit`: `b399a1df25963cc888d06b81f2de921c67857aad`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `efd464540eba0deb024452d9f22e7d0b7819863d`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
 - `priority_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
@@ -343,16 +343,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**claude-verifier → claude-coder · T-78 Runde 2 · `efd4645` · `approved`**
+
+Technische Freigabe; beide Befunde aus Runde 1 erledigt, alle Prüfungen
+unabhängig grün ([Ticket](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md),
+„Verifier-Prüfung Runde 2“). Vor dem Abschluss fehlt im Ticket noch die
+Lessons-Einordnung der Befunde aus Runde 1. Mikes Abschluss steht aus.
+
 ## OUTBOX → Verifier
-
-**claude-coder → claude-verifier · T-78 Runde 2 · `efd4645`**
-
-Bitte [T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
-in der Fassung `efd4645` prüfen. Befund 1: Xetra-Gold ist im Demomodus `etc`
-(„etc“ unübersetzt, für T-79 vorgemerkt). Befund 2: `type` je Instrument in
-`demo-details.json` als einzige Quelle für Skript und Wächter, `scriptTypes`
-entfernt, neuer Gattungstest; drei rote Gegenproben und ein Serverbeleg
-(VTI als `stock`) stehen unter „Nacharbeit Runde 2“.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
