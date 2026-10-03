@@ -10,9 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-82 · StockInfo über den eigenen Server abfragen](30-doing/T-82-stockinfo-ueber-eigenen-server.md)
-auf Branch `t-82-stockinfo-ueber-eigenen-server`, im Root ausgecheckt (Mike,
-2026-10-03: „Nach T-86 ist T-82 dran“).
+**Aktuelle Arbeit:** [T-89 · Eigener README-Abschnitt zu StockInfo](30-doing/T-89-stockinfo-abschnitt-im-readme.md)
+auf Branch `t-89-stockinfo-abschnitt-im-readme`, im Root ausgecheckt (Mike,
+2026-10-03: „ok, T-89 nach T-82, dann T-88“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
@@ -27,8 +27,9 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
-| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`9409be1`); menschlicher Abschluss offen |
-| [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-82 (Mike: „Eigenes Ticket direkt nach T-82“) |
+| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`9409be1`), nach `master` gemergt (`9c3bff8`); menschlicher Abschluss offen |
+| [T-89](30-doing/T-89-stockinfo-abschnitt-im-readme.md) | in Umsetzung auf `t-89-stockinfo-abschnitt-im-readme` (Mike: „ok, T-89 nach T-82, dann T-88“) |
+| [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-89 (Mike: „ok, T-89 nach T-82, dann T-88“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -176,19 +177,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
-- `branch`: `t-82-stockinfo-ueber-eigenen-server`
-- `handoff_commit`: `9409be1`
-- `review_round`: `2`
+- `phase`: `implementing`
+- `ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
+- `branch`: `t-89-stockinfo-abschnitt-im-readme`
+- `handoff_commit`: ``
+- `review_round`: `0`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
 - `last_reviewed_commit`: `9409be1`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-82-stockinfo-ueber-eigenen-server.md`, `T-88-rest-clients-an-einem-ort.md`
-- `priority_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
+- `priority_chain`: `T-89-stockinfo-abschnitt-im-readme.md`, `T-88-rest-clients-an-einem-ort.md`
+- `priority_ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
