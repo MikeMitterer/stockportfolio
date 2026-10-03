@@ -279,7 +279,8 @@ lesbare Instrumente mit echten Namen, darunter ein Fonds und ein ETC. Gattung
 und Detailwerte stammen aus `scripts/fixtures/demo-details.json` und folgen
 StockInfos Deklarationen (TER, Fondsgröße in Mio., Anbieter, Ausschüttung für
 ETF und ETC; Volatilität für alle Listings; eine manuelle Fondsgröße in USD).
-Ohne die Option
+„Aktualisieren“ leert die Demo-Detailwerte, weil die Testquelle keine
+liefert; ein Neustart des Stacks stellt sie wieder her. Ohne die Option
 bleiben die Randfälle: Kryptopaar, OTC-Anleihe, mehrdeutiges Symbol,
 Pence-Listing und Listing ohne ISIN. Stop entfernt eigene Prozesse und Testdaten; `.env`, `.local-data`,
 Makefiles und StockInfo-Dateien bleiben unverändert. Die Portbelegung wird vor
@@ -310,7 +311,8 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
   in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
-  und Zusatzinformationen aller Positionen); beide
+  und Zusatzinformationen aller Positionen und dass ein offener Reiter
+  den Live-Abgleich übersteht); beide
   enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
   jeweils im Kopfkommentar.
 - **Neuer sichtbarer Ablauf:** Er wird als wiederverwendbarer Schritt in

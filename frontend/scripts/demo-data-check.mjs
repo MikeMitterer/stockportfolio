@@ -11,9 +11,10 @@
 //      ETF mit manueller Fondsgröße in USD, ETC, Aktie und Fonds (Volatilität
 //      laut StockInfo T-89, Fondsgröße in Mio. laut T-88).
 //   4. Der Reiter „Informationen“ einer offenen Position bleibt offen, wenn
-//      „Aktualisieren“ die Kurse neu lädt und wenn der Live-Abgleich nach
-//      30 Sekunden das Depot neu liefert (T-83). Dieser Schritt wartet
-//      deshalb gut eine halbe Minute.
+//      der Live-Abgleich nach 30 Sekunden das Depot neu liefert (T-83). Dieser
+//      Schritt wartet deshalb gut eine halbe Minute. „Aktualisieren“ klickt er
+//      bewusst nicht: Ein echter Kursabruf ersetzt im Teststack die
+//      Demo-Detailwerte durch leere Werte.
 // Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
 // Voraussetzung:
@@ -289,11 +290,6 @@ try {
       .click()
     const assetSection = drill.locator('[data-position-section="asset"]')
     await assetSection.waitFor({ timeout: 20000 })
-    await page.getByRole('button', { name: 'Aktualisieren' }).first().click()
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(1500)
-    if (!(await assetSection.isVisible()))
-      fail(tabLabel, 'nach „Aktualisieren“ nicht mehr „Informationen“')
     // Der Live-Abgleich lädt spätestens nach 30 Sekunden neu.
     await page.waitForTimeout(35000)
     if (!(await assetSection.isVisible()))
