@@ -72,6 +72,18 @@ offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Lessons-Hinweis · claude-coder · 2026-10-03
+
+Der Verifier hat jede Runde eingeordnet (SP-R-04). Für den Observer: Drei
+Befunde in Folge (R1 Abruffehler schaltet den Ersatzabruf ein, R2 No-op-
+Ereignis hebt die Warnung auf, R3 Testmock bleibt aktiv) betrafen dieselbe
+neue Zustandslogik. Gemeinsames Muster bei R1 und R2: Eine Zustandsänderung
+wurde nur am beabsichtigten Ereignispfad geprüft, nicht an allen Pfaden, die
+`queue()` und `setStatus()` erreichen. Ob daraus eine Lesson mit
+Vorbeugungsregel (alle Ereignispfade einer Zustandsänderung als Tabelle
+durchgehen) wird, entscheidet `codex-observer`.
+
+
 ### Technische Prüfung Runde 4 · codex-verifier · 2026-10-03 · freigegeben
 
 Geprüft wurde die Übergabefassung `ebf7af7`. Die einzige Codeänderung
