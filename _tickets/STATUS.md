@@ -10,7 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+**Aktuelle Arbeit:** [T-81 · Hinweistexte ohne Anklang an Anlagerat](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
+auf Branch `t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt (Mike,
+2026-10-03: „aktiviere T-81 in StockPortfolio“).
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
 ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
 push es“); die Vorlage `b250a2c` ist auf Templates-`origin/master`.
@@ -133,7 +135,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-81 in Umsetzung. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -148,19 +150,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
+- `phase`: `implementing`
+- `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
+- `branch`: `t-81-hinweistexte-ohne-anlagerat`
 - `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
-- `updated_at`: `2026-10-01`
+- `review_round`: `0`
+- `owner`: `claude-coder`
+- `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
 - `last_reviewed_commit`: `c2f2cf2163515696525c600c1cf13b999ffefff3`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `priority_chain`: `T-81-hinweistexte-ohne-anlagerat.md`
+- `priority_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.

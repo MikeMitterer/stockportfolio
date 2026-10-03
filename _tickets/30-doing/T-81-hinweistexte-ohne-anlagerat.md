@@ -8,7 +8,8 @@ nicht zu dieser Linie. Sie klingen nach Markteinschätzung oder Empfehlung.
 **Stand:** Angelegt am 2026-10-03 aus StockInfo nach einer Durchsicht der
 Hinweistexte (Mike: „leg ein Ticket im StockPortfolio-doing an“). Liegt in
 `30-doing/`; Rollen und Aktivierung legt StockPortfolios `STATUS.md` fest.
-Noch nicht aktiviert, noch keine Umsetzung.
+Am 2026-10-03 aktiviert (Mike: „aktiviere T-81 in StockPortfolio“) auf
+Branch `t-81-hinweistexte-ohne-anlagerat`; noch keine Umsetzung.
 
 ## Befund (Claude, 2026-10-03)
 
