@@ -25,7 +25,7 @@ Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
 | [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
-| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 2 beim Verifier |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 2 mit einem blockierenden Befund an den Coder zurückgegeben |
 | [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | folgt nach T-85, mit Korrektur des Setup-Code-Hinweises (Mike: „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -33,8 +33,8 @@ dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
 `master` gemergt; Abschluss und Push folgen nach Mikes Abnahme, gepusht wird
 gemeinsam (Mike: „Nach der Abnahme pushen“). Nach der Abnahme von T-78, T-79
 und T-83 am 2026-10-03 ist `master` gepusht. Die Verschiebung der drei
-Tickets nach `40-done/` steht auf dem T-85-Branch, weil `codex-verifier` dort
-den Owner hat und der Branch nicht gewechselt wird; sie kommt mit dem Merge
+Tickets nach `40-done/` steht während der T-85-Arbeit auf dessen Branch;
+der Branch wird dafür nicht gewechselt. Die Verschiebung kommt mit dem Merge
 von T-85 nach `master`.
 
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
@@ -161,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85, Nacharbeit Runde 2 an den Verifier übergeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Runde 2 mit Nacharbeit an den Coder zurückgegeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -176,16 +176,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
 - `handoff_commit`: `67706f2`
 - `review_round`: `2`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
-- `last_reviewed_commit`: `2984a96`
-- `last_reviewed_round`: `1`
+- `last_reviewed_commit`: `67706f2`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`, `T-86-dev-down-gibt-ports-frei.md`
 - `priority_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
@@ -362,15 +362,15 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-85 Runde 2 · `67706f2`**
+
+Die technische Prüfung ist mit einem blockierenden Befund zurückgegeben:
+Nach einem fehlgeschlagenen Datenabgleich löscht ein irrelevantes
+Allowlist-Ereignis die Warnung, ohne Daten neu zu laden. Die gezielte
+Gegenprobe endete mit Exit 1; die zehn vorhandenen Live-Abgleich-Tests sind
+grün. Befund und erwartete Nacharbeit stehen in
+[T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md). Die beiden Befunde aus
+Runde 1 sind behoben. T-86 und die uncommitteten App-Hilfetexte bleiben
+außerhalb dieses Reviews.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-85 Runde 2 · `67706f2`**
-
-Bitte [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) in der Fassung
-`67706f2` prüfen. Befund 1: Ersatzabruf folgt jetzt dem SSE-Strom
-(`streamConnected`), ein Abruffehler zeigt nur die Warnung; Regressionstest
-vorher rot. Befund 2: Mikes `dev-up`-Texte aus dem T-85-Commit genommen
-(`8316c15`), Mike hat das Makefile committet (`dcd274d`), seine Doku steht
-auf seinen Wunsch als eigener Commit `50f5c4d`. Bekannter Rest außerhalb
-T-85: committeter Setup-Code-Hinweis in `de.ts`/`en.ts` nennt noch
-`make dev`; Mike hat die Korrektur T-86 zugeordnet, das nach T-85 folgt.

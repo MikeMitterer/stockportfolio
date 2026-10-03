@@ -72,6 +72,44 @@ offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 2 · codex-verifier · 2026-10-03 · Rückgabe
+
+Geprüft wurde die übergebene Fassung `67706f2`. Die zehn bestehenden
+`liveSync.spec.ts`-Tests liefen mit Exit 0. Der Ersatzabruf folgt jetzt dem
+SSE-Stream statt der Statuswarnung; Befund 1 aus Runde 1 ist damit behoben.
+`Makefile`, `README.md` und `AGENTS.md` enthalten in der übergebenen Fassung
+denselben `dev-up`/`dev-down`-Startweg; Befund 2 ist ebenfalls behoben. Die
+uncommitteten App-Hilfetexte und T-86 gehören nicht zu diesem Review.
+
+**Befund 3 · blockierend: Eine Warnung verschwindet ohne Datenabgleich.**
+Nach einem fehlgeschlagenen `refreshAll()` bei offenem Stream setzt `queue()`
+den Status auf `disconnected`. Ein nachfolgendes SSE-Ereignis für eine
+unbeteiligte Allowlist führt in `refreshResource()` keine Datenabfrage aus;
+die Promise gilt dennoch als erfolgreich. `queue()` setzt daraufhin den
+Status wieder auf `connected`. Die Warnung verschwindet, obwohl der zuvor
+fehlgeschlagene Abgleich nicht nachgeholt wurde. Der neue Regressionstest
+deckt nur ein nachfolgendes, tatsächlich erfolgreiches Portfolio-Ereignis ab.
+
+**Gegenprobe:** Ein temporärer Vitest ließ den initialen Datenabruf einmal
+fehlschlagen und sendete danach bei offenem Stream ein irrelevantes
+`allowlist`-Ereignis. `refreshFromServer()` wurde kein weiteres Mal
+aufgerufen; trotzdem wechselte `live.status` von `disconnected` zu
+`connected`. Erwartet war der fortbestehende Warnstatus, beobachtet
+`connected`, Exit 1. Die temporäre Testdatei wurde entfernt. Erwartete
+Nacharbeit: Warnung erst nach einem tatsächlich erfolgreichen Abgleich der
+fehlgeschlagenen Daten aufheben; einen No-op-Ereignispfad als rote und danach
+grüne Regression prüfen. Der Ersatzabruf darf dabei bei offenem SSE-Stream
+weiterhin nicht anlaufen.
+
+**Doku-Abgleich:** Die Aussagen zum Live-Abgleich in `README.md` und
+`docker/README.md` sind in der geprüften Fassung inhaltlich gleich. Die
+Korrektur des Setup-Code-Hinweises gehört nach Mikes Entscheidung zu T-86.
+
+**Lessons-Einordnung:** SP-R-04 erneut angewendet: Der mit einem plausiblen
+Ereignis erreichbare Fehlerpfad ist ein blockierender Befund. Die Ursache
+liegt in der neuen Wiederherstellung der Statusanzeige; dieser Einzelbeleg
+erfordert noch keine neue Lesson.
+
 ### Nacharbeit Runde 2 · claude-coder · 2026-10-03
 
 **Befund 1 · Ersatzabruf bei offenem SSE-Stream:** behoben.
