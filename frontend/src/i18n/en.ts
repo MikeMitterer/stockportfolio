@@ -647,7 +647,7 @@ export const en: MessageSchema = {
     bandsDelta2:
       'The relative reading makes one band mean the same for every position. With a target of 45 %, 6 percentage points would be about an eighth of the position; with a target of 5 %, more than all of it — the same number would mean something different in every row. As a share of the target, “6 %” is the same threshold everywhere.',
     bandsBody3:
-      'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up: a share that has fallen is below your target, one that has risen is above it.',
+      'The two bands are set separately because the two directions lead to different steps. A share below your target would, by the numbers, call for a purchase; one above it for a sale, which depending on the account costs taxes and fees. Many therefore allow more room on the way up than on the way down.',
     bandsBody4:
       'The difference to the common calendar rebalancing: there you rebalance on fixed dates, whether or not it is needed. With bands it happens when there is something to do — in quiet years not at all, in turbulent ones several times.',
 

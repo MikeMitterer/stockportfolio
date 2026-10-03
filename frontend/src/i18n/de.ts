@@ -659,7 +659,7 @@ export const de = {
     bandsDelta2:
       'Relativ gerechnet wird, damit ein Band für jede Position dasselbe bedeutet. Bei einem Ziel von 45 % wären 6 Prozentpunkte gut ein Achtel der Position, bei einem Ziel von 5 % mehr als die ganze — dieselbe Zahl hieße an jeder Zeile etwas anderes. Als Anteil des Ziels ist „6 %" überall dieselbe Schwelle.',
     bandsBody3:
-      'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben: Ein gefallener Anteil liegt unter deinem Ziel, ein gestiegener darüber.',
+      'Die beiden Bänder sind getrennt einstellbar, weil die beiden Richtungen Verschiedenes auslösen. Liegt ein Anteil unter deinem Ziel, wäre rechnerisch ein Kauf nötig; liegt er darüber, ein Verkauf, der je nach Depot Steuern und Gebühren kostet. Viele lassen deshalb nach oben mehr Spielraum als nach unten.',
     bandsBody4:
       'Der Unterschied zum verbreiteten Kalender-Rebalancing: Dort schichtet man zu festen Terminen um, unabhängig davon, ob es nötig ist. Nach Bändern geschieht es, wenn es etwas zu tun gibt — in ruhigen Jahren gar nicht, in bewegten mehrmals.',
 

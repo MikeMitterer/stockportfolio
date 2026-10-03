@@ -36,8 +36,11 @@ const expectations = {
   de: {
     saveLabel: 'Passwort speichern',
     method: {
-      required: ['Ein gefallener Anteil liegt unter deinem Ziel, ein gestiegener darüber.'],
-      forbidden: ['günstig', 'Vorschlag', 'vorschläge', 'Empfehlung'],
+      required: [
+        'Die beiden Bänder sind getrennt einstellbar, weil die beiden Richtungen Verschiedenes auslösen.',
+        'Liegt ein Anteil unter deinem Ziel, wäre rechnerisch ein Kauf nötig; liegt er darüber, ein Verkauf,',
+      ],
+      forbidden: ['günstig', 'Vorschlag', 'vorschläge', 'Empfehlung', 'aus gutem Grund'],
     },
     coverHint: {
       required: ['nennt der Plan die Stückzahl'],
@@ -47,8 +50,11 @@ const expectations = {
   en: {
     saveLabel: 'Save password',
     method: {
-      required: ['a share that has fallen is below your target, one that has risen is above it.'],
-      forbidden: ['cheap', 'suggestion', 'recommend'],
+      required: [
+        'The two bands are set separately because the two directions lead to different steps.',
+        'A share below your target would, by the numbers, call for a purchase; one above it for a sale,',
+      ],
+      forbidden: ['cheap', 'suggestion', 'recommend', 'for good reason'],
     },
     coverHint: {
       required: ['the plan gives the units'],

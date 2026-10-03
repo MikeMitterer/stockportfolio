@@ -11,7 +11,8 @@ Hinweistexte (Mike: „leg ein Ticket im StockPortfolio-doing an“). Liegt in
 Am 2026-10-03 aktiviert (Mike: „aktiviere T-81 in StockPortfolio“) auf
 Branch `t-81-hinweistexte-ohne-anlagerat`. Umsetzung Runde 1 am 2026-10-03
 durch `claude-coder` an den Verifier übergeben; Verifier-Prüfung Runde 1
-durch `claude-verifier`: `changes_requested` (siehe Review-Verlauf).
+durch `claude-verifier`: `changes_requested`. Nacharbeit Runde 2 am
+2026-10-03 übergeben (siehe Review-Verlauf).
 
 ## Befund (Claude, 2026-10-03)
 
@@ -105,9 +106,67 @@ Paketmetadaten. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
-Umgesetzt in Runde 1; technische Freigabe und Mikes Abschluss stehen aus.
+Umgesetzt, Nacharbeit Runde 2 übergeben; technische Freigabe und Mikes Abschluss stehen aus.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Nacharbeit Runde 2 · claude-coder · 2026-10-03
+
+**Befund 1 · Bänder-Satz** (`method.bandsBody3`): neu gebaut, ohne
+doppelten Doppelpunkt, mit Begründung aus der Rechnung statt aus dem Markt.
+
+- de: „Die beiden Bänder sind getrennt einstellbar, weil die beiden
+  Richtungen Verschiedenes auslösen. Liegt ein Anteil unter deinem Ziel, wäre
+  rechnerisch ein Kauf nötig; liegt er darüber, ein Verkauf, der je nach Depot
+  Steuern und Gebühren kostet. Viele lassen deshalb nach oben mehr Spielraum
+  als nach unten.“
+- en: „The two bands are set separately because the two directions lead to
+  different steps. A share below your target would, by the numbers, call for
+  a purchase; one above it for a sale, which depending on the account costs
+  taxes and fees. Many therefore allow more room on the way up than on the
+  way down.“
+
+Der letzte Satz beschreibt die übliche Einstellung und passt zur Vorgabe
+der App (Bänder −6 % / +15 %, im Teststack sichtbar); er rät nicht zu einem
+Kauf oder Verkauf. Ist Mike eine andere Begründung lieber, ist das eine
+reine Formulierungsentscheidung.
+
+`notice-texts-check.mjs` prüft jetzt die ersten beiden Sätze bis
+„ein Verkauf,“ und schließt die alte Einleitung „aus gutem Grund“ /
+„for good reason“ aus. Damit fällt die Fassung aus Runde 1 rot.
+
+**Befund 2 · Schlüssel im Nachweis:** In „Übergabe Runde 1“ an allen drei
+Stellen (Umfang, Gegenprobe Fall 1 und 2) `bandsBody2` → `bandsBody3`
+korrigiert. Die dort zitierte Fassung des Satzes bleibt die aus Runde 1.
+
+**Pflichtprüfungen** (nach letzter Änderung):
+
+| Befehl | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 82 / 852, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check` | ohne Befund |
+
+**Browserprüfung** (sichtbar, Teststack `--stack --run --demo-accounts`):
+`check:notice-texts` → vier Mal `OK`, Exit 0. Screenshot der deutschen
+Methodenseite angesehen: Absatz steht mit drei Sätzen im Abschnitt
+„Toleranzbänder“, Layout unverändert. Teststack danach gestoppt, Ports
+5175/8080/8899 frei.
+
+**Rote Gegenprobe der geänderten Erwartungen** (jeweils ein Fall allein;
+`de.ts`/`en.ts` danach byte-gleich wiederhergestellt, `cmp -s`, dann
+grüner Lauf mit Exit 0):
+
+| Fall | Eingebauter Fehler | Beobachtet | Exit |
+|---|---|---|---|
+| A | `de.ts` aus `471eefd` (Doppelpunkt-Fassung) | `FEHLER de · Methodenseite`: beide erwarteten Sätze fehlen, „aus gutem Grund“ gefunden; übrige drei `OK` | 1 |
+| B | `en.ts` aus `471eefd` | `FEHLER en · Methodenseite`: beide erwarteten Sätze fehlen, „for good reason“ gefunden; übrige drei `OK` | 1 |
+
+**Lessons:** SP-R-02 bei Befund 2 angewendet: Schlüssel gegen
+`git diff master` abgeglichen; geändert ist im Methodenteil nur
+`bandsBody3` (`de.ts:661`, `en.ts:649`). Einordnung der Befunde übernimmt
+laut Verifier der Observer.
 
 ### Verifier-Prüfung Runde 1 · claude-verifier · 2026-10-03
 
@@ -173,7 +232,7 @@ geprüft) angewendet. Die Einordnung der neuen Befunde übernimmt der Observer.
 
 **Umfang** (Produktcommit siehe STATUS `handoff_commit`):
 
-- **Bänder-Satz** (`method.bandsBody2`, de/en): beschreibt die Lage zum
+- **Bänder-Satz** (`method.bandsBody3`, de/en): beschreibt die Lage zum
   Ziel statt des Markts. de: „Nach unten reagiert man üblicherweise früher
   als nach oben: Ein gefallener Anteil liegt unter deinem Ziel, ein
   gestiegener darüber.“ en: „… one usually reacts sooner on the way down than
@@ -234,8 +293,8 @@ Fehler jeweils in der laufenden Oberfläche eingebaut, danach
 
 | Fall | Eingebauter Fehler | Beobachtet | Exit |
 |---|---|---|---|
-| Erwarteter Text fehlt | en `bandsBody2`: „below your target“ → „below the target“ | `FEHLER en · Methodenseite: erwarteter Text fehlt` | 1 |
-| Ausgeschlossener Text vorhanden | de `bandsBody2` um „Dann kann man günstig nachkaufen.“ ergänzt | `FEHLER de · Methodenseite: ausgeschlossener Text gefunden: „günstig“` | 1 |
+| Erwarteter Text fehlt | en `bandsBody3`: „below your target“ → „below the target“ | `FEHLER en · Methodenseite: erwarteter Text fehlt` | 1 |
+| Ausgeschlossener Text vorhanden | de `bandsBody3` um „Dann kann man günstig nachkaufen.“ ergänzt | `FEHLER de · Methodenseite: ausgeschlossener Text gefunden: „günstig“` | 1 |
 | Hinweis mit altem Wortlaut | de `hints.coverFrom`: „nennt der Plan“ → „nennt der Vorschlag“ | `FEHLER de · Rebalancing-Hinweis: erwarteter Text fehlt` und `… ausgeschlossener Text gefunden: „Vorschlag“` | 1 |
 
 Einschränkung: Weil die Wiederherstellung zwischen den Fällen zunächst an
