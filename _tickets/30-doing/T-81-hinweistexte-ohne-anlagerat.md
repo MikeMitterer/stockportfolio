@@ -10,7 +10,8 @@ Hinweistexte (Mike: „leg ein Ticket im StockPortfolio-doing an“). Liegt in
 `30-doing/`; Rollen und Aktivierung legt StockPortfolios `STATUS.md` fest.
 Am 2026-10-03 aktiviert (Mike: „aktiviere T-81 in StockPortfolio“) auf
 Branch `t-81-hinweistexte-ohne-anlagerat`. Umsetzung Runde 1 am 2026-10-03
-durch `claude-coder` an den Verifier übergeben (siehe Review-Verlauf).
+durch `claude-coder` an den Verifier übergeben; Verifier-Prüfung Runde 1
+durch `claude-verifier`: `changes_requested` (siehe Review-Verlauf).
 
 ## Befund (Claude, 2026-10-03)
 
@@ -107,6 +108,66 @@ Paketmetadaten. Kein Push, kein Docker-Hub- oder Unraid-Update.
 Umgesetzt in Runde 1; technische Freigabe und Mikes Abschluss stehen aus.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 1 · claude-verifier · 2026-10-03
+
+**Geprüfte Fassung:** `471eefd` (Übergabe-Commit `77d4069`), Branch
+`t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt.
+**Urteil: `changes_requested`**, ein blockierender Befund und eine
+falsche Zuordnung im Nachweis.
+
+#### Befund 1 · Bänder-Satz: zwei Doppelpunkte, „aus gutem Grund“ ohne Grund (blockierend)
+
+`method.bandsBody3` lautet jetzt in beiden Sprachen:
+
+- de: „Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund:
+  Nach unten reagiert man üblicherweise früher als nach oben: Ein gefallener
+  Anteil liegt unter deinem Ziel, ein gestiegener darüber.“
+- en: „… and for good reason: one usually reacts sooner on the way down than
+  on the way up: a share that has fallen is below your target, one that has
+  risen is above it.“
+
+Der Vorschlag aus dem Befund war ein eigener Satz. Eingefügt hinter den
+schon vorhandenen Doppelpunkt nach „aus gutem Grund“, stehen nun zwei
+Doppelpunkte in einem Satz. Außerdem begründet der neue Schluss nichts mehr:
+Dass ein gefallener Anteil unter dem Ziel liegt, gilt immer. Er erklärt
+nicht, warum die Bänder getrennt einstellbar sind. Leser sehen den Satz
+direkt auf der Methodenseite. `notice-texts-check.mjs` prüft nur den
+zweiten Teil und meldet den Fehler deshalb nicht.
+
+Erwartet wird ein Satzbau ohne doppelten Doppelpunkt, in DE und EN gleich,
+der beim Ziel bleibt und den Grund trotzdem nennt. Wie die Bänder-Begründung
+ohne Marktwertung lauten soll, ist eine Formulierungsfrage; im Zweifel
+entscheidet Mike. Den erwarteten Wortlaut im Prüfskript anpassen.
+
+#### Befund 2 · Nachweis nennt den falschen Schlüssel
+
+Umfang und Tabelle „Rote Gegenprobe“ nennen `method.bandsBody2`. Geändert
+wurde aber `method.bandsBody3`. `bandsBody2` gibt es ebenfalls, und er ist
+unverändert (`de.ts:655`). Der Nachweis zeigt damit auf einen anderen Text
+als den geprüften. Bitte beide Stellen korrigieren (vgl.
+[SP-R-02](../.agents/lessons/SP-R-02-pruefaussagen-den-tatsaechlich-ausgefuehrten-schritten-zuordnen.md)).
+
+#### Unabhängig nachgeprüft, ohne Befund
+
+| Prüfung | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 82 Dateien / 852 Tests, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check master..471eefd` | ohne Befund |
+| Textinventar `Vorschl\|suggest\|empfehl\|recommend\|günstig\|cheap` über `frontend/src`, `frontend/public`, `README.md`, `docker/README.md`, `unraid/`, `docs/*.md` | Übrig sind Bezeichner (`Suggestion`, `suggestion.*`), Code-Kommentare (`RebalancingView.vue:281`, `tradePlan.ts`, `assetGroup.ts`, `rebalancing.ts`), der ausgenommene `groupHint` und ein historischer Vorschlag in `docs/stockinfo-integration-proposal.md`. Kein sichtbarer Handelstext übrig. |
+| DE/EN-Gleichheit `fx.missingPair`, `notify.targetsExceededBody`, `hints.coverFrom` | sagen dasselbe |
+| Lizenzfeld, Inventar aller versionierten `package.json` | `api/` und `frontend/` je `"license": "EUPL-1.2"`; Lockfile nur um diese Zeile geändert |
+| Teststack-Importkorrektur | Alle 13 `from app.…`-Importe in `scripts/stockinfo-test-server.py` lösen gegen StockInfo-`master` auf; `app/db.py` und `app/repository.py` gibt es dort nicht mehr (`2b5f908`). Zwei Zeilen, nötig für die Browserprüfung: im Ticketumfang vertretbar. |
+| Sichtbare Browserprüfung | Teststack `--stack --run --demo-accounts`; `check:notice-texts` → vier Mal `OK`, Exit 0. Danach gestoppt, Ports 5175/8080/8899 frei. |
+| Rote Gegenprobe, Einschränkung Fall 2/3 | Ich habe sie nicht wiederholt (kein Eingriff in Produktcode). Statisch: Jede `FEHLER`-Zeile entsteht aus einem Eintrag in `failures`, und Exit 1 hängt allein daran. Eine neue `FEHLER`-Zeile je Fall belegt deshalb, dass der Fall erkannt wird. Als Beleg ausreichend. |
+| Support-Absatz `README.md` / `docker/README.md` | gleiche Aussage; Docker-Fassung verlinkt Issues in der Liste darunter |
+| `AGENTS.md` · Browserprüfung | Skriptliste um `notice-texts-check.mjs` ergänzt, stimmt mit Kopfkommentar und npm-Skript überein |
+
+**Lessons (Autor Claude):** SP-R-02 greift bei Befund 2. Gegenproben aus
+SI-P-02/12 (eigenes Inventar statt Coder-Grep) und SP-R-05 (Stack nach Stopp
+geprüft) angewendet. Die Einordnung der neuen Befunde übernimmt der Observer.
 
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
