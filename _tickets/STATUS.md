@@ -29,7 +29,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
 | [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`9409be1`), nach `master` gemergt (`9c3bff8`); menschlicher Abschluss offen |
 | [T-89](30-doing/T-89-stockinfo-abschnitt-im-readme.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`3ae4dca`), nach `master` gemergt (`c410a4f`); menschlicher Abschluss offen |
-| [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Runde 1 an den Verifier übergeben (`798477d`) |
+| [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Runde 1 formal zurückgegeben: Exit-Codes der Rotläufe im Übergabebeleg fehlen (`798477d`) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -162,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-89, Runde 1 technisch freigegeben und beim Coder zur Abwicklung; danach T-88. T-82 ist technisch freigegeben und auf `master`, der menschliche Abschluss steht aus. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-88; Runde 1 wurde wegen fehlender Exit-Codes der Rotläufe formal an den Coder zurückgegeben. T-82 und T-89 sind technisch freigegeben und auf `master`; ihr menschlicher Abschluss steht aus. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -177,15 +177,15 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-88-rest-clients-an-einem-ort.md`
 - `branch`: `t-88-rest-clients-an-einem-ort`
 - `handoff_commit`: `798477d`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
-- `last_reviewed_commit`: `3ae4dca`
+- `last_reviewed_ticket`: `T-88-rest-clients-an-einem-ort.md`
+- `last_reviewed_commit`: `798477d`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-88-rest-clients-an-einem-ort.md`
@@ -363,12 +363,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-89 Runde 1 · `3ae4dca`**
+**codex-verifier → claude-coder · T-88 Runde 1 · `798477d`**
 
-Technisch freigegeben. Die Tabellen in Projekt- und Docker-README stimmen
-mit StockInfos Gegenstück überein; Unraid-Link und Installationsaussagen
-sind konsistent. Die unabhängige Docker-Hub-Vorschau hat 13.663 Bytes und
-enthält Abschnitt und Anker. Details im T-89-Review Runde 1. Menschlichen
-Abschluss getrennt einholen; danach T-88 nach der festgelegten Reihenfolge.
+Formal zurückgegeben: Der lokale Workflow verlangt bei neuen Testwächtern
+je rotem Fehlerfall den beobachteten Exit-Code im Ticket. Für die zwei
+beschriebenen Rotläufe fehlen beide Exit-Codes. Grüne Tests, Lint, Typecheck
+und Build unabhängig bestätigt. Bitte die Rotlauf-Belege ergänzen und erneut
+übergeben; Details im T-88-Review Runde 1.
 
 ## OUTBOX → Verifier

@@ -64,6 +64,43 @@ Siehe Review-Verlauf.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `798477d` auf `t-88-rest-clients-an-einem-ort`.
+Rollen, Owner, Branch und Paketversion
+`df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+abgeglichen. **Urteil: `changes_requested`.** Kein Produktcode durch den
+Verifier geändert.
+
+**Formaler Rückgabepunkt · Exit-Codes der Rotläufe fehlen.**
+`_tickets/.agents/AGENT-WORKFLOW.md` verlangt bei einem neuen Testwächter
+für jeden absichtlich roten Fehlerfall den eingebauten Fehler **und den
+beobachteten Exit-Code** im Ticket; ohne diesen Beleg ist die Übergabe formal
+zurückzugeben. Die Übergabe dokumentiert zwei Fehlerfälle in `StatusView.vue`
+und `src/data/liveEvents.ts`, bezeichnet die Tests jeweils als rot, nennt
+aber keinen beobachteten Exit-Code. Bitte die Exit-Codes beider Rotläufe
+belegen und die Übergabe erneut vornehmen. Die technische Freigabe folgt
+erst nach diesem Nachweis.
+
+**Unabhängige grüne Belege:** `make test` Exit 0 (Frontend 84 Dateien/868
+Tests, API 6/28); Frontend- und API-Lint sowie Typecheck je Exit 0;
+`npm --prefix frontend run build` Exit 0. Die verschobenen Clientdateien
+haben identischen Inhalt (`R100`); die übrigen Source-Änderungen sind
+Importpfade. Das Inventar fand gegenwärtig keinen Netzwerkaufruf und keinen
+`/api/`-Pfad außerhalb `frontend/src/api/`. Die sichtbaren Läufe stehen in
+der Coder-Übergabe; ich habe sie in dieser Runde nicht selbst wiederholt.
+
+**Doku-Abgleich:** `AGENTS.md` nennt die neuen Pfade und den Wächter;
+`README.md`, `docker/README.md` und `unraid/README.md` enthalten keine
+betroffenen Frontend-Pfade. Eine inhaltliche Änderung dieser Anleitungen
+ist durch die reine Verschiebung nicht nötig. Am Skill
+`task-verification-workflow` ist keine Board-Konvention zu übernehmen.
+
+**Lessons-Einordnung:** Bestehende lokale Rotlauf-Regel angewendet; die
+fehlenden Exit-Codes sind ein Übergabebeleg, kein neues Fehlermuster für
+eine Lesson. Die Prüfung behauptet nur die selbst ausgeführten grünen
+Schritte als unabhängigen Nachweis (SP-R-02).
+
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
 Branch `t-88-rest-clients-an-einem-ort` von `master` (`c410a4f`, mit T-82
