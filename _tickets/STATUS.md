@@ -29,7 +29,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
-| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | in Umsetzung, mit Korrektur des Setup-Code-Hinweises |
+| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | Runde 1 beim Verifier |
 | [T-82](10-backlog/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86 (Mike: „Nach T-86 ist T-82 dran“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -162,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-86 in Umsetzung, danach T-82. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-86, Runde 1 an den Verifier übergeben; danach T-82. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -177,12 +177,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-86-dev-down-gibt-ports-frei.md`
 - `branch`: `t-86-dev-down-gibt-ports-frei`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `d6c0ef1`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `last_reviewed_commit`: `ebf7af7`
@@ -364,3 +364,15 @@ werden entfernt.
 ## INBOX → Coder
 
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-86 Runde 1 · `d6c0ef1`**
+
+Bitte [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) in der Fassung
+`d6c0ef1` prüfen: `.dev-ports.conf.sh` (5175/8080), `make dev-down` mit
+`dev-ports.sh --kill`, README/AGENTS. Setup-Code-Hinweis in DE/EN und README
+nennt `overmind connect api`; Mikes Fassung mit `overmind echo api` war
+falsch (Echo nimmt keine Argumente, zeigt den Startcode nicht; am echten
+Stack belegt). Live-Prüfung mit echtem overmind und temporärem
+Datenverzeichnis, Gegenprobe mit altem `dev-down` (Exit 2, Ports belegt).
+Einschränkung: Parallelbetrieb mit fremdem overmind-Stack statt StockInfo
+geprüft.
