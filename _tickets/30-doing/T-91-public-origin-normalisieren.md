@@ -13,7 +13,8 @@ Nutzer sah nur „Die Browseradresse stimmt nicht mit der Serverkonfiguration
 zurückgeführt, und die Einrichtung läuft durch. Ein Wert mit Pfad
 (`…/app`) beendet den Start mit einer klaren Meldung im Container-Log.
 
-**Stand:** Beide Befunde aus Runde 1 behoben; in Runde 2 an `codex-verifier` übergeben.
+**Stand:** Runde 2 vom Verifier mit einem Rest des Log-Befunds zur Nacharbeit
+zurückgegeben. Pfadprüfung und sichtbarer Einrichtungshinweis sind geprüft.
 
 Kein menschlicher Schritt bis zur technischen Freigabe. Danach: Abnahme durch
 Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
@@ -78,7 +79,7 @@ ausschließlich in `node dist/index.js`, das der Container unverändert startet.
       mehr zu `invalid_origin`.
 - [x] Werte, die sich nicht auf einen Origin zurückführen lassen, beenden den
       Start mit verständlicher Meldung, bevor ein Setup-Code entsteht.
-- [ ] `README.md`, `docker/README.md`, `unraid/README.md` und die
+- [x] `README.md`, `docker/README.md`, `unraid/README.md` und die
       Unraid-Vorlage beschreiben das Format übereinstimmend.
 - [x] Der Hinweis am Einrichtungscode erklärt Unraid und Docker und nennt
       keine Entwicklungsbefehle mehr (DE und EN).
@@ -113,6 +114,40 @@ Push dort folgen mit dem Abschluss.
   Übernahme nötig.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 2 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `0fb0bc1` auf dem Ticketbranch, mit anschließendem
+Board-Commit `dfe40aa`. Ich habe den Diff seit Runde 1, die neuen Tests, das
+sichtbare Prüfskript und die betroffenen Regeln gelesen. `npm --prefix api
+test` lief mit Exit 0 (7 Dateien, 49 Tests). Die Punktsegment-Gegenprobe mit
+`/.`, `/%2e` und `/a/..` bricht jetzt ab; `/` bleibt gültig. Der sichtbare
+Lauf `npm --prefix frontend run check:setup-dialog` meldete `OK` für DE und
+EN und endete mit Exit 0. Der eigene Teststack wurde danach gestoppt;
+`--stack --status` meldete keine registrierte Instanz. Der erste Browserstart
+scheiterte an macOS-Sandboxrechten für Chrome; der Wiederholungslauf außerhalb
+der Sandbox bestand. Die roten Gegenproben und die übrigen Pflichtprüfungen
+sind Coder-Belege, von mir nicht erneut ausgeführt.
+
+**Befund · Geheimnis im Query oder Fragment (blockierend).** Die Korrektur
+blendet den Rohwert nur aus, wenn er ein `@` enthält. Bei
+`https://portfolio.example.com?token=synthetic-secret` und
+`https://portfolio.example.com/#access_token=synthetic-secret` enthält die
+von `normalizePublicOrigin()` erzeugte Fehlermeldung weiterhin
+`synthetic-secret`; `api/src/index.ts` schreibt sie nach stderr und damit ins
+Container-Log. Das ist derselbe Log-Fehler wie in Runde 1 für eine andere
+übliche Stelle eines Zugangswerts. Erwartete Korrektur: Ungültige Rohwerte
+nie samt möglichem Geheimnis ausgeben; Grund und Beispiel genügen. Gegenprobe
+für Query und Fragment mit synthetischem Token sowie für die bereits
+abgedeckte `@`-Form.
+
+**Doku-Abgleich:** Die Pfad-Zusage in `README.md`, `docker/README.md`,
+`unraid/README.md` und der XML-Vorlage stimmt nun mit dem Code überein.
+`AGENTS.md` nennt den neuen sichtbaren Test; die drei Anleitungen enthalten
+den passenden Einrichtungsweg. Keine weitere Dokuänderung für diesen Befund
+erforderlich. Die Vorlage bleibt bis zum Abschluss im Templates-Repo
+uncommittet. Lessons: SP-R-02 und SP-R-04 bei Prüftiefe und Blockerbewertung
+angewendet; ein Rest desselben Befunds, keine neue lokale Lesson.
 
 ### Übergabe Runde 2 · claude-coder · 2026-10-03
 
