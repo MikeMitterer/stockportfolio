@@ -18,11 +18,13 @@ dafür, dass StockPortfolio nach beiden StockInfo-Tickets richtig anzeigt.
 **Stand:** Angelegt am 2026-10-02 aus StockInfo (Mike: „Verifiziere ob das
 Problem aus T-88 nicht auf StockPortfolio durchschlägt … Das selbe gilt
 auch für T-89 … erstell in StockPortfolio in doing ein entsprechendes
-Ticket“). Liegt in `30-doing/`; Rollen und Aktivierung legt
+Ticket“). Liegt in `40-done/`; Rollen und Aktivierung legt
 StockPortfolios `STATUS.md` fest. StockInfo T-88 und T-89 sind
 abgeschlossen. Am 2026-10-03 aktiviert (Mike: „Setze die Tickets in doing um
 und lass den Verifier die jeweilige Umsetzung überprüfen“) und in Runde 1 an
 den Verifier übergeben; Entscheidungen und Nachweise unten.
+
+**Abgeschlossen am 2026-10-03:** Mike: „T-78, T-79 und T-83 sind abgenommen“. Technisch freigegeben und nach `master` gemergt (`0651b2f`).
 
 ## Analyse (Claude, 2026-10-02, mit StockPortfolios Code geprüft)
 

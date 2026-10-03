@@ -23,7 +23,7 @@ zeigte 14 Einträge, darunter „T39 Kryptopaar“ für 50.000 EUR mit TER 0,2 %
 
 **Stand:** Angelegt am 2026-10-01 aus StockInfo heraus (Mike: „Leg ein Ticket
 in StockPortfolio an zum Thema Testdaten … Das Ticket in StockPortfolio soll
-gleich nach doing“). Liegt in `30-doing/`; Rollen und Aktivierung legt
+gleich nach doing“). Liegt in `40-done/`; Rollen und Aktivierung legt
 StockPortfolios `STATUS.md` fest. StockInfo T-88 ist abgeschlossen. Am
 2026-10-03 aktiviert (Mike: „Setze die Tickets in doing um und lass den
 Verifier die jeweilige Umsetzung überprüfen“) und in Runde 1 an den Verifier
@@ -31,6 +31,8 @@ Verifier die jeweilige Umsetzung überprüfen“) und in Runde 1 an den Verifier
 `changes_requested`. Nacharbeit Runde 2 am 2026-10-03 übergeben; Verifier-Prüfung
 Runde 2: `approved` (technische Freigabe, Mikes Abschluss steht aus; siehe
 Review-Verlauf).
+
+**Abgeschlossen am 2026-10-03:** Mike: „T-78, T-79 und T-83 sind abgenommen“. Technisch freigegeben und nach `master` gemergt (`940efba`).
 
 ## Was zu tun ist
 

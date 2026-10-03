@@ -22,16 +22,19 @@ Arbeitsumfang“; dazu T-83 und T-85 auf Mikes Meldungen):
 | Ticket | Stand |
 |---|---|
 | [T-81](40-done/T-81-hinweistexte-ohne-anlagerat.md) | abgeschlossen (Mike: „Erledige gleich auch T-81“) |
-| [T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | Runde 2 technisch freigegeben, gemergt (`940efba`); Mikes Abnahme steht aus |
-| [T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | Runde 1 technisch freigegeben, gemergt (`0651b2f`); Mikes Abnahme steht aus |
-| [T-83](30-doing/T-83-reiter-bleibt-bei-aktualisierung.md) | Runde 1 technisch freigegeben, gemergt (`bfc178a`); Mikes Abnahme steht aus |
+| [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
+| [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
+| [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 1 beim Verifier |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
 `master` gemergt; Abschluss und Push folgen nach Mikes Abnahme, gepusht wird
-gemeinsam (Mike: „Nach der Abnahme pushen“). `master` ist lokal und nicht
-gepusht.
+gemeinsam (Mike: „Nach der Abnahme pushen“). Nach der Abnahme von T-78, T-79
+und T-83 am 2026-10-03 ist `master` gepusht. Die Verschiebung der drei
+Tickets nach `40-done/` steht auf dem T-85-Branch, weil `codex-verifier` dort
+den Owner hat und der Branch nicht gewechselt wird; sie kommt mit dem Merge
+von T-85 nach `master`.
 
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
 ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
@@ -157,7 +160,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85, Runde 1 an den Verifier übergeben. T-83 ist technisch freigegeben und gemergt. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen. T-78 und T-79 sind technisch freigegeben und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Runde 1 an den Verifier übergeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -172,7 +175,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `reviewing`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
 - `handoff_commit`: `2984a96`
@@ -183,7 +186,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `6fc6a2d`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-83-reiter-bleibt-bei-aktualisierung.md`, `T-85-ersatzabruf-nur-ohne-sse.md`
+- `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `priority_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz

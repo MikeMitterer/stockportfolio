@@ -15,6 +15,8 @@ Kursverlauf angezeigt wird - check das“). Branch
 `t-83-reiter-bleibt-bei-aktualisierung`. Befund per Test bestätigt, behoben
 und in Runde 1 an den Verifier übergeben (siehe Review-Verlauf).
 
+**Abgeschlossen am 2026-10-03:** Mike: „T-78, T-79 und T-83 sind abgenommen“. Technisch freigegeben und nach `master` gemergt (`bfc178a`).
+
 Für Mike ist aktuell kein Handgriff nötig.
 
 ## Befund (claude-coder, 2026-10-03)
