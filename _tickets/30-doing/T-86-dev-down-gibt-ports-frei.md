@@ -22,7 +22,10 @@ muss auch einen Mehrfachaufruf überleben. Ergänze die Anpassungen auch im
 T86“ — Vorlage, Umfang und Verify auf den nachgeschärften StockInfo-Stand
 gebracht. Am 2026-10-03 nach dem Abschluss von T-85 auf Branch
 `t-86-dev-down-gibt-ports-frei` aktiviert, umgesetzt und in Runde 1 an den
-Verifier übergeben.
+Verifier übergeben. Codex hat Runde 1 technisch mit einem Befund an den Coder
+zurückgegeben: Der gemeinsame Port-Helfer erkennt den Socket eines lebenden
+Overmind-Stacks fälschlich als verwaist. Mikes bedingte Vorab-Abnahme greift
+erst nach einer technischen Freigabe.
 
 ## Vorlage aus StockInfo
 
@@ -111,9 +114,69 @@ Nur der lokale Dev-Stack. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
-Umgesetzt; technische Freigabe und Mikes Abnahme stehen aus.
+Runde 1 mit blockierendem Befund zurückgegeben; technische Freigabe steht aus.
+Mike hat den menschlichen Abschluss für den Fall der Codex-Freigabe vorab
+zugesagt; diese Bedingung ist noch nicht erfüllt.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `d6c0ef1` auf `t-86-dev-down-gibt-ports-frei`. Rollen,
+Owner, Branch und Paketversion `df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+vor der Prüfung abgeglichen. **Urteil: `changes_requested`.**
+
+**Blockierender Befund 1 · lebender Overmind-Socket wird als verwaist erkannt.**
+Während `make dev-up` mit temporärem Datenverzeichnis lief, meldete
+`overmind status` beide Prozesse als laufend. Der ProjectTools-Helfer
+`dev-ports.sh --status` zeigte bei vollständiger Prozesssicht den Overmind-
+Master, zwei tmux-Prozesse und beide belegten Ports, warnte aber zugleich
+„verwaiste .overmind.sock — blockiert den naechsten Start“. `lsof -nP -t
+.overmind.sock` lieferte dabei keinen Treffer. Die Funktion
+`isStaleOvermindSocket` in `ProjectTools/src/bash/dev-ports.sh` wertet einen
+fehlenden `lsof`-Treffer als verwaisten Socket. Sie wird sowohl von `--status`
+als auch von `--kill` verwendet; letzteres entfernt die Datei dann. Bei
+einem plausiblen Fehlschlag der Overmind-Prozesssuche kann `--kill` folglich
+den Socket eines noch laufenden Stacks entfernen. Schon die Statusaussage ist
+in der geprüften Fassung falsch.
+
+**Erwartete Korrektur:** Die Socket-Erkennung im ProjectTools-Repository so
+prüfen, dass ein erreichbarer Socket als lebend und ein tatsächlich
+verwaister als verwaist gilt; beide Fälle als Regression testen. Danach
+StockPortfolio gegen den korrigierten Helferstand mit echtem `make dev-up`,
+`--status` und `make dev-down` erneut prüfen. Die bestehende Testdatei deckt
+laut Inventar die Entfernung eines verwaisten Sockets ab, aber keinen
+lebenden Socket. Keine ProjectTools-Datei wurde durch den Verifier geändert.
+
+**Unabhängige Gegenproben:** Nach `kill -9` des eigenen Overmind-Masters
+beendete `make dev-down` den tmux-Rest und die Lauscher auf 5175/8080,
+entfernte den nun tatsächlich verwaisten Socket und endete mit Exit 0. Ein
+sofortiger `make dev-up` gelang; `make dev-down` danach und drei weitere
+Aufrufe ohne Stack endeten jeweils mit Exit 0 und freien Ports. Ein fremder
+Python-Lauscher auf 5175 aus `/private/tmp` blieb nach `make dev-down`
+erhalten; der Befehl meldete den belegten Port mit Exit 2 auf Make-Ebene
+(Helfer Exit 1). Den eigenen Fremdprozess anschließend gestoppt; beide Ports
+und der Socket waren frei. Für Prozess- und Portdiagnosen wurde die nötige
+volle Prozesssicht verwendet; die eingeschränkte Sandbox-Sicht war erkennbar
+unvollständig und zählt nicht als Befund. Temporäre Testdaten wurden entfernt.
+
+**Weitere Prüfung:** `make test` Exit 0 (Frontend 84 Dateien/868 Tests, API
+5/20); Frontend-/API-Lint und Typecheck je Exit 0; `bash -n
+.dev-ports.conf.sh` und `git diff --check` ohne Befund. Der Doku-Abgleich
+von `README.md` und `docker/README.md` ergab: Der lokale Dev-Stack ist nur
+im Projekt-README beschrieben, die Container-Anleitung widerspricht nicht.
+`AGENTS.md` und die DE-/EN-Setup-Code-Hinweise passen zum Startweg;
+`overmind connect --help` bestätigt das Prozessargument. Der Code selbst
+wurde nicht ausgegeben.
+
+**Lessons-Einordnung:** [SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md)
+auf die plausible Socket-Fehlentscheidung angewendet; der Fund blockiert die
+Freigabe. [SP-R-05](../.agents/lessons/SP-R-05-nach-dem-stopp-alle-reste-der-gestarteten-prozesse-pruefen.md)
+auf Port-, Socket-, PID- und Neustartkontrolle angewendet. Einzelfall in
+ProjectTools: Für eine neue Lesson liegt hier nur dieser eine Befund vor;
+keine neue Aufnahmebedingung erfüllt. Die Korrektur in ProjectTools ist eine
+offene Übernahme beim `claude-coder`; das Projekt-Board und die gesonderten
+Repository-Schreibgrenzen bleiben maßgeblich.
 
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
