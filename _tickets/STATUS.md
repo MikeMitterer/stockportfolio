@@ -12,6 +12,13 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** keine. Der Root steht auf `master`.
 
+**Neu beauftragt:** [T-93 · Unraid-Template vor dem Image-Push prüfen](30-doing/T-93-unraid-template-vor-image-push-pruefen.md)
+liegt auf Mikes Auftrag in `30-doing/`. Das Ticket erfasst das gemeinsame
+ProjectTools-Skript mit Einstellungen für StockInfo und StockPortfolio; die
+Anbindung vor `make push` bleibt offen. Es ist noch nicht als aktives
+STATUS-Ticket zugeordnet. Der Owner `claude-coder` aktiviert es auf einem
+eigenen Branch, bevor die Umsetzung beginnt.
+
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; „T-79 + T-81 gehören auch noch den aktuellen
 Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
