@@ -7,13 +7,14 @@ nicht zu dieser Linie. Sie klingen nach Markteinschätzung oder Empfehlung.
 
 **Stand:** Angelegt am 2026-10-03 aus StockInfo nach einer Durchsicht der
 Hinweistexte (Mike: „leg ein Ticket im StockPortfolio-doing an“). Liegt in
-`30-doing/`; Rollen und Aktivierung legt StockPortfolios `STATUS.md` fest.
+`40-done/`; Rollen und Aktivierung legt StockPortfolios `STATUS.md` fest.
 Am 2026-10-03 aktiviert (Mike: „aktiviere T-81 in StockPortfolio“) auf
 Branch `t-81-hinweistexte-ohne-anlagerat`. Umsetzung Runde 1 am 2026-10-03
 durch `claude-coder` an den Verifier übergeben; Verifier-Prüfung Runde 1
 durch `claude-verifier`: `changes_requested`. Nacharbeit Runde 2 am
 2026-10-03 übergeben; Verifier-Prüfung Runde 2: `approved` (technische
-Freigabe, Mikes Abschluss steht aus; siehe Review-Verlauf).
+Freigabe; siehe Review-Verlauf). Am 2026-10-03 von Mike abgeschlossen:
+„Erledige gleich auch T-81“.
 
 ## Befund (Claude, 2026-10-03)
 
@@ -83,7 +84,7 @@ Nur sichtbare Texte und das Lizenzfeld; keine Logik, keine Schlüssel umbenennen
 
 ### Verify
 
-Legende: ✅ vom Coder geprüft (Belege im Review-Verlauf, Runde 1); unabhängige Prüfung offen.
+Legende: ✅ vom Coder geprüft und in Runde 2 von `claude-verifier` unabhängig nachgeprüft (Belege im Review-Verlauf).
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
@@ -107,7 +108,11 @@ Paketmetadaten. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
-Umgesetzt; in Runde 2 durch `claude-verifier` technisch freigegeben. Mikes Abschluss steht aus.
+Abgeschlossen am 2026-10-03. In Runde 2 durch `claude-verifier` technisch
+freigegeben (`d0b0d07`), nach `master` gemergt (`f3e5b33`); Mikes Abschluss:
+„Erledige gleich auch T-81“. Offener Rest außerhalb dieses Tickets: Ob die
+Lesson SP-R-02 einen neuen Beleg erhält, entscheidet `codex-observer`
+(Lessons-Einordnung oben).
 
 ## Review-Verlauf (neueste Runde zuerst)
 
