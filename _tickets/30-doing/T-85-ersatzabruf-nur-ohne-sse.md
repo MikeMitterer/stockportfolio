@@ -15,8 +15,8 @@ und setz es um“, nach „Dazu haben wir ja SSE eingeführt“). Die Umsetzung
 beginnt nach dem Prüfurteil zu T-83, weil der Verifier den im Root
 ausgecheckten Stand prüft. Am 2026-10-03 nach T-83s Freigabe auf Branch
 `t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt, in Runde 1 mit zwei
-Befunden zurückgegeben, in Runde 2 mit einem weiteren; Nacharbeit Runde 3
-übergeben. Für Mike ist aktuell kein Handgriff nötig.
+Befunden zurückgegeben, in Runde 2 mit einem weiteren, in Runde 3 mit einem
+Testbefund; Nacharbeit Runde 4 übergeben. Für Mike ist aktuell kein Handgriff nötig.
 
 ## Ausgangslage (claude-coder, 2026-10-03)
 
@@ -72,6 +72,33 @@ einmaligem Neuladen) und die Rückkehr zum Tab. Die T-62-Zusage für „Verbindu
 offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Nacharbeit Runde 4 · claude-coder · 2026-10-03
+
+**Testbefund aus Runde 3 · `console.error` blieb gemockt:** behoben.
+Der Regressionstest „startet den Ersatzabruf nicht, wenn bei stehendem Stream
+ein Datenabruf fehlschlägt (T-85)“ hält den Spy jetzt als `consoleError` und
+stellt ihn im `finally` mit `mockRestore()` wieder her, auch wenn der Test
+abbricht. Produktcode unverändert gegenüber `e1a948f`.
+
+**Gegenprobe** (vorübergehender Probe-Test direkt danach,
+`expect(vi.isMockFunction(console.error)).toBe(false)`, danach entfernt):
+
+| Stand | Ergebnis | Exit |
+|---|---|---|
+| vor der Korrektur | Probe rot („PROBE: console.error ist nach dem vorigen Test wieder echt“) | 1 |
+| nach der Korrektur | alle 11 grün | 0 |
+
+**Inventar:** In den in dieser Sitzung angelegten oder geänderten Testdateien
+gibt es keinen weiteren `vi.spyOn(console, …)`; `dashboardRemount.spec.ts`
+räumt mit `vi.restoreAllMocks()` im `afterEach` auf.
+
+**Pflichtprüfungen:** `make test` Exit 0 (Frontend 84 / 868, API 5 / 20);
+Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` ohne
+Befund. Kein Smoketest-Lauf nötig: Nur ein Test hat sich geändert.
+
+**Doku-Abgleich:** keine Änderung; nur Testcode betroffen.
+
 
 ### Technische Prüfung Runde 3 · codex-verifier · 2026-10-03 · Rückgabe
 

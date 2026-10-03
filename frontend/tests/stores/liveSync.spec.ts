@@ -97,7 +97,9 @@ describe('Live-Abgleich der Stores', () => {
     const stream = new FakeEventStream()
     const live = useLiveSyncStore()
     const fallbackMs = 20
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    // Der erwartete Fehler soll die Ausgabe nicht füllen; nach dem Test gilt
+    // wieder das echte console.error, sonst verschwänden spätere Fehler.
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     live.start(new LiveEventsClient(() => stream), fallbackMs)
     try {
       stream.dispatchEvent(new Event('open'))
@@ -135,6 +137,7 @@ describe('Live-Abgleich der Stores', () => {
       expect(refresh).toHaveBeenCalledTimes(afterFailure + 2)
     } finally {
       live.stop()
+      consoleError.mockRestore()
     }
   })
 
