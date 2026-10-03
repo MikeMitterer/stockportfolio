@@ -136,10 +136,11 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `claude-coder`, Verifier `claude-verifier`
-(seit 2026-10-03 auf Mikes Auftrag, zuvor `codex-verifier`), Observer
-`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `claude-verifier`
-ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
+Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`
+(am 2026-10-03 auf Mikes Auftrag zurück von `claude-verifier`, das T-81 und
+T-78 geprüft hat), Observer `codex-observer` (seit 2026-10-01, zuvor
+`claude-observer`). `codex-verifier` ist eine eigenständige Instanz neben dem
+Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
 **Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen und
@@ -161,7 +162,7 @@ ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
 - `implementer`: `claude-coder`
-- `reviewer`: `claude-verifier`
+- `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
 - `phase`: `implementing`
 - `ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
