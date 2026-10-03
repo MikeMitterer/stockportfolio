@@ -95,7 +95,7 @@ if waitReady "${C}"; then
     expect "Datenbank gehört 99:100" "$(dataOwner "${C}")" "99:100"
     expect "App-Prozess läuft als 99:100" "$(appIds "${C}")" "99:100"
     expect "Daten ohne Sitzung gesperrt" "$(curl -s -o /dev/null -w '%{http_code}' "${ORIGIN}/api/data/portfolio")" 401
-    expect "config.js enthält StockInfo-Adresse" "$(curl -s "${ORIGIN}/config.js" | grep -c '127.0.0.1:8899')" 1
+    expect "Server nennt die StockInfo-Adresse" "$(curl -s -b "${JAR}" "${ORIGIN}/api/stockinfo-target" | grep -c '127.0.0.1:8899')" 1
 else
     failed "Container startet nicht: $(docker logs "${C}" 2>&1 | tail -3)"
 fi

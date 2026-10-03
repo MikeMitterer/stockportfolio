@@ -5,8 +5,6 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . /app
-ARG VITE_STOCKINFO_API_URL=""
-ENV VITE_STOCKINFO_API_URL=${VITE_STOCKINFO_API_URL}
 RUN npm run build
 
 FROM node:22-bookworm-slim AS api-build
@@ -37,9 +35,8 @@ COPY --from=api-build /app/api/drizzle ./drizzle
 COPY --from=frontend-build /app/dist /app/public
 COPY docker/entrypoint.sh /entrypoint.sh
 # Der Entrypoint startet als root, richtet /data für PUID/PGID (Vorgabe 99/100,
-# Unraid) ein und startet die App dann ohne Root-Rechte (T-72). config.js
-# bleibt für jeden beschreibbar, damit auch ein Start mit --user sie schreibt.
-RUN chmod +x /entrypoint.sh && chmod 666 /app/public/config.js
+# Unraid) ein und startet die App dann ohne Root-Rechte (T-72).
+RUN chmod +x /entrypoint.sh
 
 ENV STOCKINFO_API_URL="" \
     PUID="99" \

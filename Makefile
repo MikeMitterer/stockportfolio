@@ -70,7 +70,7 @@ info: ## Umgebungsvariablen anzeigen
 	@echo "    $(YELLOW)WORKSPACE$(RESET)    = $(BLUE)$(WORKSPACE)$(RESET)"
 	@echo "    $(YELLOW)DEV_MAKE$(RESET)     = $(BLUE)$${DEV_MAKE:-<nicht gesetzt>}$(RESET)"
 	@echo "    $(YELLOW)BASH_LIBS$(RESET)    = $(BLUE)$${BASH_LIBS:-<nicht gesetzt>}$(RESET)"
-	@echo "    $(YELLOW)VITE_STOCKINFO_API_URL$(RESET) = $(BLUE)$${VITE_STOCKINFO_API_URL:-<nicht gesetzt>}$(RESET)"
+	@echo "    $(YELLOW)STOCKINFO_API_URL$(RESET) = $(BLUE)$${STOCKINFO_API_URL:-<nicht gesetzt>}$(RESET)"
 	@echo
 	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
 	  "PLATFORM" "$(PLATFORM)"   "# build: x86 | arm"

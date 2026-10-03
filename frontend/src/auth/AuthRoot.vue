@@ -5,7 +5,8 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NButton, NCheckbox, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, type GlobalThemeOverrides } from 'naive-ui'
 import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
-import { apiBaseUrl, MissingApiUrlError } from '@/api/client'
+import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
+import { useApiStatusStore } from '@/stores/apiStatus'
 import { naiveLocales } from '@/i18n/naiveLocale'
 import { readStoredTheme } from '@/stores/theme'
 import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/data/client'
@@ -36,13 +37,19 @@ const newPassword = ref('')
  * einen Login und wird nicht gespeichert (Mike, 2026-10-01).
  */
 const noticeAccepted = ref(false)
-const baseUrl = ref('')
+/*
+ * Der einzige StockInfo-Client der Sitzung. Seine Adresse kennt er selbst
+ * (Weiterleitung über den eigenen Server, T-82); niemand reicht sie durch.
+ */
+const stockInfoClient = new StockInfoClient()
+const apiStatus = useApiStatusStore()
 const legacyStore = useLegacyStore()
 const { legacyData } = storeToRefs(legacyStore)
 const isDark = THEMES[readStoredTheme()].isDark
 const naiveOverrides = ref<GlobalThemeOverrides>({})
 
 provide(AUTH_CLIENT, client)
+provide(STOCK_INFO_CLIENT, stockInfoClient)
 provide(AUTH_USER, user)
 provide(AUTH_LOGOUT, logout)
 
@@ -61,7 +68,10 @@ async function acceptUser(nextUser: PortfolioUser): Promise<void> {
     view.value = 'change'
   } else {
     try {
-      baseUrl.value = apiBaseUrl()
+      if (!(await loadStockInfoTarget())) {
+        view.value = 'missingStockInfo'
+        return
+      }
       activatePrivateData(new PrivateDataClient())
       if (nextUser.isSetupAccount) {
         if (await legacyStore.inspect()) {
@@ -72,9 +82,28 @@ async function acceptUser(nextUser: PortfolioUser): Promise<void> {
       view.value = 'app'
       if (cameFromLogin) void router.replace({ name: 'dashboard' })
     } catch (error) {
-      if (!(error instanceof MissingApiUrlError)) throw error
-      view.value = 'missingStockInfo'
+      reportError(error)
+      view.value = 'unavailable'
     }
+  }
+}
+
+/**
+ * Fragt den Server, welche StockInfo-Adresse er nutzt, und legt sie für die
+ * Anzeige im Status-Store ab.
+ *
+ * @returns `false` nur, wenn der Server sicher keine Adresse kennt. Ist die
+ *   Auskunft gerade nicht zu haben, startet die App trotzdem; die Statusseite
+ *   meldet den Rest.
+ */
+async function loadStockInfoTarget(): Promise<boolean> {
+  try {
+    const target = await stockInfoClient.target()
+    apiStatus.setTarget(target)
+    return target !== null
+  } catch (error) {
+    console.warn('StockInfo-Adresse nicht abfragbar', error)
+    return true
   }
 }
 
@@ -223,7 +252,7 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
 
 <template>
   <NConfigProvider :locale="locale === 'de' ? naiveLocales.de : naiveLocales.en" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
-    <AuthenticatedApp v-if="view === 'app'" :base-url="baseUrl" />
+    <AuthenticatedApp v-if="view === 'app'" />
     <main v-else-if="view !== 'loading' || showStartupStatus" class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
       <section class="auth-panel" :class="{ 'auth-panel--wide': view === 'login' }">
         <header class="auth-panel__header">

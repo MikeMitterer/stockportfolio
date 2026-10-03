@@ -69,8 +69,8 @@ msgstr "StockInfo-Testdaten: {url}"
 msgid "Browser origin / API origin: {origin}"
 msgstr "Browser-Herkunft / API-Herkunft: {origin}"
 
-msgid "Effective StockInfo endpoint: {url}"
-msgstr "Wirksamer StockInfo-Endpunkt: {url}"
+msgid "StockInfo for the account API: {url}"
+msgstr "StockInfo für die Konto-API: {url}"
 
 msgid "Synthetic account credentials: {path}"
 msgstr "Zugangsdaten für Testkonten: {path}"
@@ -96,8 +96,8 @@ msgstr "Es ist kein lokaler Teststack registriert."
 msgid "A local test stack is already registered; use --stack --stop before starting again"
 msgstr "Ein lokaler Teststack ist bereits registriert; beende ihn vor einem neuen Start mit --stack --stop."
 
-msgid "All local endpoints and CORS checks passed"
-msgstr "Alle lokalen Endpunkte und CORS-Prüfungen sind erfolgreich."
+msgid "All local endpoints passed"
+msgstr "Alle lokalen Endpunkte sind erfolgreich."
 
 msgid "Own local test stack stopped; temporary account data removed"
 msgstr "Eigener lokaler Teststack beendet; temporäre Kontodaten entfernt."
@@ -174,8 +174,8 @@ msgstr "Unerwartetes Testverzeichnis wird nicht entfernt: {path}"
 msgid "{url} returned HTTP {status}"
 msgstr "{url} antwortete mit HTTP {status}"
 
-msgid "StockInfo {path} has the wrong response or CORS origin"
-msgstr "StockInfo {path} liefert eine falsche Antwort oder CORS-Herkunft"
+msgid "StockInfo {path} has the wrong response"
+msgstr "StockInfo {path} liefert eine falsche Antwort"
 
 msgid "The known StockInfo test quote is missing"
 msgstr "Der bekannte StockInfo-Testkurs fehlt"
@@ -189,11 +189,11 @@ msgstr "Die Health-Prüfung der Konto-API ist fehlgeschlagen"
 msgid "The account API has unexpected setup state"
 msgstr "Die Konto-API meldet einen unerwarteten Einrichtungsstand"
 
-msgid "Vite is not serving the selected StockInfo endpoint"
-msgstr "Vite liefert den ausgewählten StockInfo-Endpunkt nicht aus"
+msgid "Vite does not forward the StockInfo route to the account API"
+msgstr "Vite leitet die StockInfo-Route nicht an die Konto-API weiter"
 
-msgid "Vite runtime configuration overrides the selected StockInfo endpoint"
-msgstr "Die Vite-Laufzeitkonfiguration überschreibt den ausgewählten StockInfo-Endpunkt"
+msgid "The StockInfo route answers without a session"
+msgstr "Die StockInfo-Route antwortet ohne Sitzung"
 
 msgid "The local test stack did not become ready: {error}"
 msgstr "Der lokale Teststack wurde nicht bereit: {error}"

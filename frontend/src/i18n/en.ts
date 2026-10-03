@@ -132,7 +132,7 @@ export const en: MessageSchema = {
   startup: {
     noApiUrlTitle: 'No API address configured',
     noApiUrlBody:
-      'StockPortfolio gets its prices from a StockInfo instance; without its address there is nothing to calculate. In the container it is set through the environment variable STOCKINFO_API_URL, in development through VITE_STOCKINFO_API_URL in the .env file.',
+      'StockPortfolio gets its prices from a StockInfo instance; without its address there is nothing to calculate. Set STOCKINFO_API_URL on the StockPortfolio server: as an environment variable in the container, in the .env file in the project folder during development. The server must reach StockInfo at this address; the browser does not need it.',
     noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
   },
 
@@ -303,11 +303,10 @@ export const en: MessageSchema = {
     staleQuote: 'An outdated quote is being used.',
     invalidResponse: 'Invalid StockInfo response: field "{field}" is missing or invalid. The quote was not accepted.',
     unsupportedIdentity: 'StockInfo returned an unsupported identity: "{kind}". The quote was not accepted.',
-    urlFrom: {
-      runtime: 'Address from the container’s STOCKINFO_API_URL',
-      'container-build':
-        'STOCKINFO_API_URL is not set on the container — the build-time value applies',
-      build: 'Address from .env at build time (VITE_STOCKINFO_API_URL)',
+    stockinfo: {
+      stockinfo_unreachable: 'StockInfo cannot be reached from the StockPortfolio server. Check STOCKINFO_API_URL and whether StockInfo is running.',
+      stockinfo_timeout: 'StockInfo did not answer in time.',
+      stockinfo_not_configured: 'STOCKINFO_API_URL is not set on the StockPortfolio server.',
     },
   },
 

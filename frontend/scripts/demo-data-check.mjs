@@ -15,6 +15,8 @@
 //      Schritt wartet deshalb gut eine halbe Minute. „Aktualisieren“ klickt er
 //      bewusst nicht: Ein echter Kursabruf ersetzt im Teststack die
 //      Demo-Detailwerte durch leere Werte.
+//   5. Der Browser fragt während des ganzen Laufs nur StockPortfolio an, nie
+//      StockInfo direkt (T-82: Weiterleitung über den eigenen Server).
 // Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
 // Voraussetzung:
@@ -85,6 +87,14 @@ try {
   const context = await browser.newContext({ viewport, locale: 'de-AT' })
   await context.addInitScript(() => localStorage.setItem('stockportfolio.locale', 'de'))
   const page = await context.newPage()
+  // Jede Anfrage des Browsers, die nicht an StockPortfolio geht (Schritt 5).
+  const foreignRequests = new Set()
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if ((url.protocol === 'http:' || url.protocol === 'https:') && url.origin !== origin) {
+      foreignRequests.add(`${request.method()} ${url.origin}${url.pathname}`)
+    }
+  })
   const session = await context.newCDPSession(page)
   const { windowId } = await session.send('Browser.getWindowForTarget')
   await session.send('Browser.setWindowBounds', { windowId, bounds: { left: 100, top: 0 } })
@@ -298,6 +308,11 @@ try {
   } catch (error) {
     fail(tabLabel, `Ablauf abgebrochen: ${String(error.message).split('\n')[0]}`)
   }
+
+  // 5 · Nur Anfragen an StockPortfolio.
+  const requestLabel = 'Anfragen des Browsers'
+  for (const entry of foreignRequests) fail(requestLabel, `nicht an StockPortfolio: ${entry}`)
+  if (passed(requestLabel)) console.log(`OK  ${requestLabel}: nur ${origin}`)
 } catch (error) {
   fail('Ablauf', String(error.message).split('\n')[0])
 } finally {

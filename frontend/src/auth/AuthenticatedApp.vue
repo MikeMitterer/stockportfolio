@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, provide } from 'vue'
+import { inject, onMounted, onUnmounted } from 'vue'
 import App from '@/App.vue'
-import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
+import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 import { LiveEventsClient } from '@/data/liveEvents'
 import { useLiveSyncStore } from '@/stores/liveSync'
 
-const props = defineProps<{ baseUrl: string }>()
-const stockInfoClient = new StockInfoClient(props.baseUrl)
-provide(STOCK_INFO_CLIENT, stockInfoClient)
+const stockInfoClient = inject<StockInfoClient>(STOCK_INFO_CLIENT)
+if (!stockInfoClient) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 
 const liveSync = useLiveSyncStore()
 onMounted(() => liveSync.start(new LiveEventsClient(), 30_000, stockInfoClient))

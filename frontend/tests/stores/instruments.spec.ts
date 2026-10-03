@@ -97,7 +97,7 @@ describe('useInstrumentsStore — load', () => {
   })
 
   /**
-   * Der Fall aus der Praxis: falsche `VITE_STOCKINFO_API_URL` in der `.env`.
+   * Der Fall aus der Praxis: eine falsche StockInfo-Adresse in der Konfiguration.
    * Die Meldung lautete nur „Netzwerkfehler" — sie nannte weder die Adresse
    * noch den Grund, und die Papiere sind die einzige Ansicht, die überhaupt
    * etwas sagt.

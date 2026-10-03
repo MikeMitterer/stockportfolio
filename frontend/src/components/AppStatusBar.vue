@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NButton } from 'naive-ui'
@@ -11,7 +11,6 @@ import { useQuotesStore } from '@/stores/quotes'
 import { useRelativeTime } from '@/composables/useRelativeTime'
 import { integer } from '@/domain/formatters'
 import { baseCurrencyOf } from '@/domain/fx'
-import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 /**
  * Die Statuszeile dieser App.
@@ -28,7 +27,6 @@ import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/client'
 
 const { t } = useI18n()
 
-const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
 const router = useRouter()
 const aboutHref = computed(() => router.resolve({ path: '/settings', query: { tab: 'about' } }).href)
 
@@ -55,7 +53,7 @@ const stateLabel = computed<Record<string, string>>(() => ({
 
 /** Kurze Adresse ohne Schema — die volle steht auf der Statusseite. */
 const host = computed(() => {
-  const url = client?.url
+  const url = apiStatus.target
   if (!url) return ''
   try {
     return new URL(url).host
