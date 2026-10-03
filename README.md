@@ -101,6 +101,11 @@ The type is not repeated in the details.
 Open a position on the dashboard. **Information** combines
 fields supplied by StockInfo plugins, TER and volatility. Symbol, ISIN and the
 original price stay in the main row without being repeated in the details.
+A fund size appears in millions with its currency code, as StockInfo writes it,
+for example `89,123.00 million EUR`; a manually entered size keeps the currency
+it was entered in. StockInfo computes volatility for every asset type with
+prices, so stocks and funds show it too. A value saved in the browser with an
+older unit shows `—` until the next price refresh replaces it.
 A converted unit price remains available here when needed. On mobile the area
 also provides the quote age and external links, which the card does not show. On mobile, tap the position card
 or its caret to reach the same sections. Fields already
@@ -406,11 +411,13 @@ API log. Add `--demo-accounts` to create a synthetic admin and user instead;
 their generated credentials are stored only in the printed temporary file.
 Both generated passwords meet the account API's password rules.
 Add `--demo-details` for screenshots and visual checks. StockInfo then serves
-only nine readable instruments with real names: the five sample-portfolio
-securities, iShares Core MSCI World, Vanguard Total Stock Market and Apple, plus
-a German federal bond. Each has its own detail values (TER, volatility, fund
-size in millions, provider, accumulating) from `scripts/fixtures/demo-details.json`;
-Vanguard Total Stock Market carries a manual fund size in USD. Without
+only ten readable instruments with real names: the five sample-portfolio
+securities (Xetra-Gold as an ETC), iShares Core MSCI World, Vanguard Total
+Stock Market, Apple, the DWS Vermögensbildungsfonds I fund and a German federal
+bond. Type and detail values come from `scripts/fixtures/demo-details.json`
+and follow StockInfo's own declarations: TER, fund size in millions, provider
+and accumulating for ETFs and ETCs, volatility for every listing. Vanguard
+Total Stock Market carries a manual fund size in USD. Without
 `--demo-details`, the fixture server keeps its test cases instead: a crypto
 pair, an OTC bond without listing, one symbol on two exchanges, a pence
 listing and a listing without ISIN.

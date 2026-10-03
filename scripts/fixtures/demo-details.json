@@ -3,7 +3,8 @@
     "AAPL": "Apple Inc.",
     "EUNL.DE": "iShares Core MSCI World",
     "VTI": "Vanguard Total Stock Market",
-    "DE0001135275": "Bundesanleihe 2037"
+    "DE0001135275": "Bundesanleihe 2037",
+    "847652.F": "DWS Vermögensbildungsfonds I"
   },
   "instruments": {
     "EUNL.DE": { "type": "etf", "ter": 0.2, "volatility": 13.5, "fund_size": 89123.0, "provider": "iShares", "accumulating": true },
@@ -13,7 +14,8 @@
     "IUSN.DE": { "type": "etf", "ter": 0.35, "volatility": 16.2, "fund_size": 5640.0, "provider": "iShares", "accumulating": true },
     "IS3M.DE": { "type": "etf", "ter": 0.07, "volatility": 6.1, "fund_size": 1312.0, "provider": "iShares", "accumulating": true },
     "AAPL": { "type": "stock", "volatility": 24.7 },
-    "4GLD.DE": { "type": "etc", "volatility": 14.3 },
-    "DE0001135275": { "type": "bond", "volatility": 5.2 }
+    "4GLD.DE": { "type": "etc", "ter": 0.0, "volatility": 14.3, "fund_size": 15420.0, "provider": "Deutsche Börse Commodities", "accumulating": true },
+    "DE0001135275": { "type": "bond" },
+    "847652.F": { "type": "fund", "volatility": 15.8 }
   }
 }

@@ -1,6 +1,6 @@
 /** Gemeinsame Anzeigeprojektion für Hauptspalten und Zusatzinformationen. */
 import { translate } from '@/i18n'
-import { money, number, percent } from './formatters'
+import { money, moneyAmount, number, percent } from './formatters'
 import type { DetailDefinition, DetailScalar, DetailValue } from '@/types/details'
 import type { QuoteCacheEntry } from '@/types/portfolio'
 
@@ -39,6 +39,10 @@ function valueText(definition: DetailDefinition, value: DetailScalar | null, uni
     : unit === 'ratio' ? translate('detailFields.ratio')
       : unit === 'basis_points' ? translate('detailFields.basisPoints')
         : unit === 'millions' ? translate('detailFields.millions') : unit
+  // Wie StockInfo (T-88): „129.791,00 Mio. EUR“ — Zahl, Maßstab, Währungscode.
+  if (unit === 'millions' && currency) {
+    return translate('detailFields.amountMillions', { amount: moneyAmount(value, currency, 2), currency: currency.toUpperCase() })
+  }
   if (currency) return `${money(value, currency, 2)}${unitLabel ? ` ${unitLabel}` : ''}`
   if (unit === 'percent') return percent(value, 4)
   return `${number(value)}${unitLabel ? ` ${unitLabel}` : ''}`

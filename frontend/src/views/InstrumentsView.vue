@@ -11,6 +11,8 @@ import {
   type DataTableColumns,
 } from 'naive-ui'
 import { money, integer, percent } from '@/domain/formatters'
+import { instrumentTypeLabelKey, terApplies } from '@/domain/instrumentDisplay'
+import { useFieldsStore } from '@/stores/fields'
 import { useInstrumentsStore } from '@/stores/instruments'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -24,16 +26,29 @@ if (!client) throw new Error('StockInfoClient wurde nicht bereitgestellt')
 
 const instrumentsStore = useInstrumentsStore()
 const portfolioStore = usePortfolioStore()
+const fieldsStore = useFieldsStore()
 
 const search = ref<string>('')
 const typeFilter = ref<string>('')
 
-/** `''` statt `null` — Naive UIs Select-Optionen lassen kein null als Wert zu. */
-const typeOptions = [
-  { label: 'Alle Typen', value: '' },
-  { label: 'ETF', value: 'etf' },
-  { label: 'Aktie', value: 'stock' },
-]
+/** Gattung in der Landessprache; eine unbekannte bleibt als Rohwert sichtbar. */
+function typeLabel(type: string): string {
+  const key = instrumentTypeLabelKey(type)
+  return key ? t(key) : type
+}
+
+/**
+ * Filter aus den tatsächlich vorhandenen Gattungen, damit auch Anleihen oder
+ * ETCs wählbar sind. `''` statt `null` — Naive UIs Select-Optionen lassen kein
+ * null als Wert zu.
+ */
+const typeOptions = computed(() => [
+  { label: t('instruments.allTypes'), value: '' },
+  ...[...new Set(instrumentsStore.instruments.map((instrument) => instrument.type))]
+    .filter((type): type is string => type !== null)
+    .sort()
+    .map((type) => ({ label: typeLabel(type), value: type })),
+])
 
 /** Schlüssel der Papiere, die schon im Depot liegen. */
 const heldKeys = computed(
@@ -81,12 +96,12 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     render: (row) => h('span', { class: 'cell-num cell-empty' }, row.isin ?? '—'),
   },
   {
-    title: 'Typ',
+    title: t('instruments.type'),
     key: 'type',
     width: 90,
     render: (row) =>
       h(NTag, { size: 'small', bordered: false }, () => (
-        row.type === 'etf' ? t('dashboard.kindEtf') : row.type === 'stock' ? t('dashboard.kindStock') : row.type
+        row.type ? typeLabel(row.type) : '—'
       )),
   },
   {
@@ -105,9 +120,10 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'ter',
     align: 'right',
     width: 90,
+    // Zwei Nachkommastellen: 0,03 % darf nicht als „0,0 %“ erscheinen.
     render: (row) =>
-      row.ter !== null
-        ? h('span', { class: 'cell-num' }, percent(row.ter))
+      row.ter !== null && terApplies(row.type ?? '', row.identity.kind, fieldsStore.catalog?.definitions ?? null)
+        ? h('span', { class: 'cell-num' }, percent(row.ter, 2))
         : h('span', { class: 'cell-empty' }, '—'),
   },
   {
@@ -122,7 +138,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
         : h('span', { class: 'cell-empty' }, '—'),
   },
   {
-    title: 'Kurspunkte',
+    title: t('instruments.points'),
     key: 'history_count',
     align: 'right',
     width: 110,
@@ -146,6 +162,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
 onMounted(async () => {
   if (!portfolioStore.loaded) await portfolioStore.load()
   if (!instrumentsStore.loaded) await instrumentsStore.load(client)
+  // Der Feldkatalog entscheidet, für welche Gattungen die TER gilt.
+  void fieldsStore.load(client)
 })
 
 // Meldung als Toast, wie überall sonst: Ein Kasten über der Tabelle schiebt
@@ -178,7 +196,7 @@ notify(
     <div class="instruments__filters">
       <NInput
         v-model:value="search"
-        placeholder="Symbol, ISIN oder Name"
+        :placeholder="t('instruments.searchPlaceholder')"
         clearable
         class="instruments__search"
       />
@@ -186,7 +204,7 @@ notify(
         v-model:value="typeFilter"
         :options="typeOptions"
         class="instruments__select"
-        placeholder="Typ"
+        :placeholder="t('instruments.type')"
       />
     </div>
 
