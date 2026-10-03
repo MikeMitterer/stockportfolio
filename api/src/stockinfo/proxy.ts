@@ -8,6 +8,9 @@
  * Sitzungsdaten und andere Kopfzeilen des Browsers gehen nicht an StockInfo.
  */
 
+/** Statuscodes, deren Antwort keinen Rumpf haben darf (Fetch-Standard). */
+const NULL_BODY_STATUSES = new Set([204, 205, 304])
+
 /** Pfad-Muster je Methode, gemessen am Pfad nach `/api/stockinfo`. */
 const ALLOWED: Record<'GET' | 'POST', RegExp[]> = {
   GET: [
@@ -92,5 +95,7 @@ export async function forwardToStockInfo(
     const value = upstream.headers.get(name)
     if (value !== null) headers.set(name, value)
   }
-  return new Response(await upstream.arrayBuffer(), { status: upstream.status, headers })
+  // 204, 205 und 304 dürfen keinen Rumpf tragen, auch keinen leeren.
+  const body = NULL_BODY_STATUSES.has(upstream.status) ? null : await upstream.arrayBuffer()
+  return new Response(body, { status: upstream.status, headers })
 }

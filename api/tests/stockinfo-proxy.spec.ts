@@ -88,6 +88,24 @@ describe('StockInfo-Weiterleitung über den eigenen Server (T-82)', () => {
     expect(seen[0]?.init.headers).toEqual({ Accept: 'application/json' })
   })
 
+  /**
+   * 204, 205 und 304 tragen keinen Rumpf; `new Response` wirft schon bei einem
+   * leeren ArrayBuffer. Status und erlaubte Kopfzeilen müssen trotzdem ankommen.
+   */
+  it('leitet Antworten ohne Rumpf mit Status und Kopfzeilen weiter', async () => {
+    for (const status of [204, 205, 304]) {
+      const { app, cookie } = await fixture(async () => new Response(null, {
+        status,
+        headers: { 'Cache-Control': 'no-store', 'X-Internal': 'geheim' },
+      }))
+      const response = await app.request(`${origin}/api/stockinfo/health`, { headers: { Cookie: cookie } })
+      expect(response.status, String(status)).toBe(status)
+      expect(await response.text(), String(status)).toBe('')
+      expect(response.headers.get('cache-control'), String(status)).toBe('no-store')
+      expect(response.headers.get('x-internal'), String(status)).toBeNull()
+    }
+  })
+
   it('leitet Kursabrufe als POST weiter und prüft dabei Herkunft und JSON', async () => {
     const { app, seen, cookie } = await fixture()
     const refreshed = await app.request(`${origin}/api/stockinfo/refresh/IE00B4L5Y983`, {
