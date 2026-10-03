@@ -11,8 +11,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** [T-92 · Dashboard: Rückblick ohne Wartezeit](30-doing/T-92-dashboard-rueckblick-schneller.md)
-auf `t-92-dashboard-rueckblick-schneller`, Runde 1 an `codex-verifier`
-übergeben (Mike, 2026-10-03: „Ja, leg T-92 an und setz es gleich um“).
+auf `t-92-dashboard-rueckblick-schneller`, Runde 1 durch `codex-verifier`
+technisch freigegeben; Mikes Serverprüfung steht aus
+(Mike, 2026-10-03: „Ja, leg T-92 an und setz es gleich um“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; „T-79 + T-81 gehören auch noch den aktuellen
@@ -160,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-T-92 ist in Runde 1 an `codex-verifier` übergeben (`fac7055`). T-91 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-92 ist in Runde 1 durch `codex-verifier` technisch freigegeben (`fac7055`); Mikes Serverprüfung steht aus. T-91 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -175,16 +176,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-92-dashboard-rueckblick-schneller.md`
 - `branch`: `t-92-dashboard-rueckblick-schneller`
 - `handoff_commit`: `fac7055`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-91-public-origin-normalisieren.md`
-- `last_reviewed_commit`: `243f5d2`
-- `last_reviewed_round`: `3`
+- `last_reviewed_ticket`: `T-92-dashboard-rueckblick-schneller.md`
+- `last_reviewed_commit`: `fac7055`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-92-dashboard-rueckblick-schneller.md`
 - `priority_ticket`: `T-92-dashboard-rueckblick-schneller.md`
@@ -361,11 +362,10 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-92 Runde 1 · `fac7055`**
+
+Technisch freigegeben. Der Vergleichstest und die Rechenstruktur sind geprüft;
+ein eigener Browserlauf mit 20 Jahren Verlauf fehlt mangels Testdaten.
+Mikes Serverprüfung und der Abschluss bleiben offen. Details im Ticket.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-92 Runde 1 · `fac7055`**
-
-`buildBacktest()` läuft jetzt linear (Zeiger je Position); Vergleichstest
-gegen die alte Fassung und Zeittest (25 × 20 Jahre < 250 ms, gemessen 13 ms).
-Gegenproben rot, Pflichtprüfungen grün. Browserprüfung mit langem Verlauf
-nicht möglich (Teststack: 61 Tage). Details im Ticket.

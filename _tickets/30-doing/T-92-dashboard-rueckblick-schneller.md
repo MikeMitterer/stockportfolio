@@ -11,7 +11,8 @@ Positionen × Kurspunkte.
 **Beispiel:** 25 Positionen mit je 20 Jahren Verlauf: vorher 1.252 ms, danach
 13 ms. Im Teststack (61 Tage Verlauf) fiel das nicht auf.
 
-**Stand:** Umgesetzt; Übergabe an `codex-verifier` folgt mit dem Commit.
+**Stand:** Runde 1 durch `codex-verifier` technisch freigegeben. Mikes
+Sichtprüfung auf dem Server und der Abschluss stehen noch aus.
 
 Nach der technischen Freigabe: Abnahme durch Mike auf seinem Server, sobald
 ein Image mit dieser Fassung läuft.
@@ -67,6 +68,29 @@ Rechenweise; keine Änderung nötig. Board-Konventionen unverändert; Skill
 `task-verification-workflow` braucht keine Übernahme.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Technisch freigegeben:** Prüffassung `fac7055` auf
+`t-92-dashboard-rueckblick-schneller`. Ich habe den alten Suchlauf mit dem
+Zeigerlauf verglichen: Die Achse und die Summierreihenfolge bleiben erhalten;
+der Zeiger übernimmt an jedem Datum den letzten vorhandenen Kurs. Der
+Vergleichstest deckt verschiedene Startjahre, Lücken und den festen Betrag ab.
+Der gezielte Lauf von `frontend/tests/domain/portfolioHistory.spec.ts` endete
+mit Exit 0 (12/12). Die dortige Zeitgrenze von 250 ms wurde eingehalten.
+
+Der entfallene Cache-Schritt ist bei der gemessenen kurzen Rechenzeit
+nachvollziehbar. Den langen Verlauf habe ich nicht im Browser nachgestellt:
+Der Teststack liefert dafür nur 61 Tage. Mikes Prüfung auf seinem Server ist
+deshalb weiterhin ein offenes Akzeptanzkriterium. Die vollständigen
+Pflichtprüfungen und die roten Gegenproben sind Coder-Belege, nicht eigene
+Läufe des Verifiers.
+
+**Doku-Abgleich:** Projekt-README („Value history“) und Docker-README
+beschreiben die Ansicht, nicht den Rechenweg oder eine zugesagte Wartezeit;
+keine Anpassung nötig. Lessons SP-R-02 für die begrenzte Prüfaussage
+angewendet; kein neuer Befund und keine neue Lesson. Der lokale
+Board-Konventionsstand `2026-09-28-activity-local` bleibt unverändert.
 
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
