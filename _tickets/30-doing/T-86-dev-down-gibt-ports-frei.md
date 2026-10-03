@@ -114,11 +114,63 @@ Nur der lokale Dev-Stack. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
-Runde 1 mit blockierendem Befund zurückgegeben; technische Freigabe steht aus.
+Runde 1 mit blockierendem Befund zurückgegeben; Befund in ProjectTools
+(`6046a16`) behoben, Nacharbeit Runde 2 übergeben. Technische Freigabe steht aus.
 Mike hat den menschlichen Abschluss für den Fall der Codex-Freigabe vorab
 zugesagt; diese Bedingung ist noch nicht erfüllt.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Nacharbeit Runde 2 · claude-coder · 2026-10-03
+
+**Befund 1 · lebender overmind-Socket als verwaist erkannt:** in ProjectTools
+behoben, mit Mikes Freigabe („Ja, korrigieren und committen“) als lokaler
+Commit **`6046a16`** auf ProjectTools-`master`, nicht gepusht. StockPortfolio
+selbst ist gegenüber `d6c0ef1` unverändert; `.libs/ProjectTools` zeigt per
+Symlink auf diesen Stand.
+
+- **Ursache belegt:** overmind bindet relativ (`./.overmind.sock`). Ein so
+  gebundener, lebender Socket ergibt mit `lsof -t <absoluter Pfad>` 0 Treffer;
+  ein Verbindungsversuch nimmt er an, nach dem Ende kommt
+  `ConnectionRefusedError`.
+- **Korrektur** `isStaleOvermindSocket`: Verbindungsversuch (python3) relativ
+  aus dem Projektverzeichnis, was auch die Längengrenze für Socket-Pfade
+  umgeht. Nur `ConnectionRefusedError`/`FileNotFoundError` gilt als verwaist;
+  ohne python3 oder bei anderen Fehlern bleibt die Datei liegen, damit kein
+  laufender Stack seinen Socket verliert. ProjectTools-README ergänzt.
+- **Regression** `testLebenderOvermindSocketBleibt` (relativ gebunden wie
+  overmind): vor der Korrektur rot, 2 von 50 Tests („--status meldet ihn
+  nicht als verwaist“, „--kill laesst ihn liegen“; das alte `--kill`
+  entfernte den Socket des lebenden Besitzers). Danach 50 von 50 grün,
+  einschließlich `testVerwaisteOvermindSocketWirdEntfernt`. `shellcheck`
+  ohne Befund. (`nc -U -z` schied aus: meldet auf macOS auch einen lebenden
+  Socket als nicht erreichbar.)
+
+**Live-Prüfung gegen den korrigierten Helfer** (echter overmind,
+`make dev-up STOCKPORTFOLIO_DATA_DIR=<Scratchpad>`, fremder overmind-Stack
+parallel):
+
+| Fall | Beobachtet |
+|---|---|
+| Befund: laufender Stack, `overmind status` „running“, dann `dev-ports.sh --status` | Meldung „verwaiste“ 0-mal; Socket bleibt |
+| `kill -9` des Masters, dann `make dev-down` | „verwaiste .overmind.sock entfernt“, „overmind beendet“, 5175/8080 frei, Exit 0 |
+| Neustart danach | ohne „already running“; `dev-down` Exit 0 |
+| dreimal `make dev-down` ohne Stack | Exit 0, 0, 0 |
+| fremder overmind-Stack | läuft nach allen Schritten weiter |
+| Reste am Ende | keine tmux-Server `overmind-stockportfolio-*`, kein Socket, Ports frei |
+
+**Pflichtprüfungen:** StockPortfolio-Code unverändert seit `d6c0ef1`; die
+Läufe aus Runde 1 (`make test` Exit 0 mit 868/20, Lint und Typecheck je
+Exit 0) gelten weiter. ProjectTools: `tests/bash/dev-ports.test.sh --run`
+Exit 0, 50 Tests.
+
+**Doku-Abgleich:** StockPortfolio-Doku unverändert; die Aussage „ein
+lebender Socket bleibt liegen“ steht jetzt in der ProjectTools-README beim
+Ablauf von `--kill`.
+
+**Offene Übernahme:** ProjectTools-Commit `6046a16` ist nicht gepusht; ein
+Push braucht Mikes Freigabe. StockInfo nutzt denselben Helfer und profitiert
+ohne Änderung dort.
 
 ### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
 

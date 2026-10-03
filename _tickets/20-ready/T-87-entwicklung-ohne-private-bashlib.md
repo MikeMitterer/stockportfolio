@@ -11,8 +11,10 @@ requirements-dev.txt` scheitert an `-e ./.libs/ProjectTools`. Danach geht
 weder `make test` noch `make dev-up`.
 
 **Stand:** Angelegt am 2026-10-03 aus StockInfo (Mike: „ja, setz die drei
-Punkte um + StockPortfolio hat das selbe Problem“). Liegt in `30-doing/`;
-Rollen und Aktivierung legt `STATUS.md` fest. Noch nicht aktiviert. Bei der
+Punkte um + StockPortfolio hat das selbe Problem“). Am 2026-10-03 nach
+`20-ready/` gestellt (Mike: „Stelle T-87 auf ready und starte mit t-82 nach
+der Freigaben vom Verifier“); Rollen und Aktivierung legt `STATUS.md` fest.
+Noch nicht aktiviert. Bei der
 Anlage lief T-86 auf `t-86-dev-down-gibt-ports-frei`; die Umsetzung gehört
 auf einen eigenen Branch von `master` nach T-86.
 
