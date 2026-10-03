@@ -15,7 +15,8 @@ auf Branch `t-78-lesbare-testdaten-und-fondsgroessen-fixture`, danach
 [T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
 (Mike, 2026-10-03: „Setze die Tickets in doing um und lass den Verifier die
 jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes eigene Aufgabe).
-T-81 ist in Runde 2 technisch freigegeben und lokal nach `master` gemergt
+**Arbeitsumfang** (Mike, 2026-10-03: „T-79 + T-81 gehören auch noch den
+aktuellen Arbeitsumfang“): T-78, T-79 und T-81. T-81 ist in Runde 2 technisch freigegeben und lokal nach `master` gemergt
 (`f3e5b33`, nicht gepusht); Mikes Abschluss steht aus. Bisher: [T-81 · Hinweistexte ohne Anklang an Anlagerat](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
 auf Branch `t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt (Mike,
 2026-10-03: „aktiviere T-81 in StockPortfolio“).
@@ -142,7 +143,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-78, Nacharbeit Runde 2 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-78, Nacharbeit Runde 2 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -168,7 +169,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `efd464540eba0deb024452d9f22e7d0b7819863d`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
+- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-81-hinweistexte-ohne-anlagerat.md`
 - `priority_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
