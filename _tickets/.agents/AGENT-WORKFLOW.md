@@ -20,7 +20,7 @@ Lessons-Einordnung, Rollen-Shortcuts, kurze Einstiege für Workflow,
 Aktivierung, Codex-Scheduler und Lessons-Zugriff.
 **Lokale Abweichungen:** Mikes dauerhafte Freigabe von Merge **und Push** nach
 Ticketabschluss (AGENTS.md, 2026-09-27); die Rollenkennungen in STATUS
-(`claude-coder`, `codex-verifier`) weichen von den Standardkennungen der
+(`claude-coder`, `claude-verifier`) weichen von den Standardkennungen der
 Shortcuts ab, siehe [Aktivierung](AGENT-ACTIVATION.md#rollen-shortcuts-im-terminal).
 
 ## Einstieg und Rollen

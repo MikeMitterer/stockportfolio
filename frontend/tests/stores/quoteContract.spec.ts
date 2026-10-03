@@ -54,7 +54,7 @@ describe('Vertragsgrenze bis Store und Persistenz', () => {
     })
   })
 
-  it('schließt die sichtbare Position ohne gültigen Kurs auch von Handelsvorschlägen aus', async () => {
+  it('schließt die sichtbare Position ohne gültigen Kurs auch von Handelsbeträgen aus', async () => {
     const client = new StockInfoClient('https://contract.test', async () => new Response(JSON.stringify({ ...payload, currency: null })))
     const store = useQuotesStore()
     await store.loadQuotes(client, [position])

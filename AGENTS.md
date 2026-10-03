@@ -298,8 +298,10 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
 - **Umgebung:** der Teststack aus [Bauen und prüfen](#bauen-und-prüfen)
   (`scripts/stockinfo-test-server.py --stack`), nie die Arbeitsdaten.
 - **Vorhandene Abläufe:** Playwright-Skripte unter `frontend/scripts/`,
-  derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern) und
-  `capture-screenshots.mjs` (Bilder für die Anleitungen). Der Aufruf steht
+  derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
+  `capture-screenshots.mjs` (Bilder für die Anleitungen) und
+  `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
+  in DE und EN; Exit-Code 1 bei Abweichung). Der Aufruf steht
   jeweils im Kopfkommentar.
 - **Neuer sichtbarer Ablauf:** Er wird als wiederverwendbarer Schritt in
   einem Skript unter `frontend/scripts/` ergänzt, mit geprüften Inhalten

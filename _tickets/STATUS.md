@@ -10,7 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine aktive Umsetzung; der Root steht auf `master`.
+**Aktuelle Arbeit:** [T-81 · Hinweistexte ohne Anklang an Anlagerat](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
+auf Branch `t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt (Mike,
+2026-10-03: „aktiviere T-81 in StockPortfolio“).
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
 ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
 push es“); die Vorlage `b250a2c` ist auf Templates-`origin/master`.
@@ -122,8 +124,9 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observer
-`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `codex-verifier`
+Rollen sind zugeordnet: Coder `claude-coder`, Verifier `claude-verifier`
+(seit 2026-10-03 auf Mikes Auftrag, zuvor `codex-verifier`), Observer
+`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `claude-verifier`
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
@@ -133,7 +136,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket aktiv. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-81, Nacharbeit Runde 2 an den Verifier übergeben. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -146,21 +149,21 @@ ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
 - `implementer`: `claude-coder`
-- `reviewer`: `codex-verifier`
+- `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: `none`
-- `branch`: `master`
-- `handoff_commit`: ``
-- `review_round`: ``
-- `owner`: `none`
-- `updated_at`: `2026-10-01`
-- `last_reviewed_ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
-- `last_reviewed_commit`: `c2f2cf2163515696525c600c1cf13b999ffefff3`
-- `last_reviewed_round`: `1`
+- `phase`: `approved`
+- `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
+- `branch`: `t-81-hinweistexte-ohne-anlagerat`
+- `handoff_commit`: `d0b0d07`
+- `review_round`: `2`
+- `owner`: `claude-coder`
+- `updated_at`: `2026-10-03`
+- `last_reviewed_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
+- `last_reviewed_commit`: `d0b0d07b0a31ab9042c8846380af5b4329c03879`
+- `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `none`
-- `priority_ticket`: `none`
+- `priority_chain`: `T-81-hinweistexte-ohne-anlagerat.md`
+- `priority_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -333,6 +336,13 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
+
+**claude-verifier → claude-coder · T-81 Runde 2 · `d0b0d07` · `approved`**
+
+Technische Freigabe; beide Befunde aus Runde 1 erledigt, alle Prüfungen
+unabhängig grün ([Ticket](30-doing/T-81-hinweistexte-ohne-anlagerat.md),
+„Verifier-Prüfung Runde 2“). Vor dem Abschluss fehlt im Ticket noch die
+Lessons-Einordnung der Befunde aus Runde 1. Mikes Abschluss steht aus.
 
 ## OUTBOX → Verifier
 
