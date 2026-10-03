@@ -51,13 +51,20 @@ Nicht betroffen: „Vorschlag anhand des Namens“ (Gruppenvorschlag beim
 Anlegen, kein Handelsbezug) und der für Nutzer unsichtbare i18n-Schlüssel
 `suggestion.*`.
 
+### 3. Lizenzfeld in `api/package.json` fehlt
+
+`frontend/package.json` nennt `"license": "EUPL-1.2"`, `api/package.json`
+nennt keine Lizenz. Beim Lizenzvergleich mit StockInfo am 2026-10-03
+aufgefallen (Mike: „ja, nimm das in T-81 auf“). Rein formal; Lizenz und
+`LICENSING.md` gelten für das ganze Repo.
+
 ## Umsetzung und technische Nachweise
 
 | Repo | Time-box | Scope | GH-Issue |
 |---|---|---|---|
-| StockPortfolio | 1 h | Texte in `de.ts` und `en.ts`, betroffene Tests | — |
+| StockPortfolio | 1 h | Texte in `de.ts` und `en.ts`, betroffene Tests, Lizenzfeld in `api/package.json` | — |
 
-Nur sichtbare Texte; keine Logik, keine Schlüssel umbenennen.
+Nur sichtbare Texte und das Lizenzfeld; keine Logik, keine Schlüssel umbenennen.
 
 ### Verify
 
@@ -68,17 +75,20 @@ Legende: ➖ noch keine Live-Verifikation.
 | 1 | Textinventar über `de.ts` und `en.ts` nach „günstig“, „cheap“, „Vorschlag“, „suggestion“, „empfehl“, „recommend“ | Keine Formulierung mit Handels- oder Marktwertung übrig; Ausnahmen begründet | ➖ |
 | 2 | Frontend-Tests | Grün; Tests, die alte Texte prüfen, sind angepasst | ➖ |
 | 3 | Browserprüfung Methodenseite und Rebalancing in DE und EN | Neue Texte sichtbar, Layout unverändert | ➖ |
+| 4 | Lizenzfeld in allen `package.json` des Repos (ohne `node_modules`) | Jede nennt `"license": "EUPL-1.2"`; `npm install` ändert das Lockfile nur um dieses Feld | ➖ |
 
 ### Akzeptanzkriterien
 
 - [ ] Der Bänder-Satz beschreibt die Lage zum Ziel, nicht den Markt.
 - [ ] Kein sichtbarer Text nennt Kauf- oder Verkaufsbeträge „Vorschlag“ oder „suggestion“.
 - [ ] Deutsche und englische Fassung sagen dasselbe.
+- [ ] `api/package.json` nennt `"license": "EUPL-1.2"`.
 - [ ] Doku-Abgleich: READMEs geprüft; Änderung nur, wenn sie die betroffenen Formulierungen zitieren.
 
 ### Side-Effects
 
-Keine Verhaltensänderung. Kein Push, kein Docker-Hub- oder Unraid-Update.
+Keine Verhaltensänderung. Das Lizenzfeld ändert keine Rechte, nur die
+Paketmetadaten. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
