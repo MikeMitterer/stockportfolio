@@ -1,5 +1,7 @@
 # T-89 · Eigener README-Abschnitt zu StockInfo
 
+**Abgeschlossen am 2026-10-03** (Mike, 2026-10-03: „T-82 und T-89 sind abgenommen, push es“). Technisch freigegeben in Runde 1 (`3ae4dca`), nach `master` gemergt (`c410a4f`) und zu `origin` gepusht.
+
 **Warum dieses Ticket:** Die READMEs nennen StockInfo nur als Kursquelle in
 einem Nebensatz. Sie erklären nicht, wie die beiden Apps zusammengehören.
 StockInfo hat dafür seit 2026-10-03 einen eigenen Abschnitt

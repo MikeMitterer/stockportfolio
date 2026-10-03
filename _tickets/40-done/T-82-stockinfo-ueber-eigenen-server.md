@@ -1,5 +1,7 @@
 # T-82 · StockInfo über den eigenen Server abfragen
 
+**Abgeschlossen am 2026-10-03** (Mike, 2026-10-03: „T-82 und T-89 sind abgenommen, push es“). Technisch freigegeben in Runde 2 (`9409be1`), nach `master` gemergt (`9c3bff8`) und zu `origin` gepusht.
+
 StockPortfolio soll StockInfo nicht mehr direkt aus dem Browser aufrufen,
 sondern über seinen eigenen Server. Der Browser spricht dann nur noch mit
 StockPortfolio. CORS bei StockInfo, die Erreichbarkeit vom Browser und die

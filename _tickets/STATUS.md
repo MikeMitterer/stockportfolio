@@ -10,9 +10,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-89 · Eigener README-Abschnitt zu StockInfo](30-doing/T-89-stockinfo-abschnitt-im-readme.md)
-auf Branch `t-89-stockinfo-abschnitt-im-readme`, im Root ausgecheckt (Mike,
-2026-10-03: „ok, T-89 nach T-82, dann T-88“).
+**Aktuelle Arbeit:** T-88 · REST-Clients des Frontends an einem Ort, in Prüfung
+auf Branch `t-88-rest-clients-an-einem-ort` (Mike, 2026-10-03: „ok, T-89 nach
+T-82, dann T-88“). Diese `master`-Fassung trägt den Abschluss von T-82 und
+T-89.
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
@@ -27,8 +28,8 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
-| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`9409be1`), nach `master` gemergt (`9c3bff8`); menschlicher Abschluss offen |
-| [T-89](30-doing/T-89-stockinfo-abschnitt-im-readme.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`3ae4dca`); menschlicher Abschluss offen |
+| [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
+| [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-89 (Mike: „ok, T-89 nach T-82, dann T-88“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
@@ -36,7 +37,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
 `master` gemergt; Abschluss und Push folgen nach Mikes Abnahme, gepusht wird
 gemeinsam (Mike: „Nach der Abnahme pushen“). Nach den Abnahmen am 2026-10-03 ist `master` samt Abschluss von T-78, T-79,
-T-83, T-85 und T-86 zu `origin` gepusht.
+T-83, T-85 und T-86 zu `origin` gepusht, danach samt Abschluss von T-82 und T-89.
 
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
 ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
@@ -177,19 +178,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
-- `branch`: `t-89-stockinfo-abschnitt-im-readme`
-- `handoff_commit`: `3ae4dca`
+- `phase`: `ready_for_review`
+- `ticket`: `T-88-rest-clients-an-einem-ort.md`
+- `branch`: `t-88-rest-clients-an-einem-ort`
+- `handoff_commit`: `798477d`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
 - `last_reviewed_commit`: `3ae4dca`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-89-stockinfo-abschnitt-im-readme.md`, `T-88-rest-clients-an-einem-ort.md`
-- `priority_ticket`: `T-89-stockinfo-abschnitt-im-readme.md`
+- `priority_chain`: `T-88-rest-clients-an-einem-ort.md`
+- `priority_ticket`: `T-88-rest-clients-an-einem-ort.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
