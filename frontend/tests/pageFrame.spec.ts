@@ -2,8 +2,9 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
-const sourceRoot = resolve(process.cwd(), 'frontend/src')
+const sourceRoot = resolve(PROJECT_ROOT, 'frontend/src')
 const routerSource = readFileSync(resolve(sourceRoot, 'router/index.ts'), 'utf8')
 
 describe('Inhaltsrahmen der Hauptseiten', () => {

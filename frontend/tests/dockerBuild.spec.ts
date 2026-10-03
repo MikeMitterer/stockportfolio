@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, rmSy
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
 const temporaryDirectories: string[] = []
 afterEach(() => {
@@ -18,7 +19,7 @@ function createBuildFixture() {
   const bin = join(root, 'bin')
   const projectTools = join(root, 'tools')
   for (const directory of [docker, libraries, bin, join(projectTools, 'bash')]) mkdirSync(directory, { recursive: true })
-  copyFileSync(resolve('docker/build.sh'), join(docker, 'build.sh'))
+  copyFileSync(resolve(PROJECT_ROOT, 'docker/build.sh'), join(docker, 'build.sh'))
   const trace = join(root, 'trace')
   const imageId = `sha256:${'a'.repeat(64)}`
   writeFileSync(trace, '')

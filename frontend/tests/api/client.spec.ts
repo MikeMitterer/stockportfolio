@@ -3,8 +3,8 @@
  * Kein echtes Netzwerk — `fetch` wird injiziert.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { apiBaseUrl, MissingApiUrlError, StockInfoClient } from '@/api/client'
+import { describe, expect, it, vi } from 'vitest'
+import { StockInfoClient, type FetchFn } from '@/api/client'
 import { ApiError } from '@/api/errors'
 import quoteFixture from '../fixtures/stockinfo/quote-200.json'
 import catalogFixture from '../fixtures/stockinfo/instruments-200.json'
@@ -143,30 +143,44 @@ describe('StockInfoClient — Erfolgsfall', () => {
   })
 })
 
-describe('apiBaseUrl', () => {
-  beforeEach(() => {
-    vi.stubEnv('VITE_STOCKINFO_API_URL', '')
+describe('Weiterleitung über den eigenen Server (T-82)', () => {
+  it('fragt ohne Angabe über /api/stockinfo an', async () => {
+    const fetcher = vi.fn(async () => Response.json({ status: 'ok', version: '1' }))
+    const client = new StockInfoClient(undefined, fetcher as unknown as FetchFn)
+    await client.health()
+    expect(client.url).toBe('/api/stockinfo')
+    expect(fetcher).toHaveBeenCalledWith('/api/stockinfo/health', expect.objectContaining({ method: 'GET' }))
   })
 
-  afterEach(() => {
-    delete window.__STOCKPORTFOLIO_CONFIG__
-    vi.unstubAllEnvs()
+  it('schickt Kursabrufe als JSON-POST, wie es der eigene Server verlangt', async () => {
+    const fetcher = vi.fn(async () => new Response('{}', { status: 500 }))
+    const client = new StockInfoClient(undefined, fetcher as unknown as FetchFn)
+    await expect(client.refreshByIsin('IE00B4L5Y983')).rejects.toBeInstanceOf(ApiError)
+    expect(fetcher).toHaveBeenCalledWith('/api/stockinfo/refresh/IE00B4L5Y983', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    })
   })
 
-  it('bevorzugt die Laufzeit-Konfiguration', () => {
-    // Der Container schreibt sie beim Start — sonst wäre die Adresse ins
-    // Bündel gebacken und jedes Backend bräuchte einen eigenen Build.
-    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: 'https://api.laufzeit.test' }
-    expect(apiBaseUrl()).toBe('https://api.laufzeit.test')
+  it('nennt die vom Server genutzte StockInfo-Adresse oder null', async () => {
+    const answers = [{ url: 'http://stockinfo:8000' }, { url: null }]
+    const fetcher = vi.fn(async () => Response.json(answers.shift()))
+    const client = new StockInfoClient(undefined, fetcher as unknown as FetchFn)
+    await expect(client.target()).resolves.toBe('http://stockinfo:8000')
+    await expect(client.target()).resolves.toBeNull()
+    expect(fetcher).toHaveBeenCalledWith('/api/stockinfo-target', expect.objectContaining({ method: 'GET' }))
   })
 
-  it('ignoriert eine leere Laufzeit-Adresse', () => {
-    // Genau das steht in der Platzhalter-Datei für die Entwicklung.
-    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: '' }
-    expect(apiBaseUrl).toThrow(MissingApiUrlError)
-  })
-
-  it('meldet eine fehlende Adresse ohne Rückfallebene', () => {
-    expect(apiBaseUrl).toThrow(MissingApiUrlError)
+  it.each([
+    [502, 'stockinfo_unreachable', 'StockInfo cannot be reached from the StockPortfolio server'],
+    [504, 'stockinfo_timeout', 'StockInfo did not answer in time'],
+    [503, 'stockinfo_not_configured', 'STOCKINFO_API_URL is not set on the StockPortfolio server'],
+  ])('übersetzt die Meldung %s der Weiterleitung (%s)', async (status, code, text) => {
+    const fetcher = vi.fn(async () => Response.json({ error: code }, { status }))
+    const client = new StockInfoClient(undefined, fetcher as unknown as FetchFn)
+    const failure = await client.health().catch((error: unknown) => error)
+    expect(failure).toBeInstanceOf(ApiError)
+    expect((failure as ApiError).status).toBe(status)
+    expect((failure as ApiError).detail).toContain(text)
   })
 })

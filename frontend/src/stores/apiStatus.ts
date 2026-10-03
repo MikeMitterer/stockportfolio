@@ -4,9 +4,9 @@
  * Die App hängt vollständig an dieser Gegenstelle: ohne sie keine Kurse und
  * damit keine einzige Kennzahl. Steht etwas nicht, soll man hier nachsehen
  * können, statt aus leeren Tabellen zu raten — deshalb auch die Adresse im
- * Klartext. Die stammt aus `VITE_STOCKINFO_API_URL` und wird beim Bauen
- * eingesetzt; im Container zeigt sie, welches Backend das Abbild wirklich
- * anspricht.
+ * Klartext. Seit T-82 fragt der Browser StockInfo über den eigenen Server ab;
+ * angezeigt wird die Adresse, die der Server aus `STOCKINFO_API_URL` nutzt.
+ * Sie steht nur hier, damit Statuszeile und Statusseite dieselbe zeigen.
  *
  * Bewusst ein Store und kein Composable: Statuszeile und Einstellungen zeigen
  * denselben Zustand. Zwei Instanzen hätten getrennt geprüft und sich
@@ -28,6 +28,13 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
   const version = ref<string | null>(null)
   const latencyMs = ref<number | null>(null)
   const checkedAt = ref<string | null>(null)
+  /** StockInfo-Adresse des Servers; `null`, solange sie unbekannt ist. */
+  const target = ref<string | null>(null)
+
+  /** Legt die vom Server gemeldete StockInfo-Adresse für die Anzeige ab. */
+  function setTarget(value: string | null): void {
+    target.value = value
+  }
 
   /*
    * Das gerade laufende Versprechen — kein `ref`, weil es niemand anzeigt.
@@ -154,7 +161,7 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
     return Date.now() - stand < maxAgeMinutes * 60_000
   }
 
-  return { state, status, version, latencyMs, checkedAt, error, check, ensureChecked, errorUrl }
+  return { state, status, version, latencyMs, checkedAt, error, check, ensureChecked, errorUrl, target, setTarget }
 })
 
 /*

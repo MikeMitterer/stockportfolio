@@ -55,12 +55,19 @@ Projekts.
   Die eigene Konto-API verwendet getrennt davon
   `frontend/src/auth/client.ts` und eingehende Routen unter `api/src/routers/`.
 
+- **Der Browser fragt StockInfo nur über den eigenen Server ab** (T-82).
+  Der Client ruft `/api/stockinfo/*`; `api/src/stockinfo/proxy.ts` leitet
+  freigegebene Pfade für angemeldete Konten an `STOCKINFO_API_URL` weiter,
+  ohne Cookies und mit 60 s Zeitlimit. StockInfo braucht deshalb kein CORS für
+  StockPortfolio, und die Adresse muss nur vom Server aus auflösen. Neue
+  StockInfo-Pfade brauchen einen Eintrag in der Freigabeliste.
+
 - **Die Basisadresse hat keine Rückfallebene.**
-  Zur Laufzeit gilt `config.js` — im Container aus `STOCKINFO_API_URL`
-  geschrieben —, sonst `VITE_STOCKINFO_API_URL` aus der lokalen `.env`
-  (Vorlage: `.env.example`). Fehlt beides, wirft die App `MissingApiUrlError`
-  und sagt das. Eine fest eingebaute Adresse wäre für jeden außer ihrem
-  Besitzer ein Name, der nicht auflöst.
+  Sie steht in `STOCKINFO_API_URL` der Konto-API — im Container als
+  Umgebungsvariable, in der Entwicklung in der lokalen `.env` (Vorlage:
+  `.env.example`). Fehlt sie, laufen Setup und Anmeldung weiter, die App
+  meldet die fehlende Adresse. Eine fest eingebaute Adresse wäre für jeden
+  außer ihrem Besitzer ein Name, der nicht auflöst.
 
 - **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
@@ -272,7 +279,7 @@ Er ordnet zwei Fenster 50:50 auf dem Hauptbildschirm an, links bleiben 100
 Pixel frei, und lässt die Fenster bis Enter offen.
 
 Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
-Testkurs, CORS und die im Browser wirksame StockInfo-Adresse. Optionale
+Testkurs und die StockInfo-Weiterleitung über Vite zur Konto-API. Optionale
 synthetische Konten entstehen mit `--demo-accounts` nur im temporären
 Testverzeichnis. Ohne diese Option steht der einmalige Setup-Code im dortigen
 API-Log. `--demo-details` zeigt für Screenshots und Sichtprüfungen nur zehn
@@ -313,9 +320,17 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
   und Zusatzinformationen aller Positionen und dass ein offener Reiter
-  den Live-Abgleich übersteht); beide
+  den Live-Abgleich übersteht) und `stockinfo-proxy-check.mjs` (T-82:
+  StockInfo über den eigenen Server; Kursverlauf, Aktualisieren,
+  Statusseite, jedes Muster der Freigabeliste aus
+  `api/src/stockinfo/proxy.ts` mit 200, 401 ohne Sitzung, 404 außerhalb der
+  Liste; mit `--unreachable` der Ausfall als 502). Die drei Prüfskripte
   enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
-  jeweils im Kopfkommentar.
+  jeweils im Kopfkommentar. Eine neue StockInfo-Route braucht einen
+  sichtbaren Schritt, der sie aufruft; sonst schlägt die Routenabdeckung fehl.
+- **Container:** `docker/browser-check.sh` startet zwei Wegwerf-Container
+  gegen den laufenden Teststack (erreichbar über `host.docker.internal` und
+  nicht auflösbar) und ruft dafür `stockinfo-proxy-check.mjs` auf.
 - **Neuer sichtbarer Ablauf:** Er wird als wiederverwendbarer Schritt in
   einem Skript unter `frontend/scripts/` ergänzt, mit geprüften Inhalten
   statt nur einem Screenshot. Eine Gesamtprüfung aller Hauptwege wie in
@@ -350,7 +365,7 @@ UX-Konventionen: Skill `ux-standards`.
 
 StockPortfolio ist Entwicklungsstand und wird bislang nur von Mike verwendet.
 Release 0.1.0 ist draußen; die Unraid-Vorlage lief nie auf einer echten Instanz,
-CORS gegen die produktive API ist ungeprüft.
+der Betrieb gegen die produktive StockInfo-Instanz ist ungeprüft.
 
 **Keine Migrationspfade zwischen StockPortfolio-Versionen** (Mike, 2026-09-10).
 Was sich einfach übernehmen lässt, wird übernommen; der Rest darf neu angelegt

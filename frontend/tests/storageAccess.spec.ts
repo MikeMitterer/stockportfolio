@@ -18,8 +18,9 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
-const SRC = resolve(process.cwd(), 'frontend/src')
+const SRC = resolve(PROJECT_ROOT, 'frontend/src')
 
 /** Ein Aufruf am Speicher — nicht bloß das Wort im Fließtext eines Kommentars. */
 const DIRECT_ACCESS = /localStorage\s*\??\.\s*(getItem|setItem|removeItem|clear|key)/
@@ -51,7 +52,7 @@ describe('Zugriff auf den localStorage', () => {
   it('läuft überall über safeStorage aus dem Fundament', () => {
     const treffer = sourceFiles()
       .filter((path) => DIRECT_ACCESS.test(withoutComments(readFileSync(path, 'utf8'))))
-      .map((path) => relative(process.cwd(), path))
+      .map((path) => relative(PROJECT_ROOT, path))
 
     expect(
       treffer,

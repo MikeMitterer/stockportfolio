@@ -1,12 +1,13 @@
 /**
  * HTTP-Client für die StockInfo-API.
  *
- * Einzige Stelle im Projekt, die `fetch` kennt. Die Base-URL wird injiziert
- * (kein globaler Zugriff auf `import.meta.env`), damit der Client in Tests
- * ohne Netzwerk instanziierbar bleibt.
+ * Einzige Stelle im Projekt, die StockInfo-Pfade kennt. Seit T-82 laufen alle
+ * Abfragen über den eigenen Server (`/api/stockinfo`); der Browser spricht
+ * StockInfo nicht mehr direkt an. Welche Adresse der Server dafür nutzt,
+ * liefert `target()` — nur für die Anzeige.
  */
 
-import { ApiError, type ApiUrlSource } from './errors'
+import { ApiError } from './errors'
 import { normalizeFields, normalizeFx, normalizeInstruments, normalizeInstrumentTypes, normalizeQuote } from './normalizers'
 import { translate } from '@/i18n'
 import type {
@@ -17,29 +18,45 @@ import type {
   InstrumentSummary,
   InstrumentTypesResponse,
   Period,
-  QuotePoint,
   QuoteResponse,
 } from './types'
 
 /** Injizierbare fetch-Implementierung — erlaubt Mocking in Tests. */
 export type FetchFn = typeof globalThis.fetch
 
+/** Weiterleitung des eigenen Servers zu StockInfo. */
+export const STOCKINFO_PROXY_PATH = '/api/stockinfo'
+
+/** Nennt die vom Server genutzte StockInfo-Adresse. */
+const STOCKINFO_TARGET_PATH = '/api/stockinfo-target'
+
 export class StockInfoClient {
   private readonly baseUrl: string
   private readonly fetchFn: FetchFn
 
   /**
-   * @param baseUrl Basis-URL ohne trailing slash, z.B. `https://stockinfo.int.mikemitterer.at`.
+   * @param baseUrl Basis-URL ohne trailing slash; Standard ist die Weiterleitung
+   *   des eigenen Servers. Tests geben eine eigene Adresse an.
    * @param fetchFn Optionale fetch-Implementierung (Default: globales `fetch`).
    */
-  constructor(baseUrl: string, fetchFn: FetchFn = globalThis.fetch.bind(globalThis)) {
+  constructor(baseUrl: string = STOCKINFO_PROXY_PATH, fetchFn: FetchFn = globalThis.fetch.bind(globalThis)) {
     this.baseUrl = baseUrl.replace(/\/+$/, '')
     this.fetchFn = fetchFn
   }
 
-  /** Die konfigurierte Basis-URL — für die Status-Anzeige. */
+  /** Basis der Anfragen; Stores nutzen sie als Schlüssel ihres Caches. */
   get url(): string {
     return this.baseUrl
+  }
+
+  /**
+   * StockInfo-Adresse, die der Server aus `STOCKINFO_API_URL` nutzt.
+   *
+   * @returns Die Adresse oder `null`, wenn der Server keine kennt.
+   */
+  async target(): Promise<string | null> {
+    const body = await this.request<{ url?: unknown }>(STOCKINFO_TARGET_PATH, 'GET', false)
+    return typeof body.url === 'string' && body.url ? body.url : null
   }
 
   /** Katalog aller bekannten Instrumente. */
@@ -92,13 +109,6 @@ export class StockInfoClient {
     )
   }
 
-  /** Intraday-Kurshistorie zu einer ISIN. */
-  async getQuoteHistory(isin: string, limit = 100): Promise<QuotePoint[]> {
-    return this.request<QuotePoint[]>(
-      `/quote/${encodeURIComponent(isin)}/history?limit=${limit}`,
-    )
-  }
-
   /** Erzwingt serverseitiges Neuladen eines Papiers. */
   async refreshByIsin(isin: string): Promise<QuoteResponse> {
     return this.requestQuote(`/refresh/${encodeURIComponent(isin)}`, 'POST')
@@ -133,24 +143,25 @@ export class StockInfoClient {
    *
    * @param path   Pfad inkl. führendem Slash und Query-String.
    * @param method HTTP-Methode (Default `GET`).
+   * @param relative Pfad an die Basis anhängen (Standard) oder unverändert nutzen.
    * @returns Deserialisierter Response-Body.
    * @throws {ApiError} Bei Netzwerkfehler (`status: 0`) oder HTTP-Status >= 400.
    */
-  private async request<T>(path: string, method: 'GET' | 'POST' = 'GET'): Promise<T> {
-    const url = `${this.baseUrl}${path}`
+  private async request<T>(path: string, method: 'GET' | 'POST' = 'GET', relative = true): Promise<T> {
+    const url = relative ? `${this.baseUrl}${path}` : path
 
     let response: Response
     try {
       response = await this.fetchFn(url, {
         method,
-        headers: { Accept: 'application/json' },
+        // Der eigene Server verlangt bei POST JSON und prüft die Herkunft.
+        headers: method === 'POST'
+          ? { Accept: 'application/json', 'Content-Type': 'application/json' }
+          : { Accept: 'application/json' },
       })
     } catch (cause) {
       const detail = cause instanceof Error ? cause.message : 'Netzwerkfehler'
-      // Die Herkunft der Adresse gehört an den Fehler: Hier ist sie bekannt,
-      // später ließe sie sich nur noch raten — und wer eine falsche Adresse
-      // sieht, muss wissen, wo er sie ändert.
-      throw new ApiError(0, detail, url, apiUrlSource())
+      throw new ApiError(0, detail, url)
     }
 
     if (!response.ok) {
@@ -168,6 +179,11 @@ export class StockInfoClient {
 async function readErrorDetail(response: Response): Promise<string> {
   try {
     const body: unknown = await response.json()
+    // Fehler der Weiterleitung selbst: StockInfo nicht erreichbar, zu langsam
+    // oder nicht konfiguriert. Die übrigen Antworten stammen von StockInfo.
+    if (body && typeof body === 'object' && 'error' in body && typeof body.error === 'string' && body.error.startsWith('stockinfo_')) {
+      return translate(`errors.stockinfo.${body.error}`)
+    }
     if (body && typeof body === 'object' && 'code' in body && typeof body.code === 'string') {
       if (body.code === 'symbol_ambiguous' && 'params' in body && body.params && typeof body.params === 'object' && 'symbol' in body.params && typeof body.params.symbol === 'string') {
         return translate('errors.ambiguousSymbol', { symbol: body.params.symbol })
@@ -183,78 +199,6 @@ async function readErrorDetail(response: Response): Promise<string> {
     // Body war kein JSON — Statustext genügt.
   }
   return response.statusText || translate('notify.unknownError')
-}
-
-/**
- * Zur Laufzeit eingespielte Konfiguration.
- *
- * Wird im Container vom Entrypoint nach `config.js` geschrieben; im Betrieb
- * ohne Container liefert die Datei aus `public/` einen leeren Wert.
- */
-declare global {
-  interface Window {
-    __STOCKPORTFOLIO_CONFIG__?: { apiUrl?: string; container?: boolean }
-  }
-}
-
-/**
- * Fehlt die API-Adresse, gibt es nichts zu starten.
- *
- * Eigene Fehlerklasse, damit der Start sie von einem beliebigen anderen
- * Fehler unterscheiden und eine lesbare Seite zeigen kann.
- */
-export class MissingApiUrlError extends Error {
-  constructor() {
-    super('STOCKINFO_API_URL ist nicht gesetzt')
-    this.name = 'MissingApiUrlError'
-  }
-}
-
-/**
- * Base-URL der API.
- *
- * Zwei Quellen, in dieser Reihenfolge:
- *
- * 1. `config.js` — vom Container-Entrypoint aus `STOCKINFO_API_URL` erzeugt.
- *    Ohne diesen Schritt wäre die Adresse ins Bündel gebacken und dasselbe
- *    Abbild ließe sich nicht auf ein anderes Backend richten; für jede
- *    Umgebung bräuchte es einen eigenen Build.
- * 2. `VITE_STOCKINFO_API_URL` aus dem `.env` — der Wert zur Bauzeit, damit
- *    Entwicklung und Vorschau ohne Container auskommen.
- *
- * Keine Rückfallebene: Eine fest eingebaute Adresse wäre für alle außer ihrem
- * Besitzer ein Name, der nicht auflöst — und der Fehler zeigte sich erst als
- * leere Kurstabelle. Die Adresse ist Pflicht, und fehlt sie, sagt das die App.
- *
- * @throws {MissingApiUrlError} Wenn keine der beiden Quellen etwas liefert.
- */
-export function apiBaseUrl(): string {
-  const runtime = globalThis.window?.__STOCKPORTFOLIO_CONFIG__?.apiUrl?.trim()
-  if (runtime) return runtime
-
-  const compiled = import.meta.env.VITE_STOCKINFO_API_URL?.trim()
-  if (compiled) return compiled
-
-  throw new MissingApiUrlError()
-}
-
-/**
- * Welche Quelle die Adresse gerade liefert — und wo man sie ändert.
- *
- * Dieselbe Reihenfolge wie in `apiBaseUrl` und bewusst daneben statt darin:
- * Der Wert wandert in jeden Netzwerkfehler, damit eine Meldung nicht nur die
- * unerreichbare Adresse nennt, sondern auch den Ort, an dem sie steht.
- *
- * Der Container ist der Grund für den dritten Fall. Sein Entrypoint schreibt
- * `config.js` immer — bei fehlender `STOCKINFO_API_URL` mit leerer Adresse.
- * Von der Platzhalter-Datei aus `public/` unterscheidet sie sich nur durch das
- * Kennzeichen `container`. Ohne diese Unterscheidung riete eine Meldung im
- * Container zur `.env`, die es dort nicht gibt.
- */
-export function apiUrlSource(): ApiUrlSource {
-  const config = globalThis.window?.__STOCKPORTFOLIO_CONFIG__
-  if (config?.apiUrl?.trim()) return 'runtime'
-  return config?.container ? 'container-build' : 'build'
 }
 
 /** Injection-Key für den Client (Vue provide/inject). */

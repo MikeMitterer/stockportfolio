@@ -28,6 +28,9 @@ from test_state import OwnedStateFile
 API_PORT = 8080
 FRONTEND_PORT = 5175
 FRONTEND_ORIGIN = f"http://127.0.0.1:{FRONTEND_PORT}"
+# StockInfo erlaubt im Stack bewusst eine fremde Herkunft: Der Browser fragt
+# StockInfo seit T-82 über den eigenen Server ab und braucht kein CORS dort.
+STOCKINFO_CORS_ORIGIN = "http://cors-not-used.invalid"
 QUOTE_PATH = "/quote/IE00B4L5Y983"
 # Devisenweg der USD-Positionen; brach unbemerkt mit StockInfo T-94.
 FX_PATH = "/fx?base=USD&quote=EUR"
@@ -100,7 +103,7 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
                    check_cancelled: Callable[[], None] | None = None) -> None:
     stockinfo_url = f"http://127.0.0.1:{stockinfo_port}"
     stockinfo_command = [str(stockinfo_python), "-B", str(script_path), "--run", "--stockinfo-root", str(stockinfo_root),
-                         "--port", str(stockinfo_port), "--origin", FRONTEND_ORIGIN]
+                         "--port", str(stockinfo_port), "--origin", STOCKINFO_CORS_ORIGIN]
     if demo_details:
         stockinfo_command.append("--demo-details")
     if detail_fixtures:
@@ -116,8 +119,9 @@ def start_children(project_root: Path, script_path: Path, stockinfo_root: Path,
     environments = {
         "stockinfo": {},
         "api": {"PORT": str(API_PORT), "STOCKPORTFOLIO_DATA_DIR": str(data_dir / "accounts"),
-                "STOCKPORTFOLIO_PUBLIC_ORIGIN": FRONTEND_ORIGIN, "STOCKPORTFOLIO_SECURE_COOKIES": "false"},
-        "frontend": {"VITE_STOCKINFO_API_URL": stockinfo_url},
+                "STOCKPORTFOLIO_PUBLIC_ORIGIN": FRONTEND_ORIGIN, "STOCKPORTFOLIO_SECURE_COOKIES": "false",
+                "STOCKINFO_API_URL": stockinfo_url},
+        "frontend": {},
     }
     for name, command in commands.items():
         log_path = data_dir / f"{name}.log"
@@ -206,11 +210,9 @@ def request(url: str, origin: str | None = None, body: dict[str, str] | None = N
 def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
     stockinfo_url = f"http://127.0.0.1:{stockinfo_port}"
     for path in ("/health", QUOTE_PATH, FX_PATH):
-        status, headers, payload = request(stockinfo_url + path, FRONTEND_ORIGIN)
-        if status != 200 or headers.get("access-control-allow-origin") != FRONTEND_ORIGIN:
-            raise RuntimeError(translate("StockInfo {path} has the wrong response or CORS origin").format(
-                path=path,
-            ))
+        status, _, payload = request(stockinfo_url + path)
+        if status != 200:
+            raise RuntimeError(translate("StockInfo {path} has the wrong response").format(path=path))
         if path == QUOTE_PATH and json.loads(payload).get("price") != 128.7:
             raise RuntimeError(translate("The known StockInfo test quote is missing"))
         if path == FX_PATH and json.loads(payload).get("rate") != 0.8:
@@ -221,12 +223,15 @@ def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
     status, _, payload = request(f"http://127.0.0.1:{API_PORT}/api/setup/status")
     if status != 200 or json.loads(payload).get("required") != (not demo_accounts):
         raise RuntimeError(translate("The account API has unexpected setup state"))
-    status, _, module = request(FRONTEND_ORIGIN + "/src/api/client.ts")
-    if status != 200 or stockinfo_url.encode() not in module:
-        raise RuntimeError(translate("Vite is not serving the selected StockInfo endpoint"))
-    status, _, runtime_config = request(FRONTEND_ORIGIN + "/config.js")
-    if status != 200 or b"apiUrl: ''" not in runtime_config:
-        raise RuntimeError(translate("Vite runtime configuration overrides the selected StockInfo endpoint"))
+    # Vite leitet /api an die Konto-API weiter; ohne Sitzung antwortet die
+    # StockInfo-Weiterleitung mit 401, nicht mit 404.
+    try:
+        request(FRONTEND_ORIGIN + "/api/stockinfo/health")
+    except RuntimeError as error:
+        if "HTTP 401" not in str(error):
+            raise RuntimeError(translate("Vite does not forward the StockInfo route to the account API")) from error
+    else:
+        raise RuntimeError(translate("The StockInfo route answers without a session"))
 
 
 def wait_ready(stockinfo_port: int, demo_accounts: bool = False,
@@ -284,7 +289,7 @@ def describe_stack(state: dict[str, object]) -> None:
     print_message(translate("Account API: {url}").format(url=f"http://127.0.0.1:{API_PORT}"))
     print_message(translate("StockInfo fixtures: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
     print_message(translate("Browser origin / API origin: {origin}").format(origin=FRONTEND_ORIGIN))
-    print_message(translate("Effective StockInfo endpoint: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
+    print_message(translate("StockInfo for the account API: {url}").format(url=f"http://127.0.0.1:{stockinfo_port}"))
     if state.get("demo_accounts"):
         print_message(translate("Synthetic account credentials: {path}").format(path=f"{state['data_dir']}/demo-accounts.json"))
     else:
@@ -330,7 +335,7 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
         except (RuntimeError, URLError, TimeoutError, ValueError) as error:
             print_message(translate("Stack is not ready: {error}").format(error=error), "DANGER", sys.stderr)
             return 1
-        print_message(translate("All local endpoints and CORS checks passed"), "SUCCESS")
+        print_message(translate("All local endpoints passed"), "SUCCESS")
         return 0
 
     if args.stop:
@@ -384,7 +389,7 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
         require_owned_processes(state)
         check_cancelled()
         describe_stack(state)
-        print_message(translate("All local endpoints and CORS checks passed"), "SUCCESS")
+        print_message(translate("All local endpoints passed"), "SUCCESS")
         check_cancelled()
         return 0
     except (Exception, KeyboardInterrupt, SystemExit) as error:

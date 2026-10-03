@@ -56,17 +56,20 @@ calculated buy and sell values mean; the tick is not stored.
 ![StockPortfolio login](../docs/images/login.png)
 
 The port mapping above accepts connections on the Docker host's network
-interfaces. The web interface has a login, but that login does not protect
-StockInfo. Keep the host port off the internet. To allow access only from the
+interfaces. StockPortfolio forwards StockInfo requests only for signed-in
+users, but its login does not protect StockInfo's own address: anyone who
+reaches that address can use StockInfo. Keep the host port off the internet. To allow access only from the
 Docker host, use `-p 127.0.0.1:8080:8080` instead.
 
-**The browser connects directly to StockInfo.** The API address must be
-reachable from the browser; a Docker-internal hostname usually is not.
-StockInfo must allow the web app's origin through CORS. For example, when
-opening the app at `http://nas:8080`, allow that exact origin in StockInfo.
-An HTTPS web address requires an HTTPS API. If a reverse proxy in your home
-network serves the app over HTTPS, set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the
-exact browser origin and `STOCKPORTFOLIO_SECURE_COOKIES=true`.
+**The container talks to StockInfo, not the browser.** The browser only calls
+StockPortfolio under `/api/stockinfo/*`; the container forwards these requests
+to `STOCKINFO_API_URL` for signed-in users. The address must therefore be
+reachable from the container, for example a Docker-internal name such as
+`http://stockinfo:8000` on a shared Docker network or the server's LAN
+address. `localhost` means the container itself. StockInfo needs no CORS
+setting for StockPortfolio. If a reverse proxy in your home network serves the
+app over HTTPS, set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin
+and `STOCKPORTFOLIO_SECURE_COOKIES=true`.
 
 The container also serves its own account API at `/api/*`. It is separate from
 StockInfo. Without a StockInfo address, setup and login still work, while the
@@ -105,7 +108,7 @@ Start with `docker compose up -d`.
 | Setting | Meaning |
 |---|---|
 | Container port `8080/tcp` | Web interface; map it to your preferred host port. |
-| `STOCKINFO_API_URL` | Your StockInfo API URL, reachable from the browser. Set it when starting the container. |
+| `STOCKINFO_API_URL` | Your StockInfo API URL, reachable from the container. Set it when starting the container. |
 | `/data` volume | Persistent SQLite accounts and sessions. Reuse it when recreating the container. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port. Required behind a reverse proxy. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | Set to `true` when the browser uses HTTPS. Local HTTP testing uses `false`. |

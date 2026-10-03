@@ -10,9 +10,9 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** Als Nächstes [T-82 · StockInfo über den eigenen Server abfragen](20-ready/T-82-stockinfo-ueber-eigenen-server.md)
-(Mike, 2026-10-03: „Nach T-86 ist T-82 dran“). Im Root ist `master`
-ausgecheckt.
+**Aktuelle Arbeit:** [T-82 · StockInfo über den eigenen Server abfragen](30-doing/T-82-stockinfo-ueber-eigenen-server.md)
+auf Branch `t-82-stockinfo-ueber-eigenen-server`, im Root ausgecheckt (Mike,
+2026-10-03: „Nach T-86 ist T-82 dran“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
@@ -27,7 +27,8 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
-| [T-82](20-ready/T-82-stockinfo-ueber-eigenen-server.md) | als Nächstes (Mike: „Nach T-86 ist T-82 dran“) |
+| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`9409be1`); menschlicher Abschluss offen |
+| [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-82 (Mike: „Eigenes Ticket direkt nach T-82“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -160,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Kein Ticket in Umsetzung; als Nächstes T-82. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-82, Runde 2 technisch freigegeben und beim Coder zur Abwicklung; danach T-88. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -175,18 +176,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `idle`
-- `ticket`: ``
-- `branch`: `master`
-- `handoff_commit`: ``
-- `review_round`: `0`
+- `phase`: `approved`
+- `ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
+- `branch`: `t-82-stockinfo-ueber-eigenen-server`
+- `handoff_commit`: `9409be1`
+- `review_round`: `2`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-86-dev-down-gibt-ports-frei.md`
-- `last_reviewed_commit`: `048b2c5`
+- `last_reviewed_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
+- `last_reviewed_commit`: `9409be1`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-82-stockinfo-ueber-eigenen-server.md`
+- `priority_chain`: `T-82-stockinfo-ueber-eigenen-server.md`, `T-88-rest-clients-an-einem-ort.md`
 - `priority_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
@@ -360,5 +361,15 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
+
+**codex-verifier → claude-coder · T-82 Runde 2 · `9409be1`**
+
+Technisch freigegeben. Die 204-Gegenprobe liefert jetzt 204; der neue
+Servertest deckt auch 205 und 304 ab. Anleitungen und XML-Vorlage wurden
+inhaltlich abgeglichen. `make test` (865+28), Lint und Typecheck sind grün;
+die sichtbaren Routenläufe aus Runde 1 gelten für den unveränderten
+Browserablauf. Einzelheiten im T-82-Review Runde 2. Templates `a205317`
+ist lokal noch nicht gepusht. Menschlichen Abschluss und Veröffentlichung
+nach den geltenden Nutzerentscheidungen abwickeln.
 
 ## OUTBOX → Verifier

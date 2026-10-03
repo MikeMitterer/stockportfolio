@@ -1,0 +1,152 @@
+{
+  "kind": "stockportfolio-backup",
+  "schemaVersion": 3,
+  "appVersion": "0.2.0",
+  "exportedAt": "2026-09-25T18:38:46.335Z",
+  "portfolio": {
+    "id": "96870a74-391a-4b75-a877-523f7f11f6e0",
+    "name": "Routen-Testdepot",
+    "assetGroupVersion": 2,
+    "baseCurrency": "EUR",
+    "amountSettings": {
+      "securityBuffer": {
+        "mode": "percent",
+        "value": 0
+      },
+      "minTradeSize": {
+        "mode": "absolute",
+        "value": 0
+      }
+    },
+    "createdAt": "2026-09-25T18:30:31.431Z",
+    "updatedAt": "2026-09-25T18:33:43.264Z",
+    "positions": [
+      {
+        "id": "94d70a56-2817-48c1-b056-39eb278a4ab0",
+        "isin": null,
+        "symbol": "CASH",
+        "kind": null,
+        "displayName": "Verrechnungskonto",
+        "group": "cash",
+        "units": 500,
+        "targetPercent": 10,
+        "enabled": true
+      },
+      {
+        "id": "460879c4-bc6b-45bc-a48f-c1be91f36eda",
+        "isin": "IE00B4L5Y983",
+        "symbol": "EUNL.DE",
+        "kind": "etf",
+        "displayName": "MSCI World ETF",
+        "group": "etfs",
+        "units": 12,
+        "targetPercent": 30,
+        "enabled": true,
+        "notes": "Langfristig halten.\nNotiz aus dem wiederverwendbaren Browser-Testdepot."
+      },
+      {
+        "id": "9bc94e25-c1f5-427b-802a-9a4fa099aa5f",
+        "isin": "US9229087690",
+        "symbol": "VTI",
+        "kind": "etf",
+        "displayName": "US Total Market ETF",
+        "group": "etfs",
+        "units": 5,
+        "targetPercent": 25,
+        "enabled": true
+      },
+      {
+        "id": "3e1ee462-145d-4ff1-9f96-39a328df5d30",
+        "isin": "US0378331005",
+        "symbol": "AAPL",
+        "kind": "stock",
+        "displayName": "Apple Inc.",
+        "group": "stocks",
+        "units": 4,
+        "targetPercent": 10,
+        "enabled": true
+      },
+      {
+        "id": "2297c410-10b1-4c22-9c7b-f75ac1f59df5",
+        "isin": "DE0001135275",
+        "symbol": "DE0001135275",
+        "kind": null,
+        "displayName": "Bundesanleihe",
+        "group": "bonds",
+        "units": 10,
+        "targetPercent": 20,
+        "enabled": true
+      },
+      {
+        "id": "07155b88-e044-42e9-9bc5-436f653f883b",
+        "isin": null,
+        "symbol": "NOSI.DE",
+        "kind": "stock",
+        "displayName": "Listed ohne ISIN",
+        "group": "stocks",
+        "units": 3,
+        "targetPercent": 5,
+        "enabled": true
+      }
+    ]
+  },
+  "settings": {
+    "activePortfolioId": "96870a74-391a-4b75-a877-523f7f11f6e0",
+    "totalRounding": -3,
+    "bands": {
+      "lowerPercent": 6,
+      "upperPercent": 15
+    },
+    "securityBuffer": {
+      "mode": "percent",
+      "value": 0
+    },
+    "minTradeSize": {
+      "mode": "absolute",
+      "value": 0
+    },
+    "rebalancing": {
+      "trigger": "bands",
+      "intervalMonths": 12
+    },
+    "refresh": {
+      "autoOnLoad": true,
+      "staleAfterMinutes": 60
+    },
+    "links": [
+      {
+        "id": "extraetf-etf",
+        "label": "extraETF",
+        "urlTemplate": "https://extraetf.com/de/etf-profile/{isin}",
+        "appliesTo": [
+          "etf"
+        ],
+        "enabled": true
+      },
+      {
+        "id": "extraetf-stock",
+        "label": "extraETF",
+        "urlTemplate": "https://extraetf.com/de/stock-profile/{isin}",
+        "appliesTo": [
+          "stock"
+        ],
+        "enabled": true
+      },
+      {
+        "id": "oekb-meldefonds",
+        "label": "myOEKB — Meldefonds",
+        "urlTemplate": "https://my.oekb.at/kapitalmarkt-services/kms-output/fonds-info/sd/af/f?isin={isin}",
+        "appliesTo": [
+          "etf"
+        ],
+        "enabled": true
+      }
+    ],
+    "ui": {
+      "notificationSeconds": 8,
+      "historyPeriod": "month"
+    }
+  },
+  "allowlist": {},
+  "valueHistory": []
+}

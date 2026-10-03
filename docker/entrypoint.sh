@@ -1,13 +1,11 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
-# entrypoint.sh — Laufzeit-Konfiguration schreiben, Datenordner einrichten,
-# dann die eigene API ohne Root-Rechte starten
+# entrypoint.sh — Datenordner einrichten, dann die eigene API ohne
+# Root-Rechte starten
 #
-# Die Vue-App ist ein statisches Bündel: Alles, was Vite zur Bauzeit kennt,
-# steckt darin fest. Die Adresse der StockInfo-API darf aber nicht feststecken — sonst
-# bräuchte jede Umgebung ein eigenes Abbild. Unter Unraid wird sie im
-# Container-Template als Variable gesetzt; hier landet sie in config.js, von wo
-# die App sie liest (siehe apiBaseUrl() in frontend/src/api/client.ts).
+# Die StockInfo-Adresse (STOCKINFO_API_URL) liest seit T-82 nur noch der
+# Server; der Browser fragt StockInfo über /api/stockinfo ab. Der Entrypoint
+# schreibt deshalb keine Browser-Konfiguration mehr.
 #
 # Benutzer (T-72): Unraid erwartet für Dienste mit Daten UID 99 / GID 100.
 # Docker legt einen fehlenden Bind-Mount-Ordner aber als root an — die App
@@ -19,7 +17,6 @@
 set -eu
 
 DATA_DIR="${STOCKPORTFOLIO_DATA_DIR:-/data}"
-CONFIG_FILE="${STOCKPORTFOLIO_PUBLIC_DIR:-/app/public}/config.js"
 
 log() { echo "entrypoint: $*" >&2; }
 fail() { log "$*"; exit 1; }
@@ -30,17 +27,6 @@ isNumericId() {
         ''|*[!0-9]*) return 1 ;;
         *) return 0 ;;
     esac
-}
-
-# JSON.stringify erhält auch Quotes, Backslashes und Steuerzeichen korrekt.
-# Node gehört bereits zur eigenen API; keine zweite Serialisierung bauen.
-writeConfig() {
-    CONFIG_FILE="${CONFIG_FILE}" node --input-type=commonjs <<'JS'
-const { writeFileSync } = require('node:fs')
-const config = { apiUrl: process.env.STOCKINFO_API_URL || '', container: true }
-writeFileSync(process.env.CONFIG_FILE,
-  'window.__STOCKPORTFOLIO_CONFIG__ = ' + JSON.stringify(config) + ';\n')
-JS
 }
 
 # Läuft als Zielbenutzer und prüft genau das, was SQLite braucht: neue Dateien
@@ -64,9 +50,6 @@ done
 
 if [ "$(id -u)" != "0" ]; then
     # Start mit --user: kein Rechtewechsel möglich und nicht gewollt.
-    if ! writeConfig 2>/dev/null; then
-        log "warning: could not write ${CONFIG_FILE}; STOCKINFO_API_URL is not applied"
-    fi
     BLOCKED=$(sh -c "${CHECK_SCRIPT}" check "${DATA_DIR}") \
         || fail "${BLOCKED} is not writable for UID $(id -u) / GID $(id -g). Make it writable for this user or start without --user."
     exec "$@"
@@ -80,7 +63,6 @@ if [ "${PUID}" -eq 0 ] || [ "${PGID}" -eq 0 ]; then
     fail "PUID and PGID must not be 0; the app does not run as root."
 fi
 
-writeConfig
 mkdir -p "${DATA_DIR}"
 
 # Nur anfassen, was nicht schon passt — ein vollständiges chown bei jedem

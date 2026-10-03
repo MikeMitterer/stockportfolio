@@ -8,7 +8,7 @@
 // Der Test öffnet Chrome sichtbar: A und B gehören demselben Konto, C einem
 // zweiten Konto. Beim ersten Lauf ersetzt C sein temporäres Passwort; das neue
 // Passwort wird in dieselbe Datei im temporären Testverzeichnis geschrieben.
-// Die Fenster bleiben offen, bis Enter gedrückt wird.
+// Im Terminal bleiben die Fenster offen, bis Enter gedrückt wird.
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -73,12 +73,25 @@ async function login(account) {
  * Hauptbildschirm bestimmen. `window.screen` meldet nur den Bildschirm, auf
  * dem das Fenster gerade liegt; bei mehreren Monitoren ist das oft nicht der
  * große. Die Screen-Details-API kennt alle und braucht dafür eine Freigabe.
+ *
+ * Playwright kennt die Freigabe `window-management` nicht; ohne sie wartet
+ * `getScreenDetails()` endlos auf eine Rückfrage, die niemand beantwortet.
+ * Deshalb setzt CDP die Freigabe für genau diesen Browserkontext, und die
+ * Abfrage fällt nach fünf Sekunden auf `window.screen` zurück.
  */
 async function primaryScreen(page) {
-  await page.context().grantPermissions(['window-management'], { origin }).catch(() => undefined)
+  const session = await page.context().newCDPSession(page)
+  const { targetInfo } = await session.send('Target.getTargetInfo')
+  await session.send('Browser.setPermission', {
+    permission: { name: 'window-management' },
+    setting: 'granted',
+    origin,
+    browserContextId: targetInfo.browserContextId,
+  }).catch(() => undefined)
   return page.evaluate(async () => {
     try {
-      const details = await window.getScreenDetails()
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+      const details = await Promise.race([window.getScreenDetails(), timeout])
       const screen = details.screens.find((entry) => entry.isPrimary) ?? details.currentScreen
       return { left: screen.availLeft, top: screen.availTop, width: screen.availWidth, height: screen.availHeight }
     } catch {
@@ -267,7 +280,11 @@ try {
   const backupPath = join(tmpdir(), `live-sync-smoke-backup-${run}.json`)
   await (await download).saveAs(backupPath)
   await openDashboard(pages.A)
-  const removable = ['EQQQ.DE', 'IUSN.DE', 'IS3M.DE']
+  // Die Hälfte der vorhandenen Marktpositionen, nicht feste Symbole: Andere
+  // Prüfskripte spielen in dasselbe Teststack-Konto eigene Depots ein.
+  const marketSymbols = await pages.A.locator('.n-data-table-tr').filter({ has: pages.A.locator('.spark') })
+    .evaluateAll((rows) => rows.map((row) => row.innerText.split('\n').map((line) => line.trim()).find(Boolean)))
+  const removable = marketSymbols.slice(0, Math.max(1, Math.floor(marketSymbols.length / 2)))
   for (const symbol of removable) await deletePosition(pages.A, symbol)
   await waitForPositions(pages.B, originalCount - removable.length)
   for (const symbol of removable) {
@@ -353,11 +370,12 @@ try {
   }
   process.exitCode = 1
 } finally {
-  console.log('Die Fenster bleiben zur Sichtprüfung offen. Enter beendet den Test.')
-  process.stdin.resume()
-  await new Promise((resolve) => {
-    process.stdin.once('data', resolve)
-    process.stdin.once('end', resolve)
-  })
+  // Ohne Terminal (Agentenlauf, Umleitung) gibt es kein Enter; dann gleich schließen.
+  if (process.stdin.isTTY) {
+    console.log('Die Fenster bleiben zur Sichtprüfung offen. Enter beendet den Test.')
+    process.stdin.resume()
+    await new Promise((resolve) => process.stdin.once('data', resolve))
+    process.stdin.pause()
+  }
   await browser.close()
 }

@@ -16,8 +16,9 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
-const SRC = resolve(process.cwd(), 'frontend/src')
+const SRC = resolve(PROJECT_ROOT, 'frontend/src')
 
 /** Alle `.vue`-Dateien unter `src/`, rekursiv. */
 function vueFiles(dir: string = SRC): string[] {
@@ -39,7 +40,7 @@ const PFEIL_PFAD = /\bd="M\s*-?[\d.]+[\s,]+-?[\d.]+\s*[lL][\s,]*-?[\d.]+[\s,]+-?
 describe('Pfeil für Aufklappbares', () => {
   it('wird nirgends selbst gezeichnet — UxCaret ist die eine Quelle', () => {
     const funde = vueFiles()
-      .map((pfad) => ({ pfad: relative(process.cwd(), pfad), quelle: readFileSync(pfad, 'utf8') }))
+      .map((pfad) => ({ pfad: relative(PROJECT_ROOT, pfad), quelle: readFileSync(pfad, 'utf8') }))
       .filter(({ quelle }) => PFEIL_PFAD.test(quelle))
       .map(({ pfad }) => pfad)
 

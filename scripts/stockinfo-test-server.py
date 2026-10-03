@@ -36,7 +36,8 @@ für die reproduzierbare Browserprüfung ersetzt. Fehlantworten werden getrennt
 StockInfo-only: direkt StockInfos Python, --stockinfo-root PFAD und optional --port.
 Ganzer Stack: zusätzlich --stack; --demo-accounts legt auf Wunsch zwei
 synthetische Konten an. --stack --status prüft Prozesse, Endpunkte, Kurs und
-CORS; --stack --stop entfernt eigene Prozesse und temporäre Kontodaten. Ohne
+die StockInfo-Weiterleitung der Konto-API; StockInfo läuft dort ohne CORS für
+den Browser. --stack --stop entfernt eigene Prozesse und temporäre Kontodaten. Ohne
 --stack beendet --stop nur den StockInfo-Testserver, während Konto-API und Vite
 weiterlaufen können. Port, PID, Prozessstart und Scriptpfad werden im
 temporären Benutzerverzeichnis vermerkt. Ein fremder Portbesitzer wird niemals

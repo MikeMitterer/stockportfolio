@@ -25,6 +25,7 @@ PASSES=0
 cleanup() {
     docker ps -aq --filter "label=${LABEL}" | xargs docker rm -fv >/dev/null 2>&1
     docker volume ls -q --filter "label=${LABEL}" | xargs docker volume rm >/dev/null 2>&1
+    docker network ls -q --filter "label=${LABEL}" | xargs docker network rm >/dev/null 2>&1
     rm -f "${JAR}"
 }
 trap cleanup EXIT
@@ -95,7 +96,7 @@ if waitReady "${C}"; then
     expect "Datenbank gehört 99:100" "$(dataOwner "${C}")" "99:100"
     expect "App-Prozess läuft als 99:100" "$(appIds "${C}")" "99:100"
     expect "Daten ohne Sitzung gesperrt" "$(curl -s -o /dev/null -w '%{http_code}' "${ORIGIN}/api/data/portfolio")" 401
-    expect "config.js enthält StockInfo-Adresse" "$(curl -s "${ORIGIN}/config.js" | grep -c '127.0.0.1:8899')" 1
+    expect "Server nennt die StockInfo-Adresse" "$(curl -s -b "${JAR}" "${ORIGIN}/api/stockinfo-target" | grep -c '127.0.0.1:8899')" 1
 else
     failed "Container startet nicht: $(docker logs "${C}" 2>&1 | tail -3)"
 fi
@@ -194,6 +195,30 @@ C=$(start -e PUID=0)
 expect "PUID=0: klare Meldung" "$(exitLog "${C}" | grep -c 'must not be 0')" 1
 C=$(start -e PGID=0)
 expect "PGID=0: klare Meldung" "$(exitLog "${C}" | grep -c 'must not be 0')" 1
+
+# 6 · StockInfo unter einem Docker-internen Namen (T-82). Der Browser fragt
+# StockInfo über den Server ab; deshalb genügt eine Adresse, die nur im
+# Container-Netz auflöst. Der Stub ist vom Host aus nicht erreichbar.
+echo "-- 6 · Docker-interne StockInfo-Adresse"
+NET=$(docker network create --label "${LABEL}" "stockportfolio-smoke-$$")
+docker run -d --label "${LABEL}" --platform linux/amd64 --network "${NET}" --network-alias stockinfo-stub \
+    --entrypoint node "${IMAGE}" -e "require('http').createServer((request, response) => {
+        response.writeHead(request.url === '/health' ? 200 : 404, { 'content-type': 'application/json' })
+        response.end(JSON.stringify({ status: 'ok', stub: 'smoke' }))
+    }).listen(8000)" >/dev/null 2>&1
+C=$(start --network "${NET}" -e STOCKINFO_API_URL=http://stockinfo-stub:8000 \
+    --mount type=tmpfs,destination=/data,tmpfs-mode=0755)
+if waitReady "${C}"; then
+    expect "interne Adresse: Setup" "$(setupAdmin "${C}")" 201
+    expect "interne Adresse: Login" "$(login)" 200
+    expect "interne Adresse: Weiterleitung erreicht den Stub" \
+        "$(curl -s -b "${JAR}" "${ORIGIN}/api/stockinfo/health" | grep -c '"stub":"smoke"')" 1
+    expect "interne Adresse: ohne Sitzung gesperrt" \
+        "$(curl -s -o /dev/null -w '%{http_code}' "${ORIGIN}/api/stockinfo/health")" 401
+else
+    failed "interne Adresse: Container startet nicht: $(docker logs "${C}" 2>&1 | tail -3)"
+fi
+stop "${C}"
 
 echo
 echo "${PASSES} von $((PASSES + FAILURES)) Prüfungen bestanden."

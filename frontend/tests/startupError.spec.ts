@@ -3,20 +3,20 @@ import { installFakeStorage } from './fixtures/storage'
 
 beforeEach(() => {
   vi.resetModules()
-  vi.stubEnv('VITE_STOCKINFO_API_URL', '')
-  delete window.__STOCKPORTFOLIO_CONFIG__
   delete document.documentElement.dataset.theme
   document.documentElement.style.colorScheme = ''
   document.body.innerHTML = '<div id="app"></div>'
   vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(
     url === '/api/setup/status'
       ? { required: false }
-      : { user: { id: 'admin-1', username: 'admin', role: 'admin', active: true, mustChangePassword: false } },
+      // Der Server kennt keine StockInfo-Adresse (STOCKINFO_API_URL fehlt).
+      : url === '/api/stockinfo-target'
+        ? { url: null }
+        : { user: { id: 'admin-1', username: 'admin', role: 'admin', active: true, mustChangePassword: false } },
   ), { status: 200, headers: { 'Content-Type': 'application/json' } })))
 })
 
 afterEach(() => {
-  vi.unstubAllEnvs()
   vi.unstubAllGlobals()
   document.body.innerHTML = ''
 })

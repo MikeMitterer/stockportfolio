@@ -38,7 +38,7 @@ onMounted(() => { void api.check(client) })
       <dl class="status-page__facts">
         <dt>{{ t('statusPage.address') }}</dt>
         <dd class="status-page__address">
-          <a v-if="client" :href="client.url" target="_blank" rel="noopener noreferrer">{{ client.url }}</a>
+          <a v-if="api.target" :href="api.target" target="_blank" rel="noopener noreferrer">{{ api.target }}</a>
           <span v-else>{{ t('statusPage.noAddress') }}</span>
         </dd>
 

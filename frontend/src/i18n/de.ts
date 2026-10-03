@@ -132,7 +132,7 @@ export const de = {
   startup: {
     noApiUrlTitle: 'Keine API-Adresse gesetzt',
     noApiUrlBody:
-      'StockPortfolio holt seine Kurse von einer StockInfo-Instanz; ohne deren Adresse gibt es nichts zu rechnen. Im Container wird sie über die Umgebungsvariable STOCKINFO_API_URL gesetzt, in der Entwicklung über VITE_STOCKINFO_API_URL in der Datei .env.',
+      'StockPortfolio holt seine Kurse von einer StockInfo-Instanz; ohne deren Adresse gibt es nichts zu rechnen. Setze STOCKINFO_API_URL am StockPortfolio-Server: im Container als Umgebungsvariable, in der Entwicklung in der Datei .env im Projektordner. Der Server muss StockInfo unter dieser Adresse erreichen; der Browser braucht sie nicht.',
     noApiUrlRepo: 'StockInfo: https://github.com/MikeMitterer/stockinfo',
   },
 
@@ -301,19 +301,18 @@ export const de = {
   },
 
   /*
-   * Woher die Adresse des Dienstes stammt. Steht in jeder Meldung, die eine
-   * unerreichbare Adresse nennt — sonst weiß niemand, wo er sie ändert.
+   * Meldungen zu StockInfo. Die Codes `stockinfo_*` liefert der eigene Server,
+   * der StockInfo-Abfragen weiterleitet (T-82).
    */
   errors: {
     ambiguousSymbol: 'Symbol „{symbol}“ ist mehrdeutig. Kein eindeutiger Kurs verfügbar.',
     staleQuote: 'Ein veralteter Kurs wird verwendet.',
     invalidResponse: 'Ungültige StockInfo-Antwort: Feld „{field}“ fehlt oder ist ungültig. Der Kurs wird nicht übernommen.',
     unsupportedIdentity: 'StockInfo liefert eine nicht unterstützte Identität: „{kind}“. Der Kurs wird nicht übernommen.',
-    urlFrom: {
-      runtime: 'Adresse aus STOCKINFO_API_URL des Containers',
-      'container-build':
-        'STOCKINFO_API_URL ist am Container nicht gesetzt — es gilt der Wert aus dem Bau',
-      build: 'Adresse aus .env beim Bauen (VITE_STOCKINFO_API_URL)',
+    stockinfo: {
+      stockinfo_unreachable: 'StockInfo ist vom StockPortfolio-Server aus nicht erreichbar. Prüfe STOCKINFO_API_URL und ob StockInfo läuft.',
+      stockinfo_timeout: 'StockInfo hat nicht rechtzeitig geantwortet.',
+      stockinfo_not_configured: 'STOCKINFO_API_URL ist am StockPortfolio-Server nicht gesetzt.',
     },
   },
 

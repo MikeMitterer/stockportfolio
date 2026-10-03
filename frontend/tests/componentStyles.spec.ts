@@ -18,8 +18,9 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
+import { PROJECT_ROOT } from './helpers/projectRoot'
 
-const SRC = resolve(process.cwd(), 'frontend/src')
+const SRC = resolve(PROJECT_ROOT, 'frontend/src')
 
 /** Was eine Komponentenbibliothek selbst mitbringt — hier also tabu. */
 const IHRE_SACHE = [
@@ -79,7 +80,7 @@ function funde(quelle: string, datei: string): Fund[] {
 describe('Eigenes CSS auf Naive-Komponenten', () => {
   it('gibt es nicht — Größe über `size`, Bedeutung über `type`', () => {
     const alle = vueFiles().flatMap((pfad) =>
-      funde(readFileSync(pfad, 'utf8'), relative(process.cwd(), pfad)),
+      funde(readFileSync(pfad, 'utf8'), relative(PROJECT_ROOT, pfad)),
     )
 
     const bericht = alle

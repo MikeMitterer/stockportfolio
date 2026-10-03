@@ -6,11 +6,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import AuthRoot from '@/auth/AuthRoot.vue'
 import { deactivatePrivateData } from '@/data/client'
 
-afterEach(() => { deactivatePrivateData(); delete window.__STOCKPORTFOLIO_CONFIG__; vi.unstubAllGlobals() })
+afterEach(() => { deactivatePrivateData(); vi.unstubAllGlobals() })
 
 describe('Adresse nach der Anmeldung', () => {
   it('öffnet nach der Passwortänderung eines Nutzers das Dashboard statt des alten Pfads', async () => {
-    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: 'https://stockinfo.example' }
     const emptyPage = { template: '<div />' }
     const router = createRouter({
       history: createMemoryHistory(),
@@ -25,6 +24,7 @@ describe('Adresse nach der Anmeldung', () => {
     vi.stubGlobal('fetch', vi.fn(async (input: string) => {
       const path = String(input)
       if (path === '/api/setup/status') return Response.json({ required: false })
+      if (path === '/api/stockinfo-target') return Response.json({ url: 'https://stockinfo.example' })
       if (path === '/api/auth/session') return Response.json({ error: 'unauthorized' }, { status: 401 })
       if (path === '/api/auth/login') {
         return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: true, isSetupAccount: false, legacyImported: false } })
@@ -57,13 +57,13 @@ describe('Adresse nach der Anmeldung', () => {
 
 describe('Hinweis zu Anlageentscheidungen beim Login', () => {
   it('meldet erst an, nachdem der Hinweis per Checkbox bestätigt wurde', async () => {
-    window.__STOCKPORTFOLIO_CONFIG__ = { apiUrl: 'https://stockinfo.example' }
     const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', name: 'dashboard', component: { template: '<div />' } }] })
     await router.push('/')
     await router.isReady()
     const fetcher = vi.fn(async (input: string) => {
       const path = String(input)
       if (path === '/api/setup/status') return Response.json({ required: false })
+      if (path === '/api/stockinfo-target') return Response.json({ url: 'https://stockinfo.example' })
       if (path === '/api/auth/session') return Response.json({ error: 'unauthorized' }, { status: 401 })
       if (path === '/api/auth/login') {
         return Response.json({ user: { id: 'user-1', username: 'mike', role: 'user', active: true, mustChangePassword: false, isSetupAccount: false, legacyImported: false } })
