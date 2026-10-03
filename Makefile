@@ -141,8 +141,9 @@ dev-up: ## Vite und Konto-API im Hintergrund starten (Overmind)
 	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
 
 .PHONY: dev-down
-dev-down: ## Vite und Konto-API im Hintergrund stoppen (Overmind)
-	@if test -S .overmind.sock; then overmind quit; else echo "Kein Overmind-Stack aktiv."; fi
+dev-down: ## Dev-Stack stoppen und Ports 5175/8080 freigeben
+	-@overmind quit 2>/dev/null || true
+	@"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill
 
 .PHONY: test
 test: ## Frontend- und API-Tests einmalig ausführen

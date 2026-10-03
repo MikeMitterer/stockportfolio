@@ -15,7 +15,9 @@ StockPortfolio, auch mit einem Docker-internen Namen wie
 **Stand:** Angelegt am 2026-10-03 aus StockInfo nach der Durchsicht der
 Unraid-Templates (Mike: „Ich dachte das läuft umgekehrt - CORS wird bei
 StockPortfolio eingetragen“, danach „leg das Ticket in StockPortfolio im
-Backlog an“). Noch nicht eingeplant. Für Mike ist kein Handgriff nötig.
+Backlog an“). Am 2026-10-03 eingeplant (Mike: „Nach T-86 ist T-82 dran“) und
+nach `20-ready/` verschoben; die Umsetzung beginnt nach T-86. Für Mike ist
+kein Handgriff nötig.
 
 ## Ausgangslage (Claude, 2026-10-03, am Code geprüft)
 

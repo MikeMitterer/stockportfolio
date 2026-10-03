@@ -44,7 +44,7 @@ export const de = {
     setupTitle: 'Erstes Admin-Konto einrichten',
     setupHint: 'Lege das erste Admin-Konto für diese Installation an.',
     setupCode: 'Einrichtungscode',
-    setupCodeHelp: 'Solange kein Admin-Konto existiert, erzeugt die Konto-API bei jedem Start einen neuen Code. Bei make dev steht er im Terminal hinter „StockPortfolio setup code:“; im Container findest du ihn mit docker logs stockportfolio. Nach dem Anlegen des Admin-Kontos erscheint dieser Dialog nicht mehr.',
+    setupCodeHelp: 'Solange kein Admin-Konto existiert, erzeugt die Konto-API bei jedem Start einen neuen Code. Nach make dev-up öffnest du mit overmind connect api das Fenster der Konto-API und findest ihn dort hinter „StockPortfolio setup code:“ (zurück mit Ctrl-B, dann D); im Container mit docker logs stockportfolio. Nach dem Anlegen des Admin-Kontos erscheint dieser Dialog nicht mehr.',
     username: 'Benutzername',
     password: 'Passwort',
     newPassword: 'Neues Passwort',
