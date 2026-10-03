@@ -441,7 +441,8 @@ watch(() => [result.value, fx.loading], () => {
   valueHistory.computeBacktest(backtestInputs.value)
   void recordCurrentValue()
 })
-watch(() => [portfolioStore.portfolio?.id, portfolioStore.portfolio?.baseCurrency], () => { if (ready.value) void loadValueHistory() })
+// Einzelne Quellen: Ein neu geladenes, gleiches Depot stößt nichts an (T-83).
+watch([() => portfolioStore.portfolio?.id, () => portfolioStore.portfolio?.baseCurrency], () => { if (ready.value) void loadValueHistory() })
 
 watch(groupsCollapsed, (collapsed) => {
   safeStorage.write(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')

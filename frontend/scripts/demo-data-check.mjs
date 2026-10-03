@@ -10,6 +10,10 @@
 //   3. Jede Position zeigt ihre Zusatzinformationen: ETF mit justETF-Fondsgröße,
 //      ETF mit manueller Fondsgröße in USD, ETC, Aktie und Fonds (Volatilität
 //      laut StockInfo T-89, Fondsgröße in Mio. laut T-88).
+//   4. Der Reiter „Informationen“ einer offenen Position bleibt offen, wenn
+//      „Aktualisieren“ die Kurse neu lädt und wenn der Live-Abgleich nach
+//      30 Sekunden das Depot neu liefert (T-83). Dieser Schritt wartet
+//      deshalb gut eine halbe Minute.
 // Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
 // Voraussetzung:
@@ -267,6 +271,36 @@ try {
       '847652.F': 'demo-details-fund.png',
     }
     await checkPositionDetails(position.symbol, screenshot[position.symbol])
+  }
+
+  // 4 · Der gewählte Reiter übersteht Kursabruf und Live-Abgleich.
+  const tabLabel = 'Reiter nach Aktualisierung'
+  try {
+    const symbol = backup.portfolio.positions.find((entry) => entry.group !== 'cash').symbol
+    const row = page.locator('.n-data-table-tr').filter({ hasText: symbol }).first()
+    await row.locator('td').first().click()
+    const drill = page.locator('.drill').first()
+    await drill.waitFor({ timeout: 20000 })
+    await page.waitForLoadState('networkidle')
+    await drill
+      .locator('.position-details__tab button')
+      .filter({ hasText: 'Informationen' })
+      .first()
+      .click()
+    const assetSection = drill.locator('[data-position-section="asset"]')
+    await assetSection.waitFor({ timeout: 20000 })
+    await page.getByRole('button', { name: 'Aktualisieren' }).first().click()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(1500)
+    if (!(await assetSection.isVisible()))
+      fail(tabLabel, 'nach „Aktualisieren“ nicht mehr „Informationen“')
+    // Der Live-Abgleich lädt spätestens nach 30 Sekunden neu.
+    await page.waitForTimeout(35000)
+    if (!(await assetSection.isVisible()))
+      fail(tabLabel, 'nach dem Live-Abgleich nicht mehr „Informationen“')
+    if (passed(tabLabel)) console.log(`OK  ${tabLabel}: „Informationen“ bleibt offen (${symbol})`)
+  } catch (error) {
+    fail(tabLabel, `Ablauf abgebrochen: ${String(error.message).split('\n')[0]}`)
   }
 } catch (error) {
   fail('Ablauf', String(error.message).split('\n')[0])

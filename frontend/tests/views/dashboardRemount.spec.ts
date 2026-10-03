@@ -11,6 +11,7 @@ import { emptyPortfolio } from '@/db/seed'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useQuotesStore } from '@/stores/quotes'
 import { useSettingsStore } from '@/stores/settings'
+import { useValueHistoryStore } from '@/stores/valueHistory'
 import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/client'
 import { toQuoteCacheEntry } from '@/api/mappers'
 import { normalizeQuote } from '@/api/normalizers'
@@ -114,6 +115,24 @@ describe('Dashboard beim Ansichtswechsel', () => {
     expect(settingsLoad).not.toHaveBeenCalled()
     expect(requests.filter(path => path === '/fx' || path.startsWith('/quote') && !path.endsWith('/daily'))).toEqual([])
     expect(second.text()).toContain('Dollar-Aktie')
+  })
+
+  it('stößt die Wertentwicklung nur bei Depotwechsel oder neuer Basiswährung erneut an', async () => {
+    const { portfolio } = prepareLoadedState(new Date().toISOString())
+    const ensure = vi.spyOn(useValueHistoryStore(), 'ensure')
+    mountDashboard(createClient())
+    await flushPromises()
+    const afterMount = ensure.mock.calls.length
+    expect(afterMount).toBeGreaterThan(0)
+
+    // Der Live-Abgleich liefert dasselbe Depot als neues Objekt (T-83).
+    portfolio.portfolio = { ...portfolio.portfolio!, positions: [...portfolio.portfolio!.positions] }
+    await flushPromises()
+    expect(ensure.mock.calls.length).toBe(afterMount)
+
+    portfolio.portfolio = { ...portfolio.portfolio!, baseCurrency: 'USD' }
+    await flushPromises()
+    expect(ensure.mock.calls.length).toBe(afterMount + 1)
   })
 
   it('zeigt die Tabelle mit gecachten Kursen, während die Aktualisierung nach der Schonfrist läuft', async () => {
