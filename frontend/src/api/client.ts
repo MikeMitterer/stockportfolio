@@ -18,7 +18,6 @@ import type {
   InstrumentSummary,
   InstrumentTypesResponse,
   Period,
-  QuotePoint,
   QuoteResponse,
 } from './types'
 
@@ -107,13 +106,6 @@ export class StockInfoClient {
   async getDailyHistoryBySymbol(symbol: string, period: Period = '3m'): Promise<DailyPoint[]> {
     return this.request<DailyPoint[]>(
       `/quote/by-symbol/${encodeURIComponent(symbol)}/daily?period=${period}`,
-    )
-  }
-
-  /** Intraday-Kurshistorie zu einer ISIN. */
-  async getQuoteHistory(isin: string, limit = 100): Promise<QuotePoint[]> {
-    return this.request<QuotePoint[]>(
-      `/quote/${encodeURIComponent(isin)}/history?limit=${limit}`,
     )
   }
 

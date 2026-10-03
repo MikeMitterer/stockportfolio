@@ -19,7 +19,6 @@ const ALLOWED: Record<'GET' | 'POST', RegExp[]> = {
     /^\/quote$/,
     /^\/quote\/(?!by-symbol$)[^/]+$/,
     /^\/quote\/(?!by-symbol$)[^/]+\/daily$/,
-    /^\/quote\/(?!by-symbol$)[^/]+\/history$/,
     /^\/quote\/by-symbol\/[^/]+\/daily$/,
   ],
   POST: [

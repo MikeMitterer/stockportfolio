@@ -52,7 +52,7 @@ async function fixture(respond: ProxyFetch = async () => Response.json({ ok: tru
 describe('StockInfo-Weiterleitung über den eigenen Server (T-82)', () => {
   it('lässt genau die vom Frontend genutzten Pfade und Methoden zu', () => {
     for (const path of ['/instruments', '/fields', '/instrument-types', '/fx', '/health', '/quote',
-      '/quote/IE00B4L5Y983', '/quote/IE00B4L5Y983/daily', '/quote/IE00B4L5Y983/history',
+      '/quote/IE00B4L5Y983', '/quote/IE00B4L5Y983/daily',
       '/quote/by-symbol/VGWL.DE/daily', '/quote/VGWL%2FX/daily']) {
       expect(isAllowedStockInfoPath('GET', path), path).toBe(true)
     }
@@ -62,7 +62,9 @@ describe('StockInfo-Weiterleitung über den eigenen Server (T-82)', () => {
     for (const [method, path] of [['GET', '/refresh/IE00B4L5Y983'], ['POST', '/quote/IE00B4L5Y983'],
       ['DELETE', '/instruments'], ['GET', '/instruments/1'], ['GET', '/docs'], ['GET', '/openapi.json'],
       ['GET', '/quote/by-symbol'], ['POST', '/refresh/by-symbol'], ['GET', ''], ['GET', '/'],
-      ['GET', '/quote/a/b/c'], ['PUT', '/fields']]) {
+      ['GET', '/quote/a/b/c'], ['PUT', '/fields'],
+      // Die Intraday-Historie nutzt das Frontend nicht; sie bleibt zu.
+      ['GET', '/quote/IE00B4L5Y983/history']]) {
       expect(isAllowedStockInfoPath(method, path), `${method} ${path}`).toBe(false)
     }
   })

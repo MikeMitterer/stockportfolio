@@ -108,15 +108,6 @@ export interface DailyPoint {
   currency: string | null
 }
 
-/** Einzelner Kurspunkt aus der Intraday-History. */
-export interface QuotePoint {
-  price: number
-  quote_time: string
-  volume: number | null
-  currency: string | null
-  fetched_at: string
-}
-
 /** Antwort von `GET /health`. */
 export interface HealthResponse {
   status: string
