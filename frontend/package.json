@@ -16,6 +16,7 @@
     "screenshots": "node scripts/capture-screenshots.mjs",
     "check:notice-texts": "node scripts/notice-texts-check.mjs",
     "check:demo-data": "node scripts/demo-data-check.mjs",
+    "check:stockinfo-proxy": "node scripts/stockinfo-proxy-check.mjs",
     "lint": "eslint . --ext .vue,.ts,.tsx --cache",
     "lint:fix": "eslint . --ext .vue,.ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{vue,ts,tsx,css,json}\"",
