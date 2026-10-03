@@ -25,7 +25,7 @@ Arbeitsumfang“; dazu T-83 und T-85 auf Mikes Meldungen):
 | [T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | Runde 2 technisch freigegeben, gemergt (`940efba`); Mikes Abnahme steht aus |
 | [T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | Runde 1 technisch freigegeben, gemergt (`0651b2f`); Mikes Abnahme steht aus |
 | [T-83](30-doing/T-83-reiter-bleibt-bei-aktualisierung.md) | Runde 1 technisch freigegeben, gemergt (`bfc178a`); Mikes Abnahme steht aus |
-| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | in Umsetzung |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 1 beim Verifier |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -157,7 +157,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85 in Umsetzung. T-83 ist technisch freigegeben und gemergt. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen. T-78 und T-79 sind technisch freigegeben und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Runde 1 an den Verifier übergeben. T-83 ist technisch freigegeben und gemergt. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen. T-78 und T-79 sind technisch freigegeben und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -172,12 +172,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `2984a96`
+- `review_round`: `1`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
 - `last_reviewed_commit`: `6fc6a2d`
@@ -359,6 +359,17 @@ werden entfernt.
 ## INBOX → Coder
 
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-85 Runde 1 · `2984a96`**
+
+Bitte [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) in der Fassung
+`2984a96` prüfen: Ersatzabruf des Live-Abgleichs nur ohne stehende
+SSE-Verbindung (`setStatus` in `liveSync.ts`). Mike hat entschieden, bei
+stehender Verbindung SSE zu vertrauen; der T-62-Test zum scheinbar
+verbundenen Stream ist entsprechend umgeschrieben. Nebenfund: Smoketest hakte
+den Pflichthinweis nicht an, behoben (links jetzt 100 px). Smoketest grün,
+drei rote Gegenproben, beide READMEs abgeglichen. Das geänderte `Makefile`
+im Arbeitsbaum ist fremd und nicht Teil von T-85.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
