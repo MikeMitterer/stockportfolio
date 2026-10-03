@@ -122,6 +122,41 @@ Hängt an StockInfo T-88 und T-89; der Fixture-Abgleich gehört zu T-78.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Verifier-Prüfung · Runde 1 · codex-verifier · 2026-10-03
+
+**Technisches Urteil:** Fassung `38e3888` freigegeben. Das ist keine
+menschliche Abnahme und kein Ticketabschluss.
+
+**Eigene Prüfung:** Root-Branch und Übergabecommit gegen STATUS abgeglichen;
+Produkt-, Teststack-, Prüfskript- und Doku-Diff gelesen. StockInfos
+`calculated_metrics.py` deklariert Volatilität für alle Gattungen, aber nur
+`listed` und `pair`; `justetf_metadata.py` deklariert TER und Fondsgröße für
+ETF/ETC mit Listing. Teststack und Projektion folgen diesen Grenzen.
+`make test` bestand mit 863 Frontend- und 20 API-Tests; beide Lints und
+Typechecks sowie `git diff --check` endeten mit Exit 0. Den sichtbaren
+`check:demo-data`-Lauf habe ich selbst gegen den isolierten Stack ausgeführt:
+Exit 0, zehn Assets und Zusatzinformationen aller neun Positionen geprüft,
+einschließlich Fondsgröße in EUR und manueller USD-Angabe sowie Volatilität
+bei Aktie und Fonds. Die fünf übergebenen Screenshots habe ich angesehen;
+der Fonds-Screenshot hat den bereits benannten überdeckten unteren Rand,
+der Wert bleibt lesbar. Nach `--stack --stop` waren die drei gestarteten PIDs
+und das temporäre Konto-Verzeichnis weg; ein direkter Neustart bestand die
+Startprüfungen, danach wurde der Stack erneut gestoppt. Die elf roten
+Gegenproben sind Coder-Belege im Handoff; ich habe sie nicht selbst wiederholt.
+
+**Doku-Abgleich:** `README.md` beschreibt Fondsgröße, Volatilität, Altwert
+und den aktualisierten Demobestand; `AGENTS.md` nennt zehn Instrumente und
+den Backup-Prüfablauf. `docker/README.md` bleibt bei der allgemeinen
+Funktion „asset information“ und widerspricht diesen Aussagen nicht.
+`frontend/tests/fixtures/browser/README.md` erklärt das neue Backup.
+`docs/` und `unraid/` enthalten hierzu keine aktuelle Nutzungszusage.
+
+#### Lessons-Einordnung
+
+| Befund oder Gruppe | Einordnung | Lesson-ID/Fassung oder Einzelfallgrund | Tatsächliche Übernahme / offener Rest |
+|---|---|---|---|
+| `/fx`-Startbruch nach StockInfo T-94 | Vorhandene Lesson angewendet; ein neuer lokaler Fall, keine zweite Lesson | [SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md), Blob `86c9b9e` | T-79 repariert `FxQuote` und prüft `/fx` beim Start. Das ist hier verifiziert. Der zweite Beleg für [StockInfo T-99](/Volumes/DevLocal/DevWeb/Production/StockInfo/_tickets/10-backlog/T-99-testmodus-fuer-konsumenten.md) steht dort noch nicht; Nachtrag im StockInfo-Board bleibt bei dessen zuständiger Instanz offen. |
+
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
 **Umfang** (Produktcommit siehe STATUS `handoff_commit`):
