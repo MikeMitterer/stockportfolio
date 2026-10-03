@@ -77,6 +77,7 @@ Legende: ✅ geprüft (Claude, 2026-10-03, Branch-Stand `0cf50c2`).
 | 4 | Container mit `STOCKINFO_API_URL` auf einen Docker-internen Namen | Kurse erscheinen | ✅ |
 | 5 | `make test`, `make lint`, `make typecheck` | Grün | ✅ |
 | 6 | Doku-Abgleich der drei READMEs und des Templates | Keine Aussage mehr zu CORS oder Browser-Erreichbarkeit der API | ✅ |
+| 7 | Sichtbare Routenabdeckung mit einem Repo-Skript, gegen Teststack **und** Container | Jede neue Server-Route kommt im Browserlauf vor: `GET /api/stockinfo-target` und jeder freigegebene Pfad unter `/api/stockinfo/*` mit 200; ohne Sitzung 401, außerhalb der Freigabeliste 404; Ausfall als 502 `stockinfo_unreachable` sichtbar gemeldet | ➖ |
 
 ### Akzeptanzkriterien
 
@@ -85,6 +86,12 @@ Legende: ✅ geprüft (Claude, 2026-10-03, Branch-Stand `0cf50c2`).
 - [x] Nur die genutzten StockInfo-Pfade sind über die Weiterleitung erreichbar, nur angemeldet.
 - [x] Bestehende Installationen funktionieren mit derselben `STOCKINFO_API_URL`, sofern der Container die Adresse auflösen kann.
 - [x] Doku-Abgleich in StockPortfolio und Templates; Folgeänderung in StockInfo als dortiges Ticket.
+- [ ] Die sichtbaren Prüfungen enthalten alle mit T-82 im StockPortfolio-Server
+      hinzugefügten StockInfo-Routen (Mike, 2026-10-03: „Bei den visuellen
+      Checks - wichtig natürlich dass die neuen API-Routen zu StockInfo in den
+      Tests enthalten sind - die wurden bei T-82 ja beim StockPortfolio-Server
+      hinzugefügt“). Der Verifier prüft die Abdeckung je Route gegen die
+      Freigabeliste in `api/src/stockinfo/proxy.ts`.
 
 ### Side-Effects
 
@@ -95,6 +102,11 @@ im Docker-Netz laufen. Kein Push, kein Docker-Hub- oder Unraid-Update ohne
 eigenen Auftrag.
 
 ### Auflösung
+
+**Vor Prüfbeginn zurückgeholt (2026-10-03).** Mike: „Hol T-82 zurück und
+ergänze die Prüfungen“. Kursverlauf, Fehlerfall und Container waren nur
+teilweise oder von Hand sichtbar geprüft; Verify #7 und das letzte
+Akzeptanzkriterium kommen dazu. Die Übergabe Runde 1 unten gilt nicht mehr.
 
 **Übergabe Runde 1 an den Verifier (claude-coder, 2026-10-03).** Branch
 `t-82-stockinfo-ueber-eigenen-server`, Code- und Dokustand `0cf50c2`.
