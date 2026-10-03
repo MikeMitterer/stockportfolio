@@ -117,9 +117,11 @@ Open browsers signed in to the same account receive change notices through
 `/api/data/events` and reload changed portfolio data from the account API.
 After a manual price refresh, the other open browsers fetch current prices
 from StockInfo without reloading their pages.
-The status bar warns when the live connection is unavailable. The app also
-checks the server periodically for missed changes. Concurrent edits still use
-revision conflicts.
+The status bar warns when the live connection is unavailable. While the
+connection is up, the app relies on these notices and does not poll; while it
+is down, it checks the server every 30 seconds. After reconnecting, and when
+you return to the tab, it fetches the current data once. Concurrent edits
+still use revision conflicts.
 If a reverse proxy fronts the container, pass the SSE stream without buffering
 and allow an idle timeout longer than its 15-second keep-alive interval.
 The container starts as root only to prepare `/data`: it gives the directory

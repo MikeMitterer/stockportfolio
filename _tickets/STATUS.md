@@ -10,28 +10,33 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-83 · Gewählter Reiter bleibt bei der Aktualisierung offen](30-doing/T-83-reiter-bleibt-bei-aktualisierung.md)
-auf Branch `t-83-reiter-bleibt-bei-aktualisierung` (Mike, 2026-10-03: „…
-der verschwindet und der Kursverlauf angezeigt wird - check das“).
-T-78 und T-79 sind technisch freigegeben und lokal
-nach `master` gemergt; **Mikes Abnahme steht aus.** [T-81](40-done/T-81-hinweistexte-ohne-anlagerat.md)
-ist am 2026-10-03 abgeschlossen (Mike: „Erledige gleich auch T-81“).
-Gepusht wird erst nach der Abnahme von T-78 und T-79, gemeinsam (Mike,
-2026-10-03: „Nach der Abnahme pushen“). Im Root ist `master` ausgecheckt. [T-79 · Fondsgröße und Volatilität aus StockInfo T-88/T-89 abgleichen](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
-ist in Runde 1 freigegeben (`codex-verifier`) und gemergt (`0651b2f`).
-[T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) ist in
-Runde 2 technisch freigegeben und lokal nach `master` gemergt (`940efba`,
-nicht gepusht)
-(Mike, 2026-10-03: „Setze die Tickets in doing um und lass den Verifier die
-jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes eigene Aufgabe).
-**Arbeitsumfang** (Mike, 2026-10-03: „T-79 + T-81 gehören auch noch den
-aktuellen Arbeitsumfang“): T-78, T-79 und T-81. **Abnahme gesammelt am
-Ende** (Mike, 2026-10-03: „Mach erste alle Tickets fertig in doing dann
-bestätige ich die Abnahme“): technisch freigegebene Tickets werden nach
-`master` gemergt, Abschluss und Push erst nach Mikes Abnahme. T-81 ist in Runde 2 technisch freigegeben und lokal nach `master` gemergt
-(`f3e5b33`, nicht gepusht); Mikes Abschluss steht aus. Bisher: [T-81 · Hinweistexte ohne Anklang an Anlagerat](40-done/T-81-hinweistexte-ohne-anlagerat.md)
-auf Branch `t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt (Mike,
-2026-10-03: „aktiviere T-81 in StockPortfolio“).
+**Aktuelle Arbeit:** [T-85 · Ersatzabruf des Live-Abgleichs nur ohne SSE-Verbindung](30-doing/T-85-ersatzabruf-nur-ohne-sse.md)
+auf Branch `t-85-ersatzabruf-nur-ohne-sse`, im Root ausgecheckt (Mike,
+2026-10-03: „ja, leg ein Ticket an und setz es um“).
+
+**Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
+den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
+eigene Aufgabe; „T-79 + T-81 gehören auch noch den aktuellen
+Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
+
+| Ticket | Stand |
+|---|---|
+| [T-81](40-done/T-81-hinweistexte-ohne-anlagerat.md) | abgeschlossen (Mike: „Erledige gleich auch T-81“) |
+| [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
+| [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
+| [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 4 technisch freigegeben; Merge nach `master` und Mikes Abnahme stehen aus |
+| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | folgt nach T-85, mit Korrektur des Setup-Code-Hinweises (Mike: „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“) |
+
+**Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
+dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
+`master` gemergt; Abschluss und Push folgen nach Mikes Abnahme, gepusht wird
+gemeinsam (Mike: „Nach der Abnahme pushen“). Nach der Abnahme von T-78, T-79
+und T-83 am 2026-10-03 ist `master` gepusht. Die Verschiebung der drei
+Tickets nach `40-done/` steht während der T-85-Arbeit auf dessen Branch;
+der Branch wird dafür nicht gewechselt. Die Verschiebung kommt mit dem Merge
+von T-85 nach `master`.
+
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
 ist am 2026-10-01 abgeschlossen, gemergt und gepusht (Mike: „T-77 ist erledigt,
 push es“); die Vorlage `b250a2c` ist auf Templates-`origin/master`.
@@ -156,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-83, in Runde 1 technisch freigegeben. Arbeitsumfang T-78, T-79, T-81, T-83. T-81 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen. T-78 und T-79 sind technisch freigegeben und lokal nach `master` gemergt; Mikes Abnahme steht aus. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Runde 4 technisch freigegeben; Integration nach `master` und Mikes Abnahme stehen aus. Danach folgt T-86. Arbeitsumfang T-78, T-79, T-81, T-83, T-85 und T-86. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -172,18 +177,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
 - `phase`: `approved`
-- `ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
-- `branch`: `t-83-reiter-bleibt-bei-aktualisierung`
-- `handoff_commit`: `6fc6a2d`
-- `review_round`: `1`
+- `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
+- `branch`: `t-85-ersatzabruf-nur-ohne-sse`
+- `handoff_commit`: `ebf7af7`
+- `review_round`: `4`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
-- `last_reviewed_commit`: `6fc6a2d`
-- `last_reviewed_round`: `1`
+- `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
+- `last_reviewed_commit`: `ebf7af7`
+- `last_reviewed_round`: `4`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-83-reiter-bleibt-bei-aktualisierung.md`
-- `priority_ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
+- `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`, `T-86-dev-down-gibt-ports-frei.md`
+- `priority_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -357,20 +362,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-83 Runde 1 · `6fc6a2d`**
+**codex-verifier → claude-coder · T-85 Runde 4 · `ebf7af7`**
 
-Technisch freigegeben. Eigene Prüfschritte und die offene T-84-Abgrenzung
-stehen im Review. Bitte Freigabe verarbeiten. Im einleitenden STATUS-Text
-stehen noch veraltete Aussagen zu `master` als aktivem Root-Branch und zu
-T-81 als wartendem Ticket; diese bei der nächsten Board-Pflege bereinigen.
+[T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) ist für `ebf7af7`
+technisch freigegeben. Die unabhängige Gegenprobe zum zurückgesetzten
+`console.error`-Spy ist grün; Store und übriger Produktcode sind gegenüber
+Runde 3 unverändert. Bitte die freigegebene Fassung gemäß AGENTS.md nach
+`master` integrieren, den Root auf `master` zurückstellen und danach T-86
+beginnen. Mikes Abnahme und der Ticketabschluss stehen noch aus; die
+uncommitteten App-Hilfetexte gehören zu T-86.
 
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
-
-Board und Code liegen nur im Projekt-Root; STATUS nennt den ausgecheckten
-Branch im Feld `branch`. Vor jedem Durchlauf `git branch --show-current`
-gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
-[AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
-Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
-Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).

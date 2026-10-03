@@ -91,7 +91,7 @@ hints: ## Nützliche Links und Hinweise anzeigen
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Setup$(RESET)"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Setup" ""  "make setup"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "2. Env" ""       "cp .env.example .env"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Start" ""     "make dev"
+	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Start" ""     "make dev-up; später make dev-down"
 	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
 	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Docker$(RESET)"
 	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Server (x86)" ""  "make build                  # nur bauen, danach prüfen"
@@ -134,11 +134,15 @@ status: ## Git-Status des Repos + offene Blocker-Issues
 
 STOCKPORTFOLIO_DATA_DIR ?= $(WORKSPACE)/.local-data
 
-.PHONY: dev
-dev: ## Vite und Konto-API gemeinsam starten (Ports 5175/8080)
+.PHONY: dev-up
+dev-up: ## Vite und Konto-API im Hintergrund starten (Overmind)
 	@command -v overmind >/dev/null || { echo "overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
 	@command -v tmux >/dev/null || { echo "tmux fehlt; tmux installieren." >&2; exit 1; }
-	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -N -f Procfile.dev
+	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
+
+.PHONY: dev-down
+dev-down: ## Vite und Konto-API im Hintergrund stoppen (Overmind)
+	@if test -S .overmind.sock; then overmind quit; else echo "Kein Overmind-Stack aktiv."; fi
 
 .PHONY: test
 test: ## Frontend- und API-Tests einmalig ausführen

@@ -21,6 +21,9 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
   let client: LiveEventsClient | null = null
   let quoteClient: StockInfoClient | null = null
   let fallbackTimer: ReturnType<typeof setInterval> | null = null
+  let fallbackMs = 30_000
+  /** Zustand des SSE-Stroms selbst, getrennt von Fehlern einzelner Abrufe. */
+  let streamConnected = false
   let pending: Promise<void> = Promise.resolve()
   let visiblePending = 0
   let generation = 0
@@ -107,10 +110,19 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
       syncing.value = true
     }, 250) : null
     pending = pending.catch(() => undefined).then(async () => {
-      if (queuedGeneration === generation) await action()
+      if (queuedGeneration !== generation) return
+      await action()
+      // Nur ein erfolgreicher Gesamtabgleich holt alles Verpasste nach und hebt
+      // eine frühere Warnung auf. Ein einzelnes Ereignis, das womöglich gar
+      // nichts lädt, tut das nicht (T-85).
+      if (action === refreshAll && queuedGeneration === generation && streamConnected && status.value !== 'connected') {
+        setStatus('connected')
+      }
     }).catch((error: unknown) => {
       if (queuedGeneration !== generation) return
-      status.value = 'disconnected'
+      // Nur die Warnung: Der Strom steht womöglich weiter, der Ersatzabruf
+      // richtet sich allein nach ihm.
+      setStatus('disconnected')
       console.error('Private data synchronization failed', error)
     }).finally(() => {
       if (loaderTimer !== null) clearTimeout(loaderTimer)
@@ -119,6 +131,25 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
         syncing.value = visiblePending > 0
       }
     })
+  }
+
+  /*
+   * Der Ersatzabruf überbrückt nur eine fehlende SSE-Verbindung (T-85). Steht
+   * sie, meldet sie jede Änderung selbst; nach jedem Verbinden lädt die App
+   * ohnehin einmal neu. Früher lief er fest alle 30 Sekunden und lieferte auch
+   * bei stehender Verbindung ständig neue Zeilen. Maßgeblich ist der Strom,
+   * nicht die angezeigte Warnung: Ein fehlgeschlagener Abruf bei offenem Strom
+   * schaltet ihn nicht ein.
+   */
+  function setStatus(next: typeof status.value): void {
+    status.value = next
+    const wanted = client !== null && !streamConnected
+    if (wanted && fallbackTimer === null) {
+      fallbackTimer = setInterval(() => queue(refreshAll, true), fallbackMs)
+    } else if (!wanted && fallbackTimer !== null) {
+      clearInterval(fallbackTimer)
+      fallbackTimer = null
+    }
   }
 
   function onVisibilityChange(): void {
@@ -132,35 +163,40 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     queue(() => refreshResource(event), event.kind === 'portfolio' || event.kind === 'settings' || event.kind === 'quote-refresh')
   }
 
-  function start(eventsClient = new LiveEventsClient(), fallbackMs = 30_000, stockInfoClient?: StockInfoClient): void {
+  function start(eventsClient = new LiveEventsClient(), fallbackIntervalMs = 30_000, stockInfoClient?: StockInfoClient): void {
     stop()
     client = eventsClient
     quoteClient = stockInfoClient ?? null
     lastQuoteRevision = 0
-    status.value = 'connecting'
+    fallbackMs = fallbackIntervalMs
+    streamConnected = false
+    setStatus('connecting')
     eventsClient.start({
       connected: () => {
-        status.value = 'connected'
+        streamConnected = true
+        setStatus('connected')
         queue(refreshAll, true)
       },
-      disconnected: () => { status.value = 'disconnected' },
+      disconnected: () => {
+        streamConnected = false
+        setStatus('disconnected')
+      },
       resource: (event) => { void onResource(event, eventsClient) },
     })
     document.addEventListener('visibilitychange', onVisibilityChange)
-    fallbackTimer = setInterval(() => queue(refreshAll, true), fallbackMs)
   }
 
   function stop(): void {
     generation += 1
     client?.stop()
     client = null
+    streamConnected = false
     quoteClient = null
-    if (fallbackTimer !== null) clearInterval(fallbackTimer)
-    fallbackTimer = null
     document.removeEventListener('visibilitychange', onVisibilityChange)
     visiblePending = 0
     syncing.value = false
-    status.value = 'disconnected'
+    // Ohne Client endet auch der Ersatzabruf.
+    setStatus('disconnected')
   }
 
   return { status, syncing, start, stop, announceQuoteRefresh }

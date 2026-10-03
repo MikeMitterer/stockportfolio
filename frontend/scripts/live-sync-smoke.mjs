@@ -17,7 +17,7 @@ import { chromium } from 'playwright-core'
 
 const origin = 'http://127.0.0.1:5175'
 const chromePath = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-const dockSpace = 80
+const dockSpace = 100
 const credentialsPath = process.argv[2]
 if (!credentialsPath) {
   console.error('Aufruf: npm --prefix frontend run smoke:live-sync -- <data_dir>/demo-accounts.json')
@@ -46,8 +46,11 @@ async function login(account) {
   const context = await browser.newContext({ viewport: null })
   const page = await context.newPage()
   await page.goto(origin)
+  // Die Anmeldung verlangt den bestätigten Hinweis (Pflicht-Checkbox).
+  await page.locator('form [role="checkbox"]').waitFor({ timeout: 20000 })
   await page.locator('input[type="text"]').first().fill(credentials[account].username)
   await page.locator('input[type="password"]').first().fill(credentials[account].password)
+  await page.locator('form [role="checkbox"]').click()
   await page.locator('form').first().evaluate((form) => form.requestSubmit())
   await page.waitForFunction((selector) => document.querySelector(selector) ||
     document.body.textContent?.includes('Neues Passwort'), dashboardSelector, { timeout: 20000 })
@@ -84,7 +87,7 @@ async function primaryScreen(page) {
   })
 }
 
-/** Zwei Hauptfenster 50:50, links etwa 80 Pixel Platz für das Dock. */
+/** Zwei Hauptfenster 50:50, links 100 Pixel Platz für das Dock. */
 async function place(page, index, screen) {
   const width = Math.floor((screen.width - dockSpace) / 2)
   const session = await page.context().newCDPSession(page)
