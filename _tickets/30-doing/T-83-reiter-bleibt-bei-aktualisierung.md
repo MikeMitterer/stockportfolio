@@ -57,6 +57,42 @@ Keine Verhaltensänderung außer dem ausbleibenden Rücksprung.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Verifier-Prüfung · Runde 1 · codex-verifier · 2026-10-03
+
+**Technisches Urteil:** Übergabe `6fc6a2d` freigegeben. Das ist keine
+menschliche Abnahme und kein Ticketabschluss.
+
+**Eigene Prüfung:** Branch und Übergabecommit gegen STATUS abgeglichen;
+Diff der drei Watcher, Tests, Browserprüfung und Doku gelesen. Der neue
+Watcher vergleicht Positions-ID und Gruppe einzeln. Der Komponententest
+prüft dieselbe Position als neues Objekt und den Wechsel der ID; für einen
+reinen Gruppenwechsel gibt es keinen eigenen Test, die Rücksetzung folgt
+hier aus dem zweiten beobachteten Wert. Feldkatalog und Wertentwicklung
+beobachten ebenfalls einzelne Werte; die übrigen beiden Array-Getter
+reagieren absichtlich auf neue Ergebnisobjekte. `make test` bestand mit
+866 Frontend- und 20 API-Tests; beide Lints, beide Typechecks und
+`git diff --check` endeten mit Exit 0. Den sichtbaren
+`check:demo-data`-Lauf habe ich selbst am isolierten Stack ausgeführt:
+Exit 0, zehn Assets, neun Positionen und nach 35 Sekunden weiterhin
+„Informationen“ bei EUNL.DE. Nach dem Stopp waren die drei gestarteten
+PIDs und das temporäre Verzeichnis weg; ein direkter Neustart bestand die
+Stack-Prüfungen. Die drei vorher roten Unit-Tests und den roten Browserlauf
+mit altem Getter habe ich aus der Coder-Übergabe bewertet, nicht selbst
+wiederholt.
+
+**Doku-Abgleich:** `README.md` und `AGENTS.md` nennen die Grenze der
+Demo-Detailwerte nach einem echten Refresh; `AGENTS.md` nennt den neuen
+Browser-Prüfschritt. `docker/README.md` beschreibt den Live-Abgleich
+allgemein und verspricht kein Reiterverhalten. `docs/` und `unraid/`
+enthalten hierzu keine betroffene Nutzungszusage.
+
+#### Lessons-Einordnung
+
+| Befund oder Gruppe | Einordnung | Lesson-ID/Fassung oder Einzelfallgrund | Tatsächliche Übernahme / offener Rest |
+|---|---|---|---|
+| Neuer Array-Wert im `watch`-Getter löst drei unnötige Reaktionen aus | Vorhandene Lesson angewendet | [SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md), Blob `86c9b9e`; Coder nennt ergänzend SI-P-02/12 | Drei berührte Fundstellen in `717e43b` korrigiert; zwei andere Fundstellen bewusst beibehalten. Keine zusätzliche lokale Lesson für denselben Inventar- und Korrekturgrund angelegt. |
+| Demo-Detailwerte verschwinden nach echtem Refresh | Einzelfall außerhalb der Reiterkorrektur | Testquelle liefert keine Detailwerte; [T-84](../10-backlog/T-84-demodetails-ueberstehen-kursabruf.md) beschreibt Ursache und Entscheidungswege | Grenze in README und AGENTS beschrieben; T-84 bleibt im Backlog und ist nicht durch diese Freigabe erledigt. Zuständig nach Aktivierung: StockPortfolio-Coder. |
+
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
 **Befund bestätigt:** Ein neuer Komponententest war vor der Korrektur rot,
