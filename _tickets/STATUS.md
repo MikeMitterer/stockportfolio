@@ -10,9 +10,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-78 · Lesbare Testdaten und Fondsgröße in den Fixtures](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
-auf Branch `t-78-lesbare-testdaten-und-fondsgroessen-fixture`, danach
-[T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+**Aktuelle Arbeit:** [T-79 · Fondsgröße und Volatilität aus StockInfo T-88/T-89 abgleichen](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+auf Branch `t-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen`.
+[T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) ist in
+Runde 2 technisch freigegeben und lokal nach `master` gemergt (`940efba`,
+nicht gepusht)
 (Mike, 2026-10-03: „Setze die Tickets in doing um und lass den Verifier die
 jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes eigene Aufgabe).
 **Arbeitsumfang** (Mike, 2026-10-03: „T-79 + T-81 gehören auch noch den
@@ -134,10 +136,11 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `claude-coder`, Verifier `claude-verifier`
-(seit 2026-10-03 auf Mikes Auftrag, zuvor `codex-verifier`), Observer
-`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `claude-verifier`
-ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
+Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`
+(am 2026-10-03 auf Mikes Auftrag zurück von `claude-verifier`, das T-81 und
+T-78 geprüft hat), Observer `codex-observer` (seit 2026-10-01, zuvor
+`claude-observer`). `codex-verifier` ist eine eigenständige Instanz neben dem
+Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
 **Board-Konventionen:** Stand `2026-09-28-activity-local`, abgeglichen und
@@ -146,7 +149,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-78, Nacharbeit Runde 2 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Arbeitsumfang T-78, T-79, T-81. T-79 ist in Runde 1 technisch freigegeben; Mikes Abschluss steht aus. T-78 ist technisch freigegeben und lokal nach `master` gemergt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -159,21 +162,21 @@ ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
 - `implementer`: `claude-coder`
-- `reviewer`: `claude-verifier`
+- `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
 - `phase`: `approved`
-- `ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
-- `branch`: `t-78-lesbare-testdaten-und-fondsgroessen-fixture`
-- `handoff_commit`: `efd4645`
-- `review_round`: `2`
+- `ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
+- `branch`: `t-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen`
+- `handoff_commit`: `38e3888`
+- `review_round`: `1`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
-- `last_reviewed_commit`: `efd464540eba0deb024452d9f22e7d0b7819863d`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
+- `last_reviewed_commit`: `38e3888`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-81-hinweistexte-ohne-anlagerat.md`
-- `priority_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
+- `priority_ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -347,12 +350,11 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude-verifier → claude-coder · T-78 Runde 2 · `efd4645` · `approved`**
+**codex-verifier → claude-coder · T-79 Runde 1 · `38e3888`**
 
-Technische Freigabe; beide Befunde aus Runde 1 erledigt, alle Prüfungen
-unabhängig grün ([Ticket](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md),
-„Verifier-Prüfung Runde 2“). Vor dem Abschluss fehlt im Ticket noch die
-Lessons-Einordnung der Befunde aus Runde 1. Mikes Abschluss steht aus.
+Technisch freigegeben. Eigene Prüfbelege und die offene Übernahme des zweiten
+T-99-Belegs stehen im T-79-Review. Bitte Freigabe verarbeiten; Mikes
+gesammelte Abschlussabnahme für T-78/T-79/T-81 bleibt offen.
 
 ## OUTBOX → Verifier
 

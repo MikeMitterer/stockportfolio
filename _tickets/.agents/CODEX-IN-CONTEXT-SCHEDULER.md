@@ -12,8 +12,8 @@ Startzeilen für StockPortfolio stehen in der
 ## Start und Rollenprüfung
 
 Paket: gleichnamiger Abschnitt. Lokal: Die Kennung im Startauftrag muss exakt
-dem STATUS-Feld entsprechen (derzeit `codex-observer`), nicht der
-Standardkennung `codex` eines Shortcuts.
+dem STATUS-Feld entsprechen (`codex-verifier` beziehungsweise
+`codex-observer`), nicht der Standardkennung `codex` eines Shortcuts.
 
 ### Lokaler Filecheck
 

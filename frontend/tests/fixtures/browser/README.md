@@ -43,6 +43,17 @@ Typkatalog-Szenarien unten.
 
 Den eigenen Testdienst mit demselben Skript und `--stop --port 8899` beenden.
 
+## Demo-Detailwerte prüfen
+
+[`demo-details.backup.json`](demo-details.backup.json) ist ein zweites
+Backup für den Teststack mit `--demo-details`. Es enthält jedes Demo-Instrument
+mit Detailwerten als Position: die fünf Papiere des Beispiel-Depots,
+iShares Core MSCI World, Vanguard Total Stock Market (manuelle Fondsgröße in
+USD), Apple und den DWS Vermögensbildungsfonds I, dazu 1.000 EUR Cash.
+`frontend/scripts/demo-data-check.mjs` spielt es selbst ein und prüft danach
+Assets-Übersicht und Zusatzinformationen; ein Vitest-Wächter hält Backup und
+`scripts/fixtures/demo-details.json` deckungsgleich.
+
 
 ## Dynamische Typauswahl prüfen
 

@@ -208,7 +208,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     from app.detail_models import DetailDefinition, DetailInput
     from app.main import app
     from app.models import QuoteResponse
-    from app.providers.base import RawQuote, SourceAnswer
+    from app.providers.base import FxQuote, RawQuote, SourceAnswer
     from app.persistence.repository import QuoteRepository
     from app.routers.migration import get_gate
     from app.services.daily_history import DailyHistoryService
@@ -232,6 +232,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         {**BASE, "identity": {"kind": "listed", "ticker": "VTI", "mic": "ARCX", "isin": "US9229087690"}, "symbol": "VTI", "name": "T39 USD Listing", "currency": "USD", "price": 291.4},
         {**BASE, "identity": {"kind": "listed", "ticker": "AAPL", "mic": "XNAS", "isin": "US0378331005"}, "symbol": "AAPL", "name": "Apple Inc.", "type": "stock", "currency": "USD", "price": 225.0, "ter": None, "accumulating": None},
         {**BASE, "identity": {"kind": "listed", "ticker": "PEN", "mic": "XLON"}, "symbol": "PEN.L", "name": "T39 Pence Listing", "currency": "GBp", "price": 1234.5},
+        {**BASE, "identity": {"kind": "listed", "ticker": "847652", "mic": "XFRA", "isin": "DE0008476524"}, "symbol": "847652.F", "name": "DWS Vermögensbildungsfonds I", "type": "fund", "price": 210.5, "ter": None, "accumulating": None},
         *[{**BASE, "identity": {"kind": "listed", "ticker": "DUAL", "mic": mic}, "symbol": "DUAL", "name": f"T39 Mehrdeutig {mic}", "type": "stock", "currency": "USD"} for mic in ["XNAS", "XNYS"]],
         # Das versionierte Fixture deckt das Beispieldepot ab. Der Frontend-Test
         # prüft die Übereinstimmung bei späteren Änderungen der Positionen.
@@ -261,22 +262,24 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     def prepare_demo_details(repository: QuoteRepository) -> tuple[list[DetailDefinition], dict[str, dict[str, Any]]]:
         """Lesbare Detailwerte je Instrument, deklariert wie in StockInfo selbst.
 
-        TER, Fondsgröße (in Millionen, mit Währung), Anbieter und Ausschüttung
-        gelten für ETFs; die Volatilität berechnet StockInfo für alle Gattungen
-        mit Kursen (StockInfo T-89).
+        Gattungen, Identitätsarten und Beschriftungen folgen StockInfos
+        justETF-Plugin (`app/plugins/justetf_metadata.py`: ETF und ETC, nur
+        Listings) und der berechneten Volatilität (`app/calculated_metrics.py`,
+        StockInfo T-89: alle Gattungen, Listings und Paare, keine reinen ISINs).
+        Die Fondsgröße steht in Millionen mit Währung (StockInfo T-88).
         """
         fund_source, metric_source = "justETF (Demo)", "StockInfo (Demo)"
-        fund_scope = {"source": fund_source, "instrument_types": ["etf"], "identity_kinds": ["listed"]}
-        metric_scope = {"source": metric_source, "instrument_types": ["etf", "etc", "stock", "fund", "bond", "crypto"],
-                        "identity_kinds": ["listed", "isin_only", "pair"]}
+        fund_scope = {"source": fund_source, "instrument_types": ["etf", "etc"], "identity_kinds": ["listed"]}
+        metric_scope = {"source": metric_source, "instrument_types": ["stock", "etf", "etc", "fund", "crypto", "bond"],
+                        "identity_kinds": ["listed", "pair"]}
         definitions = [
-            DetailDefinition(name="ter", kind="number", unit="percent", label_en="TER", label_de="TER",
-                             sources=[fund_source], scopes=[fund_scope], minimum=0, maximum=5),
-            DetailDefinition(name="volatility", kind="number", unit="percent", label_en="Volatility", label_de="Volatilität",
-                             sources=[metric_source], scopes=[metric_scope], minimum=0, maximum=500),
-            DetailDefinition(name="fund_size", kind="number", unit="millions", label_en="Fund size", label_de="Fondsgröße",
+            DetailDefinition(name="ter", kind="number", unit="percent", label_en="Total expense ratio (TER)",
+                             label_de="Gesamtkostenquote (TER)", sources=[fund_source], scopes=[fund_scope], minimum=0, maximum=5),
+            DetailDefinition(name="volatility", kind="number", unit="percent", label_en="Volatility (1y)",
+                             label_de="Volatilität (1 Jahr)", sources=[metric_source], scopes=[metric_scope], minimum=0, maximum=500),
+            DetailDefinition(name="fund_size", kind="number", unit="millions", label_en="Fund size", label_de="Fondsvolumen",
                              sources=[fund_source], scopes=[fund_scope], minimum=0, maximum=2_000_000, currency_required=True),
-            DetailDefinition(name="provider", kind="text", label_en="Provider", label_de="Anbieter",
+            DetailDefinition(name="provider", kind="text", label_en="Fund provider", label_de="Anbieter",
                              sources=[fund_source], scopes=[fund_scope]),
             DetailDefinition(name="accumulating", kind="boolean", label_en="Accumulating", label_de="Thesaurierend",
                              sources=[fund_source], scopes=[fund_scope]),
@@ -362,11 +365,12 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
 
         name = "t38-local-fx"
 
-        def fetch_fx_rate(self, base: str, quote: str) -> SourceAnswer[float]:
+        def fetch_fx_rate(self, base: str, quote: str) -> SourceAnswer[FxQuote]:
+            # Seit StockInfo T-94 nennt eine Quelle Kurs und Zeitpunkt.
             rates = {"EUR": 1.0, "USD": 1.25, "GBP": 1 / 1.2, "CAD": 1.5}
             if base not in rates or quote not in rates:
                 return SourceAnswer(None)
-            return SourceAnswer(rates[quote] / rates[base])
+            return SourceAnswer(FxQuote(rate=rates[quote] / rates[base], quote_time=datetime.now(timezone.utc).isoformat()))
 
 
     @asynccontextmanager

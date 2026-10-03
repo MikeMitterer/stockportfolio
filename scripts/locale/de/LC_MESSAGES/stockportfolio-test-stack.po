@@ -180,6 +180,9 @@ msgstr "StockInfo {path} liefert eine falsche Antwort oder CORS-Herkunft"
 msgid "The known StockInfo test quote is missing"
 msgstr "Der bekannte StockInfo-Testkurs fehlt"
 
+msgid "The known StockInfo test exchange rate is missing"
+msgstr "Der bekannte StockInfo-Testdevisenkurs fehlt"
+
 msgid "The account API health check failed"
 msgstr "Die Health-Prüfung der Konto-API ist fehlgeschlagen"
 

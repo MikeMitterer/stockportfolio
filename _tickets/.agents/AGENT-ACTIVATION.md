@@ -23,9 +23,8 @@ im Projekt-Root; es gibt keine Worktrees ([AGENTS.md · Ein
 Arbeitsort](../../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der
 ausgecheckte Branch muss dem Feld `branch` in STATUS entsprechen.
 
-**Kennungen in StockPortfolio** (Mike, 2026-10-01; Verifier seit 2026-10-03):
-Coder `claude-coder`, Verifier `claude-verifier`, Observer `codex-observer`.
-Maßgeblich ist immer
+**Kennungen in StockPortfolio** (Mike, 2026-10-01): Coder `claude-coder`,
+Verifier `codex-verifier`, Observer `codex-observer`. Maßgeblich ist immer
 STATUS; bei einer Änderung dort gelten die Beispiele unten mit der neuen
 Kennung. Ob Kennungen oder Shortcuts dauerhaft angeglichen werden, entscheidet
 Mike ([T-65](../40-done/T-65-board-konventionen-abgleichen.md)).
@@ -35,7 +34,11 @@ Mike ([T-65](../40-done/T-65-board-konventionen-abgleichen.md)).
 Paket: Abschnitt „Codex-Scheduler“; Vertrag im
 [Codex-Einstieg](CODEX-IN-CONTEXT-SCHEDULER.md).
 
-Im Codex-Chat des Observers eingeben:
+Im Codex-Chat des Verifiers beziehungsweise Observers eingeben:
+
+```text
+Deine Instanzkennung ist codex-verifier. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Führe /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
+```
 
 ```text
 Deine Instanzkennung ist codex-observer. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Führe /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md aus.
@@ -45,15 +48,11 @@ Deine Instanzkennung ist codex-observer. Board: /Volumes/DevLocal/DevWeb/Product
 
 Paket: Abschnitt „Claude-Scheduler“.
 
-Im Claude-Chat des Coders beziehungsweise Verifiers eingeben; vorher mit
-`CronList` prüfen, ob der Board-Job bereits läuft:
+Im Claude-Chat des Coders eingeben; vorher mit `CronList` prüfen, ob der
+Board-Job bereits läuft:
 
 ```text
 /loop 5m Deine Instanzkennung ist claude-coder. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Lies /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
-```
-
-```text
-/loop 5m Deine Instanzkennung ist claude-verifier. Board: /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets. Lies /Volumes/DevLocal/DevWeb/Production/StockPortfolio/_tickets/.agents/AGENT-ACTIVATION.md und führe einmal den Abschnitt „Arbeitsdurchlauf“ aus.
 ```
 
 Beim Start aus einem normalen Prompt richtet Claude denselben Auftrag per
@@ -76,7 +75,7 @@ Paket: gleichnamiger Abschnitt. Die acht Befehle (`codex-`/`claude-` mit
 **Lokale Abweichung · Kennung nach einem Shortcut-Start.** Die Shortcuts geben
 Coder und Verifier die Kennung `codex` beziehungsweise `claude`; nur Observer
 erhalten `-observer`. In StockPortfolio passen deshalb nur `codex-observer`
-und `claude-observer` direkt. Nach `claude-coder` oder `claude-verifier` meldet
+und `claude-observer` direkt. Nach `claude-coder` oder `codex-verifier` meldet
 die Instanz zunächst einen Zuordnungskonflikt und startet keinen Scheduler.
 Dann im selben Chat die vollständige Startzeile aus
 [Codex-Scheduler](#codex-scheduler) beziehungsweise

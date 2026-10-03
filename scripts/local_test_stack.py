@@ -29,6 +29,8 @@ API_PORT = 8080
 FRONTEND_PORT = 5175
 FRONTEND_ORIGIN = f"http://127.0.0.1:{FRONTEND_PORT}"
 QUOTE_PATH = "/quote/IE00B4L5Y983"
+# Devisenweg der USD-Positionen; brach unbemerkt mit StockInfo T-94.
+FX_PATH = "/fx?base=USD&quote=EUR"
 translate = gettext.translation(
     "stockportfolio-test-stack", localedir=Path(__file__).parent / "locale", fallback=True,
 ).gettext
@@ -203,7 +205,7 @@ def request(url: str, origin: str | None = None, body: dict[str, str] | None = N
 
 def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
     stockinfo_url = f"http://127.0.0.1:{stockinfo_port}"
-    for path in ("/health", QUOTE_PATH):
+    for path in ("/health", QUOTE_PATH, FX_PATH):
         status, headers, payload = request(stockinfo_url + path, FRONTEND_ORIGIN)
         if status != 200 or headers.get("access-control-allow-origin") != FRONTEND_ORIGIN:
             raise RuntimeError(translate("StockInfo {path} has the wrong response or CORS origin").format(
@@ -211,6 +213,8 @@ def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
             ))
         if path == QUOTE_PATH and json.loads(payload).get("price") != 128.7:
             raise RuntimeError(translate("The known StockInfo test quote is missing"))
+        if path == FX_PATH and json.loads(payload).get("rate") != 0.8:
+            raise RuntimeError(translate("The known StockInfo test exchange rate is missing"))
     status, _, _ = request(f"http://127.0.0.1:{API_PORT}/healthz")
     if status != 200:
         raise RuntimeError(translate("The account API health check failed"))

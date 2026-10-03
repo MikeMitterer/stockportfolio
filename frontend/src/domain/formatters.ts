@@ -107,8 +107,16 @@ export function money(value: number, currency: string, decimals = 0): string {
     return `${formatter(`pence-${decimals}`, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value)} GBp`
   }
   const code = currency.toUpperCase()
-  const key = `${code}:${decimals}`
-  let currencyFormatter = byCurrency.get(key)
+  const currencyFormatter = forCurrency(code, decimals)
+  // Unbekannter Code — dann lieber die nackte Zahl mit angehängtem Kürzel
+  // als eine Ausnahme mitten in der Tabelle.
+  if (!currencyFormatter) return `${INT().format(value)} ${code}`
+  return currencyFormatter.format(value)
+}
+
+function forCurrency(code: string, decimals: number): Intl.NumberFormat | null {
+  const cacheName = `${code}:${decimals}`
+  let currencyFormatter = byCurrency.get(cacheName)
   if (!currencyFormatter) {
     try {
       currencyFormatter = new Intl.NumberFormat(locale, {
@@ -118,13 +126,31 @@ export function money(value: number, currency: string, decimals = 0): string {
         maximumFractionDigits: decimals,
       })
     } catch {
-      // Unbekannter Code — dann lieber die nackte Zahl mit angehängtem Kürzel
-      // als eine Ausnahme mitten in der Tabelle.
-      return `${INT().format(value)} ${code}`
+      return null
     }
-    byCurrency.set(key, currencyFormatter)
+    byCurrency.set(cacheName, currencyFormatter)
   }
-  return currencyFormatter.format(value)
+  return currencyFormatter
+}
+
+/**
+ * Nur die Zahl eines Betrags, ohne Währungszeichen: „15.214,00“.
+ *
+ * Sie trägt dieselben Trennzeichen wie `money` — in `de-AT` gruppieren
+ * Beträge mit Punkt, reine Zahlen dagegen mit Leerzeichen. Für Texte, die
+ * den Währungscode selbst setzen, etwa „15.214,00 Mio. EUR“.
+ */
+export function moneyAmount(value: number, currency: string, decimals = 2): string {
+  const currencyFormatter = forCurrency(currency.toUpperCase(), decimals)
+  if (!currencyFormatter) {
+    return formatter(`decimal-${decimals}`, {
+      style: 'decimal', minimumFractionDigits: decimals, maximumFractionDigits: decimals,
+    }).format(value)
+  }
+  return currencyFormatter.formatToParts(value)
+    .filter(part => part.type !== 'currency' && part.type !== 'literal')
+    .map(part => part.value)
+    .join('')
 }
 
 const PERCENT = (): Intl.NumberFormat =>

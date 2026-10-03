@@ -1,0 +1,195 @@
+{
+  "kind": "stockportfolio-backup",
+  "schemaVersion": 3,
+  "appVersion": "0.2.0",
+  "exportedAt": "2026-10-03T12:00:00.000Z",
+  "portfolio": {
+    "id": "6f0c2d1e-3b7a-4c55-9a51-8d2e4f7b1c30",
+    "name": "Demo-Detailwerte",
+    "assetGroupVersion": 2,
+    "baseCurrency": "EUR",
+    "amountSettings": {
+      "securityBuffer": {
+        "mode": "percent",
+        "value": 0
+      },
+      "minTradeSize": {
+        "mode": "absolute",
+        "value": 0
+      }
+    },
+    "createdAt": "2026-10-03T12:00:00.000Z",
+    "updatedAt": "2026-10-03T12:00:00.000Z",
+    "positions": [
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a01",
+        "isin": null,
+        "symbol": "CASH",
+        "kind": null,
+        "displayName": "Verrechnungskonto",
+        "group": "cash",
+        "units": 1000,
+        "targetPercent": 5,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a02",
+        "isin": "IE00B4L5Y983",
+        "symbol": "EUNL.DE",
+        "kind": "etf",
+        "displayName": "iShares Core MSCI World",
+        "group": "etfs",
+        "units": 20,
+        "targetPercent": 15,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a03",
+        "isin": "US9229087690",
+        "symbol": "VTI",
+        "kind": "etf",
+        "displayName": "Vanguard Total Stock Market",
+        "group": "etfs",
+        "units": 8,
+        "targetPercent": 10,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a04",
+        "isin": "US0378331005",
+        "symbol": "AAPL",
+        "kind": "stock",
+        "displayName": "Apple Inc.",
+        "group": "stocks",
+        "units": 6,
+        "targetPercent": 5,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a05",
+        "isin": "DE0008476524",
+        "symbol": "847652.F",
+        "kind": "fund",
+        "displayName": "DWS Vermögensbildungsfonds I",
+        "group": "stocks",
+        "units": 5,
+        "targetPercent": 5,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a06",
+        "isin": "IE00B3RBWM25",
+        "symbol": "VGWL.DE",
+        "kind": "etf",
+        "displayName": "Vanguard FTSE All-World",
+        "group": "etfs",
+        "units": 40,
+        "targetPercent": 25,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a07",
+        "isin": "IE0032077012",
+        "symbol": "EQQQ.DE",
+        "kind": "etf",
+        "displayName": "Invesco Nasdaq-100",
+        "group": "etfs",
+        "units": 5,
+        "targetPercent": 10,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a08",
+        "isin": "IE00BF4RFH31",
+        "symbol": "IUSN.DE",
+        "kind": "etf",
+        "displayName": "iShares MSCI World Small Cap",
+        "group": "etfs",
+        "units": 200,
+        "targetPercent": 5,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a09",
+        "isin": "IE00BCRY6557",
+        "symbol": "IS3M.DE",
+        "kind": "etf",
+        "displayName": "iShares $ Treasury Bond 7-10yr",
+        "group": "bonds",
+        "units": 300,
+        "targetPercent": 10,
+        "enabled": true
+      },
+      {
+        "id": "b1f8a2c4-0d3e-4f61-8a7b-1c2d3e4f5a10",
+        "isin": "DE000A0S9GB0",
+        "symbol": "4GLD.DE",
+        "kind": "etc",
+        "displayName": "Xetra-Gold",
+        "group": "metals",
+        "units": 20,
+        "targetPercent": 10,
+        "enabled": true
+      }
+    ]
+  },
+  "settings": {
+    "activePortfolioId": "6f0c2d1e-3b7a-4c55-9a51-8d2e4f7b1c30",
+    "totalRounding": -3,
+    "bands": {
+      "lowerPercent": 6,
+      "upperPercent": 15
+    },
+    "securityBuffer": {
+      "mode": "percent",
+      "value": 0
+    },
+    "minTradeSize": {
+      "mode": "absolute",
+      "value": 0
+    },
+    "rebalancing": {
+      "trigger": "bands",
+      "intervalMonths": 12
+    },
+    "refresh": {
+      "autoOnLoad": true,
+      "staleAfterMinutes": 60
+    },
+    "links": [
+      {
+        "id": "extraetf-etf",
+        "label": "extraETF",
+        "urlTemplate": "https://extraetf.com/de/etf-profile/{isin}",
+        "appliesTo": [
+          "etf"
+        ],
+        "enabled": true
+      },
+      {
+        "id": "extraetf-stock",
+        "label": "extraETF",
+        "urlTemplate": "https://extraetf.com/de/stock-profile/{isin}",
+        "appliesTo": [
+          "stock"
+        ],
+        "enabled": true
+      },
+      {
+        "id": "oekb-meldefonds",
+        "label": "myOEKB — Meldefonds",
+        "urlTemplate": "https://my.oekb.at/kapitalmarkt-services/kms-output/fonds-info/sd/af/f?isin={isin}",
+        "appliesTo": [
+          "etf"
+        ],
+        "enabled": true
+      }
+    ],
+    "ui": {
+      "notificationSeconds": 8,
+      "historyPeriod": "month"
+    }
+  },
+  "allowlist": {},
+  "valueHistory": []
+}

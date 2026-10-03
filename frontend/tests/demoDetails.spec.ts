@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { demoPortfolio } from '@/db/seed'
+import { parseBackup } from '@/domain/backup'
 import demoDetails from '../../scripts/fixtures/demo-details.json'
 import quoteFixtures from '../../scripts/fixtures/demo-quotes.json'
+import demoBackup from './fixtures/browser/demo-details.backup.json'
 
 /*
  * `--demo-details` im Teststack zeigt genau die Instrumente aus
@@ -36,8 +38,14 @@ describe('Lesbare Demodaten des Teststacks', () => {
 
   it('hält die Werte in den Grenzen von StockInfos Feldkatalog', () => {
     for (const [symbol, values] of instruments) {
-      expect(values.volatility, symbol).toBeGreaterThan(0)
-      expect(values.volatility as number).toBeLessThanOrEqual(500)
+      // StockInfo berechnet die Volatilität für Listings, nicht für reine
+      // ISINs; deren Symbol ist im Testserver die ISIN selbst.
+      const isinOnly = /^[A-Z]{2}[A-Z0-9]{9}\d$/.test(symbol)
+      expect(values.volatility !== undefined, symbol).toBe(!isinOnly)
+      if (values.volatility !== undefined) {
+        expect(values.volatility as number, symbol).toBeGreaterThan(0)
+        expect(values.volatility as number, symbol).toBeLessThanOrEqual(500)
+      }
       if (values.ter !== undefined) {
         expect(values.ter as number, symbol).toBeGreaterThanOrEqual(0)
         expect(values.ter as number, symbol).toBeLessThanOrEqual(5)
@@ -59,11 +67,30 @@ describe('Lesbare Demodaten des Teststacks', () => {
     }
   })
 
-  it('führt TER und Fondsgröße nur bei ETFs', () => {
+  it('baut das Backup-Testdepot nur aus Demo-Instrumenten mit gleicher Gattung', () => {
+    const result = parseBackup(JSON.stringify(demoBackup))
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    const positions = result.backup.portfolio.positions.filter((position) => position.group !== 'cash')
+    expect(positions.length).toBeGreaterThan(0)
+    for (const position of positions) {
+      const values = demoDetails.instruments[position.symbol as keyof typeof demoDetails.instruments]
+      expect(values, position.symbol).toBeDefined()
+      expect(position.kind, position.symbol).toBe(values?.type)
+    }
+    // Jedes Instrument mit Detailwerten steht im Depot; das Prüfskript sieht sie nur dort.
+    const held = new Set(positions.map((position) => position.symbol))
     for (const [symbol, values] of instruments) {
-      const isEtf = values.type === 'etf'
-      expect('ter' in values, symbol).toBe(isEtf)
-      expect('fund_size' in values || 'manual_fund_size' in values, symbol).toBe(isEtf)
+      const hasDetails = Object.keys(values).some((name) => name !== 'type')
+      expect(held.has(symbol), symbol).toBe(hasDetails)
+    }
+  })
+
+  it('führt TER und Fondsgröße nur bei ETF und ETC, wie justETF sie deklariert', () => {
+    for (const [symbol, values] of instruments) {
+      const isFund = values.type === 'etf' || values.type === 'etc'
+      expect('ter' in values, symbol).toBe(isFund)
+      expect('fund_size' in values || 'manual_fund_size' in values, symbol).toBe(isFund)
     }
   })
 })

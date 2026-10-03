@@ -3,7 +3,7 @@ import { StockInfoClient } from '@/api/client'
 import { toFieldCatalog, toQuoteCacheEntry } from '@/api/mappers'
 import { projectDetailFields } from '@/domain/detailFields'
 import { setFormatterLocale } from '@/domain/formatters'
-import { translate } from '@/i18n'
+import { i18n, translate } from '@/i18n'
 import quoteFixture from '../fixtures/stockinfo/quote-200.json'
 import catalogFixture from '../fixtures/stockinfo/detail-catalog.json'
 import values from '../fixtures/stockinfo/detail-values.json'
@@ -28,6 +28,23 @@ describe('Zusatzfelder als reine Anzeigeprojektion', () => {
       entry.value = value
       expect(projectDetailFields(quote, catalog.definitions, [], 'de').find(row => row.key === 'risk-a.score')?.value).toContain(expected)
     }
+  })
+
+  it('schreibt die Fondsgröße wie StockInfo als Zahl, Maßstab und Währungscode', async () => {
+    const { quote, catalog } = await sample()
+    catalog.definitions.find(field => field.name === 'risk-a.amount')!.unit = 'millions'
+    const entry = quote.details!['risk-a.amount']!
+    Object.assign(entry, { value: 129791, unit: 'millions', currency: 'EUR' })
+    i18n.global.locale.value = 'de'
+    expect(projectDetailFields(quote, catalog.definitions, [], 'de').find(row => row.key === 'risk-a.amount')?.value).toBe('129.791,00 Mio. EUR')
+    Object.assign(entry, { value: 1850000, currency: 'USD' })
+    expect(projectDetailFields(quote, catalog.definitions, [], 'de').find(row => row.key === 'risk-a.amount')?.value).toBe('1.850.000,00 Mio. USD')
+    i18n.global.locale.value = 'en'
+    setFormatterLocale('en-US')
+    expect(projectDetailFields(quote, catalog.definitions, [], 'en').find(row => row.key === 'risk-a.amount')?.value).toBe('1,850,000.00 million USD')
+    // Ein gespeicherter Wert mit alter Einheit trifft auf die neue Deklaration: kein falscher Betrag.
+    Object.assign(entry, { value: 129791000000, unit: 'absolute', currency: 'EUR' })
+    expect(projectDetailFields(quote, catalog.definitions, [], 'de').find(row => row.key === 'risk-a.amount')?.value).toBe('—')
   })
 
   it('zeigt unbekannte oder widersprüchliche Einheiten nicht als gültige Kennzahl', async () => {
