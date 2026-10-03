@@ -18,6 +18,17 @@ auf einen eigenen Branch von `master` nach T-86.
 
 ## Vorlage
 
+**StockInfos `Makefile` ist das Vorbild für die Struktur** (Mike,
+2026-10-03: „So wie hier die Makefile-Struktur aufgebaut ist passt sie aus
+meiner Sicht. In die Richtung sollte es auch bei StockPortfolio gehen“).
+Gemeint ist der Stand `217fe5f`: Kopf mit `-include` und Fallbacks, Makro
+`require_bash_libs`, Gruppen Setup · Entwicklung (`dev-up`, `dev-down`,
+`dev-logs`) · Tests · Docker · Status · Versionierung, `[Maintainer]` in
+`make help`, `precheck` ohne `##`, keine Einzel-Targets wie `dev`, `start`,
+`stop` oder `logs`. Abweichungen nur, wo StockPortfolio fachlich anders ist
+(etwa Node statt Python, `frontend`/`api` statt `dashboard`), und im Ticket
+begründet.
+
 - **Regel:** Skill `makefile-conventions`, Abschnitt „Entwicklung und
   Maintainer trennen“ (PersonalSkills `a7be0ce`).
 - **Umsetzung in StockInfo** (`217fe5f`): `-include` für MakeLib mit
