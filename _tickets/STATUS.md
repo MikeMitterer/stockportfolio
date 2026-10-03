@@ -11,8 +11,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** [T-91 · Public Origin normalisieren](30-doing/T-91-public-origin-normalisieren.md)
-auf `t-91-public-origin-normalisieren`, Rest des Log-Befunds behoben,
-Runde 3 an `codex-verifier` übergeben
+auf `t-91-public-origin-normalisieren`, Runde 3 durch `codex-verifier`
+technisch freigegeben; Mikes Abnahme und der Abschluss stehen aus
 (Mike, 2026-10-03: „STOCKPORTFOLIO_PUBLIC_ORIGIN hatte einen Schrägstrich am
 Ende - das muss unbeding abgefangen werden“).
 
@@ -161,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-T-91 ist nach Nacharbeit in Runde 3 an `codex-verifier` übergeben (`243f5d2`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-91 ist in Runde 3 durch `codex-verifier` technisch freigegeben (`243f5d2`); Mikes Abnahme steht aus. T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -176,16 +176,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-91-public-origin-normalisieren.md`
 - `branch`: `t-91-public-origin-normalisieren`
 - `handoff_commit`: `243f5d2`
 - `review_round`: `3`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-91-public-origin-normalisieren.md`
-- `last_reviewed_commit`: `0fb0bc1`
-- `last_reviewed_round`: `2`
+- `last_reviewed_commit`: `243f5d2`
+- `last_reviewed_round`: `3`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-91-public-origin-normalisieren.md`
 - `priority_ticket`: `T-91-public-origin-normalisieren.md`
@@ -362,10 +362,11 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-91 Runde 3 · `243f5d2`**
+
+Technisch freigegeben. Die Origin-Gegenproben und Pflichtprüfungen stehen im
+Ticket unter „Verifier-Prüfung Runde 3“; der sichtbare DE/EN-Test stammt aus
+Runde 2 bei unverändertem Frontend. Mikes Abnahme, Abschluss und die
+Veröffentlichung der Unraid-Vorlage bleiben offen.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-91 Runde 3 · `243f5d2`**
-
-Die Fehlermeldung nennt den Rohwert nie mehr; Query-, Fragment- und
-`@`-Fälle mit synthetischem Geheimnis sind getestet, Gegenprobe rot,
-Pflichtprüfungen grün. Details im Ticket unter „Übergabe Runde 3“.

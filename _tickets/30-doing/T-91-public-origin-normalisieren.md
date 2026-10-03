@@ -13,8 +13,8 @@ Nutzer sah nur „Die Browseradresse stimmt nicht mit der Serverkonfiguration
 zurückgeführt, und die Einrichtung läuft durch. Ein Wert mit Pfad
 (`…/app`) beendet den Start mit einer klaren Meldung im Container-Log.
 
-**Stand:** Rest des Log-Befunds aus Runde 2 behoben: Die Meldung nennt den
-Rohwert nie. In Runde 3 an `codex-verifier` übergeben.
+**Stand:** In Runde 3 durch `codex-verifier` technisch freigegeben. Mikes
+Abnahme und der Ticketabschluss stehen noch aus.
 
 Kein menschlicher Schritt bis zur technischen Freigabe. Danach: Abnahme durch
 Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
@@ -62,11 +62,11 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 | # | Lauf | Handgriff | Nachweis | woher | AI |
 |---|:--:|---|---|---|:--:|
 | 1 | Unit | <a id="pruefpunkt-1"></a>`api/tests/public-origin.spec.ts` | 25 Tests grün (Runde 3): leer, Schrägstrich, Groß-/Kleinschreibung, Standardport, 13 Ablehnungsfälle mit Meldung (darunter `/.`, `/%2e`, `/a/..`, `/./`, Backslash), acht Werte mit Zugangsdaten oder Token in Query/Fragment ohne Geheimnis in der Meldung, Setup mit `…/`-Konfiguration → 201 | Mike | ➖ |
-| 2 | Unit rot | <a id="pruefpunkt-2"></a>`return url.origin` testweise durch `return trimmed` ersetzt | 3 Tests rot (Schrägstrich, Normalisierung, Setup), Exit 1; danach zurückgesetzt. Runde 2: Rohpfadprüfung entfernt → 4 Punktsegment-Fälle rot, Exit 1; Ausblenden bei `@` entfernt → 4 Zugangsdaten-Fälle rot, Exit 1; danach zurückgesetzt (`cmp` gleich), 49/49 grün | Pflicht Gegenprobe | ➖ |
+| 2 | Unit rot | <a id="pruefpunkt-2"></a>`return url.origin` testweise durch `return trimmed` ersetzt | 3 Tests rot (Schrägstrich, Normalisierung, Setup), Exit 1; danach zurückgesetzt. Runde 2: Rohpfadprüfung entfernt → 4 Punktsegment-Fälle rot, Exit 1; Ausblenden bei `@` entfernt → 4 Zugangsdaten-Fälle rot, Exit 1. Runde 3: nur `@`-Ausblendung wiederhergestellt → 4 Query-/Fragment-Fälle rot, Exit 1; danach zurückgesetzt (`cmp` gleich), 53/53 grün | Pflicht Gegenprobe | ➖ |
 | 3 | lokal | <a id="pruefpunkt-3"></a>`node dist/index.js` mit `…/app` | Ausgabe (Fassung Runde 3, ohne Rohwert) `STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: must not contain a path. …`, `exit=1`, Datenordner leer | Mike | ✅ |
 | 4 | lokal | <a id="pruefpunkt-4"></a>`node dist/index.js` mit `http://127.0.0.1:18391/` | Log `Public origin: http://127.0.0.1:18391`; `POST /api/setup` mit fremdem Origin 403, mit passendem Origin 401 `invalid_credentials` (Origin-Prüfung bestanden) | Mike | ✅ |
-| 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | `make test` Exit 0 (Frontend 84/868, API 7/49); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
-| 7 | Pflicht | <a id="pruefpunkt-7"></a>Hilfetext Einrichtungscode | Texte in DE und EN ersetzt; danach `make test` Exit 0 (84/868, 7/41), Frontend-Lint und -Typecheck Exit 0. Keine Sichtprüfung im Browser: der Tooltip rendert den Text unverändert über `UxInfoHint` | Mike | ➖ |
+| 5 | Pflicht | <a id="pruefpunkt-5"></a>`make test`, Lint, Typecheck | Runde 3: `make test` Exit 0 (Frontend 84/868, API 7/53); Lint und Typecheck für Frontend und API je Exit 0; `git diff --check` sauber | AGENTS.md | ➖ |
+| 7 | Pflicht | <a id="pruefpunkt-7"></a>Hilfetext Einrichtungscode | Texte in DE und EN ersetzt; danach `make test` Exit 0 (84/868, 7/41), Frontend-Lint und -Typecheck Exit 0. Die spätere Sichtprüfung steht in Nr. 8. | Mike | ➖ |
 | 8 | Browser sichtbar | <a id="pruefpunkt-8"></a>Teststack frisch ohne `--demo-accounts`, dann `npm --prefix frontend run check:setup-dialog` | Info-Fenster per Mauszeiger geöffnet, sichtbarer Text in DE und EN enthält Log-Zeile, Unraid-Weg, `docker logs stockportfolio`, neuen Code nach Neustart, kein `make dev-up`/`overmind`/`Ctrl-B`; Exit 0. Gegenproben: alter DE-Text und geänderter EN-Satz → 7 Fehler, Exit 1; Admin vorher per API angelegt → „Einrichtungsdialog nicht sichtbar“ in DE und EN, Exit 1. Stack danach gestoppt, Ports frei | Mike („Browser-Test?“, nur Info-Fenster) | ✅ |
 | 6 | Doku | <a id="pruefpunkt-6"></a>Docker-Hub-Vorschau | `dockerhub-readme.sh --preview --ref master` Exit 0, 13.939 Byte (< 25.000) | AGENTS.md | ➖ |
 
@@ -114,6 +114,33 @@ Push dort folgen mit dem Abschluss.
   Übernahme nötig.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 3 · codex-verifier · 2026-10-03
+
+**Technisch freigegeben:** Prüffassung `243f5d2` auf
+`t-91-public-origin-normalisieren`; der folgende Commit `6e1b707` ändert nur
+STATUS. Die Fehlermeldung in `api/src/publicOrigin.ts` besteht jetzt nur aus
+festem Text und dem Fehlergrund; sie übernimmt keinen Rohwert. Eigene
+Gegenproben mit synthetischem Geheimnis in Query, Fragment, URL-Zugangsdaten
+und Pfad brachen jeweils mit passendem Grund ohne Geheimnis in der Meldung ab.
+Ein gültiger Origin mit abschließendem `/` blieb gültig.
+
+**Prüfungen:** `make test` Exit 0 (Frontend 84/868, API 7/53); Frontend- und
+API-Lint sowie beide Typechecks je Exit 0. Der sichtbare DE/EN-Browserlauf
+aus Runde 2 bleibt für unveränderten Frontend-Code maßgeblich. Die
+uncommittete XML-Vorlagenänderung wurde nochmals gelesen; `xmllint --noout`
+lief mit Exit 0. Die roten Gegenproben und die Live-API-Starts aus Runde 3
+sind Coder-Belege, nicht meine eigenen Läufe. Ein Docker-Image und eine
+Unraid-Instanz wurden von mir nicht geprüft.
+
+**Doku-Abgleich:** `README.md`, `docker/README.md`, `unraid/README.md` und
+die XML-Vorlage stimmen zur Pfad- und Schrägstrichregel überein. Die
+Fehlermeldung wird in den Anleitungen nicht wörtlich zitiert; für das
+Entfernen des Rohwerts ist dort keine Änderung nötig. `AGENTS.md` führt den
+sichtbaren Prüfablauf auf. Die Verify-Matrix ist auf den letzten Teststand
+abgeglichen. Lessons SP-R-02 und SP-R-04 angewendet; die Nacharbeit schließt
+denselben Einzelfall ohne neue Lesson. Mikes Abnahme und die Veröffentlichung
+der Vorlage bleiben getrennte Schritte des Coders.
 
 ### Übergabe Runde 3 · claude-coder · 2026-10-03
 
