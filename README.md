@@ -713,8 +713,19 @@ through their npm scripts.
 
 `./docker/smoke-test.sh` checks the built image with throw-away containers:
 setup and login, a root-owned `/data`, data from older images, `--user`,
-a share without `chown`, missing capabilities and `PUID`/`PGID` values. It
-removes everything it created.
+a share without `chown`, missing capabilities, `PUID`/`PGID` values and the
+StockInfo forwarding to a Docker-internal name. It removes everything it
+created.
+
+`./docker/browser-check.sh` checks the built image in a visible browser. It
+needs the local test stack (StockInfo fixtures on port 8899, started without
+`--demo-details`) and starts two throw-away containers: one reaches StockInfo
+through `host.docker.internal`, the other gets an address that does not
+resolve. Both run `frontend/scripts/stockinfo-proxy-check.mjs`, which also
+works directly against the test stack:
+`npm --prefix frontend run check:stockinfo-proxy -- <data_dir>/demo-accounts.json`.
+It checks prices, price history, refresh and the status page, and that every
+forwarded StockInfo route of the server is used at least once.
 
 Bash 4+, BashLib, Docker/buildx, a Git tag and a clean working tree are required.
 `STRICT=2` allows commits after a tag; `STRICT=1` requires the tagged commit.

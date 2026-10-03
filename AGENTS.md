@@ -320,9 +320,17 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
   und Zusatzinformationen aller Positionen und dass ein offener Reiter
-  den Live-Abgleich übersteht); beide
+  den Live-Abgleich übersteht) und `stockinfo-proxy-check.mjs` (T-82:
+  StockInfo über den eigenen Server; Kursverlauf, Aktualisieren,
+  Statusseite, jedes Muster der Freigabeliste aus
+  `api/src/stockinfo/proxy.ts` mit 200, 401 ohne Sitzung, 404 außerhalb der
+  Liste; mit `--unreachable` der Ausfall als 502). Die drei Prüfskripte
   enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
-  jeweils im Kopfkommentar.
+  jeweils im Kopfkommentar. Eine neue StockInfo-Route braucht einen
+  sichtbaren Schritt, der sie aufruft; sonst schlägt die Routenabdeckung fehl.
+- **Container:** `docker/browser-check.sh` startet zwei Wegwerf-Container
+  gegen den laufenden Teststack (erreichbar über `host.docker.internal` und
+  nicht auflösbar) und ruft dafür `stockinfo-proxy-check.mjs` auf.
 - **Neuer sichtbarer Ablauf:** Er wird als wiederverwendbarer Schritt in
   einem Skript unter `frontend/scripts/` ergänzt, mit geprüften Inhalten
   statt nur einem Screenshot. Eine Gesamtprüfung aller Hauptwege wie in

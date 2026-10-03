@@ -52,6 +52,15 @@ Assets-Übersicht und Zusatzinformationen; ein Vitest-Wächter hält Backup und
 `scripts/fixtures/demo-details.json` deckungsgleich.
 
 
+## StockInfo-Routen prüfen
+
+[`stockinfo-routes.backup.json`](stockinfo-routes.backup.json) ist das
+Browser-Testdepot oben mit 5 % NOSI.DE (Listing ohne ISIN; Apple dafür 10 %).
+Damit ruft die App jede StockInfo-Route des eigenen Servers auf: ISIN-Abfragen,
+Devisenkurs für die USD-Papiere und Abfragen über das Symbol.
+`frontend/scripts/stockinfo-proxy-check.mjs` spielt es selbst ein. NOSI.DE gibt
+es nur im Teststack ohne `--demo-details`.
+
 ## Dynamische Typauswahl prüfen
 
 Der Testserver bietet den echten `/instrument-types`-Endpunkt aus dem
