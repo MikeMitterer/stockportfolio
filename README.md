@@ -362,8 +362,13 @@ make dev-up                # Vue app on :5175 and account API on :8080
 ```
 
 `make dev-up` runs both development servers in the background through Overmind.
-Stop that session with `make dev-down`; this stops both servers and releases
-their ports unless another process is using them.
+`make dev-down` stops them and frees ports 5175 and 8080. It also cleans up
+after a crash: it ends this project's leftover Overmind and tmux processes,
+removes a stale `.overmind.sock`, and stops processes from this project that
+still listen on those ports. Processes from other projects, such as StockInfo
+or Docker, are left alone. Running it again without a stack is safe and exits
+with 0. The ports are listed in `.dev-ports.conf.sh`; the cleanup itself
+comes from ProjectTools' `dev-ports.sh`.
 
 `make setup` links existing BashLib, MakeLib and ProjectTools repositories,
 creates StockPortfolio's `.venv` with Python 3.11+, and installs the local
@@ -384,8 +389,10 @@ the repository root, use
 With either start command, the API stores local accounts under `.local-data` unless
 `STOCKPORTFOLIO_DATA_DIR` is set.
 Until an admin exists, each API start prints a new code after
-`StockPortfolio setup code:` in the API output. With `make dev-up`, read it
-using `overmind echo api`. The setup page
+`StockPortfolio setup code:` in the API output. With `make dev-up`, open the
+API's window with `overmind connect api` (leave it with Ctrl-B, then D);
+`overmind echo` only shows output from that moment on and misses the code.
+The setup page
 closes after the first admin account is created. New passwords need 12 to 1024
 characters, including an
 uppercase letter, a number and a special character.
@@ -489,7 +496,7 @@ position. No real portfolio data is involved.
 | Command                        | Purpose                                     |
 | ------------------------------ | ------------------------------------------- |
 | `make dev-up`                  | Start both development servers in the background |
-| `make dev-down`                | Stop the background Overmind session       |
+| `make dev-down`                | Stop the dev stack and free ports 5175/8080 |
 | `make test`                    | Frontend and API tests, single run          |
 | `make clean`                   | Remove generated files; keep the local Python venv |
 | `make build`                  | Build and load the Docker image for testing |

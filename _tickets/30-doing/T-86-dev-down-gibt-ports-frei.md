@@ -21,7 +21,8 @@ Setup-Code-Hinweis erweitert (siehe unten). Mike, 2026-10-03: „Das ganze
 muss auch einen Mehrfachaufruf überleben. Ergänze die Anpassungen auch im
 T86“ — Vorlage, Umfang und Verify auf den nachgeschärften StockInfo-Stand
 gebracht. Am 2026-10-03 nach dem Abschluss von T-85 auf Branch
-`t-86-dev-down-gibt-ports-frei` aktiviert.
+`t-86-dev-down-gibt-ports-frei` aktiviert, umgesetzt und in Runde 1 an den
+Verifier übergeben.
 
 ## Vorlage aus StockInfo
 
@@ -78,30 +79,31 @@ dev-down: ## Dev-Stack stoppen und Ports freigeben
 4. **Setup-Code-Hinweis** (`auth.setupCodeHelp` in
    `frontend/src/i18n/de.ts` und `en.ts`): Der committete Text nennt noch
    „make dev“, das Target gibt es seit `dcd274d` nicht mehr. Mikes
-   uncommittete Fassung nennt `make dev-up` und `overmind echo api`; sie
-   übernehmen, gegen das Makefile und die README prüfen und committen.
+   uncommittete Fassung nannte `make dev-up` und `overmind echo api`; bei der
+   Prüfung zeigte sich, dass `overmind echo` keine Argumente annimmt und den
+   Code vom Start nicht zeigt. Umgesetzt mit `overmind connect api`.
 
 ### Verify
 
-Legende: ➖ noch keine Live-Verifikation.
+Legende: ✅ vom Coder live geprüft (Belege im Review-Verlauf, Runde 1).
 
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
-| 1 | `make dev-up`, dann `dev-ports.sh --status` | Beide Ports belegt, Prozesse „im Projekt“ | ➖ |
-| 2 | overmind-Prozess per `kill -9` beenden (Absturz nachstellen), dann `make dev-down` | Vite und API samt Kindprozessen beendet; tmux-Rest beendet; verwaiste `.overmind.sock` entfernt; 5175 und 8080 frei | ➖ |
-| 3 | Danach `make dev-up` | Startet ohne „Overmind is already running“ | ➖ |
-| 4 | `make dev-down` dreimal hintereinander ohne laufenden Stack | Jeweils beide Ports frei gemeldet, Exit 0 | ➖ |
-| 5 | StockInfo-Stack läuft parallel | StockInfos overmind, tmux und Prozesse auf 5173/8000 bleiben unberührt | ➖ |
+| 1 | `make dev-up`, dann `dev-ports.sh --status` | Beide Ports belegt, Prozesse „im Projekt“ | ✅ |
+| 2 | overmind-Prozess per `kill -9` beenden (Absturz nachstellen), dann `make dev-down` | Vite und API samt Kindprozessen beendet; tmux-Rest beendet; verwaiste `.overmind.sock` entfernt; 5175 und 8080 frei | ✅ |
+| 3 | Danach `make dev-up` | Startet ohne „Overmind is already running“ | ✅ |
+| 4 | `make dev-down` dreimal hintereinander ohne laufenden Stack | Jeweils beide Ports frei gemeldet, Exit 0 | ✅ |
+| 5 | StockInfo-Stack läuft parallel | StockInfos overmind, tmux und Prozesse auf 5173/8000 bleiben unberührt | ✅ mit fremdem overmind-Stack statt StockInfo (Einschränkung in Runde 1) |
 
 ### Akzeptanzkriterien
 
-- [ ] `.dev-ports.conf.sh` nennt die tatsächlichen Dev-Ports.
-- [ ] `make dev-down` gibt beide Ports frei, auch nach einem Absturz von overmind, und räumt overmind-Reste dieses Projekts samt verwaister `.overmind.sock` auf.
-- [ ] `make dev-down` verträgt Mehrfachaufrufe (Exit 0 ohne laufenden Stack).
-- [ ] Prozesse außerhalb von StockPortfolio bleiben unberührt, auch overmind anderer Projekte.
-- [ ] Der Setup-Code-Hinweis nennt in DE und EN den gültigen Startweg
+- [x] `.dev-ports.conf.sh` nennt die tatsächlichen Dev-Ports.
+- [x] `make dev-down` gibt beide Ports frei, auch nach einem Absturz von overmind, und räumt overmind-Reste dieses Projekts samt verwaister `.overmind.sock` auf.
+- [x] `make dev-down` verträgt Mehrfachaufrufe (Exit 0 ohne laufenden Stack).
+- [x] Prozesse außerhalb von StockPortfolio bleiben unberührt, auch overmind anderer Projekte.
+- [x] Der Setup-Code-Hinweis nennt in DE und EN den gültigen Startweg
       (`make dev-up`) und wie man den Code findet.
-- [ ] Doku-Abgleich: `README.md`; `docker/README.md` und `unraid/README.md` sind nicht betroffen (Dev-Stack, kein Container).
+- [x] Doku-Abgleich: `README.md`; `docker/README.md` und `unraid/README.md` sind nicht betroffen (Dev-Stack, kein Container).
 
 ### Side-Effects
 
@@ -109,4 +111,85 @@ Nur der lokale Dev-Stack. Kein Push, kein Docker-Hub- oder Unraid-Update.
 
 ### Auflösung
 
-Offen. Noch keine Umsetzung oder Verifikation.
+Umgesetzt; technische Freigabe und Mikes Abnahme stehen aus.
+
+## Review-Verlauf (neueste Runde zuerst)
+
+### Übergabe Runde 1 · claude-coder · 2026-10-03
+
+**Umfang** (Produktcommit siehe STATUS `handoff_commit`):
+
+- `.dev-ports.conf.sh` (neu, eingecheckt): `PORTS=(5175 8080)`. Geprüft
+  gegen `frontend/vite.config.ts` (`port: 5175`, `strictPort: true`) und
+  `api/src/index.ts` (`PORT ?? '8080'`); `Procfile.dev` nennt keinen Port.
+- `Makefile` · `dev-down`: die zwei Schritte wie in StockInfo
+  (`-@overmind quit 2>/dev/null || true`, dann
+  `"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill`); die Socket-Weiche ist
+  entfallen. Hilfetext „Dev-Stack stoppen und Ports 5175/8080 freigeben“.
+  `dev-ports.sh` aus ProjectTools in Stand `e2c2fb3`.
+- `README.md` (Entwicklung, Befehlstabelle) und `AGENTS.md` (Bauen und
+  prüfen): `make dev-down` beschreibt Aufräumen nach Absturz, Schutz fremder
+  Prozesse, Mehrfachaufruf mit Exit 0.
+- **Setup-Code-Hinweis** (`auth.setupCodeHelp`, DE/EN) und README:
+  **Mikes Fassung inhaltlich korrigiert.** Sie nannte `overmind echo api`.
+  Geprüft mit overmind 2.5.1:
+  - `overmind echo api` endet mit „overmind: Echo doesn't accept any
+    arguments“.
+  - `overmind echo` zeigt nur Ausgaben ab dem Aufruf; die Startzeile mit dem
+    Code fehlt (Wegwerf-Procfile: Startzeile 0-mal, laufende Zeilen ja).
+  - Im tmux-Fenster des Prozesses steht sie: echter `make dev-up` mit
+    temporärem Datenverzeichnis, Fenster `stockportfolio:api` enthält
+    „StockPortfolio setup code:“ 1-mal, `overmind echo` 3 s lang 0-mal. Der
+    Code selbst wurde nicht ausgegeben.
+
+  Neuer Wortlaut: „Nach make dev-up öffnest du mit overmind connect api das
+  Fenster der Konto-API und findest ihn dort hinter „StockPortfolio setup
+  code:“ (zurück mit Ctrl-B, dann D)“; EN entsprechend, ohne Apostroph
+  wegen der einfachen Anführungszeichen im Quelltext. README (Setup-Code):
+  `overmind connect api` statt `overmind echo api`, mit Hinweis, warum
+  `overmind echo` den Code nicht zeigt.
+
+**Live-Prüfung** (echter overmind 2.5.1, `make dev-up
+STOCKPORTFOLIO_DATA_DIR=<Scratchpad>`, Mikes `.local-data` unberührt; ein
+fremder overmind-Stack in einem anderen Verzeichnis lief die ganze Zeit
+parallel):
+
+| # | Handgriff | Beobachtet |
+|---|---|---|
+| 1 | `make dev-up`, `dev-ports.sh --status` | 5175 und 8080 belegt; overmind-Master und tmux „im Projekt (Root)“ |
+| 2a | Gegenprobe **altes** `dev-down`: overmind-Master `kill -9`, dann `make dev-down` | „dial unix ./.overmind.sock: connect: connection refused“, Exit 2; beide Ports weiter belegt, Socket bleibt |
+| 2b | **neues** `dev-down` nach `kill -9` | „verwaiste .overmind.sock entfernt“, „overmind beendet“, „5175 ist frei“, „8080 ist frei“, Exit 0; Socket weg, keine tmux-Reste `overmind-stockportfolio-*` |
+| 3 | danach `make dev-up` | startet ohne „already running“, Ports belegt; `dev-down` Exit 0 |
+| 4 | dreimal `make dev-down` ohne Stack | Exit 0, 0, 0; Ports frei |
+| 5 | fremder overmind-Stack (anderes Verzeichnis) | nach allen Schritten weiter laufend, erst am Ende selbst beendet |
+
+Einschränkung zu #5: Geprüft mit einem fremden overmind-Stack, nicht mit
+StockInfos echtem Stack auf 5173/8000. Diese Ports stehen nicht in
+`.dev-ports.conf.sh`; `dev-ports.sh` beendet nur Prozesse mit
+Arbeitsverzeichnis im Projekt.
+
+**Pflichtprüfungen** (nach letzter Änderung):
+
+| Befehl | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 84 / 868, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `bash -n .dev-ports.conf.sh`, `git diff --check` | ohne Befund |
+| `make help` | listet `dev-up` und `dev-down` mit neuem Text |
+
+**Doku-Abgleich:**
+
+| Datei · Abschnitt | Ergebnis |
+|---|---|
+| `README.md` · Entwicklung (`make dev-up`/`dev-down`) | `dev-down` mit Aufräumen, Schutz fremder Prozesse, Mehrfachaufruf, `.dev-ports.conf.sh` |
+| `README.md` · Setup-Code | `overmind connect api` statt `overmind echo api` |
+| `README.md` · Befehlstabelle | `make dev-down` „Stop the dev stack and free ports 5175/8080“ |
+| `AGENTS.md` · Bauen und prüfen | Kommentar zu `make dev-down` |
+| `docker/README.md`, `unraid/README.md` | Dev-Stack, kein Container; unverändert |
+
+**Lessons:** SI-P-02/12 (Zusage „overmind echo api“ am Werkzeug geprüft statt
+übernommen); SP-R-04 (falscher Befehl in committeter README und im
+App-Hinweis gleich mit korrigiert); SP-R-05 (nach jedem Lauf Ports,
+Socket und tmux-Reste geprüft). Der Hinweis zur Fensterposition im
+Smoketest betrifft T-86 nicht.

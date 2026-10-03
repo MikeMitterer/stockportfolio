@@ -45,7 +45,7 @@ export const en: MessageSchema = {
     setupTitle: 'Set up the first admin account',
     setupHint: 'Create the first admin account for this installation.',
     setupCode: 'Setup code',
-    setupCodeHelp: 'Until an admin account exists, each account API start generates a new code. With make dev, find it in the terminal after “StockPortfolio setup code:”; in a container, use docker logs stockportfolio. After creating the admin account, this page will no longer appear.',
+    setupCodeHelp: 'Until an admin account exists, each account API start generates a new code. After make dev-up, open the window of the account API with overmind connect api and find it after “StockPortfolio setup code:” (leave with Ctrl-B, then D); in a container, use docker logs stockportfolio. After creating the admin account, this page will no longer appear.',
     username: 'Username',
     password: 'Password',
     newPassword: 'New password',

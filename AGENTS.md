@@ -229,7 +229,7 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 
 ```bash
 make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
-make dev-down   # den Hintergrund-Stack über Overmind stoppen
+make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
 make test       # Frontend- und API-Tests, einmalig
 make clean      # generierte Dateien in Root, Frontend und API entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
