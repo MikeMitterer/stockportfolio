@@ -36,7 +36,7 @@ placing orders yourself.
 ![Settings → Calculation](docs/images/settings-calculation.png)
 
 Each position shows its delta in units. An optional minimum trade size suppresses
-small trade suggestions without hiding the deviation. The limit can be a fixed
+small trade amounts without hiding the deviation. The limit can be a fixed
 amount in the portfolio currency or a percentage; its default is zero (off).
 Changing units converts the current value. Buffer and minimum trade settings
 are saved with the active portfolio.
@@ -83,7 +83,7 @@ in the instrument catalog alone is insufficient.
 
 When a later refresh fails, an existing position remains visible. Its last
 valid price is marked stale and may still be used; without a valid price the
-position is excluded from calculations and trade suggestions. Original quotes retain their currency, including `GBp` for pence; portfolio
+position is excluded from calculations and trade amounts. Original quotes retain their currency, including `GBp` for pence; portfolio
 market values use the converted price.
 
 The client validates StockInfo Core 4.3.0 quote and catalog responses at one
@@ -803,7 +803,7 @@ consumer declaration and a link to `/legal.html` with the source archive.
 In the container these files are under `/app/public`.
 **About StockPortfolio** in the status bar, immediately after the MangoLila
 credit, opens **Settings → About**. It explains the limits of displayed prices,
-portfolio calculations and trade suggestions. The page shows MangoLila GmbH's
+portfolio calculations and trade amounts. The page shows MangoLila GmbH's
 address, website and logo, using the light or dark logo for the current theme.
 It also links to MangoLila's separate notice for financial content on its
 website and in publications.

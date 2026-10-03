@@ -10,7 +10,7 @@ export const de = {
     changeUnavailable: 'Kein gültiger Devisenkurs für die gespeicherten Geldbeträge. Die Basiswährung wurde nicht geändert.',
     title: 'Devisenkurse', retry: 'Devisenkurse erneut laden',
     stalePair: '{pair}: Veralteter Devisenkurs vom {time} wird weiterverwendet.',
-    missingPair: '{pair}: Kein gültiger Devisenkurs. Betroffene Positionen zählen nicht in Summen und Handelsvorschläge.',
+    missingPair: '{pair}: Kein gültiger Devisenkurs. Betroffene Positionen zählen nicht in Summen und Handelsbeträge.',
     converted: 'Bewertet mit {price} je Stück · {pair}',
     historyUnavailable: 'Für Fremdwährungspositionen fehlen historische Devisenkurse. Der Rückblick bleibt deshalb leer; aufgezeichnete Tageswerte werden in der Depotwährung angezeigt.',
     amountCurrency: 'Betrag in {currency}',
@@ -330,7 +330,7 @@ export const de = {
     quotesMissingBody: '{quotes} konnten nicht geladen werden — {details}',
     targetsExceededTitle: 'Ziele über 100 %',
     targetsExceededBody:
-      'Die Ziel-Anteile summieren sich auf {sum} — mehr als 100 %. Solange das so ist, sind die Kauf- und Verkaufsvorschläge nicht schlüssig.',
+      'Die Ziel-Anteile summieren sich auf {sum} — mehr als 100 %. Solange das so ist, sind die Kauf- und Verkaufsbeträge nicht schlüssig.',
     assetsFailedTitle: 'Assets konnten nicht geladen werden',
     backupTitle: 'Backup',
     doneTitle: 'Erledigt',
@@ -659,7 +659,7 @@ export const de = {
     bandsDelta2:
       'Relativ gerechnet wird, damit ein Band für jede Position dasselbe bedeutet. Bei einem Ziel von 45 % wären 6 Prozentpunkte gut ein Achtel der Position, bei einem Ziel von 5 % mehr als die ganze — dieselbe Zahl hieße an jeder Zeile etwas anderes. Als Anteil des Ziels ist „6 %" überall dieselbe Schwelle.',
     bandsBody3:
-      'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben. Ein gefallener Anteil bedeutet, dass man günstig nachkaufen kann; ein gestiegener bedeutet nur, dass etwas gut gelaufen ist.',
+      'Die beiden Bänder sind getrennt einstellbar, und das aus gutem Grund: Nach unten reagiert man üblicherweise früher als nach oben: Ein gefallener Anteil liegt unter deinem Ziel, ein gestiegener darüber.',
     bandsBody4:
       'Der Unterschied zum verbreiteten Kalender-Rebalancing: Dort schichtet man zu festen Terminen um, unabhängig davon, ob es nötig ist. Nach Bändern geschieht es, wenn es etwas zu tun gibt — in ruhigen Jahren gar nicht, in bewegten mehrmals.',
 
@@ -729,7 +729,7 @@ export const de = {
     delta:
       'Abweichung vom Ziel, relativ zum Ziel selbst: −10 % heißt „ein Zehntel unter dem Zielwert", nicht „zehn Prozentpunkte". Die Farbe zeigt, ob die Position im Band liegt.',
     coverFrom:
-      'Käufe müssen im Plan bezahlt werden — es gibt keinen Topf, aus dem man schöpft. Fehlt Geld, nennt der Vorschlag die Stückzahl, mit der Cash oder Geldmarkt die Lücke schließt.',
+      'Käufe müssen im Plan bezahlt werden — es gibt keinen Topf, aus dem man schöpft. Fehlt Geld, nennt der Plan die Stückzahl, mit der Cash oder Geldmarkt die Lücke schließt.',
     historyPeriod:
       'Zeitraum der kleinen Linie neben dem Kurs. Ein Monat, eine Woche oder ein Tag — bei „ein Tag" steht dort die Veränderung vom letzten Handelstag auf heute.',
     dataStatus:

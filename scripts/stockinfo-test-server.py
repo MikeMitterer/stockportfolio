@@ -204,12 +204,12 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     from fastapi import FastAPI, Request
     from fastapi.responses import JSONResponse, Response
     from app.container import get_cached_quote_service, get_daily_history_service, get_fx_service
-    from app.db import init_db
+    from app.persistence.db import init_db
     from app.detail_models import DetailDefinition, DetailInput
     from app.main import app
     from app.models import QuoteResponse
     from app.providers.base import RawQuote, SourceAnswer
-    from app.repository import QuoteRepository
+    from app.persistence.repository import QuoteRepository
     from app.routers.migration import get_gate
     from app.services.daily_history import DailyHistoryService
     from app.services.daily_sync import DailyCloseSync

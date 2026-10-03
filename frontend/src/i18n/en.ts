@@ -17,7 +17,7 @@ export const en: MessageSchema = {
     changeUnavailable: 'No valid exchange rate for the stored amounts. The base currency was not changed.',
     title: 'Exchange rates', retry: 'Reload exchange rates',
     stalePair: '{pair}: Using a stale exchange rate from {time}.',
-    missingPair: '{pair}: No valid exchange rate. Affected positions are excluded from totals and trade suggestions.',
+    missingPair: '{pair}: No valid exchange rate. Affected positions are excluded from totals and trade amounts.',
     converted: 'Valued at {price} per unit · {pair}',
     historyUnavailable: 'Historical exchange rates are unavailable for foreign currency holdings. The look back remains empty; recorded daily values are shown in the portfolio currency.',
     amountCurrency: 'Amount in {currency}',
@@ -323,7 +323,7 @@ export const en: MessageSchema = {
     unknownError: 'Unknown error',
     quotesMissingBody: '{quotes} could not be loaded — {details}',
     targetsExceededTitle: 'Targets above 100 %',
-    targetsExceededBody: 'Target shares add up to {sum} — more than 100 %. While that is the case, the buy and sell suggestions do not add up either.',
+    targetsExceededBody: 'Target shares add up to {sum} — more than 100 %. While that is the case, the buy and sell amounts do not add up either.',
     assetsFailedTitle: 'Assets could not be loaded',
     backupTitle: 'Backup',
     doneTitle: 'Done',
@@ -647,7 +647,7 @@ export const en: MessageSchema = {
     bandsDelta2:
       'The relative reading makes one band mean the same for every position. With a target of 45 %, 6 percentage points would be about an eighth of the position; with a target of 5 %, more than all of it — the same number would mean something different in every row. As a share of the target, “6 %” is the same threshold everywhere.',
     bandsBody3:
-      'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up. A share that has fallen means you can buy in cheaply; one that has risen only means something went well.',
+      'The two bands are set separately, and for good reason: one usually reacts sooner on the way down than on the way up: a share that has fallen is below your target, one that has risen is above it.',
     bandsBody4:
       'The difference to the common calendar rebalancing: there you rebalance on fixed dates, whether or not it is needed. With bands it happens when there is something to do — in quiet years not at all, in turbulent ones several times.',
 
@@ -717,7 +717,7 @@ export const en: MessageSchema = {
     delta:
       'Deviation from the target, relative to the target itself: −10 % means “a tenth below the target value”, not “ten percentage points”. The colour shows whether the position is inside the band.',
     coverFrom:
-      'Purchases have to be paid for within the plan — there is no pot to draw from. If money is missing, the suggestion gives the units with which cash or money market closes the gap.',
+      'Purchases have to be paid for within the plan — there is no pot to draw from. If money is missing, the plan gives the units with which cash or money market closes the gap.',
     historyPeriod:
       'Period of the small line next to the price. A month, a week or a day — with “one day” it shows the change from the last trading day to today.',
     dataStatus:
