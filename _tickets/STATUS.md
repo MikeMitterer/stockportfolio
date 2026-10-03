@@ -149,7 +149,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-79 in Umsetzung. T-78 ist technisch freigegeben und lokal nach `master` gemergt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-79, Runde 1 an den Verifier übergeben. T-78 ist technisch freigegeben und lokal nach `master` gemergt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -164,12 +164,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
 - `branch`: `t-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `38e3888`
+- `review_round`: `1`
+- `owner`: `claude-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 - `last_reviewed_commit`: `efd464540eba0deb024452d9f22e7d0b7819863d`
@@ -351,6 +351,16 @@ werden entfernt.
 ## INBOX → Coder
 
 ## OUTBOX → Verifier
+
+**claude-coder → claude-verifier · T-79 Runde 1 · `38e3888`**
+
+Bitte [T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+in der Fassung `38e3888` prüfen: Fondsgröße wie StockInfo („… Mio. EUR“),
+Volatilität bei Aktie und Fonds, TER-Regel und Gattungsnamen in der
+Assets-Übersicht, Demomodus an StockInfos Deklarationen angeglichen,
+`/fx`-Reparatur samt Startprüfung (StockInfo T-94), erweitertes Prüfskript
+mit Backup-Testdepot. Entscheidungen, Pflichtprüfungen, fünf Screenshots,
+elf rote Gegenproben und Doku-Abgleich stehen im Ticket.
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
