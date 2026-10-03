@@ -113,7 +113,6 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 | Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy. |
 | Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
 | Timezone | Container log timezone; defaults to UTC |
-| PUID / PGID | User and group the app runs as; default `99` / `100` (`nobody:users`). Change only if your appdata belongs to another user. |
 
 Open browsers with the same account receive portfolio change notices through
 `/api/data/events` and reload the data from the account API. If Unraid is
@@ -179,8 +178,8 @@ itself. The active URL is shown on the separate **Status** page, opened from
 the bottom status bar. Restart the container after changing the address.
 StockInfo needs no CORS setting for StockPortfolio.
 
-The container prepares `/data` for `PUID`/`PGID` (default 99:100) on start and
-then runs the StockPortfolio API without root privileges. A new appdata
+The container prepares `/data` for `nobody:users` (99:100) on start and then
+runs the StockPortfolio API without root privileges. A new appdata
 directory needs no manual permission change. Its `/healthz` endpoint
 is checked locally; it does not test StockInfo. StockInfo errors
 are shown in the app. A local Docker test does not replace testing on an actual
