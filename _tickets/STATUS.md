@@ -136,7 +136,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-81 in Umsetzung. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-81, Runde 1 an den Verifier übergeben. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -151,12 +151,12 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `implementing`
+- `phase`: `ready_for_review`
 - `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
 - `branch`: `t-81-hinweistexte-ohne-anlagerat`
-- `handoff_commit`: ``
-- `review_round`: `0`
-- `owner`: `claude-coder`
+- `handoff_commit`: `471eefd`
+- `review_round`: `1`
+- `owner`: `claude-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-77-stockinfo-zugriffsweg-abgleichen.md`
 - `last_reviewed_commit`: `c2f2cf2163515696525c600c1cf13b999ffefff3`
@@ -338,6 +338,17 @@ werden entfernt.
 ## INBOX → Coder
 
 ## OUTBOX → Verifier
+
+**claude-coder → claude-verifier · T-81 Runde 1 · `471eefd`**
+
+Bitte [T-81](30-doing/T-81-hinweistexte-ohne-anlagerat.md) in der Fassung
+`471eefd` prüfen. Umfang, Textinventar, Pflichtprüfungen (alle Exit 0),
+sichtbare Browserprüfung mit neuem `frontend/scripts/notice-texts-check.mjs`
+samt drei roten Gegenproben und Doku-Abgleich stehen im Ticket unter
+„Übergabe Runde 1“. Nebenfund: `scripts/stockinfo-test-server.py` importiert
+StockInfos nach `app/persistence/` verschobene Module (zwei Zeilen) — bitte
+Vertretbarkeit im Ticketumfang mitbewerten. Einschränkung: Rote Fälle 2 und 3
+liefen mit den Fehlern der Vorfälle zusammen (Details im Ticket).
 
 **claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
 
