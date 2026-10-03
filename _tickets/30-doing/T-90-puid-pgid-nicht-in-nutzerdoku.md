@@ -32,15 +32,52 @@ OK“ bestätigt. Direkt nach T-88 aktiviert.
 
 ### Akzeptanzkriterien
 
-- [ ] Keine Erwähnung von PUID/PGID in `README.md`, `docker/README.md`,
+- [x] Keine Erwähnung von PUID/PGID in `README.md`, `docker/README.md`,
       `unraid/README.md`, App-Texten und der Vorlage; belegt per Inventar.
-- [ ] Die Anleitungen beschreiben `/data` weiter verständlich: Rechte werden
+- [x] Die Anleitungen beschreiben `/data` weiter verständlich: Rechte werden
       beim Start vorbereitet, die App läuft ohne Root.
-- [ ] `README.md` und `docker/README.md` sagen dasselbe; Docker-Hub-Vorschau
+- [x] `README.md` und `docker/README.md` sagen dasselbe; Docker-Hub-Vorschau
       unter 25.000 Byte.
-- [ ] `make test`, Lint und Typecheck grün (keine Codeänderung erwartet).
+- [x] `make test`, Lint und Typecheck grün (keine Codeänderung erwartet).
 
 ### Side-Effects
 
 Reine Doku. Kein Push, kein Docker-Hub- oder Unraid-Update ohne eigenen
 Auftrag.
+
+## Review-Verlauf (neueste Runde zuerst)
+
+### Übergabe Runde 1 · claude-coder · 2026-10-03
+
+Branch `t-90-puid-pgid-nicht-in-nutzerdoku` von `master` (`57c89fc`, mit
+T-88), Dokustand im Commit vor dieser Übergabe.
+
+**Inventar** (`git grep -i -E "puid|pgid|99:100|nobody:users"` über
+`README.md`, `docker/README.md`, `unraid/`, `docs/` ohne datierte Entwürfe,
+`frontend/src/i18n/`; dazu `grep` über die Vorlage `stockportfolio.xml`):
+vorher sechs Fundstellen mit PUID/PGID, in Vorlage und App-Texten keine.
+
+| Datei | Vorher | Nachher |
+|---|---|---|
+| `README.md` | Container-Absatz „gives the directory to `PUID`/`PGID` (default 99:100 …)“ | „gives the directory to Unraid's `nobody:users` (99:100) and then starts the app as that user“ |
+| `README.md` | Smoketest „`PUID`/`PGID` values“ | „the user switch at start“ |
+| `docker/README.md` | gleicher Container-Absatz | wortgleich zu `README.md` (per `diff` geprüft) |
+| `docker/README.md` | Configuration-Zeile `PUID` / `PGID` | entfernt |
+| `unraid/README.md` | Feldzeile „PUID / PGID … Change only if …“ (Feld fehlt in der Vorlage) | entfernt |
+| `unraid/README.md` | „prepares `/data` for `PUID`/`PGID` (default 99:100)“ | „prepares `/data` for `nobody:users` (99:100)“ |
+
+Nachher: kein Treffer für `puid|pgid` in den nutzersichtbaren Dateien (Exit 1
+von `git grep`). `99:100`/`nobody:users` bleiben als Tatsache, welcher
+Benutzer läuft; sie bewerben keine Einstellung. Intern unverändert:
+`AGENTS.md`, Tickets, `docker/smoke-test.sh`, `docker/entrypoint.sh`.
+
+**Belege:** Docker-Hub-Vorschau 13.541 Byte, ohne PUID/PGID. `make test`
+(Frontend 84/868, API 6/28), Lint und Typecheck `frontend`/`api` Exit 0,
+`git diff --check` sauber. Kein Produktcode geändert.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` sagen dasselbe
+(identischer Absatz). `unraid/README.md` passt jetzt zur Vorlage, die das
+Feld nicht führt. Vorlage, `docs/` und App-Texte: keine Fundstelle, keine
+Änderung. Skill `task-verification-workflow`: keine Board-Konvention
+geändert.
+
