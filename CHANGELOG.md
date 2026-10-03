@@ -2,6 +2,25 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.7.1+261003.2156.10fae — 2026-10-03
+
+Public origin: trailing slash accepted, invalid values stop the start without logging the value. Setup code help points to Unraid and Docker logs. Dashboard opens without delay on long price histories.
+
+### Documentation
+
+- Screenshots für 0.7.0 neu aufnehmen (`94f2f43`)
+
+### Fixes
+
+- Public Origin beim Start normalisieren und prüfen (`2cecd6a`)
+- Hinweis zum Einrichtungscode für Unraid und Docker (`c2dc9b1`)
+- Punktsegmente ablehnen, Zugangsdaten nicht loggen (`ac40853`)
+- ungültigen Public Origin nie im Log ausgeben (`243f5d2`)
+
+### Performance
+
+- Rückblick in linearer Zeit rechnen (`fac7055`)
+
 ## v0.7.0+261003.1927.b8011 — 2026-10-03
 
 StockInfo über den eigenen Server abfragen: kein CORS mehr, Adresse nur vom Container aus erreichbar, STOCKINFO\_API\_URL ersetzt die Vite-Variable; REST-Clients gebündelt, sichtbare Prüfung aller StockInfo-Routen
