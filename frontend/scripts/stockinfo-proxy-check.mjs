@@ -2,7 +2,7 @@
 // Server abfragt, und dass jede dafür angelegte Server-Route im Browserlauf
 // vorkommt (T-82).
 //
-// Vorbereitung: Das Skript spielt
+// Vorbereitung (Normalfall): Das Skript spielt
 // frontend/tests/fixtures/browser/stockinfo-routes.backup.json ein. Das Depot
 // enthält Papiere mit ISIN, USD-Papiere (Devisenkurs) und NOSI.DE ohne ISIN
 // (Abfragen über das Symbol). NOSI.DE gibt es nur im Teststack **ohne**
@@ -24,7 +24,7 @@
 //      außerhalb der Freigabeliste mit 404.
 // Fehlerfall (`--unreachable`, Server mit einer Adresse, die nicht auflöst):
 //   1. Die StockInfo-Anfragen enden mit 502 `stockinfo_unreachable`.
-//   2. Das Dashboard zeigt den Hinweis „Dienst nicht erreichbar“.
+//   2. Der Dialog „Dienst nicht erreichbar“ nennt den Grund vom Server.
 //   3. Die Statusseite nennt die Adresse, meldet „nicht erreichbar“ und den
 //      übersetzten Grund.
 // In beiden Fällen fragt der Browser nur StockPortfolio an, nie StockInfo
@@ -42,7 +42,8 @@
 // Deutsche Oberfläche; der Browser läuft sichtbar auf dem Hauptmonitor, links
 // bleiben 100 px frei.
 import { readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { tmpdir } from 'node:os'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright-core'
 
@@ -110,6 +111,7 @@ const proxyResponses = []
 /** Statuscodes von `GET /api/stockinfo-target`. */
 const targetStatuses = []
 
+let page
 const browser = await chromium.launch({
   executablePath: chromePath,
   headless: false,
@@ -118,7 +120,7 @@ const browser = await chromium.launch({
 try {
   const context = await browser.newContext({ viewport, locale: 'de-AT' })
   await context.addInitScript(() => localStorage.setItem('stockportfolio.locale', 'de'))
-  const page = await context.newPage()
+  page = await context.newPage()
   page.on('request', (request) => {
     const url = new URL(request.url())
     if ((url.protocol === 'http:' || url.protocol === 'https:') && url.origin !== origin) {
@@ -166,18 +168,22 @@ try {
   }
   await page.locator('.dashboard__kpis, .dashboard__empty').first().waitFor({ timeout: 20000 })
 
-  // Routen-Testdepot einspielen; das braucht StockInfo nicht.
-  await page.goto(`${origin}/#/settings?tab=backup`)
-  await page.locator('.backup input[type="file"]').setInputFiles(backupPath)
-  await page.getByRole('button', { name: 'Jetzt ersetzen' }).click()
-  await Promise.all([
-    page.waitForEvent('framenavigated', { timeout: 30000 }),
-    page.locator('.n-popconfirm__action button').last().click(),
-  ])
-  await page.goto(`${origin}/#/`)
-  await page.locator('.dashboard__kpis').waitFor({ timeout: 20000 })
-
   if (!expectUnreachable) {
+    // Routen-Testdepot einspielen; das braucht StockInfo nicht.
+    await page.goto(`${origin}/#/settings?tab=backup`)
+    await page.locator('.backup input[type="file"]').setInputFiles(backupPath)
+    await page.getByRole('button', { name: 'Jetzt ersetzen' }).click()
+    await Promise.all([
+      page.waitForEvent('framenavigated', { timeout: 30000 }),
+      page.locator('.n-popconfirm__action button').last().click(),
+    ])
+    // Erst wenn die neu geladene App das eingespielte Depot nennt, ist das
+    // Neuladen durch; ein früherer Seitenwechsel ginge darin unter.
+    await page.waitForLoadState('load')
+    await page.getByText('Routen-Testdepot').first().waitFor({ timeout: 20000 })
+    await page.goto(`${origin}/#/`)
+    await page.locator('.dashboard__kpis').waitFor({ timeout: 20000 })
+
     // 1 · Kurse und Verlaufslinien in der Tabelle.
     await check('Verlauf in der Tabelle', async () => {
       await page.locator('td .badge__pill').first().waitFor({ timeout: 30000 })
@@ -267,10 +273,18 @@ try {
       return `${proxyResponses.length} × 502 stockinfo_unreachable`
     })
 
-    // 2 · Hinweis im Dashboard.
+    // 2 · Der Dialog „Dienst nicht erreichbar“ erscheint einmal je Sitzung
+    // und nennt den Grund vom Server; danach wird er geschlossen.
     await check('Hinweis im Dashboard', async () => {
-      await page.getByText('Dienst nicht erreichbar').first().waitFor({ timeout: 20000 })
-      return '„Dienst nicht erreichbar“ sichtbar'
+      const dialog = page.locator('.apialert').first()
+      await dialog.waitFor({ timeout: 20000 })
+      const reason = (await dialog.locator('.apialert__reason').innerText()).trim()
+      if (!reason.includes('vom StockPortfolio-Server aus nicht erreichbar')) {
+        fail('Hinweis im Dashboard', `Grund „${reason}“ nennt nicht die Weiterleitung`)
+      }
+      await page.keyboard.press('Escape')
+      await dialog.waitFor({ state: 'hidden', timeout: 5000 })
+      return `Dialog „Dienst nicht erreichbar“: ${reason}`
     })
   }
 
@@ -353,6 +367,11 @@ try {
   }
 } catch (error) {
   fail('Ablauf', String(error.message).split('\n')[0])
+  const path = join(tmpdir(), `stockinfo-proxy-check${expectUnreachable ? '-unreachable' : ''}.png`)
+  if (page && (await page.screenshot({ path }).then(() => true, () => false))) {
+    console.error(`Bildschirmfoto: ${path}`)
+  }
+  console.error(error.stack?.split('\n').slice(0, 4).join('\n'))
 } finally {
   await browser.close()
 }
