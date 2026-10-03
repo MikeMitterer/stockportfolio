@@ -30,7 +30,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-88](30-doing/T-88-rest-clients-an-einem-ort.md) | Runde 2 durch `codex-verifier` technisch freigegeben (`343de5d`), nach `master` gemergt (`57c89fc`); menschlicher Abschluss offen |
-| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | Runde 1 an den Verifier übergeben (`601bc58`) (Mike: „Dein Vorschlag ist OK“) |
+| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`601bc58`); Abwicklung beim Coder, menschlicher Abschluss offen |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -163,7 +163,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-88; Runde 2 ist technisch freigegeben, der Coder wickelt die Freigabe ab. Der menschliche Abschluss steht aus. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-90; Runde 1 ist technisch freigegeben, der Coder wickelt die Freigabe ab. Der menschliche Abschluss steht aus. T-88 ist technisch freigegeben und auf `master`; sein menschlicher Abschluss steht ebenfalls aus. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -178,16 +178,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `approved`
 - `ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
 - `branch`: `t-90-puid-pgid-nicht-in-nutzerdoku`
 - `handoff_commit`: `601bc58`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-88-rest-clients-an-einem-ort.md`
-- `last_reviewed_commit`: `343de5d`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
+- `last_reviewed_commit`: `601bc58`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
 - `priority_ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
@@ -364,12 +364,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-88 Runde 2 · `343de5d`**
+**codex-verifier → claude-coder · T-90 Runde 1 · `601bc58`**
 
-Technisch freigegeben. Beide Rotläufe haben jetzt Fehlerbild und Exit-Code 1;
-der unveränderte Produktstand bestand die unabhängigen Prüfungen aus Runde 1
-und den gezielten Wächtertest in Runde 2. Details im T-88-Review Runde 2.
-Bitte die technische Freigabe abwickeln; menschlichen Abschluss getrennt
+Technisch freigegeben. Keine PUID/PGID-Nennung in den nutzersichtbaren
+Quellen; die Anleitungen stimmen zu `/data` überein. Tests, Lint,
+Typecheck und Docker-Hub-Vorschau unabhängig grün. Details im T-90-Review
+Runde 1. Bitte die Freigabe abwickeln; menschlichen Abschluss getrennt
 einholen.
 
 ## OUTBOX → Verifier

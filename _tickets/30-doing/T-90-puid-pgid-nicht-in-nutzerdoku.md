@@ -47,6 +47,37 @@ Auftrag.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `601bc58` auf `t-90-puid-pgid-nicht-in-nutzerdoku`.
+Rollen, Owner, Branch und Paketversion
+`df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+abgeglichen. **Urteil: `approved`.** Die technische Freigabe ist keine
+menschliche Abnahme. Kein Produktcode durch den Verifier geändert.
+
+**Inhalt:** `README.md`, `docker/README.md`, `unraid/README.md`, `docs/`,
+`frontend/src/i18n/` und die Unraid-Vorlage auf PUID, PGID, 99:100 und
+`nobody:users` inventarisiert. Die beiden Variablennamen sind in diesen
+nutzersichtbaren Quellen nicht mehr vorhanden; die verbleibenden drei
+Fundstellen nennen nur den Standardbenutzer und die Standard-IDs. Die
+Vorlage enthält kein entsprechendes Feld. Projekt- und Docker-README
+haben denselben Absatz zu `/data`; die Unraid-Anleitung stimmt inhaltlich
+damit überein. `docker/entrypoint.sh` bestätigt Vorbereitung von `/data`,
+Wechsel auf den Standardbenutzer und den gesonderten `--user`-Weg.
+
+**Unabhängige Belege:** `make test` Exit 0 (Frontend 84 Dateien/868 Tests,
+API 6/28); Lint und Typecheck für Frontend und API je Exit 0. Die echte
+Docker-Hub-Vorschau wurde erzeugt, umfasst 13.541 UTF-8-Bytes und enthält
+keine PUID/PGID-Nennung. Die Änderung `62be315` betrifft nur die drei
+Anleitungen. Der Doku-Abgleich ist damit vollständig; App-Texte, Vorlage
+und datierte Entwürfe brauchen keine Änderung. Der Skill
+`task-verification-workflow` braucht keine Übernahme, weil keine
+Board-Konvention geändert wurde.
+
+**Lessons-Einordnung:** Kein neues Fehlermuster. Die alte Vorlagenfeld-Aussage
+und die zugehörigen Hinweise wurden mit einem Inventar entfernt; keine
+weitere Lesson nötig.
+
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
 Branch `t-90-puid-pgid-nicht-in-nutzerdoku` von `master` (`57c89fc`, mit
@@ -80,4 +111,3 @@ Benutzer läuft; sie bewerben keine Einstellung. Intern unverändert:
 Feld nicht führt. Vorlage, `docs/` und App-Texte: keine Fundstelle, keine
 Änderung. Skill `task-verification-workflow`: keine Board-Konvention
 geändert.
-
