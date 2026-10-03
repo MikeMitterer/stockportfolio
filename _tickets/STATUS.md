@@ -10,8 +10,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine. Der Root steht auf `master`; T-90 wartet auf Mikes
-Abschluss.
+**Aktuelle Arbeit:** keine. Der Root steht auf `master`; der Arbeitsumfang vom
+2026-10-03 ist bis auf Mikes T-73 abgeschlossen.
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
@@ -29,7 +29,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-82](40-done/T-82-stockinfo-ueber-eigenen-server.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-89](40-done/T-89-stockinfo-abschnitt-im-readme.md) | abgeschlossen (Mike: „T-82 und T-89 sind abgenommen, push es“) |
 | [T-88](40-done/T-88-rest-clients-an-einem-ort.md) | abgeschlossen (Mike: „T-88 ist abgenommen, push es“) |
-| [T-90](30-doing/T-90-puid-pgid-nicht-in-nutzerdoku.md) | Runde 1 durch `codex-verifier` technisch freigegeben (`601bc58`), nach `master` gemergt (`cce832d`); menschlicher Abschluss offen |
+| [T-90](40-done/T-90-puid-pgid-nicht-in-nutzerdoku.md) | abgeschlossen (Mike: „T-90 ist erledigt“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
@@ -162,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Keine aktive Arbeit. T-90 ist technisch freigegeben und auf `master`; der menschliche Abschluss steht aus. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Keine aktive Arbeit. T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.

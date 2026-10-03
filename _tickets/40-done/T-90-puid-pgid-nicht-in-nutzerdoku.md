@@ -1,5 +1,7 @@
 # T-90 · PUID/PGID nicht in nutzersichtbarer Doku
 
+**Abgeschlossen am 2026-10-03** (Mike: „T-90 ist erledigt“). Technisch freigegeben in Runde 1 (`601bc58`), nach `master` gemergt (`cce832d`) und zu `origin` gepusht.
+
 **Warum dieses Ticket:** Das Image läuft ohne Zutun als 99:100 (Unraids
 `nobody:users`). Die Unraid-Vorlage führt PUID/PGID seit Templates `1272822`
 nicht mehr, StockInfo bewirbt sie seit `846868a` nicht mehr. Die
