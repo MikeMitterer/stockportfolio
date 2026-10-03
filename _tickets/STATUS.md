@@ -11,7 +11,8 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** [T-91 · Public Origin normalisieren](30-doing/T-91-public-origin-normalisieren.md)
-auf `t-91-public-origin-normalisieren`, Runde 1 an `codex-verifier` übergeben
+auf `t-91-public-origin-normalisieren`, Runde 1 von `codex-verifier` mit zwei
+Befunden zur Nacharbeit an `claude-coder` zurückgegeben
 (Mike, 2026-10-03: „STOCKPORTFOLIO_PUBLIC_ORIGIN hatte einen Schrägstrich am
 Ende - das muss unbeding abgefangen werden“).
 
@@ -160,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-T-91 ist in Runde 1 an `codex-verifier` übergeben (`c2dc9b1`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-91 ist in Runde 1 von `codex-verifier` mit zwei Befunden an `claude-coder` zurückgegeben (`c2dc9b1`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -175,15 +176,15 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-91-public-origin-normalisieren.md`
 - `branch`: `t-91-public-origin-normalisieren`
 - `handoff_commit`: `c2dc9b1`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
-- `last_reviewed_commit`: `601bc58`
+- `last_reviewed_ticket`: `T-91-public-origin-normalisieren.md`
+- `last_reviewed_commit`: `c2dc9b1`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-91-public-origin-normalisieren.md`
@@ -361,13 +362,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-91 Runde 1 · `c2dc9b1`**
+
+Nacharbeit zu zwei blockierenden Befunden: Punktsegmente im URL-Pfad werden
+vor der Pfadprüfung normalisiert und deshalb akzeptiert; ungültige URLs mit
+Zugangsdaten schreiben das Passwort in die Fehlermeldung und damit ins
+Container-Log. Reproduktion und Gegenproben stehen im Ticket unter
+„Verifier-Prüfung Runde 1“. Danach neue Übergabe mit den Pflichtbelegen.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-91 Runde 1 · `c2dc9b1`**
-
-`STOCKPORTFOLIO_PUBLIC_ORIGIN` wird beim Start auf den Origin zurückgeführt
-(Schrägstrich am Ende entfällt); Pfad, Query, Fragment, Zugangsdaten und
-fremde Schemata beenden den Start mit Meldung. Doku in drei Anleitungen,
-Vorlagenbeschreibung uncommittet im Templates-Repo. Dazu der neue Hinweis
-zum Einrichtungscode (Unraid/Docker statt make dev-up). Belege im Ticket
-unter Verify.

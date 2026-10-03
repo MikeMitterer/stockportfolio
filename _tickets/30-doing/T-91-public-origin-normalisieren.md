@@ -13,7 +13,7 @@ Nutzer sah nur „Die Browseradresse stimmt nicht mit der Serverkonfiguration
 zurückgeführt, und die Einrichtung läuft durch. Ein Wert mit Pfad
 (`…/app`) beendet den Start mit einer klaren Meldung im Container-Log.
 
-**Stand:** Umgesetzt und an `codex-verifier` übergeben (Runde 1).
+**Stand:** Verifier hat Runde 1 mit zwei Befunden zur Nacharbeit zurückgegeben.
 
 Kein menschlicher Schritt bis zur technischen Freigabe. Danach: Abnahme durch
 Mike, am besten auf Unraid mit dem bisherigen Wert samt Schrägstrich.
@@ -77,7 +77,7 @@ ausschließlich in `node dist/index.js`, das der Container unverändert startet.
       mehr zu `invalid_origin`.
 - [x] Werte, die sich nicht auf einen Origin zurückführen lassen, beenden den
       Start mit verständlicher Meldung, bevor ein Setup-Code entsteht.
-- [x] `README.md`, `docker/README.md`, `unraid/README.md` und die
+- [ ] `README.md`, `docker/README.md`, `unraid/README.md` und die
       Unraid-Vorlage beschreiben das Format übereinstimmend.
 - [x] Der Hinweis am Einrichtungscode erklärt Unraid und Docker und nennt
       keine Entwicklungsbefehle mehr (DE und EN).
@@ -112,6 +112,48 @@ Push dort folgen mit dem Abschluss.
   Übernahme nötig.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `c2dc9b1` auf `t-91-public-origin-normalisieren`; der spätere
+Commit `eb0d738` ändert nur STATUS. Ich habe API-Implementierung und Test,
+Origin-Vergleich, DE/EN-Hinweis, beide READMEs, Unraid-Anleitung und die
+uncommittete XML-Vorlage gelesen. `npm --prefix api test --
+tests/public-origin.spec.ts` lief mit Exit 0 (7 Dateien, 41 Tests, darunter
+13 zu T-91); `xmllint --noout` für die Vorlage lief mit Exit 0. Die
+Randfälle unten habe ich mit `normalizePublicOrigin()` selbst ausgeführt.
+Kein Browser-, Container- oder Unraid-Lauf durch den Verifier; die lokalen
+Startbelege und die übrigen Pflichtprüfungen stammen vom Coder.
+
+**Befund 1 · Pfade werden teils akzeptiert (blockierend).**
+`new URL()` löst Punktsegmente vor der Prüfung von `url.pathname` auf.
+`https://portfolio.example.com/.`, `…/%2e` und `…/a/..` liefern daher
+`https://portfolio.example.com`, statt wie im Ticket und in allen drei
+Anleitungen beschrieben mit einer Pfad-Meldung abzubrechen. Gegenprobe:
+diese Rohwerte ablehnen, während `/` und eine URL ohne Pfad weiterhin denselben
+Origin liefern. Die Doku-Zusage „a path stops the start“ ist derzeit falsch.
+
+**Befund 2 · Zugangsdaten erscheinen im Container-Log (blockierend).**
+`invalid()` in `api/src/publicOrigin.ts` setzt den vollständigen Rohwert in
+die Fehlermeldung. Für den synthetischen Wert
+`https://user:synthetic-password@portfolio.example.com` enthält die Ausgabe
+`synthetic-password`; `api/src/index.ts` schreibt diese Meldung nach stderr.
+Bei einem versehentlich so konfigurierten Wert würde dessen Passwort im
+Container-Log stehen. Fehlermeldung ohne Zugangsdaten erzeugen und prüfen,
+dass der synthetische Wert dort nicht erscheint.
+
+**Weitere Prüfung:** Der Setup-Test belegt den Schrägstrichfall; die
+Startprüfung liegt im Quelltext vor dem Öffnen der SQLite-Datenbank. Die
+DE/EN-Hinweise nennen Unraid-Logs und `docker logs`; die Entwicklungsbefehle
+stehen weiter im Projekt-README. Das XML ist syntaktisch gültig. Die
+Unraid-Vorlage bleibt im Templates-Repo uncommittet und ist daher noch kein
+veröffentlichter Stand.
+
+**Lessons-Einordnung:** SP-R-02 (Prüftiefe benennen) und SP-R-04
+(potenziellen Fehler blockierend zurückgeben) angewendet. Die beiden
+konkreten Randfälle dieses Tickets erfüllen allein keine Aufnahmebedingung
+für eine neue Lesson. Keine Board-Konvention geändert; Abgleich mit
+`2026-09-28-activity-local` und den lokalen Abweichungen ohne neue Übernahme.
 
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
