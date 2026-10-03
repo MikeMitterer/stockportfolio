@@ -14,8 +14,9 @@ Positionen × Kurspunkte.
 13 ms. Im Teststack (61 Tage Verlauf) fiel das nicht auf.
 
 **Stand:** Abgeschlossen. Technische Freigabe in Runde 1 durch
-`codex-verifier`, Freigabe durch Mike am 2026-10-03. Eine Messung auf Mikes
-Server ist nicht belegt; die Wirkung dort zeigt sich mit dem nächsten Image.
+`codex-verifier`, Freigabe durch Mike am 2026-10-03. Mit Image 0.7.1 auf
+Mikes Unraid-Server bestätigt (Mike: „Container auf Unraid ist aktualisiert,
+Dashboard ist jetzt flott“).
 
 Kein offener menschlicher Schritt.
 
@@ -59,8 +60,8 @@ Legende: ✅ live bestätigt · ➖ nur Unit/Review.
 - [x] `buildBacktest()` liefert dieselben Werte wie bisher (Vergleichstest).
 - [x] 25 Positionen × 20 Jahre unter 250 ms (gemessen 13 ms).
 - [x] Mike sieht auf seinem Server beim Wechsel zum Dashboard keine
-      spürbaren Platzhalter mehr (nach dem nächsten Image). Durch Mikes
-      Freigabe ersetzt; eine Prüfung auf dem Server ist nicht belegt.
+      spürbaren Platzhalter mehr (nach dem nächsten Image). Mit Image 0.7.1
+      von Mike auf dem Server bestätigt.
 
 ### Side-Effects
 
