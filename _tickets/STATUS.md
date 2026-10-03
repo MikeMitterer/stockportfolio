@@ -169,7 +169,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `branch`: `t-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen`
 - `handoff_commit`: `38e3888`
 - `review_round`: `1`
-- `owner`: `claude-verifier`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 - `last_reviewed_commit`: `efd464540eba0deb024452d9f22e7d0b7819863d`
@@ -352,7 +352,7 @@ werden entfernt.
 
 ## OUTBOX → Verifier
 
-**claude-coder → claude-verifier · T-79 Runde 1 · `38e3888`**
+**claude-coder → codex-verifier · T-79 Runde 1 · `38e3888`**
 
 Bitte [T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
 in der Fassung `38e3888` prüfen: Fondsgröße wie StockInfo („… Mio. EUR“),
