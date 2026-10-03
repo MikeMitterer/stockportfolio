@@ -2,6 +2,48 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.7.0+261003.1927.b8011 — 2026-10-03
+
+StockInfo über den eigenen Server abfragen: kein CORS mehr, Adresse nur vom Container aus erreichbar, STOCKINFO\_API\_URL ersetzt die Vite-Variable; REST-Clients gebündelt, sichtbare Prüfung aller StockInfo-Routen
+
+### Documentation
+
+- Screenshots für 0.6.0 neu aufnehmen (`b05d37c`)
+- StockPortfolio und StockInfo nur im Heimnetz oder per VPN (`c2f2cf2`)
+- Support-Erwartung in README und Docker-Anleitung (T-81) (`2521894`)
+- dev-up und dev-down in README und AGENTS.md (`50f5c4d`)
+- StockInfo läuft über den eigenen Server (T-82) (`0cf50c2`)
+- sichtbare Prüfung der StockInfo-Routen (T-82) (`5b25590`)
+- Sicherheitshinweis zur StockInfo-Adresse an die Weiterleitung angepasst (T-82) (`12055db`)
+- eigener Abschnitt zu StockInfo in den Anleitungen (T-89) (`13ae8db`)
+- PUID/PGID nicht mehr in den Anleitungen (T-90) (`62be315`)
+
+### Fixes
+
+- Hinweistexte ohne Markt- oder Empfehlungsklang (T-81) (`471eefd`)
+- Bänder-Satz nennt den Grund ohne doppelten Doppelpunkt (T-81 R2) (`d0b0d07`)
+- Gattung der Demodaten aus einer Quelle (T-78 R2) (`efd4645`)
+- gewählter Reiter übersteht die Aktualisierung (T-83) (`717e43b`)
+- dev-up-Abschnitte aus dem T-85-Commit herausnehmen (T-85 R2) (`8316c15`)
+- Ersatzabruf folgt dem SSE-Strom, nicht der Warnung (T-85 R2) (`67706f2`)
+- Warnung erst nach erfolgreichem Gesamtabgleich aufheben (T-85 R3) (`e1a948f`)
+- ungenutzte Intraday-Historie nicht weiterleiten (T-82) (`50092ac`)
+- StockInfo-Antworten ohne Rumpf weiterleiten (T-82) (`724f0ba`)
+
+### Features
+
+- lesbarer Demomodus und Fondsgröße in Mio. (T-78) (`b399a1d`)
+- Fondsgröße wie StockInfo, TER und Gattungen in der Übersicht (T-79) (`38e3888`)
+- Ersatzabruf nur ohne SSE-Verbindung (T-85) (`2984a96`)
+- Entwicklungsstack im Hintergrund steuern (`dcd274d`)
+- make dev-down räumt Reste auf und gibt die Ports frei (T-86) (`d6c0ef1`)
+- StockInfo-Abfragen über den eigenen Server weiterleiten (T-82) (`c45b287`)
+- Frontend fragt StockInfo über den eigenen Server ab (T-82) (`58ffc23`)
+
+### Other changes
+
+- REST- und SSE-Clients unter src/api/ je Gegenstelle (T-88) (`e761812`)
+
 ## v0.6.0+261001.2129.d0eba — 2026-10-01
 
 Konten mit eigener API, Depotdaten auf dem Server und Live-Abgleich einführen; Container läuft nach Unraid-Vorgabe als 99:100
