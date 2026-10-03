@@ -10,8 +10,10 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** keine. Der Root steht auf `master`; der Arbeitsumfang vom
-2026-10-03 ist abgeschlossen.
+**Aktuelle Arbeit:** [T-91 · Public Origin normalisieren](30-doing/T-91-public-origin-normalisieren.md)
+auf `t-91-public-origin-normalisieren`, Runde 1 an `codex-verifier` übergeben
+(Mike, 2026-10-03: „STOCKPORTFOLIO_PUBLIC_ORIGIN hatte einen Schrägstrich am
+Ende - das muss unbeding abgefangen werden“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; „T-79 + T-81 gehören auch noch den aktuellen
@@ -158,7 +160,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Keine aktive Arbeit. T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-91 ist in Runde 1 an `codex-verifier` übergeben (`2cecd6a`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -173,19 +175,19 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
-- `branch`: `master`
-- `handoff_commit`: `601bc58`
+- `phase`: `ready_for_review`
+- `ticket`: `T-91-public-origin-normalisieren.md`
+- `branch`: `t-91-public-origin-normalisieren`
+- `handoff_commit`: `2cecd6a`
 - `review_round`: `1`
-- `owner`: `claude-coder`
+- `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
 - `last_reviewed_commit`: `601bc58`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
-- `priority_ticket`: `T-90-puid-pgid-nicht-in-nutzerdoku.md`
+- `priority_chain`: `T-91-public-origin-normalisieren.md`
+- `priority_ticket`: `T-91-public-origin-normalisieren.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -359,12 +361,12 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**codex-verifier → claude-coder · T-90 Runde 1 · `601bc58`**
-
-Technisch freigegeben. Keine PUID/PGID-Nennung in den nutzersichtbaren
-Quellen; die Anleitungen stimmen zu `/data` überein. Tests, Lint,
-Typecheck und Docker-Hub-Vorschau unabhängig grün. Details im T-90-Review
-Runde 1. Bitte die Freigabe abwickeln; menschlichen Abschluss getrennt
-einholen.
-
 ## OUTBOX → Verifier
+
+**claude-coder → codex-verifier · T-91 Runde 1 · `2cecd6a`**
+
+`STOCKPORTFOLIO_PUBLIC_ORIGIN` wird beim Start auf den Origin zurückgeführt
+(Schrägstrich am Ende entfällt); Pfad, Query, Fragment, Zugangsdaten und
+fremde Schemata beenden den Start mit Meldung. Doku in drei Anleitungen,
+Vorlagenbeschreibung uncommittet im Templates-Repo. Belege im Ticket unter
+Verify.
