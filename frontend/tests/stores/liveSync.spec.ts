@@ -113,10 +113,26 @@ describe('Live-Abgleich der Stores', () => {
       await flushPromises()
       expect(refresh).toHaveBeenCalledTimes(afterFailure)
 
-      // Das nächste Ereignis lädt erfolgreich und zeigt die Verbindung wieder an.
+      // Ein Ereignis, das nichts nachlädt, hebt die Warnung nicht auf (Runde 2, Befund 3).
+      stream.resource('fremdes-depot', 1, 'allowlist')
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 2))
+      await flushPromises()
+      expect(refresh).toHaveBeenCalledTimes(afterFailure)
+      expect(live.status).toBe('disconnected')
+
+      // Auch ein einzelnes nachgeladenes Depot ist kein vollständiger Abgleich.
       stream.resource(id, 8)
       await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(afterFailure + 1))
+      await flushPromises()
+      expect(live.status).toBe('disconnected')
+
+      // Erst ein erfolgreicher Gesamtabgleich, hier bei Rückkehr zum Tab, hebt sie auf.
+      document.dispatchEvent(new Event('visibilitychange'))
+      await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(afterFailure + 2))
       await vi.waitFor(() => expect(live.status).toBe('connected'))
+      await new Promise((resolve) => setTimeout(resolve, fallbackMs * 4))
+      await flushPromises()
+      expect(refresh).toHaveBeenCalledTimes(afterFailure + 2)
     } finally {
       live.stop()
     }

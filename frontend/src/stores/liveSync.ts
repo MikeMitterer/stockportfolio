@@ -112,8 +112,12 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     pending = pending.catch(() => undefined).then(async () => {
       if (queuedGeneration !== generation) return
       await action()
-      // Ein erfolgreicher Abruf bei offenem Strom hebt eine frühere Warnung auf.
-      if (queuedGeneration === generation && streamConnected && status.value !== 'connected') setStatus('connected')
+      // Nur ein erfolgreicher Gesamtabgleich holt alles Verpasste nach und hebt
+      // eine frühere Warnung auf. Ein einzelnes Ereignis, das womöglich gar
+      // nichts lädt, tut das nicht (T-85).
+      if (action === refreshAll && queuedGeneration === generation && streamConnected && status.value !== 'connected') {
+        setStatus('connected')
+      }
     }).catch((error: unknown) => {
       if (queuedGeneration !== generation) return
       // Nur die Warnung: Der Strom steht womöglich weiter, der Ersatzabruf

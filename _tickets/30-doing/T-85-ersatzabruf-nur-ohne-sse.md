@@ -15,7 +15,8 @@ und setz es um“, nach „Dazu haben wir ja SSE eingeführt“). Die Umsetzung
 beginnt nach dem Prüfurteil zu T-83, weil der Verifier den im Root
 ausgecheckten Stand prüft. Am 2026-10-03 nach T-83s Freigabe auf Branch
 `t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt, in Runde 1 mit zwei
-Befunden zurückgegeben und in Runde 2 erneut übergeben. Für Mike ist aktuell kein Handgriff nötig.
+Befunden zurückgegeben, in Runde 2 mit einem weiteren; Nacharbeit Runde 3
+übergeben. Für Mike ist aktuell kein Handgriff nötig.
 
 ## Ausgangslage (claude-coder, 2026-10-03)
 
@@ -71,6 +72,58 @@ einmaligem Neuladen) und die Rückkehr zum Tab. Die T-62-Zusage für „Verbindu
 offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Nacharbeit Runde 3 · claude-coder · 2026-10-03
+
+**Befund 3 · Warnung verschwindet ohne Datenabgleich:** behoben.
+
+- `liveSync.ts` · `queue()`: Die Warnung (`status = 'disconnected'` nach
+  einem Fehler) hebt nur noch ein erfolgreicher **Gesamtabgleich**
+  (`action === refreshAll`) bei offenem Strom auf. Ein einzelnes Ereignis,
+  ob es nichts lädt (Allowlist eines anderen Depots) oder nur ein Depot
+  nachlädt, hebt sie nicht auf. `refreshAll` läuft nach jedem (Wieder-)
+  Verbinden, bei Rückkehr zum Tab und, ohne Strom, im Ersatzabruf.
+- Der Ersatzabruf richtet sich unverändert allein nach dem Strom
+  (`streamConnected`); bei offenem Strom läuft er auch nach einem Fehler
+  nicht an.
+- Folge: Nach einem Fehler bei offenem Strom bleibt die Warnung stehen, bis
+  ein Gesamtabgleich gelingt, also spätestens bei Rückkehr zum Tab oder
+  nach einem Wiederverbinden.
+- Regressionstest erweitert („startet den Ersatzabruf nicht, wenn bei
+  stehendem Stream ein Datenabruf fehlschlägt (T-85)“): nach dem Fehler
+  (1) Allowlist-Ereignis für ein fremdes Depot → kein Abruf, Warnung bleibt;
+  (2) Depot-Ereignis lädt nach → Warnung bleibt; (3) `visibilitychange` →
+  Gesamtabgleich gelingt → `connected`; danach kein Ersatzabruf.
+
+**Pflichtprüfungen** (nach letzter Änderung):
+
+| Befehl | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 84 Dateien / 868 Tests, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check` (eigene Dateien) | ohne Befund |
+
+**Rote Gegenprobe** (Datei danach byte-gleich zurück, `cmp -s`):
+
+| # | Eingebauter Fehler | Beobachtet | Exit |
+|---|---|---|---|
+| R6 | `liveSync.ts` aus `67706f2` (Runde 2) | erweiterter Regressionstest rot an `liveSync.spec.ts:121` (`connected` statt `disconnected` nach dem Allowlist-Ereignis); übrige 9 grün | 1 |
+| R7 | Bedingung `action === refreshAll` entfernt | derselbe Test rot an Zeile 121 | 1 |
+
+**Sichtbare Prüfung:** `smoke:live-sync` gegen frischen Teststack, mit
+`timeout 240`: „Alle Prüfschritte bestanden.“, Exit 0, 83 s. Stack gestoppt,
+Ports frei.
+
+**Doku-Abgleich:** `README.md` und `docker/README.md` sagen weiter nur, dass
+die Statuszeile bei fehlender Verbindung warnt und wann die App abfragt;
+keine Aussage betrifft, wann die Warnung nach einem Abruffehler verschwindet.
+Unverändert.
+
+**Lessons:** SP-R-04 angewendet (dritter Fehlerpfad im selben Zustand,
+diesmal vorab mit dem No-op-Ereignis als roter Fall belegt). Einordnung
+übernimmt der Observer.
+
 
 ### Technische Prüfung Runde 2 · codex-verifier · 2026-10-03 · Rückgabe
 
