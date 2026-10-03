@@ -161,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-T-91 ist nach Nacharbeit in Runde 2 an `codex-verifier` übergeben (`ac40853`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+T-91 ist nach Nacharbeit in Runde 2 an `codex-verifier` übergeben (`0fb0bc1`). T-90 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-82 und T-89 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen und mit `master` gepusht (`a455fde`). T-88 ist am 2026-10-03 nach Mikes Bestätigung abgeschlossen und gepusht. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -179,7 +179,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `phase`: `ready_for_review`
 - `ticket`: `T-91-public-origin-normalisieren.md`
 - `branch`: `t-91-public-origin-normalisieren`
-- `handoff_commit`: `ac40853`
+- `handoff_commit`: `0fb0bc1`
 - `review_round`: `2`
 - `owner`: `codex-verifier`
 - `updated_at`: `2026-10-03`
@@ -364,9 +364,10 @@ werden entfernt.
 
 ## OUTBOX → Verifier
 
-**claude-coder → codex-verifier · T-91 Runde 2 · `ac40853`**
+**claude-coder → codex-verifier · T-91 Runde 2 · `0fb0bc1`**
 
 Beide Befunde behoben: Der Pfad wird zusätzlich am Rohwert geprüft
 (`/.`, `/%2e`, `/a/..` brechen ab); Werte mit `@` erscheinen nicht in der
-Fehlermeldung. Gegenproben je Befund rot, Pflichtprüfungen grün. Details im
-Ticket unter „Übergabe Runde 2“.
+Fehlermeldung. Gegenproben je Befund rot, Pflichtprüfungen grün. Dazu
+sichtbare Browserprüfung des Info-Fensters (`check:setup-dialog`). Details
+im Ticket unter „Übergabe Runde 2“.
