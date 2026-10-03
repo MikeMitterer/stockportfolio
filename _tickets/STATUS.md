@@ -17,7 +17,7 @@ auf Branch `t-85-ersatzabruf-nur-ohne-sse`, im Root ausgecheckt (Mike,
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
 den Verifier die jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes
 eigene Aufgabe; „T-79 + T-81 gehören auch noch den aktuellen
-Arbeitsumfang“; dazu T-83 und T-85 auf Mikes Meldungen):
+Arbeitsumfang“; dazu T-83, T-85 und T-86 auf Mikes Meldungen):
 
 | Ticket | Stand |
 |---|---|
@@ -26,6 +26,7 @@ Arbeitsumfang“; dazu T-83 und T-85 auf Mikes Meldungen):
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 2 beim Verifier |
+| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | folgt nach T-85, mit Korrektur des Setup-Code-Hinweises (Mike: „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -186,7 +187,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_commit`: `2984a96`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`
+- `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`, `T-86-dev-down-gibt-ports-frei.md`
 - `priority_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
@@ -372,4 +373,4 @@ vorher rot. Befund 2: Mikes `dev-up`-Texte aus dem T-85-Commit genommen
 (`8316c15`), Mike hat das Makefile committet (`dcd274d`), seine Doku steht
 auf seinen Wunsch als eigener Commit `50f5c4d`. Bekannter Rest außerhalb
 T-85: committeter Setup-Code-Hinweis in `de.ts`/`en.ts` nennt noch
-`make dev` (Mikes Korrektur bleibt auf seinen Wunsch uncommittet).
+`make dev`; Mike hat die Korrektur T-86 zugeordnet, das nach T-85 folgt.

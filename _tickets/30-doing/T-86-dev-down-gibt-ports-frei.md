@@ -15,7 +15,9 @@ StockPortfolio auch gleich ein“, danach „Erstelle dort ein passendes Ticket
 im doing“). Liegt in `30-doing/`; Rollen und Aktivierung legt `STATUS.md`
 fest. Noch nicht aktiviert. Bei der Anlage lief T-85 in Nacharbeit auf
 `t-85-ersatzabruf-nur-ohne-sse`; die Umsetzung gehört auf einen eigenen
-Branch von `master` nach dem Merge von T-85.
+Branch von `master` nach dem Merge von T-85. Mike, 2026-10-03: „übernimm
+T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“ — Umfang um den
+Setup-Code-Hinweis erweitert (siehe unten).
 
 ## Vorlage aus StockInfo
 
@@ -35,7 +37,7 @@ StockInfo hat dasselbe am 2026-10-03 umgesetzt (`5d9f48c`):
 
 | Repo | Time-box | Scope | GH-Issue |
 |---|---|---|---|
-| StockPortfolio | 30 min | `.dev-ports.conf.sh`, `Makefile` (`dev-down`), `README.md` | — |
+| StockPortfolio | 30 min | `.dev-ports.conf.sh`, `Makefile` (`dev-down`), `README.md`, `auth.setupCodeHelp` in `de.ts`/`en.ts` | — |
 
 1. `.dev-ports.conf.sh` mit `PORTS=(5175 8080)` (Vite aus
    `frontend/vite.config.ts`, Konto-API). `dev-ports.sh --example` erkennt
@@ -45,6 +47,11 @@ StockInfo hat dasselbe am 2026-10-03 umgesetzt (`5d9f48c`):
    `"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill`, auch wenn kein
    Overmind-Stack aktiv ist — gerade dann bleiben Reste übrig.
 3. `README.md`: Beschreibung von `make dev-down` ergänzen.
+4. **Setup-Code-Hinweis** (`auth.setupCodeHelp` in
+   `frontend/src/i18n/de.ts` und `en.ts`): Der committete Text nennt noch
+   „make dev“, das Target gibt es seit `dcd274d` nicht mehr. Mikes
+   uncommittete Fassung nennt `make dev-up` und `overmind echo api`; sie
+   übernehmen, gegen das Makefile und die README prüfen und committen.
 
 ### Verify
 
@@ -62,6 +69,8 @@ Legende: ➖ noch keine Live-Verifikation.
 - [ ] `.dev-ports.conf.sh` nennt die tatsächlichen Dev-Ports.
 - [ ] `make dev-down` gibt beide Ports frei, auch nach einem Absturz von overmind.
 - [ ] Prozesse außerhalb von StockPortfolio bleiben unberührt.
+- [ ] Der Setup-Code-Hinweis nennt in DE und EN den gültigen Startweg
+      (`make dev-up`) und wie man den Code findet.
 - [ ] Doku-Abgleich: `README.md`; `docker/README.md` und `unraid/README.md` sind nicht betroffen (Dev-Stack, kein Container).
 
 ### Side-Effects
