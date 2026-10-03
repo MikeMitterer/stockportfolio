@@ -5,6 +5,7 @@ import { streamSSE } from 'hono/streaming'
 import { AccountService, ServiceError, type PublicUser } from '../auth/service.js'
 import { ResourceEvents } from '../data/events.js'
 import type { AccountRepository, LegacyPortfolio, ResourceKind, RestoreData } from '../persistence/repository.js'
+import { forwardToStockInfo, isAllowedStockInfoPath, STOCKINFO_TIMEOUT_MS, type ProxyFetch } from '../stockinfo/proxy.js'
 
 type ServerContext = Context<{ Bindings: HttpBindings }>
 
@@ -13,7 +14,14 @@ export interface ApiOptions {
   secureCookies: boolean
   remoteAddress: (context: ServerContext) => string
   heartbeatMs?: number
+  /** StockInfo-Adresse aus `STOCKINFO_API_URL`, ohne Schrägstrich am Ende. */
+  stockInfoUrl?: string | null
+  /** fetch für die Weiterleitung; Tests ersetzen ihn. */
+  stockInfoFetch?: ProxyFetch
+  stockInfoTimeoutMs?: number
 }
+
+const stockInfoPrefix = '/api/stockinfo'
 
 const cookieName = 'stockportfolio_session'
 const cookieLifetimeSeconds = 7 * 24 * 60 * 60
@@ -350,6 +358,31 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
       events.publish(user.id, { kind, resourceId, revision: revision + 1 })
     }
     return context.json({ ok: true })
+  })
+
+  // Konfigurierte StockInfo-Adresse für Statusseite und Statuszeile. Der
+  // Browser erreicht sie womöglich nicht selbst; angezeigt wird sie trotzdem.
+  app.get('/api/stockinfo-target', (context) => {
+    currentUser(context, service)
+    return context.json({ url: options.stockInfoUrl ?? null })
+  })
+
+  // Weiterleitung der StockInfo-Abfragen (T-82): nur angemeldet, nur die
+  // genutzten Pfade, ohne Cookies und Sitzungsdaten.
+  app.on(['GET', 'POST'], `${stockInfoPrefix}/*`, (context) => {
+    currentUser(context, service)
+    const method = context.req.method === 'POST' ? 'POST' : 'GET'
+    const url = new URL(context.req.url)
+    const path = url.pathname.slice(stockInfoPrefix.length)
+    if (!isAllowedStockInfoPath(method, path)) throw new ServiceError(404, 'not_found')
+    if (!options.stockInfoUrl) throw new ServiceError(503, 'stockinfo_not_configured')
+    return forwardToStockInfo(
+      options.stockInfoUrl,
+      method,
+      `${path}${url.search}`,
+      options.stockInfoFetch ?? ((input, init) => fetch(input, init)),
+      options.stockInfoTimeoutMs ?? STOCKINFO_TIMEOUT_MS,
+    )
   })
 
   app.all('/api/*', (context) => context.json({ error: 'not_found' }, 404))
