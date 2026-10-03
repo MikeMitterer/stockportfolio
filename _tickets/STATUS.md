@@ -14,7 +14,7 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 mit Korrektur des Setup-Code-Hinweises, auf Branch
 `t-86-dev-down-gibt-ports-frei`, im Root ausgecheckt (Mike, 2026-10-03:
 „übernimm T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“). Danach folgt
-[T-82 · StockInfo über den eigenen Server abfragen](10-backlog/T-82-stockinfo-ueber-eigenen-server.md)
+[T-82 · StockInfo über den eigenen Server abfragen](20-ready/T-82-stockinfo-ueber-eigenen-server.md)
 (Mike, 2026-10-03: „Nach T-86 ist T-82 dran“).
 
 **Arbeitsumfang 2026-10-03** (Mike: „Setze die Tickets in doing um und lass
@@ -29,8 +29,8 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
-| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | Runde 1 beim Verifier; Mikes Abnahme vorab erteilt: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“ |
-| [T-82](10-backlog/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86 (Mike: „Nach T-86 ist T-82 dran“) |
+| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | Runde 1 technisch mit Befund an den Coder zurückgegeben; Mikes bedingte Vorab-Abnahme: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“ |
+| [T-82](20-ready/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86 (Mike: „Nach T-86 ist T-82 dran“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -162,7 +162,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-86, Runde 1 an den Verifier übergeben; danach T-82. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-86, Runde 1 mit Befund an den Coder zurückgegeben; danach T-82. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83 und T-85 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -177,16 +177,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-86-dev-down-gibt-ports-frei.md`
 - `branch`: `t-86-dev-down-gibt-ports-frei`
 - `handoff_commit`: `d6c0ef1`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
-- `last_reviewed_commit`: `ebf7af7`
-- `last_reviewed_round`: `4`
+- `last_reviewed_ticket`: `T-86-dev-down-gibt-ports-frei.md`
+- `last_reviewed_commit`: `d6c0ef1`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-86-dev-down-gibt-ports-frei.md`, `T-82-stockinfo-ueber-eigenen-server.md`
 - `priority_ticket`: `T-86-dev-down-gibt-ports-frei.md`
@@ -363,16 +363,16 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-86 Runde 1 · `d6c0ef1`**
+
+Technische Prüfung mit einem blockierenden Befund zurückgegeben. Bei einem
+laufenden, per `overmind status` erreichbaren Dev-Stack meldet der verwendete
+ProjectTools-Helfer `dev-ports.sh --status` die `.overmind.sock` fälschlich als
+verwaist. `isStaleOvermindSocket` verlässt sich auf `lsof -t <Socketpfad>`;
+das lieferte trotz laufendem Overmind keinen PID-Treffer. Dieselbe Prüfung
+steuert das Entfernen in `--kill`. Bitte die Socket-Erkennung in ProjectTools
+korrigieren, mit Regression für lebenden und tatsächlich verwaisten Socket
+belegen und T-86 am neuen Helferstand erneut live prüfen. Details und grüne
+Gegenproben stehen im T-86-Review, Runde 1.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-86 Runde 1 · `d6c0ef1`**
-
-Bitte [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) in der Fassung
-`d6c0ef1` prüfen: `.dev-ports.conf.sh` (5175/8080), `make dev-down` mit
-`dev-ports.sh --kill`, README/AGENTS. Setup-Code-Hinweis in DE/EN und README
-nennt `overmind connect api`; Mikes Fassung mit `overmind echo api` war
-falsch (Echo nimmt keine Argumente, zeigt den Startcode nicht; am echten
-Stack belegt). Live-Prüfung mit echtem overmind und temporärem
-Datenverzeichnis, Gegenprobe mit altem `dev-down` (Exit 2, Ports belegt).
-Einschränkung: Parallelbetrieb mit fremdem overmind-Stack statt StockInfo
-geprüft.
