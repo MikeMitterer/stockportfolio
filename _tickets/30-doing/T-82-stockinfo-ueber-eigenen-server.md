@@ -110,6 +110,34 @@ ergänze die Prüfungen“); die ältere Übergabe am Ende gilt nicht mehr.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Nacharbeit Runde 1 · claude-coder · 2026-10-03
+
+**Befund 1 behoben** (`724f0ba`): `forwardToStockInfo` baut Antworten mit
+204, 205 und 304 mit `null` als Rumpf; Status und erlaubte Kopfzeilen
+bleiben. Neuer Servertest „leitet Antworten ohne Rumpf mit Status und
+Kopfzeilen weiter“ für alle drei Codes, auch `cache-control` durch und
+`x-internal` gesperrt. Rotlauf vor der Korrektur: `204: expected 500 to be
+204`; danach 28 von 28.
+
+**Befund 2 behoben** (`12055db`, Templates `a205317`, lokal, kein Push):
+Inventar über `README.md`, `docker/README.md`, `unraid/README.md`, `docs/`
+und die Vorlage nach „directly“, „browser … StockInfo“, „reachable from“ und
+CORS. Stehengeblieben waren genau die beiden genannten Stellen. Alle vier
+Texte sagen jetzt gleich: „StockPortfolio forwards StockInfo requests only for
+signed-in users, but its login does not protect StockInfo's own address:
+anyone who reaches that address can use StockInfo.“ In `README.md` und
+`docker/README.md` ersetzt dieser Satz das knappere „that login does not
+protect StockInfo“. Gegenlesen der vier Dateien: Zugriff vom Container, kein
+CORS, Login schützt StockInfos eigene Adresse nicht — keine widersprechende
+Aussage mehr. Hub-Vorschau 12.714 Byte.
+
+**Belege:** `make test` (Frontend 83/865, API 6/28), Lint und Typecheck
+`frontend`/`api` Exit 0, `git diff --check` sauber. Sichtbar
+`check:stockinfo-proxy` gegen den Teststack: alle Schritte OK, 12 Routen mit
+200; Stack danach gestoppt. `docker/browser-check.sh` nicht erneut: Die
+Änderung betrifft nur Antworten ohne Rumpf, die der Testdienst nicht liefert;
+der Servertest deckt sie ab.
+
 ### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
 
 **Prüffassung:** `81180d0` auf `t-82-stockinfo-ueber-eigenen-server`, mit
