@@ -15,7 +15,8 @@ und setz es um“, nach „Dazu haben wir ja SSE eingeführt“). Die Umsetzung
 beginnt nach dem Prüfurteil zu T-83, weil der Verifier den im Root
 ausgecheckten Stand prüft. Am 2026-10-03 nach T-83s Freigabe auf Branch
 `t-85-ersatzabruf-nur-ohne-sse` aktiviert, umgesetzt und nach Nacharbeit in
-Runde 4 technisch freigegeben. Mikes Abnahme steht aus.
+Runde 4 technisch freigegeben (`ebf7af7`), nach `master` gemergt
+(`703fa80`). **Abgeschlossen am 2026-10-03:** Mike: „T-85 ist von mir freigegeben“.
 
 ## Ausgangslage (claude-coder, 2026-10-03)
 
