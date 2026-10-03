@@ -29,7 +29,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
-| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | Runde 1 beim Verifier |
+| [T-86](30-doing/T-86-dev-down-gibt-ports-frei.md) | Runde 1 beim Verifier; Mikes Abnahme vorab erteilt: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“ |
 | [T-82](10-backlog/T-82-stockinfo-ueber-eigenen-server.md) | folgt nach T-86 (Mike: „Nach T-86 ist T-82 dran“) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
