@@ -10,7 +10,17 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-81 · Hinweistexte ohne Anklang an Anlagerat](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
+**Aktuelle Arbeit:** [T-78 · Lesbare Testdaten und Fondsgröße in den Fixtures](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
+auf Branch `t-78-lesbare-testdaten-und-fondsgroessen-fixture`, danach
+[T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+(Mike, 2026-10-03: „Setze die Tickets in doing um und lass den Verifier die
+jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes eigene Aufgabe).
+**Arbeitsumfang** (Mike, 2026-10-03: „T-79 + T-81 gehören auch noch den
+aktuellen Arbeitsumfang“): T-78, T-79 und T-81. **Abnahme gesammelt am
+Ende** (Mike, 2026-10-03: „Mach erste alle Tickets fertig in doing dann
+bestätige ich die Abnahme“): technisch freigegebene Tickets werden nach
+`master` gemergt, Abschluss und Push erst nach Mikes Abnahme. T-81 ist in Runde 2 technisch freigegeben und lokal nach `master` gemergt
+(`f3e5b33`, nicht gepusht); Mikes Abschluss steht aus. Bisher: [T-81 · Hinweistexte ohne Anklang an Anlagerat](30-doing/T-81-hinweistexte-ohne-anlagerat.md)
 auf Branch `t-81-hinweistexte-ohne-anlagerat`, im Root ausgecheckt (Mike,
 2026-10-03: „aktiviere T-81 in StockPortfolio“).
 [T-77 · Zugriffsweg für StockInfo abgleichen](40-done/T-77-stockinfo-zugriffsweg-abgleichen.md)
@@ -136,7 +146,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-81, Nacharbeit Runde 2 an den Verifier übergeben. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-78, Nacharbeit Runde 2 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -152,18 +162,18 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
 - `phase`: `approved`
-- `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
-- `branch`: `t-81-hinweistexte-ohne-anlagerat`
-- `handoff_commit`: `d0b0d07`
+- `ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
+- `branch`: `t-78-lesbare-testdaten-und-fondsgroessen-fixture`
+- `handoff_commit`: `efd4645`
 - `review_round`: `2`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
-- `last_reviewed_commit`: `d0b0d07b0a31ab9042c8846380af5b4329c03879`
+- `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
+- `last_reviewed_commit`: `efd464540eba0deb024452d9f22e7d0b7819863d`
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
-- `priority_chain`: `T-81-hinweistexte-ohne-anlagerat.md`
-- `priority_ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
+- `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-81-hinweistexte-ohne-anlagerat.md`
+- `priority_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -337,10 +347,10 @@ werden entfernt.
 
 ## INBOX → Coder
 
-**claude-verifier → claude-coder · T-81 Runde 2 · `d0b0d07` · `approved`**
+**claude-verifier → claude-coder · T-78 Runde 2 · `efd4645` · `approved`**
 
 Technische Freigabe; beide Befunde aus Runde 1 erledigt, alle Prüfungen
-unabhängig grün ([Ticket](30-doing/T-81-hinweistexte-ohne-anlagerat.md),
+unabhängig grün ([Ticket](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md),
 „Verifier-Prüfung Runde 2“). Vor dem Abschluss fehlt im Ticket noch die
 Lessons-Einordnung der Befunde aus Runde 1. Mikes Abschluss steht aus.
 

@@ -42,8 +42,8 @@ msgstr "Erlaubte Browser-Herkunft für CORS."
 msgid "Directory with detail fixtures."
 msgstr "Verzeichnis mit Detail-Fixtures."
 
-msgid "Use readable sources and notes for browser checks."
-msgstr "Lesbare Quellen und Notizen für Browserprüfungen verwenden."
+msgid "Use readable instruments and detail values for browser checks."
+msgstr "Lesbare Instrumente und Detailwerte für Browserprüfungen verwenden."
 
 msgid "Show this help and exit."
 msgstr "Diese Hilfe anzeigen."

@@ -21,7 +21,7 @@
 #   -p | --port             StockInfo-Testport angeben
 #   -o | --origin           Erlaubte Browser-Herkunft angeben
 #   -f | --detail-fixtures  Detail-Fixtures angeben
-#   -D | --demo-details     Lesbare Quelldaten verwenden
+#   -D | --demo-details     Lesbare Instrumente und Detailwerte verwenden
 #   -h | --help             Diese Hilfe anzeigen; auch ohne Argumente
 #------------------------------------------------------------------------------
 """Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
@@ -105,7 +105,7 @@ def parse_args(argv: list[str]) -> tuple[argparse.Namespace, argparse.ArgumentPa
     options.add_argument("-p", "--port", type=int, default=8899, help=translate("StockInfo test port (default: 8899)."))
     options.add_argument("-o", "--origin", help=translate("Allowed browser origin for CORS."))
     options.add_argument("-f", "--detail-fixtures", type=Path, help=translate("Directory with detail fixtures."))
-    options.add_argument("-D", "--demo-details", action="store_true", help=translate("Use readable sources and notes for browser checks."))
+    options.add_argument("-D", "--demo-details", action="store_true", help=translate("Use readable instruments and detail values for browser checks."))
     options.add_argument("-h", "--help", action="help", help=translate("Show this help and exit."))
     args = parser.parse_args(argv or ["--help"])
     if not 1 <= args.port <= 65535:
@@ -237,7 +237,68 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         # prüft die Übereinstimmung bei späteren Änderungen der Positionen.
         *[{**BASE, **item} for item in json.loads((Path(__file__).resolve().parent / "fixtures" / "demo-quotes.json").read_text())],
     ]
+    # --demo-details zeigt nur verständliche Instrumente: echte Namen, keine
+    # Dubletten, je Instrument eigene Werte. demo-details.json ist dafür die
+    # einzige Quelle für Gattung und Detailwerte; der Vitest-Wächter
+    # demoDetails.spec.ts liest dieselbe Datei. Die Randfälle oben (Kryptopaar,
+    # OTC-Anleihe ohne Listing, mehrdeutiges Symbol, Pence-Listing, Listing
+    # ohne ISIN) bleiben dem normalen Start vorbehalten.
+    DEMO = json.loads((Path(__file__).resolve().parent / "fixtures" / "demo-details.json").read_text())
+    if args.demo_details:
+        missing = sorted(set(DEMO["instruments"]) - {seed["symbol"] for seed in SEEDS})
+        if missing:
+            raise SystemExit(f"demo-details.json nennt Instrumente ohne Testkurs: {', '.join(missing)}")
+        SEEDS = [
+            {**seed, "name": DEMO["names"].get(seed["symbol"], seed["name"]),
+             "type": DEMO["instruments"][seed["symbol"]]["type"],
+             "ter": DEMO["instruments"][seed["symbol"]].get("ter"),
+             "accumulating": DEMO["instruments"][seed["symbol"]].get("accumulating")}
+            for seed in SEEDS if seed["symbol"] in DEMO["instruments"]
+        ]
     state = {"mode": "normal", "symbol": "NOSI.DE"}
+
+
+    def prepare_demo_details(repository: QuoteRepository) -> tuple[list[DetailDefinition], dict[str, dict[str, Any]]]:
+        """Lesbare Detailwerte je Instrument, deklariert wie in StockInfo selbst.
+
+        TER, Fondsgröße (in Millionen, mit Währung), Anbieter und Ausschüttung
+        gelten für ETFs; die Volatilität berechnet StockInfo für alle Gattungen
+        mit Kursen (StockInfo T-89).
+        """
+        fund_source, metric_source = "justETF (Demo)", "StockInfo (Demo)"
+        fund_scope = {"source": fund_source, "instrument_types": ["etf"], "identity_kinds": ["listed"]}
+        metric_scope = {"source": metric_source, "instrument_types": ["etf", "etc", "stock", "fund", "bond", "crypto"],
+                        "identity_kinds": ["listed", "isin_only", "pair"]}
+        definitions = [
+            DetailDefinition(name="ter", kind="number", unit="percent", label_en="TER", label_de="TER",
+                             sources=[fund_source], scopes=[fund_scope], minimum=0, maximum=5),
+            DetailDefinition(name="volatility", kind="number", unit="percent", label_en="Volatility", label_de="Volatilität",
+                             sources=[metric_source], scopes=[metric_scope], minimum=0, maximum=500),
+            DetailDefinition(name="fund_size", kind="number", unit="millions", label_en="Fund size", label_de="Fondsgröße",
+                             sources=[fund_source], scopes=[fund_scope], minimum=0, maximum=2_000_000, currency_required=True),
+            DetailDefinition(name="provider", kind="text", label_en="Provider", label_de="Anbieter",
+                             sources=[fund_source], scopes=[fund_scope]),
+            DetailDefinition(name="accumulating", kind="boolean", label_en="Accumulating", label_de="Thesaurierend",
+                             sources=[fund_source], scopes=[fund_scope]),
+        ]
+        repository.detail_catalog(definitions)
+        values: dict[str, dict[str, Any]] = {}
+        for symbol, entries in DEMO["instruments"].items():
+            values[symbol] = {}
+            for name, value in entries.items():
+                if name == "type":
+                    continue
+                if name == "manual_fund_size":
+                    values[symbol]["fund_size"] = {"manual_value": value["value"], "manual_currency": value["currency"]}
+                    continue
+                entry: dict[str, Any] = {"value": value, "origin": "provider",
+                                         "source": metric_source if name == "volatility" else fund_source}
+                if name == "fund_size":
+                    entry.update(unit="millions", currency="EUR")
+                elif name in {"ter", "volatility"}:
+                    entry["unit"] = "percent"
+                values[symbol][name] = entry
+        return definitions, values
 
 
     def prepare_details(repository: QuoteRepository) -> tuple[list[DetailDefinition], dict[str, Any]]:
@@ -246,19 +307,8 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
             return [], {}
         catalog = json.loads((detail_fixtures / "detail-catalog.json").read_text())
         values = json.loads((detail_fixtures / "detail-values.json").read_text())
-        if args.demo_details:
-            source_labels = {"risk-a": "Demo Source A", "risk-b": "Demo Source B"}
-            for definition in catalog["details"]:
-                definition["sources"] = [source_labels.get(source, source) for source in definition["sources"]]
-                for item in definition["scopes"]:
-                    item["source"] = source_labels.get(item["source"], item["source"])
-            for detail in values.values():
-                if detail.get("source") in source_labels:
-                    detail["source"] = source_labels[detail["source"]]
-            values["risk-a.note"]["value"] = "Beispielnotiz für die Detailansicht."
-            values["risk-a.note"]["manual_value"] = values["risk-a.note"]["value"]
         definitions = [DetailDefinition.model_validate(entry) for entry in catalog["details"]]
-        core_source = "StockInfo Demo" if args.demo_details else "t40-core"
+        core_source = "t40-core"
         scope = {"source": core_source, "instrument_types": ["etf"], "identity_kinds": ["listed"]}
         for name, label_en, label_de, value in [("ter", "TER", "TER", 0.2), ("volatility", "Volatility", "Volatilität", 11.4)]:
             definitions.append(DetailDefinition(name=name, kind="number", unit="percent", label_en=label_en, label_de=label_de,
@@ -324,9 +374,14 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
         database = str(data_dir / "stockinfo.db")
         init_db(database)
         repository = QuoteRepository(database)
-        definitions, details = prepare_details(repository)
+        if args.demo_details:
+            definitions, demo_values = prepare_demo_details(repository)
+        else:
+            definitions, details = prepare_details(repository)
         now = datetime.now(timezone.utc).isoformat()
         for seed in SEEDS:
+            if args.demo_details:
+                details = demo_values[seed["symbol"]]
             applicable = {definition.name for definition in definitions if definition.applies(seed["type"], seed["identity"]["kind"])}
             readings: dict[str, dict[str, Any]] = {}
             for name, entry in details.items():

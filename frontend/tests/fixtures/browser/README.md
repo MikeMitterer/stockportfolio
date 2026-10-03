@@ -12,7 +12,7 @@ Backup und werden beim Öffnen frisch geladen.
    ```bash
    ../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run \
      --stockinfo-root ../StockInfo \
-     --detail-fixtures tests/fixtures/stockinfo --demo-details
+     --detail-fixtures frontend/tests/fixtures/stockinfo --demo-details
    ```
 
 2. Die App mit diesem Dienst starten:
@@ -35,6 +35,11 @@ Positionskurs.
 
 EUNL.DE enthält eine mehrzeilige Positionsnotiz zum Prüfen der Anzeige direkt
 unter der Detail-Button-Leiste; die anderen Positionen bleiben ohne Notiz.
+
+Mit `--demo-details` tragen alle Instrumente lesbare Namen und eigene
+Detailwerte (`scripts/fixtures/demo-details.json`); die Anleihe heißt dort
+„Bundesanleihe 2037“. `--detail-fixtures` liefert dann nur noch die
+Typkatalog-Szenarien unten.
 
 Den eigenen Testdienst mit demselben Skript und `--stop --port 8899` beenden.
 

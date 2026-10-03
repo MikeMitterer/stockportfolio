@@ -1,0 +1,19 @@
+{
+  "names": {
+    "AAPL": "Apple Inc.",
+    "EUNL.DE": "iShares Core MSCI World",
+    "VTI": "Vanguard Total Stock Market",
+    "DE0001135275": "Bundesanleihe 2037"
+  },
+  "instruments": {
+    "EUNL.DE": { "type": "etf", "ter": 0.2, "volatility": 13.5, "fund_size": 89123.0, "provider": "iShares", "accumulating": true },
+    "VTI": { "type": "etf", "ter": 0.03, "volatility": 16.8, "manual_fund_size": { "value": 1850000.0, "currency": "USD" }, "provider": "Vanguard", "accumulating": false },
+    "VGWL.DE": { "type": "etf", "ter": 0.22, "volatility": 12.9, "fund_size": 15214.0, "provider": "Vanguard", "accumulating": false },
+    "EQQQ.DE": { "type": "etf", "ter": 0.3, "volatility": 21.4, "fund_size": 9876.0, "provider": "Invesco", "accumulating": false },
+    "IUSN.DE": { "type": "etf", "ter": 0.35, "volatility": 16.2, "fund_size": 5640.0, "provider": "iShares", "accumulating": true },
+    "IS3M.DE": { "type": "etf", "ter": 0.07, "volatility": 6.1, "fund_size": 1312.0, "provider": "iShares", "accumulating": true },
+    "AAPL": { "type": "stock", "volatility": 24.7 },
+    "4GLD.DE": { "type": "etc", "volatility": 14.3 },
+    "DE0001135275": { "type": "bond", "volatility": 5.2 }
+  }
+}
