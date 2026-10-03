@@ -72,6 +72,47 @@ offen, Ereignis fehlt“ entfällt.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03 · Rückgabe
+
+Geprüft wurde die übergebene Produktfassung `2984a96`. Die uncommitteten
+Änderungen an `Makefile` und `frontend/src/i18n/` aus Mikes gesondertem
+`dev-up`-Auftrag gehören nicht zu diesem Prüfurteil. Die neun bestehenden
+`liveSync.spec.ts`-Tests liefen mit Exit 0.
+
+**Befund 1 · blockierend: Ersatzabruf bei offenem SSE-Stream.** Wenn ein
+Datenabruf während einer stehenden SSE-Verbindung einmal fehlschlägt, setzt
+`queue()` über `setStatus('disconnected')` den Ersatzabruf wieder in Gang.
+`LiveEventsClient` hat dabei weder ein `error`-Ereignis erhalten noch den
+Stream geschlossen. Ein weiterer erfolgreicher Datenabruf setzt den Zustand
+nicht auf `connected` zurück. Damit läuft der 30-s-Ersatzabruf dauerhaft
+weiter, obwohl die SSE-Verbindung steht. Der Fehlerpfad ist erreichbar:
+`portfolio.refreshFromServer()` gibt einen Fehler aus der Konto-API weiter.
+
+**Gegenprobe:** Ein nur für die Prüfung angelegter Vitest ließ den Stream
+offen, ließ `refreshFromServer()` einmal fehlschlagen und prüfte danach 110 ms
+lang mit 20-ms-Ersatzintervall auf weitere Abrufe. Erwartet waren null;
+beobachtet wurden fünf. Exit 1; die temporäre Testdatei wurde anschließend
+entfernt. Erwartete Nacharbeit: SSE-Verbindungszustand und Fehler eines
+einzelnen Datenabrufs trennen, den Ersatzabruf am tatsächlichen
+Verbindungszustand ausrichten und diesen Fall als dauerhafte Regression
+prüfen. Der neue Test soll vor der Korrektur rot und danach grün sein.
+
+**Befund 2 · blockierend: Übergabecommit ist beim Entwicklungsstart
+widersprüchlich.** `2984a96:README.md` und `2984a96:AGENTS.md` nennen
+`make dev-up` und `make dev-down`; `2984a96:Makefile` enthält nur `dev`.
+Die beiden neuen Targets liegen bislang ausschließlich uncommittet im
+Arbeitsbaum und stammen aus Mikes gesondertem Auftrag. Für die nächste
+Übergabe müssen dokumentierter Startweg und Makefile in derselben prüfbaren
+Fassung übereinstimmen; die gesonderte Änderung ist als solche kenntlich zu
+halten. Die Live-Abgleich-Aussagen in beiden READMEs stimmen für sich
+inhaltlich überein.
+
+**Lessons-Einordnung:** SP-R-04 auf Befund 1 angewendet: Der plausibel
+erreichbare Fehlerpfad blockiert die Freigabe und braucht eine ausdrückliche
+Gegenprobe. Befund 2 ist ein Einzelfall durch die zeitgleiche Änderung ohne
+Ticket; aus dieser Runde allein folgt keine neue Lesson. Der Observer kann
+die Einordnung auf wiederkehrende Muster prüfen.
+
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
 **Umfang** (Produktcommit siehe STATUS `handoff_commit`):

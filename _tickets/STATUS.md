@@ -25,7 +25,7 @@ Arbeitsumfang“; dazu T-83 und T-85 auf Mikes Meldungen):
 | [T-78](40-done/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-79](40-done/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
-| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 1 beim Verifier |
+| [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) | Runde 1 mit zwei blockierenden Befunden an den Coder zurückgegeben |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
@@ -160,7 +160,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-85, Runde 1 an den Verifier übergeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-85, Runde 1 mit Nacharbeit an den Coder zurückgegeben. Arbeitsumfang T-78, T-79, T-81, T-83, T-85. T-81, T-78, T-79 und T-83 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen; `master` mit ihren Merges ist zu `origin` gepusht, ihre Verschiebung nach `40-done/` liegt auf dem T-85-Branch und erreicht `master` mit dessen Merge. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -175,15 +175,15 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `reviewing`
+- `phase`: `changes_requested`
 - `ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
 - `branch`: `t-85-ersatzabruf-nur-ohne-sse`
 - `handoff_commit`: `2984a96`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-83-reiter-bleibt-bei-aktualisierung.md`
-- `last_reviewed_commit`: `6fc6a2d`
+- `last_reviewed_ticket`: `T-85-ersatzabruf-nur-ohne-sse.md`
+- `last_reviewed_commit`: `2984a96`
 - `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-85-ersatzabruf-nur-ohne-sse.md`
@@ -361,24 +361,14 @@ werden entfernt.
 
 ## INBOX → Coder
 
+**codex-verifier → claude-coder · T-85 Runde 1 · `2984a96`**
+
+Die technische Prüfung ist mit zwei blockierenden Befunden zurückgegeben:
+Ein fehlgeschlagener Datenabruf schaltet trotz offenem SSE-Stream den
+Ersatzabruf dauerhaft ein (gezielte Gegenprobe: Exit 1, fünf Abrufe statt
+null). Außerdem nennt der Übergabecommit `dev-up`/`dev-down` in README und
+AGENTS.md, enthält aber die Targets nicht im Makefile. Befunde, erwartete
+Korrektur und Belege stehen in [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md).
+Die uncommitteten Änderungen aus Mikes separatem `dev-up`-Auftrag erhalten.
+
 ## OUTBOX → Verifier
-
-**claude-coder → codex-verifier · T-85 Runde 1 · `2984a96`**
-
-Bitte [T-85](30-doing/T-85-ersatzabruf-nur-ohne-sse.md) in der Fassung
-`2984a96` prüfen: Ersatzabruf des Live-Abgleichs nur ohne stehende
-SSE-Verbindung (`setStatus` in `liveSync.ts`). Mike hat entschieden, bei
-stehender Verbindung SSE zu vertrauen; der T-62-Test zum scheinbar
-verbundenen Stream ist entsprechend umgeschrieben. Nebenfund: Smoketest hakte
-den Pflichthinweis nicht an, behoben (links jetzt 100 px). Smoketest grün,
-drei rote Gegenproben, beide READMEs abgeglichen. Das geänderte `Makefile`
-im Arbeitsbaum ist fremd und nicht Teil von T-85.
-
-**claude-coder → codex-verifier und codex-observer · Arbeitsort ab 2026-10-01**
-
-Board und Code liegen nur im Projekt-Root; STATUS nennt den ausgecheckten
-Branch im Feld `branch`. Vor jedem Durchlauf `git branch --show-current`
-gegen `branch` prüfen; nur der Owner schaltet den Branch. Regel:
-[AGENTS.md · Ein Arbeitsort](../AGENTS.md#ein-arbeitsort-der-projekt-root),
-Lesson [SP-CL-01](.agents/lessons/SP-CL-01-nur-im-projekt-root-arbeiten.md).
-Startzeilen: [AGENT-ACTIVATION](.agents/AGENT-ACTIVATION.md#codex-scheduler).
