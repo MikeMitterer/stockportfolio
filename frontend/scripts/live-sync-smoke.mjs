@@ -280,7 +280,11 @@ try {
   const backupPath = join(tmpdir(), `live-sync-smoke-backup-${run}.json`)
   await (await download).saveAs(backupPath)
   await openDashboard(pages.A)
-  const removable = ['EQQQ.DE', 'IUSN.DE', 'IS3M.DE']
+  // Die Hälfte der vorhandenen Marktpositionen, nicht feste Symbole: Andere
+  // Prüfskripte spielen in dasselbe Teststack-Konto eigene Depots ein.
+  const marketSymbols = await pages.A.locator('.n-data-table-tr').filter({ has: pages.A.locator('.spark') })
+    .evaluateAll((rows) => rows.map((row) => row.innerText.split('\n').map((line) => line.trim()).find(Boolean)))
+  const removable = marketSymbols.slice(0, Math.max(1, Math.floor(marketSymbols.length / 2)))
   for (const symbol of removable) await deletePosition(pages.A, symbol)
   await waitForPositions(pages.B, originalCount - removable.length)
   for (const symbol of removable) {
