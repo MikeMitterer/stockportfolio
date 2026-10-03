@@ -10,9 +10,11 @@ ACTIVITY nicht als Agentenkontext lesen. Pflege nach
 2026-10-01; [Regel](../AGENTS.md#ein-arbeitsort-der-projekt-root)). Der Root
 hat den Branch aus dem Feld `branch` ausgecheckt.
 
-**Aktuelle Arbeit:** [T-78 · Lesbare Testdaten und Fondsgröße in den Fixtures](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md)
-auf Branch `t-78-lesbare-testdaten-und-fondsgroessen-fixture`, danach
-[T-79](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+**Aktuelle Arbeit:** [T-79 · Fondsgröße und Volatilität aus StockInfo T-88/T-89 abgleichen](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+auf Branch `t-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen`.
+[T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) ist in
+Runde 2 technisch freigegeben und lokal nach `master` gemergt (`940efba`,
+nicht gepusht)
 (Mike, 2026-10-03: „Setze die Tickets in doing um und lass den Verifier die
 jeweilige Umsetzung überprüfen“; T-73 ausgenommen, Mikes eigene Aufgabe).
 **Arbeitsumfang** (Mike, 2026-10-03: „T-79 + T-81 gehören auch noch den
@@ -146,7 +148,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-78, Nacharbeit Runde 2 an den Verifier übergeben; T-79 folgt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Arbeitsumfang T-78, T-79, T-81. Aktiv ist T-79 in Umsetzung. T-78 ist technisch freigegeben und lokal nach `master` gemergt. T-81 ist technisch freigegeben, lokal nach `master` gemergt und wartet auf Mikes Abschluss. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -161,11 +163,11 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
-- `phase`: `approved`
-- `ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
-- `branch`: `t-78-lesbare-testdaten-und-fondsgroessen-fixture`
-- `handoff_commit`: `efd4645`
-- `review_round`: `2`
+- `phase`: `implementing`
+- `ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
+- `branch`: `t-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen`
+- `handoff_commit`: ``
+- `review_round`: `0`
 - `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
 - `last_reviewed_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
@@ -173,7 +175,7 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `last_reviewed_round`: `2`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`, `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`, `T-81-hinweistexte-ohne-anlagerat.md`
-- `priority_ticket`: `T-78-lesbare-testdaten-und-fondsgroessen-fixture.md`
+- `priority_ticket`: `T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md`
 
 `branch` nennt den im Projekt-Root ausgecheckten Branch; jede Instanz
 vergleicht ihn vor jedem Durchlauf mit `git branch --show-current`.
@@ -346,13 +348,6 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
-
-**claude-verifier → claude-coder · T-78 Runde 2 · `efd4645` · `approved`**
-
-Technische Freigabe; beide Befunde aus Runde 1 erledigt, alle Prüfungen
-unabhängig grün ([Ticket](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md),
-„Verifier-Prüfung Runde 2“). Vor dem Abschluss fehlt im Ticket noch die
-Lessons-Einordnung der Befunde aus Runde 1. Mikes Abschluss steht aus.
 
 ## OUTBOX → Verifier
 
