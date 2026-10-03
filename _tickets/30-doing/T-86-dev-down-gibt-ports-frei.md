@@ -17,21 +17,45 @@ fest. Noch nicht aktiviert. Bei der Anlage lief T-85 in Nacharbeit auf
 `t-85-ersatzabruf-nur-ohne-sse`; die Umsetzung gehört auf einen eigenen
 Branch von `master` nach dem Merge von T-85. Mike, 2026-10-03: „übernimm
 T-86 nach T-85, Korrigiere den Setup-Code-Hinweis“ — Umfang um den
-Setup-Code-Hinweis erweitert (siehe unten).
+Setup-Code-Hinweis erweitert (siehe unten). Mike, 2026-10-03: „Das ganze
+muss auch einen Mehrfachaufruf überleben. Ergänze die Anpassungen auch im
+T86“ — Vorlage, Umfang und Verify auf den nachgeschärften StockInfo-Stand
+gebracht.
 
 ## Vorlage aus StockInfo
 
-StockInfo hat dasselbe am 2026-10-03 umgesetzt (`5d9f48c`):
+StockInfo hat dasselbe am 2026-10-03 umgesetzt (`5d9f48c`, nachgeschärft
+in `0ce3c08`):
 
 - Werkzeug: `dev-ports.sh` in ProjectTools (`src/bash/dev-ports.sh`,
-  `c33b8b3`). `--status` zeigt, ob und von wem die Ports belegt sind;
-  `--kill` beendet eigene Prozesse mit Arbeitsverzeichnis im Projekt samt
-  Kindprozessen (SIGTERM, dann SIGKILL) und endet mit Exit 1, wenn ein Port
-  belegt bleibt. Fremde Lauscher, etwa Docker oder StockInfo, bleiben
-  unberührt. Doku: ProjectTools `README.md`, Abschnitt „`dev-ports.sh`“.
+  `c33b8b3`, overmind-Aufräumen seit `e2c2fb3`). `--status` zeigt, ob und von
+  wem die Ports belegt sind und ob overmind-Reste laufen. `--kill`:
+  1. beendet overmind und dessen tmux-Server **dieses** Projekts
+     (Arbeitsverzeichnis im Projekt) und entfernt eine verwaiste
+     `.overmind.sock`; overmind anderer Projekte bleibt unberührt,
+  2. beendet eigene Port-Lauscher mit Arbeitsverzeichnis im Projekt samt
+     Kindprozessen (SIGTERM, dann SIGKILL),
+  3. endet mit Exit 1, wenn ein Port belegt bleibt.
+
+  Fremde Lauscher, etwa Docker oder StockInfo, bleiben unberührt. Mehrfache
+  und gleichzeitige Aufrufe gelingen (42 Tests in
+  `tests/bash/dev-ports.test.sh`). Doku: ProjectTools `README.md`, Abschnitt
+  „`dev-ports.sh`“.
 - Config `.dev-ports.conf.sh` im Projekt-Root, eingecheckt.
-- `dev-down` ruft nach den overmind-Schritten
-  `"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill` auf.
+- `dev-down` besteht nur noch aus zwei Schritten (unten); ein
+  `pkill -f overmind` ist entfallen, weil es overmind in allen Projekten
+  beendete.
+- In StockInfo am 2026-10-03 mit echtem overmind geprüft: overmind per
+  `kill -9` beendet, danach `make dev-down` → tmux-Rest und Apps beendet,
+  verwaiste `.overmind.sock` entfernt, Ports frei, Neustart möglich; ein
+  parallel laufender StockInfo-Stack blieb unberührt. Dreimal `make dev-down`
+  ohne Stack: jeweils Exit 0.
+
+```make
+dev-down: ## Dev-Stack stoppen und Ports freigeben
+	-@overmind quit 2>/dev/null || true
+	@"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill
+```
 
 ## Umsetzung und technische Nachweise
 
@@ -43,9 +67,12 @@ StockInfo hat dasselbe am 2026-10-03 umgesetzt (`5d9f48c`):
    `frontend/vite.config.ts`, Konto-API). `dev-ports.sh --example` erkennt
    diese Ports nicht, weil `Procfile.dev` kein `--port` nennt; die Ports von
    Hand eintragen und gegen die Konfiguration prüfen.
-2. `dev-down`: Die bestehende overmind-Logik bleibt. Danach
-   `"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill`, auch wenn kein
-   Overmind-Stack aktiv ist — gerade dann bleiben Reste übrig.
+2. `dev-down` wie in StockInfo auf die zwei Schritte oben umstellen. Die
+   bisherige Weiche `if test -S .overmind.sock; then overmind quit; else
+   echo "Kein Overmind-Stack aktiv."; fi` entfällt: Eine verwaiste Socket-Datei
+   ließ dort `overmind quit` scheitern, und ohne Socket blieben Reste stehen.
+   `dev-ports.sh --kill` läuft immer, auch ohne aktiven Stack — gerade dann
+   bleiben Reste übrig.
 3. `README.md`: Beschreibung von `make dev-down` ergänzen.
 4. **Setup-Code-Hinweis** (`auth.setupCodeHelp` in
    `frontend/src/i18n/de.ts` und `en.ts`): Der committete Text nennt noch
@@ -60,15 +87,17 @@ Legende: ➖ noch keine Live-Verifikation.
 | # | Handgriff | Erwarteter Nachweis | AI |
 |---|---|---|:--:|
 | 1 | `make dev-up`, dann `dev-ports.sh --status` | Beide Ports belegt, Prozesse „im Projekt“ | ➖ |
-| 2 | overmind-Prozess hart beenden (Absturz nachstellen), dann `make dev-down` | Vite und API samt Kindprozessen beendet; 5175 und 8080 frei | ➖ |
-| 3 | `make dev-down` ohne laufenden Stack | Meldet beide Ports frei, Exit 0 | ➖ |
-| 4 | StockInfo-Stack läuft parallel | StockInfos Prozesse auf 5173/8000 bleiben unberührt | ➖ |
+| 2 | overmind-Prozess per `kill -9` beenden (Absturz nachstellen), dann `make dev-down` | Vite und API samt Kindprozessen beendet; tmux-Rest beendet; verwaiste `.overmind.sock` entfernt; 5175 und 8080 frei | ➖ |
+| 3 | Danach `make dev-up` | Startet ohne „Overmind is already running“ | ➖ |
+| 4 | `make dev-down` dreimal hintereinander ohne laufenden Stack | Jeweils beide Ports frei gemeldet, Exit 0 | ➖ |
+| 5 | StockInfo-Stack läuft parallel | StockInfos overmind, tmux und Prozesse auf 5173/8000 bleiben unberührt | ➖ |
 
 ### Akzeptanzkriterien
 
 - [ ] `.dev-ports.conf.sh` nennt die tatsächlichen Dev-Ports.
-- [ ] `make dev-down` gibt beide Ports frei, auch nach einem Absturz von overmind.
-- [ ] Prozesse außerhalb von StockPortfolio bleiben unberührt.
+- [ ] `make dev-down` gibt beide Ports frei, auch nach einem Absturz von overmind, und räumt overmind-Reste dieses Projekts samt verwaister `.overmind.sock` auf.
+- [ ] `make dev-down` verträgt Mehrfachaufrufe (Exit 0 ohne laufenden Stack).
+- [ ] Prozesse außerhalb von StockPortfolio bleiben unberührt, auch overmind anderer Projekte.
 - [ ] Der Setup-Code-Hinweis nennt in DE und EN den gültigen Startweg
       (`make dev-up`) und wie man den Code findet.
 - [ ] Doku-Abgleich: `README.md`; `docker/README.md` und `unraid/README.md` sind nicht betroffen (Dev-Stack, kein Container).
