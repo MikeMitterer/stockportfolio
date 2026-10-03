@@ -27,7 +27,8 @@ gleich nach doing“). Liegt in `30-doing/`; Rollen und Aktivierung legt
 StockPortfolios `STATUS.md` fest. StockInfo T-88 ist abgeschlossen. Am
 2026-10-03 aktiviert (Mike: „Setze die Tickets in doing um und lass den
 Verifier die jeweilige Umsetzung überprüfen“) und in Runde 1 an den Verifier
-übergeben (siehe Review-Verlauf).
+übergeben; Verifier-Prüfung Runde 1 durch `claude-verifier`:
+`changes_requested` (siehe Review-Verlauf).
 
 ## Was zu tun ist
 
@@ -62,6 +63,70 @@ StockInfos Screenshots können danach mit dem Teststack entstehen statt mit
 einer eigenen Live-Instanz.
 
 ## Review-Verlauf (neueste Runde zuerst)
+
+### Verifier-Prüfung Runde 1 · claude-verifier · 2026-10-03
+
+**Geprüfte Fassung:** `b399a1d` (Übergabe-Commit `c9fc034`), Branch
+`t-78-lesbare-testdaten-und-fondsgroessen-fixture`, im Root ausgecheckt.
+**Urteil: `changes_requested`** – zwei Befunde, beide mit kleinem Umfang.
+
+#### Befund 1 · Xetra-Gold erscheint im Demomodus als „Aktie“ (blockierend)
+
+Im eigenen Lauf mit `--demo-details` zeigt die Assets-Übersicht 4GLD.DE
+„Xetra-Gold“ mit dem Typ **Aktie** (`/instruments` liefert `"type": "stock"`).
+Xetra-Gold ist ein Gold-ETC, keine Aktie. Laut „Was zu tun ist“ soll der
+Demomodus „plausible Werte“ zeigen und für Screenshots taugen; genau dort
+stünde Gold dann als Aktie. Die Ursache ist älter (`scripts/fixtures/demo-quotes.json:24`),
+wird aber erst mit T-78 zum Teil des lesbaren Bildes. In den Nebenfunden für
+T-79 fehlt sie, anders als „bond“.
+
+Erwartet wird eine der beiden Lösungen, Entscheidung beim Coder:
+
+1. Im Demomodus den passenden Typ setzen (StockInfo kennt `etc`). Dann
+   erscheint unübersetzt „etc“. Das gehört zum selben Übersetzungsthema wie
+   „bond“ in T-79 und wird dort mit vorgemerkt.
+2. Den Typ bewusst lassen und als Nebenfund für T-79 mit Begründung
+   aufnehmen, damit er nicht als plausibler Demowert gilt.
+
+#### Befund 2 · Wächter kennt die Gattungen nur als Kopie (blockierend)
+
+`demoDetails.spec.ts` prüft „TER und Fondsgröße nur bei ETFs“. Die Gattung
+von EUNL.DE, VTI, AAPL und DE0001135275 stammt dabei aus der handgeschriebenen
+Liste `scriptTypes` im Test („wie im Skript angelegt“). Die tatsächliche
+Gattung legt `SEEDS` in `scripts/stockinfo-test-server.py` fest. Ändert jemand
+dort zum Beispiel VTI auf `stock`, bleibt der Test grün, obwohl VTI dann TER
+und Fondsgröße an einer Aktie trägt. StockInfo würde die Werte für diese
+Gattung verwerfen, und die Zusatzinformationen wären leer. Der Wächter prüft
+damit eine Abschrift statt der Quelle.
+
+Erwartet wird eine gemeinsame Quelle für Gattung und Detailwerte, zum
+Beispiel `type` je Instrument in `demo-details.json`. Das Skript übernimmt
+den Typ von dort oder bricht beim Start mit Exit 1 ab, wenn er abweicht. Der
+Test liest dieselbe Datei. Rote Gegenprobe: abweichender Typ → Test rot
+beziehungsweise Startabbruch.
+
+#### Unabhängig nachgeprüft, ohne Befund
+
+| Prüfung | Ergebnis |
+|---|---|
+| `make test` | Exit 0; Frontend 83 / 856, API 5 / 20 |
+| `npm --prefix frontend run lint`, `npm --prefix api run lint` | je Exit 0 |
+| `npm --prefix frontend run typecheck`, `npm --prefix api run typecheck` | je Exit 0 |
+| `git diff --check master..b399a1d`, `py_compile` des Testservers | ohne Befund |
+| Fixtures `instruments-200.json`, `quote-200.json` gegen `../StockInfo/contract/fixtures/` | je `cmp -s` bytegleich |
+| `fund_size`-Inventar in `frontend/src` | nur Typen und `optionalNumber` in `normalizers.ts`; keine Annahme einer Größenordnung |
+| `.mo` gegen `msgfmt` der geänderten `.po` | bytegleich |
+| Sichtbare Prüfung, Stack `--stack --run --demo-accounts --demo-details` | `check:demo-data` → `OK` Assets-Übersicht (9 Instrumente) und fünf Detailprüfungen, Exit 0. Screenshots angesehen: keine Testfallnamen, keine doppelten Symbole, Detailwerte mit Quellen „justETF (Demo)“ / „StockInfo (Demo)“. Typ von Xetra-Gold siehe Befund 1. |
+| Randfälle ohne `--demo-details` (`--stack --run`, `GET /instruments`) | 14 Einträge mit Kryptopaar, OTC-Anleihe, `DUAL` auf XNAS/XNYS, Pence-Listing und Listing ohne ISIN |
+| Stopp | Stack gestoppt, Ports 5175/8080/8899 frei |
+| `--detail-fixtures` im Demomodus | Liefert laut Code nur noch die Typkatalog-Szenarien (`/instrument-types`); stimmt mit `frontend/tests/fixtures/browser/README.md` überein |
+| Doku-Abgleich `README.md` / `AGENTS.md` | beschreiben `--demo-details` übereinstimmend und passend zum Code |
+| Rote Gegenproben (9 + 1 + 5) | nicht wiederholt (kein Eingriff in Produktcode); Fälle und Exit-Codes vollständig dokumentiert, der grüne Einheitenfall nachvollziehbar ersetzt |
+
+**Lessons (Autor Claude):** Gegenproben aus SI-P-02/12 (eigenes Inventar
+`fund_size`), SI-P-04/08 (Befund 2: Ein Wächter muss bei einer Änderung der
+Quelle rot werden) und SP-R-05 angewendet. Die Einordnung der neuen Befunde
+übernimmt der Observer.
 
 ### Übergabe Runde 1 · claude-coder · 2026-10-03
 
