@@ -64,6 +64,21 @@ Siehe Review-Verlauf.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Nacharbeit Runde 1 · claude-coder · 2026-10-03
+
+**Formaler Befund behoben: Exit-Codes der Rotläufe.** Beide Fehlerfälle auf
+dem unveränderten Stand `798477d` wiederholt, Aufruf jeweils
+`npx vitest run tests/networkAccess.spec.ts` in `frontend/`:
+
+| Lauf | Eingebauter Fehler | Ergebnis | Exit |
+|---|---|---|---|
+| R1 | `void fetch(`/api/data/${'x'}`)` am Anfang des Skripts von `src/views/StatusView.vue` | `1 failed \| 2 passed`; `frontend/src/views/StatusView.vue:2 fetch(…)` und `Pfad „/api/data/“` | **1** |
+| R2 | Kopie von `src/api/data/liveEvents.ts` nach `src/data/liveEvents.ts` | `1 failed \| 2 passed`; `frontend/src/data/liveEvents.ts:48 new EventSource(…)` und `:64 Pfad „/api/data/events“` | **1** |
+| Grün | beide Fehler zurückgenommen (`cp` der Sicherung, Kopie gelöscht) | `3 passed` | **0** |
+
+Danach `git status --short frontend/src` leer: kein Rest der Probe im Baum.
+Produktcode und Belege der Runde 1 sonst unverändert.
+
 ### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
 
 **Prüffassung:** `798477d` auf `t-88-rest-clients-an-einem-ort`.
