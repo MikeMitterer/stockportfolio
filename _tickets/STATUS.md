@@ -12,7 +12,9 @@ hat den Branch aus dem Feld `branch` ausgecheckt.
 
 **Aktuelle Arbeit:** T-78 und T-79 sind technisch freigegeben und lokal
 nach `master` gemergt; **Mikes Abnahme steht aus.** [T-81](40-done/T-81-hinweistexte-ohne-anlagerat.md)
-ist am 2026-10-03 abgeschlossen (Mike: „Erledige gleich auch T-81“). Im Root ist `master` ausgecheckt. [T-79 · Fondsgröße und Volatilität aus StockInfo T-88/T-89 abgleichen](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
+ist am 2026-10-03 abgeschlossen (Mike: „Erledige gleich auch T-81“).
+Gepusht wird erst nach der Abnahme von T-78 und T-79, gemeinsam (Mike,
+2026-10-03: „Nach der Abnahme pushen“). Im Root ist `master` ausgecheckt. [T-79 · Fondsgröße und Volatilität aus StockInfo T-88/T-89 abgleichen](30-doing/T-79-stockinfo-fondsgroesse-und-volatilitaet-abgleichen.md)
 ist in Runde 1 freigegeben (`codex-verifier`) und gemergt (`0651b2f`).
 [T-78](30-doing/T-78-lesbare-testdaten-und-fondsgroessen-fixture.md) ist in
 Runde 2 technisch freigegeben und lokal nach `master` gemergt (`940efba`,
