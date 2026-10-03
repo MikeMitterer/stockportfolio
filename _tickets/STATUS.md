@@ -124,8 +124,9 @@ Screenshot-Commits bleiben dokumentiert. Mike bestätigt außerdem:
 gemeldet; ein unabhängiger Registry-/README-Nachweis wurde hier nicht ergänzt.
 T-35/T-36 bleiben im Backlog und sind nicht aktiviert.
 
-Rollen sind zugeordnet: Coder `claude-coder`, Verifier `codex-verifier`, Observer
-`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `codex-verifier`
+Rollen sind zugeordnet: Coder `claude-coder`, Verifier `claude-verifier`
+(seit 2026-10-03 auf Mikes Auftrag, zuvor `codex-verifier`), Observer
+`codex-observer` (seit 2026-10-01, zuvor `claude-observer`). `claude-verifier`
 ist eine eigenständige Instanz neben dem Coder `claude-coder`. Jede Instanz prüft
 ihre Zuordnung vor jedem Durchlauf.
 
@@ -148,7 +149,7 @@ ProjectTools-`master` enthält das paketierte Python-Modul lokal (`f8cd8ec`,
 kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 
 - `implementer`: `claude-coder`
-- `reviewer`: `codex-verifier`
+- `reviewer`: `claude-verifier`
 - `observer`: `codex-observer`
 - `phase`: `implementing`
 - `ticket`: `T-81-hinweistexte-ohne-anlagerat.md`
