@@ -103,12 +103,68 @@ eigenen Auftrag.
 
 ### Auflösung
 
-**Vor Prüfbeginn zurückgeholt (2026-10-03).** Mike: „Hol T-82 zurück und
-ergänze die Prüfungen“. Kursverlauf, Fehlerfall und Container waren nur
-teilweise oder von Hand sichtbar geprüft; Verify #7 und das letzte
-Akzeptanzkriterium kommen dazu. Die Übergabe Runde 1 unten gilt nicht mehr.
+**Runde 1 technisch zurückgegeben (2026-10-03).** Die sichtbaren Routenläufe
+sind unabhängig grün; zwei Befunde zu HTTP-Status und Dokumentation bleiben
+offen. Mike hatte T-82 vor Prüfbeginn zurückgeholt („Hol T-82 zurück und
+ergänze die Prüfungen“); die ältere Übergabe am Ende gilt nicht mehr.
 
-**Übergabe Runde 1, neu (claude-coder, 2026-10-03).** Branch
+## Review-Verlauf (neueste Runde zuerst)
+
+### Technische Prüfung Runde 1 · codex-verifier · 2026-10-03
+
+**Prüffassung:** `81180d0` auf `t-82-stockinfo-ueber-eigenen-server`, mit
+STATUS-Übergabe `d836e3c`. Rollen, Owner, Branch und Paketversion
+`df699dd1d7583c59030030ad44e3ab896d4660be8d84575662e652f754624da1`
+abgeglichen. **Urteil: `changes_requested`.** Kein Produktcode durch den
+Verifier geändert.
+
+**Blockierender Befund 1 · gültige Antwort ohne Rumpf bricht die
+Weiterleitung.** `api/src/stockinfo/proxy.ts` baut jede Upstream-Antwort als
+`new Response(await upstream.arrayBuffer(), { status: upstream.status, ... })`
+neu. Bei HTTP 204, 205 oder 304 darf `Response` keinen Rumpf erhalten, auch
+keinen leeren `ArrayBuffer`. Unabhängige Gegenprobe mit injiziertem Fetch,
+das `new Response(null, { status: 204 })` liefert: `forwardToStockInfo`
+wirft `TypeError: Response constructor: Invalid response status code 204`
+(Exit 1). Der Proxy liefert damit den zugesagten Status nicht weiter.
+Erwartung: Antworten ohne Rumpf mit `null` konstruieren, Status und erlaubte
+Header erhalten und den 204-Fall im Servertest ausdrücklich prüfen. Ein
+Status ohne Rumpf ist etwa bei einer künftigen Refresh-Antwort plausibel;
+der Fehlerpfad bleibt nicht nur wegen der heutigen 200-Antworten offen.
+
+**Blockierender Befund 2 · Installationsanleitungen widersprechen T-82.**
+`unraid/README.md` im Abschnitt „Installing through Unraid Apps“ behauptet
+weiter: „The browser connects to StockInfo directly“. Die zentrale Vorlage
+`/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`
+enthält im `Overview` noch „The browser calls StockInfo directly“. Beide
+Dateien erklären später zutreffend den Zugriff vom Container und widersprechen
+sich damit jeweils selbst. Erwartung: Die beiden alten Sicherheitshinweise
+inhaltlich an den Proxy-Weg anpassen und `README.md`, `docker/README.md`,
+`unraid/README.md` sowie die Vorlage erneut gegeneinander lesen. Die Vorlage
+liegt im separaten Repository; dessen Schreib- und Commitgrenzen gelten.
+
+**Unabhängige grüne Belege:** `make test` Exit 0 (Frontend 83 Dateien/865
+Tests, API 6/27); Frontend-/API-Lint und Typecheck je Exit 0, `git diff
+--check` ohne Befund. Das vorhandene sichtbare Skript
+`check:stockinfo-proxy` gegen den temporären Teststack prüfte alle 12
+freigegebenen Routen mit 200, die Abweisungen 401/404 und ausschließlich
+Browseranfragen an `127.0.0.1:5175`. `docker/browser-check.sh` bestand gegen
+das lokal vorhandene Image beide Fälle: alle 12 Routen mit 200 über
+`127.0.0.1:18091` sowie den nicht auflösbaren StockInfo-Namen mit 502,
+Dialog und Statusanzeige. Der Teststack wurde gestoppt; temporäre
+Kontodaten wurden durch dessen Stop entfernt. Diese Belege decken die
+heutigen 200-/502-Pfade ab und widerlegen die beiden Befunde nicht.
+
+**Lessons-Einordnung:** [SP-R-04](../.agents/lessons/SP-R-04-erkannte-potenzielle-fehler-beheben-scout-rule.md)
+auf den plausiblen 204-Fehler angewendet; er blockiert die Freigabe.
+SI-P-02/12 (vollständige Korrektur braucht ein Inventar) auf die zwei
+stehengebliebenen Installationsaussagen angewendet. Beide Texte tragen
+denselben alten Sicherheitshinweis; das ist ein einzelner Auslassungsfall,
+keine zweite unabhängige Episode für eine neue Lesson. Der Observer kann
+die Einordnung beim nächsten Durchlauf ergänzen.
+
+### Übergabe Runde 1, neu · claude-coder · 2026-10-03
+
+Branch
 `t-82-stockinfo-ueber-eigenen-server`, Stand `b246305`. Gegenüber der
 zurückgeholten Fassung:
 
@@ -179,7 +235,9 @@ und `check:stockinfo-proxy`. `AGENTS.md` › Browserprüfung: Skript, Regel
 prüfen“. `docker/README.md` bleibt unverändert: Die Prüfwerkzeuge sind
 Entwicklerwerkzeuge und gehören ins Projekt-README.
 
-**Übergabe Runde 1 an den Verifier (claude-coder, 2026-10-03).** Branch
+### Übergabe Runde 1, vor Rückholung · claude-coder · 2026-10-03
+
+Branch
 `t-82-stockinfo-ueber-eigenen-server`, Code- und Dokustand `0cf50c2`.
 
 **Umsetzung.**

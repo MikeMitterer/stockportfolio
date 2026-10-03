@@ -27,7 +27,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-83](40-done/T-83-reiter-bleibt-bei-aktualisierung.md) | abgeschlossen (Mike: „T-78, T-79 und T-83 sind abgenommen“) |
 | [T-85](40-done/T-85-ersatzabruf-nur-ohne-sse.md) | abgeschlossen (Mike: „T-85 ist von mir freigegeben“) |
 | [T-86](40-done/T-86-dev-down-gibt-ports-frei.md) | abgeschlossen (Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“) |
-| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 1 neu an den Verifier übergeben (`81180d0`), mit sichtbarer Routenabdeckung (Mike: „Hol T-82 zurück und ergänze die Prüfungen“) |
+| [T-82](30-doing/T-82-stockinfo-ueber-eigenen-server.md) | Runde 1 technisch mit zwei Befunden an den Coder zurückgegeben (`81180d0`): rumpflose HTTP-Antwort und widersprüchliche Unraid-Hinweise |
 | [T-88](20-ready/T-88-rest-clients-an-einem-ort.md) | folgt nach T-82 (Mike: „Eigenes Ticket direkt nach T-82“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
 
@@ -161,7 +161,7 @@ freigegeben. Lokale Abweichungen stehen im [Workflow](.agents/AGENT-WORKFLOW.md)
 
 ## Maschinenlesbarer Zustand
 
-Aktiv ist T-82 in Umsetzung, danach T-88. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
+Aktiv ist T-82, Runde 1 mit Befunden an den Coder zurückgegeben; danach T-88. T-87 liegt in `20-ready/`. Arbeitsumfang T-78, T-79, T-81, T-83, T-85, T-86 und T-82. T-81, T-78, T-79, T-83, T-85 und T-86 sind am 2026-10-03 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-77 ist am 2026-10-01 nach Mikes Bestätigung abgeschlossen, nach `master` integriert und gepusht. T-76 ist verworfen. T-75 ist am 2026-10-01 nach Mikes Bestätigung
 abgeschlossen, nach `master` integriert und gepusht. T-74 ist am 2026-10-01 abgeschlossen, nach
 `master` integriert und gepusht. T-72 ist am 2026-10-01 nach Mikes
 Bestätigung abgeschlossen, nach `master` integriert und gepusht.
@@ -176,16 +176,16 @@ kein Push); StockPortfolio nutzt es über die eigene `.venv` aus `make setup`.
 - `implementer`: `claude-coder`
 - `reviewer`: `codex-verifier`
 - `observer`: `codex-observer`
-- `phase`: `ready_for_review`
+- `phase`: `changes_requested`
 - `ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
 - `branch`: `t-82-stockinfo-ueber-eigenen-server`
 - `handoff_commit`: `81180d0`
 - `review_round`: `1`
-- `owner`: `codex-verifier`
+- `owner`: `claude-coder`
 - `updated_at`: `2026-10-03`
-- `last_reviewed_ticket`: `T-86-dev-down-gibt-ports-frei.md`
-- `last_reviewed_commit`: `048b2c5`
-- `last_reviewed_round`: `2`
+- `last_reviewed_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
+- `last_reviewed_commit`: `81180d0`
+- `last_reviewed_round`: `1`
 - `workstream`: `stockportfolio-server-sync`
 - `priority_chain`: `T-82-stockinfo-ueber-eigenen-server.md`, `T-88-rest-clients-an-einem-ort.md`
 - `priority_ticket`: `T-82-stockinfo-ueber-eigenen-server.md`
@@ -361,5 +361,17 @@ dauerhafte Entscheidungen gehören ins Ticket; verarbeitete Nachrichten
 werden entfernt.
 
 ## INBOX → Coder
+
+**codex-verifier → claude-coder · T-82 Runde 1 · `81180d0`**
+
+Zwei blockierende Befunde im Ticket: (1) `forwardToStockInfo` wirft bei
+gültigem HTTP 204 statt den Status weiterzugeben; Gegenprobe mit injiziertem
+Fetch ergab `TypeError` und Exit 1. Rumpflose Antworten mit `null` bauen und
+regressionsprüfen. (2) `unraid/README.md` und
+`Templates/templates/stockportfolio.xml` behaupten noch direkte
+Browseraufrufe an StockInfo und widersprechen ihren eigenen neuen
+Proxy-Abschnitten. Beide Aussagen und den Doku-Abgleich korrigieren. Die
+sichtbaren Teststack- und Containerläufe sowie alle Pflichtprüfungen waren
+grün; genaue Belege und Grenzen stehen im T-82-Review Runde 1.
 
 ## OUTBOX → Verifier
