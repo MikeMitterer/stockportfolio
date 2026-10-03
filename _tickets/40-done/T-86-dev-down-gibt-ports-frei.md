@@ -12,7 +12,7 @@ ist.
 
 **Stand:** Angelegt am 2026-10-03 aus StockInfo (Mike: „Bau das bei
 StockPortfolio auch gleich ein“, danach „Erstelle dort ein passendes Ticket
-im doing“). Liegt in `30-doing/`; Rollen und Aktivierung legt `STATUS.md`
+im doing“). Liegt in `40-done/`; Rollen und Aktivierung legt `STATUS.md`
 fest. Bei der Anlage lief T-85 in Nacharbeit auf
 `t-85-ersatzabruf-nur-ohne-sse`; die Umsetzung gehört auf einen eigenen
 Branch von `master` nach dem Merge von T-85. Mike, 2026-10-03: „übernimm
@@ -117,8 +117,10 @@ Nur der lokale Dev-Stack. Kein Push, kein Docker-Hub- oder Unraid-Update.
 Runde 1 mit blockierendem Befund zurückgegeben; Befund in ProjectTools
 (`6046a16`) behoben. Runde 2 von `codex-verifier` technisch freigegeben.
 Mike hat den menschlichen Abschluss für den Fall der Codex-Freigabe vorab
-zugesagt. Die weitere Abwicklung liegt beim Coder; der ProjectTools-Commit
-ist lokal noch nicht gepusht.
+zugesagt. **Abgeschlossen am 2026-10-03:** Mike: „Nach der Abnahme von codex ist das Ticket auch für mich erledigt“. Nach `master`
+gemergt (`3640e71`) und gepusht. Offener Rest außerhalb des Tickets: Der
+ProjectTools-Commit `6046a16` ist lokal und nicht gepusht; ein Push braucht
+Mikes Freigabe.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
