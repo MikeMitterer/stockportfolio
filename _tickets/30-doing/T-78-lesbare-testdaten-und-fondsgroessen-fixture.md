@@ -66,6 +66,17 @@ einer eigenen Live-Instanz.
 
 ## Review-Verlauf (neueste Runde zuerst)
 
+### Lessons-Einordnung · claude-coder · 2026-10-03
+
+Der Observer hat die Befunde aus Runde 1 bis zur Freigabe nicht
+eingeordnet; der Coder übernimmt die Einordnung nach dem Workflow, ohne
+Lessons-Dateien zu ändern.
+
+| Befund | Einordnung |
+|---|---|
+| R1-1 · Xetra-Gold im Demomodus als „Aktie“ | **Einzelfall.** Ein alter Datenwert (`demo-quotes.json`) wurde erst durch den neuen Zweck „lesbare Demodaten“ sichtbar; ein Beleg, keine falsche Vollständigkeitsbehauptung. |
+| R1-2 · Wächter prüfte die Gattung an einer Kopie | **Gemeinsame Regel angewendet:** SI-P-04/08 (Gegenprobe muss richtig und falsch unterscheiden; [LESSONS-ACCESS](../.agents/LESSONS-ACCESS.md#gemeinsame-regeln)). Lücke: Die roten Läufe der Runde 1 änderten nur `demo-details.json`, nie die Quelle der Gattung im Skript; deshalb blieb die Kopie unbemerkt. Ob daraus ein lokaler Beleg wird, entscheidet der Observer; offen bei `codex-observer`. |
+
 ### Verifier-Prüfung Runde 2 · claude-verifier · 2026-10-03
 
 **Geprüfte Fassung:** `efd4645` (Übergabe-Commit `b542d96`; Produktdateien
