@@ -9,7 +9,8 @@ Weitergabe oder einfach routinemäßig.
 Beim eigenen Konto steht nur „Dein Konto“; die Schaltfläche „Passwort
 zurücksetzen“ fehlt dort. Einen anderen Eintrag „Passwort ändern“ gibt es in
 der App nicht. Gewünscht: Der angemeldete Admin ändert sein Kennwort direkt in
-der App, mit Eingabe des neuen Kennworts nach den bestehenden Passwortregeln.
+der App: altes Kennwort, neues Kennwort und Wiederholung des neuen Kennworts,
+wie es üblich ist.
 
 **Stand:** Angelegt am 2026-10-06 auf Mikes Auftrag. Mike hat die offenen
 Fragen am selben Tag beantwortet (siehe [Entscheidungen](#entscheidungen)).
@@ -54,22 +55,46 @@ oben: Die Schaltflächen fehlen beim eigenen Konto. Das Ticket löst beides
 über den Wechsel mit altem Kennwort; ein Zurücksetzen ohne altes Kennwort
 für das eigene Konto ist nicht vorgesehen.
 
+Mikes Klarstellung vom 2026-10-06, Wortlaut:
+
+> Es kann auch nur der Admin die Benutzer verwalten. Wenn der Admin bei einem
+> User auf zurücksetzen klickt dann bekommt der User beim nächsten Login die
+> Aufforderung sein Kennwort neu anzulegen (OK, in dem Fall braucht er das
+> alte PW nicht wieder einzugeben - evtl. hat er es ja vergessen). Wie auch
+> immer aber der Admin muss selbst in der Lage sein sein PW zu ändern - in dem
+> Fall müsste er schon sein altes PW eingeben und dann das Neue mit 2fachem
+> Confirm. Wie es eben üblich ist.
+
+Daraus folgt:
+
+- **Zurücksetzen durch den Admin bleibt wie heute.** Der Benutzer legt beim
+  nächsten Login ein neues Kennwort an, ohne das alte einzugeben.
+- **Eigener Wechsel des Admins:** altes Kennwort, neues Kennwort, neues
+  Kennwort wiederholen. Ein eigenes Zurücksetzen des Admin-Kontos ist damit
+  nicht nötig.
+
 ### Akzeptanzkriterien
 
 - [ ] In der Benutzerverwaltung bietet das eigene Konto des Admins
       „Passwort ändern“ an.
+- [ ] Das Formular hat drei Felder: altes Kennwort, neues Kennwort,
+      neues Kennwort wiederholen.
 - [ ] Der Wechsel verlangt das bisherige Kennwort; ein falsches altes
       Kennwort wird abgewiesen und ändert nichts.
+- [ ] Stimmen neues Kennwort und Wiederholung nicht überein, wird nicht
+      gespeichert und die App sagt das verständlich (DE und EN).
 - [ ] Das neue Kennwort folgt den bestehenden Passwortregeln (12 bis 1024
       Zeichen, Großbuchstabe, Zahl, Sonderzeichen); Fehlermeldungen in DE und EN.
 - [ ] Nach dem Wechsel bleibt die Sitzung gültig, die Anmeldung mit dem neuen
       Kennwort funktioniert, mit dem alten nicht mehr.
 - [ ] Normale Benutzer erhalten keinen Weg, ihr Kennwort selbst zu ändern;
       der freiwillige Wechsel ist serverseitig auf Admins beschränkt.
-      Der Pflichtwechsel nach einem Zurücksetzen funktioniert unverändert.
+      Der Pflichtwechsel nach einem Zurücksetzen funktioniert unverändert
+      und verlangt kein altes Kennwort.
 - [ ] Der Admin kann sich weiterhin nicht selbst deaktivieren.
 - [ ] API- und Frontend-Tests decken den Wechsel ab, einschließlich falschem
-      altem Kennwort und Ablehnung für normale Benutzer; sichtbarer
+      altem Kennwort, abweichender Wiederholung und Ablehnung für normale
+      Benutzer; sichtbarer
       Browserschritt im Teststack nach [Browserprüfung](../../AGENTS.md#browserprüfung).
 - [ ] **Doku-Abgleich:** `README.md`, `docker/README.md`, `docs/` und
       `unraid/` auf Aussagen zu Konten und Passwörtern geprüft.
