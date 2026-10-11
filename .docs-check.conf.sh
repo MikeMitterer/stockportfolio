@@ -26,3 +26,7 @@ FORBIDDEN=(
     "99:100|T-90: nicht in nutzersichtbarer Doku"
     "nobody:users|T-90: nicht in nutzersichtbarer Doku"
 )
+
+# Hoechstens zwei farbige Hinweisboxen je Dokument; mehr nehmen jeder
+# einzelnen die Wirkung.
+MAX_ALERTS=2
