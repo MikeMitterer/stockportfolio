@@ -146,9 +146,13 @@ dev-down: ## Dev-Stack stoppen und Ports 5175/8080 freigeben
 	@"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill
 
 .PHONY: test
-test: ## Frontend- und API-Tests einmalig ausführen
+test: docs-check ## Doku-Prüfung, Frontend- und API-Tests einmalig ausführen
 	@npm run test --prefix frontend
 	@npm run test --prefix api
+
+.PHONY: docs-check
+docs-check: ## Nutzerdoku gegen das Projekt prüfen (Links, Befehle, verbotene Begriffe)
+	@"$(PROJECT_TOOLS)/bash/docs-check.sh" --run
 
 .PHONY: clean
 clean: ## Build-, Test- und Cache-Dateien löschen; Python-venv behalten
