@@ -178,8 +178,8 @@ itself. The active URL is shown on the separate **Status** page, opened from
 the bottom status bar. Restart the container after changing the address.
 StockInfo needs no CORS setting for StockPortfolio.
 
-The container prepares `/data` for `nobody:users` (99:100) on start and then
-runs the StockPortfolio API without root privileges. A new appdata
+The container takes over `/data` on start and then runs the StockPortfolio
+API without root privileges. A new appdata
 directory needs no manual permission change. Its `/healthz` endpoint
 is checked locally; it does not test StockInfo. StockInfo errors
 are shown in the app. A local Docker test does not replace testing on an actual

@@ -438,6 +438,13 @@ und läuft danach ohne Root. Intern erlaubt sind `AGENTS.md`, `_tickets/`,
 Code-Kommentare, Tests und Skripte. Dass die Variablen im Dockerfile und in
 `docker/entrypoint.sh` stehen, ist kein Grund, sie zu dokumentieren.
 
+**`make docs-check` prüft die Nutzerdoku** (läuft auch in `make test`):
+tote Links und Anker, unbekannte Make-Targets, npm-Skripte und Variablen und
+die verbotenen Begriffe oben. Welche Dokumente und Begriffe, steht in
+`.docs-check.conf.sh`; eine neue Doku-Regel dieser Art kommt dort mit hinein.
+Das README entsteht nach `docs/README.template.md` (Skill
+`readme-conventions`).
+
 Änderungen an Board- oder Lessons-Konventionen werden im selben Auftrag im
 Skill `task-verification-workflow` samt Referenzen und Vorlagen nachgezogen.
 Der Doku-Abgleich nennt das Ergebnis, auch wenn dort keine Änderung nötig ist.

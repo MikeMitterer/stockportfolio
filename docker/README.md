@@ -149,16 +149,14 @@ you return to the tab, it fetches the current data once. Concurrent edits
 still use revision conflicts.
 If a reverse proxy fronts the container, pass the SSE stream without buffering
 and allow an idle timeout longer than its 15-second keep-alive interval.
-The container starts as root only to prepare `/data`: it gives the directory
-to Unraid's `nobody:users` (99:100) and then starts the app as that user,
-never as root. This also fixes a host directory that
-Docker created as root. Data written by older images (UID 1000) is taken over
-on the first start. If ownership cannot be changed, for example on a network
-share, the container logs a warning and starts as long as that user can
-create files in `/data` and read and write an existing database
-(`stockportfolio.sqlite` and its `-wal`, `-shm` and `-journal` files); other
-files there do not matter. Otherwise it stops with a message naming the
-blocked path and the IDs.
+The container takes over `/data` on start and then runs the app without root
+privileges. This also fixes a host directory that Docker created as root, and
+data written by older images is taken over on the first start. If ownership
+cannot be changed, for example on a network share, the container logs a
+warning and starts as long as the app can create files in `/data` and read and
+write an existing database (`stockportfolio.sqlite` and its `-wal`, `-shm` and
+`-journal` files); other files there do not matter. Otherwise it stops with a
+message naming the blocked path.
 With `--user`, no switch happens and `/data` must already be writable for that
 user.
 Its healthcheck calls the local `/healthz` endpoint; it does not test StockInfo.
