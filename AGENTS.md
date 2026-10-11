@@ -427,6 +427,17 @@ Keine lokale Kopie des Helfers und kein separates README-Push-Target anlegen.
 - Anleitungen beschreiben die Benutzung und das aktuelle Verhalten. Interne
   Arbeitsabläufe und Review-Geschichte gehören in die Tickets.
 
+**`PUID`/`PGID` bleiben aus nutzersichtbarer Doku heraus** (Mike, 2026-10-03,
+T-90). Das Image läuft ohne Zutun als 99:100 (Unraids `nobody:users`); die
+Variablen funktionieren weiter, werden aber nicht beworben. `PUID`, `PGID`,
+`99:100` und `nobody:users` stehen nicht in `README.md` (auch nicht in
+Entwicklerabschnitten), `docker/README.md`, `unraid/README.md`, `docs/` (außer
+datierten Entwürfen), den App-Texten unter `frontend/src/i18n/` und der
+Unraid-Vorlage. Die Doku sagt nur: Der Container übernimmt `/data` beim Start
+und läuft danach ohne Root. Intern erlaubt sind `AGENTS.md`, `_tickets/`,
+Code-Kommentare, Tests und Skripte. Dass die Variablen im Dockerfile und in
+`docker/entrypoint.sh` stehen, ist kein Grund, sie zu dokumentieren.
+
 Änderungen an Board- oder Lessons-Konventionen werden im selben Auftrag im
 Skill `task-verification-workflow` samt Referenzen und Vorlagen nachgezogen.
 Der Doku-Abgleich nennt das Ergebnis, auch wenn dort keine Änderung nötig ist.
