@@ -454,8 +454,9 @@ Vorlage `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfol
 Konfiguration, Installation oder Betrieb immer `README.md` und
 `docker/README.md` abgleichen. Das gilt sowohl für Codeänderungen als auch
 für Änderungen an einer der beiden Anleitungen. Gemeinsame Aussagen müssen
-übereinstimmen; Entwickleranleitungen gehören ins Projekt-README,
-Containeranleitungen in `docker/README.md`.
+übereinstimmen. Entwickleranleitungen (Setup, Befehle, Tests, Projektaufbau)
+gehören nach `docs/development.md`; das Projekt-README verlinkt sie nur
+(Mike, 2026-10-11). Containeranleitungen gehören in `docker/README.md`.
 Der Doku-Abgleich im Ticket beziehungsweise Abschlussbericht nennt die
 nötigen Anpassungen oder begründet, weshalb die andere Datei unverändert
 bleibt. Der Verifier prüft die inhaltliche Übereinstimmung; Änderungen an
