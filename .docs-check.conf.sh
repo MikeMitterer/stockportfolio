@@ -58,10 +58,12 @@ EXCLUDE=(
 # Dollarzeichen und Backticks brauchen einen Backslash davor.
 #
 # PUID/PGID und die Standard-IDs bleiben aus nutzersichtbarer Doku heraus
-# (Mike, 2026-10-03, T-90; Regel in AGENTS.md). Das Muster deckt alle
-# Schreibweisen ab: PUID, PGID, puid, 99:100 und nobody:users.
+# (Mike, 2026-10-03, T-90; Regel in AGENTS.md).
 FORBIDDEN=(
-    "/\bP(U|G)ID\b|\b99:100\b|nobody:users/i|T-90: nicht in nutzersichtbarer Doku"
+    # Die Umgebungsvariablen, in jeder Schreibweise (PUID, PGID, puid)
+    "/\bP(U|G)ID\b/i|T-90: Variablen nicht in nutzersichtbarer Doku"
+    # Unraids Standardnutzer, als Zahl und als Name
+    "/\b99:100\b|\bnobody:users\b/i|T-90: Standard-IDs nicht in nutzersichtbarer Doku"
 )
 
 # Höchstens zwei farbige Hinweisboxen je Dokument; mehr nehmen jeder
