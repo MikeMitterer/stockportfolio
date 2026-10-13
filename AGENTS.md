@@ -312,7 +312,8 @@ absoluten Pfad für `--stockinfo-root`. Ohne `--stack` startet `--run` nur
 StockInfo und muss direkt mit StockInfos `.venv/bin/python` aufgerufen werden,
 weil es dessen `app` im selben Prozess importiert. StockInfos `make setup`
 installiert ProjectTools in dessen `.venv`; die Hilfe nutzt dort deshalb
-ebenfalls das gemeinsame CLI-Theme. Details stehen in `README.md` (**Setup**).
+ebenfalls das gemeinsame CLI-Theme. Details stehen in der
+[Entwicklerdoku](docs/development.md#einrichten-und-starten).
 
 [↑ Übersicht](#übersicht)
 
@@ -429,10 +430,10 @@ Keine lokale Kopie des Helfers und kein separates README-Push-Target anlegen.
 
 **`PUID`/`PGID` bleiben aus nutzersichtbarer Doku heraus** (Mike, 2026-10-03,
 T-90). Das Image läuft ohne Zutun als 99:100 (Unraids `nobody:users`); die
-Variablen funktionieren weiter, werden aber nicht beworben. `PUID`, `PGID`,
-`99:100` und `nobody:users` stehen nicht in `README.md` (auch nicht in
-Entwicklerabschnitten), `docker/README.md`, `unraid/README.md`, `docs/` (außer
-datierten Entwürfen), den App-Texten unter `frontend/src/i18n/` und der
+Variablen funktionieren weiter, werden aber nicht beworben. Welche Begriffe in
+welchen Dokumenten verboten sind, steht in `.docs-check.conf.sh` (`DOCS`,
+`FORBIDDEN`) und wird bei `make test` geprüft. Nicht geprüft und deshalb von
+Hand freizuhalten sind die App-Texte unter `frontend/src/i18n/` und die
 Unraid-Vorlage. Die Doku sagt nur: Der Container übernimmt `/data` beim Start
 und läuft danach ohne Root. Intern erlaubt sind `AGENTS.md`, `_tickets/`,
 Code-Kommentare, Tests und Skripte. Dass die Variablen im Dockerfile und in
@@ -440,8 +441,11 @@ Code-Kommentare, Tests und Skripte. Dass die Variablen im Dockerfile und in
 
 **`make docs-check` prüft die Nutzerdoku** (läuft auch in `make test`):
 tote Links und Anker, unbekannte Make-Targets, npm-Skripte und Variablen und
-die verbotenen Begriffe oben. Welche Dokumente und Begriffe, steht in
-`.docs-check.conf.sh`; eine neue Doku-Regel dieser Art kommt dort mit hinein.
+die verbotenen Begriffe oben. Diese Datei prüft es nur auf tote Links und
+Anker; Verweise auf andere Dokumente deshalb als Link schreiben. Zusätzlich
+meldet es Screenshots unter `docs/images/`, die älter als zwei Monate sind.
+Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
+Doku-Regel dieser Art kommt dort mit hinein.
 Das README entsteht nach `docs/README.template.md` (Skill
 `readme-conventions`).
 

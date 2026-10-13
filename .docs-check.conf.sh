@@ -4,7 +4,8 @@
 # Aufruf: make docs-check (läuft auch in make test)
 # shellcheck disable=SC2034  # von docs-check.sh gesourct
 
-# Pfadangaben in DOCS, EXCLUDE und REQUIRED gelten ab dem Projekt-Root.
+# Pfadangaben in DOCS, LINKS_ONLY, EXCLUDE, REQUIRED und SCREENSHOTS gelten
+# ab dem Projekt-Root.
 # Muster wie in .gitignore: * innerhalb eines Ordners, ** beliebig tief,
 # ? genau ein Zeichen. Ordner und Muster treffen nur Dateien, die git nicht
 # ignoriert.
@@ -13,8 +14,8 @@
 # Dokumentation), Lizenz- und Quelltexthinweise und die Anleitungen der
 # Test-Fixtures. AGENTS.md und _tickets/ sind intern und dürfen die
 # verbotenen Begriffe nennen; CHANGELOG.md entsteht aus Commit-Nachrichten
-# (make changelog) und darf alte Angaben behalten. Diese Dateien stehen nur
-# in REQUIRED.
+# (make changelog) und darf alte Angaben behalten. Diese Dateien stehen
+# nicht in DOCS, sondern in REQUIRED und teils in LINKS_ONLY.
 DOCS=(
     "README.md"
     "docker/README.md"
@@ -26,11 +27,20 @@ DOCS=(
     "frontend/tests/fixtures"
 )
 
-# Datierte Entwürfe dürfen interne Angaben enthalten; die README-Vorlage
-# nennt die verbotenen Begriffe bewusst.
+# Interne Doku: nur tote Links und Anker prüfen, verbotene Begriffe und
+# Make-Targets sind hier erlaubt. Verweise auf andere Dokumente als Link
+# schreiben, sonst fällt ein veralteter Verweis nicht auf. _tickets/ fehlt
+# bewusst: Erledigte Tickets verlinken auf Dateien, die es heute nicht mehr
+# gibt, und bleiben als Verlauf unverändert.
+LINKS_ONLY=(
+    "AGENTS.md"
+    "CLAUDE.md"
+)
+
+# Datierte Entwürfe dürfen interne Angaben enthalten. Die README-Vorlage
+# verweist für verbotene Begriffe auf diese Datei und wird mit geprüft.
 EXCLUDE=(
     "docs/superpowers"
-    "docs/README.template.md"
 )
 
 # Text, der in keinem Dokument aus DOCS stehen darf. Geprüft wird jede Zeile,
@@ -66,6 +76,13 @@ FORBIDDEN=(
     "/\b99:100\b|\bnobody:users\b/i|T-90: Standard-IDs nicht in nutzersichtbarer Doku"
 )
 
+# Variablen, die docs/development.md nennt, die aber nur in MakeLib unter
+# .libs/ stehen (von git ignoriert), oder allgemeine Standards sind.
+KNOWN_VARIABLES=(
+    "NO_COLOR|Standard der Kommandozeile, schaltet Farben ab"
+    "THEME_WIDTH_HELP|MakeLib, colours.mk"
+)
+
 # Höchstens zwei farbige Hinweisboxen je Dokument; mehr nehmen jeder
 # einzelnen die Wirkung.
 MAX_ALERTS=2
@@ -79,9 +96,8 @@ REQUIRED=(
     "unraid/README.md|Unraid-Anleitung"
     "./CHANGELOG.md|Release-Historie, im README verlinkt"
     "docs/README.template.md|Vorlage für den Skill readme-conventions"
-    # Nach Übernahme des neuen README aktivieren (dort verlinkt):
-    # "docs/user-guide.md|im README verlinkt"
-    # "docs/development.md|im README verlinkt"
+    "docs/user-guide.md|im README verlinkt"
+    "docs/development.md|im README verlinkt"
 
     # Lizenz und Quelltext: liegen jedem Build bei (frontend/scripts/licenseAssets.ts)
     "./LICENSE|EUPL 1.2, englischer Lizenztext"
@@ -117,3 +133,11 @@ REQUIRED=(
     "frontend/tests/fixtures/browser/README.md"
     "frontend/tests/fixtures/stockinfo/README.md"
 )
+
+# Screenshots der Anleitungen. Sind sie älter als zwei Monate (nach
+# Änderungsdatum der Datei), erscheint ein Hinweis: Dann prüfen, ob sie die
+# aktuelle Oberfläche zeigen, sonst neu aufnehmen (docs/development.md).
+SCREENSHOTS=(
+    "docs/images"
+)
+MAX_SCREENSHOT_AGE_DAYS=60
