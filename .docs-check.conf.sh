@@ -145,3 +145,18 @@ SCREENSHOTS=(
     "docs/images"
 )
 MAX_SCREENSHOT_AGE_DAYS=60
+
+# Code, dessen Umgebungsvariablen in einem Dokument aus DOCS stehen müssen:
+# App, API und die Skripte für Teststack und Browserprüfungen. Jede Variable,
+# die der Code dort liest, braucht eine Beschreibung (meist README.md,
+# docker/README.md oder docs/development.md); sonst scheitert make test.
+CODE_VARIABLES=(
+    "api/src"
+    "frontend/src"
+    "frontend/scripts"
+    "scripts"
+)
+
+# Vom Code gelesen, bewusst nicht dokumentiert, je mit "|<grund>".
+INTERNAL_VARIABLES=(
+)
