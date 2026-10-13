@@ -93,11 +93,15 @@ REQUIRED=(
     # Projekt- und Nutzerdoku
     "./README.md|Projekt-README"
     "docker/README.md|Container-Anleitung, Quelle der Docker-Hub-Beschreibung"
-    "unraid/README.md|Unraid-Anleitung"
-    "./CHANGELOG.md|Release-Historie, im README verlinkt"
-    "docs/README.template.md|Vorlage für den Skill readme-conventions"
     "docs/user-guide.md|im README verlinkt"
     "docs/development.md|im README verlinkt"
+    "unraid/README.md|Unraid-Anleitung"
+
+    # ChangeLog - wird mit make changelog generiert
+    "./CHANGELOG.md|Release-Historie, im README verlinkt"
+
+    # Neben der Vorlage im Skill - die Vorlage für das README dieses Projektes
+    "docs/README.template.md|Vorlage für den Skill readme-conventions"
 
     # Lizenz und Quelltext: liegen jedem Build bei (frontend/scripts/licenseAssets.ts)
     "./LICENSE|EUPL 1.2, englischer Lizenztext"

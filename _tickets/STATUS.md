@@ -38,6 +38,7 @@ Arbeitsumfang“; dazu T-83, T-85, T-86 und T-82 auf Mikes Meldungen):
 | [T-91](40-done/T-91-public-origin-normalisieren.md) | abgeschlossen (Mike: „T-91 ist aus meiner Sicht auch ok“) |
 | [T-92](40-done/T-92-dashboard-rueckblick-schneller.md) | abgeschlossen (Mike: „T-92 ist freigegeben“) |
 | [T-87](20-ready/T-87-entwicklung-ohne-private-bashlib.md) | bereit, noch nicht aktiviert (Mike: „Stelle T-87 auf ready“) |
+| [T-95](20-ready/T-95-screenshot-werkzeug-in-projecttools.md) | bereit, noch nicht aktiviert (Mike, 2026-10-13: Screenshot-Skript nach Deno in ProjectTools) |
 
 **Abnahme gesammelt am Ende** (Mike: „Mach erste alle Tickets fertig in doing
 dann bestätige ich die Abnahme“). Technisch freigegebene Tickets werden nach
