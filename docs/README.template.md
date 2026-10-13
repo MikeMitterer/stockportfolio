@@ -6,15 +6,30 @@ hinein gehört und woher die Angaben kommen. Formuliere selbst, in der Sprache
 des README (laut `AGENTS.md` Englisch). Erscheint das README in weiteren
 Sprachen, gilt dieselbe Vorlage für jede Fassung.
 
-Reihenfolge der Abschnitte wie hier. Komplexere Zusammenhänge als
-Mermaid-Diagramm statt als Fließtext.
+Die Datei hat zwei Teile: zuerst Anweisungen für die Arbeit, dann die
+nummerierten Abschnitte des README in ihrer Reihenfolge. Nur die nummerierten
+Abschnitte erscheinen im README.
 
-## Ausschlüsse
+## Anweisungen
 
-- Keine UID/GID-Angaben (`PUID`, `PGID`, `99:100`, `nobody:users`).
-- Keine Make-Targets, npm-Befehle, Verzeichnisbäume, Test- oder Release-Abläufe.
-  Das gehört in die Entwicklerdoku; das README verlinkt sie nur.
-- Nichts, was sich nicht in Code oder vorhandener Doku belegen lässt.
+**Allgemeine Regeln** (keine Make-Targets, npm-Befehle, Verzeichnisbäume,
+Test- oder Release-Abläufe; nur Belegtes; Mermaid für Zusammenhänge) stehen
+im Skill `readme-conventions` und werden hier nicht wiederholt.
+
+**Verbotene Begriffe** stehen mit Grund in `.docs-check.conf.sh` unter
+`FORBIDDEN`; `make docs-check` prüft sie. Sie gelten auch für Codeblöcke und
+Entwicklerabschnitte.
+
+**Feature-Liste:** Quelle sind die Abschnitte von `docs/user-guide.md`
+(je Funktion ein Abschnitt; „Rebalancing-Methode“ und „Noch nicht vorhanden“
+sind keine Features). Beim Aktualisieren neue Abschnitte dort und
+`feat`-Commits seit dem letzten README-Commit gegen die Liste abgleichen.
+
+**Fehlende Dokumente:** Fehlt ein Dokument, auf das diese Vorlage verlinkt
+(etwa `docs/user-guide.md` oder `docs/development.md`), legt der Agent es an,
+nach den Sprachregeln der `AGENTS.md` (`docs/` ist deutsch). Inhalt aus Code
+und vorhandener Doku, insbesondere aus dem bisherigen README. Angelegte
+Dokumente im Bericht nennen.
 
 ## 1. Kopf
 
@@ -43,7 +58,8 @@ Quelle: Abschnitt „Docker“ im bisherigen README bzw. `docker/README.md`.
 ## 5. Feature-Liste
 
 Alle Features als Liste, je Eintrag eine Zeile: fetter Name, kurze
-Beschreibung. Features mit eigenem Abschnitt (siehe 6) verlinken auf diesen.
+Beschreibung. Quelle siehe [Anweisungen](#anweisungen). Features mit eigenem
+Abschnitt (siehe 6) verlinken auf diesen.
 
 ## 6. Wichtigste Features
 
@@ -91,16 +107,10 @@ Liste mit Links und je einer kurzen Beschreibung:
 
 - User Guide (`docs/user-guide.md`)
 - Container-Guide (`docker/README.md`)
+- Unraid-Guide (`unraid/README.md`)
 - Changelog (`CHANGELOG.md`)
 
 Design-Specs und Ticket-Board nicht aufnehmen.
-
-## Fehlende Dokumente
-
-Fehlt ein Dokument, auf das diese Vorlage verlinkt (etwa `docs/user-guide.md`
-oder `docs/development.md`), legt der Agent es an, nach den Sprachregeln der
-`AGENTS.md` (`docs/` ist deutsch). Inhalt aus Code und vorhandener Doku,
-insbesondere aus dem bisherigen README. Angelegte Dokumente im Bericht nennen.
 
 ## 12. Support
 
