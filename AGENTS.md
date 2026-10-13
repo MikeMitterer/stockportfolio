@@ -443,7 +443,10 @@ Code-Kommentare, Tests und Skripte. Dass die Variablen im Dockerfile und in
 tote Links und Anker, unbekannte Make-Targets, npm-Skripte und Variablen und
 die verbotenen Begriffe oben. Diese Datei prüft es nur auf tote Links und
 Anker; Verweise auf andere Dokumente deshalb als Link schreiben. Zusätzlich
-meldet es Screenshots unter `docs/images/`, die älter als zwei Monate sind.
+meldet es Screenshots unter `docs/images/`, die älter als zwei Monate sind,
+und jede Umgebungsvariable, die der Code liest, aber keine Doku nennt. Es
+läuft vor jedem Commit (`.githooks/pre-commit`); `--no-verify` nur im Notfall
+und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
 Das README entsteht nach `docs/README.template.md` (Skill

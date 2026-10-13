@@ -97,7 +97,12 @@ npm --prefix api run typecheck
 Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
 
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
-Begriffe aus `.docs-check.conf.sh`. Vor Änderungen an `README.md` zuerst
+Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
+(`.githooks/pre-commit`, eingerichtet von `make setup`) und bricht ihn bei
+Problemen ab. Jede Umgebungsvariable, die der Code unter `api/src`,
+`frontend/src`, `frontend/scripts` oder `scripts` liest, muss in der Doku
+stehen; eine neue Variable also gleich hier oder im Container-Guide
+beschreiben. Vor Änderungen an `README.md` zuerst
 `make docs-check` laufen lassen: Es meldet auch Anker, auf die andere
 Dokumente verlinken. Das README folgt [`README.template.md`](README.template.md).
 
@@ -122,6 +127,10 @@ unraid/              Unraid-Anleitung
 `frontend/package.json` ist die Versionsquelle des Projekts. Der Router nutzt
 Hash-URLs (`/#/rebalancing`); Einstellungsreiter sind direkt adressierbar
 (`/#/settings?tab=calc`). Der Server braucht deshalb keine Rewrite-Regeln.
+
+Die API liefert die gebaute App aus `STOCKPORTFOLIO_PUBLIC_DIR` aus. Ohne die
+Variable ist das `dist/` im Projekt-Root, wohin `npm --prefix frontend run build`
+baut; das Image setzt `/app/public`. Im Betrieb muss niemand den Wert ändern.
 
 ## StockInfo-Adresse
 
@@ -194,6 +203,11 @@ im Kopfkommentar. Prüfskripte enden mit Exit-Code 1 bei Abweichung.
 | `check:demo-data` | lesbare Demodaten aus `--demo-details` |
 | `check:stockinfo-proxy` | Weiterleitung an StockInfo: jede freigegebene Route, 401 ohne Sitzung, 404 außerhalb der Liste |
 | `check:setup-dialog` | Info-Fenster am Einrichtungscode (braucht einen frischen Stack ohne `--demo-accounts`) |
+
+`check:demo-data` und `check:stockinfo-proxy` erreichen StockInfo unter
+`STOCKINFO_URL` (Vorgabe `http://127.0.0.1:8899`, der Test-StockInfo des
+Teststacks). `check:stockinfo-proxy` öffnet StockPortfolio unter
+`STOCKPORTFOLIO_ORIGIN` (Vorgabe `http://127.0.0.1:5175`, der Vite-Server).
 
 Beispiel:
 

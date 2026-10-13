@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+# pre-commit — Nutzerdoku vor jedem Commit prüfen
+#
+# Aktiv über `git config core.hooksPath .githooks` (macht `make setup`).
+# Ruft `make docs-check` auf und bricht den Commit ab, wenn die Prüfung
+# Probleme meldet; Hinweise lassen ihn durch. Ohne Probleme erscheint nur die
+# Ergebniszeile, sonst die vollständige Ausgabe.
+#
+# Geprüft wird der Arbeitsbaum, nicht nur der vorgemerkte Stand.
+# Im Notfall umgehen: git commit --no-verify
+#------------------------------------------------------------------------------
+
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+output="$(mktemp "${TMPDIR:-/tmp}/docs-check.XXXXXX")"
+trap 'command rm -f -- "${output}"' EXIT
+
+if make --no-print-directory docs-check >"${output}" 2>&1; then
+    grep -E '^(Ergebnis|  ⚠)' "${output}" || true
+    exit 0
+fi
+
+cat "${output}"
+echo
+echo "Commit abgebrochen: make docs-check meldet Probleme (siehe oben)."
+echo "Beheben und erneut committen; im Notfall: git commit --no-verify"
+exit 1

@@ -111,8 +111,9 @@ precheck: ## Benötigte Bibliotheksdateien prüfen
 ##@ Setup
 
 .PHONY: setup
-setup: ## Symlinks, Python-venv und npm-Abhängigkeiten einrichten
+setup: ## Symlinks, Git-Hooks, Python-venv und npm-Abhängigkeiten einrichten
 	@./scripts/setup-libs.sh --install
+	@git config core.hooksPath .githooks
 	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
 	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
 	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
@@ -152,7 +153,11 @@ test: docs-check ## Doku-Prüfung, Frontend- und API-Tests einmalig ausführen
 
 .PHONY: docs-check
 docs-check: ## Nutzerdoku gegen das Projekt prüfen (Links, Befehle, verbotene Begriffe)
-	@"$(PROJECT_TOOLS)/bash/docs-check.sh" --run
+	@if [[ -r "$(PROJECT_TOOLS)/bash/docs-check.sh" ]]; then \
+		"$(PROJECT_TOOLS)/bash/docs-check.sh" --run; \
+	else \
+		echo -e "  $(YELLOW)⚠$(RESET) ProjectTools nicht verfügbar — Doku nicht geprüft (make setup)"; \
+	fi
 
 .PHONY: clean
 clean: ## Build-, Test- und Cache-Dateien löschen; Python-venv behalten
