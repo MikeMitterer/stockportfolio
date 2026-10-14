@@ -43,20 +43,66 @@ works. The full EUPL text governs these requirements.
 
 ## MangoLila's declaration for consumers
 
-In dealings with consumers, MangoLila GmbH does not rely on the warranty and
-liability exclusions in Articles 7 and 8 of the EUPL 1.2. The statutory rules
-apply instead, with their respective requirements. MangoLila GmbH does not
-provide an additional voluntary guarantee.
+StockPortfolio is provided free of charge. MangoLila GmbH asks for neither payment
+nor personal data in return.
+
+The warranty and liability exclusions in Articles 7 and 8 of the EUPL 1.2 also
+apply in dealings with consumers, to the extent permitted by law. Mandatory
+statutory rights remain unaffected. In particular:
+
+- Liability for intent and gross negligence and for personal injury is not
+  excluded or limited (§ 6 (1) no. 9 of the Austrian Consumer Protection Act,
+  KSchG).
+- Liability under the Austrian Product Liability Act (PHG) remains unaffected;
+  Article 8 of the EUPL also preserves it.
+- Statutory warranty rights that cannot be excluded in advance remain
+  unaffected (§ 9 KSchG).
+
+The Austrian Consumer Warranty Act (VGG) does not apply to software offered
+under a free and open-source licence if the consumer makes no payment and
+personal data is processed only to improve the security, compatibility or
+interoperability of that software (§ 1 (2) no. 7 VGG). This exception concerns
+the VGG only; it does not exclude other consumer rights.
+
+MangoLila GmbH does not provide an additional voluntary guarantee.
+
+StockPortfolio is a calculation tool. It does not check whether a trade or a
+financial instrument suits you, and it does not place orders. Check data,
+prices, costs and risks before you trade.
 
 This declaration is made by MangoLila GmbH on its own behalf and responsibility.
 It imposes no additional obligations on the author, other contributors or
 redistributors and does not restrict any rights granted by the EUPL.
 
-**Deutsche Fassung der Erklärung:** Gegenüber Verbrauchern beruft sich MangoLila
-GmbH nicht auf die Gewährleistungs- und Haftungsausschlüsse der Artikel 7 und 8
-der EUPL 1.2. Stattdessen gelten die gesetzlichen Bestimmungen mit ihren
-jeweiligen Voraussetzungen. Eine zusätzliche freiwillige Garantie wird nicht
-übernommen. Diese Erklärung gibt MangoLila GmbH im eigenen Namen und auf eigene
+**Deutsche Fassung der Erklärung:** StockPortfolio wird unentgeltlich
+bereitgestellt. MangoLila GmbH verlangt dafür weder eine Zahlung noch
+personenbezogene Daten.
+
+Die Gewährleistungs- und Haftungsausschlüsse der Artikel 7 und 8 der EUPL 1.2
+gelten auch gegenüber Verbrauchern, soweit das Gesetz es zulässt. Zwingende
+gesetzliche Rechte bleiben unberührt. Insbesondere gilt:
+
+- Die Haftung für Vorsatz und grobe Fahrlässigkeit sowie für Personenschäden
+  wird weder ausgeschlossen noch eingeschränkt (§ 6 Abs. 1 Z 9 KSchG).
+- Die Haftung nach dem Produkthaftungsgesetz (PHG) bleibt unberührt; auch
+  Artikel 8 der EUPL nimmt sie aus.
+- Gesetzliche Gewährleistungsrechte, die vor Kenntnis des Mangels nicht
+  ausgeschlossen werden können, bleiben unberührt (§ 9 KSchG).
+
+Das Verbrauchergewährleistungsgesetz (VGG) gilt nicht für Software, die im
+Rahmen einer freien und quelloffenen Lizenz angeboten wird, sofern der
+Verbraucher keine Zahlung leistet und seine personenbezogenen Daten nur zur
+Verbesserung der Sicherheit, Kompatibilität oder Interoperabilität dieser
+Software verarbeitet werden (§ 1 Abs. 2 Z 7 VGG). Diese Ausnahme betrifft nur
+das VGG; andere Verbraucherrechte schließt sie nicht aus.
+
+Eine zusätzliche freiwillige Garantie übernimmt MangoLila GmbH nicht.
+
+StockPortfolio ist ein Rechenwerkzeug. Es prüft nicht, ob ein Geschäft oder
+ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe
+Daten, Kurse, Kosten und Risiken, bevor du handelst.
+
+Diese Erklärung gibt MangoLila GmbH im eigenen Namen und auf eigene
 Verantwortung ab. Sie begründet keine zusätzlichen Pflichten des Urhebers,
 anderer Mitwirkender oder Weiterverbreiter und schränkt die durch die EUPL
 eingeräumten Rechte nicht ein.
