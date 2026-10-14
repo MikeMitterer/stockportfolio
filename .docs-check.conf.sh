@@ -109,6 +109,7 @@ REQUIRED=(
     "./LICENSING.md|Anbieter- und Verbrauchererklärung"
     "./THIRD_PARTY_NOTICES.md|Lizenzen der Fremdkomponenten"
     "./SOURCE.md|Bauanleitung für den mitgelieferten Quelltext"
+    "frontend/public/legal.html|handgeschrieben (nicht generiert), entstand bei der EUPL-Umstellung"
 
     # Projektregeln für Agenten
     "./AGENTS.md|Projektregeln"

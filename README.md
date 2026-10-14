@@ -222,9 +222,10 @@ without a paid license.
 Keep the required notices, mark your changes and follow the license's
 source-code and copyleft rules, also for network services.
 
-When dealing with consumers, MangoLila GmbH does not rely on the warranty and
-liability exclusions in EUPL Articles 7 and 8; statutory rules apply. No
-additional guarantee is given.
+The warranty and liability exclusions in EUPL Articles 7 and 8 also apply to
+consumers, as far as the law permits. Mandatory rights remain unaffected,
+including liability for intent, gross negligence, personal injury and product
+liability. No additional guarantee is given.
 
 Contact: **office@MangoLila.at**.
 

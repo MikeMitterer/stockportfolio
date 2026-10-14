@@ -233,10 +233,11 @@ required notices, identify changes and comply with the license's source-code
 and copyleft requirements, including for covered network services.
 StockPortfolio is licensed under version 1.2 only.
 
-[Provider and consumer declaration](../LICENSING.md): MangoLila GmbH does not
-rely on the warranty and liability exclusions in EUPL Articles 7 and 8 when
-dealing with consumers. Statutory rules apply; no additional voluntary
-guarantee is provided. The official [German license text](../LICENSE.de.txt)
+[Provider and consumer declaration](../LICENSING.md): The warranty and
+liability exclusions in EUPL Articles 7 and 8 also apply to consumers, as far
+as the law permits. Mandatory rights remain unaffected, including liability for
+intent, gross negligence, personal injury and product liability. No additional
+voluntary guarantee is provided. The official [German license text](../LICENSE.de.txt)
 is included alongside the English version.
 
 Open **Settings → About** in the app for the license documents, consumer

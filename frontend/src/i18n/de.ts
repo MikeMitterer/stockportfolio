@@ -794,7 +794,7 @@ export const de = {
     use: 'Die Statussymbole ↓ und ↑ zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
     legal: 'Die Software steht unter der EUPL 1.2. MangoLilas Erklärung für Verbraucher erläutert die geltenden Regeln zu Gewährleistung und Haftung.',
     licenseLink: 'EUPL 1.2 (Deutsch)',
-    licensingLink: 'Lizenz- und Verbraucherklärung',
+    licensingLink: 'Lizenz- und Verbrauchererklärung',
     sourceLink: 'Lizenzseite und Quellarchiv',
     financialContentLink: 'MangoLila: Hinweise zu Finanzinhalten',
   },
