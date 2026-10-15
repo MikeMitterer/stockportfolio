@@ -237,3 +237,9 @@ DEPENDS_HINT=(
     # "frontend/src/i18n|docs/user-guide.md|30|Bedienelemente im Wortlaut der App"
     # "docker/README.md|unraid/README.md|30|gemeinsame Aussagen zum Betrieb"
 )
+
+# Sprachfassungen mit derselben Gliederung: Überschriften und je Abschnitt
+# Linkziele, Bilder, Code, Hinweisboxen und Absätze müssen übereinstimmen.
+TRANSLATIONS=(
+    "README.md|README.de.md|deutsche Fassung"
+)
