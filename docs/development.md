@@ -113,7 +113,15 @@ mit einer Frist in Tagen. Ändert sich die Basis nach der abhängigen Datei,
 meldet `make docs-check` einen Hinweis, nach Ablauf der Frist ein Problem. Die
 Vorschau hat die Frist 0 und gehört deshalb in denselben Commit wie
 `docker/README.md`. Maßgeblich ist der letzte Commit, uncommittete Änderungen
-zählen als „jetzt“.
+zählen als „jetzt“. Ändert sich `docs/README.template.md` nach den READMEs,
+erscheint nur ein Hinweis (`DEPENDS_HINT`).
+
+`README.md` und `README.de.md` müssen gleich aufgebaut sein (`TRANSLATIONS`):
+dieselben Überschriften und je Abschnitt dieselben Links, Bilder, Code,
+Hinweisboxen und gleich viele Absätze. Übersetzt werden nur Texte und
+Mermaid-Beschriftungen. Jede Abweichung ist ein Problem und lässt den
+Pre-Commit-Hook scheitern; quittieren lässt sie sich nicht. Wer eine Fassung
+ändert, zieht die andere im selben Commit nach.
 
 Screenshots unter `docs/images/` werden mit dem UI-Code verglichen, den sie
 zeigen (`SCREENSHOTS`): Hat er sich nach der Aufnahme geändert, erscheint ein
