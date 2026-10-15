@@ -113,6 +113,19 @@ Vorschau hat die Frist 0 und gehört deshalb in denselben Commit wie
 `docker/README.md`. Maßgeblich ist der letzte Commit, uncommittete Änderungen
 zählen als „jetzt“.
 
+Screenshots unter `docs/images/` werden mit dem UI-Code verglichen, den sie
+zeigen (`SCREENSHOTS`): Hat er sich nach der Aufnahme geändert, erscheint ein
+Hinweis. Verlangt eine Änderung nichts, etwa eine Meldung, die auf keinem Bild
+steht, die Meldung nach dem Prüfen quittieren und `.docs-check.ack`
+mitcommitten:
+
+```bash
+.libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
+```
+
+Die Quittung gilt bis zum nächsten Commit der Basis. Einträge mit Frist 0 und
+uncommittete Basen lassen sich nicht quittieren.
+
 Vor Änderungen an `README.md` zuerst
 `make docs-check` laufen lassen: Es meldet auch Anker, auf die andere
 Dokumente verlinken. Das README folgt [`README.template.md`](README.template.md).
