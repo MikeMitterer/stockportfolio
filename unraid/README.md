@@ -12,28 +12,20 @@ on [Docker Hub](https://hub.docker.com/r/mangolila/stockportfolio).
 
 ## License
 
-StockPortfolio's application code is licensed under **[EUPL 1.2](../LICENSE)**
-(version 1.2 only), an OSI-approved open-source license. Personal and commercial
-use, modifications, redistribution, sale and hosting are permitted without an
-additional paid license, subject to the EUPL's notice, source-code and copyleft
-requirements. See the [provider and consumer declaration](../LICENSING.md).
-In the app, **Settings → About** explains the limits of
-displayed data and calculations. It shows MangoLila GmbH's address, website
-and a logo matched to the selected theme. The status bar links to About
-immediately after the MangoLila credit. About links to the license page and
-source archive. On narrow screens, a section selector replaces the Settings
-tab row.
-About also links to MangoLila's separate notice for website financial content.
-The dashboard and Rebalancing tables also carry a short note about the
-calculated buy and sell figures.
+Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
+
+StockPortfolio is licensed under the **[EUPL 1.2](../LICENSE)**, version 1.2
+only. What it permits and requires, the consumer declaration and the contact
+are in the [License section of the README](../README.md#license).
 
 The separate [template repository](https://github.com/MikeMitterer/unraid-templates)
-is MIT-licensed; its license covers the templates. StockPortfolio is listed in
-[Unraid Community Applications](https://ca.unraid.net/).
+is MIT-licensed; its license covers the templates.
 
 ## Installing through Unraid Apps
 
-Use **Apps / Community Applications** in the Unraid web interface for a normal
+StockPortfolio is listed in
+[Unraid Community Applications](https://ca.unraid.net/). Use **Apps /
+Community Applications** in the Unraid web interface for a normal
 installation:
 
 1. Open **Apps** and search for **StockPortfolio**.
