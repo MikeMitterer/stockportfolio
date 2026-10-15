@@ -21,6 +21,25 @@ Header, Fixtures) und **T-25** (implementiert und rotiert die Generation).
 
 ---
 
+## Hinweis aus StockInfo T-110 · 2026-10-15
+
+**StockInfo sagt die Grundlage dieses Tickets nicht mehr zu.** Vor einer
+Aufnahme neu bewerten.
+
+- `GET /generation` gibt es nicht. Er stand in StockInfos
+  `contract/core-contract.json` nur unter `planned` und ist dort entfernt.
+- Den Header `StockInfo-Generation` sendet nur `GET /instrument-types`, nicht
+  jede Antwort. Dieselbe UUID liefert `GET /fields` als `generation_id`.
+  Das Artefakt (`core_version` 4.4.1) sagt nur noch das zu.
+- StockInfos `contract/fixtures/` ist entfernt. Damit veraltet auch
+  `AGENTS.md` Zeile 87 hier, die diese Fixtures als Quelle mit echten
+  HTTP-Antworten beschreibt, sowie der Quellenverweis in
+  `frontend/tests/fixtures/stockinfo/README.md`. Fünf der dortigen Kopien
+  tragen den Header `StockInfo-Generation`, darunter `quote-200.json` und
+  `instruments-200.json`, die ihn von StockInfo nicht bekommen.
+
+Eintrag durch StockInfos Agent; in StockPortfolio ist nichts geändert.
+
 ## Zuschnitt nach T-37 · 2026-09-10
 
 **Die gemeinsame Kursprüfung wird in
