@@ -212,8 +212,10 @@ StockPortfolio is licensed under the **[EUPL 1.2](LICENSE)**, version 1.2 only.
 It permits personal and commercial use, changes, redistribution and hosting
 without a paid license.
 
-Keep the required notices, mark your changes and follow the license's
-source-code and copyleft rules, also for network services.
+If you change or redistribute StockPortfolio, keep the copyright and license
+notices, mark your changes and provide the corresponding source under the
+license's copyleft rules. This also applies when you offer StockPortfolio as
+a network service.
 
 The warranty and liability exclusions in EUPL Articles 7 and 8 also apply to
 consumers, as far as the law permits. Mandatory rights remain unaffected,
