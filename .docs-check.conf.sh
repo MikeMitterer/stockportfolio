@@ -225,9 +225,12 @@ DEPENDS_HINT=(
     # docker/README.md wird per KI gepflegt und übernimmt Aussagen aus README.md
     "README.md|docker/README.md|14|übernommene Aussagen"
 
+    # Geänderte README-Vorlage: betroffene Abschnitte beider Fassungen prüfen
+    "docs/README.template.md|README.md|30|Gliederung"
+    "docs/README.template.md|README.de.md|30|Gliederung"
+
     # Bei Bedarf einschalten:
     # "docs/user-guide.md|README.md|14|Feature-Liste"
-    # "docs/README.template.md|README.md|30|Gliederung"
     # "frontend/src/i18n|docs/user-guide.md|30|Bedienelemente im Wortlaut der App"
     # "docker/README.md|unraid/README.md|30|gemeinsame Aussagen zum Betrieb"
 )

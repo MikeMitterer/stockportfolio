@@ -36,12 +36,9 @@ nach den Sprachregeln der `AGENTS.md` (`docs/` ist deutsch). Inhalt aus Code
 und vorhandener Doku, insbesondere aus dem bisherigen README. Angelegte
 Dokumente im Bericht nennen.
 
-**README.md** im Project-Root muss in Englisch gehalten sein. Parallel dazu 
-muss es auch ein README.de.md auf Deutsch geben.
-Wir folgen der GitHub-Konvention README.de.md, also der Sprachcode vor der Endung, 
-neben einem englischen README.md. Beide Dateien verlinken sich gegenseitig oben im Kopf, 
-zum Beispiel mit der Zeile „English · Deutsch“, in der die jeweils andere
-Sprache auf ihre Datei verlinkt.
+**Sprachfassungen:** `README.md` ist englisch, daneben steht die deutsche
+Fassung `README.de.md`. Aufbau, Sprachzeile und Abgleich der Fassungen regelt
+der Skill `readme-conventions`.
 
 
 ## 1. Kopf
@@ -66,7 +63,7 @@ Bildunterschrift: was man sieht und wie man es liest.
 
 Ein GitHub-Hinweis (`> [!WARNING]`): StockPortfolio und StockInfo nicht ins
 Internet stellen, nur im Heimnetz betreiben, von außen per VPN zugreifen.
-Quelle: Abschnitt „Docker“ im bisherigen README bzw. `docker/README.md`.
+Quelle: `docker/README.md`.
 
 ## 5. Feature-Liste
 
