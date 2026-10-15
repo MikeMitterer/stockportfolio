@@ -56,7 +56,6 @@ coverage/
 docker/.last-build-tag*
 docker/.last_login
 docker/logs/
-docker/preview/
 
 # Local libs (symlinks, not tracked)
 .libs/

@@ -6,6 +6,8 @@
 
 **Self-hosted portfolio tracking with tolerance-band rebalancing.**
 
+English · [Deutsch](README.de.md)
+
 [![Version](https://img.shields.io/github/package-json/v/MikeMitterer/stockportfolio?filename=frontend%2Fpackage.json)](CHANGELOG.md)
 [![Docker Hub](https://img.shields.io/docker/v/mangolila/stockportfolio?label=docker&sort=semver)](https://hub.docker.com/r/mangolila/stockportfolio)
 [![License: EUPL 1.2](https://img.shields.io/badge/license-EUPL%201.2-blue.svg)](LICENSE)

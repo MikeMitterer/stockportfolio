@@ -205,7 +205,8 @@ YAML-Schlüsseln. Das Namensschema je Sprache bleibt unberührt: TypeScript
 
 Deutsch bleibt die Sprache der **Erklärung**: Kommentare, JSDoc, Testnamen,
 `describe`/`it`-Texte und Commit-Bodies. `README.md` richtet sich an fremde
-Leser und ist englisch; Tickets, `docs/` und Kommentare sind deutsch.
+Leser und ist englisch; daneben gibt es die deutsche Fassung `README.de.md`.
+Tickets, `docs/` und Kommentare sind deutsch.
 
 Steht in einer Datei beides, ist das keine gewachsene Konvention, sondern
 Altlast: **Was ohnehin angefasst wird, zieht mit.**
@@ -404,16 +405,30 @@ anderen Betriebsstand festlegt.
 Der Leser soll schnell erkennen, was etwas macht, wie er es benutzt und welche
 Grenzen gelten.
 
+**Projekt-README in zwei Sprachen:** `README.md` ist englisch, `README.de.md`
+die deutsche Fassung mit demselben Inhalt und derselben Gliederung. Beide
+entstehen nach `docs/README.template.md`. Wer eine der beiden Dateien ändert,
+zieht die andere im selben Auftrag nach.
+
 **Docker-Hub-Beschreibung:** `docker/README.md` ist die eigene englische
-Container-Anleitung für Docker Hub. Direkt nach der Kurzbeschreibung steht
-ein gut sichtbarer Link zum GitHub-Repository. Sie erklärt Start,
-Konfiguration, Browser-Daten, Backups und Updates; Entwicklungsdetails stehen
-im Projekt-README.
-Nach erfolgreichem Image-Push überträgt der gemeinsame ProjectTools-Helfer
-`docker/README.md`. Die konvertierte Fassung darf höchstens **25.000
-UTF-8-Bytes** enthalten; absolute Bild- und Dokumentlinks zählen mit.
-Nach Änderungen an dieser Datei die echte Vorschau prüfen:
-`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master --output docker/logs/dockerhub-readme.md`.
+Container-Anleitung für Docker Hub. Sie wird per KI erstellt und gepflegt,
+nicht von einem Skript erzeugt, und beruht zumindest teilweise auf den
+Angaben im Haupt-README `README.md`. Ändert sich dort eine übernommene
+Aussage, zieht die KI sie in `docker/README.md` nach. Direkt nach der
+Kurzbeschreibung steht ein gut sichtbarer Link zum GitHub-Repository. Sie
+erklärt Start, Konfiguration, Browser-Daten, Backups und Updates;
+Entwicklungsdetails stehen im Projekt-README.
+
+Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Helfer
+`.libs/ProjectTools/src/bash/dockerhub-readme.sh` die Hub-Fassung: Pandoc
+wandelt relative Links in absolute GitHub-Links um, das Ergebnis darf
+höchstens **25.000 UTF-8-Bytes** enthalten; absolute Bild- und Dokumentlinks
+zählen mit. `make push` schreibt zuerst die Vorschau
+`docker/preview/README.md` und überträgt nach dem Image-Push denselben Inhalt
+nach Docker Hub. Die Vorschau ist ein Erzeugnis und wird nie von Hand
+bearbeitet. Nach Änderungen an `docker/README.md` die Vorschau neu erzeugen
+und prüfen:
+`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master`.
 Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. Die Grenze
 gilt für die Hub-Beschreibung, nicht für das Projekt-README.
 `DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.
@@ -460,12 +475,12 @@ Der Skill beschreibt Verfahren und Format; er erhält keine zweite Wissenskopie.
 Bei Änderungen an Verhalten, Verträgen, Konfiguration, Installation oder
 beschlossenem Umfang gehört der **Doku-Abgleich zum selben Auftrag**. Mike muss
 betroffene Anleitungen nicht eigens nennen. Betroffen sind hier vor allem
-`README.md` als Projektanleitung, `docker/README.md` als Container-Anleitung,
+`README.md` und `README.de.md` als Projektanleitung, `docker/README.md` als Container-Anleitung,
 die Dateien unter `docs/`, die Unraid-Anleitung unter `unraid/` und die zentrale
 Vorlage `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfolio.xml`.
 
 **Beide READMEs gemeinsam prüfen:** Bei Änderungen an Funktionen,
-Konfiguration, Installation oder Betrieb immer `README.md` und
+Konfiguration, Installation oder Betrieb immer `README.md`, `README.de.md` und
 `docker/README.md` abgleichen. Das gilt sowohl für Codeänderungen als auch
 für Änderungen an einer der beiden Anleitungen. Gemeinsame Aussagen müssen
 übereinstimmen. Entwickleranleitungen (Setup, Befehle, Tests, Projektaufbau)
