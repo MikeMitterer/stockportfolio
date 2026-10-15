@@ -7,3 +7,4 @@ docs/images/login.png|frontend/src/App.vue,frontend/src/views,frontend/src/compo
 docs/images/rebalancing.png|frontend/src/App.vue,frontend/src/views,frontend/src/components,frontend/src/i18n,frontend/src/assets|f6b728c07b9901870652e2214b798834b2f0ed78|2026-10-15
 docs/images/settings-calculation.png|frontend/src/App.vue,frontend/src/views,frontend/src/components,frontend/src/i18n,frontend/src/assets|f6b728c07b9901870652e2214b798834b2f0ed78|2026-10-15
 docs/images/user-admin.png|frontend/src/App.vue,frontend/src/views,frontend/src/components,frontend/src/i18n,frontend/src/assets|f6b728c07b9901870652e2214b798834b2f0ed78|2026-10-15
+docker/README.md|README.md|eb9ca53a80c65c002314e582bd2d0aa6e0fdca72|2026-10-15
