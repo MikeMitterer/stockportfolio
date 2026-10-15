@@ -4,7 +4,7 @@
  * Jede aufklappbare Fläche zeichnete ihren eigenen (T-16 im Fundament) — hier
  * dreimal, in StockInfo zweimal. Der SVG-Pfad war überall derselbe, abgeschrieben
  * und danach einzeln verstellt: 2 und 2.5 Strichstärke, 0.75 und 0.875 rem
- * Größe, drei Deckkräfte. Genau der Verlauf, den ux-standards beschreibt — die
+ * Größe, drei Deckkräfte. Genau der Verlauf, den ux-conventions beschreibt — die
  * Kopie, die man beim zweiten Mal duldet, ist beim dritten Mal auseinandergelaufen.
  *
  * Geprüft wird statisch wie in `componentStyles.spec.ts`: Ein Mount-Test je
