@@ -17,7 +17,6 @@ beschreibt der [Docker-Guide](../docker/README.md).
 - [Sprache und Texte](#sprache-und-texte)
 - [Docker-Image bauen und veröffentlichen](#docker-image-bauen-und-veröffentlichen)
 - [Release und Changelog](#release-und-changelog)
-- [Kommandozeilen-Themes](#kommandozeilen-themes)
 
 ## Voraussetzungen
 
@@ -335,19 +334,3 @@ Ursache beheben und ohne neue Version wiederholen:
 ```bash
 python3 .libs/ProjectTools/src/python/changelog.py --publish
 ```
-
-## Kommandozeilen-Themes
-
-Make, BashLib-Helfer und ProjectTools-Skripte teilen die Themes aus MakeLib:
-`classic`, `ocean`, `earth`, `night`, `mono`, `sunset`, `forest`, `neon` und
-`shell`. Auswahl mit `MAKE_THEME`, etwa `make help MAKE_THEME=ocean`; Make
-reicht den Wert an gestartete Skripte weiter. `NO_COLOR`, umgeleitete Ausgabe
-und `TERM=dumb` schalten Farben ab.
-
-| Variable | Standard | Wirkung |
-|---|---|---|
-| `THEME_WIDTH_TARGET` | 22 | Breite der Zielspalte |
-| `THEME_COLUMN_GAP` | 1 | Abstand zwischen Spalten |
-| `THEME_INDENT_GROUP` / `THEME_INDENT_TARGET` | 2 / 7 | Einrückung von Gruppen und Einträgen |
-| `THEME_WIDTH_HELP` | 110 | Breite der Python-Hilfe |
-| `THEME_GROUP_SPACING` | 1 | Leerzeilen zwischen Gruppen |
