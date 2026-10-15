@@ -216,8 +216,10 @@ StockPortfolio steht unter der **[EUPL 1.2](LICENSE)**, nur Version 1.2. Sie
 erlaubt private und gewerbliche Nutzung, Änderungen, Weitergabe und Hosting
 ohne kostenpflichtige Lizenz.
 
-Behalte die erforderlichen Hinweise, kennzeichne deine Änderungen und halte die
-Quelltext- und Copyleft-Regeln der Lizenz ein, auch für Netzwerkdienste.
+Wer StockPortfolio ändert oder weitergibt, muss die Urheber- und
+Lizenzhinweise erhalten, Änderungen kennzeichnen und den zugehörigen
+Quelltext nach den Copyleft-Regeln der Lizenz bereitstellen. Das gilt auch,
+wenn StockPortfolio als Netzwerkdienst angeboten wird.
 
 Die Gewährleistungs- und Haftungsausschlüsse der EUPL-Artikel 7 und 8 gelten
 auch gegenüber Verbrauchern, soweit das Gesetz es zulässt. Zwingende Rechte
