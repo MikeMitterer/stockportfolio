@@ -279,9 +279,7 @@ Aus diesem Repository aufrufen:
 .venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 ```
 
-Die lokale `.venv` stellt `projecttools.ui.colors` für `MAKE_THEME` bereit;
-`NO_COLOR` und umgeleitete Ausgabe bleiben schlicht. Der StockInfo-Kindprozess
-verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
+Der StockInfo-Kindprozess verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
 diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
 
 Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen
@@ -311,9 +309,7 @@ nur den StockInfo-Testport; Status und Stop lesen den registrierten Port. Für
 Worktrees außerhalb des gemeinsamen Elternverzeichnisses benötigen einen
 absoluten Pfad für `--stockinfo-root`. Ohne `--stack` startet `--run` nur
 StockInfo und muss direkt mit StockInfos `.venv/bin/python` aufgerufen werden,
-weil es dessen `app` im selben Prozess importiert. StockInfos `make setup`
-installiert ProjectTools in dessen `.venv`; die Hilfe nutzt dort deshalb
-ebenfalls das gemeinsame CLI-Theme. Details stehen in der
+weil es dessen `app` im selben Prozess importiert. Details stehen in der
 [Entwicklerdoku](docs/development.md#einrichten-und-starten).
 
 [↑ Übersicht](#übersicht)
