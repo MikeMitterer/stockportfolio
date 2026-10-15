@@ -213,13 +213,13 @@ Copyright © 2026 Michael Mitterer. **MangoLila GmbH** ist Anbieterin und
 Lizenzgeberin.
 
 StockPortfolio steht unter der **[EUPL 1.2](LICENSE)**, nur Version 1.2. Sie
-erlaubt private und gewerbliche Nutzung, Änderungen, Weitergabe und Hosting
-ohne kostenpflichtige Lizenz.
+erlaubt private und gewerbliche Nutzung, Änderungen, Weitergabe, Verkauf und
+Hosting ohne kostenpflichtige Lizenz.
 
-Wer StockPortfolio ändert oder weitergibt, muss die Urheber- und
-Lizenzhinweise erhalten, Änderungen kennzeichnen und den zugehörigen
-Quelltext nach den Copyleft-Regeln der Lizenz bereitstellen. Das gilt auch,
-wenn StockPortfolio als Netzwerkdienst angeboten wird.
+Wer StockPortfolio oder eine geänderte Fassung weitergibt oder als
+Netzwerkdienst anbietet, muss die Urheber- und Lizenzhinweise erhalten,
+Änderungen kennzeichnen und den zugehörigen Quelltext nach den
+Copyleft-Regeln der Lizenz bereitstellen.
 
 Die Gewährleistungs- und Haftungsausschlüsse der EUPL-Artikel 7 und 8 gelten
 auch gegenüber Verbrauchern, soweit das Gesetz es zulässt. Zwingende Rechte
@@ -231,4 +231,5 @@ Kontakt: **office@MangoLila.at**.
 
 Details: [LICENSE](LICENSE) · [Deutscher Lizenztext](LICENSE.de.txt) ·
 [Anbieter- und Verbrauchererklärung](LICENSING.md) ·
-[Hinweise zu Fremdkomponenten](THIRD_PARTY_NOTICES.md)
+[Hinweise zu Fremdkomponenten](THIRD_PARTY_NOTICES.md) ·
+[Quelltext](SOURCE.md)
