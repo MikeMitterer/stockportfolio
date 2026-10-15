@@ -90,11 +90,9 @@ MAX_ALERTS=2
 
 # ─── Variablen zwischen Doku und Code ──────────────────────────────────────────
 
-# Variablen, die docs/development.md nennt, die aber nur in MakeLib unter
-# .libs/ stehen (von git ignoriert), oder allgemeine Standards sind.
+# Variablen, die die Doku nennt, die aber nur in MakeLib unter .libs/ stehen
+# (von git ignoriert), oder allgemeine Standards sind.
 KNOWN_VARIABLES=(
-    "NO_COLOR|Standard der Kommandozeile, schaltet Farben ab"
-    "THEME_WIDTH_HELP|MakeLib, colours.mk"
 )
 
 # Code, dessen Umgebungsvariablen in einem Dokument aus DOCS stehen müssen:
