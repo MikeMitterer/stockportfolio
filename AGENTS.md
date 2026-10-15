@@ -405,10 +405,10 @@ anderen Betriebsstand festlegt.
 Der Leser soll schnell erkennen, was etwas macht, wie er es benutzt und welche
 Grenzen gelten.
 
-**Projekt-README in zwei Sprachen:** `README.md` ist englisch, `README.de.md`
-die deutsche Fassung mit demselben Inhalt und derselben Gliederung. Beide
-entstehen nach `docs/README.template.md`. Wer eine der beiden Dateien ändert,
-zieht die andere im selben Auftrag nach.
+**Projekt-README:** `README.md` und `README.de.md` entstehen nach der
+[README-Vorlage](docs/README.template.md) und dem Skill `readme-conventions`.
+Gliederung, Sprachfassungen und Schreibregeln stehen dort und werden hier
+nicht wiederholt.
 
 **Docker-Hub-Beschreibung:** `docker/README.md` ist die eigene englische
 Container-Anleitung für Docker Hub. Sie wird per KI erstellt und gepflegt,
@@ -473,8 +473,6 @@ vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
 auf. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
-Das README entsteht nach `docs/README.template.md` (Skill
-`readme-conventions`).
 
 Änderungen an Board- oder Lessons-Konventionen werden im selben Auftrag im
 Skill `task-verification-workflow` samt Referenzen und Vorlagen nachgezogen.
