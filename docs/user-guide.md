@@ -52,6 +52,12 @@ Aufträge. Der Hinweis dazu steht unter den Tabellen, auf der Anmeldeseite und
 unter _About_. Bei jeder Anmeldung bestätigst du ihn mit „Ich habe den Hinweis
 gelesen“; die Bestätigung gilt nur für diese Anmeldung.
 
+_Über StockPortfolio_ in der Statusleiste öffnet _Einstellungen → About_.
+Dort stehen die Anbieterin MangoLila GmbH mit Adresse und Website, die Grenzen
+der Daten und Links auf die EUPL 1.2 in der gewählten Sprache, die Lizenz- und
+Verbrauchererklärung, die Lizenzseite mit Quellarchiv und MangoLilas Hinweise
+zu Finanzinhalten.
+
 Fragezeichen-Tooltips erklären die Methode und verlinken auf die passende
 Einstellung oder die Referenzseite _Die Methode_.
 
