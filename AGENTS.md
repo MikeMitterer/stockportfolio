@@ -216,7 +216,7 @@ vorher erraten hat, und `vue-tsc` prüft Typen — einen deutschen Namen sieht e
 nie. Für TypeScript und Vue leistet das ein Lauf über die TS-Compiler-API, für
 Bash die Liste aller Zuweisungen und Funktionsköpfe.
 
-Vollständige Konventionen samt Namensschema je Sprache: Skill `code-standards`.
+Vollständige Konventionen samt Namensschema je Sprache: Skill `code-conventions`.
 
 [↑ Übersicht](#übersicht)
 
@@ -368,7 +368,7 @@ Hier entstünden sonst lokale Kopien, die beim nächsten Update auseinanderlaufe
 [T-36](_tickets/10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) wartet aus
 demselben Grund auf eine installierbare Fundament-Fassung.
 
-UX-Konventionen: Skill `ux-standards`.
+UX-Konventionen: Skill `ux-conventions`.
 
 [↑ Übersicht](#übersicht)
 

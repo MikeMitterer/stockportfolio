@@ -113,7 +113,7 @@ Die Aufteilung bleibt:
 |---|---|
 | ux-foundation | generische ESLint-Mechanik, Scope-Auswertung, Vue-Template-Anbindung und Regeltests |
 | StockPortfolio `eslint.config.js` | Aktivierung für `localStorage` und Geltungsbereich `src/` |
-| Skill `ux-standards` | Begründung der Speicherregel |
+| Skill `ux-conventions` | Begründung der Speicherregel |
 
 StockPortfolio hat keinen eigenen erlaubten Speicheradapter unter `src/`:
 Theme, Locale und Ansichten verwenden `safeStorage` aus

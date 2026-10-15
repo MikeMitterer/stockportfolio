@@ -29,7 +29,7 @@ Paket: Abschnitt „Rollen und Arbeitsbeginn“.
 
 Lokal: Vor fachlicher Arbeit [README](../README.md), STATUS und das Ticket
 lesen. Neue Tickets folgen der [Ticketvorlage](TICKET-TEMPLATE.md); für
-Produktcode gelten der Skill `code-standards` und die passenden Hausregeln.
+Produktcode gelten der Skill `code-conventions` und die passenden Hausregeln.
 Das Board wurde am 2026-09-10 aus StockInfo übernommen und wird seither
 eigenständig geführt; keine Rollen oder Übergaben von dort übernehmen.
 
