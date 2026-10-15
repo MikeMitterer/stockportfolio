@@ -157,9 +157,9 @@ REQUIRED=(
     "_tickets/.agents/TICKET-TEMPLATE.md"
 
     # Design und Planung
-    "docs/stockinfo-integration-proposal.md|StockInfo-Anbindung"
-    "docs/superpowers/specs/2026-08-06-rebalancing-webapp-design.md|Grundentwurf der App"
-    "docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md|Entwurf Server und Konten"
+    # "docs/stockinfo-integration-proposal.md|StockInfo-Anbindung"
+    # "docs/superpowers/specs/2026-08-06-rebalancing-webapp-design.md|Grundentwurf der App"
+    # "docs/superpowers/specs/2026-09-29-stockportfolio-server-design.md|Entwurf Server und Konten"
 
     # Anleitungen der Test-Fixtures
     "frontend/tests/fixtures/browser/README.md"
