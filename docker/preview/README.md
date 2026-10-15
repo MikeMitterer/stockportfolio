@@ -131,15 +131,21 @@ For `docker run`, pull the new image and recreate the container with the same en
 
 Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
 
-The **[EUPL 1.2](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE)** permits personal and commercial use, modifications, redistribution, sale and hosting without an additional paid license. Modified versions may be offered under another name. Preserve the required notices, identify changes and comply with the license's source-code and copyleft requirements, including for covered network services. StockPortfolio is licensed under version 1.2 only.
+StockPortfolio is licensed under the **[EUPL 1.2](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE)**, version 1.2 only. It permits personal and commercial use, changes, redistribution, sale and hosting without a paid license.
 
-[Provider and consumer declaration](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSING.md): The warranty and liability exclusions in EUPL Articles 7 and 8 also apply to consumers, as far as the law permits. Mandatory rights remain unaffected, including liability for intent, gross negligence, personal injury and product liability. No additional voluntary guarantee is provided. The official [German license text](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE.de.txt) is included alongside the English version.
+If you redistribute StockPortfolio or a changed version, or offer it as a network service, keep the copyright and license notices, mark your changes and provide the corresponding source under the license's copyleft rules.
 
-Open **Settings → About** in the app for the license documents, consumer declaration and a link to `/legal.html` on your instance. Production builds include license documents and `/stockportfolio-source.tgz`, made from the same working files as the app. These files are stored under `/app/public` in the image. The archive includes build instructions in SOURCE.md.
+The warranty and liability exclusions in EUPL Articles 7 and 8 also apply to consumers, as far as the law permits. Mandatory rights remain unaffected, including liability for intent, gross negligence, personal injury and product liability. No additional guarantee is given.
 
-The **About StockPortfolio** link in the status bar opens **Settings → About**, a tab about data and calculation limits. It links to the English or German EUPL according to the selected UI language, the consumer declaration and the license page with the source archive. It shows MangoLila GmbH's address, website and theme-matched logo, and links to MangoLila's separate notice for website financial content. On narrow screens, a section selector replaces the Settings tab row.
+Third-party components retain their own licenses. StockInfo is a separate service with its own license.
 
-Third-party components keep their own licenses; see [third-party notices](https://github.com/MikeMitterer/stockportfolio/blob/master/THIRD_PARTY_NOTICES.md). StockInfo is a separate service with its own license. Contact **<office@MangoLila.at>**.
+Contact: **<office@MangoLila.at>**.
+
+In the app, **Settings → About** links to the license in the selected UI language, the consumer declaration and the license page `/legal.html` on your instance. The **About StockPortfolio** link in the status bar opens it.
+
+Production images include the license documents and `/stockportfolio-source.tgz` under `/app/public`. The archive is made from the same working files as the app and includes build instructions in [SOURCE.md](https://github.com/MikeMitterer/stockportfolio/blob/master/SOURCE.md).
+
+Details: [LICENSE](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE) · [German license text](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE.de.txt) · [Provider and consumer declaration](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSING.md) · [Third-party notices](https://github.com/MikeMitterer/stockportfolio/blob/master/THIRD_PARTY_NOTICES.md) · [Source code](https://github.com/MikeMitterer/stockportfolio/blob/master/SOURCE.md)
 
 ## Unraid and support
 
