@@ -7,24 +7,54 @@
 # Probleme meldet; Hinweise lassen ihn durch. Ohne Probleme erscheint nur die
 # Ergebniszeile, sonst die vollständige Ausgabe.
 #
-# Geprüft wird der Arbeitsbaum, nicht nur der vorgemerkte Stand.
+# Geprüft wird der vorgemerkte Stand, also genau das, was der Commit enthält:
+# Der Hook schreibt den Index in ein temporäres Verzeichnis und lässt die
+# Prüfung dort laufen, mit Git-Verzeichnis und Index dieses Repositorys.
+# Nicht vorgemerkte Änderungen und neue, nicht vorgemerkte Dateien zählen
+# deshalb nicht mit.
+#
 # Im Notfall umgehen: git commit --no-verify
 #------------------------------------------------------------------------------
 
 set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)"
+ROOT="$(git rev-parse --show-toplevel)"
+readonly ROOT
+cd "${ROOT}"
 
-output="$(mktemp "${TMPDIR:-/tmp}/docs-check.XXXXXX")"
-trap 'command rm -f -- "${output}"' EXIT
+# Bei `git commit -a` oder `git commit <pfad>` setzt git einen eigenen Index;
+# ein relativer Pfad muss nach dem Wechsel ins Snapshot-Verzeichnis gelten.
+if [[ -n "${GIT_INDEX_FILE:-}" && "${GIT_INDEX_FILE}" != /* ]]; then
+    export GIT_INDEX_FILE="${ROOT}/${GIT_INDEX_FILE}"
+fi
 
-if make --no-print-directory docs-check >"${output}" 2>&1; then
-    grep -E '^(Ergebnis|  ⚠)' "${output}" || true
+# ProjectTools liegt unter .libs/ (von git ignoriert) und fehlt im Snapshot.
+# Ein gesetzter relativer Pfad gilt ab dem Projekt-Root, wie bei make.
+export PROJECT_TOOLS="${PROJECT_TOOLS:-${ROOT}/.libs/ProjectTools/src}"
+if [[ "${PROJECT_TOOLS}" != /* ]]; then
+    PROJECT_TOOLS="${ROOT}/${PROJECT_TOOLS}"
+fi
+
+SNAPSHOT="$(mktemp -d "${TMPDIR:-/tmp}/docs-check-index.XXXXXX")"
+readonly SNAPSHOT
+OUTPUT="$(mktemp "${TMPDIR:-/tmp}/docs-check.XXXXXX")"
+readonly OUTPUT
+trap 'command rm -rf -- "${SNAPSHOT}" "${OUTPUT}"' EXIT
+
+git checkout-index --all --prefix="${SNAPSHOT}/"
+
+GIT_DIR="$(git rev-parse --absolute-git-dir)"
+export GIT_DIR
+export GIT_WORK_TREE="${SNAPSHOT}"
+
+if make --no-print-directory -C "${SNAPSHOT}" docs-check >"${OUTPUT}" 2>&1; then
+    # Ergebniszeile und Warnungen; vor dem ⚠ kann ein Farbcode stehen.
+    grep -E '^Ergebnis|⚠' "${OUTPUT}" || true
     exit 0
 fi
 
-cat "${output}"
+cat "${OUTPUT}"
 echo
-echo "Commit abgebrochen: make docs-check meldet Probleme (siehe oben)."
-echo "Beheben und erneut committen; im Notfall: git commit --no-verify"
+echo "Commit abgebrochen: make docs-check meldet Probleme im vorgemerkten Stand (siehe oben)."
+echo "Beheben, vormerken und erneut committen; im Notfall: git commit --no-verify"
 exit 1

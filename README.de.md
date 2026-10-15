@@ -67,9 +67,6 @@ Bestände und Ziele lassen sich direkt in der Tabelle bearbeiten.
 Bänder beziehen sich auf das Ziel: Bei 10 % Ziel und 6 % unterem Band löst die
 Position bei 9,4 % aus.
 
-Ein optionales Mindest-Handelsvolumen blendet kleine Handelsbeträge aus; die
-Abweichung selbst bleibt sichtbar.
-
 ### Rebalancing-Simulation
 
 ![Rebalancing-Simulation](docs/images/rebalancing.png)
@@ -96,12 +93,6 @@ mit Kurs und prozentualer Veränderung auf zwei Achsen.
 Der Reiter _Bewertung_ zeigt Marktwert, Ziel und Bänder; _Informationen_ listet
 die Daten, die StockInfo für das Instrument liefert, etwa TER, Fondsgröße,
 Anbieter und Volatilität.
-
-Tageskurse werden im Browser zwischengespeichert und je Wertpapier höchstens
-einmal am Tag abgerufen.
-
-Eine kleine Sparkline in jeder Zeile zeigt auf einen Blick, ob der Kurs von oben
-oder von unten kommt.
 
 ### Berechnung, Sicherheitspuffer und Investitionsreserve
 
@@ -148,7 +139,7 @@ flowchart LR
 
 Der Browser spricht nur mit StockPortfolio. Der Server leitet zulässige
 StockInfo-Anfragen angemeldeter Benutzer weiter, ohne Cookies. StockInfo
-braucht deshalb keine CORS-Einstellung und erfährt nichts über deine Bestände.
+erfährt nichts über deine Bestände.
 
 | | StockInfo | StockPortfolio |
 |---|---|---|

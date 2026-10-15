@@ -136,7 +136,7 @@ Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
 `30-doing/`; Backlog, Done, Iced und Rejected erzeugen keinen Auftrag.
 
 - [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
-- [`_tickets/ACTIVITY.md`](_tickets/ACTIVITY.md) — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Die Datei bleibt lokal und wird über `_tickets/.gitignore` nicht in Git versioniert (Mike, 2026-09-28). Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
+- `_tickets/ACTIVITY.md` — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Die Datei bleibt lokal und wird über `_tickets/.gitignore` nicht in Git versioniert (Mike, 2026-09-28). Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
 - [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
 - [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
 - [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
@@ -468,8 +468,9 @@ wie `docker/README.md`. Alle Zeiten kommen aus git, nicht vom Dateidatum oder
 Tagesdatum. Verlangt eine Änderung nichts, wird die Meldung nach dem Prüfen
 mit `docs-check.sh --ack <datei>` quittiert und `.docs-check.ack`
 mitcommittet; ungesehen quittieren ist kein Weg, eine Meldung loszuwerden. Es
-läuft vor jedem Commit (`.githooks/pre-commit`); `--no-verify` nur im Notfall
-und mit Begründung im Bericht.
+läuft vor jedem Commit (`.githooks/pre-commit`) und prüft dort genau den
+vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
+auf. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
 Das README entsteht nach `docs/README.template.md` (Skill
