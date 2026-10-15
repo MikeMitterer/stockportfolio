@@ -2,6 +2,27 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.7.2+261015.1724.c0abc — 2026-10-15
+
+Verbrauchererklärung in Deutsch und Englisch, deutsches README, Doku-Prüfung vor jedem Commit
+
+### Features
+
+- Nutzerdoku bei make test gegen das Projekt prüfen (`216ba56`)
+
+### Documentation
+
+- README nach Vorlage neu fassen, User Guide und Entwicklerdoku anlegen (`7395d49`)
+- Verbrauchererklärung auf EUPL-Ausschlüsse mit Vorbehalt umstellen (`f6b728c`)
+- deutsches README und versionierte Docker-Hub-Vorschau ergänzen (`eb9ca53`)
+- abhängige Dateien mit docs-check überwachen (`a7ece9f`)
+- Screenshots am UI-Code messen, Quittung mit --ack beschreiben (`3d19a3a`)
+- docs-check-Config thematisch gliedern, Screenshots quittiert (`5c281d2`)
+- Hinweis README.md → docker/README.md quittiert (`e3fb97b`)
+- READMEs kürzen, Pre-Commit-Hook prüft den vorgemerkten Stand (`5e8aa60`)
+- Hinweis README.md → docker/README.md quittiert (`0ec1ef1`)
+- Design-Dokumente nicht mehr als Pflichtdateien prüfen (`1e51333`)
+
 ## v0.7.1+261003.2156.10fae — 2026-10-03
 
 Public origin: trailing slash accepted, invalid values stop the start without logging the value. Setup code help points to Unraid and Docker logs. Dashboard opens without delay on long price histories.
