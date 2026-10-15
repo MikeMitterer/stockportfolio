@@ -150,13 +150,15 @@ REQUIRED=(
     "frontend/tests/fixtures/stockinfo/README.md"
 )
 
-# Screenshots der Anleitungen. Sind sie älter als zwei Monate (nach dem
-# letzten Commit, der das Bild ändert), erscheint ein Hinweis: Dann prüfen, ob
-# sie die aktuelle Oberfläche zeigen, sonst neu aufnehmen (docs/development.md).
+# Screenshots der Anleitungen und der UI-Code, den sie zeigen, je
+# "<ui-code>|<bilder>|<grund>" (UI-Code: mehrere Pfade mit Komma). Hat sich
+# der UI-Code nach einem Bild geändert, erscheint ein Hinweis: prüfen, ob das
+# Bild die Oberfläche noch richtig zeigt, sonst neu aufnehmen
+# (docs/development.md). Verglichen wird mit dem letzten Commit des Codes,
+# nicht mit dem Tagesdatum; die Prüfung scheitert daran nie.
 SCREENSHOTS=(
-    "docs/images"
+    "frontend/src/App.vue,frontend/src/views,frontend/src/components,frontend/src/i18n,frontend/src/assets|docs/images|Oberfläche"
 )
-MAX_SCREENSHOT_AGE_DAYS=60
 
 # Dateien, die ihrer Basis bald nach deren Änderung folgen müssen, je
 # "<basis>|<abhängig>|<tage>|<grund>". Ändert sich die Basis später, ist das
@@ -177,8 +179,7 @@ DEPENDS=(
 )
 
 # Gleiches Format, auch überfällig nur ein Hinweis: Die Basis ändert sich oft,
-# ohne dass die abhängige Datei etwas nachziehen muss. Der Hinweis bleibt, bis
-# die abhängige Datei angefasst wird.
+# ohne dass die abhängige Datei etwas nachziehen muss.
 DEPENDS_HINT=(
     # docker/README.md wird per KI gepflegt und übernimmt Aussagen aus README.md
     "README.md|docker/README.md|14|übernommene Aussagen"
@@ -189,6 +190,19 @@ DEPENDS_HINT=(
     # "frontend/src/i18n|docs/user-guide.md|30|Bedienelemente im Wortlaut der App"
     # "docker/README.md|unraid/README.md|30|gemeinsame Aussagen zum Betrieb"
 )
+
+# Quittieren statt sinnlos anfassen: Verlangt eine Änderung der Basis nichts
+# (Tippfehler im README, Codeänderung ohne sichtbare Folge), die Meldung aus
+# SCREENSHOTS, DEPENDS oder DEPENDS_HINT nach dem Prüfen quittieren:
+#
+#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
+#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images   # ganzer Ordner
+#   .libs/ProjectTools/src/bash/docs-check.sh --ack               # alle offenen
+#
+# Das schreibt je Paar den letzten Commit der Basis nach .docs-check.ack; die
+# Datei mitcommitten. Die Quittung gilt, bis die Basis einen neueren Commit
+# hat, dann kommt die Meldung zurück. Nicht quittieren lassen sich Einträge mit
+# Frist 0 (die Vorschau neu erzeugen) und uncommittete Basen (erst committen).
 
 # Code, dessen Umgebungsvariablen in einem Dokument aus DOCS stehen müssen:
 # App, API und die Skripte für Teststack und Browserprüfungen. Jede Variable,
