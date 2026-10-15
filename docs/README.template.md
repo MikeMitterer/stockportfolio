@@ -31,6 +31,14 @@ nach den Sprachregeln der `AGENTS.md` (`docs/` ist deutsch). Inhalt aus Code
 und vorhandener Doku, insbesondere aus dem bisherigen README. Angelegte
 Dokumente im Bericht nennen.
 
+**README.md** im Project-Root muss in Englisch gehalten sein. Parallel dazu 
+muss es auch ein README.de.md auf Deutsch geben.
+Wir folgen der GitHub-Konvention README.de.md, also der Sprachcode vor der Endung, 
+neben einem englischen README.md. Beide Dateien verlinken sich gegenseitig oben im Kopf, 
+zum Beispiel mit der Zeile „English · Deutsch“, in der die jeweils andere
+Sprache auf ihre Datei verlinkt.
+
+
 ## 1. Kopf
 
 Zentriert (`<div align="center">`), und nur der Kopf: App-Logo

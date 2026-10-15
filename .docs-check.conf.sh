@@ -18,6 +18,7 @@
 # nicht in DOCS, sondern in REQUIRED und teils in LINKS_ONLY.
 DOCS=(
     "README.md"
+    "README.de.md"
     "docker/README.md"
     "unraid/README.md"
     "docs"
@@ -92,7 +93,17 @@ MAX_ALERTS=2
 REQUIRED=(
     # Projekt- und Nutzerdoku
     "./README.md|Projekt-README"
+    "./README.de.md|Projekt-README auf deutsch"
     "docker/README.md|Container-Anleitung, Quelle der Docker-Hub-Beschreibung"
+
+    # Aufrufkette:
+    #     make push ruft docker/build.sh --push auf.
+    #     Darin ruft push() (docker/build.sh:297) der Reihe nach auf:
+    #
+    #     1. updateDockerHubReadme --preview: erzeugt die Vorschau.
+    #     2. pushImage: lädt das Image hoch.
+    #     3. updateDockerHubReadme --publish: überträgt die Beschreibung nach Docker Hub.
+    "docker/preview/README.md|Docker-Hub-Beschreibung, aus docker/README.md erzeugt"
     "docs/user-guide.md|im README verlinkt"
     "docs/development.md|im README verlinkt"
     "unraid/README.md|Unraid-Anleitung"
