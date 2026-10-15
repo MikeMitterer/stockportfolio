@@ -397,14 +397,11 @@ anderen Betriebsstand festlegt.
 
 ## Dokumentation gehört zur Änderung
 
-**Schreibe für normale Programmierer, ohne Vorwissen über dieses Projekt.**
-Der Leser soll schnell erkennen, was etwas macht, wie er es benutzt und welche
-Grenzen gelten.
-
-**Projekt-README:** `README.md` und `README.de.md` entstehen nach der
-[README-Vorlage](docs/README.template.md) und dem Skill `docs-conventions`.
-Gliederung, Sprachfassungen und Schreibregeln stehen dort und werden hier
-nicht wiederholt.
+**Wie Dokumente geschrieben werden, steht nicht hier.** Schreibregeln,
+welcher Inhalt in welches Dokument gehört, Sprachfassungen und den
+Lizenzabschnitt regelt der Skill `docs-conventions`; `README.md` und
+`README.de.md` entstehen nach der [README-Vorlage](docs/README.template.md).
+Hier stehen nur StockPortfolios eigene Festlegungen.
 
 **Docker-Hub-Beschreibung:** `docker/README.md` ist die eigene englische
 Container-Anleitung für Docker Hub. Sie wird per KI erstellt und gepflegt,
@@ -430,15 +427,6 @@ gilt für die Hub-Beschreibung, nicht für das Projekt-README.
 `DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.
 Keine lokale Kopie des Helfers und kein separates README-Push-Target anlegen.
 
-- Kurze, direkte Sätze und geläufige Wörter. Keine KI-Floskeln, Werbesprache
-  oder erfundenen Fachbegriffe.
-- Fachbegriffe nur, wenn sie nötig sind, und beim ersten Auftreten kurz erklärt.
-  Ein kleines Beispiel hilft oft mehr als eine abstrakte Erklärung.
-- Die wichtigste Information zuerst. Details stehen beim jeweiligen Thema;
-  Schritte als nummerierte Liste, Vergleiche bei Bedarf als Tabelle.
-- Anleitungen beschreiben die Benutzung und das aktuelle Verhalten. Interne
-  Arbeitsabläufe und Review-Geschichte gehören in die Tickets.
-
 **`PUID`/`PGID` bleiben aus nutzersichtbarer Doku heraus** (Mike, 2026-10-03,
 T-90). Das Image läuft ohne Zutun als 99:100 (Unraids `nobody:users`); die
 Variablen funktionieren weiter, werden aber nicht beworben. Welche Begriffe in
@@ -456,7 +444,8 @@ die verbotenen Begriffe oben. Diese Datei prüft es nur auf tote Links und
 Anker; Verweise auf andere Dokumente deshalb als Link schreiben. Zusätzlich
 meldet es Screenshots unter `docs/images/`, deren UI-Code sich nach der
 Aufnahme geändert hat, und jede Umgebungsvariable, die der Code liest, aber
-keine Doku nennt. Abhängige Dateien stehen dort unter `DEPENDS`: Ändert sich
+keine Doku nennt. `README.md` und `README.de.md` müssen gleich aufgebaut sein
+(`TRANSLATIONS`). Abhängige Dateien stehen dort unter `DEPENDS`: Ändert sich
 eine Basis wie `README.md` oder `docker/README.md` nach ihrer abhängigen Datei
 (`README.de.md`, `docker/preview/README.md`), meldet es einen Hinweis und nach
 der eingetragenen Frist ein Problem. Die Vorschau gehört in denselben Commit
@@ -486,9 +475,7 @@ Vorlage `/Volumes/DevLocal/DevUnraid/Production/Templates/templates/stockportfol
 Konfiguration, Installation oder Betrieb immer `README.md`, `README.de.md` und
 `docker/README.md` abgleichen. Das gilt sowohl für Codeänderungen als auch
 für Änderungen an einer der beiden Anleitungen. Gemeinsame Aussagen müssen
-übereinstimmen. Entwickleranleitungen (Setup, Befehle, Tests, Projektaufbau)
-gehören nach `docs/development.md`; das Projekt-README verlinkt sie nur
-(Mike, 2026-10-11). Containeranleitungen gehören in `docker/README.md`.
+übereinstimmen; was in welches Dokument gehört, regelt `docs-conventions`.
 Der Doku-Abgleich im Ticket beziehungsweise Abschlussbericht nennt die
 nötigen Anpassungen oder begründet, weshalb die andere Datei unverändert
 bleibt. Der Verifier prüft die inhaltliche Übereinstimmung; Änderungen an
