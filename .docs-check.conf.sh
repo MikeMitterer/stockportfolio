@@ -4,11 +4,13 @@
 # Aufruf: make docs-check (läuft auch in make test)
 # shellcheck disable=SC2034  # von docs-check.sh gesourct
 
-# Pfadangaben in DOCS, LINKS_ONLY, EXCLUDE, REQUIRED und SCREENSHOTS gelten
-# ab dem Projekt-Root.
+# Pfadangaben in DOCS, LINKS_ONLY, EXCLUDE, REQUIRED, CODE_VARIABLES,
+# SCREENSHOTS, DEPENDS und DEPENDS_HINT gelten ab dem Projekt-Root.
 # Muster wie in .gitignore: * innerhalb eines Ordners, ** beliebig tief,
 # ? genau ein Zeichen. Ordner und Muster treffen nur Dateien, die git nicht
 # ignoriert.
+
+# ─── Welche Dokumente geprüft werden ───────────────────────────────────────────
 
 # Inhaltlich geprüfte Dokumente: nutzersichtbare Doku (AGENTS.md, Abschnitt
 # Dokumentation), Lizenz- und Quelltexthinweise und die Anleitungen der
@@ -44,6 +46,8 @@ EXCLUDE=(
     "docs/superpowers"
 )
 
+# ─── Was in den Dokumenten stehen darf ─────────────────────────────────────────
+
 # Text, der in keinem Dokument aus DOCS stehen darf. Geprüft wird jede Zeile,
 # auch in Codeblöcken; jeder Treffer lässt make test scheitern. Die Meldung
 # nennt Zeilen, gefundenen Text und Grund.
@@ -77,6 +81,12 @@ FORBIDDEN=(
     "/\b99:100\b|\bnobody:users\b/i|T-90: Standard-IDs nicht in nutzersichtbarer Doku"
 )
 
+# Höchstens zwei farbige Hinweisboxen je Dokument; mehr nehmen jeder
+# einzelnen die Wirkung.
+MAX_ALERTS=2
+
+# ─── Variablen zwischen Doku und Code ──────────────────────────────────────────
+
 # Variablen, die docs/development.md nennt, die aber nur in MakeLib unter
 # .libs/ stehen (von git ignoriert), oder allgemeine Standards sind.
 KNOWN_VARIABLES=(
@@ -84,9 +94,22 @@ KNOWN_VARIABLES=(
     "THEME_WIDTH_HELP|MakeLib, colours.mk"
 )
 
-# Höchstens zwei farbige Hinweisboxen je Dokument; mehr nehmen jeder
-# einzelnen die Wirkung.
-MAX_ALERTS=2
+# Code, dessen Umgebungsvariablen in einem Dokument aus DOCS stehen müssen:
+# App, API und die Skripte für Teststack und Browserprüfungen. Jede Variable,
+# die der Code dort liest, braucht eine Beschreibung (meist README.md,
+# docker/README.md oder docs/development.md); sonst scheitert make test.
+CODE_VARIABLES=(
+    "api/src"
+    "frontend/src"
+    "frontend/scripts"
+    "scripts"
+)
+
+# Vom Code gelesen, bewusst nicht dokumentiert, je mit "|<grund>".
+INTERNAL_VARIABLES=(
+)
+
+# ─── Dateien, die es geben muss ────────────────────────────────────────────────
 
 # Dateien, die es geben muss: versioniert, nicht leer, Markdown mit
 # Überschrift. Ohne "/" irgendwo im Projekt, "./" heißt Projekt-Root.
@@ -96,13 +119,6 @@ REQUIRED=(
     "./README.de.md|Projekt-README auf deutsch"
     "docker/README.md|Container-Anleitung, Quelle der Docker-Hub-Beschreibung"
 
-    # Aufrufkette:
-    #     make push ruft docker/build.sh --push auf.
-    #     Darin ruft push() (docker/build.sh:297) der Reihe nach auf:
-    #
-    #     1. updateDockerHubReadme --preview: erzeugt die Vorschau.
-    #     2. pushImage: lädt das Image hoch.
-    #     3. updateDockerHubReadme --publish: überträgt die Beschreibung nach Docker Hub.
     "docker/preview/README.md|Docker-Hub-Beschreibung, aus docker/README.md erzeugt"
     "docs/user-guide.md|im README verlinkt"
     "docs/development.md|im README verlinkt"
@@ -150,6 +166,27 @@ REQUIRED=(
     "frontend/tests/fixtures/stockinfo/README.md"
 )
 
+# ─── Abhängige Dateien und Screenshots ─────────────────────────────────────────
+
+# Abhängige Dateien müssen ihrer Basis folgen: Screenshots dem UI-Code,
+# Übersetzungen und Kurzfassungen ihrem Original, erzeugte Dateien ihrer
+# Quelle. Ändert sich die Basis nach der abhängigen Datei, meldet die Prüfung
+# das. Maßgeblich ist der letzte Commit laut git, uncommittete Änderungen
+# zählen als jetzt; Dateidatum und Tagesdatum zählen nicht.
+#
+# Quittieren statt sinnlos anfassen: Verlangt eine Änderung der Basis nichts
+# (Tippfehler im README, Codeänderung ohne sichtbare Folge), die Meldung aus
+# SCREENSHOTS, DEPENDS oder DEPENDS_HINT nach dem Prüfen quittieren:
+#
+#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
+#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images   # ganzer Ordner
+#   .libs/ProjectTools/src/bash/docs-check.sh --ack               # alle offenen
+#
+# Das schreibt je Paar den letzten Commit der Basis nach .docs-check.ack; die
+# Datei mitcommitten. Die Quittung gilt, bis die Basis einen neueren Commit
+# hat, dann kommt die Meldung zurück. Nicht quittieren lassen sich Einträge mit
+# Frist 0 (die Vorschau neu erzeugen) und uncommittete Basen (erst committen).
+
 # Screenshots der Anleitungen und der UI-Code, den sie zeigen, je
 # "<ui-code>|<bilder>|<grund>" (UI-Code: mehrere Pfade mit Komma). Hat sich
 # der UI-Code nach einem Bild geändert, erscheint ein Hinweis: prüfen, ob das
@@ -163,9 +200,13 @@ SCREENSHOTS=(
 # Dateien, die ihrer Basis bald nach deren Änderung folgen müssen, je
 # "<basis>|<abhängig>|<tage>|<grund>". Ändert sich die Basis später, ist das
 # ein Hinweis, nach <tage> Tagen ein Problem; 0 heißt: im selben Commit.
-# Zeiten aus git, uncommittete Änderungen zählen als jetzt.
 DEPENDS=(
-    # Erzeugt mit dem Vorschaubefehl aus AGENTS.md (Docker-Hub-Beschreibung)
+    # Erzeugt mit dem Vorschaubefehl aus AGENTS.md (Docker-Hub-Beschreibung).
+    # Aufrufkette: make push ruft docker/build.sh --push auf; darin ruft
+    # push() (docker/build.sh) der Reihe nach auf:
+    #   1. updateDockerHubReadme --preview: erzeugt die Vorschau.
+    #   2. pushImage: lädt das Image hoch.
+    #   3. updateDockerHubReadme --publish: überträgt die Beschreibung nach Docker Hub.
     "docker/README.md|docker/preview/README.md|0|Vorschau neu erzeugen"
 
     # Deutsche Fassung des Projekt-README
@@ -189,32 +230,4 @@ DEPENDS_HINT=(
     # "docs/README.template.md|README.md|30|Gliederung"
     # "frontend/src/i18n|docs/user-guide.md|30|Bedienelemente im Wortlaut der App"
     # "docker/README.md|unraid/README.md|30|gemeinsame Aussagen zum Betrieb"
-)
-
-# Quittieren statt sinnlos anfassen: Verlangt eine Änderung der Basis nichts
-# (Tippfehler im README, Codeänderung ohne sichtbare Folge), die Meldung aus
-# SCREENSHOTS, DEPENDS oder DEPENDS_HINT nach dem Prüfen quittieren:
-#
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images   # ganzer Ordner
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack               # alle offenen
-#
-# Das schreibt je Paar den letzten Commit der Basis nach .docs-check.ack; die
-# Datei mitcommitten. Die Quittung gilt, bis die Basis einen neueren Commit
-# hat, dann kommt die Meldung zurück. Nicht quittieren lassen sich Einträge mit
-# Frist 0 (die Vorschau neu erzeugen) und uncommittete Basen (erst committen).
-
-# Code, dessen Umgebungsvariablen in einem Dokument aus DOCS stehen müssen:
-# App, API und die Skripte für Teststack und Browserprüfungen. Jede Variable,
-# die der Code dort liest, braucht eine Beschreibung (meist README.md,
-# docker/README.md oder docs/development.md); sonst scheitert make test.
-CODE_VARIABLES=(
-    "api/src"
-    "frontend/src"
-    "frontend/scripts"
-    "scripts"
-)
-
-# Vom Code gelesen, bewusst nicht dokumentiert, je mit "|<grund>".
-INTERNAL_VARIABLES=(
 )
