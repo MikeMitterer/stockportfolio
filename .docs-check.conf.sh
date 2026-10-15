@@ -80,7 +80,7 @@ FORBIDDEN=(
     # Unraids Standardnutzer, als Zahl und als Name
     "/\b99:100\b|\bnobody:users\b/i|T-90: Standard-IDs nicht in nutzersichtbarer Doku"
     # EUPL-Pflichten gelten erst bei Weitergabe oder Netzwerkdienst, nicht
-    # schon bei einer Änderung; Wortlaut aus dem Baustein in readme-conventions
+    # schon bei einer Änderung; Wortlaut aus dem Baustein in docs-conventions
     "/if you change or redistribute|wer \S+ ändert oder weitergibt|preserve the required notices/i|EUPL-Pflichten ohne Bedingung: Satz aus dem Lizenz-Baustein verwenden"
 )
 
@@ -129,7 +129,7 @@ REQUIRED=(
     "./CHANGELOG.md|Release-Historie, im README verlinkt"
 
     # Neben der Vorlage im Skill - die Vorlage für das README dieses Projektes
-    "docs/README.template.md|Vorlage für den Skill readme-conventions"
+    "docs/README.template.md|Vorlage für den Skill docs-conventions"
 
     # Lizenz und Quelltext: liegen jedem Build bei (frontend/scripts/licenseAssets.ts)
     "./LICENSE|EUPL 1.2, englischer Lizenztext"

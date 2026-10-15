@@ -402,7 +402,7 @@ Der Leser soll schnell erkennen, was etwas macht, wie er es benutzt und welche
 Grenzen gelten.
 
 **Projekt-README:** `README.md` und `README.de.md` entstehen nach der
-[README-Vorlage](docs/README.template.md) und dem Skill `readme-conventions`.
+[README-Vorlage](docs/README.template.md) und dem Skill `docs-conventions`.
 Gliederung, Sprachfassungen und Schreibregeln stehen dort und werden hier
 nicht wiederholt.
 

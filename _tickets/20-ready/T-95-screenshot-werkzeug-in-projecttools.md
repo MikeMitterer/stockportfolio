@@ -110,7 +110,7 @@ darf nicht entstehen.
 - **`README.md` und `docker/README.md`:** Inventar prüfen. Beide nennen das
   Aufnahmeskript derzeit nicht; Entwicklerdetails gehören nach
   `docs/development.md` (Mike, 2026-10-11). Ergebnis im Doku-Abgleich nennen.
-- **Skills:** Prüfen, ob `readme-conventions` oder `docker-conventions`
+- **Skills:** Prüfen, ob `docs-conventions` oder `docker-conventions`
   einen Hinweis auf das Werkzeug brauchen (Bilder für README und Docker Hub).
   Änderung nur mit Mikes Auftrag; sonst Vorschlag im Ticket.
 

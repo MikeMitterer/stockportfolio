@@ -14,7 +14,7 @@ Abschnitte erscheinen im README.
 
 **Allgemeine Regeln** (keine Make-Targets, npm-Befehle, Verzeichnisbäume,
 Test- oder Release-Abläufe; nur Belegtes; Mermaid für Zusammenhänge) stehen
-im Skill `readme-conventions` und werden hier nicht wiederholt.
+im Skill `docs-conventions` und werden hier nicht wiederholt.
 
 Halte dich kurz und allgemein verständlich. Keine ausufernden Beschreibungen,
 keine Detailverliebtheit. Wichtige Details klar aber nicht jede Kleinigkeit.
@@ -38,7 +38,7 @@ Dokumente im Bericht nennen.
 
 **Sprachfassungen:** `README.md` ist englisch, daneben steht die deutsche
 Fassung `README.de.md`. Aufbau, Sprachzeile und Abgleich der Fassungen regelt
-der Skill `readme-conventions`.
+der Skill `docs-conventions`.
 
 
 ## 1. Kopf
@@ -130,6 +130,6 @@ Issues. Quelle: Abschnitt „Support“ im bisherigen README.
 
 ## 13. Lizenz
 
-Baustein `templates/license-eupl.md` aus dem Skill `readme-conventions`,
+Baustein `templates/license-eupl.md` aus dem Skill `docs-conventions`,
 Wortlaut unverändert. Alle Werte und Links aus `LICENSING.md` und den dort
 genannten Lizenzdateien; das bisherige README ist keine Quelle.
