@@ -150,13 +150,45 @@ REQUIRED=(
     "frontend/tests/fixtures/stockinfo/README.md"
 )
 
-# Screenshots der Anleitungen. Sind sie älter als zwei Monate (nach
-# Änderungsdatum der Datei), erscheint ein Hinweis: Dann prüfen, ob sie die
-# aktuelle Oberfläche zeigen, sonst neu aufnehmen (docs/development.md).
+# Screenshots der Anleitungen. Sind sie älter als zwei Monate (nach dem
+# letzten Commit, der das Bild ändert), erscheint ein Hinweis: Dann prüfen, ob
+# sie die aktuelle Oberfläche zeigen, sonst neu aufnehmen (docs/development.md).
 SCREENSHOTS=(
     "docs/images"
 )
 MAX_SCREENSHOT_AGE_DAYS=60
+
+# Dateien, die ihrer Basis bald nach deren Änderung folgen müssen, je
+# "<basis>|<abhängig>|<tage>|<grund>". Ändert sich die Basis später, ist das
+# ein Hinweis, nach <tage> Tagen ein Problem; 0 heißt: im selben Commit.
+# Zeiten aus git, uncommittete Änderungen zählen als jetzt.
+DEPENDS=(
+    # Erzeugt mit dem Vorschaubefehl aus AGENTS.md (Docker-Hub-Beschreibung)
+    "docker/README.md|docker/preview/README.md|0|Vorschau neu erzeugen"
+
+    # Deutsche Fassung des Projekt-README
+    "README.md|README.de.md|3|deutsche Fassung"
+
+    # Kurzfassungen der Anbieter- und Verbrauchererklärung
+    "LICENSING.md|README.md|3|Lizenzabschnitt"
+    "LICENSING.md|README.de.md|3|Lizenzabschnitt"
+    "LICENSING.md|docker/README.md|3|Lizenzabschnitt"
+    "LICENSING.md|frontend/public/legal.html|3|Lizenzseite im Build"
+)
+
+# Gleiches Format, auch überfällig nur ein Hinweis: Die Basis ändert sich oft,
+# ohne dass die abhängige Datei etwas nachziehen muss. Der Hinweis bleibt, bis
+# die abhängige Datei angefasst wird.
+DEPENDS_HINT=(
+    # docker/README.md wird per KI gepflegt und übernimmt Aussagen aus README.md
+    "README.md|docker/README.md|14|übernommene Aussagen"
+
+    # Bei Bedarf einschalten:
+    # "docs/user-guide.md|README.md|14|Feature-Liste"
+    # "docs/README.template.md|README.md|30|Gliederung"
+    # "frontend/src/i18n|docs/user-guide.md|30|Bedienelemente im Wortlaut der App"
+    # "docker/README.md|unraid/README.md|30|gemeinsame Aussagen zum Betrieb"
+)
 
 # Code, dessen Umgebungsvariablen in einem Dokument aus DOCS stehen müssen:
 # App, API und die Skripte für Teststack und Browserprüfungen. Jede Variable,

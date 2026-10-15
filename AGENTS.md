@@ -459,7 +459,12 @@ tote Links und Anker, unbekannte Make-Targets, npm-Skripte und Variablen und
 die verbotenen Begriffe oben. Diese Datei prüft es nur auf tote Links und
 Anker; Verweise auf andere Dokumente deshalb als Link schreiben. Zusätzlich
 meldet es Screenshots unter `docs/images/`, die älter als zwei Monate sind,
-und jede Umgebungsvariable, die der Code liest, aber keine Doku nennt. Es
+und jede Umgebungsvariable, die der Code liest, aber keine Doku nennt.
+Abhängige Dateien stehen dort unter `DEPENDS`: Ändert sich eine Basis wie
+`README.md` oder `docker/README.md` nach ihrer abhängigen Datei
+(`README.de.md`, `docker/preview/README.md`), meldet es einen Hinweis und nach
+der eingetragenen Frist ein Problem. Die Vorschau gehört in denselben Commit
+wie `docker/README.md`. Alle Zeiten kommen aus git, nicht vom Dateidatum. Es
 läuft vor jedem Commit (`.githooks/pre-commit`); `--no-verify` nur im Notfall
 und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue

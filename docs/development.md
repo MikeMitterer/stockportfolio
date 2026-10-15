@@ -102,7 +102,18 @@ Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
 Problemen ab. Jede Umgebungsvariable, die der Code unter `api/src`,
 `frontend/src`, `frontend/scripts` oder `scripts` liest, muss in der Doku
 stehen; eine neue Variable also gleich hier oder im Container-Guide
-beschreiben. Vor Änderungen an `README.md` zuerst
+beschreiben.
+
+Manche Dateien müssen einer anderen folgen: `README.de.md` dem `README.md`,
+`docker/preview/README.md` dem `docker/README.md`, die Lizenzabschnitte der
+`LICENSING.md`. Diese Paare stehen in `.docs-check.conf.sh` unter `DEPENDS`
+mit einer Frist in Tagen. Ändert sich die Basis nach der abhängigen Datei,
+meldet `make docs-check` einen Hinweis, nach Ablauf der Frist ein Problem. Die
+Vorschau hat die Frist 0 und gehört deshalb in denselben Commit wie
+`docker/README.md`. Maßgeblich ist der letzte Commit, uncommittete Änderungen
+zählen als „jetzt“.
+
+Vor Änderungen an `README.md` zuerst
 `make docs-check` laufen lassen: Es meldet auch Anker, auf die andere
 Dokumente verlinken. Das README folgt [`README.template.md`](README.template.md).
 
