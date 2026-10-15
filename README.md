@@ -67,9 +67,6 @@ Holdings and targets can be edited directly in the table.
 Bands are relative to the target: a 10 % target with a 6 % lower band triggers
 at 9.4 %.
 
-An optional minimum trade size hides small trade amounts, but the deviation
-itself stays visible.
-
 ### Rebalancing simulation
 
 ![Rebalancing simulation](docs/images/rebalancing.png)
@@ -95,12 +92,6 @@ and percentage change on two axes.
 The _Valuation_ tab shows market value, target and bands; _Information_ lists
 the data StockInfo supplies for that instrument, such as TER, fund size,
 provider and volatility.
-
-Daily prices are cached in the browser and fetched at most once a day per
-security.
-
-A small sparkline in each row shows at a glance whether the price comes from
-above or below.
 
 ### Calculation, safety buffer and investment reserve
 
@@ -145,8 +136,8 @@ flowchart LR
 ```
 
 The browser only talks to StockPortfolio. The server forwards permitted
-StockInfo requests for signed-in users, without cookies. StockInfo therefore
-needs no CORS setting and never learns about your holdings.
+StockInfo requests for signed-in users, without cookies. StockInfo never
+learns about your holdings.
 
 | | StockInfo | StockPortfolio |
 |---|---|---|

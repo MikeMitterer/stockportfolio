@@ -99,7 +99,9 @@ Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
 (`.githooks/pre-commit`, eingerichtet von `make setup`) und bricht ihn bei
-Problemen ab. Jede Umgebungsvariable, die der Code unter `api/src`,
+Problemen ab. Der Hook prüft genau den vorgemerkten Stand, nicht den
+Arbeitsbaum: Nicht vorgemerkte Änderungen zählen nicht, und ein Link auf eine
+Datei, die nicht in git liegt, ist ein Problem. Jede Umgebungsvariable, die der Code unter `api/src`,
 `frontend/src`, `frontend/scripts` oder `scripts` liest, muss in der Doku
 stehen; eine neue Variable also gleich hier oder im Container-Guide
 beschreiben.

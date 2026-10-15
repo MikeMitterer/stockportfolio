@@ -16,6 +16,11 @@ Abschnitte erscheinen im README.
 Test- oder Release-Abläufe; nur Belegtes; Mermaid für Zusammenhänge) stehen
 im Skill `readme-conventions` und werden hier nicht wiederholt.
 
+Halte dich kurz und allgemein verständlich. Keine ausufernden Beschreibungen,
+keine Detailverliebtheit. Wichtige Details klar aber nicht jede Kleinigkeit.
+Kein Verweis auf Tickets und Entwicklungshistorie,
+falls es nicht für das Verständnis des Textes unbedingt notwendig ist.
+
 **Verbotene Begriffe** stehen mit Grund in `.docs-check.conf.sh` unter
 `FORBIDDEN`; `make docs-check` prüft sie. Sie gelten auch für Codeblöcke und
 Entwicklerabschnitte.
