@@ -24,8 +24,8 @@ beschreibt der [Docker-Guide](../docker/README.md).
 - Python 3.11+ für den Teststack und die gemeinsamen Werkzeuge
 - Overmind und tmux für den Dev-Stack (macOS: `brew install overmind tmux`)
 - eine erreichbare StockInfo-Instanz; `make dev-up` startet sie **nicht**
-- für den ersten `make setup`: die Repositories BashLib, MakeLib und
-  ProjectTools, angegeben über `BASH_LIBS`, `DEV_MAKE` und `PROJECT_TOOLS`
+- für den ersten `make setup`: die gemeinsamen Werkzeuge BashLib, MakeLib
+  und ProjectTools; wo sie erwartet werden, zeigt `make info`
 
 ## Einrichten und starten
 
@@ -35,9 +35,9 @@ cp .env.example .env       # STOCKINFO_API_URL anpassen
 make dev-up                # Vite auf :5175, Konto-API auf :8080
 ```
 
-`make setup` verlinkt BashLib, MakeLib und ProjectTools unter `.libs/`, legt
-StockPortfolios `.venv` mit Python 3.11+ an und installiert dort das
-ProjectTools-Paket aus `requirements-dev.txt`. `PYTHON_BOOTSTRAP` wählt den
+`make setup` verlinkt die gemeinsamen Werkzeuge unter `.libs/`, legt
+StockPortfolios `.venv` mit Python 3.11+ an und installiert dort die
+Abhängigkeiten aus `requirements-dev.txt`. `PYTHON_BOOTSTRAP` wählt den
 Interpreter, falls `python3.11` fehlt. Eine bestehende venv wird
 wiederverwendet; `make clean` behält sie.
 
