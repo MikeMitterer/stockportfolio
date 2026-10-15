@@ -133,8 +133,6 @@ Issues. Quelle: Abschnitt „Support“ im bisherigen README.
 
 ## 13. Lizenz
 
-Die wichtigsten Punkte: Rechteinhaber und Lizenzgeber, Lizenz (EUPL 1.2,
-nur diese Version), was sie erlaubt und verlangt, Haftungsausschluss,
-Kontakt. Quelle: `LICENSING.md` und Abschnitt „License“ im bisherigen
-README. Verlinke `LICENSE`, `LICENSE.de.txt`, `LICENSING.md` und
-`THIRD_PARTY_NOTICES.md` für die Details.
+Baustein `templates/license-eupl.md` aus dem Skill `readme-conventions`,
+Wortlaut unverändert. Alle Werte und Links aus `LICENSING.md` und den dort
+genannten Lizenzdateien; das bisherige README ist keine Quelle.
