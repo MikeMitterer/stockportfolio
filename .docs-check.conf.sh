@@ -79,6 +79,9 @@ FORBIDDEN=(
     "/\bP(U|G)ID\b/i|T-90: Variablen nicht in nutzersichtbarer Doku"
     # Unraids Standardnutzer, als Zahl und als Name
     "/\b99:100\b|\bnobody:users\b/i|T-90: Standard-IDs nicht in nutzersichtbarer Doku"
+    # EUPL-Pflichten gelten erst bei Weitergabe oder Netzwerkdienst, nicht
+    # schon bei einer Änderung; Wortlaut aus dem Baustein in readme-conventions
+    "/if you change or redistribute|wer \S+ ändert oder weitergibt|preserve the required notices/i|EUPL-Pflichten ohne Bedingung: Satz aus dem Lizenz-Baustein verwenden"
 )
 
 # Höchstens zwei farbige Hinweisboxen je Dokument; mehr nehmen jeder

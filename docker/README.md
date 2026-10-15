@@ -227,22 +227,8 @@ unchanged, for example `8088:80` becomes `8088:8080`.
 Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
 
 StockPortfolio is licensed under the **[EUPL 1.2](../LICENSE)**, version 1.2
-only. It permits personal and commercial use, changes, redistribution, sale and
-hosting without a paid license.
-
-If you redistribute StockPortfolio or a changed version, or offer it as a
-network service, keep the copyright and license notices, mark your changes and
-provide the corresponding source under the license's copyleft rules.
-
-The warranty and liability exclusions in EUPL Articles 7 and 8 also apply to
-consumers, as far as the law permits. Mandatory rights remain unaffected,
-including liability for intent, gross negligence, personal injury and product
-liability. No additional guarantee is given.
-
-Third-party components retain their own licenses. StockInfo is a separate
-service with its own license.
-
-Contact: **office@MangoLila.at**.
+only. What it permits and requires, the consumer declaration and the contact
+are in the [License section of the README](../README.md#license).
 
 In the app, **Settings → About** links to the license in the selected UI
 language, the consumer declaration and the license page `/legal.html` on your
@@ -252,10 +238,6 @@ Production images include the license documents and
 `/stockportfolio-source.tgz` under `/app/public`. The archive is made from the
 same working files as the app and includes build instructions in
 [SOURCE.md](../SOURCE.md).
-
-Details: [LICENSE](../LICENSE) · [German license text](../LICENSE.de.txt) ·
-[Provider and consumer declaration](../LICENSING.md) · [Third-party
-notices](../THIRD_PARTY_NOTICES.md) · [Source code](../SOURCE.md)
 
 ## Unraid and support
 

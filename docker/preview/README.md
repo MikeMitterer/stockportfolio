@@ -131,21 +131,11 @@ For `docker run`, pull the new image and recreate the container with the same en
 
 Copyright © 2026 Michael Mitterer. **MangoLila GmbH** is the provider and licensor.
 
-StockPortfolio is licensed under the **[EUPL 1.2](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE)**, version 1.2 only. It permits personal and commercial use, changes, redistribution, sale and hosting without a paid license.
-
-If you redistribute StockPortfolio or a changed version, or offer it as a network service, keep the copyright and license notices, mark your changes and provide the corresponding source under the license's copyleft rules.
-
-The warranty and liability exclusions in EUPL Articles 7 and 8 also apply to consumers, as far as the law permits. Mandatory rights remain unaffected, including liability for intent, gross negligence, personal injury and product liability. No additional guarantee is given.
-
-Third-party components retain their own licenses. StockInfo is a separate service with its own license.
-
-Contact: **<office@MangoLila.at>**.
+StockPortfolio is licensed under the **[EUPL 1.2](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE)**, version 1.2 only. What it permits and requires, the consumer declaration and the contact are in the [License section of the README](https://github.com/MikeMitterer/stockportfolio/blob/master/README.md#license).
 
 In the app, **Settings → About** links to the license in the selected UI language, the consumer declaration and the license page `/legal.html` on your instance. The **About StockPortfolio** link in the status bar opens it.
 
 Production images include the license documents and `/stockportfolio-source.tgz` under `/app/public`. The archive is made from the same working files as the app and includes build instructions in [SOURCE.md](https://github.com/MikeMitterer/stockportfolio/blob/master/SOURCE.md).
-
-Details: [LICENSE](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE) · [German license text](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSE.de.txt) · [Provider and consumer declaration](https://github.com/MikeMitterer/stockportfolio/blob/master/LICENSING.md) · [Third-party notices](https://github.com/MikeMitterer/stockportfolio/blob/master/THIRD_PARTY_NOTICES.md) · [Source code](https://github.com/MikeMitterer/stockportfolio/blob/master/SOURCE.md)
 
 ## Unraid and support
 
