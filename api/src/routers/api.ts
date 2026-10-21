@@ -24,7 +24,12 @@ export interface ApiOptions {
 const stockInfoPrefix = '/api/stockinfo'
 
 const cookieName = 'stockportfolio_session'
-const cookieLifetimeSeconds = 7 * 24 * 60 * 60
+
+/** Cookie-Eigenschaften je Server: `Secure` nach Konfiguration, Laufzeit gleich der Leerlauffrist (T-98). */
+interface SessionCookie {
+  secure: boolean
+  maxAgeSeconds: number
+}
 
 function readObject(value: unknown): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -105,31 +110,41 @@ function token(context: ServerContext): string {
   return value
 }
 
-function currentUser(context: ServerContext, service: AccountService, allowPasswordChange = false): PublicUser {
-  const user = service.session(token(context))
+/**
+ * Prüft die Sitzung und verlängert das Cookie um die volle Leerlauffrist.
+ * Server und Browser zählen so ab derselben Nutzung; sonst liefe das Cookie
+ * vor der serverseitigen Sitzung ab (T-98). `null` lässt das Cookie
+ * unverändert, wenn die Route selbst ein neues setzt — zwei `Set-Cookie`
+ * desselben Namens ließen offen, welches der Browser behält.
+ */
+function currentUser(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): PublicUser {
+  const sessionToken = token(context)
+  const user = service.session(sessionToken)
+  if (cookie) setSessionCookie(context, sessionToken, cookie)
   if (user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
   return user
 }
 
-function requireAdmin(context: ServerContext, service: AccountService): PublicUser {
-  const user = currentUser(context, service)
+function requireAdmin(context: ServerContext, service: AccountService, cookie: SessionCookie): PublicUser {
+  const user = currentUser(context, service, cookie)
   if (user.role !== 'admin') throw new ServiceError(403, 'forbidden')
   return user
 }
 
-function setSessionCookie(context: ServerContext, value: string, secure: boolean): void {
+function setSessionCookie(context: ServerContext, value: string, cookie: SessionCookie): void {
   setCookie(context, cookieName, value, {
     httpOnly: true,
     sameSite: 'Lax',
-    secure,
+    secure: cookie.secure,
     path: '/',
-    maxAge: cookieLifetimeSeconds,
+    maxAge: cookie.maxAgeSeconds,
   })
 }
 
 export function createApiRouter(service: AccountService, repository: AccountRepository, options: ApiOptions): Hono<{ Bindings: HttpBindings }> {
   const app = new Hono<{ Bindings: HttpBindings }>()
   const events = new ResourceEvents()
+  const cookie: SessionCookie = { secure: options.secureCookies, maxAgeSeconds: Math.floor(service.sessionIdleMs / 1000) }
 
   app.onError((error, context) => {
     if (error instanceof ServiceError) {
@@ -165,11 +180,11 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   app.post('/api/auth/login', async (context) => {
     const request = await body(context)
     const result = await service.login(readString(request.username), readString(request.password), options.remoteAddress(context))
-    setSessionCookie(context, result.token, options.secureCookies)
+    setSessionCookie(context, result.token, cookie)
     return context.json({ user: result.user })
   })
 
-  app.get('/api/auth/session', (context) => context.json({ user: currentUser(context, service, true) }))
+  app.get('/api/auth/session', (context) => context.json({ user: currentUser(context, service, cookie, true) }))
 
   app.post('/api/auth/logout', (context) => {
     service.logout(token(context))
@@ -178,20 +193,20 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.post('/api/auth/change-password', async (context) => {
-    const user = currentUser(context, service, true)
+    const user = currentUser(context, service, null, true)
     const request = await body(context)
     const newToken = await service.changePassword(user.id, readString(request.password))
-    setSessionCookie(context, newToken, options.secureCookies)
+    setSessionCookie(context, newToken, cookie)
     return context.json({ user: service.session(newToken) })
   })
 
   app.get('/api/admin/users', (context) => {
-    requireAdmin(context, service)
+    requireAdmin(context, service, cookie)
     return context.json({ users: service.listUsers() })
   })
 
   app.post('/api/admin/users', async (context) => {
-    requireAdmin(context, service)
+    requireAdmin(context, service, cookie)
     const request = await body(context)
     if (request.role !== 'admin' && request.role !== 'user') throw new ServiceError(400, 'invalid_role')
     const user = await service.createUser(readString(request.username), readString(request.password), request.role)
@@ -199,27 +214,27 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.post('/api/admin/users/:id/reset-password', async (context) => {
-    requireAdmin(context, service)
+    requireAdmin(context, service, cookie)
     const request = await body(context)
     await service.resetPassword(context.req.param('id'), readString(request.password))
     return context.json({ ok: true })
   })
 
   app.post('/api/admin/users/:id/deactivate', (context) => {
-    requireAdmin(context, service)
+    requireAdmin(context, service, cookie)
     service.deactivateUser(context.req.param('id'))
     return context.json({ ok: true })
   })
 
   app.post('/api/admin/users/:id/reactivate', (context) => {
-    requireAdmin(context, service)
+    requireAdmin(context, service, cookie)
     service.reactivateUser(context.req.param('id'))
     return context.json({ ok: true })
   })
 
   app.get('/api/data/events', (context) => {
     const sessionToken = token(context)
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     context.header('Cache-Control', 'no-cache')
     context.header('X-Accel-Buffering', 'no')
     return streamSSE(context, async (stream) => {
@@ -245,13 +260,13 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.get('/api/data/:kind', (context) => {
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     const kind = readResourceKind(context.req.param('kind'))
     return context.json({ resources: repository.listResources(user.id, kind) })
   })
 
   app.get('/api/data/:kind/:id', (context) => {
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     const kind = readResourceKind(context.req.param('kind'))
     const resource = repository.findResource(user.id, kind, context.req.param('id'))
     if (!resource) throw new ServiceError(404, 'not_found')
@@ -259,7 +274,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.put('/api/data/:kind/:id', async (context) => {
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     const kind = readResourceKind(context.req.param('kind'))
     const id = context.req.param('id')
     const request = await body(context)
@@ -273,7 +288,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.delete('/api/data/:kind/:id', async (context) => {
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     const kind = readResourceKind(context.req.param('kind'))
     // Offene Fenster vergleichen die Revision des Kurs-Hinweises. Nach einem
     // Löschen begänne sie wieder bei 1, und spätere Hinweise blieben unbeachtet.
@@ -289,7 +304,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.post('/api/data/legacy-import', async (context) => {
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     const request = await body(context)
     const portfolios = readLegacyPortfolios(request.portfolios)
     const settings = request.settings === null || request.settings === undefined ? null : readObject(request.settings)
@@ -312,7 +327,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.post('/api/data/restore', async (context) => {
-    const user = currentUser(context, service)
+    const user = currentUser(context, service, cookie)
     const request = await body(context)
     const portfolio = readObject(request.portfolio)
     const id = readString(portfolio.id)
@@ -363,14 +378,14 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   // Konfigurierte StockInfo-Adresse für Statusseite und Statuszeile. Der
   // Browser erreicht sie womöglich nicht selbst; angezeigt wird sie trotzdem.
   app.get('/api/stockinfo-target', (context) => {
-    currentUser(context, service)
+    currentUser(context, service, cookie)
     return context.json({ url: options.stockInfoUrl ?? null })
   })
 
   // Weiterleitung der StockInfo-Abfragen (T-82): nur angemeldet, nur die
   // genutzten Pfade, ohne Cookies und Sitzungsdaten.
   app.on(['GET', 'POST'], `${stockInfoPrefix}/*`, (context) => {
-    currentUser(context, service)
+    currentUser(context, service, cookie)
     const method = context.req.method === 'POST' ? 'POST' : 'GET'
     const url = new URL(context.req.url)
     const path = url.pathname.slice(stockInfoPrefix.length)

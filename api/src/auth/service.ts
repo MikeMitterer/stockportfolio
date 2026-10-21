@@ -1,9 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import argon2 from 'argon2'
 import type { AccountRepository, UserRecord } from '../persistence/repository.js'
-
-const idleLimitMs = 12 * 60 * 60_000
-const absoluteLimitMs = 7 * 24 * 60 * 60_000
+import { parseSessionIdleMs } from '../sessionIdle.js'
 // Gleiche Argon2id-Parameter wie bei echten Konten, damit unbekannte Namen keinen kürzeren Login-Pfad haben.
 const placeholderPasswordHash = '$argon2id$v=19$m=65536,p=4,t=3$I2q0ZM23ZTSD1i05A5Gxuw$kVyn3VeN0V2F2B2rwTwUX465a4odogCqqZOBLu2+XbM'
 
@@ -73,6 +71,8 @@ export class AccountService {
     private readonly repository: AccountRepository,
     private setupCodeHash: string | null,
     private readonly now: () => number = Date.now,
+    /** Frist ohne Anfrage bis zum Ablauf; jede Nutzung startet sie neu, Höchstdauer gibt es keine (T-98). */
+    readonly sessionIdleMs: number = parseSessionIdleMs(undefined),
   ) {}
 
   setupRequired(): boolean {
@@ -137,7 +137,7 @@ export class AccountService {
     const session = this.repository.findSession(tokenHash)
     if (!session) throw new ServiceError(401, 'unauthorized')
     const now = this.now()
-    if (now - session.lastSeenAt >= idleLimitMs || now - session.createdAt >= absoluteLimitMs) {
+    if (now - session.lastSeenAt >= this.sessionIdleMs) {
       this.repository.deleteSession(tokenHash)
       throw new ServiceError(401, 'unauthorized')
     }
