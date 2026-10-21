@@ -245,6 +245,8 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ```bash
 make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
 make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
+make check      # lint, typecheck, format-check und test für TS, Python und Bash
+make security   # gitleaks über die Git-History, bandit für Python
 make test       # Frontend- und API-Tests, einmalig
 make clean      # generierte Dateien in Root, Frontend und API entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
@@ -253,17 +255,20 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 
 `make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
-stehen `make dev-up`, `make dev-down`, `make test` und
-`make clean`. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
-Vor einer Übergabe laufen mindestens `make test`, `npm --prefix frontend run lint`,
-`npm --prefix api run lint`, `npm --prefix frontend run typecheck` und
-`npm --prefix api run typecheck`. Das Ergebnis gehört als Beleg ins Ticket.
+stehen `make dev-up`, `make dev-down` und `make clean`, unter Prüfen ein
+Target je Prüfart (`check`, `lint`, `typecheck`, `format`, `format-check`,
+`test`, `security`, `audit`, `quality`); darin läuft je Sprache das passende
+Werkzeug. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
+Vor einer Übergabe laufen mindestens `make check` und `make security`. Das
+Ergebnis gehört als Beleg ins Ticket. `make audit` braucht Netz,
+`make quality` ist nur ein Bericht; beide gehören nicht zur Abnahme.
 
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
 temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
-das verlinkte ProjectTools-Paket aus `requirements-dev.txt`, wenn es fehlt.
+das verlinkte ProjectTools-Paket und die gepinnten Prüfwerkzeuge aus
+`requirements-dev.txt`, sobald sich die Datei ändert.
 Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
 wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.

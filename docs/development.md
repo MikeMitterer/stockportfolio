@@ -21,7 +21,10 @@ beschreibt der [Docker-Guide](../docker/README.md).
 ## Voraussetzungen
 
 - Node.js 22 und npm
-- Python 3.11+ für den Teststack und die gemeinsamen Werkzeuge
+- Python 3.11+ für den Teststack und die gemeinsamen Werkzeuge; ruff,
+  bandit und pip-audit installiert `make setup` gepinnt in die `.venv`
+- shellcheck und gitleaks für `make lint` und `make security`
+  (macOS: `brew install shellcheck gitleaks`)
 - Overmind und tmux für den Dev-Stack (macOS: `brew install overmind tmux`)
 - eine erreichbare StockInfo-Instanz; `make dev-up` startet sie **nicht**
 - für den ersten `make setup`: die gemeinsamen Werkzeuge BashLib, MakeLib
@@ -76,7 +79,14 @@ Anmeldung.
 | Befehl | Zweck |
 |---|---|
 | `make dev-up` / `make dev-down` | Dev-Stack starten / stoppen |
+| `make check` | Alle technischen Prüfungen: `lint`, `typecheck`, `format-check`, `test` |
+| `make lint` | ESLint (Frontend, API), ruff (Python), `bash -n` und shellcheck (Bash) |
+| `make typecheck` | vue-tsc (Frontend) und tsc (API) |
+| `make format` / `make format-check` | Prettier (Frontend, API) und ruff format anwenden / nur prüfen |
 | `make test` | Doku-Prüfung, Frontend- und API-Tests, einmalig |
+| `make security` | gitleaks über die Git-History, bandit ab mittlerer Schwere |
+| `make audit` | Abhängigkeiten auf bekannte Lücken: npm (Laufzeit) und Python; braucht Netz |
+| `make quality` | Bericht zu Komplexität, Dateigröße und doppeltem Code (jscpd); endet bei Befunden mit 0 |
 | `make docs-check` | Nutzerdoku prüfen: Links, Anker, Befehle, verbotene Begriffe |
 | `make clean` | Erzeugte Dateien entfernen; Python-venv bleibt |
 | `make build` | Docker-Image lokal bauen (linux/amd64) |
@@ -84,16 +94,9 @@ Anmeldung.
 | `make tag-minor MSG="…"` | Version erhöhen, committen, taggen, pushen; danach Changelog |
 | `make changelog` | `CHANGELOG.md` neu erzeugen, ohne Commit |
 
-Lint und Typprüfung laufen je Paket:
-
-```bash
-npm --prefix frontend run lint
-npm --prefix api run lint
-npm --prefix frontend run typecheck
-npm --prefix api run typecheck
-```
-
-Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
+Vor einer Übergabe laufen `make check` und `make security`. Einzelne
+Pakete lassen sich weiter über ihre npm-Skripte prüfen, etwa
+`npm --prefix api run lint`.
 
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit

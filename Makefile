@@ -173,6 +173,8 @@ $(PY_TOOLS): requirements-dev.txt
 	@$(VENV)/bin/python -m pip install -q -r requirements-dev.txt
 	@touch $@
 
+##@ Prüfen
+
 .PHONY: check lint typecheck format format-check test security audit quality
 
 check: lint typecheck format-check test ## Alle technischen Prüfungen ausführen (Abnahme)
