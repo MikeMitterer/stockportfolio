@@ -1,0 +1,1 @@
+ALTER TABLE `sessions` ADD `replaced_by` text;

@@ -231,4 +231,67 @@ describe('Token-Tausch (T-98)', () => {
       repository.close()
     }
   })
+
+  it('beendet beim Abmelden mit dem neuen Token auch das alte in der Übergangsfrist (R1-F1)', async () => {
+    const { repository, cookie, post, session, send, advance } = await signedIn()
+    try {
+      const original = cookie()
+      advance(dayMs)
+      await session()
+      const successor = cookie()
+      expect(successor).not.toBe(original)
+      expect((await post('/api/auth/logout', {}, successor)).status).toBe(200)
+      expect((await send(original)).status).toBe(401)
+      expect((await send(successor)).status).toBe(401)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('beendet beim Abmelden mit dem alten Token auch den Nachfolger (R1-F1)', async () => {
+    const { repository, cookie, post, session, send, advance } = await signedIn()
+    try {
+      const original = cookie()
+      advance(dayMs)
+      await session()
+      const successor = cookie()
+      expect((await post('/api/auth/logout', {}, original)).status).toBe(200)
+      expect((await send(successor)).status).toBe(401)
+      expect((await send(original)).status).toBe(401)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('lässt die Abmeldung anderer Browser desselben Kontos unberührt', async () => {
+    const { repository, cookie, post, send } = await signedIn()
+    try {
+      const first = cookie()
+      await post('/api/auth/login', { username: 'mike', password: 'Test-password-123' })
+      const second = cookie()
+      expect(second).not.toBe(first)
+      expect((await post('/api/auth/logout', {}, second)).status).toBe(200)
+      expect((await send(first)).status).toBe(200)
+    } finally {
+      repository.close()
+    }
+  })
+})
+
+describe('Ereignisverbindung und Leerlauffrist (R1-F2)', () => {
+  it('verlängert die Sitzung beim Prüfen der offenen Verbindung nicht', async () => {
+    const { repository, service, cookie, session, advance } = await signedIn()
+    try {
+      const token = cookie().split('=')[1]
+      for (let check = 0; check < 6; check++) {
+        advance(dayMs)
+        expect(service.isActive(token)).toBe(true)
+      }
+      advance(dayMs)
+      expect(service.isActive(token)).toBe(false)
+      expect((await session()).status).toBe(401)
+    } finally {
+      repository.close()
+    }
+  })
 })

@@ -29,6 +29,13 @@
       "when": 1792571353075,
       "tag": "0003_session_replaced_at",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792572042912,
+      "tag": "0004_session_replaced_by",
+      "breakpoints": true
     }
   ]
 }

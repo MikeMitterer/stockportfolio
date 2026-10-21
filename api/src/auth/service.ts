@@ -139,10 +139,11 @@ export class AccountService {
 
   /**
    * Prüft ein Token. Ein ersetztes Token gilt nur noch während der
-   * Übergangsfrist und verlängert nichts; sonst startet die Nutzung die
-   * Leerlauffrist neu.
+   * Übergangsfrist und verlängert nichts. Sonst startet `extend` die
+   * Leerlauffrist neu — nur dort, wo auch das Cookie neu gesetzt werden kann,
+   * damit Browser- und Serverfrist gleich bleiben.
    */
-  private validSession(token: string): { session: SessionRecord; user: PublicUser } {
+  private validSession(token: string, extend: boolean): { session: SessionRecord; user: PublicUser } {
     const tokenHash = digest(token)
     const session = this.repository.findSession(tokenHash)
     if (!session) throw new ServiceError(401, 'unauthorized')
@@ -159,13 +160,29 @@ export class AccountService {
       this.repository.deleteSession(tokenHash)
       throw new ServiceError(401, 'unauthorized')
     }
-    if (session.replacedAt == null) this.repository.touchSession(tokenHash, now)
+    if (extend && session.replacedAt == null) this.repository.touchSession(tokenHash, now)
     return { session, user: publicUser(user) }
   }
 
-  /** Prüft die Sitzung ohne Token-Tausch, etwa für eine offene Ereignisverbindung, die kein Cookie mehr setzen kann. */
+  /** Prüft die Sitzung ohne Token-Tausch und verlängert sie. */
   session(token: string): PublicUser {
-    return this.validSession(token).user
+    return this.validSession(token, true).user
+  }
+
+  /**
+   * Prüft, ob eine Sitzung noch gilt, ohne sie zu verlängern oder zu
+   * tauschen — für eine offene Ereignisverbindung, die kein Cookie mehr
+   * setzen kann. Verlängerte sie, lebte die Sitzung serverseitig weiter,
+   * während das Cookie im Browser abläuft.
+   */
+  isActive(token: string): boolean {
+    try {
+      this.validSession(token, false)
+      return true
+    } catch (error) {
+      if (error instanceof ServiceError) return false
+      throw error
+    }
   }
 
   /**
@@ -180,7 +197,7 @@ export class AccountService {
    *   das der Browser schon erhalten hat, nicht überschreiben.
    */
   authenticate(token: string): { user: PublicUser; token: string | null } {
-    const { session, user } = this.validSession(token)
+    const { session, user } = this.validSession(token, true)
     if (session.replacedAt != null) return { user, token: null }
     const now = this.now()
     if (now - session.createdAt < tokenRotationMs) return { user, token }
@@ -193,8 +210,9 @@ export class AccountService {
     return { user, token: successor }
   }
 
+  /** Beendet die Sitzung samt Vorgänger und Nachfolger aus einem Token-Tausch, auch während der Übergangsfrist. */
   logout(token: string): void {
-    this.repository.deleteSession(digest(token))
+    this.repository.deleteSessionChain(digest(token))
   }
 
   async changePassword(userId: string, password: string): Promise<string> {

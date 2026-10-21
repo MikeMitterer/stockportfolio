@@ -251,11 +251,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
         while (!stream.aborted) {
           const event = await subscription.next(options.heartbeatMs ?? 15_000)
           if (stream.aborted) break
-          try {
-            service.session(sessionToken)
-          } catch {
-            break
-          }
+          if (!service.isActive(sessionToken)) break
           if (event) await stream.writeSSE({ event: 'resource', data: JSON.stringify(event) })
           else await stream.write(': keep-alive\n\n')
         }

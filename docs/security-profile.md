@@ -30,8 +30,9 @@ Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und
 - **Gültigkeit (Mike, 2026-10-21, T-98):** gleitende Leerlauffrist aus
   `STOCKPORTFOLIO_SESSION_IDLE_DAYS`, ohne Angabe 7 Tage. Jede
   authentifizierte Anfrage startet die Frist neu, für Sitzung und Cookie
-  gleichermaßen; eine feste Höchstdauer gibt es nicht. Ein offener Reiter
-  mit Live-Abgleich hält die Sitzung serverseitig aktiv.
+  gleichermaßen; eine feste Höchstdauer gibt es nicht. Die Prüfung einer
+  offenen Ereignisverbindung (Live-Abgleich) verlängert nicht, weil sie kein
+  Cookie mehr setzen kann; sonst liefe das Cookie vor der Sitzung ab.
 - **Token-Tausch (Mike, 2026-10-21, T-98):** Ist das Token älter als einen
   Tag, bekommt die nächste authentifizierte Anfrage ein neues. Das alte gilt
   danach noch 60 Sekunden, ohne selbst zu verlängern, zu tauschen oder ein
@@ -43,7 +44,8 @@ Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und
   Browser nach einem Tausch wieder anfragt; nutzt ihn der Angreifer zuerst,
   wird der rechtmäßige Browser abgemeldet. Jede Anmeldung in einem weiteren
   Browser ist eine eigene Sitzung mit eigenem Tausch.
-- **Widerruf:** Abmelden löscht die Sitzung. Passwortwechsel,
+- **Widerruf:** Abmelden löscht die Sitzung samt Vorgänger und Nachfolger
+  aus einem Token-Tausch, auch während der Übergangsfrist. Passwortwechsel,
   Passwort-Reset durch einen Admin und Deaktivieren löschen alle Sitzungen
   des Kontos; der Passwortwechsel stellt danach eine neue aus.
 - **Schreibende Anfragen** verlangen einen `Origin`, der zum Server oder zu
