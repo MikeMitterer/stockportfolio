@@ -90,9 +90,9 @@ Projekts.
   StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
   `frontend/src/api/stockinfo/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
   unter `frontend/tests/fixtures/stockinfo/`. Die Bewertung steht in
-  [T-37](_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
+  T-37,
   Generation und Währung in
-  [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
+  T-35.
   T-37 ist als Bewertung abgeschlossen. T-39 normalisiert Identität und prüft
   Kurs-Pflichtfelder einschließlich Währung; eine neue Depotposition setzt
   einen erfolgreichen eindeutigen Kursabruf voraus. T-40 ergänzt `/fields`,
@@ -124,22 +124,24 @@ Entscheidungen haben Vorrang; insbesondere gilt unten die dauerhafte Freigabe
 für Merge **und Push** nach Ticketabschluss, die das Paket allein nicht
 erteilt. Fehlt das Paket, das melden; keine alte Regelkopie fortschreiben.
 
-**Coder und Verifier werden ausschließlich in
-[`_tickets/STATUS.md`](_tickets/STATUS.md) zugeordnet.** `implementer`
-bezeichnet den Coder, `reviewer` den unabhängigen Verifier, `owner` die Instanz
-am Zug, `observer` eine eigenständige dritte Instanz. Diese Felder prüft die
-eigene Instanz vor jedem Turn; `none` und `unassigned` sind inaktive Werte,
-keine Instanznamen.
+**Board, Rollen und Ablauf verwaltet agent-lessons** (seit 2026-10-21).
+Das Board liegt auf dem Branch `board` und ist lokal unter `_tickets/`
+ausgecheckt; es gehört nicht zum Code-Baum von `master`, Links aus diesem
+Repository zeigen deshalb nie hinein — Tickets werden mit ihrer Kennung
+(etwa T-37) genannt. Welche Laufzeit `implementer` (Coder), `reviewer`
+(unabhängiger Verifier) oder `observer` ist, und alle Board-Einstellungen
+stehen in `_tickets/.board/project.yaml`. Stand, Tickets, Fragen,
+Tätigkeitsmeldungen und Lessons liefern die MCP-Werkzeuge von agent-lessons
+(`next`, `get_status`, `get_ticket`, `get_questions`, `get_lessons`); für
+Mike zeigen `agent-lessons status`, `agent-lessons ticket ls` und
+`agent-lessons activity` dasselbe.
 
 Nur der zuständige Coder implementiert. Wer nicht am Zug ist, verändert keinen
-Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
-`30-doing/`; Backlog, Done, Iced und Rejected erzeugen keinen Auftrag.
-
-- [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
-- `_tickets/ACTIVITY.md` — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Die Datei bleibt lokal und wird über `_tickets/.gitignore` nicht in Git versioniert (Mike, 2026-09-28). Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
-- [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
-- [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
-- [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
+Produktcode. Arbeit beginnt nur an dem Ticket, das `next` nennt und das mit
+`start_ticket` in Doing steht; Backlog, Done, Iced und Rejected erzeugen
+keinen Auftrag. Lessons und Erkenntnisse liefert `start_ticket` beziehungsweise
+`next` passend zum Ticket; der Coder nennt bei der Übergabe, welche ihn
+gelenkt haben.
 
 **Das Board hier ist der neuere Stand, nicht die Kopie aus StockInfo.**
 Die Struktur wurde am 2026-09-10 von dort übernommen und seither
@@ -159,12 +161,6 @@ und zu `origin` pushen. Anschließend im Arbeitsverzeichnis wieder auf
 `origin/master` übereinstimmt. Mike hat diese Schritte dauerhaft autorisiert;
 eine weitere Rückfrage ist nicht nötig. Fremde uncommittete Änderungen
 bleiben außerhalb dieser Integration.
-
-Lokale Lessons liegen als Einzeldateien unter `_tickets/.agents/lessons/`.
-Die alten Sammeldateien sind Linkeinstiege. Verzeichnisinventar, gemeinsamer
-AgentLessons-Bestand und Herkunft folgen
-[Lessons lesen und pflegen](_tickets/.agents/LESSONS-ACCESS.md); die gemeinsame
-Sammlung wird noch nicht automatisch aktualisiert.
 
 [↑ Übersicht](#übersicht)
 
@@ -365,7 +361,7 @@ Stand um.
 
 **Arbeit an Themes, Token und Kontrast gehört ins Fundament, nicht hierher.**
 Hier entstünden sonst lokale Kopien, die beim nächsten Update auseinanderlaufen.
-[T-36](_tickets/10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) wartet aus
+T-36 wartet aus
 demselben Grund auf eine installierbare Fundament-Fassung.
 
 UX-Konventionen: Skill `ux-conventions`.
