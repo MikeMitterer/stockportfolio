@@ -1,0 +1,13 @@
+# Ruff für die Python-Werkzeuge des Projekts (Teststack unter scripts/,
+# Observer-Hilfe unter .agents/bin/). Feste Regelauswahl, damit ein neues
+# Ruff-Release nicht still andere Befunde liefert (T-99).
+target-version = "py311"
+line-length = 120
+
+[lint]
+# Fehler und Syntax (E4/E7/E9, F), Importordnung (I), Modernisierung (UP),
+# wahrscheinliche Fehler (B).
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
+
+[lint.isort]
+known-first-party = ["cli_theme", "local_test_stack", "test_state"]

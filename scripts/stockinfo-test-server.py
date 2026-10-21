@@ -48,18 +48,17 @@ from __future__ import annotations
 
 import argparse
 import atexit
-from collections.abc import AsyncIterator, Awaitable, Callable
-from contextlib import asynccontextmanager
-from datetime import datetime, timedelta, timezone
 import json
 import os
-import signal
 import shutil
-import subprocess
-from pathlib import Path
+import signal
 import sys
 import tempfile
 import time
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from types import FrameType
 from typing import Any
 
@@ -202,21 +201,21 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
     sys.path.insert(0, str(stockinfo_root))
 
     import uvicorn
-    from fastapi import FastAPI, Request
-    from fastapi.responses import JSONResponse, Response
     from app.container import get_cached_quote_service, get_daily_history_service, get_fx_service
-    from app.persistence.db import init_db
     from app.detail_models import DetailDefinition, DetailInput
     from app.main import app
     from app.models import QuoteResponse
-    from app.providers.base import FxQuote, RawQuote, SourceAnswer
+    from app.persistence.db import init_db
     from app.persistence.repository import QuoteRepository
+    from app.providers.base import FxQuote, RawQuote, SourceAnswer
     from app.routers.migration import get_gate
     from app.services.daily_history import DailyHistoryService
     from app.services.daily_sync import DailyCloseSync
+    from app.services.fx_service import CachedFxService
     from app.services.quote_cache import CachedQuoteService
     from app.services.quote_service import QuoteService
-    from app.services.fx_service import CachedFxService
+    from fastapi import FastAPI, Request
+    from fastapi.responses import JSONResponse, Response
     from stockinfo_plugin.types import NotFound
     from tests.boundaries import EmptyEtfEnricher
 
@@ -329,7 +328,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
             seed = next(item for item in SEEDS if item["symbol"] == instrument.symbol)
             return RawQuote(
                 symbol=instrument.symbol, price=seed["price"] + 1,
-                quote_time=datetime.now(timezone.utc).isoformat(),
+                quote_time=datetime.now(UTC).isoformat(),
                 currency=seed["currency"], name=seed["name"], type=seed["type"],
                 isin=seed["identity"].get("isin"), source="t39-local-test-source",
             )
@@ -353,7 +352,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
 
         def fetch_daily_closes(self, symbol: str, start: str | None = None, *, identity: Any = None, instrument_type: str | None = None) -> SourceAnswer:
             seed = next(item for item in SEEDS if item["symbol"] == symbol)
-            today = datetime.now(timezone.utc).date()
+            today = datetime.now(UTC).date()
             return SourceAnswer([
                 {"date": (today - timedelta(days=day)).isoformat(), "close": seed["price"] * (1 - day / 1000), "currency": seed["currency"]}
                 for day in range(60, -1, -1)
@@ -371,7 +370,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
             rates = {"EUR": 1.0, "USD": 1.25, "GBP": 1 / 1.2, "CAD": 1.5}
             if base not in rates or quote not in rates:
                 return SourceAnswer(None)
-            return SourceAnswer(FxQuote(rate=rates[quote] / rates[base], quote_time=datetime.now(timezone.utc).isoformat()))
+            return SourceAnswer(FxQuote(rate=rates[quote] / rates[base], quote_time=datetime.now(UTC).isoformat()))
 
 
     @asynccontextmanager
@@ -383,7 +382,7 @@ def run_single_server(args: argparse.Namespace, script_path: Path, parser: argpa
             definitions, demo_values = prepare_demo_details(repository)
         else:
             definitions, details = prepare_details(repository)
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         for seed in SEEDS:
             if args.demo_details:
                 details = demo_values[seed["symbol"]]

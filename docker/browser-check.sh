@@ -22,7 +22,8 @@
 set -uo pipefail
 
 readonly IMAGE="${1:-mangolila/stockportfolio:latest}"
-readonly ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly ROOT
 readonly PORT=18091
 readonly ORIGIN="http://127.0.0.1:${PORT}"
 readonly STOCKINFO_PORT="${STOCKINFO_PORT:-8899}"
@@ -31,7 +32,8 @@ readonly MISSING_URL="http://stockinfo-missing.invalid:8000"
 readonly USERNAME="browser-admin"
 readonly PASSWORD='Browser-Check-Pass1!'
 readonly LABEL="stockportfolio-browser-check=$$"
-readonly WORK="$(mktemp -d)"
+WORK="$(mktemp -d)"
+readonly WORK
 FAILURES=0
 
 cleanup() {

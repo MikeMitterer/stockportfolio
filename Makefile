@@ -9,6 +9,9 @@ BASH_LIBS ?= $(WORKSPACE)/.libs/BashLib/src
 PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
 PYTHON ?= python3
 PYTHON_BOOTSTRAP ?= python3.11
+VENV := .venv
+# Stempel: Die gepinnten Python-Werkzeuge aus requirements-dev.txt sind installiert.
+PY_TOOLS := $(VENV)/.dev-installed
 DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
 export BASH_LIBS PROJECT_TOOLS
 
@@ -117,7 +120,7 @@ setup: ## Symlinks, Git-Hooks, Python-venv und npm-Abhängigkeiten einrichten
 	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
 	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
 	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
-	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -r requirements-dev.txt
+	@$(MAKE) --no-print-directory $(PY_TOOLS)
 	@npm ci --prefix frontend --no-audit --no-fund
 	@npm ci --prefix api --no-audit --no-fund
 
@@ -146,10 +149,81 @@ dev-down: ## Dev-Stack stoppen und Ports 5175/8080 freigeben
 	-@overmind quit 2>/dev/null || true
 	@"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill
 
-.PHONY: test
+# ─── Prüfen ──────────────────────────────────────────────────────────────────
+#
+# Ein Target je Prüfart; darin je Sprache das passende Werkzeug: TypeScript/Vue
+# über die npm-Skripte der Pakete, Python (Teststack unter scripts/, Observer-
+# Hilfe unter .agents/bin/) über die gepinnten Werkzeuge der .venv, Bash über
+# shellcheck. Die Dateilisten kommen aus git, damit neue Dateien mitlaufen.
+
+PY_SOURCES := $(shell git ls-files '*.py')
+SH_SOURCES := $(shell git ls-files '*.sh') .githooks/pre-commit
+# Ein Prettier für beide Pakete; die Regeln stehen in .prettierrc.
+PRETTIER := frontend/node_modules/.bin/prettier
+PRETTIER_FILES := "frontend/src/**/*.{vue,ts,tsx,css,json}" "frontend/tests/**/*.ts" "api/src/**/*.ts" "api/tests/**/*.ts"
+
+# Bricht ab, wenn ein Werkzeug außerhalb der .venv fehlt — still zu bestehen
+# wäre ein falsches Grün. $(1): Befehl, $(2): Installationshinweis.
+define require_tool
+@command -v $(1) >/dev/null || { echo "$(1) fehlt: $(2)" >&2; exit 1; }
+endef
+
+$(PY_TOOLS): requirements-dev.txt
+	@test -x $(VENV)/bin/python || { echo ".venv fehlt: make setup ausführen." >&2; exit 1; }
+	@$(VENV)/bin/python -m pip install -q -r requirements-dev.txt
+	@touch $@
+
+.PHONY: check lint typecheck format format-check test security audit quality
+
+check: lint typecheck format-check test ## Alle technischen Prüfungen ausführen (Abnahme)
+
+lint: $(PY_TOOLS) ## ESLint (Frontend, API), ruff (Python) und shellcheck (Bash)
+	@npm run lint --prefix frontend
+	@npm run lint --prefix api
+	@$(VENV)/bin/ruff check $(PY_SOURCES)
+	@for file in $(SH_SOURCES); do bash -n "$$file" || exit 1; done
+	$(call require_tool,shellcheck,brew install shellcheck)
+	@shellcheck $(SH_SOURCES)
+
+typecheck: ## Typprüfung für Frontend (vue-tsc) und API (tsc)
+	@npm run typecheck --prefix frontend
+	@npm run typecheck --prefix api
+
+format: $(PY_TOOLS) ## Prettier (Frontend, API) und ruff format anwenden
+	@$(PRETTIER) --write --log-level warn $(PRETTIER_FILES)
+	@$(VENV)/bin/ruff format $(PY_SOURCES)
+
+format-check: $(PY_TOOLS) ## Formatierung prüfen, ohne Dateien zu ändern
+	@$(PRETTIER) --check --log-level warn $(PRETTIER_FILES)
+	@$(VENV)/bin/ruff format --check $(PY_SOURCES)
+
 test: docs-check ## Doku-Prüfung, Frontend- und API-Tests einmalig ausführen
 	@npm run test --prefix frontend
 	@npm run test --prefix api
+
+security: $(PY_TOOLS) ## Geheimnisse in der Git-History (gitleaks) und Python-Code (bandit ab mittlerer Schwere)
+	$(call require_tool,gitleaks,brew install gitleaks)
+	@gitleaks git --redact --no-banner .
+	@$(VENV)/bin/python -m bandit -q -ll $(PY_SOURCES)
+
+audit: $(PY_TOOLS) ## Abhängigkeiten auf bekannte Lücken prüfen: npm (Laufzeit) und Python (braucht Netz; nicht in der Abnahme)
+	@npm audit --omit=dev --prefix frontend
+	@npm audit --omit=dev --prefix api
+	@$(VENV)/bin/python -m pip_audit --skip-editable
+
+# Nur Bericht: Befunde enden mit 0, die Schwellen sind Anhaltspunkte. Läuft ein
+# Werkzeug gar nicht, scheitert das Target — ein leerer Bericht wäre sonst ein
+# falsches Grün. Die Schwellen für TypeScript stehen in quality-report.mjs.
+
+quality: $(PY_TOOLS) ## Codequalität berichten: Komplexität, Dateigröße, doppelter Code (nicht in der Abnahme)
+	@echo "$(THEME_COLOR_GROUP)Komplexität und Dateigröße TypeScript/Vue (ESLint)$(RESET)"
+	@node frontend/scripts/quality-report.mjs frontend src
+	@node frontend/scripts/quality-report.mjs api src
+	@echo "$(THEME_COLOR_GROUP)Komplexität und Vereinfachungen Python (ruff C90, SIM, PLR09, RET)$(RESET)"
+	@$(VENV)/bin/ruff check $(PY_SOURCES) --select C90,SIM,PLR09,RET --output-format concise --exit-zero
+	@echo "$(THEME_COLOR_GROUP)Doppelter Code über TypeScript, Vue und Python (jscpd)$(RESET)"
+	@frontend/node_modules/.bin/jscpd --reporters console --min-tokens 70 \
+		frontend/src frontend/tests api/src api/tests scripts .agents/bin
 
 .PHONY: docs-check
 docs-check: ## Nutzerdoku gegen das Projekt prüfen (Links, Befehle, verbotene Begriffe)

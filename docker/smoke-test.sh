@@ -15,13 +15,15 @@ readonly IMAGE="${1:-mangolila/stockportfolio:latest}"
 readonly PORT=18090
 readonly ORIGIN="http://127.0.0.1:${PORT}"
 readonly PASSWORD='Smoke-Test-Pass1!'
-readonly JAR="$(mktemp)"
+JAR="$(mktemp)"
+readonly JAR
 # Alles, was dieser Lauf anlegt, trägt dieses Label. Die Hilfsfunktionen
 # laufen in $(…)-Subshells; eine Liste in Variablen käme dort nie an.
 readonly LABEL="stockportfolio-smoke=$$"
 FAILURES=0
 PASSES=0
 
+# shellcheck disable=SC2329  # über trap cleanup EXIT aufgerufen
 cleanup() {
     docker ps -aq --filter "label=${LABEL}" | xargs docker rm -fv >/dev/null 2>&1
     docker volume ls -q --filter "label=${LABEL}" | xargs docker volume rm >/dev/null 2>&1

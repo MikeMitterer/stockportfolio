@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import gettext
 import hashlib
+import json
 import os
-from collections.abc import Callable
-from pathlib import Path
 import re
 import secrets
 import shutil
@@ -18,6 +16,8 @@ import sys
 import tempfile
 import time
 from argparse import Namespace
+from collections.abc import Callable
+from pathlib import Path
 from types import FrameType
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -197,9 +197,12 @@ def request(url: str, origin: str | None = None, body: dict[str, str] | None = N
         headers["Content-Type"] = "application/json"
     if cookie:
         headers["Cookie"] = cookie
+    # Nur HTTP(S): urlopen öffnete sonst auch file:-Adressen (bandit B310).
+    if not url.startswith(("http://", "https://")):
+        raise ValueError(f"Only http(s) URLs are allowed: {url}")
     http_request = Request(url, data=json.dumps(body).encode() if body is not None else None, headers=headers)
     try:
-        with urlopen(http_request, timeout=2) as response:
+        with urlopen(http_request, timeout=2) as response:  # nosec B310
             return response.status, {key.lower(): value for key, value in response.headers.items()}, response.read()
     except HTTPError as error:
         raise RuntimeError(translate("{url} returned HTTP {status}").format(
