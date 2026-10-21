@@ -111,18 +111,24 @@ function token(context: ServerContext): string {
 }
 
 /**
- * Prüft die Sitzung und verlängert das Cookie um die volle Leerlauffrist.
- * Server und Browser zählen so ab derselben Nutzung; sonst liefe das Cookie
- * vor der serverseitigen Sitzung ab (T-98). `null` lässt das Cookie
- * unverändert, wenn die Route selbst ein neues setzt — zwei `Set-Cookie`
- * desselben Namens ließen offen, welches der Browser behält.
+ * Prüft die Sitzung und gibt dem Cookie die volle Leerlauffrist, bei Bedarf
+ * mit dem getauschten Token (T-98). Server und Browser zählen so ab derselben
+ * Nutzung. `null` lässt das Cookie unverändert, wenn die Route selbst ein
+ * neues setzt — zwei `Set-Cookie` desselben Namens ließen offen, welches der
+ * Browser behält.
+ *
+ * @returns Benutzer und das Token, mit dem der Browser weiterarbeitet.
  */
-function currentUser(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): PublicUser {
+function authenticated(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): { user: PublicUser; token: string } {
   const sessionToken = token(context)
-  const user = service.session(sessionToken)
-  if (cookie) setSessionCookie(context, sessionToken, cookie)
-  if (user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
-  return user
+  const result = cookie ? service.authenticate(sessionToken) : { user: service.session(sessionToken), token: null }
+  if (cookie && result.token) setSessionCookie(context, result.token, cookie)
+  if (result.user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
+  return { user: result.user, token: result.token ?? sessionToken }
+}
+
+function currentUser(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): PublicUser {
+  return authenticated(context, service, cookie, allowPasswordChange).user
 }
 
 function requireAdmin(context: ServerContext, service: AccountService, cookie: SessionCookie): PublicUser {
@@ -233,8 +239,8 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.get('/api/data/events', (context) => {
-    const sessionToken = token(context)
-    const user = currentUser(context, service, cookie)
+    // Das Token nach einem möglichen Tausch: Die offene Verbindung prüft es weiter.
+    const { user, token: sessionToken } = authenticated(context, service, cookie)
     context.header('Cache-Control', 'no-cache')
     context.header('X-Accel-Buffering', 'no')
     return streamSSE(context, async (stream) => {

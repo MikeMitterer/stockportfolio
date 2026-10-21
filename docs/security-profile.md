@@ -32,6 +32,17 @@ Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und
   authentifizierte Anfrage startet die Frist neu, für Sitzung und Cookie
   gleichermaßen; eine feste Höchstdauer gibt es nicht. Ein offener Reiter
   mit Live-Abgleich hält die Sitzung serverseitig aktiv.
+- **Token-Tausch (Mike, 2026-10-21, T-98):** Ist das Token älter als einen
+  Tag, bekommt die nächste authentifizierte Anfrage ein neues. Das alte gilt
+  danach noch 60 Sekunden, ohne selbst zu verlängern, zu tauschen oder ein
+  Cookie zu setzen; so melden parallele Anfragen und andere Reiter desselben
+  Browsers nicht ab. Ersetzte Sitzungen löscht der nächste Tausch. Eine
+  offene Ereignisverbindung tauscht nicht, weil sie kein Cookie mehr setzen
+  kann; nach Ablauf ihres ersetzten Tokens verbindet der Browser neu. Ein
+  kopiertes Token verliert damit seine Gültigkeit, sobald der rechtmäßige
+  Browser nach einem Tausch wieder anfragt; nutzt ihn der Angreifer zuerst,
+  wird der rechtmäßige Browser abgemeldet. Jede Anmeldung in einem weiteren
+  Browser ist eine eigene Sitzung mit eigenem Tausch.
 - **Widerruf:** Abmelden löscht die Sitzung. Passwortwechsel,
   Passwort-Reset durch einen Admin und Deaktivieren löschen alle Sitzungen
   des Kontos; der Passwortwechsel stellt danach eine neue aus.

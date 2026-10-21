@@ -15,6 +15,10 @@ afterEach(() => {
   for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true })
 })
 
+/**
+ * Angemeldeter Browser: `cookie` folgt wie im Browser jedem `Set-Cookie`,
+ * `send` schickt dagegen ein festes, etwa veraltetes Cookie.
+ */
 async function signedIn(sessionIdleMs?: number) {
   const directory = mkdtempSync(join(tmpdir(), 'stockportfolio-session-'))
   directories.push(directory)
@@ -22,21 +26,28 @@ async function signedIn(sessionIdleMs?: number) {
   let currentTime = 100_000
   const service = new AccountService(repository, hashSetupCode('setup-code'), () => currentTime, sessionIdleMs)
   const app = createApiRouter(service, repository, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1' })
-  const post = (path: string, body: unknown, cookie?: string) => app.request(`${origin}${path}`, {
+  let jar = ''
+  const remember = (response: Response) => {
+    const sessionCookie = response.headers.getSetCookie().find((value) => value.startsWith('stockportfolio_session='))
+    if (sessionCookie) jar = sessionCookie.split(';')[0]
+    return response
+  }
+  const post = async (path: string, body: unknown, cookie = jar) => remember(await app.request(`${origin}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: origin, ...(cookie ? { Cookie: cookie } : {}) },
     body: JSON.stringify(body),
-  })
+  }))
+  const send = (cookie: string) => app.request(`${origin}/api/auth/session`, { headers: { Cookie: cookie } })
   await post('/api/setup', { code: 'setup-code', username: 'mike', password: 'Test-password-123' })
   const login = await post('/api/auth/login', { username: 'mike', password: 'Test-password-123' })
-  const loginCookie = login.headers.get('set-cookie') ?? ''
-  const cookie = loginCookie.split(';')[0]
   return {
     repository,
-    loginCookie,
-    cookie,
+    service,
+    loginCookie: login.headers.get('set-cookie') ?? '',
+    cookie: () => jar,
     post,
-    session: () => app.request(`${origin}/api/auth/session`, { headers: { Cookie: cookie } }),
+    send,
+    session: async () => remember(await send(jar)),
     advance: (milliseconds: number) => { currentTime += milliseconds },
   }
 }
@@ -112,26 +123,110 @@ describe('gleitende Sitzung (T-98)', () => {
   })
 
   it('setzt beim Passwortwechsel genau ein Sitzungscookie, das neue', async () => {
-    const { repository, cookie, post, session } = await signedIn()
+    const { repository, cookie, post, send } = await signedIn()
     try {
-      const changed = await post('/api/auth/change-password', { password: 'Changed-password-123' }, cookie)
+      const before = cookie()
+      const changed = await post('/api/auth/change-password', { password: 'Changed-password-123' })
       expect(changed.status).toBe(200)
       const sessionCookies = changed.headers.getSetCookie().filter((value) => value.startsWith('stockportfolio_session='))
       expect(sessionCookies).toHaveLength(1)
-      expect(sessionCookies[0].split(';')[0]).not.toBe(cookie)
-      expect((await session()).status).toBe(401)
+      expect(cookie()).not.toBe(before)
+      expect((await send(before)).status).toBe(401)
     } finally {
       repository.close()
     }
   })
 
   it('verlängert eine ungültige Sitzung nicht und beendet sie beim Abmelden sofort', async () => {
-    const { repository, cookie, post, session } = await signedIn()
+    const { repository, post, session } = await signedIn()
     try {
-      expect((await post('/api/auth/logout', {}, cookie)).status).toBe(200)
+      expect((await post('/api/auth/logout', {})).status).toBe(200)
       const after = await session()
       expect(after.status).toBe(401)
       expect(after.headers.get('set-cookie')).toBeNull()
+    } finally {
+      repository.close()
+    }
+  })
+})
+
+describe('Token-Tausch (T-98)', () => {
+  it('tauscht ein Token, das älter als einen Tag ist, und lässt das alte noch 60 s gelten', async () => {
+    const { repository, cookie, session, send, advance } = await signedIn()
+    try {
+      const original = cookie()
+      advance(dayMs - 1)
+      await session()
+      expect(cookie()).toBe(original)
+      advance(1)
+      expect((await session()).status).toBe(200)
+      const successor = cookie()
+      expect(successor).not.toBe(original)
+      advance(60_000 - 1)
+      expect((await send(original)).status).toBe(200)
+      advance(1)
+      expect((await send(original)).status).toBe(401)
+      expect((await send(successor)).status).toBe(200)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('setzt mit einem ersetzten Token kein Cookie und tauscht nicht erneut', async () => {
+    const { repository, cookie, session, send, advance } = await signedIn()
+    try {
+      const original = cookie()
+      advance(dayMs)
+      await session()
+      const successor = cookie()
+      const late = await send(original)
+      expect(late.status).toBe(200)
+      expect(late.headers.getSetCookie()).toEqual([])
+      expect((await send(successor)).headers.getSetCookie()[0].split(';')[0]).toBe(successor)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('meldet auch ohne tägliche Nutzung nur nach der Leerlauffrist ab', async () => {
+    const { repository, cookie, session, advance } = await signedIn()
+    try {
+      const seen = new Set([cookie()])
+      for (let visit = 0; visit < 6; visit++) {
+        advance(5 * dayMs)
+        expect((await session()).status).toBe(200)
+        seen.add(cookie())
+      }
+      expect(seen.size).toBe(7)
+      advance(7 * dayMs)
+      expect((await session()).status).toBe(401)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('räumt ersetzte Sitzungen nach der Übergangsfrist beim nächsten Tausch weg', async () => {
+    const { repository, cookie, session, advance } = await signedIn()
+    try {
+      const original = cookie().split('=')[1]
+      advance(dayMs)
+      await session()
+      expect(repository.findSession(hashSetupCode(original))?.replacedAt).not.toBeNull()
+      advance(dayMs)
+      await session()
+      expect(repository.findSession(hashSetupCode(original))).toBeNull()
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('tauscht nicht in einer offenen Ereignisverbindung, die kein Cookie mehr setzen kann', async () => {
+    const { repository, service, cookie, advance } = await signedIn()
+    try {
+      const original = cookie().split('=')[1]
+      advance(dayMs)
+      expect(service.session(original).username).toBe('mike')
+      expect(repository.findSession(hashSetupCode(original))?.replacedAt ?? null).toBeNull()
     } finally {
       repository.close()
     }

@@ -3,7 +3,7 @@ import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import Database from 'better-sqlite3'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, lt } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import { loginAttempts, privateResources, sessions, users } from './schema.js'
@@ -51,6 +51,8 @@ export interface SessionRecord {
   userId: string
   createdAt: number
   lastSeenAt: number
+  /** Gesetzt, sobald ein neues Token diese Sitzung ersetzt hat. */
+  replacedAt?: number | null
 }
 
 export interface AttemptRecord {
@@ -81,6 +83,8 @@ export interface AccountRepository {
   findSession(tokenHash: string): SessionRecord | null
   touchSession(tokenHash: string, now: number): void
   deleteSession(tokenHash: string): void
+  /** Legt die Nachfolgesitzung an, markiert die alte als ersetzt und löscht vor `expiredBefore` ersetzte Sitzungen. */
+  replaceSession(oldTokenHash: string, successor: SessionRecord, expiredBefore: number): void
   deleteUserSessions(userId: string): void
   getAttempt(key: string): AttemptRecord | null
   recordFailure(key: string, now: number): AttemptRecord
@@ -273,6 +277,13 @@ export function createSqliteRepository(filePath: string): AccountRepository {
     },
     deleteSession(tokenHash) {
       database.delete(sessions).where(eq(sessions.tokenHash, tokenHash)).run()
+    },
+    replaceSession(oldTokenHash, successor, expiredBefore) {
+      database.transaction((transaction) => {
+        transaction.insert(sessions).values(successor).run()
+        transaction.update(sessions).set({ replacedAt: successor.createdAt }).where(eq(sessions.tokenHash, oldTokenHash)).run()
+        transaction.delete(sessions).where(lt(sessions.replacedAt, expiredBefore)).run()
+      })
     },
     deleteUserSessions(userId) {
       database.delete(sessions).where(eq(sessions.userId, userId)).run()
