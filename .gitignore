@@ -68,3 +68,5 @@ docker/logs/
 # Claude Code (lokale Werkzeug-Konfiguration)
 .claude/
 .overmind.sock
+/_tickets/
+/.worktrees/

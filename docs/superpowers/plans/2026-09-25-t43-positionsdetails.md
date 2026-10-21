@@ -8,7 +8,7 @@
 
 **Tech Stack:** Vue 3, TypeScript, Naive UI, vue-i18n, Vitest.
 
-**Spec:** `_tickets/30-doing/T-43-positionsdetails-ordnen.md`.
+**Spec:** Ticket T-43.
 
 ## Global Constraints
 
