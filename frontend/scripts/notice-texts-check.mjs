@@ -1,4 +1,5 @@
-// Prüft sichtbare Hinweistexte auf Methodenseite und Rebalancing in DE und EN.
+// Prüft sichtbare Hinweistexte auf Methodenseite und Rebalancing in DE und EN,
+// dazu die Zielsumme in der Fußzeile der Rebalancing-Tabelle (T-97).
 //
 // Die App rechnet aus, was zu den selbst gesetzten Zielen führt; Hinweise
 // sprechen deshalb von Lage zum Ziel und von rechnerischen Beträgen, nicht
@@ -46,6 +47,7 @@ const expectations = {
       required: ['nennt der Plan die Stückzahl'],
       forbidden: ['Vorschlag'],
     },
+    targetSum: { balanced: 'Ziele ergeben 100 %', over: 'zu viel', toast: 'Die Ziele ergeben zusammen' },
   },
   en: {
     saveLabel: 'Save password',
@@ -60,10 +62,55 @@ const expectations = {
       required: ['the plan gives the units'],
       forbidden: ['suggestion'],
     },
+    targetSum: { balanced: 'Targets add up to 100 %', over: 'too much', toast: 'The targets add up to' },
   },
 }
 
 const failures = []
+
+/** Zahlen eines Zellentexts in Reihenfolge; Dezimalkomma im Deutschen, Minus auch als U+2212. */
+function numbersIn(text, locale) {
+  const normalized = locale === 'de' ? text.replaceAll('.', '').replaceAll(',', '.') : text.replaceAll(',', '')
+  return [...normalized.replaceAll('−', '-').matchAll(/[+-]?\d+(?:\.\d+)?/g)].map((match) => Number(match[0]))
+}
+
+/**
+ * Hebt das erste Ziel probeweise um einen Prozentpunkt und prüft die
+ * Fußzeile: Summe steigt um genau 1, Abweichung passt zur Summe, Zustand
+ * „über 100 %“, und der Toast nennt dieselbe Summe.
+ */
+async function verifyTargetSum(page, locale, expected) {
+  const label = `${locale} · Zielsumme Fußzeile`
+  const cell = page.locator('tfoot .reb__foot-target')
+  await cell.waitFor({ timeout: 20000 })
+  const [before] = numbersIn(await cell.innerText(), locale)
+  const startsBalanced = Math.abs(before - 100) <= 0.01
+  if (startsBalanced && !(await cell.innerText()).includes(expected.balanced)) {
+    failures.push(`${label}: ausgeglichene Summe ohne „${expected.balanced}“`)
+  }
+  const display = page.locator('tbody tr.reb__row .reb__target .inline-number__display').first()
+  await display.click()
+  const input = page.locator('tbody tr.reb__row .reb__target input').first()
+  const current = Number(await input.inputValue())
+  await input.fill(String(current + 1))
+  await input.press('Enter')
+  await page.waitForFunction((previous) => document.querySelector('tfoot .reb__foot-target')?.textContent?.trim().split(/\s/)[0] !== previous,
+    (await cell.innerText()).trim().split(/\s/)[0], { timeout: 5000 }).catch(() => {})
+  const text = await cell.innerText()
+  const [after, deviation] = numbersIn(text, locale)
+  const classes = (await cell.getAttribute('class')) ?? ''
+  if (Math.abs(after - before - 1) > 0.05) failures.push(`${label}: Summe ${before} → ${after}, erwartet +1`)
+  else if (after > 100.01) {
+    if (Math.abs(deviation - (after - 100)) > 0.05) failures.push(`${label}: Abweichung ${deviation} passt nicht zur Summe ${after}`)
+    if (!text.includes(expected.over)) failures.push(`${label}: „${expected.over}“ fehlt in „${text}“`)
+    if (!classes.includes('reb__flow--out')) failures.push(`${label}: Zustand „über 100 %“ nicht markiert`)
+    const sumText = text.trim().split('\n')[0].trim()
+    const toast = page.locator('.n-notification', { hasText: expected.toast })
+    await toast.first().waitFor({ timeout: 5000 }).catch(() => {})
+    if (!(await toast.first().innerText().catch(() => '')).includes(sumText)) failures.push(`${label}: Toast nennt nicht „${sumText}“`)
+  }
+  if (!failures.some((failure) => failure.startsWith(`${label}:`))) console.log(`OK  ${label}: ${before} → ${after}`)
+}
 
 /** Vergleicht einen gelesenen Text mit den Erwartungen und sammelt Abweichungen. */
 function verify(label, text, { required, forbidden }) {
@@ -122,6 +169,9 @@ try {
     await trigger.hover()
     await page.locator('.ux-hint__body').first().waitFor({ timeout: 5000 })
     if (imageDir) await page.screenshot({ path: resolve(imageDir, `notice-rebalancing-${locale}.png`) })
+    await page.mouse.move(0, 0)
+    await verifyTargetSum(page, locale, expected.targetSum)
+    if (imageDir) await page.locator('tfoot').screenshot({ path: resolve(imageDir, `target-sum-${locale}.png`) })
 
     await context.close()
   }
