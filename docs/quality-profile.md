@@ -165,6 +165,10 @@ Was zu einer Änderung gehört und welches Dokument wofür steht, regelt
 - **Sprachkataloge über 500 Zeilen** (`frontend/src/i18n/de.ts`, `en.ts`): Je
   Sprache eine Datei hält den Abgleich in `catalogues.spec.ts` einfach. Der
   Bericht aus `make quality` nennt sie weiter.
+- **Gleich lautende Theme-Namen in `de.ts` und `en.ts`** (`settings.themeNames`):
+  Namen sind sichtbarer Text und gehören nach `@mmit/ux-foundation` in den
+  Sprachkatalog, nicht zur Farbdefinition; dass sie heute in beiden Sprachen
+  gleich heißen, ist Zufall. jscpd meldet den Block als Kopie.
 - **Gleiche Depots in mehreren Backup-Fixtures** unter
   `frontend/tests/fixtures/browser/`: Jede Datei ist ein vollständiges Backup
   für genau eine Browserprüfung und soll ohne die anderen lesbar bleiben.

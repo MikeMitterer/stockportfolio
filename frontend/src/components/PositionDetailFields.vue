@@ -121,6 +121,8 @@ function keepPercentTogether(value: string): string {
 </template>
 
 <style scoped lang="scss">
+@use '@/assets/detail-tile' as *;
+
 .detail-fields {
   @include stack(var(--space-3));
 
@@ -141,10 +143,7 @@ function keepPercentTogether(value: string): string {
   &__item {
     min-width: 0;
     overflow-wrap: anywhere;
-    padding: var(--space-2);
-    border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
-    border-radius: var(--radius-sm);
-    background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
+    @include detail-tile;
   }
   &__source {
     display: block;

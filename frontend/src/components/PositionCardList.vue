@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import PositionCard from '@/components/PositionCard.vue'
 import { assetColor } from '@/domain/assetColors'
 import { percent } from '@/domain/formatters'
+import { rowsByGroup } from '@/domain/positionGroups'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { ExternalLink } from '@/types/portfolio'
 
@@ -23,19 +24,8 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-interface RenderedGroup {
-  group: GroupResult
-  rows: PositionResult[]
-}
-
-/** Nur Gruppen mit Positionen — leere Überschriften wären Rauschen. */
-const renderedGroups = computed<RenderedGroup[]>(() =>
-  props.groups
-    .map((group) => ({
-      group,
-      rows: props.rows.filter((row) => row.position.group === group.group),
-    }))
-    .filter((entry) => entry.rows.length > 0),
+const renderedGroups = computed(() =>
+  rowsByGroup(props.groups, props.rows, (row) => row.position.group),
 )
 const { formatMoney } = usePortfolioCurrency()
 </script>
