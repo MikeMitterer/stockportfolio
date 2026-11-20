@@ -25,10 +25,11 @@ export DEVTOOLS_SOURCE DEVTOOLS_TAG
 # Ohne die Git-Variablen eines Hooks (make docs-check im pre-commit): Ein älterer Starter gäbe
 # sie an pipx weiter, und pip klonte in den Index dieses Repositorys.
 DEV_TOOLS := env -u GIT_INDEX_FILE -u GIT_DIR -u GIT_WORK_TREE devtools --project
-# Bricht ab, wenn der Starter fehlt, und nennt seinen Installationsbefehl. Im Rezept vor jedem
-# Aufruf von devtools: @$(REQUIRE_STARTER); …
+# Bricht ab, wenn der Starter fehlt, und nennt den Weg dorthin. Solange die Werkzeuge nicht
+# veröffentlicht sind, kommt er aus der lokalen DevTools-Arbeitskopie (Mike, 2026-11-20). Im
+# Rezept vor jedem Aufruf von devtools: @$(REQUIRE_STARTER); …
 REQUIRE_STARTER = command -v devtools >/dev/null || { \
-	echo "  ✗ devtools fehlt: pipx install '$${DEVTOOLS_SOURCE}@$${DEVTOOLS_TAG}'" >&2; exit 1; }
+	echo "  ✗ devtools fehlt: einmal je Rechner in der DevTools-Arbeitskopie make install" >&2; exit 1; }
 
 # Die Konto-API liest .env selbst (npm run dev); das Makefile braucht daraus nur die Adresse
 # für info und hints.

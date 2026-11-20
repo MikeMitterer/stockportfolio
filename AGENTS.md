@@ -453,11 +453,13 @@ eine Basis wie `README.md` oder `docker/README.md` nach ihrer abhängigen Datei
 der eingetragenen Frist ein Problem. Die Vorschau gehört in denselben Commit
 wie `docker/README.md`. Alle Zeiten kommen aus git, nicht vom Dateidatum oder
 Tagesdatum. Verlangt eine Änderung nichts, wird die Meldung nach dem Prüfen
-mit `docs-check.sh --ack <datei>` quittiert und `.docs-check.ack`
+mit `docs-check --ack <datei>` quittiert und `.docs-check.ack`
 mitcommittet; ungesehen quittieren ist kein Weg, eine Meldung loszuwerden. Es
 läuft vor jedem Commit (`.githooks/pre-commit`) und prüft dort genau den
 vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
-auf. `--no-verify` nur im Notfall und mit Begründung im Bericht.
+auf. Fehlen der Starter `devtools` oder ProjectTools in `.tools/`, warnt der
+Hook nur und lässt den Commit durch; das ist keine bestandene Doku-Prüfung,
+`make test` bleibt die harte Grenze. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
 

@@ -24,8 +24,11 @@ beschreibt der [Docker-Guide](../docker/README.md).
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
 - Python 3.11+ für den Teststack
-- pipx und der Starter `devtools`, einmal je Rechner; fehlt er, nennt
-  `make setup` den Installationsbefehl
+- pipx und der Starter `devtools`, einmal je Rechner aus der lokalen
+  DevTools-Arbeitskopie installiert (dort das Make-Ziel install); fehlt er, bricht
+  `make setup` mit diesem Hinweis ab. Solange die Werkzeuge nicht auf GitHub
+  oder PyPI veröffentlicht sind, holt DevTools sie über seine rechnerlokale
+  Zuordnung aus den lokalen Repos.
 - Overmind und tmux für den Dev-Stack (macOS: `brew install overmind tmux`)
 - eine erreichbare StockInfo-Instanz; `make dev-up` startet sie **nicht**
 
@@ -101,7 +104,9 @@ Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
 (`.githooks/pre-commit`, eingerichtet von `make setup`) und bricht ihn bei
-Problemen ab. Der Hook prüft genau den vorgemerkten Stand, nicht den
+Problemen ab. Fehlen der Starter oder ProjectTools in `.tools/`, warnt der
+Hook nur („Doku nicht geprüft“) und lässt den Commit durch; ein solcher Commit
+gilt nicht als geprüft, `make test` bleibt die harte Grenze. Der Hook prüft genau den vorgemerkten Stand, nicht den
 Arbeitsbaum: Nicht vorgemerkte Änderungen zählen nicht, und ein Link auf eine
 Datei, die nicht in git liegt, ist ein Problem. Jede Umgebungsvariable, die der Code unter `api/src`,
 `frontend/src`, `frontend/scripts` oder `scripts` liest, muss in der Doku
