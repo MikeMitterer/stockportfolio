@@ -4,8 +4,18 @@ import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { streamSSE } from 'hono/streaming'
 import { AccountService, ServiceError, type PublicUser } from '../auth/service.js'
 import { ResourceEvents } from '../data/events.js'
-import type { AccountRepository, LegacyPortfolio, ResourceKind, RestoreData } from '../persistence/repository.js'
-import { forwardToStockInfo, isAllowedStockInfoPath, STOCKINFO_TIMEOUT_MS, type ProxyFetch } from '../stockinfo/proxy.js'
+import type {
+  AccountRepository,
+  LegacyPortfolio,
+  ResourceKind,
+  RestoreData,
+} from '../persistence/repository.js'
+import {
+  forwardToStockInfo,
+  isAllowedStockInfoPath,
+  STOCKINFO_TIMEOUT_MS,
+  type ProxyFetch,
+} from '../stockinfo/proxy.js'
 
 type ServerContext = Context<{ Bindings: HttpBindings }>
 
@@ -44,12 +54,19 @@ function readString(value: unknown): string {
 }
 
 function readRevision(value: unknown): number {
-  if (!Number.isSafeInteger(value) || (value as number) < 0) throw new ServiceError(400, 'invalid_revision')
+  if (!Number.isSafeInteger(value) || (value as number) < 0)
+    throw new ServiceError(400, 'invalid_revision')
   return value as number
 }
 
 function readResourceKind(value: string): ResourceKind {
-  if (value !== 'portfolio' && value !== 'settings' && value !== 'allowlist' && value !== 'snapshots' && value !== 'quote-refresh') {
+  if (
+    value !== 'portfolio' &&
+    value !== 'settings' &&
+    value !== 'allowlist' &&
+    value !== 'snapshots' &&
+    value !== 'quote-refresh'
+  ) {
     throw new ServiceError(404, 'not_found')
   }
   return value
@@ -57,29 +74,50 @@ function readResourceKind(value: string): ResourceKind {
 
 function validateResource(kind: ResourceKind, id: string, value: unknown): void {
   if (kind === 'snapshots') {
-    if (!Array.isArray(value) || value.some((entry) => {
-      const row = readObject(entry)
-      return typeof row.date !== 'string' || typeof row.currency !== 'string' || typeof row.total !== 'number' || !Number.isFinite(row.total)
-    })) throw new ServiceError(400, 'invalid_data')
+    if (
+      !Array.isArray(value) ||
+      value.some((entry) => {
+        const row = readObject(entry)
+        return (
+          typeof row.date !== 'string' ||
+          typeof row.currency !== 'string' ||
+          typeof row.total !== 'number' ||
+          !Number.isFinite(row.total)
+        )
+      })
+    )
+      throw new ServiceError(400, 'invalid_data')
     return
   }
   const record = readObject(value)
-  if (kind === 'quote-refresh' && (id !== 'current' || typeof record.refreshedAt !== 'string' || !Number.isFinite(Date.parse(record.refreshedAt)))) {
+  if (
+    kind === 'quote-refresh' &&
+    (id !== 'current' ||
+      typeof record.refreshedAt !== 'string' ||
+      !Number.isFinite(Date.parse(record.refreshedAt)))
+  ) {
     throw new ServiceError(400, 'invalid_data')
   }
-  if (kind === 'portfolio' && (record.id !== id || typeof record.name !== 'string' || !Array.isArray(record.positions))) {
+  if (
+    kind === 'portfolio' &&
+    (record.id !== id || typeof record.name !== 'string' || !Array.isArray(record.positions))
+  ) {
     throw new ServiceError(400, 'invalid_data')
   }
   if (kind === 'settings' && (id !== 'current' || typeof record.activePortfolioId !== 'string')) {
     throw new ServiceError(400, 'invalid_data')
   }
-  if (kind === 'allowlist' && Object.values(record).some((enabled) => typeof enabled !== 'boolean')) {
+  if (
+    kind === 'allowlist' &&
+    Object.values(record).some((enabled) => typeof enabled !== 'boolean')
+  ) {
     throw new ServiceError(400, 'invalid_data')
   }
 }
 
 function readLegacyPortfolios(value: unknown): LegacyPortfolio[] {
-  if (!Array.isArray(value) || value.length === 0 || value.length > 1000) throw new ServiceError(400, 'invalid_data')
+  if (!Array.isArray(value) || value.length === 0 || value.length > 1000)
+    throw new ServiceError(400, 'invalid_data')
   const entries = value.map((item) => {
     const source = readObject(item)
     const portfolio = readObject(source.portfolio ?? source)
@@ -91,7 +129,8 @@ function readLegacyPortfolios(value: unknown): LegacyPortfolio[] {
     validateResource('snapshots', id, snapshots)
     return { portfolio, allowlist, snapshots: snapshots as unknown[] }
   })
-  if (new Set(entries.map((entry) => entry.portfolio.id)).size !== entries.length) throw new ServiceError(400, 'invalid_data')
+  if (new Set(entries.map((entry) => entry.portfolio.id)).size !== entries.length)
+    throw new ServiceError(400, 'invalid_data')
   return entries
 }
 
@@ -105,7 +144,9 @@ async function body(context: ServerContext): Promise<Record<string, unknown>> {
 }
 
 /** Token einer authentifizierten Anfrage; nach dem Tausch am Ende der Anfrage der Nachfolger. */
-interface SessionRenewal { token: string }
+interface SessionRenewal {
+  token: string
+}
 
 /**
  * Sitzungscookie, das die Antwort am Ende der Anfrage setzt, samt Token-Tausch
@@ -132,19 +173,34 @@ function token(context: ServerContext): string {
  * @returns Benutzer und das Token, mit dem der Browser weiterarbeitet; nach
  *   dem Tausch am Ende der Anfrage steht dort der Nachfolger.
  */
-function authenticated(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): { user: PublicUser; session: SessionRenewal } {
+function authenticated(
+  context: ServerContext,
+  service: AccountService,
+  cookie: SessionCookie | null,
+  allowPasswordChange = false,
+): { user: PublicUser; session: SessionRenewal } {
   const session: SessionRenewal = { token: token(context) }
   const user = service.session(session.token)
   if (cookie) pendingSessionCookie.set(context, session)
-  if (user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
+  if (user.mustChangePassword && !allowPasswordChange)
+    throw new ServiceError(403, 'password_change_required')
   return { user, session }
 }
 
-function currentUser(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): PublicUser {
+function currentUser(
+  context: ServerContext,
+  service: AccountService,
+  cookie: SessionCookie | null,
+  allowPasswordChange = false,
+): PublicUser {
   return authenticated(context, service, cookie, allowPasswordChange).user
 }
 
-function requireAdmin(context: ServerContext, service: AccountService, cookie: SessionCookie): PublicUser {
+function requireAdmin(
+  context: ServerContext,
+  service: AccountService,
+  cookie: SessionCookie,
+): PublicUser {
   const user = currentUser(context, service, cookie)
   if (user.role !== 'admin') throw new ServiceError(403, 'forbidden')
   return user
@@ -160,10 +216,17 @@ function setSessionCookie(context: ServerContext, value: string, cookie: Session
   })
 }
 
-export function createApiRouter(service: AccountService, repository: AccountRepository, options: ApiOptions): Hono<{ Bindings: HttpBindings }> {
+export function createApiRouter(
+  service: AccountService,
+  repository: AccountRepository,
+  options: ApiOptions,
+): Hono<{ Bindings: HttpBindings }> {
   const app = new Hono<{ Bindings: HttpBindings }>()
   const events = new ResourceEvents()
-  const cookie: SessionCookie = { secure: options.secureCookies, maxAgeSeconds: Math.floor(service.sessionIdleMs / 1000) }
+  const cookie: SessionCookie = {
+    secure: options.secureCookies,
+    maxAgeSeconds: Math.floor(service.sessionIdleMs / 1000),
+  }
 
   app.onError((error, context) => {
     if (error instanceof ServiceError) {
@@ -174,11 +237,18 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   })
 
   app.use('/api/*', async (context, next) => {
-    if (context.req.method === 'POST' || context.req.method === 'PUT' || context.req.method === 'PATCH' || context.req.method === 'DELETE') {
+    if (
+      context.req.method === 'POST' ||
+      context.req.method === 'PUT' ||
+      context.req.method === 'PATCH' ||
+      context.req.method === 'DELETE'
+    ) {
       const expectedOrigin = options.publicOrigin ?? new URL(context.req.url).origin
-      if (context.req.header('Origin') !== expectedOrigin) throw new ServiceError(403, 'invalid_origin')
+      if (context.req.header('Origin') !== expectedOrigin)
+        throw new ServiceError(403, 'invalid_origin')
       const contentType = context.req.header('Content-Type') ?? ''
-      if (!/^application\/json(?:\s*;|\s*$)/i.test(contentType)) throw new ServiceError(415, 'json_required')
+      if (!/^application\/json(?:\s*;|\s*$)/i.test(contentType))
+        throw new ServiceError(415, 'json_required')
     }
     await next()
     const pending = pendingSessionCookie.get(context)
@@ -204,12 +274,18 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
 
   app.post('/api/auth/login', async (context) => {
     const request = await body(context)
-    const result = await service.login(readString(request.username), readString(request.password), options.remoteAddress(context))
+    const result = await service.login(
+      readString(request.username),
+      readString(request.password),
+      options.remoteAddress(context),
+    )
     setSessionCookie(context, result.token, cookie)
     return context.json({ user: result.user })
   })
 
-  app.get('/api/auth/session', (context) => context.json({ user: currentUser(context, service, cookie, true) }))
+  app.get('/api/auth/session', (context) =>
+    context.json({ user: currentUser(context, service, cookie, true) }),
+  )
 
   app.post('/api/auth/logout', (context) => {
     service.logout(token(context))
@@ -233,8 +309,13 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
   app.post('/api/admin/users', async (context) => {
     requireAdmin(context, service, cookie)
     const request = await body(context)
-    if (request.role !== 'admin' && request.role !== 'user') throw new ServiceError(400, 'invalid_role')
-    const user = await service.createUser(readString(request.username), readString(request.password), request.role)
+    if (request.role !== 'admin' && request.role !== 'user')
+      throw new ServiceError(400, 'invalid_role')
+    const user = await service.createUser(
+      readString(request.username),
+      readString(request.password),
+      request.role,
+    )
     return context.json({ user }, 201)
   })
 
@@ -328,7 +409,10 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
     const user = currentUser(context, service, cookie)
     const request = await body(context)
     const portfolios = readLegacyPortfolios(request.portfolios)
-    const settings = request.settings === null || request.settings === undefined ? null : readObject(request.settings)
+    const settings =
+      request.settings === null || request.settings === undefined
+        ? null
+        : readObject(request.settings)
     if (settings) validateResource('settings', 'current', settings)
     const previousSettings = repository.findResource(user.id, 'settings', 'current')
     const result = repository.importLegacy(user.id, portfolios, settings)
@@ -375,12 +459,15 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
         replaced: revisions.replaced === null ? null : readRevision(revisions.replaced),
       },
     }
-    const removed = replacedId && replacedId !== id
-      ? (['portfolio', 'allowlist', 'snapshots'] as const).flatMap((kind) => {
-          const resource = repository.findResource(user.id, kind, replacedId)
-          return resource ? [{ kind, resourceId: replacedId, revision: resource.revision + 1 }] : []
-        })
-      : []
+    const removed =
+      replacedId && replacedId !== id
+        ? (['portfolio', 'allowlist', 'snapshots'] as const).flatMap((kind) => {
+            const resource = repository.findResource(user.id, kind, replacedId)
+            return resource
+              ? [{ kind, resourceId: replacedId, revision: resource.revision + 1 }]
+              : []
+          })
+        : []
     const result = repository.restoreBackup(user.id, data)
     if (result === 'not_found') throw new ServiceError(404, 'not_found')
     if (result === 'conflict') throw new ServiceError(409, 'revision_conflict')

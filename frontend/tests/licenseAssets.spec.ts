@@ -19,13 +19,19 @@ afterEach(() => {
 describe('Lizenzartefakte', () => {
   it('liefert die eigene Konto-API samt Lockfile und Migrationen im Projektarchiv mit', () => {
     const root = fileURLToPath(new URL('../..', import.meta.url))
-    const archive = createLegalAssets(root).find((asset) => asset.fileName === 'stockportfolio-source.tgz')!.source
+    const archive = createLegalAssets(root).find(
+      (asset) => asset.fileName === 'stockportfolio-source.tgz',
+    )!.source
     const directory = mkdtempSync(join(tmpdir(), 'stockportfolio-license-api-'))
     temporaryDirectories.push(directory)
     const path = join(directory, 'source.tgz')
     writeFileSync(path, archive)
     const listing = execFileSync('tar', ['-tzf', path], { encoding: 'utf8' })
-    for (const name of ['api/src/index.ts', 'api/package-lock.json', 'api/drizzle/0000_majestic_shooting_star.sql']) {
+    for (const name of [
+      'api/src/index.ts',
+      'api/package-lock.json',
+      'api/drizzle/0000_majestic_shooting_star.sql',
+    ]) {
       expect(listing).toContain(name)
     }
     expect(listing).not.toContain('docker/runtime/')
@@ -35,9 +41,15 @@ describe('Lizenzartefakte', () => {
     const root = mkdtempSync(join(tmpdir(), 'stockportfolio-license-test-'))
     temporaryDirectories.push(root)
     mkdirSync(join(root, 'frontend'))
-    writeFileSync(join(root, 'frontend/package.json'), JSON.stringify({
-      name: 'license-test', version: '1.0.0', private: true, sourceFiles: ['src'],
-    }))
+    writeFileSync(
+      join(root, 'frontend/package.json'),
+      JSON.stringify({
+        name: 'license-test',
+        version: '1.0.0',
+        private: true,
+        sourceFiles: ['src'],
+      }),
+    )
     mkdirSync(join(root, 'src'))
     writeFileSync(join(root, 'src', 'main.ts'), 'export const changed = true\n')
     if (process.platform === 'darwin') {
@@ -52,18 +64,23 @@ describe('Lizenzartefakte', () => {
     const assets = createLegalAssets(root)
     for (const file of ['LICENSE', 'LICENSE.de.txt', 'LICENSING.md', 'THIRD_PARTY_NOTICES.md']) {
       const outputName = file === 'LICENSE' ? 'LICENSE.txt' : file
-      expect(assets.find((asset) => asset.fileName === outputName)?.source)
-        .toEqual(readFileSync(join(root, file)))
+      expect(assets.find((asset) => asset.fileName === outputName)?.source).toEqual(
+        readFileSync(join(root, file)),
+      )
     }
     const archive = join(root, 'source.tgz')
-    writeFileSync(archive, assets.find((asset) => asset.fileName === 'stockportfolio-source.tgz')!.source)
+    writeFileSync(
+      archive,
+      assets.find((asset) => asset.fileName === 'stockportfolio-source.tgz')!.source,
+    )
     const listing = execFileSync('tar', ['-tzf', archive], { encoding: 'utf8' })
     expect(listing).toContain('src/main.ts')
     expect(listing).not.toContain('private.txt')
     expect(listing).not.toContain('dist/')
     expect(gunzipSync(readFileSync(archive)).includes(Buffer.from('._main.ts'))).toBe(false)
-    expect(execFileSync('tar', ['-xOzf', archive, 'src/main.ts'], { encoding: 'utf8' }))
-      .toBe('export const changed = true\n')
+    expect(execFileSync('tar', ['-xOzf', archive, 'src/main.ts'], { encoding: 'utf8' })).toBe(
+      'export const changed = true\n',
+    )
   })
 
   it('bricht bei fehlendem Lizenztext ab', () => {

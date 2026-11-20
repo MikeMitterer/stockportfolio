@@ -51,9 +51,8 @@ describe('Lesbare Demodaten des Teststacks', () => {
         expect(values.ter as number, symbol).toBeLessThanOrEqual(5)
       }
       // Fondsgröße in Millionen: unter 2.000.000 (2 Billionen).
-      const fundSize = (values.fund_size ?? (values.manual_fund_size as { value: number } | undefined)?.value) as
-        | number
-        | undefined
+      const fundSize = (values.fund_size ??
+        (values.manual_fund_size as { value: number } | undefined)?.value) as number | undefined
       if (fundSize !== undefined) {
         expect(fundSize, symbol).toBeGreaterThan(0)
         expect(fundSize, symbol).toBeLessThan(2_000_000)
@@ -71,10 +70,13 @@ describe('Lesbare Demodaten des Teststacks', () => {
     const result = parseBackup(JSON.stringify(demoBackup))
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    const positions = result.backup.portfolio.positions.filter((position) => position.group !== 'cash')
+    const positions = result.backup.portfolio.positions.filter(
+      (position) => position.group !== 'cash',
+    )
     expect(positions.length).toBeGreaterThan(0)
     for (const position of positions) {
-      const values = demoDetails.instruments[position.symbol as keyof typeof demoDetails.instruments]
+      const values =
+        demoDetails.instruments[position.symbol as keyof typeof demoDetails.instruments]
       expect(values, position.symbol).toBeDefined()
       expect(position.kind, position.symbol).toBe(values?.type)
     }

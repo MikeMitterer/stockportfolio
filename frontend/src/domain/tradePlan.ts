@@ -18,13 +18,7 @@ import {
   upperBand,
   type PositionResult,
 } from './rebalancing'
-import type {
-  Bands,
-  Portfolio,
-  QuoteMap,
-  RebalancingTrigger,
-  Suggestion,
-} from '@/types/portfolio'
+import type { Bands, Portfolio, QuoteMap, RebalancingTrigger, Suggestion } from '@/types/portfolio'
 
 /** Geplante Stückzahlen je Position (`+` kaufen, `−` verkaufen). */
 export type TradeMap = Record<string, number>
@@ -230,9 +224,16 @@ export function computeTradePlan(
         targetOverridden: override !== undefined,
         lowerBandPercent: lowerPct,
         upperBandPercent: upperPct,
-        lowerBandPrice: row.position.group === 'cash' ? null : bandPrice(price, marketValueAfter, total, lowerPct),
-        upperBandPrice: row.position.group === 'cash' ? null : bandPrice(price, marketValueAfter, total, upperPct),
-        bandBreachAfter: percentAfter < lowerPct ? 'lower' : percentAfter > upperPct ? 'upper' : null,
+        lowerBandPrice:
+          row.position.group === 'cash'
+            ? null
+            : bandPrice(price, marketValueAfter, total, lowerPct),
+        upperBandPrice:
+          row.position.group === 'cash'
+            ? null
+            : bandPrice(price, marketValueAfter, total, upperPct),
+        bandBreachAfter:
+          percentAfter < lowerPct ? 'lower' : percentAfter > upperPct ? 'upper' : null,
         // Dieselbe Mindestgröße wie im Dashboard: Sonst meldet die Simulation
         // „Buy" für einen Betrag, für den die Übersicht daneben „OK" sagt.
         suggestionAfter: verdict.suggestion,
@@ -262,7 +263,8 @@ export function computeTradePlan(
 
   const liquidBefore = rows
     .filter(
-      (row) => row.isActive && (row.position.group === 'cash' || row.position.group === 'moneymarket'),
+      (row) =>
+        row.isActive && (row.position.group === 'cash' || row.position.group === 'moneymarket'),
     )
     .reduce((sum, row) => sum + row.marketValue, 0)
 

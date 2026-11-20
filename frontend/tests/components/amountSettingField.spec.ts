@@ -10,19 +10,35 @@ import type { AmountSetting } from '@/types/portfolio'
 beforeEach(() => {
   setActivePinia(createPinia())
   Object.defineProperty(HTMLElement.prototype, 'scrollTo', { configurable: true, value() {} })
-  vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener() {}, removeEventListener() {} }))
+  vi.stubGlobal('matchMedia', () => ({
+    matches: false,
+    addEventListener() {},
+    removeEventListener() {},
+  }))
 })
-afterEach(() => { document.body.innerHTML = ''; vi.unstubAllGlobals() })
+afterEach(() => {
+  document.body.innerHTML = ''
+  vi.unstubAllGlobals()
+})
 
 describe('Betragseinstellung', () => {
   it('öffnet die Einheit ohne einen Klick ans Zahlenfeld weiterzureichen und rechnet um', async () => {
     const setting = ref<AmountSetting>({ mode: 'percent', value: 20 })
-    const wrapper = mount(defineComponent({
-      setup: () => () => h(AmountSettingField, {
-        label: 'Sicherheitspuffer', setting: setting.value, total: 5000,
-        zeroHint: 'Aus', onUpdate: (value: AmountSetting) => { setting.value = value },
+    const wrapper = mount(
+      defineComponent({
+        setup: () => () =>
+          h(AmountSettingField, {
+            label: 'Sicherheitspuffer',
+            setting: setting.value,
+            total: 5000,
+            zeroHint: 'Aus',
+            onUpdate: (value: AmountSetting) => {
+              setting.value = value
+            },
+          }),
       }),
-    }), { attachTo: document.body })
+      { attachTo: document.body },
+    )
     const input = wrapper.get('input').element
     const numericClick = vi.fn()
     input.addEventListener('click', numericClick)

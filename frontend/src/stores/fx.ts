@@ -27,7 +27,12 @@ export const useFxStore = defineStore('fx', () => {
    * StockInfo nicht erneut; neue Kurse holen auch den Devisenkurs neu. Nach
    * einem Fehler und ohne `sourceStamp` lädt jeder Aufruf.
    */
-  function load(client: StockInfoClient, base: string, quote: string, sourceStamp?: string): Promise<void> {
+  function load(
+    client: StockInfoClient,
+    base: string,
+    quote: string,
+    sourceStamp?: string,
+  ): Promise<void> {
     if (apiUrl.value !== client.url) {
       generation++
       apiUrl.value = client.url
@@ -41,7 +46,12 @@ export const useFxStore = defineStore('fx', () => {
     const key = fxKey(base, quote)
     const existing = pending.get(key)
     if (existing) return existing
-    if (sourceStamp !== undefined && loadedFor.get(key) === sourceStamp && rates.value.has(key) && !errors.value.has(key)) {
+    if (
+      sourceStamp !== undefined &&
+      loadedFor.get(key) === sourceStamp &&
+      rates.value.has(key) &&
+      !errors.value.has(key)
+    ) {
       return Promise.resolve()
     }
     const current = generation

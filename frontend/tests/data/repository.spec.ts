@@ -24,6 +24,9 @@ describe('private Repository-Wahl', () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ resources: [] }))
     activatePrivateData(new PrivateDataClient(fetcher))
     expect(await createPortfolioRepository().findAll()).toEqual([])
-    expect(fetcher).toHaveBeenCalledWith('/api/data/portfolio', expect.objectContaining({ method: 'GET' }))
+    expect(fetcher).toHaveBeenCalledWith(
+      '/api/data/portfolio',
+      expect.objectContaining({ method: 'GET' }),
+    )
   })
 })

@@ -16,7 +16,12 @@ import AssetTypeHint from '@/components/AssetTypeHint.vue'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields } from '@/domain/detailFields'
-import { positionIsin, positionPrimaryLabel, positionSymbol, positionType } from '@/domain/positionIdentity'
+import {
+  positionIsin,
+  positionPrimaryLabel,
+  positionSymbol,
+  positionType,
+} from '@/domain/positionIdentity'
 import { integer, money, percent } from '@/domain/formatters'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
@@ -175,7 +180,7 @@ function isCollapsed(group: AssetGroup): boolean {
 }
 
 function collapseAllGroups(): void {
-  collapsedGroups.value = new Set(renderedGroups.value.map(entry => entry.group.group))
+  collapsedGroups.value = new Set(renderedGroups.value.map((entry) => entry.group.group))
 }
 
 function openAllGroups(): void {
@@ -224,24 +229,32 @@ function renderExpandIcon({ expanded }: { expanded: boolean }) {
 
 // ─── Spalten ────────────────────────────────────────────────────────────────
 
-const dynamicColumns = computed<PositionColumn[]>(() => [...new Set(props.detailColumns ?? [])].map(key => {
-  const fieldFor = (row: PositionResult) => projectDetailFields(row.quote, fieldsStore.catalog?.definitions ?? [], [], locale.value)
-    .find(field => field.key === key)
-  return {
-    key: `detail:${key}`,
-    title: props.rows.map(fieldFor).find(field => field)?.label ?? key,
-    width: 160,
-    stockInfoFields: row => fieldFor(row) ? [key] : [],
-    render: row => {
-      const field = fieldFor(row)
-      return field ? h('span', { 'data-main-field': key }, field.value) : '—'
-    },
-  }
-}))
+const dynamicColumns = computed<PositionColumn[]>(() =>
+  [...new Set(props.detailColumns ?? [])].map((key) => {
+    const fieldFor = (row: PositionResult) =>
+      projectDetailFields(row.quote, fieldsStore.catalog?.definitions ?? [], [], locale.value).find(
+        (field) => field.key === key,
+      )
+    return {
+      key: `detail:${key}`,
+      title: props.rows.map(fieldFor).find((field) => field)?.label ?? key,
+      width: 160,
+      stockInfoFields: (row) => (fieldFor(row) ? [key] : []),
+      render: (row) => {
+        const field = fieldFor(row)
+        return field ? h('span', { 'data-main-field': key }, field.value) : '—'
+      },
+    }
+  }),
+)
 
-watch(() => props.detailColumns, keys => {
-  if (keys?.length && client) void fieldsStore.load(client)
-}, { immediate: true, deep: true })
+watch(
+  () => props.detailColumns,
+  (keys) => {
+    if (keys?.length && client) void fieldsStore.load(client)
+  },
+  { immediate: true, deep: true },
+)
 
 const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
@@ -252,7 +265,9 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         row,
         total: props.total,
         links: props.links,
-        visibleStockInfoFields: columns.value.flatMap(column => column.stockInfoFields?.(row) ?? []),
+        visibleStockInfoFields: columns.value.flatMap(
+          (column) => column.stockInfoFields?.(row) ?? [],
+        ),
         historyRequest: historyRequests.value[row.position.id] ?? 0,
         refreshing: props.refreshingIds?.has(row.position.id) ?? false,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
@@ -263,7 +278,10 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
     title: t('table.position'),
     key: 'symbol',
-    stockInfoFields: row => row.position.group === 'cash' ? [] : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
+    stockInfoFields: (row) =>
+      row.position.group === 'cash'
+        ? []
+        : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
     // Nur Mindestbreite: Diese Spalte nimmt übrigen Platz auf. Die übrigen
     // Spalten behalten ihre Breite, und die Status-Spalte liegt damit genau
     // unter dem Statusfeld des Gruppenkopfs.
@@ -323,19 +341,22 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
             : null,
         ]),
         row.position.group !== 'cash'
-          ? h('div', { class: 'cell-name-row' }, [h(
-              'button',
-              {
-                class: 'cell-name cell-openable',
-                type: 'button',
-                title: t('table.openDetails'),
-                onClick: (event: MouseEvent) => {
-                  event.stopPropagation()
-                  toggleRow(row.position.id)
+          ? h('div', { class: 'cell-name-row' }, [
+              h(
+                'button',
+                {
+                  class: 'cell-name cell-openable',
+                  type: 'button',
+                  title: t('table.openDetails'),
+                  onClick: (event: MouseEvent) => {
+                    event.stopPropagation()
+                    toggleRow(row.position.id)
+                  },
                 },
-              },
-              row.position.displayName,
-            ), h(AssetTypeHint, { type: positionType(row), label: t('links.appliesToKind') })])
+                row.position.displayName,
+              ),
+              h(AssetTypeHint, { type: positionType(row), label: t('links.appliesToKind') }),
+            ])
           : null,
         quoteIssue(row) ? h('span', { class: 'cell-num--missing' }, quoteIssue(row)) : null,
       ]),
@@ -363,7 +384,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
     title: t('table.price'),
     key: 'price',
-    stockInfoFields: row => row.quote ? ['price', 'currency'] : [],
+    stockInfoFields: (row) => (row.quote ? ['price', 'currency'] : []),
     align: 'right',
     width: 100,
     render: (row) =>
@@ -398,25 +419,32 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         return h('span', { class: 'cell-empty' }, '—')
       }
       const series = pointsFor(row.position)
-      return h('button', {
-        type: 'button',
-        class: 'cell-openable',
-        'data-open-history': row.position.id,
-        'aria-label': `${t('drilldown.sectionHistory')}: ${row.position.displayName}`,
-        'aria-expanded': expandedRowKeys.value.includes(row.position.id),
-        onClick: (event: MouseEvent) => {
-          event.stopPropagation()
-          toggleRow(row.position.id)
-          if (expandedRowKeys.value.includes(row.position.id)) {
-            historyRequests.value[row.position.id] = (historyRequests.value[row.position.id] ?? 0) + 1
-          }
+      return h(
+        'button',
+        {
+          type: 'button',
+          class: 'cell-openable',
+          'data-open-history': row.position.id,
+          'aria-label': `${t('drilldown.sectionHistory')}: ${row.position.displayName}`,
+          'aria-expanded': expandedRowKeys.value.includes(row.position.id),
+          onClick: (event: MouseEvent) => {
+            event.stopPropagation()
+            toggleRow(row.position.id)
+            if (expandedRowKeys.value.includes(row.position.id)) {
+              historyRequests.value[row.position.id] =
+                (historyRequests.value[row.position.id] ?? 0) + 1
+            }
+          },
         },
-      }, [h(PriceSparkline, {
-        points: series.points,
-        loading: series.loading,
-        width: 62,
-        periodLabel: periodLabel.value,
-      })])
+        [
+          h(PriceSparkline, {
+            points: series.points,
+            loading: series.loading,
+            width: 62,
+            periodLabel: periodLabel.value,
+          }),
+        ],
+      )
     },
   },
   {
@@ -430,8 +458,12 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         'span',
         { class: 'cell-num cell-num--strong' },
         row.quote
-          ? row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : money(row.originalMarketValue, row.quote.currency)
-          : row.position.group === 'cash' ? formatMoney(row.marketValue) : '—',
+          ? row.basePrice !== null
+            ? money(row.marketValue, row.baseCurrency)
+            : money(row.originalMarketValue, row.quote.currency)
+          : row.position.group === 'cash'
+            ? formatMoney(row.marketValue)
+            : '—',
       ),
   },
   {
@@ -517,24 +549,29 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         },
         row.excludedReason === 'currency'
           ? t('currency.statusForeign')
-          : row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : t('currency.notCounted'),
+          : row.excludedReason === 'missing-quote'
+            ? t('currency.missingQuote')
+            : t('currency.notCounted'),
       )
     },
   },
   ...dynamicColumns.value,
 ])
-const displayedColumns = computed<PositionColumn[]>(() => columns.value.map(column => ({
-  ...column,
-  cellProps: row => ({
-    style: {
-      backgroundColor: hoveredRowKey.value === row.position.id && !expandedRowKeys.value.includes(row.position.id)
-        ? 'rgb(var(--surface-raised))'
-        : 'transparent',
-    },
-  }),
-})))
+const displayedColumns = computed<PositionColumn[]>(() =>
+  columns.value.map((column) => ({
+    ...column,
+    cellProps: (row) => ({
+      style: {
+        backgroundColor:
+          hoveredRowKey.value === row.position.id &&
+          !expandedRowKeys.value.includes(row.position.id)
+            ? 'rgb(var(--surface-raised))'
+            : 'transparent',
+      },
+    }),
+  })),
+)
 const { formatMoney } = usePortfolioCurrency()
-
 </script>
 
 <template>

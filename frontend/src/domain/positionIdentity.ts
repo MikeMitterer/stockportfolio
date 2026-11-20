@@ -12,9 +12,7 @@ export function positionSymbol(row: PositionResult): string | null {
   if (row.quote) return row.quote.identity.kind === 'isin_only' ? null : row.quote.symbol
 
   const symbol = row.position.symbol.trim()
-  return symbol && symbol.toUpperCase() !== row.position.isin?.trim().toUpperCase()
-    ? symbol
-    : null
+  return symbol && symbol.toUpperCase() !== row.position.isin?.trim().toUpperCase() ? symbol : null
 }
 
 export function positionIsin(row: PositionResult): string | null {

@@ -18,9 +18,7 @@ const props = defineProps<{
 const fillWidth = computed(() => `${Math.min(100, props.sum)}%`)
 
 /** Der Teil über 100 % — als eigener Streifen am Ende sichtbar gemacht. */
-const overflowWidth = computed(() =>
-  props.exceeded ? `${Math.min(100, props.sum - 100)}%` : '0%',
-)
+const overflowWidth = computed(() => (props.exceeded ? `${Math.min(100, props.sum - 100)}%` : '0%'))
 
 const isComplete = computed(() => !props.exceeded && Math.abs(props.sum - 100) < 0.01)
 
@@ -42,11 +40,7 @@ const state = computed<'exceeded' | 'complete' | 'open'>(() => {
         :style="{ width: fillWidth }"
       ></div>
       <!-- Überhang: sitzt am rechten Rand, damit „zu viel" sichtbar bleibt -->
-      <div
-        v-if="exceeded"
-        class="allocation__overflow"
-        :style="{ width: overflowWidth }"
-      ></div>
+      <div v-if="exceeded" class="allocation__overflow" :style="{ width: overflowWidth }"></div>
     </div>
 
     <span class="allocation__value tabular-nums" :class="`allocation__value--${state}`">
@@ -82,9 +76,15 @@ const state = computed<'exceeded' | 'complete' | 'open'>(() => {
     left: 0;
     border-radius: var(--radius-full);
 
-    &--exceeded { background-color: token(--status-out, 0.7); }
-    &--complete { background-color: token(--status-ok, 0.6); }
-    &--open { background-color: token(--accent, 0.5); }
+    &--exceeded {
+      background-color: token(--status-out, 0.7);
+    }
+    &--complete {
+      background-color: token(--status-ok, 0.6);
+    }
+    &--open {
+      background-color: token(--accent, 0.5);
+    }
   }
 
   &__overflow {
@@ -99,9 +99,15 @@ const state = computed<'exceeded' | 'complete' | 'open'>(() => {
     flex-shrink: 0;
     font-size: var(--font-xs);
 
-    &--exceeded { color: token(--status-out); }
-    &--complete { color: token(--status-ok); }
-    &--open { @include muted(null); }
+    &--exceeded {
+      color: token(--status-out);
+    }
+    &--complete {
+      color: token(--status-ok);
+    }
+    &--open {
+      @include muted(null);
+    }
   }
 
   &__over {

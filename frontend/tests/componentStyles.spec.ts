@@ -65,7 +65,10 @@ function funde(quelle: string, datei: string): Fund[] {
 
   const gefunden: Fund[] = []
   for (const klasse of klassen) {
-    const regel = new RegExp(`\\.${klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{((?:[^{}]|\\{[^{}]*\\})*)\\}`, 'g')
+    const regel = new RegExp(
+      `\\.${klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{((?:[^{}]|\\{[^{}]*\\})*)\\}`,
+      'g',
+    )
     for (const treffer of style.matchAll(regel)) {
       const block = treffer[1] ?? ''
       const eigenschaften = IHRE_SACHE.filter((name) =>

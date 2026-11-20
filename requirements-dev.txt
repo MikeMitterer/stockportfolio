@@ -6,3 +6,10 @@
 #
 # Farben, Abstände und argparse-Hilfe der Teststack-Skripte (scripts/terminal_style.py).
 mmit-clitheme @ git+https://github.com/MikeMitterer/python-clitheme.git@v0.12.0+261119.1304.0816b
+#
+# Gepinnte Prüfwerkzeuge für make lint, format-check, security, audit und quality (T-99).
+ruff==0.17.1
+bandit==1.9.4
+pip-audit==2.10.1
+# Untergrenze für die .venv selbst: ältere Fassungen haben PYSEC-2026-3447 (T-100).
+setuptools>=83

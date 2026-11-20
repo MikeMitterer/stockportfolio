@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, rmSync, existsSync } from 'node:fs'
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  copyFileSync,
+  rmSync,
+  existsSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -10,7 +18,8 @@ const temporaryDirectories: string[] = []
 const BUILT_TAG = '1'.repeat(40)
 const OTHER_TAG = '2'.repeat(40)
 afterEach(() => {
-  for (const directory of temporaryDirectories.splice(0)) rmSync(directory, { recursive: true, force: true })
+  for (const directory of temporaryDirectories.splice(0))
+    rmSync(directory, { recursive: true, force: true })
 })
 
 /** Führt das echte Buildscript aus; nur äußere Bibliothek/Prozesse sind Fakes. */
@@ -25,22 +34,33 @@ function createBuildFixture() {
   const trace = join(root, 'trace')
   const imageId = `sha256:${'a'.repeat(64)}`
   writeFileSync(trace, '')
-  writeFileSync(join(libraries, 'build.lib.sh'), `
+  writeFileSync(
+    join(libraries, 'build.lib.sh'),
+    `
 RED='' NC='' YELLOW='' GREEN='' BLUE='' MACHINE=Darwin ARCHITECTURE=arm64
 usageLine() { :; }
 showSamples() { :; }
-`)
-  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\ngitReleaseTag() { echo v0.2.0+test; }\n')
-  writeFileSync(join(libraries, 'docker.lib.sh'), `
+`,
+  )
+  writeFileSync(
+    join(libraries, 'version.lib.sh'),
+    'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\ngitReleaseTag() { echo v0.2.0+test; }\n',
+  )
+  writeFileSync(
+    join(libraries, 'docker.lib.sh'),
+    `
 buildSingleArchImage() { echo "local:$1" >> "$TRACE"; return "\${BUILD_RC:-0}"; }
 showImages() { :; }
 pushImage2DockerHub() { echo image-push >> "$TRACE"; return "\${PUSH_RC:-0}"; }
 pushImage2GHCR() { echo ghcr-push >> "$TRACE"; }
 pushImage2Amazon() { echo ecr-push >> "$TRACE"; }
-`)
+`,
+  )
   // Tag-Objekt des Release-Tags lokal (rev-parse) und auf origin (ls-remote); Vorgabe ist das
   // Objekt des Builds, leer heißt: Tag fehlt dort.
-  writeFileSync(join(bin, 'git'), `#!/usr/bin/env bash
+  writeFileSync(
+    join(bin, 'git'),
+    `#!/usr/bin/env bash
 if [[ "$1" == rev-parse ]]; then
   [[ -n "\${LOCAL_TAG_SHA-${BUILT_TAG}}" ]] || exit 1
   echo "\${LOCAL_TAG_SHA-${BUILT_TAG}}"
@@ -49,12 +69,20 @@ elif [[ "$1" == ls-remote ]]; then
 else
   echo "git:$*" >> "$TRACE"
 fi
-`, { mode: 0o755 })
-  writeFileSync(join(bin, 'docker'), `#!/usr/bin/env bash
+`,
+    { mode: 0o755 },
+  )
+  writeFileSync(
+    join(bin, 'docker'),
+    `#!/usr/bin/env bash
 if [[ "$1 $2" == 'image inspect' ]]; then echo '${imageId}';
 else echo "docker:$*" >> "$TRACE"; fi
-`, { mode: 0o755 })
-  writeFileSync(join(bin, 'dockerhub-readme'), `#!/usr/bin/env bash
+`,
+    { mode: 0o755 },
+  )
+  writeFileSync(
+    join(bin, 'dockerhub-readme'),
+    `#!/usr/bin/env bash
 README_SOURCE=''
 ARGUMENTS=("$@")
 for (( INDEX=0; INDEX<\${#ARGUMENTS[@]}; INDEX++ )); do
@@ -68,39 +96,66 @@ for ARGUMENT in "$@"; do
     exit "\${README_RC:-0}"
   fi
 done
-`, { mode: 0o755 })
+`,
+    { mode: 0o755 },
+  )
   const marker = join(docker, '.last-build-tag')
-  const run = (args: string[], extraEnvironment: Record<string, string> = {}) => spawnSync('bash', [join(docker, 'build.sh'), ...args], {
-    cwd: root,
-    encoding: 'utf8',
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, BASH_LIBS: libraries, TRACE: trace, TARGET: 'dockerhub', ...extraEnvironment },
-  })
-  return { run, marker, imageId, calls: () => readFileSync(trace, 'utf8').trim().split('\n').filter(Boolean) }
+  const run = (args: string[], extraEnvironment: Record<string, string> = {}) =>
+    spawnSync('bash', [join(docker, 'build.sh'), ...args], {
+      cwd: root,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${bin}:${process.env.PATH}`,
+        BASH_LIBS: libraries,
+        TRACE: trace,
+        TARGET: 'dockerhub',
+        ...extraEnvironment,
+      },
+    })
+  return {
+    run,
+    marker,
+    imageId,
+    calls: () => readFileSync(trace, 'utf8').trim().split('\n').filter(Boolean),
+  }
 }
 
 describe('Docker-Build und README-Übertragung', () => {
   it('zeigt Hilfe ohne Buildmarker und lehnt unklare Optionen ab', () => {
     const fixture = createBuildFixture()
     expect(fixture.run([]).status).toBe(0)
-    for (const args of [['--typo'], ['--build-and-push'], ['--build', 'unknown'], ['--build', 'all'], ['--push', 'extra']]) {
+    for (const args of [
+      ['--typo'],
+      ['--build-and-push'],
+      ['--build', 'unknown'],
+      ['--build', 'all'],
+      ['--push', 'extra'],
+    ]) {
       expect(fixture.run(args).status).toBe(2)
     }
     expect(existsSync(fixture.marker)).toBe(false)
     expect(fixture.calls()).toEqual([])
   })
 
-  it.each(['linux/amd64', 'amd64', 'x86', 'x86_64'])('lädt %s nur lokal und speichert die Image-ID', platform => {
-    const fixture = createBuildFixture()
-    expect(fixture.run(['--build', platform]).status).toBe(0)
-    expect(fixture.calls()).toEqual(['local:linux/amd64'])
-    expect(readFileSync(fixture.marker, 'utf8')).toContain(`single\n${fixture.imageId}\n`)
-  })
+  it.each(['linux/amd64', 'amd64', 'x86', 'x86_64'])(
+    'lädt %s nur lokal und speichert die Image-ID',
+    (platform) => {
+      const fixture = createBuildFixture()
+      expect(fixture.run(['--build', platform]).status).toBe(0)
+      expect(fixture.calls()).toEqual(['local:linux/amd64'])
+      expect(readFileSync(fixture.marker, 'utf8')).toContain(`single\n${fixture.imageId}\n`)
+    },
+  )
 
-  it.each(['linux/arm64', 'arm64', 'aarch64', 'arm', 'm1'])('erkennt ARM-Plattform %s', platform => {
-    const fixture = createBuildFixture()
-    expect(fixture.run(['--build', platform]).status).toBe(0)
-    expect(fixture.calls()).toEqual(['local:linux/arm64'])
-  })
+  it.each(['linux/arm64', 'arm64', 'aarch64', 'arm', 'm1'])(
+    'erkennt ARM-Plattform %s',
+    (platform) => {
+      const fixture = createBuildFixture()
+      expect(fixture.run(['--build', platform]).status).toBe(0)
+      expect(fixture.calls()).toEqual(['local:linux/arm64'])
+    },
+  )
 
   it('verwendet ohne Plattformangabe den ARM-Host', () => {
     const fixture = createBuildFixture()
@@ -116,7 +171,9 @@ describe('Docker-Build und README-Übertragung', () => {
       'local:linux/arm64',
       `docker:tag ${fixture.imageId} mangolila/stockportfolio:0.2.0-test`,
       `docker:tag ${fixture.imageId} mangolila/stockportfolio:latest`,
-      'preview:docker/README.md', 'image-push', 'readme-publish:1:docker/README.md',
+      'preview:docker/README.md',
+      'image-push',
+      'readme-publish:1:docker/README.md',
     ])
   })
 
@@ -197,10 +254,12 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.calls().at(-1)).toBe('readme-publish:1:docker/README.md')
   })
 
-  it.each(['ghcr', 'ecr'])('überträgt für %s kein Docker-Hub-README', target => {
+  it.each(['ghcr', 'ecr'])('überträgt für %s kein Docker-Hub-README', (target) => {
     const fixture = createBuildFixture()
     expect(fixture.run(['--build']).status).toBe(0)
-    expect(fixture.run(['--push'], { TARGET: target, AMAZON_REPO_URI: 'ecr.example/repo' }).status).toBe(0)
+    expect(
+      fixture.run(['--push'], { TARGET: target, AMAZON_REPO_URI: 'ecr.example/repo' }).status,
+    ).toBe(0)
     expect(fixture.calls()).toContain(`${target}-push`)
     expect(fixture.calls()).not.toContain('preview:docker/README.md')
     expect(fixture.calls()).not.toContain('readme-publish:1:docker/README.md')

@@ -144,12 +144,15 @@ export function moneyAmount(value: number, currency: string, decimals = 2): stri
   const currencyFormatter = forCurrency(currency.toUpperCase(), decimals)
   if (!currencyFormatter) {
     return formatter(`decimal-${decimals}`, {
-      style: 'decimal', minimumFractionDigits: decimals, maximumFractionDigits: decimals,
+      style: 'decimal',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
     }).format(value)
   }
-  return currencyFormatter.formatToParts(value)
-    .filter(part => part.type !== 'currency' && part.type !== 'literal')
-    .map(part => part.value)
+  return currencyFormatter
+    .formatToParts(value)
+    .filter((part) => part.type !== 'currency' && part.type !== 'literal')
+    .map((part) => part.value)
     .join('')
 }
 
@@ -191,8 +194,12 @@ export function eurCent(value: number): string {
 
 /** Zahlformat für Prozentwerte: mindestens eine Nachkommastelle, höchstens die angegebenen. */
 function percentNumber(maximumFractionDigits: number): Intl.NumberFormat {
-  return maximumFractionDigits === 1 ? PERCENT()
-    : formatter(`percent-${maximumFractionDigits}`, { minimumFractionDigits: 1, maximumFractionDigits })
+  return maximumFractionDigits === 1
+    ? PERCENT()
+    : formatter(`percent-${maximumFractionDigits}`, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits,
+      })
 }
 
 /** Prozentzahl mit mindestens einer Nachkommastelle, bei Bedarf genauer. */

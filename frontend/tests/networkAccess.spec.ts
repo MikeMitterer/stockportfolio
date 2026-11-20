@@ -41,7 +41,9 @@ function sourceFiles(dir: string = SRC): string[] {
 function scriptOf(path: string): string {
   const source = readFileSync(path, 'utf8')
   if (!path.endsWith('.vue')) return source
-  return [...source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map((match) => match[1]).join('\n')
+  return [...source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)]
+    .map((match) => match[1])
+    .join('\n')
 }
 
 /** Name eines Aufrufziels: `fetch`, `window.fetch`, `navigator.sendBeacon`. */
@@ -74,7 +76,9 @@ export function networkAccesses(fileName: string, script: string): string[] {
       if (name && NETWORK_CONSTRUCTORS.has(name)) report(node, `new ${name}(…)`)
     }
     if (
-      (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isTemplateHead(node)) &&
+      (ts.isStringLiteral(node) ||
+        ts.isNoSubstitutionTemplateLiteral(node) ||
+        ts.isTemplateHead(node)) &&
       isApiPath(node.text)
     ) {
       report(node, `Pfad „${node.text}“`)
@@ -128,8 +132,16 @@ describe('Netzwerkzugriffe des Frontends', () => {
     const inApi = sourceFiles(API_DIR).flatMap((path) =>
       networkAccesses(relative(PROJECT_ROOT, path), scriptOf(path)),
     )
-    for (const client of ['api/stockinfo/client.ts', 'api/account/client.ts', 'api/data/client.ts', 'api/data/liveEvents.ts']) {
-      expect(inApi.some((entry) => entry.includes(client)), client).toBe(true)
+    for (const client of [
+      'api/stockinfo/client.ts',
+      'api/account/client.ts',
+      'api/data/client.ts',
+      'api/data/liveEvents.ts',
+    ]) {
+      expect(
+        inApi.some((entry) => entry.includes(client)),
+        client,
+      ).toBe(true)
     }
   })
 })

@@ -8,8 +8,15 @@ import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { ValueSnapshotRepository } from '@/db/repository'
 
-beforeEach(async () => { await closeDb(); await deleteDB(DB_NAME); setActivePinia(createPinia()) })
-afterEach(async () => { await closeDb(); await deleteDB(DB_NAME) })
+beforeEach(async () => {
+  await closeDb()
+  await deleteDB(DB_NAME)
+  setActivePinia(createPinia())
+})
+afterEach(async () => {
+  await closeDb()
+  await deleteDB(DB_NAME)
+})
 
 describe('Basiswährung je Depot', () => {
   it('erhält Wahl und Geldschwellen bei Depotwechsel und Neuladen', async () => {
@@ -35,13 +42,38 @@ describe('Basiswährung je Depot', () => {
     const store = usePortfolioStore()
     const id = await store.createPortfolio('Bestehend', 'EUR')
     await store.updatePosition(store.positions[0]!.id, { units: 100 })
-    await store.addPosition({ id: 'stock', isin: null, symbol: 'VTI', displayName: 'Test', group: 'stocks', kind: 'etf', units: 10, targetPercent: 50, enabled: true })
+    await store.addPosition({
+      id: 'stock',
+      isin: null,
+      symbol: 'VTI',
+      displayName: 'Test',
+      group: 'stocks',
+      kind: 'etf',
+      units: 10,
+      targetPercent: 50,
+      enabled: true,
+    })
     await store.setAmountSetting('securityBuffer', { mode: 'percent', value: 5 })
     await store.setAmountSetting('minTradeSize', { mode: 'absolute', value: 20 })
     await new ValueSnapshotRepository().put(id, '2026-09-10', 100, 'EUR')
-    const rate = { base: 'EUR', quote: 'USD', rate: 1.25, quoteTime: '2026-09-10T10:00:00Z', fetchedAt: '2026-09-10T10:01:00Z', cached: true, stale: true, source: null }
+    const rate = {
+      base: 'EUR',
+      quote: 'USD',
+      rate: 1.25,
+      quoteTime: '2026-09-10T10:00:00Z',
+      fetchedAt: '2026-09-10T10:01:00Z',
+      cached: true,
+      stale: true,
+      source: null,
+    }
     await store.setBaseCurrency(id, 'USD', rate)
-    expect(store.portfolio).toMatchObject({ baseCurrency: 'USD', amountSettings: { securityBuffer: { mode: 'percent', value: 5 }, minTradeSize: { mode: 'absolute', value: 25 } } })
+    expect(store.portfolio).toMatchObject({
+      baseCurrency: 'USD',
+      amountSettings: {
+        securityBuffer: { mode: 'percent', value: 5 },
+        minTradeSize: { mode: 'absolute', value: 25 },
+      },
+    })
     expect(store.positions[0]?.units).toBe(125)
     expect(store.positions[1]?.units).toBe(10)
     const before = structuredClone(JSON.parse(JSON.stringify(store.portfolio)))
@@ -51,7 +83,10 @@ describe('Basiswährung je Depot', () => {
     expect(store.portfolio).toEqual(before)
     await store.setAmountSetting('securityBuffer', { mode: 'absolute', value: 50 })
     await store.setBaseCurrency(id, 'EUR', { ...rate, base: 'USD', quote: 'EUR', rate: 0.8 })
-    expect(store.portfolio?.amountSettings).toEqual({ securityBuffer: { mode: 'absolute', value: 40 }, minTradeSize: { mode: 'absolute', value: 20 } })
+    expect(store.portfolio?.amountSettings).toEqual({
+      securityBuffer: { mode: 'absolute', value: 40 },
+      minTradeSize: { mode: 'absolute', value: 20 },
+    })
     expect(store.positions[0]?.units).toBe(100)
     expect(store.positions[1]?.units).toBe(10)
   })

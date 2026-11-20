@@ -11,11 +11,12 @@ import catalogFixture from '../fixtures/stockinfo/instruments-200.json'
 
 /** Baut eine fetch-Attrappe, die eine JSON-Antwort liefert. */
 function jsonFetch(body: unknown, status = 200): typeof globalThis.fetch {
-  return vi.fn(async () =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    }),
+  return vi.fn(
+    async () =>
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+      }),
   ) as unknown as typeof globalThis.fetch
 }
 
@@ -35,10 +36,7 @@ describe('StockInfoClient — URL-Bildung', () => {
 
     await client.getQuoteByIsin('IE00B3RBWM25')
 
-    expect(spy).toHaveBeenCalledWith(
-      'https://example.test/quote/IE00B3RBWM25',
-      expect.anything(),
-    )
+    expect(spy).toHaveBeenCalledWith('https://example.test/quote/IE00B3RBWM25', expect.anything())
   })
 
   it('übergibt das Symbol als Query-Parameter', async () => {
@@ -47,10 +45,7 @@ describe('StockInfoClient — URL-Bildung', () => {
 
     await client.getQuoteBySymbol('VGWL.DE')
 
-    expect(spy).toHaveBeenCalledWith(
-      'https://example.test/quote?symbol=VGWL.DE',
-      expect.anything(),
-    )
+    expect(spy).toHaveBeenCalledWith('https://example.test/quote?symbol=VGWL.DE', expect.anything())
   })
 
   it('setzt den period-Parameter für die Tages-History', async () => {
@@ -107,7 +102,8 @@ describe('StockInfoClient — Fehlerbehandlung', () => {
 
   it('fällt auf den Statustext zurück wenn der Fehler-Body kein JSON ist', async () => {
     const fetchFn = vi.fn(
-      async () => new Response('<html>Bad Gateway</html>', { status: 502, statusText: 'Bad Gateway' }),
+      async () =>
+        new Response('<html>Bad Gateway</html>', { status: 502, statusText: 'Bad Gateway' }),
     ) as unknown as typeof globalThis.fetch
     const client = new StockInfoClient('https://example.test', fetchFn)
 
@@ -149,7 +145,10 @@ describe('Weiterleitung über den eigenen Server (T-82)', () => {
     const client = new StockInfoClient(undefined, fetcher as unknown as FetchFn)
     await client.health()
     expect(client.url).toBe('/api/stockinfo')
-    expect(fetcher).toHaveBeenCalledWith('/api/stockinfo/health', expect.objectContaining({ method: 'GET' }))
+    expect(fetcher).toHaveBeenCalledWith(
+      '/api/stockinfo/health',
+      expect.objectContaining({ method: 'GET' }),
+    )
   })
 
   it('schickt Kursabrufe als JSON-POST, wie es der eigene Server verlangt', async () => {
@@ -168,7 +167,10 @@ describe('Weiterleitung über den eigenen Server (T-82)', () => {
     const client = new StockInfoClient(undefined, fetcher as unknown as FetchFn)
     await expect(client.target()).resolves.toBe('http://stockinfo:8000')
     await expect(client.target()).resolves.toBeNull()
-    expect(fetcher).toHaveBeenCalledWith('/api/stockinfo-target', expect.objectContaining({ method: 'GET' }))
+    expect(fetcher).toHaveBeenCalledWith(
+      '/api/stockinfo-target',
+      expect.objectContaining({ method: 'GET' }),
+    )
   })
 
   it.each([

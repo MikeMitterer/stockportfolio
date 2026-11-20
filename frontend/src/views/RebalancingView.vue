@@ -89,7 +89,11 @@ const plan = computed(() => {
     result.value.liquidity.securityBuffer,
     {
       targets: targets.value,
-      minTrade: resolveAmount(portfolioStore.portfolio?.amountSettings?.minTradeSize ?? settingsStore.settings.minTradeSize, result.value.total),
+      minTrade: resolveAmount(
+        portfolioStore.portfolio?.amountSettings?.minTradeSize ??
+          settingsStore.settings.minTradeSize,
+        result.value.total,
+      ),
       trigger: settingsStore.settings.rebalancing.trigger,
       due: result.value.schedule.due,
     },
@@ -123,13 +127,17 @@ const targetSumState = computed<'balanced' | 'over' | 'under' | null>(() => {
   return deviation > 0 ? 'over' : 'under'
 })
 
-const targetSumOff = computed(() => targetSumState.value === 'over' || targetSumState.value === 'under')
+const targetSumOff = computed(
+  () => targetSumState.value === 'over' || targetSumState.value === 'under',
+)
 
 const { clear: clearPlan } = draft
 
 /** Bestand einer Position jetzt; der Plan merkt ihn sich beim ersten Eintrag. */
 function unitsOf(positionId: string): number {
-  return portfolioStore.portfolio?.positions.find((position) => position.id === positionId)?.units ?? 0
+  return (
+    portfolioStore.portfolio?.positions.find((position) => position.id === positionId)?.units ?? 0
+  )
 }
 
 function setTrade(positionId: string, units: number): void {
@@ -183,7 +191,8 @@ notify(
 notify(targetSumOff, {
   title: t('rebalancing.targetSumTitle'),
   type: 'warning',
-  content: () => t('rebalancing.targetSumBody', { sum: percent(plan.value?.targetSum ?? 0, TARGET_DIGITS) }),
+  content: () =>
+    t('rebalancing.targetSumBody', { sum: percent(plan.value?.targetSum ?? 0, TARGET_DIGITS) }),
 })
 
 notify(
@@ -239,7 +248,6 @@ function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | 
   return row.current.basePrice
 }
 const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrency()
-
 </script>
 
 <template>
@@ -250,11 +258,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
         <NSpin size="large" />
       </div>
 
-      <NEmpty
-        v-else-if="!hasHoldings"
-        class="reb__empty"
-        :description="t('rebalancing.empty')"
-      />
+      <NEmpty v-else-if="!hasHoldings" class="reb__empty" :description="t('rebalancing.empty')" />
 
       <template v-else-if="plan && result">
         <!--
@@ -281,16 +285,15 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
           <div class="reb__figure">
             <span class="reb__caption">{{ t('rebalancing.balance') }}</span>
-            <span
-              class="reb__value tabular-nums"
-              :class="{ 'reb__value--out': plan.underfunded }"
-            >
+            <span class="reb__value tabular-nums" :class="{ 'reb__value--out': plan.underfunded }">
               {{ formatMoneySigned(plan.netCashFlow) }}
             </span>
             <span class="reb__caption-hint">
               <template v-if="!planHasEntries">{{ t('rebalancing.nothingPlanned') }}</template>
               <template v-else-if="plan.underfunded">{{ t('rebalancing.underfunded') }}</template>
-              <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">{{ t('rebalancing.balanced') }}</template>
+              <template v-else-if="Math.abs(plan.netCashFlow) < 0.005">{{
+                t('rebalancing.balanced')
+              }}</template>
               <template v-else>{{ t('rebalancing.leftOver') }}</template>
             </span>
           </div>
@@ -303,9 +306,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
           Höhe verhindert auch beim Erscheinen jeden Versatz.
         -->
           <div class="reb__figure reb__figure--cover">
-            <span
-              class="reb__caption reb__caption--hinted"
-            >
+            <span class="reb__caption reb__caption--hinted">
               {{ t('rebalancing.coverFrom') }}
               <InfoHint :text="t('hints.coverFrom')" anchor="plan" settings-tab="calc" />
             </span>
@@ -315,7 +316,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                 :key="option.id"
                 type="button"
                 class="reb__cover-button tabular-nums"
-                :title="t('rebalancing.coverTitle', { label: option.label, units: integer(option.units) })"
+                :title="
+                  t('rebalancing.coverTitle', { label: option.label, units: integer(option.units) })
+                "
                 @click="setTrade(option.id, option.units)"
               >
                 {{ option.label }} {{ integer(option.units) }}
@@ -350,7 +353,16 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
               <template #icon>
                 <NIcon>
                   <!-- Lucide „trash“ (früher „trash-2“); Quelle und Lizenz in THIRD_PARTY_NOTICES.md. -->
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
                     <path d="M10 11v6" />
                     <path d="M14 11v6" />
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
@@ -390,7 +402,11 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     <!-- Erklärt die Bandkurse unter jedem Kurs; fokussierbar und per Tap erreichbar. -->
                     <span class="reb__status-head">
                       {{ t('table.price') }}
-                      <InfoHint :text="t('rebalancing.bandPriceTooltip')" anchor="bands" settings-tab="calc" />
+                      <InfoHint
+                        :text="t('rebalancing.bandPriceTooltip')"
+                        anchor="bands"
+                        settings-tab="calc"
+                      />
                     </span>
                   </th>
                   <th class="reb__th">{{ t('table.actualPercent') }}</th>
@@ -420,17 +436,25 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                   <th class="reb__th reb__th--left reb__th--w38 reb__band-column">
                     <NTooltip trigger="hover">
                       <template #trigger>
-                        <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
+                        <span class="reb__hinted">{{
+                          t('rebalancing.columns.relativeDeviationAfter')
+                        }}</span>
                       </template>
-                      <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
+                      <div class="reb__tooltip">
+                        {{ t('rebalancing.relativeDeviationTooltip') }}
+                      </div>
                     </NTooltip>
                   </th>
                   <th class="reb__th">
                     <NTooltip trigger="hover">
                       <template #trigger>
-                        <span class="reb__hinted">{{ t('rebalancing.columns.relativePercent') }}</span>
+                        <span class="reb__hinted">{{
+                          t('rebalancing.columns.relativePercent')
+                        }}</span>
                       </template>
-                      <div class="reb__tooltip">{{ t('rebalancing.relativeDeviationTooltip') }}</div>
+                      <div class="reb__tooltip">
+                        {{ t('rebalancing.relativeDeviationTooltip') }}
+                      </div>
                     </NTooltip>
                   </th>
                   <th class="reb__th">
@@ -465,20 +489,17 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     </td>
                   </tr>
 
-                  <tr
-                    v-for="row in entry.rows"
-                    :key="row.current.position.id"
-                    class="reb__row"
-                  >
+                  <tr v-for="row in entry.rows" :key="row.current.position.id" class="reb__row">
                     <td class="reb__td reb__td--wide">
                       <div class="reb__symbol">
                         {{ positionPrimaryLabel(row.current) }}
-                        <span v-if="positionSymbol(row.current) && positionIsin(row.current)" class="reb__isin"><span aria-hidden="true">|</span> {{ positionIsin(row.current) }}</span>
+                        <span
+                          v-if="positionSymbol(row.current) && positionIsin(row.current)"
+                          class="reb__isin"
+                          ><span aria-hidden="true">|</span> {{ positionIsin(row.current) }}</span
+                        >
                       </div>
-                      <div
-                        v-if="row.current.position.group !== 'cash'"
-                        class="reb__name"
-                      >
+                      <div v-if="row.current.position.group !== 'cash'" class="reb__name">
                         {{ row.current.position.displayName }}
                       </div>
                     </td>
@@ -499,18 +520,28 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                           class="reb__band-price"
                           :class="{ 'reb__band-price--out': row.bandBreachAfter === 'lower' }"
                         >
-                          {{ t('rebalancing.bandPriceLower', { price: bandPriceLabel(row.lowerBandPrice) }) }}
+                          {{
+                            t('rebalancing.bandPriceLower', {
+                              price: bandPriceLabel(row.lowerBandPrice),
+                            })
+                          }}
                         </span>
                         <span
                           class="reb__band-price"
                           :class="{ 'reb__band-price--out': row.bandBreachAfter === 'upper' }"
                         >
-                          {{ t('rebalancing.bandPriceUpper', { price: bandPriceLabel(row.upperBandPrice) }) }}
+                          {{
+                            t('rebalancing.bandPriceUpper', {
+                              price: bandPriceLabel(row.upperBandPrice),
+                            })
+                          }}
                         </span>
                       </div>
                     </td>
 
-                    <td class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums">
+                    <td
+                      class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums"
+                    >
                       {{ percent(row.current.actualPercent) }}
                     </td>
 
@@ -529,8 +560,8 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                           :title="
                             row.targetOverridden
                               ? t('rebalancing.targetProbe', {
-                                target: percent(row.current.position.targetPercent),
-                              })
+                                  target: percent(row.current.position.targetPercent),
+                                })
                               : ''
                           "
                           aria-hidden="true"
@@ -617,12 +648,18 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     <td
                       class="reb__td reb__td--num reb__relative-value tabular-nums"
                       :class="{
-                        'reb__relative-value--positive': row.targetPercent !== 0 && row.relativeDeviationAfter > 0,
-                        'reb__relative-value--negative': row.targetPercent !== 0 && row.relativeDeviationAfter < 0,
+                        'reb__relative-value--positive':
+                          row.targetPercent !== 0 && row.relativeDeviationAfter > 0,
+                        'reb__relative-value--negative':
+                          row.targetPercent !== 0 && row.relativeDeviationAfter < 0,
                       }"
-                      :title="row.targetPercent === 0 ? t('rebalancing.relativeUndefined') : undefined"
+                      :title="
+                        row.targetPercent === 0 ? t('rebalancing.relativeUndefined') : undefined
+                      "
                     >
-                      {{ row.targetPercent === 0 ? '—' : percentSigned(row.relativeDeviationAfter) }}
+                      {{
+                        row.targetPercent === 0 ? '—' : percentSigned(row.relativeDeviationAfter)
+                      }}
                     </td>
 
                     <!--
@@ -634,7 +671,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                       class="reb__td reb__td--num tabular-nums"
                       :class="row.inBandAfter ? 'reb__muted' : 'reb__flow--out'"
                     >
-                      {{ row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row) }}
+                      {{
+                        row.tradeUnits === 0 && row.deviationAfter === 0 ? '—' : deviationLabel(row)
+                      }}
                     </td>
 
                     <td class="reb__td reb__td--wide reb__td--center">
@@ -667,21 +706,29 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                   >
                     {{ percent(plan.targetSum, TARGET_DIGITS) }}
                     <span v-if="targetSumState" class="reb__foot-deviation">
-                      <template v-if="targetSumState === 'balanced'">{{ t('rebalancing.footerTargetsBalanced') }}</template>
+                      <template v-if="targetSumState === 'balanced'">{{
+                        t('rebalancing.footerTargetsBalanced')
+                      }}</template>
                       <template v-else-if="targetSumState === 'over'">
-                        {{ t('rebalancing.footerTargetsOver', { deviation: percentSigned(plan.targetSum - 100, TARGET_DIGITS) }) }}
+                        {{
+                          t('rebalancing.footerTargetsOver', {
+                            deviation: percentSigned(plan.targetSum - 100, TARGET_DIGITS),
+                          })
+                        }}
                       </template>
                       <template v-else>
-                        {{ t('rebalancing.footerTargetsUnder', { deviation: percentSigned(plan.targetSum - 100, TARGET_DIGITS) }) }}
+                        {{
+                          t('rebalancing.footerTargetsUnder', {
+                            deviation: percentSigned(plan.targetSum - 100, TARGET_DIGITS),
+                          })
+                        }}
                       </template>
                     </span>
                   </td>
                   <td colspan="2"></td>
                   <td
                     class="reb__foot-value tabular-nums"
-                    :class="
-                      Math.abs(plan.netCashFlow) < 0.005 ? 'reb__flow--in' : ''
-                    "
+                    :class="Math.abs(plan.netCashFlow) < 0.005 ? 'reb__flow--in' : ''"
                   >
                     {{ formatMoneySigned(plan.netCashFlow) }}
                   </td>
@@ -694,7 +741,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                       {{ t('rebalancing.footerShort', { amount: formatMoney(-plan.netCashFlow) }) }}
                     </template>
                     <template v-else>
-                      {{ t('rebalancing.footerLeftOver', { amount: formatMoney(plan.netCashFlow) }) }}
+                      {{
+                        t('rebalancing.footerLeftOver', { amount: formatMoney(plan.netCashFlow) })
+                      }}
                     </template>
                   </td>
                 </tr>
@@ -722,7 +771,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     min-width: 0;
     overflow-x: auto;
 
-    @include up(md) { gap: var(--space-6); }
+    @include up(md) {
+      gap: var(--space-6);
+    }
   }
 
   &__loading {
@@ -732,7 +783,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     padding: var(--space-8) 0;
   }
 
-  &__empty { padding: var(--space-8) 0; }
+  &__empty {
+    padding: var(--space-8) 0;
+  }
 
   /* Der Kopf fasst den Plan zusammen: was frei wird, was er kostet, was bleibt. */
   &__summary {
@@ -746,7 +799,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     @include stack(0.125rem);
 
     /* Feste Mindesthöhe, damit die Zeile beim Erscheinen der Knöpfe nicht springt. */
-    &--cover { min-height: 3.75rem; }
+    &--cover {
+      min-height: 3.75rem;
+    }
   }
 
   &__caption {
@@ -771,8 +826,12 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     font-size: var(--font-lg);
     font-weight: 600;
 
-    &--in { color: token(--status-ok); }
-    &--out { color: token(--status-out); }
+    &--in {
+      color: token(--status-ok);
+    }
+    &--out {
+      color: token(--status-out);
+    }
   }
 
   &__cover-options {
@@ -791,7 +850,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     color: token(--accent);
     transition: border-color 0.15s ease;
 
-    &:hover { border-color: token(--accent); }
+    &:hover {
+      border-color: token(--accent);
+    }
   }
 
   &__cover-empty {
@@ -814,7 +875,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     @include muted(null);
 
     // Mike hat für diesen Hinweis ausdrücklich die Grenze 1160 px vorgegeben.
-    @media (width < 1160px) { display: none; }
+    @media (width < 1160px) {
+      display: none;
+    }
   }
 
   &__panel {
@@ -831,7 +894,10 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     justify-content: space-between;
     padding: var(--space-3) var(--space-4);
 
-    @include up(md) { padding-right: 1.25rem; padding-left: 1.25rem; }
+    @include up(md) {
+      padding-right: 1.25rem;
+      padding-left: 1.25rem;
+    }
   }
 
   &__panel-title {
@@ -842,7 +908,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     @include muted(null);
   }
 
-  &__panel-bands { @include muted; }
+  &__panel-bands {
+    @include muted;
+  }
 
   &__share-after {
     margin-top: var(--space-1);
@@ -864,19 +932,27 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
       color: token(--text-muted);
     }
 
-    &--out { color: token(--status-out); }
+    &--out {
+      color: token(--status-out);
+    }
   }
 
   &__band-column {
-    @include below(xl) { display: none; }
+    @include below(xl) {
+      display: none;
+    }
   }
 
   &__relative-value {
     white-space: nowrap;
     color: token(--text-secondary);
 
-    &--positive { color: token(--status-ok); }
-    &--negative { color: token(--status-out); }
+    &--positive {
+      color: token(--status-ok);
+    }
+    &--negative {
+      color: token(--status-out);
+    }
   }
 
   &__table {
@@ -896,13 +972,28 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     font-weight: 500;
     text-align: right;
 
-    &--left { text-align: left; }
-    &--center { text-align: center; }
-    &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
-    &--w24 { width: 6rem; }
-    &--w28 { width: 7rem; }
-    &--w32 { width: 8rem; }
-    &--w38 { width: 9.5rem; }
+    &--left {
+      text-align: left;
+    }
+    &--center {
+      text-align: center;
+    }
+    &--wide {
+      padding-right: var(--space-4);
+      padding-left: var(--space-4);
+    }
+    &--w24 {
+      width: 6rem;
+    }
+    &--w28 {
+      width: 7rem;
+    }
+    &--w32 {
+      width: 8rem;
+    }
+    &--w38 {
+      width: 9.5rem;
+    }
   }
 
   &__status-head {
@@ -943,16 +1034,29 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     border-radius: var(--radius-full);
   }
 
-  &__row { border-top: 1px solid token(--border-subtle); }
+  &__row {
+    border-top: 1px solid token(--border-subtle);
+  }
 
   &__td {
     padding: var(--space-1) var(--space-2);
 
-    &--num { text-align: right; }
-    &--center { text-align: center; }
-    &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
-    &--secondary { color: token(--text-secondary); }
-    &--percent { white-space: nowrap; }
+    &--num {
+      text-align: right;
+    }
+    &--center {
+      text-align: center;
+    }
+    &--wide {
+      padding-right: var(--space-4);
+      padding-left: var(--space-4);
+    }
+    &--secondary {
+      color: token(--text-secondary);
+    }
+    &--percent {
+      white-space: nowrap;
+    }
   }
 
   &__symbol {
@@ -967,9 +1071,14 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     max-width: 14rem;
   }
 
-  &__isin { @include muted(var(--font-xs)); font-variant-numeric: tabular-nums; }
+  &__isin {
+    @include muted(var(--font-xs));
+    font-variant-numeric: tabular-nums;
+  }
 
-  &__target { @include row(var(--space-1)); }
+  &__target {
+    @include row(var(--space-1));
+  }
 
   /* Der Punkt markiert ein probeweise geändertes Ziel. */
   &__override {
@@ -979,27 +1088,43 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     border-radius: var(--radius-full);
     background-color: transparent;
 
-    &--on { background-color: token(--accent); }
+    &--on {
+      background-color: token(--accent);
+    }
   }
 
-  &__grow { flex: 1; }
+  &__grow {
+    flex: 1;
+  }
 
   &__delta {
     font-size: var(--font-xs);
     text-decoration: underline dotted;
 
-    &--up { color: token(--status-ok); }
-    &--down { color: token(--status-out); }
+    &--up {
+      color: token(--status-ok);
+    }
+    &--down {
+      color: token(--status-out);
+    }
   }
 
-  &__muted { @include muted(null); }
+  &__muted {
+    @include muted(null);
+  }
 
   &__flow {
-    &--in { color: token(--status-ok); }
-    &--out { color: token(--status-out); }
+    &--in {
+      color: token(--status-ok);
+    }
+    &--out {
+      color: token(--status-out);
+    }
   }
 
-  &__foot { border-top: 1px solid token(--border-default); }
+  &__foot {
+    border-top: 1px solid token(--border-default);
+  }
 
   &__foot-label {
     padding: var(--space-2) var(--space-4);
@@ -1016,7 +1141,9 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     text-align: right;
   }
 
-  &__foot-target { vertical-align: top; }
+  &__foot-target {
+    vertical-align: top;
+  }
 
   &__foot-deviation {
     display: block;

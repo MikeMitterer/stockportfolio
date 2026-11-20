@@ -205,7 +205,62 @@ dev-down: ## Dev-Stack gestoppt, Ports frei
 	@if command -v dev-ports >/dev/null; then dev-ports --kill; \
 	else echo "  ⚠ dev-ports fehlt (make setup) — Reste nach einem Absturz nicht geprüft"; fi
 
-.PHONY: test docs-check clean
+# Setzt den Checkout zurück; danach verlangen die Prüfziele wieder make setup.
+.PHONY: clean
+clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
+	@npm --prefix frontend run clean
+	@npm --prefix api run clean
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__ \
+		$(VENV) $(TOOLS_DIR) frontend/node_modules/.installed api/node_modules/.installed
+	@echo "  ✓ aufgeräumt"
+
+# ─── Prüfen ──────────────────────────────────────────────────────────────────
+#
+# Ein Target je Prüfart; darin je Sprache das passende Werkzeug: TypeScript/Vue über die
+# npm-Skripte der Pakete, Python (Teststack unter scripts/) über die gepinnten Werkzeuge der
+# .venv (requirements-dev.txt), Bash über shellcheck. Die Dateilisten kommen aus git, damit neue
+# Dateien mitlaufen.
+
+##@ Prüfen
+
+# Python- und Shell-Werkzeuge bekommen die versionierten Dateien über scripts/check-files.sh:
+# jeder Pfad ein eigenes Argument mit „./“, und ein Fehler von git bricht das Ziel ab.
+CHECK_PY := scripts/check-files.sh python
+CHECK_SH := scripts/check-files.sh shell
+# Ein Prettier für beide Pakete; die Regeln stehen in .prettierrc.
+PRETTIER := frontend/node_modules/.bin/prettier
+PRETTIER_FILES := "frontend/src/**/*.{vue,ts,tsx,css,json}" "frontend/tests/**/*.ts" "api/src/**/*.ts" "api/tests/**/*.ts"
+
+# Bricht ab, wenn ein Werkzeug außerhalb der .venv fehlt; still zu bestehen wäre ein falsches
+# Grün. $(1): Befehl, $(2): Installationshinweis.
+define require_tool
+@command -v $(1) >/dev/null || { echo "  ✗ $(1) fehlt: $(2)" >&2; exit 1; }
+endef
+
+.PHONY: check lint typecheck format format-check test docs-check security audit quality
+
+check: lint typecheck format-check test ## Alles geprüft, was die Abnahme verlangt
+
+lint: require-setup ## Lint geprüft: ESLint (Frontend, API), ruff, shellcheck
+	@npm run lint --prefix frontend
+	@npm run lint --prefix api
+	@$(CHECK_PY) $(VENV)/bin/ruff check
+	@$(CHECK_SH) --each bash -n
+	$(call require_tool,shellcheck,brew install shellcheck)
+	@$(CHECK_SH) shellcheck
+
+typecheck: require-setup ## Typen geprüft: vue-tsc (Frontend), tsc (API)
+	@npm run typecheck --prefix frontend
+	@npm run typecheck --prefix api
+
+format: require-setup ## Quellen formatiert: Prettier (Frontend, API), ruff format
+	@$(PRETTIER) --write --log-level warn $(PRETTIER_FILES)
+	@$(CHECK_PY) $(VENV)/bin/ruff format
+
+format-check: require-setup ## Formatierung geprüft, keine Datei geändert
+	@$(PRETTIER) --check --log-level warn $(PRETTIER_FILES)
+	@$(CHECK_PY) $(VENV)/bin/ruff format --check
+
 test: docs-check require-setup ## Doku, Frontend- und API-Tests einmal geprüft
 	@npm run test --prefix frontend
 	@npm run test --prefix api
@@ -215,13 +270,32 @@ test: docs-check require-setup ## Doku, Frontend- und API-Tests einmal geprüft
 docs-check: require-tools ## Doku geprüft: Links, Befehle, Variablen, verbotene Begriffe
 	@docs-check --run
 
-# Setzt den Checkout zurück; danach verlangen die Prüfziele wieder make setup.
-clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
-	@npm --prefix frontend run clean
-	@npm --prefix api run clean
-	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__ \
-		$(VENV) $(TOOLS_DIR) frontend/node_modules/.installed api/node_modules/.installed
-	@echo "  ✓ aufgeräumt"
+security: require-setup ## Keine Geheimnisse in der Git-History, Python ohne Befund ab mittel
+	$(call require_tool,gitleaks,brew install gitleaks)
+	@gitleaks git --redact --no-banner .
+	@$(CHECK_PY) $(VENV)/bin/python -m bandit -q -ll
+
+# Braucht Netz; nicht in der Abnahme. Alle drei laufen, auch wenn einer Lücken findet; der
+# Exit-Code meldet am Ende, ob einer davon fehlschlug.
+audit: require-setup ## Abhängigkeiten ohne bekannte Lücken: npm (Laufzeit), Python
+	@status=0; \
+	npm audit --omit=dev --prefix frontend || status=1; \
+	npm audit --omit=dev --prefix api || status=1; \
+	$(VENV)/bin/python -m pip_audit --skip-editable || status=1; \
+	exit $$status
+
+# Nur Bericht: Befunde enden mit 0, die Schwellen sind Anhaltspunkte. Läuft ein Werkzeug gar
+# nicht, scheitert das Target; ein leerer Bericht wäre sonst ein falsches Grün. Die Schwellen
+# für TypeScript stehen in frontend/scripts/quality-report.mjs.
+quality: require-setup ## Bericht zu Komplexität, Dateigröße und doppeltem Code
+	@echo "Komplexität und Dateigröße TypeScript/Vue (ESLint)"
+	@node frontend/scripts/quality-report.mjs frontend src
+	@node frontend/scripts/quality-report.mjs api src
+	@echo "Komplexität und Vereinfachungen Python (ruff C90, SIM, PLR09, RET)"
+	@$(CHECK_PY) $(VENV)/bin/ruff check --select C90,SIM,PLR09,RET --output-format concise --exit-zero
+	@echo "Doppelter Code über TypeScript, Vue und Python (jscpd)"
+	@frontend/node_modules/.bin/jscpd --reporters console --min-tokens 70 \
+		frontend/src frontend/tests api/src api/tests scripts $(wildcard .agents/bin)
 
 # ─── Docker ──────────────────────────────────────────────────────────────────
 

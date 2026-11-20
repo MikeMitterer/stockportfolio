@@ -27,7 +27,10 @@ beschreibt der [Docker-Guide](../docker/README.md).
   Freigaben in `allowScripts` nicht: `npm install -g npm@11`
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
-- Python 3.11+ für den Teststack
+- Python 3.11+ für den Teststack; ruff, bandit und pip-audit installiert
+  `make setup` gepinnt in die `.venv`
+- shellcheck und gitleaks für `make lint` und `make security`
+  (macOS: `brew install shellcheck gitleaks`)
 - pipx und der Starter `devtools`, einmal je Rechner aus der lokalen
   DevTools-Arbeitskopie installiert (dort das Make-Ziel install); fehlt er, bricht
   `make setup` mit diesem Hinweis ab. Solange die Werkzeuge nicht auf GitHub
@@ -47,7 +50,8 @@ make dev-up                # Vite auf :5175, Konto-API auf :8080
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
 npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
 3.11+ an (`PYTHON_BOOTSTRAP` wählt den Interpreter, falls `python3.11`
-fehlt) und bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
+fehlt), installiert dort die gepinnten Pakete aus `requirements-dev.txt` und
+bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
 Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
 wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
 zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Prüfziele wie
@@ -86,7 +90,14 @@ den Alltag.
 | Befehl | Zweck |
 |---|---|
 | `make dev-up` / `make dev-down` | Dev-Stack starten / stoppen |
+| `make check` | Alle technischen Prüfungen: `lint`, `typecheck`, `format-check`, `test` |
+| `make lint` | ESLint (Frontend, API), ruff (Python), `bash -n` und shellcheck (Bash) |
+| `make typecheck` | vue-tsc (Frontend) und tsc (API) |
+| `make format` / `make format-check` | Prettier (Frontend, API) und ruff format anwenden / nur prüfen |
 | `make test` | Doku-Prüfung, Frontend- und API-Tests, einmalig |
+| `make security` | gitleaks über die Git-History, bandit ab mittlerer Schwere |
+| `make audit` | Abhängigkeiten auf bekannte Lücken: npm (Laufzeit) und Python; braucht Netz |
+| `make quality` | Bericht zu Komplexität, Dateigröße und doppeltem Code (jscpd); endet bei Befunden mit 0 |
 | `make docs-check` | Nutzerdoku prüfen: Links, Anker, Befehle, verbotene Begriffe |
 | `make clean` | Erzeugte Dateien, `.venv` und `.tools/` entfernen; danach wieder `make setup` |
 | `make build` | Docker-Image lokal bauen (linux/amd64) |
@@ -94,16 +105,9 @@ den Alltag.
 | `make tag-minor MSG="…"` | Version erhöhen, lokal taggen und Changelog committen; kein Push |
 | `make changelog` | `CHANGELOG.md` neu erzeugen, ohne Commit |
 
-Lint und Typprüfung laufen je Paket:
-
-```bash
-npm --prefix frontend run lint
-npm --prefix api run lint
-npm --prefix frontend run typecheck
-npm --prefix api run typecheck
-```
-
-Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
+Vor einer Übergabe laufen `make check` und `make security`. Einzelne
+Pakete lassen sich weiter über ihre npm-Skripte prüfen, etwa
+`npm --prefix api run lint`.
 
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit

@@ -12,9 +12,19 @@ export function useTradePlanDraftSync(): void {
   const portfolioStore = usePortfolioStore()
   const draft = useTradePlanDraftStore()
 
-  watch(() => portfolioStore.portfolio?.id ?? null, (id) => draft.useFor(id), { immediate: true })
   watch(
-    () => Object.fromEntries((portfolioStore.portfolio?.positions ?? []).map((position) => [position.id, position.units])),
+    () => portfolioStore.portfolio?.id ?? null,
+    (id) => draft.useFor(id),
+    { immediate: true },
+  )
+  watch(
+    () =>
+      Object.fromEntries(
+        (portfolioStore.portfolio?.positions ?? []).map((position) => [
+          position.id,
+          position.units,
+        ]),
+      ),
     (units) => draft.dropStale(units),
     { deep: true },
   )

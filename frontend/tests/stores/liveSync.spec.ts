@@ -23,9 +23,11 @@ class FakeEventStream extends EventTarget {
   }
 
   resource(id: string, revision: number, kind = 'portfolio'): void {
-    this.dispatchEvent(new MessageEvent('resource', {
-      data: JSON.stringify({ kind, resourceId: id, revision }),
-    }))
+    this.dispatchEvent(
+      new MessageEvent('resource', {
+        data: JSON.stringify({ kind, resourceId: id, revision }),
+      }),
+    )
   }
 }
 
@@ -146,9 +148,12 @@ describe('Live-Abgleich der Stores', () => {
     await portfolio.load()
     const id = portfolio.portfolio!.id
     let finishWrite: ((response: Response) => void) | undefined
-    const fetcher = vi.fn<typeof fetch>().mockImplementation(() => new Promise<Response>((resolve) => {
-      finishWrite = resolve
-    }))
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(
+      () =>
+        new Promise<Response>((resolve) => {
+          finishWrite = resolve
+        }),
+    )
     const dataClient = new PrivateDataClient(fetcher)
     activatePrivateData(dataClient)
     const refresh = vi.spyOn(portfolio, 'refreshFromServer')
@@ -171,9 +176,14 @@ describe('Live-Abgleich der Stores', () => {
     const portfolio = usePortfolioStore()
     await portfolio.load()
     const id = portfolio.portfolio!.id
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({
-      resources: [{ resourceId: id, revision: 1, value: portfolio.portfolio }],
-    }), { status: 200 }))
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          resources: [{ resourceId: id, revision: 1, value: portfolio.portfolio }],
+        }),
+        { status: 200 },
+      ),
+    )
     const client = new PrivateDataClient(fetcher)
     await client.list('portfolio')
     activatePrivateData(client)
@@ -277,7 +287,9 @@ describe('Live-Abgleich der Stores', () => {
     live.start(new LiveEventsClient(() => new FakeEventStream()), 20)
     await repository.save({ ...portfolio.portfolio!, name: 'Ohne Verbindungsaufbau' })
 
-    await vi.waitFor(() => expect(portfolio.portfolio?.name).toBe('Ohne Verbindungsaufbau'), { timeout: 500 })
+    await vi.waitFor(() => expect(portfolio.portfolio?.name).toBe('Ohne Verbindungsaufbau'), {
+      timeout: 500,
+    })
     expect(live.status).toBe('connecting')
     live.stop()
   })
@@ -302,7 +314,9 @@ describe('Live-Abgleich der Stores', () => {
     expect(portfolio.portfolio?.name).not.toBe('Verpasste Änderung')
 
     document.dispatchEvent(new Event('visibilitychange'))
-    await vi.waitFor(() => expect(portfolio.portfolio?.name).toBe('Verpasste Änderung'), { timeout: 500 })
+    await vi.waitFor(() => expect(portfolio.portfolio?.name).toBe('Verpasste Änderung'), {
+      timeout: 500,
+    })
     expect(live.status).toBe('connected')
     live.stop()
   })

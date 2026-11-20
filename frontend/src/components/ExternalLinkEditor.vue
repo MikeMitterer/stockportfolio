@@ -31,15 +31,15 @@ const emit = defineEmits<{
 /** Fehlende gespeicherte Filter nur an ihrem Verweis erhalten, niemals als Ersatzkatalog. */
 function kindOptions(link: ExternalLink): { label: string; value: InstrumentKind }[] {
   const available = props.typeCatalog?.types ?? []
-  const retained = link.appliesTo.filter(type => !available.includes(type))
+  const retained = link.appliesTo.filter((type) => !available.includes(type))
   const absentLabel = props.typeCatalog?.complete ? 'links.typeNotOffered' : 'links.typeUnconfirmed'
   return [
-    ...available.map(type => ({ label: type, value: type })),
-    ...retained.map(type => ({ label: t(absentLabel, { type }), value: type })),
+    ...available.map((type) => ({ label: type, value: type })),
+    ...retained.map((type) => ({ label: t(absentLabel, { type }), value: type })),
   ]
 }
 const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
-  ASSET_GROUPS.map(value => ({ label: t(`groups.${value}`), value })),
+  ASSET_GROUPS.map((value) => ({ label: t(`groups.${value}`), value })),
 )
 
 const hasLinks = computed(() => props.links.length > 0)
@@ -85,36 +85,74 @@ function add(): void {
       <span v-else-if="typeCatalog && !typeCatalog.complete">{{ t('links.typesIncomplete') }}</span>
       <span v-else-if="typeCatalog && !typeCatalog.types.length">{{ t('links.typesEmpty') }}</span>
       <span v-else>{{ t('links.typesSource') }}</span>
-      <NButton text size="small" :loading="typesLoading" @click="emit('reload-types')">{{ t('links.reloadTypes') }}</NButton>
+      <NButton text size="small" :loading="typesLoading" @click="emit('reload-types')">{{
+        t('links.reloadTypes')
+      }}</NButton>
     </div>
 
     <div v-if="hasLinks" class="linkeditor__list">
-      <div
-        v-for="link in links"
-        :key="link.id"
-        class="linkeditor__row"
-      >
+      <div v-for="link in links" :key="link.id" class="linkeditor__row">
         <div class="linkeditor__field linkeditor__field--label">
           <span>{{ t('links.labelPlaceholder') }}</span>
-          <NInput :value="link.label" size="small" :placeholder="t('links.labelPlaceholder')" @update:value="(value: string) => patch(link.id, { label: value })" />
+          <NInput
+            :value="link.label"
+            size="small"
+            :placeholder="t('links.labelPlaceholder')"
+            @update:value="(value: string) => patch(link.id, { label: value })"
+          />
         </div>
         <div class="linkeditor__field linkeditor__field--url">
           <span>{{ t('links.url') }}</span>
-          <NInput :value="link.urlTemplate" size="small" :placeholder="t('links.urlPlaceholder')" @update:value="(value: string) => patch(link.id, { urlTemplate: value })" />
+          <NInput
+            :value="link.urlTemplate"
+            size="small"
+            :placeholder="t('links.urlPlaceholder')"
+            @update:value="(value: string) => patch(link.id, { urlTemplate: value })"
+          />
         </div>
         <div class="linkeditor__field linkeditor__field--kind">
           <span>{{ t('links.appliesToKind') }}</span>
-          <NSelect :value="link.appliesTo" :options="kindOptions(link)" :loading="typesLoading" :aria-label="t('links.appliesToKind')" filterable multiple size="small" :placeholder="t('links.allKinds')" @update:value="(value: InstrumentKind[]) => patch(link.id, { appliesTo: value ?? [] })" />
+          <NSelect
+            :value="link.appliesTo"
+            :options="kindOptions(link)"
+            :loading="typesLoading"
+            :aria-label="t('links.appliesToKind')"
+            filterable
+            multiple
+            size="small"
+            :placeholder="t('links.allKinds')"
+            @update:value="(value: InstrumentKind[]) => patch(link.id, { appliesTo: value ?? [] })"
+          />
         </div>
         <div class="linkeditor__field linkeditor__field--group">
           <span>{{ t('links.appliesToGroup') }}</span>
-          <NSelect :value="link.appliesToGroups ?? []" :options="groupOptions" multiple size="small" :placeholder="t('links.allGroups')" @update:value="(value: AssetGroup[]) => patch(link.id, { appliesToGroups: value ?? [] })" />
+          <NSelect
+            :value="link.appliesToGroups ?? []"
+            :options="groupOptions"
+            multiple
+            size="small"
+            :placeholder="t('links.allGroups')"
+            @update:value="
+              (value: AssetGroup[]) => patch(link.id, { appliesToGroups: value ?? [] })
+            "
+          />
         </div>
         <div class="linkeditor__controls">
-          <NSwitch :value="link.enabled" size="small" :aria-label="t('links.enabled')" @update:value="(value: boolean) => patch(link.id, { enabled: value })" />
+          <NSwitch
+            :value="link.enabled"
+            size="small"
+            :aria-label="t('links.enabled')"
+            @update:value="(value: boolean) => patch(link.id, { enabled: value })"
+          />
           <NPopconfirm @positive-click="remove(link.id)">
-            <template #trigger><NButton size="tiny" quaternary type="error">{{ t('actions.delete') }}</NButton></template>
-            <p class="linkeditor__delete-confirmation">{{ t('links.confirmDeleteShort', { label: link.label }) }}</p>
+            <template #trigger
+              ><NButton size="tiny" quaternary type="error">{{
+                t('actions.delete')
+              }}</NButton></template
+            >
+            <p class="linkeditor__delete-confirmation">
+              {{ t('links.confirmDeleteShort', { label: link.label }) }}
+            </p>
           </NPopconfirm>
         </div>
       </div>
@@ -179,7 +217,9 @@ function add(): void {
     }
 
     @include up(lg) {
-      grid-template-columns: minmax(9rem, 1fr) minmax(12rem, 2fr) minmax(9rem, 1fr) minmax(9rem, 1fr) auto;
+      grid-template-columns:
+        minmax(9rem, 1fr) minmax(12rem, 2fr) minmax(9rem, 1fr) minmax(9rem, 1fr)
+        auto;
       grid-template-areas: 'label url kind group controls';
     }
   }
@@ -212,10 +252,18 @@ function add(): void {
     font-size: var(--font-xs);
     @include muted(null);
 
-    &--label { grid-area: label; }
-    &--url { grid-area: url; }
-    &--kind { grid-area: kind; }
-    &--group { grid-area: group; }
+    &--label {
+      grid-area: label;
+    }
+    &--url {
+      grid-area: url;
+    }
+    &--kind {
+      grid-area: kind;
+    }
+    &--group {
+      grid-area: group;
+    }
   }
 
   &__controls {

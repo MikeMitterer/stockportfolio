@@ -95,9 +95,7 @@ export const useQuotesStore = defineStore('quotes', () => {
   const busy = computed<boolean>(() => progressTotal.value > 0)
 
   const progressPercent = computed<number>(() =>
-    progressTotal.value === 0
-      ? 0
-      : Math.round((progressDone.value / progressTotal.value) * 100),
+    progressTotal.value === 0 ? 0 : Math.round((progressDone.value / progressTotal.value) * 100),
   )
 
   /** Meldet `count` beginnende Abrufe an. */
@@ -121,11 +119,15 @@ export const useQuotesStore = defineStore('quotes', () => {
 
     quotes.value = cached
     // Gespeicherter Vollabruf, sonst der dieser Sitzung; erst ohne beides der jüngste Kurs.
-    lastRefreshAt.value = safeStorage.read(LAST_REFRESH_KEY) ?? lastRefreshAt.value ?? newestFetchedAt(cached)
+    lastRefreshAt.value =
+      safeStorage.read(LAST_REFRESH_KEY) ?? lastRefreshAt.value ?? newestFetchedAt(cached)
   }
 
   /** Prüft einen Aufnahmekandidaten; Fehler gehen vor jeder Depotänderung zurück. */
-  async function loadOne(client: StockInfoClient, instrument: Pick<Position, 'isin' | 'symbol'>): Promise<void> {
+  async function loadOne(
+    client: StockInfoClient,
+    instrument: Pick<Position, 'isin' | 'symbol'>,
+  ): Promise<void> {
     const entry = toQuoteCacheEntry(await requestQuote(client, instrument, false))
     const key = quoteKey(instrument)
     await repository.put(key, entry)
@@ -284,8 +286,10 @@ export const useQuotesStore = defineStore('quotes', () => {
       await loadQuotes(client, positions)
       return
     }
-    const missing = positions.filter((position) =>
-      position.enabled && position.group !== 'cash' && !quotes.value.has(quoteKey(position)))
+    const missing = positions.filter(
+      (position) =>
+        position.enabled && position.group !== 'cash' && !quotes.value.has(quoteKey(position)),
+    )
     if (missing.length > 0) await loadMissing(client, missing)
   }
 
@@ -301,11 +305,15 @@ export const useQuotesStore = defineStore('quotes', () => {
     loadingRuns.value += 1
     beginProgress(missing.length)
     try {
-      const results = await mapWithConcurrency(missing, MAX_CONCURRENT_REQUESTS, async (position) => {
-        const outcome = await fetchOne(client, position, false)
-        stepProgress()
-        return outcome
-      })
+      const results = await mapWithConcurrency(
+        missing,
+        MAX_CONCURRENT_REQUESTS,
+        async (position) => {
+          const outcome = await fetchOne(client, position, false)
+          stepProgress()
+          return outcome
+        },
+      )
       const sorted = sortOutcomes(results, quotes.value)
       const touched = new Set(results.map((outcome) => outcome.key))
       const nextQuotes: QuoteMap = new Map(quotes.value)
@@ -351,7 +359,8 @@ export const useQuotesStore = defineStore('quotes', () => {
         quotes.value = new Map(quotes.value).set(key, stale)
         await repository.put(key, stale)
       }
-      const reason = error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
+      const reason =
+        error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
       consola.error('quotes: Einzel-Refresh fehlgeschlagen', {
         symbol: position.symbol,
         reason,
@@ -429,9 +438,7 @@ function requestQuote(
   if (position.isin) {
     return force ? client.refreshByIsin(position.isin) : client.getQuoteByIsin(position.isin)
   }
-  return force
-    ? client.refreshBySymbol(position.symbol)
-    : client.getQuoteBySymbol(position.symbol)
+  return force ? client.refreshBySymbol(position.symbol) : client.getQuoteBySymbol(position.symbol)
 }
 
 /** Holt den Kurs einer Position und macht aus einem Fehler ein Ergebnis. */

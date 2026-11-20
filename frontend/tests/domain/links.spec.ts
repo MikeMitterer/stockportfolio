@@ -169,23 +169,42 @@ describe('resolveLinks', () => {
   })
 
   it('verknüpft Gruppen- und Gattungsfilter; Cash braucht keine Gattung', () => {
-    const groupOnly = makeLink({ id: 'cash', urlTemplate: 'https://example.test/cash', appliesToGroups: ['cash'] })
+    const groupOnly = makeLink({
+      id: 'cash',
+      urlTemplate: 'https://example.test/cash',
+      appliesToGroups: ['cash'],
+    })
     const both = makeLink({ id: 'bond-etf', appliesTo: ['etf'], appliesToGroups: ['bonds'] })
     const cash = makePosition({ group: 'cash', kind: null, isin: null, symbol: 'CASH' })
-    expect(resolveLinks(cash, [groupOnly, both]).map(link => link.id)).toEqual(['cash'])
-    expect(resolveLinks(makePosition({ group: 'bonds', kind: 'etf' }), [groupOnly, both]).map(link => link.id)).toEqual(['bond-etf'])
-    expect(resolveLinks(makePosition({ group: 'etfs', kind: 'etf' }), [groupOnly, both])).toEqual([])
-    expect(resolveLinks(makePosition({ group: 'bonds', kind: 'stock' }), [groupOnly, both])).toEqual([])
+    expect(resolveLinks(cash, [groupOnly, both]).map((link) => link.id)).toEqual(['cash'])
+    expect(
+      resolveLinks(makePosition({ group: 'bonds', kind: 'etf' }), [groupOnly, both]).map(
+        (link) => link.id,
+      ),
+    ).toEqual(['bond-etf'])
+    expect(resolveLinks(makePosition({ group: 'etfs', kind: 'etf' }), [groupOnly, both])).toEqual(
+      [],
+    )
+    expect(
+      resolveLinks(makePosition({ group: 'bonds', kind: 'stock' }), [groupOnly, both]),
+    ).toEqual([])
   })
 })
-
 
 describe('Dynamische Typen und Gruppenfilter', () => {
   it('verwendet den aktuellen Typ und kombiniert ihn mit der gewählten Depotgruppe', () => {
     const link = makeLink({ appliesTo: ['future-type'], appliesToGroups: ['bonds'] })
-    expect(resolveLinks(makePosition({ kind: 'stock', group: 'bonds' }), [link], 'future-type')).toHaveLength(1)
-    expect(resolveLinks(makePosition({ kind: 'future-type', group: 'stocks' }), [link], 'future-type')).toHaveLength(0)
-    expect(resolveLinks(makePosition({ kind: 'future-type', group: 'bonds' }), [link], 'fund')).toHaveLength(0)
-    expect(resolveLinks(makePosition({ kind: 'future-type', group: 'bonds' }), [link])).toHaveLength(1)
+    expect(
+      resolveLinks(makePosition({ kind: 'stock', group: 'bonds' }), [link], 'future-type'),
+    ).toHaveLength(1)
+    expect(
+      resolveLinks(makePosition({ kind: 'future-type', group: 'stocks' }), [link], 'future-type'),
+    ).toHaveLength(0)
+    expect(
+      resolveLinks(makePosition({ kind: 'future-type', group: 'bonds' }), [link], 'fund'),
+    ).toHaveLength(0)
+    expect(
+      resolveLinks(makePosition({ kind: 'future-type', group: 'bonds' }), [link]),
+    ).toHaveLength(1)
   })
 })

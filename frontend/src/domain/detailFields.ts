@@ -14,34 +14,68 @@ export interface ProjectedDetailField {
 
 /** Nur die schon vorher angezeigten Core-Zusatzwerte brauchen einen Rückfall. */
 function coreDefinitions(): DetailDefinition[] {
-  return ['ter', 'volatility'].map(name => ({
-    name, kind: 'number', unit: 'percent',
+  return ['ter', 'volatility'].map((name) => ({
+    name,
+    kind: 'number',
+    unit: 'percent',
     labelEn: name === 'ter' ? translate('detailFields.ter') : translate('drilldown.volatility'),
-    labelDe: '', overridable: false, sources: [], scopes: [],
-    minimum: null, maximum: null, currencyRequired: false,
+    labelDe: '',
+    overridable: false,
+    sources: [],
+    scopes: [],
+    minimum: null,
+    maximum: null,
+    currencyRequired: false,
   }))
 }
 
 function coreValue(value: number): DetailValue {
-  return { value, unit: 'percent', currency: null, origin: null, source: null,
-    asOf: null, shadowed: false, manualValue: null, manualCurrency: null }
+  return {
+    value,
+    unit: 'percent',
+    currency: null,
+    origin: null,
+    source: null,
+    asOf: null,
+    shadowed: false,
+    manualValue: null,
+    manualCurrency: null,
+  }
 }
 
-function valueText(definition: DetailDefinition, value: DetailScalar | null, unit: string | null, currency: string | null): string {
+function valueText(
+  definition: DetailDefinition,
+  value: DetailScalar | null,
+  unit: string | null,
+  currency: string | null,
+): string {
   if (value === null) return '—'
-  if (definition.kind === 'boolean') return typeof value === 'boolean' ? translate(value ? 'detailFields.yes' : 'detailFields.no') : '—'
+  if (definition.kind === 'boolean')
+    return typeof value === 'boolean'
+      ? translate(value ? 'detailFields.yes' : 'detailFields.no')
+      : '—'
   if (definition.kind === 'text') return typeof value === 'string' ? value : '—'
   if (typeof value !== 'number' || !Number.isFinite(value)) return '—'
-  if (unit !== null && !['percent', 'ratio', 'basis_points', 'millions', 'absolute'].includes(unit)) return '—'
+  if (unit !== null && !['percent', 'ratio', 'basis_points', 'millions', 'absolute'].includes(unit))
+    return '—'
   if (definition.unit !== null && unit !== definition.unit) return '—'
   if ((definition.currencyRequired || unit === 'absolute') && !currency) return '—'
-  const unitLabel = unit === 'absolute' ? ''
-    : unit === 'ratio' ? translate('detailFields.ratio')
-      : unit === 'basis_points' ? translate('detailFields.basisPoints')
-        : unit === 'millions' ? translate('detailFields.millions') : unit
+  const unitLabel =
+    unit === 'absolute'
+      ? ''
+      : unit === 'ratio'
+        ? translate('detailFields.ratio')
+        : unit === 'basis_points'
+          ? translate('detailFields.basisPoints')
+          : unit === 'millions'
+            ? translate('detailFields.millions')
+            : unit
   // Wie StockInfo (T-88): „129.791,00 Mio. EUR“ — Zahl, Maßstab, Währungscode.
   if (unit === 'millions' && currency) {
-    return translate('detailFields.amountMillions', { amount: moneyAmount(value, currency, 2), currency: currency.toUpperCase() })
+    return translate('detailFields.amountMillions', {
+      amount: moneyAmount(value, currency, 2),
+      currency: currency.toUpperCase(),
+    })
   }
   if (currency) return `${money(value, currency, 2)}${unitLabel ? ` ${unitLabel}` : ''}`
   if (unit === 'percent') return percent(value, 4)
@@ -56,20 +90,27 @@ export function projectDetailFields(
 ): ProjectedDetailField[] {
   if (!quote) return []
   const visible = new Set(visibleKeys)
-  const catalog = new Map(coreDefinitions().map(definition => [definition.name, definition]))
+  const catalog = new Map(coreDefinitions().map((definition) => [definition.name, definition]))
   for (const definition of definitions) catalog.set(definition.name, definition)
   const values: Record<string, DetailValue> = { ...quote.details }
   if (!Object.hasOwn(values, 'ter') && quote.ter !== null) values.ter = coreValue(quote.ter)
-  if (!Object.hasOwn(values, 'volatility') && quote.volatility !== null) values.volatility = coreValue(quote.volatility)
+  if (!Object.hasOwn(values, 'volatility') && quote.volatility !== null)
+    values.volatility = coreValue(quote.volatility)
 
   const fields: ProjectedDetailField[] = []
   for (const [key, metadata] of Object.entries(values)) {
     const definition = catalog.get(key)
     if (!definition || visible.has(key)) continue
     // Nur die lokalen Core-Rückfälle gelten ohne deklarierte Anwendbarkeit.
-    if (definitions.includes(definition) && !definition.scopes.some(scope =>
-      scope.instrumentTypes.includes(quote.type ?? '') && scope.identityKinds.includes(quote.identity.kind),
-    )) continue
+    if (
+      definitions.includes(definition) &&
+      !definition.scopes.some(
+        (scope) =>
+          scope.instrumentTypes.includes(quote.type ?? '') &&
+          scope.identityKinds.includes(quote.identity.kind),
+      )
+    )
+      continue
     const unit = metadata.unit ?? definition.unit
     fields.push({
       key,
@@ -84,7 +125,11 @@ export function projectDetailFields(
 
 /** Null ohne Herkunft ist leer; Nullwerte mit Quellenhinweis bleiben erklärbar. */
 export function hasDetailContent(field: ProjectedDetailField): boolean {
-  return (field.value !== '—' && field.value.trim() !== '') ||
-    field.metadata.origin !== null || field.metadata.source !== null ||
-    field.metadata.asOf !== null || field.metadata.shadowed
+  return (
+    (field.value !== '—' && field.value.trim() !== '') ||
+    field.metadata.origin !== null ||
+    field.metadata.source !== null ||
+    field.metadata.asOf !== null ||
+    field.metadata.shadowed
+  )
 }

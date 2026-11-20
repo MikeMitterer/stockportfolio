@@ -10,8 +10,16 @@ import { buildBackup, parseBackup } from '@/domain/backup'
 import { emptyPortfolio } from '@/db/seed'
 import { defaultSettings } from '@/stores/settings'
 
-beforeEach(async () => { await closeDb(); await deleteDB(DB_NAME); setActivePinia(createPinia()) })
-afterEach(async () => { vi.restoreAllMocks(); await closeDb(); await deleteDB(DB_NAME) })
+beforeEach(async () => {
+  await closeDb()
+  await deleteDB(DB_NAME)
+  setActivePinia(createPinia())
+})
+afterEach(async () => {
+  vi.restoreAllMocks()
+  await closeDb()
+  await deleteDB(DB_NAME)
+})
 
 describe('Währung in Tageswerten und Backups', () => {
   it('mischt beim Laden keine verschiedenen Währungen', async () => {
@@ -48,13 +56,35 @@ describe('Währung in Tageswerten und Backups', () => {
   it('erhält Depotwährung und Geldschwellen und verwirft nicht zuordenbare Tageswerte', () => {
     const portfolio = emptyPortfolio('USA', 'USD')
     portfolio.amountSettings!.securityBuffer = { mode: 'absolute', value: 100 }
-    const backup = buildBackup(portfolio, defaultSettings(portfolio.id), new Map(), 'test', '2026-09-10', [{ date: '2026-09-10', total: 200, currency: 'USD' }])
-    const raw = { ...backup, valueHistory: [...backup.valueHistory, { date: '2026-09-09', total: 180, currency: 'EUR' }, { date: '2026-09-08', total: 999 }] }
+    const backup = buildBackup(
+      portfolio,
+      defaultSettings(portfolio.id),
+      new Map(),
+      'test',
+      '2026-09-10',
+      [{ date: '2026-09-10', total: 200, currency: 'USD' }],
+    )
+    const raw = {
+      ...backup,
+      valueHistory: [
+        ...backup.valueHistory,
+        { date: '2026-09-09', total: 180, currency: 'EUR' },
+        { date: '2026-09-08', total: 999 },
+      ],
+    }
     const result = parseBackup(JSON.stringify(raw))
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    expect(result.backup.portfolio).toMatchObject({ baseCurrency: 'USD', amountSettings: { securityBuffer: { value: 100 } } })
-    expect(result.backup.valueHistory).toEqual([{ date: '2026-09-09', total: 180, currency: 'EUR' }, ...backup.valueHistory])
-    expect(parseBackup(JSON.stringify({ ...raw, portfolio: { ...portfolio, baseCurrency: 'ZZZ' } })).ok).toBe(false)
+    expect(result.backup.portfolio).toMatchObject({
+      baseCurrency: 'USD',
+      amountSettings: { securityBuffer: { value: 100 } },
+    })
+    expect(result.backup.valueHistory).toEqual([
+      { date: '2026-09-09', total: 180, currency: 'EUR' },
+      ...backup.valueHistory,
+    ])
+    expect(
+      parseBackup(JSON.stringify({ ...raw, portfolio: { ...portfolio, baseCurrency: 'ZZZ' } })).ok,
+    ).toBe(false)
   })
 })

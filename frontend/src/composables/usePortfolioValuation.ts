@@ -19,10 +19,15 @@ export function usePortfolioValuation() {
     const current = portfolio.portfolio
     if (!current) return []
     const target = baseCurrencyOf(current)
-    return current.positions.filter(position => position.enabled && position.group !== 'cash')
-      .map(position => quoteFor(position, quotes.quotes))
-      .filter(quote => quote && majorCurrency(quote.currency) !== target)
-      .map(quote => ({ base: majorCurrency(quote!.currency), target, fetchedAt: quote!.fetchedAt }))
+    return current.positions
+      .filter((position) => position.enabled && position.group !== 'cash')
+      .map((position) => quoteFor(position, quotes.quotes))
+      .filter((quote) => quote && majorCurrency(quote.currency) !== target)
+      .map((quote) => ({
+        base: majorCurrency(quote!.currency),
+        target,
+        fetchedAt: quote!.fetchedAt,
+      }))
   })
   /**
    * Holt die nötigen Devisenkurse. Ohne `force` bleibt ein Kurs zum selben
@@ -37,13 +42,29 @@ export function usePortfolioValuation() {
       entry.fetchedAt.push(pair.fetchedAt)
       stamps.set(pair.base, entry)
     }
-    await Promise.all([...stamps].map(([base, entry]) =>
-      fx.load(client, base, entry.target, force ? undefined : entry.fetchedAt.sort().join('|'))))
+    await Promise.all(
+      [...stamps].map(([base, entry]) =>
+        fx.load(client, base, entry.target, force ? undefined : entry.fetchedAt.sort().join('|')),
+      ),
+    )
   }
-  watch(() => `${portfolio.portfolio?.id}|${baseCurrencyOf(portfolio.portfolio)}|${needed.value.map(pair => `${pair.base}:${pair.fetchedAt}`).join('|')}`, () => loadFx(), { immediate: true })
-  const result = computed(() => portfolio.portfolio
-    ? computeRebalancing(portfolio.portfolio, quotes.quotes, settings.settings, new Date(), fx.rates)
-    : null)
+  watch(
+    () =>
+      `${portfolio.portfolio?.id}|${baseCurrencyOf(portfolio.portfolio)}|${needed.value.map((pair) => `${pair.base}:${pair.fetchedAt}`).join('|')}`,
+    () => loadFx(),
+    { immediate: true },
+  )
+  const result = computed(() =>
+    portfolio.portfolio
+      ? computeRebalancing(
+          portfolio.portfolio,
+          quotes.quotes,
+          settings.settings,
+          new Date(),
+          fx.rates,
+        )
+      : null,
+  )
   /** „Erneut versuchen“: fragt StockInfo auch bei vorhandenem Kurs. */
   const retryFx = (): Promise<void> => loadFx(true)
   return { result, fx, loadFx, retryFx }

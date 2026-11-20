@@ -36,8 +36,20 @@ describe('Dynamischer Typkatalog pro API-Adresse', () => {
 
   it('ignoriert verspätete Antworten nach einem Adresswechsel', async () => {
     let release!: (response: Response) => void
-    const oldClient = new StockInfoClient('https://old.test', () => new Promise(resolve => { release = resolve }))
-    const nextClient = new StockInfoClient('https://new.test', async () => new Response(JSON.stringify({ instrument_types: ['new-type'], complete: true, sources: [] })))
+    const oldClient = new StockInfoClient(
+      'https://old.test',
+      () =>
+        new Promise((resolve) => {
+          release = resolve
+        }),
+    )
+    const nextClient = new StockInfoClient(
+      'https://new.test',
+      async () =>
+        new Response(
+          JSON.stringify({ instrument_types: ['new-type'], complete: true, sources: [] }),
+        ),
+    )
     const store = useInstrumentTypesStore()
     const oldRequest = store.load(oldClient)
     await store.load(nextClient)

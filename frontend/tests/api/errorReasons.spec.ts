@@ -39,7 +39,10 @@ const CODES: Record<string, Record<string, string>> = {
 
 /** Liefert die Fehlermeldung, die der Client aus einer StockInfo-Antwort bildet. */
 async function detailFor(body: unknown, status = 404): Promise<string> {
-  const client = new StockInfoClient('https://errors.test', async () => new Response(JSON.stringify(body), { status }))
+  const client = new StockInfoClient(
+    'https://errors.test',
+    async () => new Response(JSON.stringify(body), { status }),
+  )
   const failure = await client.getQuoteBySymbol('EUNL.DE').catch((error: unknown) => error)
   return (failure as { detail: string }).detail
 }
@@ -52,58 +55,73 @@ afterEach(() => useLocale('en'))
 
 describe('StockInfo-Fehlerkennungen', () => {
   it('haben je Kennung einen Satz im Katalog, nicht mehr und nicht weniger', () => {
-    const catalogued = Object.keys(en.errors.reason).filter((code) => code !== 'unknown').sort()
+    const catalogued = Object.keys(en.errors.reason)
+      .filter((code) => code !== 'unknown')
+      .sort()
     expect(catalogued).toEqual(Object.keys(CODES).sort())
     expect(Object.keys(de.errors.reason).sort()).toEqual(Object.keys(en.errors.reason).sort())
   })
 
   for (const locale of ['de', 'en'] as const) {
-    it.each(Object.entries(CODES))(`übersetzt %s auf ${locale} und setzt die Werte ein`, async (code, params) => {
-      useLocale(locale)
-      const detail = await detailFor({ code, params })
-      expect(detail).not.toContain('{')
-      expect(detail).not.toBe(code)
-      for (const value of Object.values(params).filter((value) => value !== 'listed')) {
-        expect(detail).toContain(value)
-      }
-    })
+    it.each(Object.entries(CODES))(
+      `übersetzt %s auf ${locale} und setzt die Werte ein`,
+      async (code, params) => {
+        useLocale(locale)
+        const detail = await detailFor({ code, params })
+        expect(detail).not.toContain('{')
+        expect(detail).not.toBe(code)
+        for (const value of Object.values(params).filter((value) => value !== 'listed')) {
+          expect(detail).toContain(value)
+        }
+      },
+    )
   }
 
   it('spricht die gewählte Sprache', async () => {
     useLocale('de')
-    expect(await detailFor({ code: 'fx_pair_not_found', params: { base: 'USD', quote: 'EUR' } }))
-      .toBe('Keine der in StockInfo eingerichteten Quellen führt den Kurs USD/EUR.')
+    expect(
+      await detailFor({ code: 'fx_pair_not_found', params: { base: 'USD', quote: 'EUR' } }),
+    ).toBe('Keine der in StockInfo eingerichteten Quellen führt den Kurs USD/EUR.')
     useLocale('en')
-    expect(await detailFor({ code: 'fx_pair_not_found', params: { base: 'USD', quote: 'EUR' } }))
-      .toBe('None of the sources configured in StockInfo carries the rate USD/EUR.')
+    expect(
+      await detailFor({ code: 'fx_pair_not_found', params: { base: 'USD', quote: 'EUR' } }),
+    ).toBe('None of the sources configured in StockInfo carries the rate USD/EUR.')
   })
 
   it('nennt bei einer unbekannten Kennung die Kennung in einem allgemeinen Satz', async () => {
     useLocale('de')
-    expect(await detailFor({ code: 'brand_new_reason', params: { x: '1' } }))
-      .toBe('StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: brand_new_reason.')
+    expect(await detailFor({ code: 'brand_new_reason', params: { x: '1' } })).toBe(
+      'StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: brand_new_reason.',
+    )
   })
 
   it('zeigt einen Satz im alten Format weiter an', async () => {
-    expect(await detailFor({ detail: 'Vertragsartefakt nicht lesbar' }, 503)).toBe('Vertragsartefakt nicht lesbar')
+    expect(await detailFor({ detail: 'Vertragsartefakt nicht lesbar' }, 503)).toBe(
+      'Vertragsartefakt nicht lesbar',
+    )
   })
 
   it('übersetzt die Kennung im detail eines 503 während Migration oder Start', async () => {
     useLocale('de')
-    expect(await detailFor({ detail: 'migration_pending', migration: '/migration' }, 503))
-      .toBe('StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.')
+    expect(await detailFor({ detail: 'migration_pending', migration: '/migration' }, 503)).toBe(
+      'StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.',
+    )
   })
 
   it('nennt eine unbekannte Kennung im detail eines 503 im allgemeinen Satz, nicht roh', async () => {
     useLocale('de')
-    expect(await detailFor({ detail: 'maintenance_running' }, 503))
-      .toBe('StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: maintenance_running.')
+    expect(await detailFor({ detail: 'maintenance_running' }, 503)).toBe(
+      'StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: maintenance_running.',
+    )
     useLocale('en')
-    expect(await detailFor({ detail: 'maintenance_running' }, 503))
-      .toBe('StockInfo reports an error that StockPortfolio does not know: maintenance_running.')
+    expect(await detailFor({ detail: 'maintenance_running' }, 503)).toBe(
+      'StockInfo reports an error that StockPortfolio does not know: maintenance_running.',
+    )
     // Ein Satz im alten Format bleibt unverändert, auch ein einzelnes Wort.
     expect(await detailFor({ detail: 'Not Found' }, 404)).toBe('Not Found')
-    expect(await detailFor({ detail: 'Vertragsartefakt nicht lesbar' }, 503)).toBe('Vertragsartefakt nicht lesbar')
+    expect(await detailFor({ detail: 'Vertragsartefakt nicht lesbar' }, 503)).toBe(
+      'Vertragsartefakt nicht lesbar',
+    )
   })
 
   it.each([

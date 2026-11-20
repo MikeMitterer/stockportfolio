@@ -24,20 +24,40 @@ async function signedIn(sessionIdleMs?: number, extra: Partial<ApiOptions> = {})
   directories.push(directory)
   const repository = createSqliteRepository(join(directory, 'test.sqlite'))
   let currentTime = 100_000
-  const service = new AccountService(repository, hashSetupCode('setup-code'), () => currentTime, sessionIdleMs)
-  const app = createApiRouter(service, repository, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1', ...extra })
+  const service = new AccountService(
+    repository,
+    hashSetupCode('setup-code'),
+    () => currentTime,
+    sessionIdleMs,
+  )
+  const app = createApiRouter(service, repository, {
+    publicOrigin: origin,
+    secureCookies: false,
+    remoteAddress: () => '10.0.0.1',
+    ...extra,
+  })
   let jar = ''
   const remember = (response: Response) => {
-    const sessionCookie = response.headers.getSetCookie().find((value) => value.startsWith('stockportfolio_session='))
+    const sessionCookie = response.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('stockportfolio_session='))
     if (sessionCookie) jar = sessionCookie.split(';')[0]
     return response
   }
-  const post = async (path: string, body: unknown, cookie = jar) => remember(await app.request(`${origin}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Origin: origin, ...(cookie ? { Cookie: cookie } : {}) },
-    body: JSON.stringify(body),
-  }))
-  const send = (cookie: string) => app.request(`${origin}/api/auth/session`, { headers: { Cookie: cookie } })
+  const post = async (path: string, body: unknown, cookie = jar) =>
+    remember(
+      await app.request(`${origin}${path}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: origin,
+          ...(cookie ? { Cookie: cookie } : {}),
+        },
+        body: JSON.stringify(body),
+      }),
+    )
+  const send = (cookie: string) =>
+    app.request(`${origin}/api/auth/session`, { headers: { Cookie: cookie } })
   await post('/api/setup', { code: 'setup-code', username: 'mike', password: 'Test-password-123' })
   const login = await post('/api/auth/login', { username: 'mike', password: 'Test-password-123' })
   return {
@@ -48,8 +68,11 @@ async function signedIn(sessionIdleMs?: number, extra: Partial<ApiOptions> = {})
     post,
     send,
     session: async () => remember(await send(jar)),
-    proxy: async (path: string) => remember(await app.request(`${origin}/api/stockinfo${path}`, { headers: { Cookie: jar } })),
-    advance: (milliseconds: number) => { currentTime += milliseconds },
+    proxy: async (path: string) =>
+      remember(await app.request(`${origin}/api/stockinfo${path}`, { headers: { Cookie: jar } })),
+    advance: (milliseconds: number) => {
+      currentTime += milliseconds
+    },
   }
 }
 
@@ -67,9 +90,14 @@ describe('STOCKPORTFOLIO_SESSION_IDLE_DAYS', () => {
     expect(parseSessionIdleMs('365')).toBe(365 * dayMs)
   })
 
-  it.each(['0', '366', '-1', '1.5', '7d', 'sieben', '1e2', '0x10'])('beendet den Start bei %j mit verständlicher Meldung', (value) => {
-    expect(() => parseSessionIdleMs(value)).toThrow(/STOCKPORTFOLIO_SESSION_IDLE_DAYS is invalid: expected whole days from 1 to 365/)
-  })
+  it.each(['0', '366', '-1', '1.5', '7d', 'sieben', '1e2', '0x10'])(
+    'beendet den Start bei %j mit verständlicher Meldung',
+    (value) => {
+      expect(() => parseSessionIdleMs(value)).toThrow(
+        /STOCKPORTFOLIO_SESSION_IDLE_DAYS is invalid: expected whole days from 1 to 365/,
+      )
+    },
+  )
 })
 
 describe('gleitende Sitzung (T-98)', () => {
@@ -129,7 +157,9 @@ describe('gleitende Sitzung (T-98)', () => {
       const before = cookie()
       const changed = await post('/api/auth/change-password', { password: 'Changed-password-123' })
       expect(changed.status).toBe(200)
-      const sessionCookies = changed.headers.getSetCookie().filter((value) => value.startsWith('stockportfolio_session='))
+      const sessionCookies = changed.headers
+        .getSetCookie()
+        .filter((value) => value.startsWith('stockportfolio_session='))
       expect(sessionCookies).toHaveLength(1)
       expect(cookie()).not.toBe(before)
       expect((await send(before)).status).toBe(401)
@@ -299,10 +329,13 @@ describe('Ereignisverbindung und Leerlauffrist (R1-F2)', () => {
 
 describe('Cookie beim Token-Tausch (Runde 2)', () => {
   it('liefert über die StockInfo-Weiterleitung das neue Cookie, nie eines von StockInfo (R1-F1)', async () => {
-    const upstream = vi.fn(async () => new Response('{"status":"ok"}', {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', 'Set-Cookie': 'stockinfo=fremd; Path=/' },
-    }))
+    const upstream = vi.fn(
+      async () =>
+        new Response('{"status":"ok"}', {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', 'Set-Cookie': 'stockinfo=fremd; Path=/' },
+        }),
+    )
     const { repository, cookie, advance, proxy, send } = await signedIn(undefined, {
       stockInfoUrl: 'http://stockinfo.test',
       stockInfoFetch: upstream,
@@ -329,7 +362,11 @@ describe('Cookie beim Token-Tausch (Runde 2)', () => {
       const before = cookie()
       advance(dayMs - 1_000)
       // Die langsame Anfrage prüft die Sitzung noch vor der Tauschgrenze und hasht dann ein Kennwort.
-      const slow = post('/api/admin/users', { username: 'anna', password: 'Test-password-456', role: 'user' }, before)
+      const slow = post(
+        '/api/admin/users',
+        { username: 'anna', password: 'Test-password-456', role: 'user' },
+        before,
+      )
       await new Promise((resolve) => setImmediate(resolve))
       advance(2_000)
       expect((await session()).status).toBe(200)
@@ -352,7 +389,11 @@ describe('Übergangsfrist und Abmeldung (Runde 3)', () => {
       const before = cookie()
       advance(dayMs + 1_000)
       // Die erste Anfrage nach der Tauschgrenze dauert länger als die 60-s-Übergangsfrist.
-      const slow = post('/api/admin/users', { username: 'anna', password: 'Test-password-456', role: 'user' }, before)
+      const slow = post(
+        '/api/admin/users',
+        { username: 'anna', password: 'Test-password-456', role: 'user' },
+        before,
+      )
       await new Promise((resolve) => setImmediate(resolve))
       advance(61_000)
       // Der Browser hat noch kein neues Cookie; eine parallele Anfrage muss mit dem alten durchgehen.
@@ -397,4 +438,3 @@ describe('Übergangsfrist und Abmeldung (Runde 3)', () => {
     }
   })
 })
-

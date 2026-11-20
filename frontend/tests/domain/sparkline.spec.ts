@@ -10,7 +10,10 @@ import { describe, expect, it } from 'vitest'
 import { buildSparkline, type HistoryPoint } from '@/domain/sparkline'
 
 function points(...closes: number[]): HistoryPoint[] {
-  return closes.map((close, index) => ({ date: `2026-01-${String(index + 1).padStart(2, '0')}`, close }))
+  return closes.map((close, index) => ({
+    date: `2026-01-${String(index + 1).padStart(2, '0')}`,
+    close,
+  }))
 }
 
 describe('buildSparkline', () => {

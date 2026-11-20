@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NAlert, NButton, NCard, NIcon, NInput, NInputNumber, NModal, NPopconfirm, NSelect, NSwitch } from 'naive-ui'
+import {
+  NAlert,
+  NButton,
+  NCard,
+  NIcon,
+  NInput,
+  NInputNumber,
+  NModal,
+  NPopconfirm,
+  NSelect,
+  NSwitch,
+} from 'naive-ui'
 import { formatAge } from '@/composables/useRelativeTime'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import PositionReadDetails from '@/components/PositionReadDetails.vue'
@@ -28,12 +39,17 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const quoteIssue = useQuoteIssue()
 const editing = ref(false)
-type EditDraft = Pick<Position, 'units' | 'targetPercent' | 'displayName' | 'group' | 'enabled'> & { notes: string }
+type EditDraft = Pick<Position, 'units' | 'targetPercent' | 'displayName' | 'group' | 'enabled'> & {
+  notes: string
+}
 const draft = ref<EditDraft | null>(null)
 const isCash = computed(() => props.row.position.group === 'cash')
 const quoteAge = computed(() => formatAge(props.row.quote?.fetchedAt ?? null))
 const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
-  ASSET_GROUPS.filter(value => value !== 'cash').map(value => ({ label: t(`groups.${value}`), value })),
+  ASSET_GROUPS.filter((value) => value !== 'cash').map((value) => ({
+    label: t(`groups.${value}`),
+    value,
+  })),
 )
 
 function openEditor(): void {
@@ -87,7 +103,9 @@ function updateTargetPercent(value: number | null): void {
     >
       <template #toolbar>
         <div class="drill__head">
-          <span v-if="row.quote" class="drill__quote-age">{{ t('dashboard.quoteAge') }}: {{ quoteAge }}</span>
+          <span v-if="row.quote" class="drill__quote-age"
+            >{{ t('dashboard.quoteAge') }}: {{ quoteAge }}</span
+          >
           <span v-else-if="!isCash" class="drill__quote-age">{{ t('currency.missingQuote') }}</span>
           <div class="drill__actions">
             <NButton
@@ -105,19 +123,46 @@ function updateTargetPercent(value: number | null): void {
             >
               <template #icon>
                 <NIcon>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v6h6M20 20v-6h-6" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 10a8 8 0 0 0-14-4M4 14a8 8 0 0 0 14 4" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M20 10a8 8 0 0 0-14-4M4 14a8 8 0 0 0 14 4"
+                    />
                   </svg>
                 </NIcon>
               </template>
             </NButton>
-            <NButton size="small" type="primary" circle :aria-label="t('drilldown.editHeading')" :title="t('drilldown.editHeading')" @click="openEditor">
+            <NButton
+              size="small"
+              type="primary"
+              circle
+              :aria-label="t('drilldown.editHeading')"
+              :title="t('drilldown.editHeading')"
+              @click="openEditor"
+            >
               <template #icon>
                 <NIcon>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4 10.5-10.5Z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4 10.5-10.5Z"
+                    />
                   </svg>
                 </NIcon>
               </template>
@@ -128,16 +173,44 @@ function updateTargetPercent(value: number | null): void {
     </PositionReadDetails>
 
     <NModal v-if="draft" :show="editing" @update:show="!$event && cancelEditor()">
-      <NCard class="drill__editor" data-position-editor :bordered="false" role="dialog" aria-modal="true" :title="t('drilldown.editHeading')" closable @close="cancelEditor">
+      <NCard
+        class="drill__editor"
+        data-position-editor
+        :bordered="false"
+        role="dialog"
+        aria-modal="true"
+        :title="t('drilldown.editHeading')"
+        closable
+        @close="cancelEditor"
+      >
         <div class="drill__form">
           <div class="drill__pair">
             <label class="drill__field">
-              <span>{{ isCash ? t('dashboard.amountEuro', { currency: row.baseCurrency }) : t('table.units') }}</span>
-              <NInputNumber :value="draft.units" :precision="isCash ? 2 : 0" :min="0" :step="isCash ? 100 : 1" size="small" @update:value="updateUnits" />
+              <span>{{
+                isCash
+                  ? t('dashboard.amountEuro', { currency: row.baseCurrency })
+                  : t('table.units')
+              }}</span>
+              <NInputNumber
+                :value="draft.units"
+                :precision="isCash ? 2 : 0"
+                :min="0"
+                :step="isCash ? 100 : 1"
+                size="small"
+                @update:value="updateUnits"
+              />
             </label>
             <label class="drill__field">
               <span>{{ t('table.targetPercent') }}</span>
-              <NInputNumber :value="draft.targetPercent" :precision="2" :min="0" :max="100" :step="0.5" size="small" @update:value="updateTargetPercent" />
+              <NInputNumber
+                :value="draft.targetPercent"
+                :precision="2"
+                :min="0"
+                :max="100"
+                :step="0.5"
+                size="small"
+                @update:value="updateTargetPercent"
+              />
             </label>
           </div>
           <div class="drill__pair" :class="{ 'drill__pair--single': isCash }">
@@ -163,11 +236,15 @@ function updateTargetPercent(value: number | null): void {
               <template #trigger>
                 <NButton size="small" quaternary type="error">{{ t('actions.delete') }}</NButton>
               </template>
-              <p class="drill__delete-confirmation">{{ t('dashboard.confirmRemove', { name: row.position.displayName }) }}</p>
+              <p class="drill__delete-confirmation">
+                {{ t('dashboard.confirmRemove', { name: row.position.displayName }) }}
+              </p>
             </NPopconfirm>
             <div class="drill__footer-actions">
               <NButton size="small" @click="cancelEditor">{{ t('actions.cancel') }}</NButton>
-              <NButton size="small" type="primary" @click="saveEditor">{{ t('actions.save') }}</NButton>
+              <NButton size="small" type="primary" @click="saveEditor">{{
+                t('actions.save')
+              }}</NButton>
             </div>
           </div>
         </div>
@@ -191,21 +268,35 @@ function updateTargetPercent(value: number | null): void {
     justify-content: flex-end;
     gap: var(--space-2);
   }
-  &__quote-age { @include muted(var(--font-xs)); }
-  &__actions { @include row(var(--space-2)); flex-wrap: wrap; }
-  &__refresh--loading :deep(svg) { animation: drill-refresh-spin 0.9s linear infinite; }
+  &__quote-age {
+    @include muted(var(--font-xs));
+  }
+  &__actions {
+    @include row(var(--space-2));
+    flex-wrap: wrap;
+  }
+  &__refresh--loading :deep(svg) {
+    animation: drill-refresh-spin 0.9s linear infinite;
+  }
   &__editor {
     width: min(calc(100vw - 2rem), 48rem);
     min-width: 0;
   }
-  &__form, &__field { @include stack(var(--space-2)); }
-  &__field { font-size: var(--font-xs); }
+  &__form,
+  &__field {
+    @include stack(var(--space-2));
+  }
+  &__field {
+    font-size: var(--font-xs);
+  }
   &__pair {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
 
-    &--single { grid-template-columns: minmax(0, 1fr); }
+    &--single {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
   &__footer {
     display: flex;
@@ -222,19 +313,34 @@ function updateTargetPercent(value: number | null): void {
     max-width: min(22rem, calc(100vw - 6rem));
     overflow-wrap: anywhere;
   }
-  &__footer-actions { display: flex; gap: var(--space-2); }
-  &__enabled { @include row(var(--space-2)); align-items: center; font-size: var(--font-xs); }
+  &__footer-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+  &__enabled {
+    @include row(var(--space-2));
+    align-items: center;
+    font-size: var(--font-xs);
+  }
   @media (max-width: 600px) {
-    &__pair { grid-template-columns: minmax(0, 1fr); }
-    &__footer { flex-wrap: wrap; }
+    &__pair {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    &__footer {
+      flex-wrap: wrap;
+    }
   }
 }
 
 @keyframes drill-refresh-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .drill__refresh--loading :deep(svg) { animation: none; }
+  .drill__refresh--loading :deep(svg) {
+    animation: none;
+  }
 }
 </style>

@@ -41,8 +41,13 @@ const paragraphs = computed<Part[][]>(() =>
 .emphasized {
   margin: 0;
 
-  & + & { margin-top: var(--space-2); }
+  & + & {
+    margin-top: var(--space-2);
+  }
 
-  strong { font-weight: 600; color: token(--text-primary); }
+  strong {
+    font-weight: 600;
+    color: token(--text-primary);
+  }
 }
 </style>

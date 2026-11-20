@@ -74,9 +74,7 @@ export interface BackupError {
 }
 
 /** Was beim Einlesen herauskommt: entweder Daten oder ein Grund. */
-export type ParseResult =
-  | { ok: true; backup: Backup }
-  | { ok: false; error: BackupError }
+export type ParseResult = { ok: true; backup: Backup } | { ok: false; error: BackupError }
 
 /**
  * Baut den Inhalt der Backup-Datei.
@@ -128,7 +126,6 @@ export function backupFileName(portfolioName: string, exportedAt: string): strin
   const day = exportedAt.slice(0, 10)
   return `stockportfolio-${slug}-${day}.json`
 }
-
 
 /**
  * Liest und prüft den Inhalt einer Backup-Datei.
@@ -239,7 +236,8 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
   if (typeof value.id !== 'string' || value.id === '') return { key: 'noPortfolioId' }
   if (typeof value.name !== 'string') return { key: 'noPortfolioName' }
   if (!Array.isArray(value.positions)) return { key: 'noPositions' }
-  if (value.baseCurrency !== undefined && !isCurrency(value.baseCurrency)) return { key: 'invalidCurrency' }
+  if (value.baseCurrency !== undefined && !isCurrency(value.baseCurrency))
+    return { key: 'invalidCurrency' }
 
   let amountSettings: Portfolio['amountSettings']
   if (value.amountSettings !== undefined) {
@@ -270,7 +268,7 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
     id: value.id,
     name: value.name,
     ...(value.assetGroupVersion === 2 ? { assetGroupVersion: 2 as const } : {}),
-    baseCurrency: value.baseCurrency as string | undefined ?? 'EUR',
+    baseCurrency: (value.baseCurrency as string | undefined) ?? 'EUR',
     ...(amountSettings ? { amountSettings } : {}),
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
@@ -309,7 +307,8 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
   const at = index + 1
   if (!isRecord(value)) return { key: 'positionNotAnObject', params: { at } }
 
-  if (typeof value.id !== 'string' || value.id === '') return { key: 'positionNoId', params: { at } }
+  if (typeof value.id !== 'string' || value.id === '')
+    return { key: 'positionNoId', params: { at } }
   if (typeof value.symbol !== 'string' || value.symbol === '') {
     return { key: 'positionNoSymbol', params: { at } }
   }
@@ -351,6 +350,10 @@ function isFiniteNumber(value: unknown): value is number {
 
 /** Vorhandene Geldschwellen müssen vollständig und gültig sein. */
 function parseAmountSetting(value: unknown): AmountSetting | null {
-  return isRecord(value) && (value.mode === 'absolute' || value.mode === 'percent') && isFiniteNumber(value.value) && value.value >= 0
-    ? { mode: value.mode, value: value.value } : null
+  return isRecord(value) &&
+    (value.mode === 'absolute' || value.mode === 'percent') &&
+    isFiniteNumber(value.value) &&
+    value.value >= 0
+    ? { mode: value.mode, value: value.value }
+    : null
 }
