@@ -21,6 +21,8 @@ beschreibt der [Docker-Guide](../docker/README.md).
 ## Voraussetzungen
 
 - Node.js 22 und npm
+- Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
+  `make help` und `make setup` (macOS: `brew install bash`)
 - Python 3.11+ für den Teststack
 - pipx und der Starter `devtools`, einmal je Rechner; fehlt er, nennt
   `make setup` den Installationsbefehl

@@ -230,18 +230,22 @@ DOCKER_README_REF ?= master
 export PLATFORM STRICT DOCKER_README_REF
 
 # docker/build.sh braucht BashLib und dockerhub-readme aus .tools/; die Ziele holen sie nach.
+# BASH_LIBS aus dem Kopf ist leer, wenn $(TOOLS_STAMP) die Werkzeuge erst in diesem Lauf
+# installiert; darum liest das Rezept es dann aus .tools/.
+DOCKER_BUILD = BASH_LIBS="$${BASH_LIBS:-$$($(TOOLS_DIR)/bin/bashlib-path)}" ./docker/build.sh
+
 .PHONY: build push docker-images docker-samples
 build: $(TOOLS_STAMP) ## Image lokal gebaut (PLATFORM=x86|arm, Default x86)
-	@./docker/build.sh --build "$${PLATFORM}"
+	@$(DOCKER_BUILD) --build "$${PLATFORM}"
 
 push: $(TOOLS_STAMP) ## Geprüfter Build veröffentlicht, danach README (TARGET=dockerhub)
-	@./docker/build.sh --push
+	@$(DOCKER_BUILD) --push
 
 docker-images: $(TOOLS_STAMP) ## Lokale Images des Projekts anzeigen
-	@./docker/build.sh --images
+	@$(DOCKER_BUILD) --images
 
 docker-samples: $(TOOLS_STAMP) ## Beispiel-`docker run`-Kommandos zeigen
-	@./docker/build.sh --samples
+	@$(DOCKER_BUILD) --samples
 
 # ─── Versionierung ───────────────────────────────────────────────────────────
 
