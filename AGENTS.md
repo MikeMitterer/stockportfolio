@@ -258,9 +258,10 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
 `make hints` zeigt Links, URLs und Tipps, `make help` alle Ziele.
-`make setup` ist der einzige Einrichtungsweg; Prüfziele wie `make test`
-richten nichts selbst ein und nennen bei fehlender oder veralteter
-Einrichtung `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
+`make setup` ist der einzige Einrichtungsweg, auch für die Workspaces und
+den Prüf-Worktree der Abnahme (agent-lessons, Schlüssel `worktree_setup`);
+Prüfziele wie `make test` richten nichts selbst ein und nennen bei fehlender
+oder veralteter Einrichtung `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
 kommen in der Version aus `.dev-tools.conf.sh` nach `.tools/`, nicht als
 Links. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
