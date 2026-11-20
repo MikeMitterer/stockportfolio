@@ -159,6 +159,7 @@ describe('Zielsumme in der Fußzeile (T-97)', () => {
     [9, '99,0 %', '−1,0 % fehlen'],
     // Das Zielfeld nimmt zwei Nachkommastellen an; knapp neben 100 % muss die Abweichung lesbar bleiben.
     [10.04, '100,04 %', '+0,04 % zu viel'],
+    [10.02, '100,02 %', '+0,02 % zu viel'],
     [9.97, '99,97 %', '−0,03 % fehlen'],
   ])('zeigt probeweises Ziel %s als Summe %s mit „%s“', async (target, sum, deviation) => {
     const row = await renderPlan()
@@ -167,6 +168,20 @@ describe('Zielsumme in der Fußzeile (T-97)', () => {
     expect(cell.classes()).toContain('reb__flow--out')
     expect(cell.classes()).not.toContain('reb__flow--in')
     expect(document.body.textContent).toContain(`Die Ziele ergeben zusammen ${sum} statt 100 %`)
+  })
+
+  // Bis 0,01 Prozentpunkte gilt die Summe als ausgeglichen (T-97), auch mit mehr Stellen als das
+  // Zielfeld annimmt, etwa aus einem Backup-Import.
+  it.each([
+    [10.006, '100,01 %'],
+    [10.01, '100,01 %'],
+  ])('wertet Ziel %s (Summe %s) innerhalb der Toleranz als ausgeglichen', async (target, sum) => {
+    const row = await renderPlan()
+    const cell = await setAssetTarget(row, target)
+    expect(cell.text()).toBe(`${sum} Ziele ergeben 100 %`)
+    expect(cell.classes()).toContain('reb__flow--in')
+    expect(cell.classes()).not.toContain('reb__flow--out')
+    expect(document.body.textContent).not.toContain('Die Ziele ergeben zusammen')
   })
 
   it('beschriftet Summe und Abweichung auf Englisch', async () => {

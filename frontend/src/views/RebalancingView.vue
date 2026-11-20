@@ -96,8 +96,10 @@ const plan = computed(() => {
   )
 })
 
-/** Nachkommastellen eines Zielanteils: Eingabe, Anzeige und Toleranz der Zielsumme. */
+/** Nachkommastellen eines Zielanteils in Eingabe und Anzeige. */
 const TARGET_DIGITS = 2
+/** Abweichung der Zielsumme von 100 % in Prozentpunkten, die noch als ausgeglichen gilt (T-97). */
+const TARGET_SUM_TOLERANCE = 0.01
 
 const planHasEntries = computed(
   () => hasTrades(trades.value) || Object.keys(targets.value).length > 0,
@@ -115,9 +117,9 @@ const planHasEntries = computed(
 const targetSumState = computed<'balanced' | 'over' | 'under' | null>(() => {
   if (!hasHoldings.value || plan.value === null) return null
   const deviation = plan.value.targetSum - 100
-  // Halbe kleinste Eingabestufe: fängt Rundungsreste der Gleitkommasumme ab, aber keine echte
-  // Abweichung von 0,01 %.
-  if (Math.abs(deviation) < 0.5 * 10 ** -TARGET_DIGITS) return 'balanced'
+  // Vereinbarte Toleranz aus T-97; der kleine Zuschlag fängt Rundungsreste der Gleitkommasumme
+  // ab, damit etwa 90 % + 10,01 % noch als ausgeglichen gilt.
+  if (Math.abs(deviation) <= TARGET_SUM_TOLERANCE + 1e-9) return 'balanced'
   return deviation > 0 ? 'over' : 'under'
 })
 

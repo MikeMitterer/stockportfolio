@@ -99,6 +99,18 @@ function numbersIn(text, locale) {
 }
 
 /**
+ * Summe und Abweichung der Fußzeile, jede aus ihrer eigenen Zeile: Die zweite Zeile kann
+ * „Ziele ergeben 100 %“ lauten; ihre 100 darf nicht als Summe gelten.
+ */
+function footerNumbers(text, locale) {
+  const [sumLine = '', ...rest] = text.trim().split('\n')
+  return { sum: numbersIn(sumLine, locale)[0], deviation: numbersIn(rest.join(' '), locale)[0] }
+}
+
+/** Toleranz der Zielsumme aus T-97, mit Zuschlag für Rundungsreste wie in der App. */
+const targetSumTolerance = 0.01 + 1e-9
+
+/**
  * Hebt das erste Ziel probeweise um einen Prozentpunkt und prüft die
  * Fußzeile: Summe steigt um genau 1, Abweichung passt zur Summe, Zustand
  * „über 100 %“, und der Toast nennt dieselbe Summe.
@@ -107,13 +119,13 @@ async function verifyTargetSum(page, locale, expected) {
   const label = `${locale} · Zielsumme Fußzeile`
   const cell = page.locator('tfoot .reb__foot-target')
   await cell.waitFor({ timeout: 20000 })
-  const [before] = numbersIn(await cell.innerText(), locale)
+  const { sum: before } = footerNumbers(await cell.innerText(), locale)
   // Fehlt eine Zahl, wird jede Rechnung NaN und jeder Vergleich falsch; das wäre ein stilles OK.
   if (!Number.isFinite(before)) {
     failures.push(`${label}: keine Summe in „${await cell.innerText()}“`)
     return
   }
-  const startsBalanced = Math.abs(before - 100) < 0.005
+  const startsBalanced = Math.abs(before - 100) <= targetSumTolerance
   if (startsBalanced && !(await cell.innerText()).includes(expected.balanced)) {
     failures.push(`${label}: ausgeglichene Summe ohne „${expected.balanced}“`)
   }
@@ -126,12 +138,12 @@ async function verifyTargetSum(page, locale, expected) {
   await page.waitForFunction((previous) => document.querySelector('tfoot .reb__foot-target')?.textContent?.trim().split(/\s/)[0] !== previous,
     (await cell.innerText()).trim().split(/\s/)[0], { timeout: 5000 }).catch(() => {})
   const text = await cell.innerText()
-  const [after, deviation] = numbersIn(text, locale)
+  const { sum: after, deviation } = footerNumbers(text, locale)
   const classes = (await cell.getAttribute('class')) ?? ''
   if (!Number.isFinite(after)) failures.push(`${label}: keine Summe nach der Änderung in „${text}“`)
-  else if (after > 100.005 && !Number.isFinite(deviation)) failures.push(`${label}: keine Abweichung in „${text}“`)
+  else if (after - 100 > targetSumTolerance && !Number.isFinite(deviation)) failures.push(`${label}: keine Abweichung in „${text}“`)
   else if (Math.abs(after - before - 1) > 0.05) failures.push(`${label}: Summe ${before} → ${after}, erwartet +1`)
-  else if (after > 100.005) {
+  else if (after - 100 > targetSumTolerance) {
     if (Math.abs(deviation - (after - 100)) > 0.05) failures.push(`${label}: Abweichung ${deviation} passt nicht zur Summe ${after}`)
     if (!text.includes(expected.over)) failures.push(`${label}: „${expected.over}“ fehlt in „${text}“`)
     if (!classes.includes('reb__flow--out')) failures.push(`${label}: Zustand „über 100 %“ nicht markiert`)
