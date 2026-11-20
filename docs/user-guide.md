@@ -175,7 +175,9 @@ Spalte _± Stück_ nimmt die geplante Stückzahl auf.
 
 Der Plan bleibt stehen, wenn du zwischendurch eine andere Seite der App
 öffnest. Er gilt für das gewählte Depot; ein Depotwechsel, die Abmeldung,
-_Plan leeren_ oder ein Neuladen der Seite leeren ihn.
+_Plan leeren_ oder ein Neuladen der Seite leeren ihn. Änderst du inzwischen
+den Bestand einer Position, etwa im Dashboard, fällt ihr Eintrag aus dem
+Plan; die übrigen bleiben.
 
 Auf schmalen Bildschirmen verschwinden zuerst der Balken (unter 1280 px), dann
 der Simulationshinweis (unter 1160 px). Unter 890 px scrollen Zusammenfassung

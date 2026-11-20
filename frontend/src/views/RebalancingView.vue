@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
-import { computed, inject, onMounted, watch } from 'vue'
+import { computed, inject, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NIcon, NSpin, NTooltip } from 'naive-ui'
@@ -73,11 +73,10 @@ onMounted(async () => {
  * erst, wenn die Trades wirklich durch sind; das macht man dann selbst im
  * Dashboard. Bis dahin darf hier nichts am Bestand oder am Ziel hängen bleiben.
  * Der Plan liegt im Store, damit er einen Abstecher auf die Methodenseite
- * übersteht; er gehört zum gerade gewählten Depot.
+ * übersteht; Depotwechsel und Bestandsänderungen hält der Store selbst nach.
  */
 const draft = useTradePlanDraftStore()
 const { trades, targets } = storeToRefs(draft)
-watch(() => portfolioStore.portfolio?.id ?? null, (id) => draft.useFor(id), { immediate: true })
 
 const plan = computed(() => {
   const portfolio = portfolioStore.portfolio
@@ -113,7 +112,20 @@ const targetSumOff = computed(
   () => hasHoldings.value && plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
 )
 
-const { setTrade, setTarget, clear: clearPlan } = draft
+const { clear: clearPlan } = draft
+
+/** Bestand einer Position jetzt; der Plan merkt ihn sich beim ersten Eintrag. */
+function unitsOf(positionId: string): number {
+  return portfolioStore.portfolio?.positions.find((position) => position.id === positionId)?.units ?? 0
+}
+
+function setTrade(positionId: string, units: number): void {
+  draft.setTrade(positionId, units, unitsOf(positionId))
+}
+
+function setTarget(positionId: string, targetPercent: number): void {
+  draft.setTarget(positionId, targetPercent, unitsOf(positionId))
+}
 
 /**
  * Liquide Zeilen, die die offene Lücke schließen könnten.
