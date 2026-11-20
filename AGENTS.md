@@ -15,7 +15,7 @@ Fehler im falschen Repository.
 
 - [StockPortfolio hängt an StockInfo](#stockportfolio-hängt-an-stockinfo)
 - [Vor Arbeitsbeginn](#vor-arbeitsbeginn)
-- [Ein Arbeitsort: der Projekt-Root](#ein-arbeitsort-der-projekt-root)
+- [Arbeitsort und Integration folgen dem Board](#arbeitsort-und-integration-folgen-dem-board)
 - [Bezeichner sind englisch. Ausnahmslos.](#bezeichner-sind-englisch-ausnahmslos)
 - [Wächter-Tests prüfen das Muster, nicht die Fundstelle](#wächter-tests-prüfen-das-muster-nicht-die-fundstelle)
 - [Bauen und prüfen](#bauen-und-prüfen)
@@ -125,9 +125,8 @@ ist die Vorgabe aus `.env.example`.
 fachlichen Durchlauf `VERSION` prüfen; beim ersten Einstieg und nach einer
 Änderung `PACKAGE.md` und `PROJECT-RULES.md` (Arbeitsfreigabe, sensible
 Dateien, Ticketabschluss) lesen. Die Abschnitte dieser Datei und Mikes
-Entscheidungen haben Vorrang; insbesondere gilt unten die dauerhafte Freigabe
-für Merge **und Push** nach Ticketabschluss, die das Paket allein nicht
-erteilt. Fehlt das Paket, das melden; keine alte Regelkopie fortschreiben.
+Entscheidungen haben Vorrang. Fehlt das Paket, das melden; keine alte
+Regelkopie fortschreiben.
 
 **Board, Rollen und Ablauf verwaltet agent-lessons** (seit 2026-10-21).
 Das Board liegt auf dem Branch `board` und ist lokal unter `_tickets/`
@@ -158,42 +157,36 @@ Dateinamen und Produktnamen sind keine Rollenverteilung. Der Autor kann seine
 eigene Fassung nicht unabhängig abnehmen, und eine technische Freigabe ist noch
 kein Ticketabschluss.
 
-**Abgeschlossene Tickets sofort integrieren** (Mike, 2026-09-27): Sobald
-technische Freigabe und menschlicher Abschluss vorliegen, die zugehörigen
-Änderungen einschließlich Ticketabschluss committen, nach `master` mergen
-und zu `origin` pushen. Anschließend im Arbeitsverzeichnis wieder auf
-`master` wechseln und prüfen, dass `master` der aktive Branch ist und mit
-`origin/master` übereinstimmt. Mike hat diese Schritte dauerhaft autorisiert;
-eine weitere Rückfrage ist nicht nötig. Fremde uncommittete Änderungen
-bleiben außerhalb dieser Integration.
+Wie freigegebene und abgenommene Tickets integriert werden, regelt der
+Board-Workflow ([Arbeitsort und Integration folgen dem
+Board](#arbeitsort-und-integration-folgen-dem-board)).
 
 [↑ Übersicht](#übersicht)
 
-## Ein Arbeitsort: der Projekt-Root
+## Arbeitsort und Integration folgen dem Board
 
-**Alle Instanzen arbeiten ausschließlich im Projekt-Root
-`/Volumes/DevLocal/DevWeb/Production/StockPortfolio`** (Mike, 2026-10-01).
-Keine `git worktree add`, keine Kopien unter `/private/tmp` oder anderswo —
-außer Mike ordnet es ausdrücklich an. Grund: Mike muss Board und Quellstand
-jederzeit an einer Stelle sehen und von dort testen können.
+**Wo gearbeitet wird, auf welchem Branch und welcher Stand geprüft wird,
+legt der Board-Workflow von agent-lessons fest** (Mike, 2026-11-20, q-5:
+„Variante A“). Die wirksamen Einstellungen liefert `get_config`; diese Datei
+wiederholt keine Werte daraus.
 
-- **Ein Board.** `_tickets/` gibt es nur im Root. Board-Änderungen kommen auf
-  den gerade ausgecheckten Branch; es gibt keine STATUS-Kopien abzugleichen.
-- **Branch im Root.** Der Ticketbranch wird im Root ausgecheckt
-  (`git switch`). STATUS nennt ihn im Feld `branch`. Vor jedem Durchlauf
-  prüft jede Instanz `git branch --show-current` gegen dieses Feld; bei
-  Abweichung meldet sie den Konflikt und arbeitet nicht weiter.
-- **Nur der Owner schaltet den Branch.** Der Verifier prüft den im Root
-  ausgecheckten Übergabestand und wechselt den Branch nicht; ältere Fassungen
-  liest er mit `git show` und `git diff`.
-- **Früh integrieren.** Nach der technischen Freigabe wird der Ticketbranch
-  sofort nach `master` gemergt und der Root auf `master` zurückgestellt.
-  Mikes Abnahme findet auf `master` statt; Nacharbeit beginnt auf einem neuen
-  Branch von `master`. Ketten, die nur auf Seitenbranches existieren, entstehen
-  so nicht.
-- **Hilfsinstanzen nur aus dem Root,** mit den dokumentierten Ports, und nach
-  dem Lauf beenden. Der Teststack startet aus dem Root
-  ([Bauen und prüfen](#bauen-und-prüfen)).
+- **Arbeitsort und Branch je Rolle:** Der Coder (`implementer`) arbeitet in
+  dem Workspace, den `start_ticket` nennt, auf dem Ticketbranch, den es dort
+  auscheckt. Für den Reviewer stellt `next` Arbeitsort und Prüfstand her,
+  etwa den Übergabe-Commit in seinem Workspace. Ein eigenes
+  `git worktree add`, Kopien an anderer Stelle oder ein Branchwechsel von Hand
+  gehören nicht dazu.
+- **Abnahme:** Einen Prüf-Worktree richtet der Workflow bei Bedarf mit dem
+  Befehl aus `worktree_setup` ein; ob er einen schon grün geprüften Stand
+  übernimmt, entscheidet der Workflow.
+- **Integration und Push:** Wie gemergt, abgenommen und gepusht wird, folgt
+  aus den Stufen in `git.stages`; `get_config` zeigt die daraus abgeleiteten
+  wirksamen Werte `merge_after` und `push_after`. Darüber hinaus gibt es keine
+  dauerhafte Freigabe zum Push.
+- **Board:** `_tickets/` ist der Worktree des Branches `board`;
+  Board-Änderungen laufen über die Werkzeuge von agent-lessons.
+- **Hilfsinstanzen** wie den Teststack mit den dokumentierten Ports starten
+  und nach dem Lauf beenden ([Bauen und prüfen](#bauen-und-prüfen)).
 
 [↑ Übersicht](#übersicht)
 
