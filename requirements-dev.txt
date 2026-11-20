@@ -1,7 +1,9 @@
-# Python-Werkzeuge für die Entwicklung von StockPortfolio (make setup).
+# Gepinnte Python-Prüfwerkzeuge für make lint, format-check, security, audit
+# und quality (T-99); make setup installiert sie, sobald sich die Datei ändert.
 # Die App selbst braucht kein Python; das Image enthält diese Pakete nicht.
--e ./.libs/ProjectTools
-# Prüfwerkzeuge für make lint, format-check, security, audit und quality (T-99).
+# Das verlinkte ProjectTools-Paket installiert make setup getrennt davon.
 ruff==0.17.1
 bandit==1.9.4
 pip-audit==2.10.1
+# Untergrenze für die .venv selbst: ältere Fassungen haben PYSEC-2026-3447 (T-100).
+setuptools>=83

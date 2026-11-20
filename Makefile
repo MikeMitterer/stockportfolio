@@ -120,6 +120,7 @@ setup: ## Symlinks, Git-Hooks, Python-venv und npm-Abhängigkeiten einrichten
 	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
 	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
 	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
+	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -e ./.libs/ProjectTools
 	@$(MAKE) --no-print-directory $(PY_TOOLS)
 	@npm ci --prefix frontend --no-audit --no-fund
 	@npm ci --prefix api --no-audit --no-fund
@@ -225,7 +226,7 @@ quality: $(PY_TOOLS) ## Codequalität berichten: Komplexität, Dateigröße, dop
 	@$(VENV)/bin/ruff check $(PY_SOURCES) --select C90,SIM,PLR09,RET --output-format concise --exit-zero
 	@echo "$(THEME_COLOR_GROUP)Doppelter Code über TypeScript, Vue und Python (jscpd)$(RESET)"
 	@frontend/node_modules/.bin/jscpd --reporters console --min-tokens 70 \
-		frontend/src frontend/tests api/src api/tests scripts .agents/bin
+		frontend/src frontend/tests api/src api/tests scripts $(wildcard .agents/bin)
 
 .PHONY: docs-check
 docs-check: ## Nutzerdoku gegen das Projekt prüfen (Links, Befehle, verbotene Begriffe)

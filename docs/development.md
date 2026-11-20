@@ -39,8 +39,9 @@ make dev-up                # Vite auf :5175, Konto-API auf :8080
 ```
 
 `make setup` verlinkt die gemeinsamen Werkzeuge unter `.libs/`, legt
-StockPortfolios `.venv` mit Python 3.11+ an und installiert dort die
-Abhängigkeiten aus `requirements-dev.txt`. `PYTHON_BOOTSTRAP` wählt den
+StockPortfolios `.venv` mit Python 3.11+ an und installiert dort das
+verlinkte ProjectTools-Paket, wenn es fehlt, sowie die gepinnten
+Prüfwerkzeuge aus `requirements-dev.txt`, sobald sich die Datei ändert. `PYTHON_BOOTSTRAP` wählt den
 Interpreter, falls `python3.11` fehlt. Eine bestehende venv wird
 wiederverwendet; `make clean` behält sie.
 
