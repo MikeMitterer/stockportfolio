@@ -63,9 +63,15 @@ hier zur Schranke oder ihr Grund steht unter [Bewusste Ausnahmen](#bewusste-ausn
     Den StockInfo-Client holen sie über `inject(STOCK_INFO_CLIENT)`, den
     `auth/AuthRoot.vue` bereitstellt; Typen und Fehlerformen importieren sie
     aus `frontend/src/api/stockinfo/`.
-  - Die Konto-API (`frontend/src/api/account/`) rufen `auth/` und `views/UserAdminView.vue`
-    direkt auf; private Depotdaten gehen über `data/repository.ts`, das
-    `frontend/src/api/data/` kapselt und von den Stores genutzt wird.
+  - Die Konto-API (`frontend/src/api/account/`) rufen `auth/` und
+    `views/UserAdminView.vue` direkt auf.
+  - Private Depotdaten lesen und schreiben die Stores `instruments`,
+    `portfolio`, `settings` und `valueHistory` über `data/repository.ts`, das
+    den Client aus `frontend/src/api/data/` kapselt. Backup, Altbestands-Import
+    und Live-Abgleich (`stores/backup.ts`, `legacy.ts`, `liveSync.ts`) rufen
+    diesen Client direkt auf; `auth/` aktiviert ihn und öffnet den
+    Ereignisstrom, `App.vue` zeigt seine Fehler (Importsuche nach
+    `from '@/api/data/` und `from '@/data/repository'` in beide Richtungen).
   - `stores/` nutzen `api/`, `data/`, `db/` und `domain/`, aber keine Views
     oder Komponenten (0 Treffer für `from '@/(views|components)/'` unter
     `stores/`; dieselbe Suche findet unter `views/` 3 Dateien).
