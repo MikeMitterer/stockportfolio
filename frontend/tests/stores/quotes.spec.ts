@@ -377,13 +377,12 @@ describe('useQuotesStore — Fortschritt', () => {
 
   it('lässt den Knopf in Ruhe, wenn es gar nichts zu holen gibt', async () => {
     const store = useQuotesStore()
-    let seen = false
 
     // Nur Cash: `loadQuotes` bricht ab, bevor irgendein Abruf ergeht.
     await store.loadQuotes(mockClient(), [makePosition({ group: 'cash', isin: null })], {
       force: true,
     })
-    seen = store.forcing || store.busy
+    const seen = store.forcing || store.busy
 
     expect(seen).toBe(false)
   })
