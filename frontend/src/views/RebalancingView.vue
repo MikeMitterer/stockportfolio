@@ -100,17 +100,23 @@ const planHasEntries = computed(
   () => hasTrades(trades.value) || Object.keys(targets.value).length > 0,
 )
 
-/** Weichen die probeweisen Ziele in Summe von 100 % ab? */
 /**
- * Weichen die Ziele in Summe von 100 % ab?
+ * Lage der Zielsumme, auch probeweiser Ziele, zu 100 % — für Toast und
+ * Fußzeile aus derselben Quelle (T-97). Die Toleranz schluckt Rundungsreste
+ * der Eingabe.
  *
- * Nicht im leeren Depot: Dort ist die Summe naturgemäß 0, und eine Warnung
+ * `null` im leeren Depot: Dort ist die Summe naturgemäß 0, und eine Warnung
  * darüber wäre die erste Meldung, die ein neuer Nutzer zu sehen bekäme — für
  * einen Zustand, den er gar nicht herbeigeführt hat.
  */
-const targetSumOff = computed(
-  () => hasHoldings.value && plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
-)
+const targetSumState = computed<'balanced' | 'over' | 'under' | null>(() => {
+  if (!hasHoldings.value || plan.value === null) return null
+  const deviation = plan.value.targetSum - 100
+  if (Math.abs(deviation) <= 0.01) return 'balanced'
+  return deviation > 0 ? 'over' : 'under'
+})
+
+const targetSumOff = computed(() => targetSumState.value === 'over' || targetSumState.value === 'under')
 
 const { clear: clearPlan } = draft
 
@@ -637,9 +643,33 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
               <!-- Bilanz des Plans -->
               <tfoot>
                 <tr class="reb__foot">
-                  <td colspan="7" class="reb__foot-label">
+                  <td colspan="4" class="reb__foot-label">
                     {{ t('rebalancing.footerQuestion') }}
                   </td>
+                  <!--
+                  Unter „Ziel %“: Summe und Abweichung zweizeilig statt als
+                  Tooltip — beim Tippen in die Zielspalte soll die Antwort
+                  ohne Zeigen direkt darunter stehen, wie die Geldbilanz.
+                  -->
+                  <td
+                    class="reb__foot-value reb__foot-target tabular-nums"
+                    :class="{
+                      'reb__flow--in': targetSumState === 'balanced',
+                      'reb__flow--out': targetSumOff,
+                    }"
+                  >
+                    {{ percent(plan.targetSum) }}
+                    <span v-if="targetSumState" class="reb__foot-deviation">
+                      <template v-if="targetSumState === 'balanced'">{{ t('rebalancing.footerTargetsBalanced') }}</template>
+                      <template v-else-if="targetSumState === 'over'">
+                        {{ t('rebalancing.footerTargetsOver', { deviation: percentSigned(plan.targetSum - 100) }) }}
+                      </template>
+                      <template v-else>
+                        {{ t('rebalancing.footerTargetsUnder', { deviation: percentSigned(plan.targetSum - 100) }) }}
+                      </template>
+                    </span>
+                  </td>
+                  <td colspan="2"></td>
                   <td
                     class="reb__foot-value tabular-nums"
                     :class="
@@ -977,6 +1007,15 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     padding: var(--space-2);
     font-weight: 600;
     text-align: right;
+  }
+
+  &__foot-target { vertical-align: top; }
+
+  &__foot-deviation {
+    display: block;
+    font-size: var(--font-xs);
+    font-weight: 400;
+    white-space: nowrap;
   }
 
   &__foot-note {
