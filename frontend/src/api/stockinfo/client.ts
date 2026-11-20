@@ -172,6 +172,9 @@ export class StockInfoClient {
   }
 }
 
+/** Form einer StockInfo-Kennung: Kleinbuchstaben und Ziffern, mindestens ein Unterstrich. */
+const STOCKINFO_CODE = /^[a-z][a-z0-9]*(_[a-z0-9]+)+$/
+
 /** Katalogschlüssel des Satzes zu einer StockInfo-Kennung. */
 function reasonKey(code: string): string {
   return `errors.reason.${code}`
@@ -222,8 +225,10 @@ async function readErrorDetail(response: Response): Promise<string> {
     }
     if (body && typeof body === 'object' && 'detail' in body) {
       const detail = (body as { detail: unknown }).detail
-      // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`.
-      if (typeof detail === 'string' && isKnownStockInfoCode(detail)) return describeStockInfoCode(detail, undefined)
+      // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`. Auch eine
+      // unbekannte Kennung in dieser Form (Kleinbuchstaben mit Unterstrich, etwa
+      // maintenance_running) geht über den allgemeinen Satz, nie roh in die Oberfläche.
+      if (typeof detail === 'string' && STOCKINFO_CODE.test(detail)) return describeStockInfoCode(detail, undefined)
       // Ein Satz im alten Format bleibt lesbar; Objekte und Listen nie als JSON zeigen.
       if (typeof detail === 'string') return detail
     }

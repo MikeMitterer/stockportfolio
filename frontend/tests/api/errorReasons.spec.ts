@@ -94,6 +94,18 @@ describe('StockInfo-Fehlerkennungen', () => {
       .toBe('StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.')
   })
 
+  it('nennt eine unbekannte Kennung im detail eines 503 im allgemeinen Satz, nicht roh', async () => {
+    useLocale('de')
+    expect(await detailFor({ detail: 'maintenance_running' }, 503))
+      .toBe('StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: maintenance_running.')
+    useLocale('en')
+    expect(await detailFor({ detail: 'maintenance_running' }, 503))
+      .toBe('StockInfo reports an error that StockPortfolio does not know: maintenance_running.')
+    // Ein Satz im alten Format bleibt unverändert, auch ein einzelnes Wort.
+    expect(await detailFor({ detail: 'Not Found' }, 404)).toBe('Not Found')
+    expect(await detailFor({ detail: 'Vertragsartefakt nicht lesbar' }, 503)).toBe('Vertragsartefakt nicht lesbar')
+  })
+
   it.each([
     { detail: [{ loc: ['query', 'isin'], msg: 'field required' }] },
     { detail: { reason: 'x' } },
