@@ -18,7 +18,7 @@ import { baseCurrencyOf, isCurrency } from '@/domain/fx'
 import { upgradeAssetGroups } from '@/domain/assetGroup'
 import { translate } from '@/i18n'
 import type { FxRate } from '@/types/fx'
-import type { AmountSetting, Portfolio, Position } from '@/types/portfolio'
+import type { AmountSetting, Portfolio, Position, Settings } from '@/types/portfolio'
 
 /** Kopf-Daten eines Depots für die Verwaltungsliste. */
 export interface PortfolioSummary {
@@ -62,18 +62,41 @@ export const usePortfolioStore = defineStore('portfolio', () => {
    */
   async function load(preferredId?: string): Promise<void> {
     if ((await repository.count()) === 0) {
-      const fresh = emptyPortfolio()
-      await repository.save(fresh)
-      consola.info('portfolio: leeres Depot angelegt')
-      portfolio.value = fresh
-      loaded.value = true
-      await refreshList()
+      await createFirstPortfolio()
       return
     }
 
     const entries = await repository.findAll()
-    // Vorhandene Depots waren EUR; ihre bisherigen Geldschwellen direkt übernehmen.
     const settings = await createSettingsRepository().load()
+    await completeStoredEntries(entries, settings)
+    const selectedId = preferredId ?? portfolio.value?.id ?? settings?.activePortfolioId
+    portfolio.value = entries.find((entry) => entry.id === selectedId) ?? entries[0] ?? null
+    loaded.value = true
+    await refreshList()
+  }
+
+  /** Erststart: ein leeres Depot anlegen und öffnen. */
+  async function createFirstPortfolio(): Promise<void> {
+    const fresh = emptyPortfolio()
+    await repository.save(fresh)
+    consola.info('portfolio: leeres Depot angelegt')
+    portfolio.value = fresh
+    loaded.value = true
+    await refreshList()
+  }
+
+  /**
+   * Bringt gespeicherte Depots auf den aktuellen Stand und speichert nur die
+   * geänderten. Vorhandene Depots waren EUR; ihre bisherigen Geldschwellen
+   * werden direkt übernommen.
+   *
+   * @param entries  Gespeicherte Depots; werden an Ort und Stelle ersetzt.
+   * @param settings Gespeicherte Einstellungen mit den alten Geldschwellen.
+   */
+  async function completeStoredEntries(
+    entries: Portfolio[],
+    settings: Settings | null,
+  ): Promise<void> {
     for (const [index, previous] of entries.entries()) {
       const entry = upgradeAssetGroups(previous)
       entries[index] = entry
@@ -85,10 +108,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       }
       await repository.save(entry)
     }
-    const selectedId = preferredId ?? portfolio.value?.id ?? settings?.activePortfolioId
-    portfolio.value = entries.find((entry) => entry.id === selectedId) ?? entries[0] ?? null
-    loaded.value = true
-    await refreshList()
   }
 
   /** Übernimmt den Serverstand ohne die Erststart-Vorgabe erneut anzulegen. */
@@ -128,23 +147,16 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     )
   }
 
-  /** Bestände neu bewerten; nur gespeicherte Geldbeträge einmalig umrechnen. */
-  async function setBaseCurrency(id: string, currency: string, fx?: FxRate | null): Promise<void> {
-    if (!isCurrency(currency)) throw new Error(translate('fx.invalidCurrency'))
-    const entry = id === portfolio.value?.id ? portfolio.value : await repository.findById(id)
-    if (!entry || baseCurrencyOf(entry) === currency) return
-    const needsRate = hasCurrencyAmounts(entry)
-    if (
-      needsRate &&
-      (!fx ||
-        fx.base !== baseCurrencyOf(entry) ||
-        fx.quote !== currency ||
-        !Number.isFinite(fx.rate) ||
-        fx.rate <= 0)
-    ) {
-      throw new Error(translate('fx.changeUnavailable'))
-    }
-    const rate = needsRate ? fx!.rate : 1
+  /** Ist `fx` ein brauchbarer Kurs von `base` nach `quote`? */
+  function isRateFor(fx: FxRate | null | undefined, base: string, quote: string): boolean {
+    return !!fx && fx.base === base && fx.quote === quote && Number.isFinite(fx.rate) && fx.rate > 0
+  }
+
+  /**
+   * Depot in neuer Basiswährung: Bargeld und absolute Geldschwellen mit `rate`
+   * umgerechnet, alles andere unverändert.
+   */
+  function convertAmounts(entry: Portfolio, currency: string, rate: number): Portfolio {
     const convert = (value: number): number => {
       const result = value * rate
       if (!Number.isFinite(result)) throw new Error(translate('fx.changeUnavailable'))
@@ -154,7 +166,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       ...setting,
       value: setting.mode === 'absolute' ? convert(setting.value) : setting.value,
     })
-    const changed: Portfolio = {
+    return {
       ...entry,
       baseCurrency: currency,
       updatedAt: new Date().toISOString(),
@@ -170,6 +182,18 @@ export const usePortfolioStore = defineStore('portfolio', () => {
           }
         : {}),
     }
+  }
+
+  /** Bestände neu bewerten; nur gespeicherte Geldbeträge einmalig umrechnen. */
+  async function setBaseCurrency(id: string, currency: string, fx?: FxRate | null): Promise<void> {
+    if (!isCurrency(currency)) throw new Error(translate('fx.invalidCurrency'))
+    const entry = id === portfolio.value?.id ? portfolio.value : await repository.findById(id)
+    if (!entry || baseCurrencyOf(entry) === currency) return
+    const needsRate = hasCurrencyAmounts(entry)
+    if (needsRate && !isRateFor(fx, baseCurrencyOf(entry), currency)) {
+      throw new Error(translate('fx.changeUnavailable'))
+    }
+    const changed = convertAmounts(entry, currency, needsRate ? fx!.rate : 1)
     await repository.save(changed)
     if (id === portfolio.value?.id) portfolio.value = changed
     await refreshList()
