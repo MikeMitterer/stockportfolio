@@ -124,20 +124,29 @@ async function checkTradeTable(page, locale, expected) {
   if (!(await hint.evaluate((element) => element === document.activeElement))) {
     failures.push(`${label}: Hinweis zu den Bandkursen ist nicht fokussierbar`)
   }
-  await page.locator('body').click({ position: { x: 1, y: 1 } })
+  await closeHints(page)
 
   if (imageDir) await page.locator('.reb__table').screenshot({ path: resolve(imageDir, `trade-table-${locale}.png`) })
 
   // Schmalste Breite: Die Tabelle scrollt dort in ihrem Bereich; die Kurs-Spalte
   // kommt ins Bild, und auch hier bricht kein Bandkurs um.
   await page.setViewportSize(narrowViewport)
+  await closeHints(page)
   await hint.scrollIntoViewIfNeeded()
   if (!(await hint.isVisible())) failures.push(`${label}: Hinweis zu den Bandkursen in schmaler Breite nicht erreichbar`)
   await bands.first().scrollIntoViewIfNeeded()
   const wrappedNarrow = await countWrapped(bands)
   if (wrappedNarrow > 0) failures.push(`${label}: ${wrappedNarrow} Bandkurs-Zeilen brechen in schmaler Breite um`)
+  await closeHints(page)
   if (imageDir) await page.screenshot({ path: resolve(imageDir, `trade-table-${locale}-narrow.png`) })
   await page.setViewportSize(viewport)
+}
+
+/** Schließt offene Hinweise (Fokus und Maus weg), damit sie auf den Bildern nichts verdecken. */
+async function closeHints(page) {
+  await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur())
+  await page.mouse.move(0, 0)
+  await page.waitForFunction(() => !document.querySelector('.ux-hint__body'), null, { timeout: 5000 })
 }
 
 /** Zählt Bandkurs-Zeilen, deren untere und obere Grenze nicht auf einer Linie stehen. */
