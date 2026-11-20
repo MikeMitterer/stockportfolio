@@ -1,0 +1,13 @@
+/*
+ * Kachel für einen Detailwert: Rahmen und leicht angehobene Fläche, damit
+ * nebeneinanderliegende Werte als getrennte Einträge lesbar bleiben. Gemeinsam
+ * für die Zusatzinformationen und die Bewertung in den Positionsdetails (T-128).
+ */
+@use '@mmit/ux-foundation/styles/shared' as *;
+
+@mixin detail-tile {
+  padding: var(--space-2);
+  border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
+}

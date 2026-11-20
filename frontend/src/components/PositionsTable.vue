@@ -23,6 +23,7 @@ import {
   positionType,
 } from '@/domain/positionIdentity'
 import { integer, money, percent } from '@/domain/formatters'
+import { rowsByGroup } from '@/domain/positionGroups'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
 import { useHistoryStore, type HistorySeries } from '@/stores/history'
@@ -132,19 +133,8 @@ function toggleRow(id: RowKey): void {
 
 // ─── Gruppierung ────────────────────────────────────────────────────────────
 
-interface RenderedGroup {
-  group: GroupResult
-  rows: PositionResult[]
-}
-
-/** Nur Gruppen mit Positionen — leere Kopfzeilen wären Rauschen. */
-const renderedGroups = computed<RenderedGroup[]>(() =>
-  props.groups
-    .map((group) => ({
-      group,
-      rows: props.rows.filter((row) => row.position.group === group.group),
-    }))
-    .filter((entry) => entry.rows.length > 0),
+const renderedGroups = computed(() =>
+  rowsByGroup(props.groups, props.rows, (row) => row.position.group),
 )
 
 const COLLAPSED_KEY = 'stockportfolio.table.collapsedGroups'

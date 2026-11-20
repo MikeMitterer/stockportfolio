@@ -14,8 +14,8 @@ import TradeNotice from '@/components/TradeNotice.vue'
 import { resolveAmount } from '@/domain/amount'
 import { assetColor } from '@/domain/assetColors'
 import { decimalSigned, integer, percent, percentSigned } from '@/domain/formatters'
+import { rowsByGroup } from '@/domain/positionGroups'
 import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/positionIdentity'
-import type { GroupResult } from '@/domain/rebalancing'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import FxNotice from '@/components/FxNotice.vue'
 import { computeTradePlan, hasTrades } from '@/domain/tradePlan'
@@ -210,22 +210,11 @@ notify(
 
 // ─── Gliederung nach Assetklasse ────────────────────────────────────────────
 
-interface RenderedGroup {
-  group: GroupResult
-  rows: NonNullable<typeof plan.value>['rows']
-}
-
-const groupedRows = computed<RenderedGroup[]>(() => {
+const groupedRows = computed(() => {
   const currentPlan = plan.value
   const currentResult = result.value
   if (!currentPlan || !currentResult) return []
-
-  return currentResult.groups
-    .map((group) => ({
-      group,
-      rows: currentPlan.rows.filter((row) => row.current.position.group === group.group),
-    }))
-    .filter((entry) => entry.rows.length > 0)
+  return rowsByGroup(currentResult.groups, currentPlan.rows, (row) => row.current.position.group)
 })
 
 function bandColor(group: AssetGroup): string {
