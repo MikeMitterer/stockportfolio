@@ -243,15 +243,21 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ## Bauen und prüfen
 
 ```bash
+make setup      # npm-Pakete, .venv und Werkzeuge in .tools/ einrichten
 make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
 make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
 make test       # Frontend- und API-Tests, einmalig
-make clean      # generierte Dateien in Root, Frontend und API entfernen
+make clean      # erzeugte Dateien, .venv und .tools/ entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
-`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
+`make hints` zeigt Links, URLs und Tipps, `make help` alle Ziele.
+`make setup` ist der einzige Einrichtungsweg; Prüfziele wie `make test`
+richten nichts selbst ein und nennen bei fehlender oder veralteter
+Einrichtung `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
+kommen in der Version aus `.dev-tools.conf.sh` nach `.tools/`, nicht als
+Links. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
 stehen `make dev-up`, `make dev-down`, `make test` und
 `make clean`. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
@@ -263,9 +269,8 @@ Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
 temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
-das verlinkte ProjectTools-Paket aus `requirements-dev.txt`, wenn es fehlt.
-Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
-wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
+dort die Pakete aus `requirements-dev.txt`. Vor dem Anlegen prüft Setup die
+Python-Version; bestehende `.venv` werden wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
 Aus diesem Repository aufrufen:
 
@@ -276,7 +281,8 @@ Aus diesem Repository aufrufen:
 ```
 
 Der StockInfo-Kindprozess verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
-diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
+diese Umgebung nicht. `make clean` entfernt StockPortfolios `.venv`; danach
+legt `make setup` sie neu an.
 
 Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen
 diesen Stack mit `--demo-accounts`:
@@ -408,8 +414,8 @@ Kurzbeschreibung steht ein gut sichtbarer Link zum GitHub-Repository. Sie
 erklärt Start, Konfiguration, Browser-Daten, Backups und Updates;
 Entwicklungsdetails stehen im Projekt-README.
 
-Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Helfer
-`.libs/ProjectTools/src/bash/dockerhub-readme.sh` die Hub-Fassung: Pandoc
+Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Befehl
+`dockerhub-readme` (aus `.tools/`, `make setup`) die Hub-Fassung: Pandoc
 wandelt relative Links in absolute GitHub-Links um, das Ergebnis darf
 höchstens **25.000 UTF-8-Bytes** enthalten; absolute Bild- und Dokumentlinks
 zählen mit. `make push` schreibt zuerst die Vorschau
@@ -417,7 +423,7 @@ zählen mit. `make push` schreibt zuerst die Vorschau
 nach Docker Hub. Die Vorschau ist ein Erzeugnis und wird nie von Hand
 bearbeitet. Nach Änderungen an `docker/README.md` die Vorschau neu erzeugen
 und prüfen:
-`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master`.
+`.tools/bin/dockerhub-readme --readme docker/README.md --preview --ref master`.
 Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. Die Grenze
 gilt für die Hub-Beschreibung, nicht für das Projekt-README.
 `DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.

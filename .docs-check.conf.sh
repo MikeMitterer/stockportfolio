@@ -90,8 +90,8 @@ MAX_ALERTS=2
 
 # ─── Variablen zwischen Doku und Code ──────────────────────────────────────────
 
-# Variablen, die die Doku nennt, die aber nur in MakeLib unter .libs/ stehen
-# (von git ignoriert), oder allgemeine Standards sind.
+# Variablen, die die Doku nennt, die aber nicht im Code des Projekts stehen,
+# etwa allgemeine Standards.
 KNOWN_VARIABLES=(
 )
 
@@ -179,9 +179,9 @@ REQUIRED=(
 # (Tippfehler im README, Codeänderung ohne sichtbare Folge), die Meldung aus
 # SCREENSHOTS, DEPENDS oder DEPENDS_HINT nach dem Prüfen quittieren:
 #
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images   # ganzer Ordner
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack               # alle offenen
+#   .tools/bin/docs-check --ack docs/images/dashboard.png
+#   .tools/bin/docs-check --ack docs/images   # ganzer Ordner
+#   .tools/bin/docs-check --ack               # alle offenen
 #
 # Das schreibt je Paar den letzten Commit der Basis nach .docs-check.ack; die
 # Datei mitcommitten. Die Quittung gilt, bis die Basis einen neueren Commit
