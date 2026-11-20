@@ -22,7 +22,7 @@ from types import FrameType
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from cli_theme import print_message
+from terminal_style import print_message
 from test_state import OwnedStateFile
 
 API_PORT = 8080

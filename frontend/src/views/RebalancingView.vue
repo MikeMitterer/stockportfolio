@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NIcon, NSpin, NTooltip } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
@@ -17,13 +18,9 @@ import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/pos
 import type { GroupResult } from '@/domain/rebalancing'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import FxNotice from '@/components/FxNotice.vue'
-import {
-  computeTradePlan,
-  hasTrades,
-  type TargetMap,
-  type TradeMap,
-} from '@/domain/tradePlan'
+import { computeTradePlan, hasTrades } from '@/domain/tradePlan'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { useTradePlanDraftStore } from '@/stores/tradePlanDraft'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
 import { useApiStatusStore } from '@/stores/apiStatus'
@@ -69,16 +66,17 @@ onMounted(async () => {
 
 // ─── Der Plan ───────────────────────────────────────────────────────────────
 
-const trades = ref<TradeMap>({})
-
 /**
- * Probeweise Ziele — leben nur in diesem Tab.
+ * Geplante Stückzahlen und probeweise Ziele — leben nur in diesem Tab.
  *
  * Das Rebalancing ist eine Simulation. Ins Depot wandert eine Zieländerung
  * erst, wenn die Trades wirklich durch sind; das macht man dann selbst im
  * Dashboard. Bis dahin darf hier nichts am Bestand oder am Ziel hängen bleiben.
+ * Der Plan liegt im Store, damit er einen Abstecher auf die Methodenseite
+ * übersteht; Depotwechsel und Bestandsänderungen hält der Store selbst nach.
  */
-const targets = ref<TargetMap>({})
+const draft = useTradePlanDraftStore()
+const { trades, targets } = storeToRefs(draft)
 
 const plan = computed(() => {
   const portfolio = portfolioStore.portfolio
@@ -114,17 +112,19 @@ const targetSumOff = computed(
   () => hasHoldings.value && plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
 )
 
+const { clear: clearPlan } = draft
+
+/** Bestand einer Position jetzt; der Plan merkt ihn sich beim ersten Eintrag. */
+function unitsOf(positionId: string): number {
+  return portfolioStore.portfolio?.positions.find((position) => position.id === positionId)?.units ?? 0
+}
+
 function setTrade(positionId: string, units: number): void {
-  trades.value = { ...trades.value, [positionId]: units }
+  draft.setTrade(positionId, units, unitsOf(positionId))
 }
 
 function setTarget(positionId: string, targetPercent: number): void {
-  targets.value = { ...targets.value, [positionId]: targetPercent }
-}
-
-function clearPlan(): void {
-  trades.value = {}
-  targets.value = {}
+  draft.setTarget(positionId, targetPercent, unitsOf(positionId))
 }
 
 /**
@@ -213,6 +213,11 @@ function bandColor(group: AssetGroup): string {
 /** Prozentpunkte: Ziel 10 %, danach 9,5 % ergibt −0,5. Einheit im Spaltenkopf. */
 function deviationLabel(row: NonNullable<typeof plan.value>['rows'][number]): string {
   return decimalSigned(row.deviationAfter)
+}
+
+/** Bandkurs in der Formatierung der Kursspalte; ohne Kurs an der Grenze „—“. */
+function bandPriceLabel(price: number | null): string {
+  return price === null ? '—' : formatMoneyCents(price)
 }
 
 /** Kurs je Stück — für die Anzeige in der Zeile. */
@@ -368,7 +373,13 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                 <tr class="reb__head">
                   <th class="reb__th reb__th--left reb__th--wide">{{ t('table.position') }}</th>
                   <th class="reb__th">{{ t('table.units') }}</th>
-                  <th class="reb__th">{{ t('table.price') }}</th>
+                  <th class="reb__th">
+                    <!-- Erklärt die Bandkurse unter jedem Kurs; fokussierbar und per Tap erreichbar. -->
+                    <span class="reb__status-head">
+                      {{ t('table.price') }}
+                      <InfoHint :text="t('rebalancing.bandPriceTooltip')" anchor="bands" settings-tab="calc" />
+                    </span>
+                  </th>
                   <th class="reb__th">{{ t('table.actualPercent') }}</th>
                   <th class="reb__th">{{ t('table.targetPercent') }}</th>
                   <th class="reb__th">
@@ -384,7 +395,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                       </div>
                     </NTooltip>
                   </th>
-                  <th class="reb__th reb__th--w32">
+                  <th class="reb__th reb__th--w24">
                     <NTooltip trigger="hover">
                       <template #trigger>
                         <span class="reb__hinted">{{ t('rebalancing.columns.trade') }}</span>
@@ -393,7 +404,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     </NTooltip>
                   </th>
                   <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
-                  <th class="reb__th reb__th--left reb__th--w56 reb__band-column">
+                  <th class="reb__th reb__th--left reb__th--w38 reb__band-column">
                     <NTooltip trigger="hover">
                       <template #trigger>
                         <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
@@ -465,6 +476,25 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
                     <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
                       {{ priceOf(row) !== null ? formatMoneyCents(priceOf(row)!) : '—' }}
+                      <!--
+                      Bandkurse unter dem Kurs: Wo stehe ich im Korridor, ohne
+                      Blicksprung. Rot ist nur eine Grenze, die der Anteil nach dem
+                      Plan tatsächlich verlassen hat; die Erklärung steht im Spaltenkopf.
+                    -->
+                      <div v-if="priceOf(row) !== null" class="reb__band-prices">
+                        <span
+                          class="reb__band-price"
+                          :class="{ 'reb__band-price--out': row.bandBreachAfter === 'lower' }"
+                        >
+                          {{ t('rebalancing.bandPriceLower', { price: bandPriceLabel(row.lowerBandPrice) }) }}
+                        </span>
+                        <span
+                          class="reb__band-price"
+                          :class="{ 'reb__band-price--out': row.bandBreachAfter === 'upper' }"
+                        >
+                          {{ t('rebalancing.bandPriceUpper', { price: bandPriceLabel(row.upperBandPrice) }) }}
+                        </span>
+                      </div>
                     </td>
 
                     <td class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums">
@@ -783,6 +813,23 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     @include muted(0.6875rem);
   }
 
+  &__band-prices {
+    margin-top: var(--space-1);
+    white-space: nowrap;
+    @include muted(0.6875rem);
+  }
+
+  &__band-price {
+    // Trenner zwischen unterer und oberer Grenze: „↓ 241,20 · ↑ 290,10“.
+    & + &::before {
+      content: '·';
+      margin: 0 0.3em;
+      color: token(--text-muted);
+    }
+
+    &--out { color: token(--status-out); }
+  }
+
   &__band-column {
     @include below(xl) { display: none; }
   }
@@ -815,9 +862,10 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     &--left { text-align: left; }
     &--center { text-align: center; }
     &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
+    &--w24 { width: 6rem; }
     &--w28 { width: 7rem; }
     &--w32 { width: 8rem; }
-    &--w56 { width: 14rem; }
+    &--w38 { width: 9.5rem; }
   }
 
   &__status-head {

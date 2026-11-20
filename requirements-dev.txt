@@ -1,7 +1,13 @@
-# Gepinnte Python-Prüfwerkzeuge für make lint, format-check, security, audit
-# und quality (T-99); make setup installiert sie, sobald sich die Datei ändert.
+# Python-Pakete der .venv für die Entwicklung von StockPortfolio (make setup).
 # Die App selbst braucht kein Python; das Image enthält diese Pakete nicht.
-# Das verlinkte ProjectTools-Paket installiert make setup getrennt davon.
+# ProjectTools kommt als Befehl über .dev-tools.conf.sh nach .tools/, nicht hierher.
+# Git-Quellen installiert make setup über devtools exec; auf dem Entwicklungsrechner
+# ersetzt dessen rechnerlokale Zuordnung GitHub durch das lokale Repo.
+#
+# Farben, Abstände und argparse-Hilfe der Teststack-Skripte (scripts/terminal_style.py).
+mmit-clitheme @ git+https://github.com/MikeMitterer/python-clitheme.git@v0.12.0+261119.1304.0816b
+#
+# Gepinnte Prüfwerkzeuge für make lint, format-check, security, audit und quality (T-99).
 ruff==0.17.1
 bandit==1.9.4
 pip-audit==2.10.1

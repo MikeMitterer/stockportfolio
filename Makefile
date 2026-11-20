@@ -2,160 +2,223 @@ SHELL := bash
 
 .DEFAULT_GOAL := help
 
-WORKSPACE    := $(realpath $(shell pwd))
-PROJECT_NAME := $(notdir $(WORKSPACE))
+# MSG (Nachricht für tag-*) unausgewertet übernehmen, vor dem ersten $(shell …): Make exportiert
+# eine Variable von der Kommandozeile an jedes $(shell …) und wertet sie dabei aus; aus „$HOME“
+# würde „OME“, und ein $(shell …) in der Nachricht liefe schon beim Einlesen. Im Rezept steht MSG
+# nur als "$${MSG:-}".
+override MSG := $(value MSG)
+export MSG
 
-BASH_LIBS ?= $(WORKSPACE)/.libs/BashLib/src
-PROJECT_TOOLS ?= $(WORKSPACE)/.libs/ProjectTools/src
-PYTHON ?= python3
-PYTHON_BOOTSTRAP ?= python3.11
-VENV := .venv
-# Stempel: Die gepinnten Python-Werkzeuge aus requirements-dev.txt sind installiert.
-PY_TOOLS := $(VENV)/.dev-installed
-DEV_MAKE ?= $(WORKSPACE)/.libs/MakeLib
-export BASH_LIBS PROJECT_TOOLS
+WORKSPACE    := $(CURDIR)
+WORKSPACE_SQ := '$(subst ','\'',$(WORKSPACE))'
+PROJECT_NAME := $(shell basename -- $(WORKSPACE_SQ))
+# Werte von außen (Pfad, Umgebung) nur über die Umgebung in Rezepte geben, nie als $(VAR).
+export WORKSPACE WORKSPACE_SQ PROJECT_NAME
 
+# Prüfungen, Status und Releases laufen über die Befehle von ProjectTools in .tools/ dieses
+# Checkouts (make setup). Tag und Quelle der Werkzeuge und von DevTools selbst stehen nur in
+# .dev-tools.conf.sh. Aufgerufen wird das einmal je Rechner installierte devtools (Starter);
+# ist es älter als DEVTOOLS_TAG, gibt es an diesen Tag weiter. Mit --project installiert und
+# prüft es die Werkzeuge in .tools/.
+include .dev-tools.conf.sh
+export DEVTOOLS_SOURCE DEVTOOLS_TAG
+# Ohne die Git-Variablen eines Hooks (make docs-check im pre-commit): Ein älterer Starter gäbe
+# sie an pipx weiter, und pip klonte in den Index dieses Repositorys.
+DEV_TOOLS := env -u GIT_INDEX_FILE -u GIT_DIR -u GIT_WORK_TREE devtools --project
+# Bricht ab, wenn der Starter fehlt, und nennt den Weg dorthin. Solange die Werkzeuge nicht
+# veröffentlicht sind, kommt er aus der lokalen DevTools-Arbeitskopie (Mike, 2026-11-20). Im
+# Rezept vor jedem Aufruf von devtools: @$(REQUIRE_STARTER); …
+REQUIRE_STARTER = command -v devtools >/dev/null || { \
+	echo "  ✗ devtools fehlt: einmal je Rechner in der DevTools-Arbeitskopie make install" >&2; exit 1; }
+
+# Die Konto-API liest .env selbst (npm run dev); das Makefile braucht daraus nur die Adresse
+# für info und hints.
 -include .env
+export STOCKINFO_API_URL
 
--include ${DEV_MAKE}/colours.mk
--include ${DEV_MAKE}/tools.mk
+# Werkzeuge aus .tools/ dieses Checkouts vorn im PATH; ein global installiertes ProjectTools
+# zählt nicht. BashLib für help, info, hints, version, tags und docker/build.sh: Ein von außen
+# gesetztes BASH_LIBS geht vor, sonst die aus .tools/.
+TOOLS_DIR := .tools
+export PATH := $(WORKSPACE)/$(TOOLS_DIR)/bin:$(PATH)
+ifndef BASH_LIBS
+BASH_LIBS := $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/bashlib-path 2>/dev/null)
+BASHLIB_FROM_TOOLS := $(if $(BASH_LIBS),yes)
+endif
+export BASH_LIBS
 
-# Fallback-Farben wenn DEV_MAKE nicht gesetzt ist (z.B. im CI-Container)
-YELLOW ?= $(shell printf "\033[38;5;11m")
-GREEN  ?= $(shell printf "\033[38;5;10m")
-BLUE   ?= $(shell printf "\033[38;5;33m")
-ORANGE ?= $(shell printf "\033[38;5;208m")
-RED    ?= $(shell printf "\033[38;5;196m")
-WHITE  ?= $(shell printf "\033[38;5;15m")
-RESET  ?= $(shell printf "\033[0m")
-NC     ?= $(shell printf "\033[0m")
-THEME_COLOR_GROUP   ?= $(YELLOW)
-THEME_COLOR_TARGET  ?= $(BLUE)
-THEME_COLOR_DESC    ?= $(GREEN)
-THEME_COLOR_SERVER  ?= $(ORANGE)
-THEME_COLOR_DANGER  ?= $(RED)
-THEME_INDENT_GROUP  ?= $(shell printf '%2s' '')
-THEME_INDENT_TARGET ?= $(shell printf '%7s' '')
-THEME_WIDTH_TARGET ?= 22
-THEME_COLUMN_GAP ?= 1
-THEME_GROUP_SPACING ?= 1
+# Python für den Teststack unter scripts/; von außen überschreibbar, darum in Rezepten nur als
+# "$${PYTHON_BOOTSTRAP}".
+PYTHON_BOOTSTRAP ?= python3.11
+export PYTHON_BOOTSTRAP
+VENV := .venv
+PYTHON := $(VENV)/bin/python
 
-export
+# Was setup herstellt und require-setup prüft: npm-Pakete beider Teilprojekte, die .venv und
+# die Werkzeuge in .tools/. Jeder Stempel entsteht neu, sobald seine Quelldatei neuer ist.
+TOOLS_STAMP := $(TOOLS_DIR)/.installed
+SETUP_STAMPS := frontend/node_modules/.installed api/node_modules/.installed \
+	$(VENV)/.installed $(TOOLS_STAMP)
+
+# Ports des Dev-Stacks aus derselben Config wie dev-ports; nur Ziffern, darum als Make-Wert.
+DEV_PORTS := $(shell source .dev-ports.conf.sh && echo "$${PORTS[@]}")
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
 
+# help, info und hints geben über BashLib make.lib.sh aus, geladen über BASH_ENV in jede
+# Rezeptzeile; eine Rezeptzeile ergibt eine Ausgabezeile. Bash wertet BASH_ENV aus: darum der
+# Verweis auf BASH_LIBS statt des Pfads, ein $(…) im Checkout-Pfad bleibt Text.
+help info hints: export BASH_ENV := $${BASH_LIBS}/make.lib.sh
+
+# Eine Beschreibung sagt, was nach dem Ziel anders ist; den Ablauf beschreibt docs/development.md.
+# showMakeTargets füllt {major}, {minor} und {patch} aus der Version im Arbeitsverzeichnis; sie
+# steht in frontend/package.json, darum läuft es dort. Targets stehen nur in diesem Makefile.
 .PHONY: help
-help: ## Alle verfügbaren Befehle anzeigen
-	@echo
-	@echo "Please use \`make <$(THEME_COLOR_GROUP)target$(RESET)>' where <target> is one of"
-	@echo
-	@echo "Project: $(THEME_COLOR_GROUP)$(PROJECT_NAME)$(RESET)"
-	@echo
-	@grep -hE '^(##@|[a-zA-Z0-9_-]+:.*?##[RD]? )' $(MAKEFILE_LIST) | \
-	  awk 'function row(label, description, color) { \
-	      printf "$(THEME_INDENT_TARGET)%s%s$(RESET)", color, label; \
-	      padding = $(THEME_WIDTH_TARGET) - length(label) + $(THEME_COLUMN_GAP); \
-	      if (length(label) > $(THEME_WIDTH_TARGET)) { printf "\n$(THEME_INDENT_TARGET)"; padding = $(THEME_WIDTH_TARGET) + $(THEME_COLUMN_GAP) }; \
-	      printf "%*s$(THEME_COLOR_DESC)%s$(RESET)\n", padding, "", description \
-	    }; BEGIN {FS = ":.*##[RD]? "}; \
-	    /^##@/ { for (i=0; i<$(THEME_GROUP_SPACING); i++) printf "\n"; heading=substr($$0, 4); sub(/^[[:space:]]+/, "", heading); printf "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)%s$(RESET)\n", heading; next }; \
-	    /##D /  { row($$1, $$2, "$(THEME_COLOR_DANGER)"); next }; \
-	    /##R /  { row($$1, $$2, "$(THEME_COLOR_SERVER)"); next }; \
-	    /## /   { row($$1, $$2, "$(THEME_COLOR_TARGET)") }'
-	@echo
-	@echo "  $(THEME_COLOR_TARGET)■$(RESET) lokal   $(THEME_COLOR_SERVER)■$(RESET) SSH → Server, schreibend   $(THEME_COLOR_DANGER)■$(RESET) SSH → Server, destruktiv"
-	@echo
+help: ## Verfügbare Befehle anzeigen
+	@showMakeHeader "$${PROJECT_NAME}"
+	@cd frontend && showMakeTargets "$${WORKSPACE}/Makefile"
 
 .PHONY: info
-info: ## Umgebungsvariablen anzeigen
+info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
 	@echo
-	@echo "    $(YELLOW)PROJECT_NAME$(RESET) = $(BLUE)$(PROJECT_NAME)$(RESET)"
-	@echo "    $(YELLOW)WORKSPACE$(RESET)    = $(BLUE)$(WORKSPACE)$(RESET)"
-	@echo "    $(YELLOW)DEV_MAKE$(RESET)     = $(BLUE)$${DEV_MAKE:-<nicht gesetzt>}$(RESET)"
-	@echo "    $(YELLOW)BASH_LIBS$(RESET)    = $(BLUE)$${BASH_LIBS:-<nicht gesetzt>}$(RESET)"
-	@echo "    $(YELLOW)STOCKINFO_API_URL$(RESET) = $(BLUE)$${STOCKINFO_API_URL:-<nicht gesetzt>}$(RESET)"
-	@echo
-	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
-	  "PLATFORM" "$(PLATFORM)"   "# build: x86 | arm"
-	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
-	  "STRICT"   "$(STRICT)"     "# 1 = auch abbrechen, wenn Commits nach dem Tag liegen"
-	@printf "    $(YELLOW)%-12s$(RESET) = $(BLUE)%-10s$(RESET) $(WHITE)%s$(RESET)\n" \
-	  "TARGET"   "$${TARGET:-dockerhub}" "# push: dockerhub | ghcr | ecr"
+	@printMakeValue WORKSPACE         "$${WORKSPACE}"
+	@printMakeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
+	@printMakeValue PYTHON_BOOTSTRAP  "$${PYTHON_BOOTSTRAP}"
+	@printMakeValue STOCKINFO_API_URL "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
+	@printMakeValue PLATFORM          "$${PLATFORM}  (build: x86 | arm)"
+	@printMakeValue TARGET            "$${TARGET:-dockerhub}  (push: dockerhub | ghcr | ecr)"
+	@printMakeHeading "Werkzeuge (.dev-tools.conf.sh)"
+	@# devtools rückt um zwei Zeichen ein; fünf mehr stellen die Zeilen unter die Werte oben.
+	@$(REQUIRE_STARTER); set -o pipefail; $(DEV_TOOLS) status 2>/dev/null | sed 's/^/     /' || echo "       Werkzeugstand nicht abrufbar: make setup"
 	@echo
 
+# Repo-Adresse (origin als https) und letzter Release-Tag aus repo-info (ProjectTools); die
+# Ausgabe enthält nur erlaubte Zeichen, auch der Ersatz ohne Remote oder Tag. repo-info läuft
+# erst, wenn hints einen Wert braucht, und je Wert nur einmal (eval mit :=).
+NO_REPO_INFO := repo-info fehlt (make setup)
+REPO_URL     = $(eval REPO_URL := $(or $(shell repo-info --url 2>/dev/null),$(NO_REPO_INFO)))$(REPO_URL)
+RELEASE_TAG  = $(eval RELEASE_TAG := $(or $(shell repo-info --release-tag 2>/dev/null),$(NO_REPO_INFO)))$(RELEASE_TAG)
+# Links, URLs und Tipps für den Alltag; das Einrichten beschreibt docs/development.md.
 .PHONY: hints
-hints: ## Nützliche Links und Hinweise anzeigen
-	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
-	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)URLs$(RESET)"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Dev-Server" ""   "http://localhost:5175"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "StockInfo API" "" "https://stockinfo.int.mikemitterer.at/docs"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Docker Hub" ""   "https://hub.docker.com/r/mangolila/stockportfolio"
-	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
-	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Setup$(RESET)"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "1. Setup" ""  "make setup"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "2. Env" ""       "cp .env.example .env"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "3. Start" ""     "make dev-up; später make dev-down"
-	@for ((i=0; i<$(THEME_GROUP_SPACING); i++)); do echo; done
-	@echo "$(THEME_INDENT_GROUP)$(THEME_COLOR_GROUP)Docker$(RESET)"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Server (x86)" ""  "make build                  # nur bauen, danach prüfen"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Lokal auf M1" ""  "make build PLATFORM=arm     # lokaler ARM-Test"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Veröffentlichen" "" "make push               # geprüftes Image + README"
-	@printf "$(THEME_INDENT_TARGET)$(THEME_COLOR_TARGET)%-$(THEME_WIDTH_TARGET)s$(RESET)%$(THEME_COLUMN_GAP)s$(THEME_COLOR_DESC)%s$(RESET)\n" "Push-Ziel" ""     "make push TARGET=ghcr"
+hints: ## Links, URLs und Tipps für die tägliche Arbeit
+	@printMakeHeading "Links"
+	@printMakeValue   "Repository"        '$(REPO_URL)'
+	@printMakeValue   "Letzter Release"   '$(RELEASE_TAG)'
+	@printMakeValue   "Docker Hub"        "https://hub.docker.com/r/mangolila/stockportfolio"
+	@printMakeValue   "StockInfo"         "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
+	@printMakeHeading "URLs (nach make dev-up)"
+	@printMakeValue   "App"               "http://localhost:$(word 1,$(DEV_PORTS))"
+	@printMakeValue   "Konto-API"         "http://localhost:$(word 2,$(DEV_PORTS))"
+	@printMakeHeading "Im Alltag"
+	@printMakeValue   "Vor dem Commit"    "make test"
+	@printMakeValue   "Stack hängt"       "make dev-down; danach make dev-up"
+	@printMakeValue   "Teststack"         ".venv/bin/python scripts/stockinfo-test-server.py --stack --run"
+	@printMakeValue   "Image für ARM"     "make build PLATFORM=arm"
+	@printMakeValue   "Anderes Push-Ziel" "make push TARGET=ghcr"
 	@echo
 
 # ─── Precheck ────────────────────────────────────────────────────────────────
 
+# Ohne `##`: läuft vor version, tags, require-tools und require-setup. Verlangt BashLib, aus
+# .tools/ in der Mindestversion aus .dev-tools.conf.sh; ein von außen gesetztes BASH_LIBS prüft
+# es nur auf Lesbarkeit. Bewusst ohne BashLib-Ausgabe: precheck meldet gerade, dass sie fehlt.
 .PHONY: precheck
-precheck: ## Benötigte Bibliotheksdateien prüfen
-	@test -r "$(BASH_LIBS)/version.lib.sh" || { echo "BashLib fehlt: make setup ausführen."; exit 1; }
+precheck:
+	@if [[ ! -r "$${BASH_LIBS:-}/version.lib.sh" ]]; then \
+		echo "  ✗ BashLib fehlt (BASH_LIBS oder .tools/): make setup" >&2; \
+		exit 1; \
+	elif [[ -n '$(BASHLIB_FROM_TOOLS)' ]]; then $(REQUIRE_STARTER); $(DEV_TOOLS) check bashlib; fi
+
+# Ohne `##`: verlangt ProjectTools in .tools/ in Mindestversion; devtools nennt sonst den Grund.
+.PHONY: require-tools
+require-tools: precheck
+	@$(REQUIRE_STARTER); $(DEV_TOOLS) check projecttools
 
 # ─── Setup ───────────────────────────────────────────────────────────────────
 
 ##@ Setup
 
-.PHONY: setup
-setup: ## Symlinks, Git-Hooks, Python-venv und npm-Abhängigkeiten einrichten
-	@./scripts/setup-libs.sh --install
-	@git config core.hooksPath .githooks
-	@$(PYTHON_BOOTSTRAP) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
-	@test -x .venv/bin/python || $(PYTHON_BOOTSTRAP) -m venv .venv
-	@./.venv/bin/python -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
-	@./.venv/bin/python -c 'from importlib.metadata import version; version("mmit-projecttools"); import projecttools.ui.colors' >/dev/null 2>&1 || ./.venv/bin/python -m pip install -e ./.libs/ProjectTools
-	@$(MAKE) --no-print-directory $(PY_TOOLS)
-	@npm ci --prefix frontend --no-audit --no-fund
-	@npm ci --prefix api --no-audit --no-fund
+# setup ist der einzige Weg, einen Checkout einzurichten, auch als worktree_setup im
+# Prüf-Worktree. Prüfziele richten nichts selbst ein, sie hängen an require-setup.
+.PHONY: setup require-setup
+setup: ## Bereit zum Entwickeln: npm-Pakete, .venv, Werkzeuge in .tools/
+	@git config core.hooksPath .githooks   # pre-commit: make docs-check
+	@$(MAKE) -s --no-print-directory $(SETUP_STAMPS)
+
+# Stempelregeln: nur setup und build erreichen sie; neu, sobald die Lock- bzw. Config-Datei
+# neuer ist.
+%/node_modules/.installed: %/package-lock.json
+	@npm ci --prefix "$*" --no-audit --no-fund
+	@touch "$@"
+
+$(PYTHON):
+	@"$${PYTHON_BOOTSTRAP}" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
+	@"$${PYTHON_BOOTSTRAP}" -m venv $(VENV)
+
+# Über devtools exec: Mit rechnerlokaler Zuordnung kommen Git-Abhängigkeiten (CLITheme) aus den
+# lokalen Repos, auch mit ungepushtem Tag.
+$(VENV)/.installed: requirements-dev.txt | $(PYTHON)
+	@$(PYTHON) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
+	@$(REQUIRE_STARTER); devtools exec -- $(PYTHON) -m pip install -q --disable-pip-version-check -r requirements-dev.txt
+	@touch "$@"
+
+# Werkzeuge auf Quelle und Tag aus .dev-tools.conf.sh nach .tools/; devtools meldet je Werkzeug
+# eine Zeile.
+$(TOOLS_STAMP): .dev-tools.conf.sh
+	@$(REQUIRE_STARTER); $(DEV_TOOLS) install
+	@touch "$@"
+
+# Ohne Hilfeeintrag: meldet eine fehlende oder veraltete Einrichtung, statt sie nachzuholen.
+require-setup: precheck
+	@source "$${BASH_LIBS}/make.lib.sh" && requireMakeSetup --hooks .githooks --make "$(MAKE)" $(SETUP_STAMPS)
 
 # ─── Status ──────────────────────────────────────────────────────────────────
 
 ##@ Status
 
 .PHONY: status
-status: ## Git-Status des Repos + offene Blocker-Issues
-	@bash $(PROJECT_TOOLS)/bash/repo-status.sh --show
+status: require-tools ## Git-Status dieses Projekts anzeigen
+	@repo-status --show
 
 # ─── Entwicklung ─────────────────────────────────────────────────────────────
 
 ##@ Entwicklung
 
 STOCKPORTFOLIO_DATA_DIR ?= $(WORKSPACE)/.local-data
+export STOCKPORTFOLIO_DATA_DIR
 
-.PHONY: dev-up
-dev-up: ## Vite und Konto-API im Hintergrund starten (Overmind)
-	@command -v overmind >/dev/null || { echo "overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
-	@command -v tmux >/dev/null || { echo "tmux fehlt; tmux installieren." >&2; exit 1; }
-	@STOCKPORTFOLIO_DATA_DIR="$(STOCKPORTFOLIO_DATA_DIR)" OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
+# Ein belegter Port bricht den Start ab, statt dass eine App still auf einen anderen ausweicht.
+# Ohne dev-ports (ProjectTools) nur eine Warnung: dev-up und dev-down sind Entwicklungsziele.
+.PHONY: dev-up dev-down
+dev-up: ## Vite und Konto-API laufen im Hintergrund (Overmind)
+	@command -v overmind >/dev/null || { echo "  ✗ overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
+	@command -v tmux >/dev/null || { echo "  ✗ tmux fehlt; tmux installieren." >&2; exit 1; }
+	@if command -v dev-ports >/dev/null; then dev-ports --check; \
+	else echo "  ⚠ dev-ports fehlt (make setup) — Ports vor dem Start nicht geprüft"; fi
+	@OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
 
-.PHONY: dev-down
-dev-down: ## Dev-Stack stoppen und Ports 5175/8080 freigeben
+dev-down: ## Dev-Stack gestoppt, Ports frei
 	-@overmind quit 2>/dev/null || true
-	@"$(PROJECT_TOOLS)/bash/dev-ports.sh" --kill
+	@if command -v dev-ports >/dev/null; then dev-ports --kill; \
+	else echo "  ⚠ dev-ports fehlt (make setup) — Reste nach einem Absturz nicht geprüft"; fi
+
+# Setzt den Checkout zurück; danach verlangen die Prüfziele wieder make setup.
+.PHONY: clean
+clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
+	@npm --prefix frontend run clean
+	@npm --prefix api run clean
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__ \
+		$(VENV) $(TOOLS_DIR) frontend/node_modules/.installed api/node_modules/.installed
+	@echo "  ✓ aufgeräumt"
 
 # ─── Prüfen ──────────────────────────────────────────────────────────────────
 #
-# Ein Target je Prüfart; darin je Sprache das passende Werkzeug: TypeScript/Vue
-# über die npm-Skripte der Pakete, Python (Teststack unter scripts/, Observer-
-# Hilfe unter .agents/bin/) über die gepinnten Werkzeuge der .venv, Bash über
-# shellcheck. Die Dateilisten kommen aus git, damit neue Dateien mitlaufen.
+# Ein Target je Prüfart; darin je Sprache das passende Werkzeug: TypeScript/Vue über die
+# npm-Skripte der Pakete, Python (Teststack unter scripts/) über die gepinnten Werkzeuge der
+# .venv (requirements-dev.txt), Bash über shellcheck. Die Dateilisten kommen aus git, damit neue
+# Dateien mitlaufen.
+
+##@ Prüfen
 
 PY_SOURCES := $(shell git ls-files '*.py')
 SH_SOURCES := $(shell git ls-files '*.sh') .githooks/pre-commit
@@ -163,24 +226,17 @@ SH_SOURCES := $(shell git ls-files '*.sh') .githooks/pre-commit
 PRETTIER := frontend/node_modules/.bin/prettier
 PRETTIER_FILES := "frontend/src/**/*.{vue,ts,tsx,css,json}" "frontend/tests/**/*.ts" "api/src/**/*.ts" "api/tests/**/*.ts"
 
-# Bricht ab, wenn ein Werkzeug außerhalb der .venv fehlt — still zu bestehen
-# wäre ein falsches Grün. $(1): Befehl, $(2): Installationshinweis.
+# Bricht ab, wenn ein Werkzeug außerhalb der .venv fehlt; still zu bestehen wäre ein falsches
+# Grün. $(1): Befehl, $(2): Installationshinweis.
 define require_tool
-@command -v $(1) >/dev/null || { echo "$(1) fehlt: $(2)" >&2; exit 1; }
+@command -v $(1) >/dev/null || { echo "  ✗ $(1) fehlt: $(2)" >&2; exit 1; }
 endef
 
-$(PY_TOOLS): requirements-dev.txt
-	@test -x $(VENV)/bin/python || { echo ".venv fehlt: make setup ausführen." >&2; exit 1; }
-	@$(VENV)/bin/python -m pip install -q -r requirements-dev.txt
-	@touch $@
+.PHONY: check lint typecheck format format-check test docs-check security audit quality
 
-##@ Prüfen
+check: lint typecheck format-check test ## Alles geprüft, was die Abnahme verlangt
 
-.PHONY: check lint typecheck format format-check test security audit quality
-
-check: lint typecheck format-check test ## Alle technischen Prüfungen ausführen (Abnahme)
-
-lint: $(PY_TOOLS) ## ESLint (Frontend, API), ruff (Python) und shellcheck (Bash)
+lint: require-setup ## Lint geprüft: ESLint (Frontend, API), ruff, shellcheck
 	@npm run lint --prefix frontend
 	@npm run lint --prefix api
 	@$(VENV)/bin/ruff check $(PY_SOURCES)
@@ -188,60 +244,50 @@ lint: $(PY_TOOLS) ## ESLint (Frontend, API), ruff (Python) und shellcheck (Bash)
 	$(call require_tool,shellcheck,brew install shellcheck)
 	@shellcheck $(SH_SOURCES)
 
-typecheck: ## Typprüfung für Frontend (vue-tsc) und API (tsc)
+typecheck: require-setup ## Typen geprüft: vue-tsc (Frontend), tsc (API)
 	@npm run typecheck --prefix frontend
 	@npm run typecheck --prefix api
 
-format: $(PY_TOOLS) ## Prettier (Frontend, API) und ruff format anwenden
+format: require-setup ## Quellen formatiert: Prettier (Frontend, API), ruff format
 	@$(PRETTIER) --write --log-level warn $(PRETTIER_FILES)
 	@$(VENV)/bin/ruff format $(PY_SOURCES)
 
-format-check: $(PY_TOOLS) ## Formatierung prüfen, ohne Dateien zu ändern
+format-check: require-setup ## Formatierung geprüft, keine Datei geändert
 	@$(PRETTIER) --check --log-level warn $(PRETTIER_FILES)
 	@$(VENV)/bin/ruff format --check $(PY_SOURCES)
 
-test: docs-check ## Doku-Prüfung, Frontend- und API-Tests einmalig ausführen
+test: docs-check require-setup ## Doku, Frontend- und API-Tests einmal geprüft
 	@npm run test --prefix frontend
 	@npm run test --prefix api
 
-security: $(PY_TOOLS) ## Geheimnisse in der Git-History (gitleaks) und Python-Code (bandit ab mittlerer Schwere)
+# Ohne ProjectTools scheitert es laut, statt die Doku still zu überspringen. Config in
+# .docs-check.conf.sh.
+docs-check: require-tools ## Doku geprüft: Links, Befehle, Variablen, verbotene Begriffe
+	@docs-check --run
+
+security: require-setup ## Keine Geheimnisse in der Git-History, Python ohne Befund ab mittel
 	$(call require_tool,gitleaks,brew install gitleaks)
 	@gitleaks git --redact --no-banner .
 	@$(VENV)/bin/python -m bandit -q -ll $(PY_SOURCES)
 
-audit: $(PY_TOOLS) ## Abhängigkeiten auf bekannte Lücken prüfen: npm (Laufzeit) und Python (braucht Netz; nicht in der Abnahme)
+# Braucht Netz; nicht in der Abnahme.
+audit: require-setup ## Abhängigkeiten ohne bekannte Lücken: npm (Laufzeit), Python
 	@npm audit --omit=dev --prefix frontend
 	@npm audit --omit=dev --prefix api
 	@$(VENV)/bin/python -m pip_audit --skip-editable
 
-# Nur Bericht: Befunde enden mit 0, die Schwellen sind Anhaltspunkte. Läuft ein
-# Werkzeug gar nicht, scheitert das Target — ein leerer Bericht wäre sonst ein
-# falsches Grün. Die Schwellen für TypeScript stehen in quality-report.mjs.
-
-quality: $(PY_TOOLS) ## Codequalität berichten: Komplexität, Dateigröße, doppelter Code (nicht in der Abnahme)
-	@echo "$(THEME_COLOR_GROUP)Komplexität und Dateigröße TypeScript/Vue (ESLint)$(RESET)"
+# Nur Bericht: Befunde enden mit 0, die Schwellen sind Anhaltspunkte. Läuft ein Werkzeug gar
+# nicht, scheitert das Target; ein leerer Bericht wäre sonst ein falsches Grün. Die Schwellen
+# für TypeScript stehen in frontend/scripts/quality-report.mjs.
+quality: require-setup ## Bericht: Komplexität, Dateigröße, doppelter Code (nicht in der Abnahme)
+	@echo "Komplexität und Dateigröße TypeScript/Vue (ESLint)"
 	@node frontend/scripts/quality-report.mjs frontend src
 	@node frontend/scripts/quality-report.mjs api src
-	@echo "$(THEME_COLOR_GROUP)Komplexität und Vereinfachungen Python (ruff C90, SIM, PLR09, RET)$(RESET)"
+	@echo "Komplexität und Vereinfachungen Python (ruff C90, SIM, PLR09, RET)"
 	@$(VENV)/bin/ruff check $(PY_SOURCES) --select C90,SIM,PLR09,RET --output-format concise --exit-zero
-	@echo "$(THEME_COLOR_GROUP)Doppelter Code über TypeScript, Vue und Python (jscpd)$(RESET)"
+	@echo "Doppelter Code über TypeScript, Vue und Python (jscpd)"
 	@frontend/node_modules/.bin/jscpd --reporters console --min-tokens 70 \
 		frontend/src frontend/tests api/src api/tests scripts $(wildcard .agents/bin)
-
-.PHONY: docs-check
-docs-check: ## Nutzerdoku gegen das Projekt prüfen (Links, Befehle, verbotene Begriffe)
-	@if [[ -r "$(PROJECT_TOOLS)/bash/docs-check.sh" ]]; then \
-		"$(PROJECT_TOOLS)/bash/docs-check.sh" --run; \
-	else \
-		echo -e "  $(YELLOW)⚠$(RESET) ProjectTools nicht verfügbar — Doku nicht geprüft (make setup)"; \
-	fi
-
-.PHONY: clean
-clean: ## Build-, Test- und Cache-Dateien löschen; Python-venv behalten
-	@npm --prefix frontend run clean
-	@npm --prefix api run clean
-	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__
-	@echo "$(GREEN)✓$(RESET) aufgeräumt"
 
 # ─── Docker ──────────────────────────────────────────────────────────────────
 
@@ -253,53 +299,62 @@ PLATFORM ?= x86
 STRICT ?= 2
 # Bereits veröffentlichter GitHub-Stand für README-Bilder und Dokumentlinks.
 DOCKER_README_REF ?= master
+export PLATFORM STRICT DOCKER_README_REF
 
-.PHONY: build push
-build: ## Docker-Image lokal bauen (PLATFORM=x86|arm, Default x86)
-	@./docker/build.sh --build "$(PLATFORM)"
+# docker/build.sh braucht BashLib und dockerhub-readme aus .tools/; die Ziele holen sie nach.
+# BASH_LIBS aus dem Kopf ist leer, wenn $(TOOLS_STAMP) die Werkzeuge erst in diesem Lauf
+# installiert; darum liest das Rezept es dann aus .tools/.
+DOCKER_BUILD = BASH_LIBS="$${BASH_LIBS:-$$($(TOOLS_DIR)/bin/bashlib-path)}" ./docker/build.sh
 
-push: ## Geprüften lokalen Build veröffentlichen, danach README (TARGET=dockerhub)
-	@./docker/build.sh --push
+.PHONY: build push docker-images docker-samples
+build: $(TOOLS_STAMP) ## Image lokal gebaut (PLATFORM=x86|arm, Default x86)
+	@$(DOCKER_BUILD) --build "$${PLATFORM}"
 
-.PHONY: docker-images
-docker-images: ## Lokale Images des Projekts anzeigen
-	@./docker/build.sh --images
+push: $(TOOLS_STAMP) ## Geprüfter Build veröffentlicht, danach README (TARGET=dockerhub)
+	@$(DOCKER_BUILD) --push
 
-.PHONY: docker-samples
-docker-samples: ## Beispiel-`docker run`-Kommandos zeigen
-	@./docker/build.sh --samples
+docker-images: $(TOOLS_STAMP) ## Lokale Images des Projekts anzeigen
+	@$(DOCKER_BUILD) --images
+
+docker-samples: $(TOOLS_STAMP) ## Beispiel-`docker run`-Kommandos zeigen
+	@$(DOCKER_BUILD) --samples
 
 # ─── Versionierung ───────────────────────────────────────────────────────────
 
 ##@ Versionierung
 
-.PHONY: version
-version: ## Aktuelle Version anzeigen (frontend/package.json + git tag)
+# Die Version steht in frontend/package.json; version und tag-version lesen sie dort.
+.PHONY: version tags changelog
+version: precheck ## Version aus frontend/package.json und letzter Release-Tag
 	@echo
-	@VER=$$(source "$${BASH_LIBS}/version.lib.sh" 2>/dev/null && readProjectVersion auto frontend 2>/dev/null); \
-	 [[ -z "$$VER" ]] && VER='nicht gesetzt'; \
-	 TAG=$$(git describe --tags --abbrev=0 2>/dev/null || echo 'kein Tag'); \
-	 echo "    $(YELLOW)version$(RESET)  = $(BLUE)$$VER$(RESET)"; \
-	 echo "    $(YELLOW)git tag$(RESET)  = $(BLUE)$$TAG$(RESET)"
+	@source "$${BASH_LIBS}/make.lib.sh" && showProjectVersion auto frontend
 	@echo
 
-.PHONY: tags
-tags: ## Letzte 10 Tags mit Message anzeigen
-	@git tag --sort=-version:refname -n1 | head -10 | \
-	  awk '{printf "    \033[34m%-28s\033[0m \033[32m%s\033[0m\n", $$1, substr($$0, index($$0,$$2))}'
+tags: precheck ## Letzte zehn Release-Tags mit Nachricht anzeigen
+	@echo
+	@source "$${BASH_LIBS}/make.lib.sh" && showReleaseTags 10
+	@echo
 
-.PHONY: changelog
-changelog: ## CHANGELOG.md aus Release-Tags erstellen (ohne Commit)
-	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --generate
+# Sprache von CHANGELOG.md, unabhängig von der Locale der Shell (changelog folgt sonst
+# LANG). Überschreiben: make … CHANGELOG_LANGUAGE=de
+CHANGELOG_LANGUAGE ?= en
+export CHANGELOG_LANGUAGE
 
+changelog: require-tools ## CHANGELOG.md aus Release-Tags und Commits erzeugen
+	@LANGUAGE="$${CHANGELOG_LANGUAGE}" changelog --generate
+
+# Je Target eine Hilfezeile; showMakeTargets liest nur Zeilen mit einem Target.
 .PHONY: tag-major tag-minor tag-patch
-tag-major: ## Version committen, taggen UND pushen — Major; danach Changelog [MSG="..."]
-tag-minor: ## Version committen, taggen UND pushen — Minor; danach Changelog [MSG="..."]
-tag-patch: ## Version committen, taggen UND pushen — Patch; danach Changelog [MSG="..."]
+tag-major: ## Major {major}, inkompatibel  [MSG="..."]
+tag-minor: ## Minor {minor}, neue Funktion  [MSG="..."]
+tag-patch: ## Patch {patch}, Fehler behoben  [MSG="..."]
 
-# Ein gemeinsames Rezept hält Reihenfolge und Fehlerverhalten für alle Stufen gleich.
-tag-major tag-minor tag-patch: precheck
-	@test -r "$(PROJECT_TOOLS)/python/changelog.py"
-	@test -z "$$(git status --porcelain)"
-	@cd frontend && source "$${BASH_LIBS}/version.lib.sh" && semVerBump "$(patsubst tag-%,%,$@)" auto "" "$${MSG:-}"
-	@LANGUAGE=en "$(PYTHON)" "$(PROJECT_TOOLS)/python/changelog.py" --publish
+# Version in frontend/package.json heben und lokal taggen, CHANGELOG.md committen, Stufe
+# vorspulen; alles nur lokal, veröffentlicht wird mit git push --follow-tags. Prüfung und
+# Ablauf stehen nur in tag-version (ProjectTools). changelog nennt bei Erfolg den absoluten
+# Pfad der Datei, darum ohne stdout; Fehler kommen über stderr. require-tools (mit precheck):
+# ohne ProjectTools oder BashLib bricht ein Release vor dem Bump ab, nicht erst nach dem Tag.
+tag-major tag-minor tag-patch: require-tools
+	@cd frontend && tag-version "$(patsubst tag-%,%,$@)" --message "$${MSG:-}"
+	@LANGUAGE="$${CHANGELOG_LANGUAGE}" changelog --commit >/dev/null
+	@tag-version --fast-forward

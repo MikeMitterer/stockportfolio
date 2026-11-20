@@ -28,11 +28,22 @@ if [[ -n "${GIT_INDEX_FILE:-}" && "${GIT_INDEX_FILE}" != /* ]]; then
     export GIT_INDEX_FILE="${ROOT}/${GIT_INDEX_FILE}"
 fi
 
-# ProjectTools liegt unter .libs/ (von git ignoriert) und fehlt im Snapshot.
-# Ein gesetzter relativer Pfad gilt ab dem Projekt-Root, wie bei make.
-export PROJECT_TOOLS="${PROJECT_TOOLS:-${ROOT}/.libs/ProjectTools/src}"
-if [[ "${PROJECT_TOOLS}" != /* ]]; then
-    PROJECT_TOOLS="${ROOT}/${PROJECT_TOOLS}"
+# Werkzeuge (make, devtools, pipx, pip) laufen ohne die Git-Variablen des Hooks: git setzt
+# für ihn GIT_INDEX_FILE, und ein git-Aufruf, mit dem devtools ein Werkzeug holt, schriebe
+# sonst in den Index dieses Repositorys.
+without_git() {
+    env -u GIT_INDEX_FILE -u GIT_DIR -u GIT_WORK_TREE -u GIT_OBJECT_DIRECTORY \
+        -u GIT_COMMON_DIR "$@"
+}
+
+# Ohne ProjectTools in .tools/ nur warnen, mit dem Grund von devtools und dem nächsten
+# Schritt: make test bleibt die harte Grenze, ein Commit soll nicht daran scheitern.
+if ! REASON="$(without_git make --no-print-directory -s require-tools 2>&1)"; then
+    echo "  ⚠ Doku nicht geprüft: ProjectTools fehlt oder ist zu alt"
+    # Die Meldung von devtools ohne die Abschlusszeile von make („make: *** …“).
+    printf '%s\n' "${REASON}" | grep -v '^make: \*\*\*' || true
+    echo "    make setup"
+    exit 0
 fi
 
 SNAPSHOT="$(mktemp -d "${TMPDIR:-/tmp}/docs-check-index.XXXXXX")"
@@ -42,11 +53,16 @@ readonly OUTPUT
 trap 'command rm -rf -- "${SNAPSHOT}" "${OUTPUT}"' EXIT
 
 git checkout-index --all --prefix="${SNAPSHOT}/"
+# Die Werkzeuge aus make setup liegen unversioniert in .tools/ des Checkouts; make docs-check
+# verlangt und findet sie im Snapshot nur über diesen Link.
+[[ -d "${ROOT}/.tools" ]] && ln -s "${ROOT}/.tools" "${SNAPSHOT}/.tools"
 
 GIT_DIR="$(git rev-parse --absolute-git-dir)"
 export GIT_DIR
 export GIT_WORK_TREE="${SNAPSHOT}"
 
+# make docs-check braucht GIT_DIR und GIT_WORK_TREE für den vorgemerkten Stand; das Makefile
+# startet devtools ohne sie (DEV_TOOLS mit env -u).
 if make --no-print-directory -C "${SNAPSHOT}" docs-check >"${OUTPUT}" 2>&1; then
     # Ergebniszeile und Warnungen; vor dem ⚠ kann ein Farbcode stehen.
     grep -E '^Ergebnis|⚠' "${OUTPUT}" || true

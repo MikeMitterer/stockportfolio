@@ -299,7 +299,6 @@ export const en: MessageSchema = {
   },
 
   errors: {
-    ambiguousSymbol: 'Symbol "{symbol}" is ambiguous. No unique quote is available.',
     staleQuote: 'An outdated quote is being used.',
     invalidResponse: 'Invalid StockInfo response: field "{field}" is missing or invalid. The quote was not accepted.',
     unsupportedIdentity: 'StockInfo returned an unsupported identity: "{kind}". The quote was not accepted.',
@@ -307,6 +306,40 @@ export const en: MessageSchema = {
       stockinfo_unreachable: 'StockInfo cannot be reached from the StockPortfolio server. Check STOCKINFO_API_URL and whether StockInfo is running.',
       stockinfo_timeout: 'StockInfo did not answer in time.',
       stockinfo_not_configured: 'STOCKINFO_API_URL is not set on the StockPortfolio server.',
+    },
+    reason: {
+      quote_unavailable:
+        'StockInfo could not look it up at any source: {identifier}. Whether the security exists is therefore open.',
+      instrument_not_found: 'None of the sources configured in StockInfo found a security for {identifier}.',
+      unsupported_instrument_type:
+        '{symbol} is a {instrument_type}. StockInfo does not currently accept this instrument type.',
+      quote_currency_mismatch:
+        '{symbol} is quoted in {expected} but the source delivered {delivered}. That is a different instrument.',
+      identity_conflict:
+        'Two stored entries in StockInfo claim the same identity ({identity}). This has to be resolved in StockInfo.',
+      symbol_ambiguous: 'Symbol "{symbol}" is ambiguous. No unique quote is available.',
+      invalid_isin_format: '{isin} is not shaped like an ISIN.',
+      invalid_symbol_format: '{symbol} is not shaped like a symbol.',
+      daily_series_not_found: 'None of the sources configured in StockInfo carries a price history for {identifier}.',
+      daily_source_unavailable:
+        'The price history for {identifier} could not be fetched. At least one source did not answer.',
+      fx_pair_not_found: 'None of the sources configured in StockInfo carries the rate {base}/{quote}.',
+      fx_source_unavailable: 'The rate {base}/{quote} could not be fetched. At least one source did not answer.',
+      invalid_currency_code: '{base} and {quote} must be three-letter currency codes.',
+      identifier_empty: 'Nothing was entered.',
+      identifier_unknown_form: '{identifier} is neither an ISIN nor a symbol with an exchange suffix.',
+      exchange_not_covered: 'StockInfo has no quote source for the trading venue {mic}.',
+      ambiguous_exchange_suffix:
+        'The exchange suffix matches more than one trading venue. The input does not say which one is meant.',
+      symbol_without_exchange_suffix:
+        'The symbol has no exchange suffix. The trading venue cannot be derived from it alone.',
+      unknown_exchange_suffix: 'The exchange suffix in the symbol is unknown and matches no trading venue.',
+      non_canonical_ticker: 'The ticker does not match the canonical spelling of its trading venue.',
+      migration_pending: 'StockInfo is waiting for a data migration and answers no requests until then.',
+      startup_running: 'StockInfo is still starting. Please try again in a moment.',
+      startup_failed: 'StockInfo could not start and answers no requests.',
+      contract_unavailable: 'StockInfo cannot read its field description right now.',
+      unknown: 'StockInfo reports an error that StockPortfolio does not know: {code}.',
     },
   },
 
@@ -502,7 +535,7 @@ export const en: MessageSchema = {
     bandsLabel: 'Bands: −{lower} / +{upper}',
     columns: {
       delta: 'Delta',
-      trade: 'Buy / sell',
+      trade: '± Units',
       value: 'Value',
       relativeDeviationAfter: 'Rel. dev.',
       relativePercent: 'Rel. %',
@@ -511,6 +544,10 @@ export const en: MessageSchema = {
     shareAfterLabel: 'Share after: {share}',
     relativeUndefined: 'Undefined for a 0 % target',
     tradeTooltip: 'Positive values mean buying, negative values mean selling.',
+    bandPriceLower: '↓ {price}',
+    bandPriceUpper: '↑ {price}',
+    bandPriceTooltip:
+      'Band prices: at this price the share after the plan reaches the lower (↓) or upper (↑) band. Calculated on the assumption that all other prices stay the same; if the whole market falls, the limit is lower.',
     relativeDeviationTooltip: 'Relative deviation from the target after the planned trade. Example: a 9.5 % share against a 10 % target gives −5 % relative deviation. The number is green or red according to its sign; the bar colour indicates the band status.',
     deviationTooltip: 'Difference from the target after the planned trade, in percentage points. Example: a 9.5 % share minus a 10 % target gives −0.5 percentage points.',
     deltaTooltip:
@@ -659,6 +696,8 @@ export const en: MessageSchema = {
       'Bands relative to the target have a flip side. They do fix the blindness towards small positions — 6 % of 2 % is 6 % of 2 %, however small the share — but they make them oversensitive in euro terms: in a €100,000 portfolio a 2 % target already signals at €120 of deviation. No order is worth that; the fee eats the benefit.',
     bandsMinTrade2:
       'The minimum trade size in the settings counters this. If a position sits outside its band but the missing amount is smaller than that limit, the status stays ✓ (OK) and the row gets a small “min”. The deviation does not disappear — it remains in the delta column — only the ↓ or ↑ symbol does. The default is 0, i.e. off.',
+    bandsBandPrice:
+      'Band prices: below each price in the trade table you see the price at which the share after the plan reaches the lower (↓) or upper (↑) band. They are calculated from the values after the planned trade and on the assumption that all other prices stay the same; if the whole market falls, the limit is lower. A limit the share has already left is shown in red.',
 
     triggerHeading: 'Bands, schedule — or both',
     triggerBody:

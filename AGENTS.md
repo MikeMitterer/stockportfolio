@@ -82,6 +82,11 @@ Projekts.
 - **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
 
+- **StockInfo-Fehler sind Kennungen, die Sätze bildet StockPortfolio** (T-117).
+  `readErrorDetail` in `frontend/src/api/stockinfo/client.ts` übersetzt
+  `{code, params}` über `errors.reason` im Katalog; die Liste der Kennungen
+  steht in der [Entwicklerdoku](docs/development.md#sprache-und-texte).
+
 - **Den Vertrag liefert StockInfo maschinenlesbar mit.**
   `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
@@ -243,17 +248,24 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ## Bauen und prüfen
 
 ```bash
+make setup      # npm-Pakete, .venv und Werkzeuge in .tools/ einrichten
 make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
 make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
 make check      # lint, typecheck, format-check und test für TS, Python und Bash
 make security   # gitleaks über die Git-History, bandit für Python
 make test       # Frontend- und API-Tests, einmalig
-make clean      # generierte Dateien in Root, Frontend und API entfernen
+make clean      # erzeugte Dateien, .venv und .tools/ entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
-`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
+`make hints` zeigt Links, URLs und Tipps, `make help` alle Ziele.
+`make setup` ist der einzige Einrichtungsweg, auch für die Workspaces und
+den Prüf-Worktree der Abnahme (agent-lessons, Schlüssel `worktree_setup`);
+Prüfziele wie `make test` richten nichts selbst ein und nennen bei fehlender
+oder veralteter Einrichtung `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
+kommen in der Version aus `.dev-tools.conf.sh` nach `.tools/`, nicht als
+Links. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
 stehen `make dev-up`, `make dev-down` und `make clean`, unter Prüfen ein
 Target je Prüfart (`check`, `lint`, `typecheck`, `format`, `format-check`,
@@ -267,10 +279,9 @@ Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
 temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
-das verlinkte ProjectTools-Paket, wenn es fehlt, und die gepinnten
-Prüfwerkzeuge aus `requirements-dev.txt`, sobald sich die Datei ändert.
-Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
-wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
+dort die Pakete aus `requirements-dev.txt`, darunter die gepinnten Prüfwerkzeuge
+(ruff, bandit, pip-audit). Vor dem Anlegen prüft Setup die
+Python-Version; bestehende `.venv` werden wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
 Aus diesem Repository aufrufen:
 
@@ -281,7 +292,8 @@ Aus diesem Repository aufrufen:
 ```
 
 Der StockInfo-Kindprozess verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
-diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
+diese Umgebung nicht. `make clean` entfernt StockPortfolios `.venv`; danach
+legt `make setup` sie neu an.
 
 Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen
 diesen Stack mit `--demo-accounts`:
@@ -327,7 +339,8 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
   `capture-screenshots.mjs` (Bilder für die Anleitungen) und
   `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
-  in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
+  in DE und EN, dazu die Handelstabelle mit Bandkursen, gekürztem Kopf und
+  ohne waagrechtes Scrollen) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
   und Zusatzinformationen aller Positionen und dass ein offener Reiter
   den Live-Abgleich übersteht) und `stockinfo-proxy-check.mjs` (T-82:
@@ -413,8 +426,8 @@ Kurzbeschreibung steht ein gut sichtbarer Link zum GitHub-Repository. Sie
 erklärt Start, Konfiguration, Browser-Daten, Backups und Updates;
 Entwicklungsdetails stehen im Projekt-README.
 
-Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Helfer
-`.libs/ProjectTools/src/bash/dockerhub-readme.sh` die Hub-Fassung: Pandoc
+Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Befehl
+`dockerhub-readme` (aus `.tools/`, `make setup`) die Hub-Fassung: Pandoc
 wandelt relative Links in absolute GitHub-Links um, das Ergebnis darf
 höchstens **25.000 UTF-8-Bytes** enthalten; absolute Bild- und Dokumentlinks
 zählen mit. `make push` schreibt zuerst die Vorschau
@@ -422,7 +435,7 @@ zählen mit. `make push` schreibt zuerst die Vorschau
 nach Docker Hub. Die Vorschau ist ein Erzeugnis und wird nie von Hand
 bearbeitet. Nach Änderungen an `docker/README.md` die Vorschau neu erzeugen
 und prüfen:
-`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master`.
+`.tools/bin/dockerhub-readme --readme docker/README.md --preview --ref master`.
 Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. Die Grenze
 gilt für die Hub-Beschreibung, nicht für das Projekt-README.
 `DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.
@@ -452,11 +465,13 @@ eine Basis wie `README.md` oder `docker/README.md` nach ihrer abhängigen Datei
 der eingetragenen Frist ein Problem. Die Vorschau gehört in denselben Commit
 wie `docker/README.md`. Alle Zeiten kommen aus git, nicht vom Dateidatum oder
 Tagesdatum. Verlangt eine Änderung nichts, wird die Meldung nach dem Prüfen
-mit `docs-check.sh --ack <datei>` quittiert und `.docs-check.ack`
+mit `docs-check --ack <datei>` quittiert und `.docs-check.ack`
 mitcommittet; ungesehen quittieren ist kein Weg, eine Meldung loszuwerden. Es
 läuft vor jedem Commit (`.githooks/pre-commit`) und prüft dort genau den
 vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
-auf. `--no-verify` nur im Notfall und mit Begründung im Bericht.
+auf. Fehlen der Starter `devtools` oder ProjectTools in `.tools/`, warnt der
+Hook nur und lässt den Commit durch; das ist keine bestandene Doku-Prüfung,
+`make test` bleibt die harte Grenze. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
 
