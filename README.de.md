@@ -73,7 +73,9 @@ Position bei 9,4 % aus.
 
 Unter _Rebalancing_ übernimmst du vorgeschlagene Geschäfte oder gibst eigene
 Stückzahlen und Probe-Zielanteile ein. Der Plan zeigt die Kosten, die
-resultierenden Anteile und Bänder und ob das Geld reicht. Reicht es nicht,
+resultierenden Anteile und Bänder und ob das Geld reicht. Unter jedem Kurs
+stehen die Bandkurse: der Kurs, bei dem der Anteil das untere oder obere Band
+erreichen würde, wenn alle anderen Kurse gleich blieben. Reicht es nicht,
 schlägt _Decken aus_ liquide Positionen zum Verkauf vor.
 
 > [!NOTE]

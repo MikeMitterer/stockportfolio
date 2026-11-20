@@ -21,9 +21,14 @@ beschreibt der [Docker-Guide](../docker/README.md).
 ## Voraussetzungen
 
 - Node.js 22 und npm
+- Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
+  `make help` und `make setup` (macOS: `brew install bash`)
 - Python 3.11+ für den Teststack
-- pipx und der Starter `devtools`, einmal je Rechner; fehlt er, nennt
-  `make setup` den Installationsbefehl
+- pipx und der Starter `devtools`, einmal je Rechner aus der lokalen
+  DevTools-Arbeitskopie installiert (dort das Make-Ziel install); fehlt er, bricht
+  `make setup` mit diesem Hinweis ab. Solange die Werkzeuge nicht auf GitHub
+  oder PyPI veröffentlicht sind, holt DevTools sie über seine rechnerlokale
+  Zuordnung aus den lokalen Repos.
 - Overmind und tmux für den Dev-Stack (macOS: `brew install overmind tmux`)
 - eine erreichbare StockInfo-Instanz; `make dev-up` startet sie **nicht**
 
@@ -99,7 +104,9 @@ Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
 (`.githooks/pre-commit`, eingerichtet von `make setup`) und bricht ihn bei
-Problemen ab. Der Hook prüft genau den vorgemerkten Stand, nicht den
+Problemen ab. Fehlen der Starter oder ProjectTools in `.tools/`, warnt der
+Hook nur („Doku nicht geprüft“) und lässt den Commit durch; ein solcher Commit
+gilt nicht als geprüft, `make test` bleibt die harte Grenze. Der Hook prüft genau den vorgemerkten Stand, nicht den
 Arbeitsbaum: Nicht vorgemerkte Änderungen zählen nicht, und ein Link auf eine
 Datei, die nicht in git liegt, ist ein Problem. Jede Umgebungsvariable, die der Code unter `api/src`,
 `frontend/src`, `frontend/scripts` oder `scripts` liest, muss in der Doku
@@ -233,7 +240,7 @@ im Kopfkommentar. Prüfskripte enden mit Exit-Code 1 bei Abweichung.
 |---|---|
 | `smoke:live-sync` | Live-Abgleich zwischen zwei Browsern desselben Kontos (braucht `--demo-accounts`) |
 | `screenshots` | erzeugt die Bilder unter `docs/images/` |
-| `check:notice-texts` | Hinweistexte auf Methodenseite und Rebalancing, DE und EN |
+| `check:notice-texts` | Hinweistexte auf Methodenseite und Rebalancing, Handelstabelle mit Bandkursen, DE und EN |
 | `check:demo-data` | lesbare Demodaten aus `--demo-details` |
 | `check:stockinfo-proxy` | Weiterleitung an StockInfo: jede freigegebene Route, 401 ohne Sitzung, 404 außerhalb der Liste |
 | `check:setup-dialog` | Info-Fenster am Einrichtungscode (braucht einen frischen Stack ohne `--demo-accounts`) |
@@ -265,6 +272,15 @@ Alle sichtbaren Texte stehen im Katalog unter `frontend/src/i18n/`. Eine
 ESLint-Regel macht fest eingetragenen Text im Template zum Fehler, und die
 Typprüfung meldet jeden Schlüssel, der in einer Sprache fehlt.
 
+**StockInfo-Fehler** kommen als Kennung mit Werten (`{code, params}`), bei
+503 während einer Migration oder eines Starts als Kennung in `detail`. Den
+Satz bildet StockPortfolio selbst aus `errors.reason` im Katalog; eine
+unbekannte Kennung erscheint in einem allgemeinen Satz, ein Satz im alten
+Format unverändert. Welche Kennungen es mit welchen Werten gibt, steht im
+StockInfo-Repository: im REST-Vertrag (rest-core-contract.md unter docs) und im
+Katalog `errors.reason` der StockInfo-Oberfläche. Eine neue Kennung bekommt in beiden Sprachen einen
+Satz und einen Eintrag in `frontend/tests/api/errorReasons.spec.ts`.
+
 ## Docker-Image bauen und veröffentlichen
 
 Bauen und Veröffentlichen sind getrennte Schritte. Erst den gebauten Container
@@ -279,7 +295,12 @@ make build PLATFORM=arm       # optional: lokaler ARM-Build
 
 `make push` verwendet die unveränderliche Image-ID des lokalen Builds, auch
 für `latest`. Gescheiterte Builds hinterlassen keine wiederverwendbare
-Markierung. `TARGET=dockerhub` ist Standard; GHCR und ECR sind optional.
+Markierung. Der Build merkt sich den Release-Tag samt Tag-Objekt; vor dem Push
+prüft `make push`, dass genau dieses Objekt auf `origin` liegt, damit die
+Registry keine Version zeigt, die es im Repository so nicht gibt. Ein nur
+lokal getaggtes Release bricht mit dem Hinweis auf
+`git push --follow-tags origin master` ab. Wurde der Tag nach dem Build
+umgesetzt oder liegt er auf `origin` anders, heißt der Hinweis `make build`. `TARGET=dockerhub` ist Standard; GHCR und ECR sind optional.
 Voraussetzungen: Bash 4+, BashLib, Docker mit buildx, ein Git-Tag und ein
 sauberer Arbeitsbaum. `STRICT=2` erlaubt Commits nach dem Tag, `STRICT=1`
 verlangt den getaggten Commit.

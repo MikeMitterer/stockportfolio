@@ -25,10 +25,11 @@ export DEVTOOLS_SOURCE DEVTOOLS_TAG
 # Ohne die Git-Variablen eines Hooks (make docs-check im pre-commit): Ein älterer Starter gäbe
 # sie an pipx weiter, und pip klonte in den Index dieses Repositorys.
 DEV_TOOLS := env -u GIT_INDEX_FILE -u GIT_DIR -u GIT_WORK_TREE devtools --project
-# Bricht ab, wenn der Starter fehlt, und nennt seinen Installationsbefehl. Im Rezept vor jedem
-# Aufruf von devtools: @$(REQUIRE_STARTER); …
+# Bricht ab, wenn der Starter fehlt, und nennt den Weg dorthin. Solange die Werkzeuge nicht
+# veröffentlicht sind, kommt er aus der lokalen DevTools-Arbeitskopie (Mike, 2026-11-20). Im
+# Rezept vor jedem Aufruf von devtools: @$(REQUIRE_STARTER); …
 REQUIRE_STARTER = command -v devtools >/dev/null || { \
-	echo "  ✗ devtools fehlt: pipx install '$${DEVTOOLS_SOURCE}@$${DEVTOOLS_TAG}'" >&2; exit 1; }
+	echo "  ✗ devtools fehlt: einmal je Rechner in der DevTools-Arbeitskopie make install" >&2; exit 1; }
 
 # Die Konto-API liest .env selbst (npm run dev); das Makefile braucht daraus nur die Adresse
 # für info und hints.
@@ -230,18 +231,22 @@ DOCKER_README_REF ?= master
 export PLATFORM STRICT DOCKER_README_REF
 
 # docker/build.sh braucht BashLib und dockerhub-readme aus .tools/; die Ziele holen sie nach.
+# BASH_LIBS aus dem Kopf ist leer, wenn $(TOOLS_STAMP) die Werkzeuge erst in diesem Lauf
+# installiert; darum liest das Rezept es dann aus .tools/.
+DOCKER_BUILD = BASH_LIBS="$${BASH_LIBS:-$$($(TOOLS_DIR)/bin/bashlib-path)}" ./docker/build.sh
+
 .PHONY: build push docker-images docker-samples
 build: $(TOOLS_STAMP) ## Image lokal gebaut (PLATFORM=x86|arm, Default x86)
-	@./docker/build.sh --build "$${PLATFORM}"
+	@$(DOCKER_BUILD) --build "$${PLATFORM}"
 
 push: $(TOOLS_STAMP) ## Geprüfter Build veröffentlicht, danach README (TARGET=dockerhub)
-	@./docker/build.sh --push
+	@$(DOCKER_BUILD) --push
 
 docker-images: $(TOOLS_STAMP) ## Lokale Images des Projekts anzeigen
-	@./docker/build.sh --images
+	@$(DOCKER_BUILD) --images
 
 docker-samples: $(TOOLS_STAMP) ## Beispiel-`docker run`-Kommandos zeigen
-	@./docker/build.sh --samples
+	@$(DOCKER_BUILD) --samples
 
 # ─── Versionierung ───────────────────────────────────────────────────────────
 

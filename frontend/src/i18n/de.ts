@@ -305,7 +305,6 @@ export const de = {
    * der StockInfo-Abfragen weiterleitet (T-82).
    */
   errors: {
-    ambiguousSymbol: 'Symbol „{symbol}“ ist mehrdeutig. Kein eindeutiger Kurs verfügbar.',
     staleQuote: 'Ein veralteter Kurs wird verwendet.',
     invalidResponse: 'Ungültige StockInfo-Antwort: Feld „{field}“ fehlt oder ist ungültig. Der Kurs wird nicht übernommen.',
     unsupportedIdentity: 'StockInfo liefert eine nicht unterstützte Identität: „{kind}“. Der Kurs wird nicht übernommen.',
@@ -313,6 +312,51 @@ export const de = {
       stockinfo_unreachable: 'StockInfo ist vom StockPortfolio-Server aus nicht erreichbar. Prüfe STOCKINFO_API_URL und ob StockInfo läuft.',
       stockinfo_timeout: 'StockInfo hat nicht rechtzeitig geantwortet.',
       stockinfo_not_configured: 'STOCKINFO_API_URL ist am StockPortfolio-Server nicht gesetzt.',
+    },
+    /*
+     * StockInfos Fehler als Kennung (`code`) mit Werten (`params`); den Satz
+     * bildet StockPortfolio selbst (T-117). Kennungen und Platzhalter folgen
+     * dem StockInfo-Katalog `errors.reason` und `migration.reason` in
+     * dashboard/src/i18n. Die Gate-Kennungen `migration_pending`,
+     * `startup_running` und `startup_failed` kommen bei 503 als `detail`.
+     */
+    reason: {
+      quote_unavailable:
+        'StockInfo konnte bei keiner Quelle nachsehen: {identifier}. Ob es das Papier gibt, ist damit offen.',
+      instrument_not_found:
+        'Zu {identifier} hat keine der in StockInfo eingerichteten Quellen ein Wertpapier gefunden.',
+      unsupported_instrument_type:
+        '{symbol} ist ein {instrument_type}. Diese Gattung nimmt StockInfo derzeit nicht auf.',
+      quote_currency_mismatch:
+        '{symbol} notiert in {expected}, die Quelle lieferte {delivered}. Das ist ein anderes Instrument.',
+      identity_conflict:
+        'In StockInfo beanspruchen zwei gespeicherte Einträge dieselbe Identität ({identity}). Das muss in StockInfo bereinigt werden.',
+      symbol_ambiguous: 'Symbol „{symbol}“ ist mehrdeutig. Kein eindeutiger Kurs verfügbar.',
+      invalid_isin_format: '{isin} hat nicht das Format einer ISIN.',
+      invalid_symbol_format: '{symbol} hat nicht das Format eines Symbols.',
+      daily_series_not_found:
+        'Für {identifier} führt keine der in StockInfo eingerichteten Quellen eine Kurshistorie.',
+      daily_source_unavailable:
+        'Die Kurshistorie zu {identifier} war nicht abrufbar. Mindestens eine Quelle hat nicht geantwortet.',
+      fx_pair_not_found: 'Keine der in StockInfo eingerichteten Quellen führt den Kurs {base}/{quote}.',
+      fx_source_unavailable:
+        'Der Kurs {base}/{quote} war nicht abrufbar. Mindestens eine Quelle hat nicht geantwortet.',
+      invalid_currency_code: '{base} und {quote} müssen dreibuchstabige Währungscodes sein.',
+      identifier_empty: 'Es wurde nichts eingegeben.',
+      identifier_unknown_form: '{identifier} ist weder eine ISIN noch ein Symbol mit Börsenkürzel.',
+      exchange_not_covered: 'Für den Handelsplatz {mic} ist in StockInfo keine Kursquelle verfügbar.',
+      ambiguous_exchange_suffix:
+        'Das Börsenkürzel im Symbol passt auf mehrere Handelsplätze. Welcher gemeint ist, sagt die Eingabe nicht.',
+      symbol_without_exchange_suffix:
+        'Dem Symbol fehlt das Börsenkürzel. Aus ihm allein lässt sich der Handelsplatz nicht ableiten.',
+      unknown_exchange_suffix:
+        'Das Börsenkürzel im Symbol ist unbekannt und lässt sich keinem Handelsplatz zuordnen.',
+      non_canonical_ticker: 'Der Ticker entspricht nicht der kanonischen Schreibweise des Handelsplatzes.',
+      migration_pending: 'StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.',
+      startup_running: 'StockInfo startet noch. Bitte gleich noch einmal versuchen.',
+      startup_failed: 'StockInfo konnte nicht starten und beantwortet keine Abfragen.',
+      contract_unavailable: 'StockInfo kann seine Feldbeschreibung gerade nicht lesen.',
+      unknown: 'StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: {code}.',
     },
   },
 
@@ -516,7 +560,7 @@ export const de = {
     bandsLabel: 'Bänder: −{lower} / +{upper}',
     columns: {
       delta: 'Delta',
-      trade: 'Kauf / Verkauf',
+      trade: '± Stück',
       value: 'Wert',
       relativeDeviationAfter: 'Rel. Abw.',
       relativePercent: 'Rel. %',
@@ -525,6 +569,10 @@ export const de = {
     shareAfterLabel: 'Anteil nachher: {share}',
     relativeUndefined: 'Bei Ziel 0 % nicht definiert',
     tradeTooltip: 'Positive Werte bedeuten Kauf, negative Werte Verkauf.',
+    bandPriceLower: '↓ {price}',
+    bandPriceUpper: '↑ {price}',
+    bandPriceTooltip:
+      'Bandkurse: Bei diesem Kurs erreicht der Anteil nach dem Plan das untere (↓) bzw. obere (↑) Band. Rechnerisch und unter der Annahme, dass alle anderen Kurse gleich bleiben; fällt der Markt breit, liegt die Grenze tiefer.',
     relativeDeviationTooltip: 'Relative Abweichung vom Ziel nach dem geplanten Handel. Beispiel: 9,5 % Anteil bei 10 % Ziel ergeben −5 % relative Abweichung. Die Zahl ist je nach Vorzeichen grün oder rot; die Balkenfarbe zeigt den Bandstatus.',
     deviationTooltip: 'Abweichung vom Ziel nach dem geplanten Handel in Prozentpunkten. Beispiel: 9,5 % Anteil minus 10 % Ziel ergeben −0,5 Prozentpunkte.',
     deltaTooltip: 'Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen. Anklicken übernimmt den Wert in die Eingabe.',
@@ -671,6 +719,8 @@ export const de = {
       'Dass die Bänder relativ zum Ziel gelten, hat eine Kehrseite. Es löst zwar die Blindheit bei kleinen Positionen — 6 % von 2 % sind 6 % von 2 %, egal wie klein der Anteil ist —, macht sie in Euro aber überempfindlich: Bei einem Depot von 100.000 € meldet sich ein Ziel von 2 % schon bei 120 € Abweichung. Für diesen Betrag lohnt keine Order; die Gebühr frisst den Nutzen.',
     bandsMinTrade2:
       'Dagegen steht das Mindest-Handelsvolumen in den Einstellungen. Liegt eine Position außerhalb ihres Bandes, ist die fehlende Summe aber kleiner als diese Grenze, bleibt der Status auf ✓ (OK) und die Zeile bekommt ein kleines „min". Die Abweichung verschwindet nicht — sie steht weiter in der Delta-Spalte —, nur die Anzeige ↓ oder ↑ unterbleibt. Vorgabe ist 0, also aus.',
+    bandsBandPrice:
+      'Bandkurse: Unter jedem Kurs in der Handelstabelle steht, bei welchem Kurs der Anteil nach dem Plan das untere (↓) bzw. obere (↑) Band erreicht. Gerechnet wird mit den Werten nach dem geplanten Handel und unter der Annahme, dass alle anderen Kurse gleich bleiben; fällt der Markt breit, liegt die Grenze tiefer. Hat der Anteil eine Grenze schon verlassen, steht sie rot.',
 
     triggerHeading: 'Bänder, Termin — oder beides',
     triggerBody:
