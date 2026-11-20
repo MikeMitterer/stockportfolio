@@ -21,29 +21,34 @@ beschreibt der [Docker-Guide](../docker/README.md).
 ## Voraussetzungen
 
 - Node.js 22 und npm
-- Python 3.11+ für den Teststack und die gemeinsamen Werkzeuge
+- Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
+  `make help` und `make setup` (macOS: `brew install bash`)
+- Python 3.11+ für den Teststack
+- pipx und der Starter `devtools`, einmal je Rechner aus der lokalen
+  DevTools-Arbeitskopie installiert (dort das Make-Ziel install); fehlt er, bricht
+  `make setup` mit diesem Hinweis ab. Solange die Werkzeuge nicht auf GitHub
+  oder PyPI veröffentlicht sind, holt DevTools sie über seine rechnerlokale
+  Zuordnung aus den lokalen Repos.
 - Overmind und tmux für den Dev-Stack (macOS: `brew install overmind tmux`)
 - eine erreichbare StockInfo-Instanz; `make dev-up` startet sie **nicht**
-- für den ersten `make setup`: die gemeinsamen Werkzeuge BashLib, MakeLib
-  und ProjectTools; wo sie erwartet werden, zeigt `make info`
 
 ## Einrichten und starten
 
 ```bash
-make setup                 # .libs/-Links, lokale Python-venv, npm-Abhängigkeiten
+make setup                 # npm-Pakete, Python-venv, Werkzeuge in .tools/, Git-Hooks
 cp .env.example .env       # STOCKINFO_API_URL anpassen
 make dev-up                # Vite auf :5175, Konto-API auf :8080
 ```
 
-`make setup` verlinkt die gemeinsamen Werkzeuge unter `.libs/`, legt
-StockPortfolios `.venv` mit Python 3.11+ an und installiert dort die
-Abhängigkeiten aus `requirements-dev.txt`. `PYTHON_BOOTSTRAP` wählt den
-Interpreter, falls `python3.11` fehlt. Eine bestehende venv wird
-wiederverwendet; `make clean` behält sie.
-
-Ohne die gemeinsamen Werkzeuge reichen für Frontend und API
-`npm ci --prefix frontend` und `npm ci --prefix api`. Jedes Teilprojekt hat
-seine eigene Lock-Datei.
+`make setup` ist der einzige Einrichtungsweg. Es installiert die
+npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
+3.11+ an (`PYTHON_BOOTSTRAP` wählt den Interpreter, falls `python3.11`
+fehlt) und bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
+Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
+wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
+zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Prüfziele wie
+`make test` richten nichts selbst ein: Fehlt etwas oder ist es veraltet,
+brechen sie ab und nennen `make setup`. `make info` zeigt den Werkzeugstand.
 
 **Einrichtungscode:** Solange es kein Admin-Konto gibt, gibt die API bei jedem
 Start einen neuen Code nach `StockPortfolio setup code:` aus. Unter
@@ -71,17 +76,18 @@ Anmeldung.
 
 ## Befehle
 
-`make help` listet alle Ziele, `make hints` zeigt URLs und Setup-Schritte.
+`make help` listet alle Ziele, `make hints` zeigt Links, URLs und Tipps für
+den Alltag.
 
 | Befehl | Zweck |
 |---|---|
 | `make dev-up` / `make dev-down` | Dev-Stack starten / stoppen |
 | `make test` | Doku-Prüfung, Frontend- und API-Tests, einmalig |
 | `make docs-check` | Nutzerdoku prüfen: Links, Anker, Befehle, verbotene Begriffe |
-| `make clean` | Erzeugte Dateien entfernen; Python-venv bleibt |
+| `make clean` | Erzeugte Dateien, `.venv` und `.tools/` entfernen; danach wieder `make setup` |
 | `make build` | Docker-Image lokal bauen (linux/amd64) |
 | `make push` | Geprüftes Image veröffentlichen, danach Docker-Hub-README |
-| `make tag-minor MSG="…"` | Version erhöhen, committen, taggen, pushen; danach Changelog |
+| `make tag-minor MSG="…"` | Version erhöhen, lokal taggen und Changelog committen; kein Push |
 | `make changelog` | `CHANGELOG.md` neu erzeugen, ohne Commit |
 
 Lint und Typprüfung laufen je Paket:
@@ -98,7 +104,9 @@ Vor einer Übergabe laufen mindestens `make test` und diese vier Befehle.
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
 (`.githooks/pre-commit`, eingerichtet von `make setup`) und bricht ihn bei
-Problemen ab. Der Hook prüft genau den vorgemerkten Stand, nicht den
+Problemen ab. Fehlen der Starter oder ProjectTools in `.tools/`, warnt der
+Hook nur („Doku nicht geprüft“) und lässt den Commit durch; ein solcher Commit
+gilt nicht als geprüft, `make test` bleibt die harte Grenze. Der Hook prüft genau den vorgemerkten Stand, nicht den
 Arbeitsbaum: Nicht vorgemerkte Änderungen zählen nicht, und ein Link auf eine
 Datei, die nicht in git liegt, ist ein Problem. Jede Umgebungsvariable, die der Code unter `api/src`,
 `frontend/src`, `frontend/scripts` oder `scripts` liest, muss in der Doku
@@ -129,7 +137,7 @@ steht, die Meldung nach dem Prüfen quittieren und `.docs-check.ack`
 mitcommitten:
 
 ```bash
-.libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
+.tools/bin/docs-check --ack docs/images/dashboard.png
 ```
 
 Die Quittung gilt bis zum nächsten Commit der Basis. Einträge mit Frist 0 und
@@ -300,13 +308,13 @@ verlangt den getaggten Commit.
   Beide führen `check:stockinfo-proxy` aus.
 
 **Docker-Hub-Beschreibung:** Nach erfolgreichem Push überträgt der
-ProjectTools-Helfer `docker/README.md` nach Docker Hub. Nur diese Datei
+ProjectTools-Befehl `dockerhub-readme` aus `.tools/` `docker/README.md` nach
+Docker Hub. Nur diese Datei
 bearbeiten. Relative Links werden zu absoluten GitHub-Links; die konvertierte
 Fassung darf höchstens 25.000 UTF-8-Bytes groß sein. Vorschau ohne Upload:
 
 ```bash
-./.libs/ProjectTools/src/bash/dockerhub-readme.sh \
-  --readme docker/README.md --preview --ref master
+.tools/bin/dockerhub-readme --readme docker/README.md --preview --ref master
 ```
 
 `DOCKER_README_REF` muss einen bereits veröffentlichten Stand nennen
@@ -316,26 +324,29 @@ Fassung darf höchstens 25.000 UTF-8-Bytes groß sein. Vorschau ohne Upload:
 neuen Build wiederholen:
 
 ```bash
-./.libs/ProjectTools/src/bash/dockerhub-readme.sh \
+.tools/bin/dockerhub-readme \
   --readme docker/README.md --publish --ref master --repository mangolila/stockportfolio
 ```
 
 ## Release und Changelog
 
 `make tag-major`, `make tag-minor` und `make tag-patch` (jeweils mit
-`MSG="Zusammenfassung"`) erhöhen die Version, committen, taggen und pushen.
-Danach erzeugen sie [CHANGELOG.md](../CHANGELOG.md) und veröffentlichen ihn in
-einem eigenen Commit. Ein normaler Image-Build erhöht die Version nicht.
+`MSG="Zusammenfassung"`) heben die Version in `frontend/package.json`,
+committen und taggen sie lokal, erzeugen [CHANGELOG.md](../CHANGELOG.md) und
+committen ihn. Nichts wird gepusht; veröffentlicht wird danach mit
+`git push --follow-tags`. `make help` zeigt neben jedem Ziel die Version davor
+und danach. Ein normaler Image-Build erhöht die Version nicht.
 
-Der Generator aus ProjectTools liest Release-Tags der First-Parent-Historie,
+Den Ablauf übernimmt `tag-version` aus ProjectTools: Es bricht vor dem Bump
+ab, wenn nicht `master` ausgecheckt ist. Der
+Changelog-Generator `changelog` liest Release-Tags der First-Parent-Historie,
 gruppiert Conventional Commits und lässt Ticket-, Aktivitäts-, Merge- und
-Versions-Commits weg. Ungetaggte Änderungen erscheinen nicht. Er braucht nur
-Python 3.9+ ohne Zusatzpakete; `make changelog PYTHON=/pfad/zu/python3` wählt
-einen anderen Interpreter.
+Versions-Commits weg. Ungetaggte Änderungen erscheinen nicht.
+`make changelog` erzeugt die Datei ohne Commit.
 
 Scheitert der Changelog-Schritt nach dem Tag, existiert das Release bereits.
 Ursache beheben und ohne neue Version wiederholen:
 
 ```bash
-python3 .libs/ProjectTools/src/python/changelog.py --publish
+.tools/bin/changelog --commit
 ```

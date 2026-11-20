@@ -219,12 +219,13 @@ pushImage() {
     esac
 }
 
-# Gemeinsamer ProjectTools-Helfer: Vorschau vor, Übertragung nach dem Image-Push.
+# Gemeinsamer ProjectTools-Befehl (make setup bringt ihn nach .tools/): Vorschau vor,
+# Übertragung nach dem Image-Push.
 # $1: --preview oder --publish; nur Token-Dateipfad, niemals Token-Inhalt übergeben.
 updateDockerHubReadme() {
     [[ "${TARGET}" == dockerhub ]] || return 0
     local -r _ACTION="$1"
-    local -r _HELPER="${PROJECT_TOOLS:-${SCRIPTPATH}/../.libs/ProjectTools/src}/bash/dockerhub-readme.sh"
+    local -r _HELPER="dockerhub-readme"
     if [[ "${_ACTION}" == --publish ]]; then
         DOCKER_README_AFTER_PUSH=1 "${_HELPER}" \
             --project-dir "${SCRIPTPATH}/.." --ref "${DOCKER_README_REF:-master}" \

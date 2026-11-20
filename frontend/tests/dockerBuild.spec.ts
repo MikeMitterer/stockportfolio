@@ -20,8 +20,7 @@ function createBuildFixture() {
   const docker = join(root, 'docker')
   const libraries = join(root, 'libs')
   const bin = join(root, 'bin')
-  const projectTools = join(root, 'tools')
-  for (const directory of [docker, libraries, bin, join(projectTools, 'bash')]) mkdirSync(directory, { recursive: true })
+  for (const directory of [docker, libraries, bin]) mkdirSync(directory, { recursive: true })
   copyFileSync(resolve(PROJECT_ROOT, 'docker/build.sh'), join(docker, 'build.sh'))
   const trace = join(root, 'trace')
   const imageId = `sha256:${'a'.repeat(64)}`
@@ -55,7 +54,7 @@ fi
 if [[ "$1 $2" == 'image inspect' ]]; then echo '${imageId}';
 else echo "docker:$*" >> "$TRACE"; fi
 `, { mode: 0o755 })
-  writeFileSync(join(projectTools, 'bash/dockerhub-readme.sh'), `#!/usr/bin/env bash
+  writeFileSync(join(bin, 'dockerhub-readme'), `#!/usr/bin/env bash
 README_SOURCE=''
 ARGUMENTS=("$@")
 for (( INDEX=0; INDEX<\${#ARGUMENTS[@]}; INDEX++ )); do
@@ -74,7 +73,7 @@ done
   const run = (args: string[], extraEnvironment: Record<string, string> = {}) => spawnSync('bash', [join(docker, 'build.sh'), ...args], {
     cwd: root,
     encoding: 'utf8',
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, BASH_LIBS: libraries, PROJECT_TOOLS: projectTools, TRACE: trace, TARGET: 'dockerhub', ...extraEnvironment },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, BASH_LIBS: libraries, TRACE: trace, TARGET: 'dockerhub', ...extraEnvironment },
   })
   return { run, marker, imageId, calls: () => readFileSync(trace, 'utf8').trim().split('\n').filter(Boolean) }
 }
