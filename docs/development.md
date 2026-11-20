@@ -286,7 +286,12 @@ make build PLATFORM=arm       # optional: lokaler ARM-Build
 
 `make push` verwendet die unveränderliche Image-ID des lokalen Builds, auch
 für `latest`. Gescheiterte Builds hinterlassen keine wiederverwendbare
-Markierung. `TARGET=dockerhub` ist Standard; GHCR und ECR sind optional.
+Markierung. Der Build merkt sich den Release-Tag samt Tag-Objekt; vor dem Push
+prüft `make push`, dass genau dieses Objekt auf `origin` liegt, damit die
+Registry keine Version zeigt, die es im Repository so nicht gibt. Ein nur
+lokal getaggtes Release bricht mit dem Hinweis auf
+`git push --follow-tags origin master` ab. Wurde der Tag nach dem Build
+umgesetzt oder liegt er auf `origin` anders, heißt der Hinweis `make build`. `TARGET=dockerhub` ist Standard; GHCR und ECR sind optional.
 Voraussetzungen: Bash 4+, BashLib, Docker mit buildx, ein Git-Tag und ein
 sauberer Arbeitsbaum. `STRICT=2` erlaubt Commits nach dem Tag, `STRICT=1`
 verlangt den getaggten Commit.
