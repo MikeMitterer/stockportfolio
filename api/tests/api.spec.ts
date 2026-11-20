@@ -20,14 +20,29 @@ function createFixture() {
   const repository = createSqliteRepository(join(directory, 'test.sqlite'))
   let currentTime = 100_000
   const service = new AccountService(repository, hashSetupCode('setup-code'), () => currentTime)
-  const app = createApiRouter(service, repository, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1' })
-  return { app, repository, service, advance: (milliseconds: number) => { currentTime += milliseconds } }
+  const app = createApiRouter(service, repository, {
+    publicOrigin: origin,
+    secureCookies: false,
+    remoteAddress: () => '10.0.0.1',
+  })
+  return {
+    app,
+    repository,
+    service,
+    advance: (milliseconds: number) => {
+      currentTime += milliseconds
+    },
+  }
 }
 
 function jsonRequest(body: unknown, cookie?: string, requestOrigin = origin) {
   return {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Origin: requestOrigin, ...(cookie ? { Cookie: cookie } : {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      Origin: requestOrigin,
+      ...(cookie ? { Cookie: cookie } : {}),
+    },
     body: JSON.stringify(body),
   }
 }
@@ -45,18 +60,25 @@ describe('eigene Konto-API', () => {
 
     try {
       for (const password of invalidPasswords) {
-        await expect(service.setup('setup-code', 'mike', password, '10.0.0.1'))
-          .rejects.toMatchObject({ status: 400, code: 'invalid_password' })
+        await expect(
+          service.setup('setup-code', 'mike', password, '10.0.0.1'),
+        ).rejects.toMatchObject({ status: 400, code: 'invalid_password' })
       }
 
       const admin = await service.setup('setup-code', 'mike', 'Äbcdefghij1!', '10.0.0.1')
-      await expect(service.createUser('guest', 'NoSymbol12345', 'user'))
-        .rejects.toMatchObject({ status: 400, code: 'invalid_password' })
+      await expect(service.createUser('guest', 'NoSymbol12345', 'user')).rejects.toMatchObject({
+        status: 400,
+        code: 'invalid_password',
+      })
       const guest = await service.createUser('guest', 'Guest-password-123', 'user')
-      await expect(service.resetPassword(guest.id, 'NoDigitsHere!'))
-        .rejects.toMatchObject({ status: 400, code: 'invalid_password' })
-      await expect(service.changePassword(admin.id, 'lowercase!12345'))
-        .rejects.toMatchObject({ status: 400, code: 'invalid_password' })
+      await expect(service.resetPassword(guest.id, 'NoDigitsHere!')).rejects.toMatchObject({
+        status: 400,
+        code: 'invalid_password',
+      })
+      await expect(service.changePassword(admin.id, 'lowercase!12345')).rejects.toMatchObject({
+        status: 400,
+        code: 'invalid_password',
+      })
     } finally {
       repository.close()
     }
@@ -66,11 +88,24 @@ describe('eigene Konto-API', () => {
     const { app, repository } = createFixture()
     expect((await (await app.request(`${origin}/api/setup/status`)).json()).required).toBe(true)
 
-    const setup = await app.request(`${origin}/api/setup`, jsonRequest({ code: 'setup-code', username: 'Mike', password: 'Test-password-123' }))
+    const setup = await app.request(
+      `${origin}/api/setup`,
+      jsonRequest({ code: 'setup-code', username: 'Mike', password: 'Test-password-123' }),
+    )
     expect(setup.status).toBe(201)
-    expect((await app.request(`${origin}/api/setup`, jsonRequest({ code: 'setup-code', username: 'other', password: 'Test-password-123' }))).status).toBe(409)
+    expect(
+      (
+        await app.request(
+          `${origin}/api/setup`,
+          jsonRequest({ code: 'setup-code', username: 'other', password: 'Test-password-123' }),
+        )
+      ).status,
+    ).toBe(409)
 
-    const login = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'mike', password: 'Test-password-123' }))
+    const login = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+    )
     expect(login.status).toBe(200)
     const cookie = login.headers.get('set-cookie') ?? ''
     expect(cookie).toContain('HttpOnly')
@@ -83,64 +118,180 @@ describe('eigene Konto-API', () => {
 
   it('weist fremde Herkunft und normale Nutzer auf Admin-Routen ab', async () => {
     const { app, repository } = createFixture()
-    expect((await app.request(`${origin}/api/setup`, jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }, undefined, 'https://foreign.example'))).status).toBe(403)
-    await app.request(`${origin}/api/setup`, jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }))
-    const adminLogin = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'mike', password: 'Test-password-123' }))
+    expect(
+      (
+        await app.request(
+          `${origin}/api/setup`,
+          jsonRequest(
+            { code: 'setup-code', username: 'mike', password: 'Test-password-123' },
+            undefined,
+            'https://foreign.example',
+          ),
+        )
+      ).status,
+    ).toBe(403)
+    await app.request(
+      `${origin}/api/setup`,
+      jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }),
+    )
+    const adminLogin = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+    )
     const adminCookie = adminLogin.headers.get('set-cookie') ?? ''
-    const created = await app.request(`${origin}/api/admin/users`, jsonRequest({ username: 'guest', password: 'Guest-password-123', role: 'user' }, adminCookie))
+    const created = await app.request(
+      `${origin}/api/admin/users`,
+      jsonRequest({ username: 'guest', password: 'Guest-password-123', role: 'user' }, adminCookie),
+    )
     expect(created.status).toBe(201)
-    const guestLogin = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'guest', password: 'Guest-password-123' }))
+    const guestLogin = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'guest', password: 'Guest-password-123' }),
+    )
     const guestCookie = guestLogin.headers.get('set-cookie') ?? ''
-    expect((await app.request(`${origin}/api/admin/users`, { headers: { Cookie: guestCookie } })).status).toBe(403)
+    expect(
+      (await app.request(`${origin}/api/admin/users`, { headers: { Cookie: guestCookie } })).status,
+    ).toBe(403)
     expect((await app.request(`${origin}/api/admin/users`)).status).toBe(401)
     repository.close()
   })
 
   it('widerruft nach Reset Sitzungen und schützt den letzten aktiven Admin', async () => {
     const { app, repository } = createFixture()
-    await app.request(`${origin}/api/setup`, jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }))
-    const login = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'mike', password: 'Test-password-123' }))
+    await app.request(
+      `${origin}/api/setup`,
+      jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }),
+    )
+    const login = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+    )
     const adminCookie = login.headers.get('set-cookie') ?? ''
     const adminId = repository.findUserByName('mike')?.id
-    expect((await app.request(`${origin}/api/admin/users/${adminId}/deactivate`, jsonRequest({}, adminCookie))).status).toBe(409)
-    const userResponse = await app.request(`${origin}/api/admin/users`, jsonRequest({ username: 'guest', password: 'Guest-password-123', role: 'user' }, adminCookie))
+    expect(
+      (
+        await app.request(
+          `${origin}/api/admin/users/${adminId}/deactivate`,
+          jsonRequest({}, adminCookie),
+        )
+      ).status,
+    ).toBe(409)
+    const userResponse = await app.request(
+      `${origin}/api/admin/users`,
+      jsonRequest({ username: 'guest', password: 'Guest-password-123', role: 'user' }, adminCookie),
+    )
     const guestId = (await userResponse.json()).user.id
-    const guestLogin = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'guest', password: 'Guest-password-123' }))
+    const guestLogin = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'guest', password: 'Guest-password-123' }),
+    )
     const guestCookie = guestLogin.headers.get('set-cookie') ?? ''
-    const reset = await app.request(`${origin}/api/admin/users/${guestId}/reset-password`, jsonRequest({ password: 'New-password-123' }, adminCookie))
+    const reset = await app.request(
+      `${origin}/api/admin/users/${guestId}/reset-password`,
+      jsonRequest({ password: 'New-password-123' }, adminCookie),
+    )
     expect(reset.status).toBe(200)
-    expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: guestCookie } })).status).toBe(401)
-    const temporaryLogin = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'guest', password: 'New-password-123' }))
+    expect(
+      (await app.request(`${origin}/api/auth/session`, { headers: { Cookie: guestCookie } }))
+        .status,
+    ).toBe(401)
+    const temporaryLogin = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'guest', password: 'New-password-123' }),
+    )
     expect((await temporaryLogin.json()).user.mustChangePassword).toBe(true)
     const temporaryCookie = temporaryLogin.headers.get('set-cookie') ?? ''
-    const changed = await app.request(`${origin}/api/auth/change-password`, jsonRequest({ password: 'Changed-password-123' }, temporaryCookie))
+    const changed = await app.request(
+      `${origin}/api/auth/change-password`,
+      jsonRequest({ password: 'Changed-password-123' }, temporaryCookie),
+    )
     expect(changed.status).toBe(200)
     expect((await changed.json()).user.mustChangePassword).toBe(false)
-    expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: temporaryCookie } })).status).toBe(401)
+    expect(
+      (await app.request(`${origin}/api/auth/session`, { headers: { Cookie: temporaryCookie } }))
+        .status,
+    ).toBe(401)
     const changedCookie = changed.headers.get('set-cookie') ?? ''
-    expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: changedCookie } })).status).toBe(200)
-    expect((await app.request(`${origin}/api/admin/users/${guestId}/deactivate`, jsonRequest({}, adminCookie))).status).toBe(200)
-    expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: changedCookie } })).status).toBe(401)
-    expect((await app.request(`${origin}/api/admin/users/${guestId}/reactivate`, jsonRequest({}, adminCookie))).status).toBe(200)
-    expect((await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'guest', password: 'Changed-password-123' }))).status).toBe(200)
-    expect((await app.request(`${origin}/api/auth/logout`, jsonRequest({}, adminCookie))).status).toBe(200)
-    expect((await app.request(`${origin}/api/auth/session`, { headers: { Cookie: adminCookie } })).status).toBe(401)
+    expect(
+      (await app.request(`${origin}/api/auth/session`, { headers: { Cookie: changedCookie } }))
+        .status,
+    ).toBe(200)
+    expect(
+      (
+        await app.request(
+          `${origin}/api/admin/users/${guestId}/deactivate`,
+          jsonRequest({}, adminCookie),
+        )
+      ).status,
+    ).toBe(200)
+    expect(
+      (await app.request(`${origin}/api/auth/session`, { headers: { Cookie: changedCookie } }))
+        .status,
+    ).toBe(401)
+    expect(
+      (
+        await app.request(
+          `${origin}/api/admin/users/${guestId}/reactivate`,
+          jsonRequest({}, adminCookie),
+        )
+      ).status,
+    ).toBe(200)
+    expect(
+      (
+        await app.request(
+          `${origin}/api/auth/login`,
+          jsonRequest({ username: 'guest', password: 'Changed-password-123' }),
+        )
+      ).status,
+    ).toBe(200)
+    expect(
+      (await app.request(`${origin}/api/auth/logout`, jsonRequest({}, adminCookie))).status,
+    ).toBe(200)
+    expect(
+      (await app.request(`${origin}/api/auth/session`, { headers: { Cookie: adminCookie } }))
+        .status,
+    ).toBe(401)
     repository.close()
   })
 
   it('begrenzt Fehlversuche für ein Konto ohne ein anderes Konto derselben IP zu sperren', async () => {
     const { app, repository } = createFixture()
-    await app.request(`${origin}/api/setup`, jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }))
-    const adminLogin = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'mike', password: 'Test-password-123' }))
+    await app.request(
+      `${origin}/api/setup`,
+      jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }),
+    )
+    const adminLogin = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+    )
     const adminCookie = adminLogin.headers.get('set-cookie') ?? ''
-    expect((await app.request(`${origin}/api/admin/users`, jsonRequest({ username: 'other', password: 'Other-password-123', role: 'user' }, adminCookie))).status).toBe(201)
+    expect(
+      (
+        await app.request(
+          `${origin}/api/admin/users`,
+          jsonRequest(
+            { username: 'other', password: 'Other-password-123', role: 'user' },
+            adminCookie,
+          ),
+        )
+      ).status,
+    ).toBe(201)
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'mike', password: 'wrong-password' }))
+      await app.request(
+        `${origin}/api/auth/login`,
+        jsonRequest({ username: 'mike', password: 'wrong-password' }),
+      )
     }
-    const blocked = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'mike', password: 'Test-password-123' }))
+    const blocked = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+    )
     expect(blocked.status).toBe(429)
     expect(blocked.headers.get('retry-after')).toBeTruthy()
-    const other = await app.request(`${origin}/api/auth/login`, jsonRequest({ username: 'other', password: 'Other-password-123' }))
+    const other = await app.request(
+      `${origin}/api/auth/login`,
+      jsonRequest({ username: 'other', password: 'Other-password-123' }),
+    )
     expect(other.status).toBe(200)
     repository.close()
   })
@@ -176,4 +327,38 @@ describe('eigene Konto-API', () => {
       repository.close()
     }
   })
+})
+
+describe('Origin-Prüfung für alle Pfadformen (T-125)', () => {
+  // Absicherung zu GHSA-h7mg-cq63-vhpq (hono): Wildcard-Middleware übersprungen bei
+  // kodiertem Zeilenende. Schon vor der Anhebung grün; der Test hält das Verhalten fest.
+  // GHSA-jpvv-r467-5p4w (Backslash als Pfadtrenner) liegt in der Pfadauswertung von
+  // @hono/node-server, die app.request nicht durchläuft; belegt ist sie nur durch die
+  // Versionsanhebung.
+  it.each(['/api/admin/users%0A', '/api/admin/users%0D', '/api/admin/users%0D%0A'])(
+    'weist eine schreibende Anfrage fremder Herkunft auf %s ab',
+    async (path) => {
+      const { app, repository } = createFixture()
+      await app.request(
+        `${origin}/api/setup`,
+        jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }),
+      )
+      const login = await app.request(
+        `${origin}/api/auth/login`,
+        jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+      )
+      const cookie = login.headers.get('set-cookie') ?? ''
+      const response = await app.request(
+        `${origin}${path}`,
+        jsonRequest(
+          { username: 'eve', password: 'Eve-password-123', role: 'admin' },
+          cookie,
+          'https://foreign.example',
+        ),
+      )
+      expect(response.status).toBe(403)
+      expect(repository.listUsers().map((user) => user.username)).not.toContain('eve')
+      repository.close()
+    },
+  )
 })

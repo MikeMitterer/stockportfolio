@@ -7,7 +7,8 @@ import { naiveLocales } from '@/i18n/naiveLocale'
 /** Hängt ein Feld unter dem App-Sprachpaket ein und liefert den sichtbaren Platzhalter. */
 function placeholderOf(locale: 'de' | 'en', field: unknown): string | null {
   const Host = defineComponent({
-    setup: () => () => h(NConfigProvider, { locale: naiveLocales[locale] }, { default: () => field }),
+    setup: () => () =>
+      h(NConfigProvider, { locale: naiveLocales[locale] }, { default: () => field }),
   })
   const wrapper = mount(Host)
   const value = wrapper.find('input').attributes('placeholder') ?? null

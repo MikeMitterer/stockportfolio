@@ -44,8 +44,14 @@ describe('Hinweise zu Daten und Nutzung', () => {
     expect(aboutLink.text()).toBe('Über StockPortfolio')
     const originLink = wrapper.get('a.ux-statusbar__origin')
     const repositoryLink = wrapper.get('a[href="https://github.com/MikeMitterer/stockportfolio"]')
-    expect(originLink.element.compareDocumentPosition(aboutLink.element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(aboutLink.element.compareDocumentPosition(repositoryLink.element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(
+      originLink.element.compareDocumentPosition(aboutLink.element) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(
+      aboutLink.element.compareDocumentPosition(repositoryLink.element) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
     expect(wrapper.find('a[href="./legal.html"]').exists()).toBe(false)
   })
 
@@ -64,7 +70,13 @@ describe('Hinweise zu Daten und Nutzung', () => {
     expect(wrapper.find('a[href="./LICENSE.de.txt"]').exists()).toBe(true)
     expect(wrapper.find('a[href="./LICENSING.md"]').exists()).toBe(true)
     expect(wrapper.find('a[href="./legal.html"]').exists()).toBe(true)
-    expect(wrapper.find('a[href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"]').exists()).toBe(true)
+    expect(
+      wrapper
+        .find(
+          'a[href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"]',
+        )
+        .exists(),
+    ).toBe(true)
   })
 
   it('öffnet auf Englisch den englischen Lizenztext', async () => {

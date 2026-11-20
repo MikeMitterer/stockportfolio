@@ -74,9 +74,7 @@ export interface BackupError {
 }
 
 /** Was beim Einlesen herauskommt: entweder Daten oder ein Grund. */
-export type ParseResult =
-  | { ok: true; backup: Backup }
-  | { ok: false; error: BackupError }
+export type ParseResult = { ok: true; backup: Backup } | { ok: false; error: BackupError }
 
 /**
  * Baut den Inhalt der Backup-Datei.
@@ -129,16 +127,6 @@ export function backupFileName(portfolioName: string, exportedAt: string): strin
   return `stockportfolio-${slug}-${day}.json`
 }
 
-
-/**
- * Liest und prüft den Inhalt einer Backup-Datei.
- *
- * Streng statt nachsichtig: Eine halb gelesene Datei würde ein halbes Depot
- * herstellen, und das fiele erst auf, wenn die Zahlen nicht mehr stimmen. Im
- * Zweifel lieber ablehnen — die Datei ist ja noch da.
- *
- * @param raw Dateiinhalt als Text.
- */
 /**
  * Prüft die Hülle der Datei — Kennung und Format-Fassung.
  *
@@ -236,24 +224,67 @@ function parseAllowlist(value: unknown): Record<string, boolean> {
 function parsePortfolio(value: unknown): Portfolio | BackupError {
   if (!isRecord(value)) return { key: 'noPortfolio' }
 
+  const headerError = checkPortfolioHeader(value)
+  if (headerError) return headerError
+
+  const amountSettings = parseAmountSettings(value.amountSettings)
+  if (amountSettings && 'key' in amountSettings) return amountSettings
+
+  const positions = parsePositions(value.positions as unknown[])
+  if (!Array.isArray(positions)) return positions
+
+  const now = new Date().toISOString()
+  return {
+    id: value.id as string,
+    name: value.name as string,
+    ...(value.assetGroupVersion === 2 ? { assetGroupVersion: 2 as const } : {}),
+    baseCurrency: (value.baseCurrency as string | undefined) ?? 'EUR',
+    ...(amountSettings ? { amountSettings } : {}),
+    createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
+    updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
+    // Der letzte Ausgleich gehört zum Depot: Ohne ihn stünde ein
+    // wiederhergestelltes Depot beim Kalender-Rebalancing sofort auf „fällig".
+    lastRebalancedAt: typeof value.lastRebalancedAt === 'string' ? value.lastRebalancedAt : null,
+    positions,
+  }
+}
+
+/**
+ * Prüft die Pflichtfelder des Depots: Kennung, Name, Positionsliste und eine
+ * angegebene Basiswährung.
+ *
+ * @returns Grund der Ablehnung, oder `null` wenn alle stimmen.
+ */
+function checkPortfolioHeader(value: Record<string, unknown>): BackupError | null {
   if (typeof value.id !== 'string' || value.id === '') return { key: 'noPortfolioId' }
   if (typeof value.name !== 'string') return { key: 'noPortfolioName' }
   if (!Array.isArray(value.positions)) return { key: 'noPositions' }
-  if (value.baseCurrency !== undefined && !isCurrency(value.baseCurrency)) return { key: 'invalidCurrency' }
+  if (value.baseCurrency !== undefined && !isCurrency(value.baseCurrency))
+    return { key: 'invalidCurrency' }
+  return null
+}
 
-  let amountSettings: Portfolio['amountSettings']
-  if (value.amountSettings !== undefined) {
-    if (!isRecord(value.amountSettings)) return { key: 'invalidAmountSettings' }
-    const securityBuffer = parseAmountSetting(value.amountSettings.securityBuffer)
-    const minTradeSize = parseAmountSetting(value.amountSettings.minTradeSize)
-    if (!securityBuffer || !minTradeSize) return { key: 'invalidAmountSettings' }
-    amountSettings = { securityBuffer, minTradeSize }
-  }
+/**
+ * Liest die Geldschwellen des Depots.
+ *
+ * @returns `undefined`, wenn die Datei keine enthält (ältere Fassungen);
+ *   sonst beide Schwellen oder den Grund der Ablehnung.
+ */
+function parseAmountSettings(value: unknown): Portfolio['amountSettings'] | BackupError {
+  if (value === undefined) return undefined
+  if (!isRecord(value)) return { key: 'invalidAmountSettings' }
+  const securityBuffer = parseAmountSetting(value.securityBuffer)
+  const minTradeSize = parseAmountSetting(value.minTradeSize)
+  if (!securityBuffer || !minTradeSize) return { key: 'invalidAmountSettings' }
+  return { securityBuffer, minTradeSize }
+}
 
+/** Prüft alle Positionen; die erste fehlerhafte bestimmt den Grund. */
+function parsePositions(entries: unknown[]): Position[] | BackupError {
   const positions: Position[] = []
   const seen = new Set<string>()
 
-  for (const [index, entry] of value.positions.entries()) {
+  for (const [index, entry] of entries.entries()) {
     const position = parsePosition(entry, index)
     if ('key' in position) return position
 
@@ -264,21 +295,7 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
     seen.add(position.id)
     positions.push(position)
   }
-
-  const now = new Date().toISOString()
-  return {
-    id: value.id,
-    name: value.name,
-    ...(value.assetGroupVersion === 2 ? { assetGroupVersion: 2 as const } : {}),
-    baseCurrency: value.baseCurrency as string | undefined ?? 'EUR',
-    ...(amountSettings ? { amountSettings } : {}),
-    createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
-    updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
-    // Der letzte Ausgleich gehört zum Depot: Ohne ihn stünde ein
-    // wiederhergestelltes Depot beim Kalender-Rebalancing sofort auf „fällig".
-    lastRebalancedAt: typeof value.lastRebalancedAt === 'string' ? value.lastRebalancedAt : null,
-    positions,
-  }
+  return positions
 }
 
 /**
@@ -309,7 +326,33 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
   const at = index + 1
   if (!isRecord(value)) return { key: 'positionNotAnObject', params: { at } }
 
-  if (typeof value.id !== 'string' || value.id === '') return { key: 'positionNoId', params: { at } }
+  const identity = parsePositionIdentity(value, at)
+  if ('key' in identity) return identity
+  const amounts = parsePositionAmounts(value, at)
+  if ('key' in amounts) return amounts
+
+  return {
+    id: identity.id,
+    isin: typeof value.isin === 'string' ? value.isin : null,
+    symbol: identity.symbol,
+    displayName: typeof value.displayName === 'string' ? value.displayName : identity.symbol,
+    group: identity.group,
+    kind: typeof value.kind === 'string' && value.kind.trim() ? value.kind : null,
+    units: amounts.units,
+    targetPercent: amounts.targetPercent,
+    // Fehlend heißt aktiv — ältere Backups kannten das Feld nicht.
+    enabled: typeof value.enabled === 'boolean' ? value.enabled : true,
+    ...(typeof value.notes === 'string' ? { notes: value.notes } : {}),
+  }
+}
+
+/** Kennung, Symbol und Gattung einer Position — ohne sie ist keine Zeile zuzuordnen. */
+function parsePositionIdentity(
+  value: Record<string, unknown>,
+  at: number,
+): Pick<Position, 'id' | 'symbol' | 'group'> | BackupError {
+  if (typeof value.id !== 'string' || value.id === '')
+    return { key: 'positionNoId', params: { at } }
   if (typeof value.symbol !== 'string' || value.symbol === '') {
     return { key: 'positionNoSymbol', params: { at } }
   }
@@ -317,7 +360,14 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
   if (!ASSET_GROUPS.includes(value.group as AssetGroup)) {
     return { key: 'positionGroup', params: { at, group: String(value.group) } }
   }
+  return { id: value.id, symbol: value.symbol, group: value.group as AssetGroup }
+}
 
+/** Stückzahl und Zielanteil einer Position. */
+function parsePositionAmounts(
+  value: Record<string, unknown>,
+  at: number,
+): Pick<Position, 'units' | 'targetPercent'> | BackupError {
   // Endliche Zahlen, keine Texte: `NaN` oder "100" würden sich erst in den
   // Kennzahlen zeigen, und dort sieht man die Ursache nicht mehr.
   if (!isFiniteNumber(value.units)) return { key: 'positionUnits', params: { at } }
@@ -325,20 +375,7 @@ function parsePosition(value: unknown, index: number): Position | BackupError {
   if (value.targetPercent < 0 || value.targetPercent > 100) {
     return { key: 'positionTargetRange', params: { at } }
   }
-
-  return {
-    id: value.id,
-    isin: typeof value.isin === 'string' ? value.isin : null,
-    symbol: value.symbol,
-    displayName: typeof value.displayName === 'string' ? value.displayName : value.symbol,
-    group: value.group as AssetGroup,
-    kind: typeof value.kind === 'string' && value.kind.trim() ? value.kind : null,
-    units: value.units,
-    targetPercent: value.targetPercent,
-    // Fehlend heißt aktiv — ältere Backups kannten das Feld nicht.
-    enabled: typeof value.enabled === 'boolean' ? value.enabled : true,
-    ...(typeof value.notes === 'string' ? { notes: value.notes } : {}),
-  }
+  return { units: value.units, targetPercent: value.targetPercent }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -351,6 +388,10 @@ function isFiniteNumber(value: unknown): value is number {
 
 /** Vorhandene Geldschwellen müssen vollständig und gültig sein. */
 function parseAmountSetting(value: unknown): AmountSetting | null {
-  return isRecord(value) && (value.mode === 'absolute' || value.mode === 'percent') && isFiniteNumber(value.value) && value.value >= 0
-    ? { mode: value.mode, value: value.value } : null
+  return isRecord(value) &&
+    (value.mode === 'absolute' || value.mode === 'percent') &&
+    isFiniteNumber(value.value) &&
+    value.value >= 0
+    ? { mode: value.mode, value: value.value }
+    : null
 }

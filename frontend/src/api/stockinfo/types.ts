@@ -131,7 +131,6 @@ export interface FxResponse {
   source: string | null
 }
 
-
 /** Plugin-Typkatalog aus GET /instrument-types, unabhängig vom Instrumentbestand. */
 export interface InstrumentTypesResponse {
   instrument_types: string[]

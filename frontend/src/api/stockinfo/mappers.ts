@@ -5,7 +5,14 @@
  * `src/domain/` und `src/components/` fließt, geht durch hier durch.
  */
 
-import type { DetailValueResponse, FieldsResponse, FxResponse, InstrumentTypesResponse, InstrumentSummary, QuoteResponse } from './types'
+import type {
+  DetailValueResponse,
+  FieldsResponse,
+  FxResponse,
+  InstrumentTypesResponse,
+  InstrumentSummary,
+  QuoteResponse,
+} from './types'
 import type { DetailValue, FieldCatalog } from '@/types/details'
 import type { InstrumentTypeCatalog } from '@/types/instrumentTypes'
 import type { FxRate } from '@/types/fx'
@@ -36,9 +43,7 @@ export function toQuoteCacheEntry(response: QuoteResponse): QuoteCacheEntry {
  * Mappt einen Instruments-Katalog-Eintrag auf einen Cache-Eintrag.
  * Instrumente ohne `latest_price` liefern `null` — sie haben noch keinen Kurs.
  */
-export function instrumentToQuoteCacheEntry(
-  instrument: InstrumentSummary,
-): QuoteCacheEntry | null {
+export function instrumentToQuoteCacheEntry(instrument: InstrumentSummary): QuoteCacheEntry | null {
   if (instrument.latest_price === null) return null
   const currency = requireCurrency(instrument.latest_currency, 'latest_currency', 'instruments')
   if (!instrument.latest_fetched_at) return null
@@ -66,13 +71,26 @@ export function cacheKeyOf(entry: Pick<QuoteCacheEntry, 'isin' | 'symbol'>): str
   return entry.isin ?? entry.symbol
 }
 
-function mapDetails(input: Record<string, DetailValueResponse> | null | undefined): Record<string, DetailValue> | null {
+function mapDetails(
+  input: Record<string, DetailValueResponse> | null | undefined,
+): Record<string, DetailValue> | null {
   if (input == null) return null
-  return Object.fromEntries(Object.entries(input).map(([key, entry]) => [key, {
-    value: entry.value, unit: entry.unit, currency: entry.currency,
-    origin: entry.origin, source: entry.source, asOf: entry.as_of,
-    shadowed: entry.shadowed, manualValue: entry.manual_value, manualCurrency: entry.manual_currency,
-  }]))
+  return Object.fromEntries(
+    Object.entries(input).map(([key, entry]) => [
+      key,
+      {
+        value: entry.value,
+        unit: entry.unit,
+        currency: entry.currency,
+        origin: entry.origin,
+        source: entry.source,
+        asOf: entry.as_of,
+        shadowed: entry.shadowed,
+        manualValue: entry.manual_value,
+        manualCurrency: entry.manual_currency,
+      },
+    ]),
+  )
 }
 
 export function toFieldCatalog(response: FieldsResponse): FieldCatalog {
@@ -80,31 +98,48 @@ export function toFieldCatalog(response: FieldsResponse): FieldCatalog {
     generationId: response.generation_id,
     coreVersion: response.core_version,
     detailsVersion: response.details_version,
-    definitions: response.details.map(entry => ({
-      name: entry.name, kind: entry.kind, unit: entry.unit,
-      labelEn: entry.label_en, labelDe: entry.label_de, overridable: entry.overridable,
-      sources: entry.sources, minimum: entry.minimum, maximum: entry.maximum,
+    definitions: response.details.map((entry) => ({
+      name: entry.name,
+      kind: entry.kind,
+      unit: entry.unit,
+      labelEn: entry.label_en,
+      labelDe: entry.label_de,
+      overridable: entry.overridable,
+      sources: entry.sources,
+      minimum: entry.minimum,
+      maximum: entry.maximum,
       currencyRequired: entry.currency_required,
-      scopes: entry.scopes.map(scope => ({
-        source: scope.source, instrumentTypes: scope.instrument_types, identityKinds: scope.identity_kinds,
+      scopes: entry.scopes.map((scope) => ({
+        source: scope.source,
+        instrumentTypes: scope.instrument_types,
+        identityKinds: scope.identity_kinds,
       })),
     })),
   }
 }
 
 export function toFxRate(response: FxResponse): FxRate {
-  return { base: response.base, quote: response.quote, rate: response.rate,
-    quoteTime: response.quote_time, fetchedAt: response.fetched_at,
-    cached: response.cached, stale: response.stale, source: response.source }
+  return {
+    base: response.base,
+    quote: response.quote,
+    rate: response.rate,
+    quoteTime: response.quote_time,
+    fetchedAt: response.fetched_at,
+    cached: response.cached,
+    stale: response.stale,
+    source: response.source,
+  }
 }
-
 
 export function toInstrumentTypeCatalog(response: InstrumentTypesResponse): InstrumentTypeCatalog {
   return {
     types: response.instrument_types,
     complete: response.complete,
-    sources: response.sources.map(source => ({
-      name: source.name, role: source.role, types: source.instrument_types, status: source.status,
+    sources: response.sources.map((source) => ({
+      name: source.name,
+      role: source.role,
+      types: source.instrument_types,
+      status: source.status,
     })),
   }
 }

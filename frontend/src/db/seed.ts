@@ -82,19 +82,34 @@ const DEMO_POSITIONS: readonly (Omit<Position, 'id' | 'displayName'> & {
 
 /** Neues Verrechnungskonto für den Depotstart und das spätere Wiederanlegen. */
 export function cashPosition(units = 0, targetPercent = 0): Position {
-  return { id: newId(), isin: null, symbol: 'CASH', kind: null,
-    displayName: translate('seed.cashAccount'), group: 'cash', units, targetPercent, enabled: true }
+  return {
+    id: newId(),
+    isin: null,
+    symbol: 'CASH',
+    kind: null,
+    displayName: translate('seed.cashAccount'),
+    group: 'cash',
+    units,
+    targetPercent,
+    enabled: true,
+  }
 }
 
 /** Leeres Depot mit genau einem Verrechnungskonto. */
-export function emptyPortfolio(name = translate('seed.portfolioName'), baseCurrency = 'EUR'): Portfolio {
+export function emptyPortfolio(
+  name = translate('seed.portfolioName'),
+  baseCurrency = 'EUR',
+): Portfolio {
   const now = new Date().toISOString()
   return {
     id: newId(),
     name,
     assetGroupVersion: 2,
     baseCurrency,
-    amountSettings: { securityBuffer: { mode: 'percent', value: 0 }, minTradeSize: { mode: 'absolute', value: 0 } },
+    amountSettings: {
+      securityBuffer: { mode: 'percent', value: 0 },
+      minTradeSize: { mode: 'absolute', value: 0 },
+    },
     createdAt: now,
     updatedAt: now,
     positions: [cashPosition()],
@@ -109,7 +124,10 @@ export function demoPortfolio(): Portfolio {
     name: translate('seed.demoName'),
     assetGroupVersion: 2,
     baseCurrency: 'EUR',
-    amountSettings: { securityBuffer: { mode: 'percent', value: 0 }, minTradeSize: { mode: 'absolute', value: 0 } },
+    amountSettings: {
+      securityBuffer: { mode: 'percent', value: 0 },
+      minTradeSize: { mode: 'absolute', value: 0 },
+    },
     createdAt: now,
     updatedAt: now,
     positions: DEMO_POSITIONS.map((position) => ({

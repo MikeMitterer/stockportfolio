@@ -26,8 +26,12 @@ describe('Feldkatalog nur für die Sitzung', () => {
 
   it('verwirft bei Fehler nur den Feldkatalog und hält die Ursache bereit', async () => {
     const store = useFieldsStore()
-    await store.load(new StockInfoClient('https://fields.test', async () => new Response(JSON.stringify(catalog))))
-    await store.load(new StockInfoClient('https://fields.test', async () => new Response('', { status: 503 })))
+    await store.load(
+      new StockInfoClient('https://fields.test', async () => new Response(JSON.stringify(catalog))),
+    )
+    await store.load(
+      new StockInfoClient('https://fields.test', async () => new Response('', { status: 503 })),
+    )
     expect(store.catalog).toBeNull()
     expect(store.error).toBeTruthy()
     expect(store.loading).toBe(false)
@@ -35,8 +39,17 @@ describe('Feldkatalog nur für die Sitzung', () => {
 
   it('übernimmt beim Adresswechsel keine verspätete Antwort der vorigen Instanz', async () => {
     let release!: (response: Response) => void
-    const first = new StockInfoClient('https://old.test', () => new Promise(resolve => { release = resolve }))
-    const second = new StockInfoClient('https://new.test', async () => new Response(JSON.stringify({ ...catalog, generation_id: 'new' })))
+    const first = new StockInfoClient(
+      'https://old.test',
+      () =>
+        new Promise((resolve) => {
+          release = resolve
+        }),
+    )
+    const second = new StockInfoClient(
+      'https://new.test',
+      async () => new Response(JSON.stringify({ ...catalog, generation_id: 'new' })),
+    )
     const store = useFieldsStore()
     const old = store.load(first)
     await store.load(second)

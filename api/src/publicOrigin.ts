@@ -24,7 +24,9 @@ export function normalizePublicOrigin(value: string | undefined): string | undef
   if (!trimmed) return undefined
 
   const invalid = (reason: string) =>
-    new Error(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}. Expected the browser address without a path, for example https://portfolio.example.com or http://192.168.1.10:8088`)
+    new Error(
+      `STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}. Expected the browser address without a path, for example https://portfolio.example.com or http://192.168.1.10:8088`,
+    )
 
   let url: URL
   try {
@@ -32,12 +34,14 @@ export function normalizePublicOrigin(value: string | undefined): string | undef
   } catch {
     throw invalid('not a URL')
   }
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') throw invalid('scheme must be http or https')
+  if (url.protocol !== 'http:' && url.protocol !== 'https:')
+    throw invalid('scheme must be http or https')
   if (url.username || url.password) throw invalid('must not contain user credentials')
   // Alles hinter Schema und Host, bis zu Query oder Fragment. Ein Backslash
   // beendet den Host wie bei `new URL()`.
   const rawPath = trimmed.replace(/^[a-z][a-z\d+.-]*:\/\/[^/\\?#]*/i, '').replace(/[?#].*$/s, '')
-  if (url.pathname !== '/' || (rawPath !== '' && rawPath !== '/')) throw invalid('must not contain a path')
+  if (url.pathname !== '/' || (rawPath !== '' && rawPath !== '/'))
+    throw invalid('must not contain a path')
   if (url.search || trimmed.includes('?')) throw invalid('must not contain a query')
   if (url.hash || trimmed.includes('#')) throw invalid('must not contain a fragment')
   return url.origin

@@ -33,7 +33,6 @@ const color = computed(() => assetColor(props.group.group))
  */
 const bandColor = computed(() => `color-mix(in srgb, ${color.value} 7%, transparent)`)
 const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
-
 </script>
 
 <template>
@@ -54,7 +53,13 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
       darunter". Nicht `flip`: Die Gruppe verschwindet nicht, sie ist nur
       zusammengeschoben.
     -->
-    <UxCaret class="groupheader__chevron" :style="{ color }" :open="!collapsed" motion="turn" size="md" />
+    <UxCaret
+      class="groupheader__chevron"
+      :style="{ color }"
+      :open="!collapsed"
+      motion="turn"
+      size="md"
+    />
 
     <!-- Farbpunkt wie im Assetklassen-Balken oben — gleiche Klasse, gleiche Farbe -->
     <span class="groupheader__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>
@@ -77,7 +82,11 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
         {{ formatMoneySigned(group.deltaEuro) }}
       </span>
       <span class="groupheader__status">
-        <SuggestionBadge :suggestion="group.suggestion" :below-min-trade="group.belowMinTrade" plain />
+        <SuggestionBadge
+          :suggestion="group.suggestion"
+          :below-min-trade="group.belowMinTrade"
+          plain
+        />
       </span>
     </span>
   </button>
@@ -92,8 +101,12 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
   @include muted(null);
 
   &:hover {
-    .groupheader__chevron { opacity: 1; }
-    .groupheader__label { color: token(--text-primary); }
+    .groupheader__chevron {
+      opacity: 1;
+    }
+    .groupheader__label {
+      color: token(--text-primary);
+    }
   }
 
   // Form, Größe und Drehung stehen in `UxCaret` (Fundament) — hier bleibt die
@@ -125,7 +138,9 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     transition: color 0.15s ease;
   }
 
-  &__count { opacity: 0.5; }
+  &__count {
+    opacity: 0.5;
+  }
 
   &__figures {
     display: grid;
@@ -138,28 +153,44 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     font-size: 0.6875rem;
     opacity: 0.8;
 
-    @include up(sm) { grid-template-columns: 6.5rem 6rem 6.875rem; }
-    @include up(md) { grid-template-columns: 8rem 6.5rem 6rem 6.875rem; }
+    @include up(sm) {
+      grid-template-columns: 6.5rem 6rem 6.875rem;
+    }
+    @include up(md) {
+      grid-template-columns: 8rem 6.5rem 6rem 6.875rem;
+    }
 
-    > span { text-align: right; }
+    > span {
+      text-align: right;
+    }
   }
 
   &__value {
     display: none;
 
-    @include up(md) { display: block; }
+    @include up(md) {
+      display: block;
+    }
   }
 
-  &__actual { opacity: 0.6; }
+  &__actual {
+    opacity: 0.6;
+  }
 
   &__delta {
     display: none;
     text-align: right;
 
-    @include up(sm) { display: block; }
+    @include up(sm) {
+      display: block;
+    }
 
-    &--up { color: token(--status-ok, 0.7); }
-    &--down { color: token(--status-out, 0.7); }
+    &--up {
+      color: token(--status-ok, 0.7);
+    }
+    &--down {
+      color: token(--status-out, 0.7);
+    }
   }
 
   &__status {

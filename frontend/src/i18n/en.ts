@@ -7,27 +7,40 @@
 import type { MessageSchema } from './de'
 
 export const en: MessageSchema = {
-  tradeNotice: 'Buy and sell amounts and unit counts show which changes would be needed, by calculation, to reach the targets you set yourself. The app does not check whether a trade or a financial instrument suits you, and it does not place orders. Check data, prices, costs and risks before you trade.',
+  tradeNotice:
+    'Buy and sell amounts and unit counts show which changes would be needed, by calculation, to reach the targets you set yourself. The app does not check whether a trade or a financial instrument suits you, and it does not place orders. Check data, prices, costs and risks before you trade.',
   fx: {
-    baseCurrency: 'Base currency', invalidCurrency: 'Choose a valid base currency.',
+    baseCurrency: 'Base currency',
+    invalidCurrency: 'Choose a valid base currency.',
     changeTitle: 'Change base currency',
-    changeHint: 'The base currency can be changed at any time. Cash and absolute amount limits will be converted.',
-    changeConfirm: 'Switch from {from} to {to}? Cash and absolute amount limits will be converted; holdings and percentage limits stay unchanged. The chart shows the new currency series. Earlier series remain stored.',
+    changeHint:
+      'The base currency can be changed at any time. Cash and absolute amount limits will be converted.',
+    changeConfirm:
+      'Switch from {from} to {to}? Cash and absolute amount limits will be converted; holdings and percentage limits stay unchanged. The chart shows the new currency series. Earlier series remain stored.',
     changeRate: '1 {from} = {rate} {to}, rate as of {time}.',
-    changeUnavailable: 'No valid exchange rate for the stored amounts. The base currency was not changed.',
-    title: 'Exchange rates', retry: 'Reload exchange rates',
+    changeUnavailable:
+      'No valid exchange rate for the stored amounts. The base currency was not changed.',
+    title: 'Exchange rates',
+    retry: 'Reload exchange rates',
     stalePair: '{pair}: Using a stale exchange rate from {time}.',
-    missingPair: '{pair}: No valid exchange rate. Affected positions are excluded from totals and trade amounts.',
+    missingPair:
+      '{pair}: No valid exchange rate. Affected positions are excluded from totals and trade amounts.',
     converted: 'Valued at {price} per unit · {pair}',
-    historyUnavailable: 'Historical exchange rates are unavailable for foreign currency holdings. The look back remains empty; recorded daily values are shown in the portfolio currency.',
+    historyUnavailable:
+      'Historical exchange rates are unavailable for foreign currency holdings. The look back remains empty; recorded daily values are shown in the portfolio currency.',
     amountCurrency: 'Amount in {currency}',
   },
   detailFields: {
     title: 'Additional information',
-    yes: 'Yes', no: 'No', ter: 'TER',
-    ratio: 'ratio', basisPoints: 'basis points', millions: 'million',
+    yes: 'Yes',
+    no: 'No',
+    ter: 'TER',
+    ratio: 'ratio',
+    basisPoints: 'basis points',
+    millions: 'million',
     amountMillions: '{amount} million {currency}',
-    provider: 'Provider', manual: 'Manual',
+    provider: 'Provider',
+    manual: 'Manual',
     asOf: 'As of: {value}',
     shadowed: 'Manual value (overridden by provider): {value}',
     unavailable: 'Additional information is currently unavailable. Quotes remain usable.',
@@ -45,15 +58,18 @@ export const en: MessageSchema = {
     setupTitle: 'Set up the first admin account',
     setupHint: 'Create the first admin account for this installation.',
     setupCode: 'Setup code',
-    setupCodeHelp: 'You will find the code in the StockPortfolio log, on the line “StockPortfolio setup code: …”. On Unraid: open the “Docker” tab, click the StockPortfolio icon, choose “Logs”. With Docker: docker logs <container name>, for example docker logs stockportfolio. Until an admin account exists, every restart creates a new code; always use the latest one. After creating the admin account, this page no longer appears.',
+    setupCodeHelp:
+      'You will find the code in the StockPortfolio log, on the line “StockPortfolio setup code: …”. On Unraid: open the “Docker” tab, click the StockPortfolio icon, choose “Logs”. With Docker: docker logs <container name>, for example docker logs stockportfolio. Until an admin account exists, every restart creates a new code; always use the latest one. After creating the admin account, this page no longer appears.',
     username: 'Username',
     password: 'Password',
     newPassword: 'New password',
-    passwordRequirements: '12 to 1024 characters, with at least one uppercase letter, one number and one special character.',
+    passwordRequirements:
+      '12 to 1024 characters, with at least one uppercase letter, one number and one special character.',
     createAdmin: 'Create admin account',
     loginTitle: 'Sign in',
     login: 'Sign in',
-    investmentNotice: 'StockPortfolio calculates portfolio values and deviations from your holdings, the targets and tolerance bands you set yourself, and external price data.\n\nThe status symbols ↓ and ↑ show deviations from the targets and limits you set yourself. Buy and sell amounts and unit counts show which changes would be needed, **by calculation**, to reach these targets.\n\nThe app **does not check** whether a trade or a financial instrument suits you, and it **does not place orders**. Prices and calculations may be delayed, incomplete or wrong. **Check data, prices, costs and risks before you trade.**',
+    investmentNotice:
+      'StockPortfolio calculates portfolio values and deviations from your holdings, the targets and tolerance bands you set yourself, and external price data.\n\nThe status symbols ↓ and ↑ show deviations from the targets and limits you set yourself. Buy and sell amounts and unit counts show which changes would be needed, **by calculation**, to reach these targets.\n\nThe app **does not check** whether a trade or a financial instrument suits you, and it **does not place orders**. Prices and calculations may be delayed, incomplete or wrong. **Check data, prices, costs and risks before you trade.**',
     investmentConfirm: 'I have read the notice.',
     logout: 'Sign out',
     accountMenu: 'Account {username}: open menu',
@@ -72,7 +88,8 @@ export const en: MessageSchema = {
     accountsTitle: 'Existing accounts',
     createUser: 'Create account',
     temporaryPassword: 'Temporary password',
-    temporaryPasswordHelp: 'You set this password for the first sign-in or after a reset. The person must change it at the next login.',
+    temporaryPasswordHelp:
+      'You set this password for the first sign-in or after a reset. The person must change it at the next login.',
     role: 'Role',
     userRole: 'User',
     adminRole: 'Admin',
@@ -89,8 +106,10 @@ export const en: MessageSchema = {
     errors: {
       request_failed: 'The request failed. Please try again.',
       invalid_credentials: 'The username, password or setup code is incorrect.',
-      invalid_username: 'Use 3 to 64 letters, numbers, dots, hyphens or underscores for the username.',
-      invalid_password: 'The password needs 12 to 1024 characters, an uppercase letter, a number and a special character.',
+      invalid_username:
+        'Use 3 to 64 letters, numbers, dots, hyphens or underscores for the username.',
+      invalid_password:
+        'The password needs 12 to 1024 characters, an uppercase letter, a number and a special character.',
       rate_limited: 'Too many failed attempts. Please wait and try again.',
       setup_closed: 'Initial setup is already complete.',
       invalid_origin: 'The browser address does not match the server configuration.',
@@ -138,23 +157,30 @@ export const en: MessageSchema = {
 
   privateData: {
     title: 'Portfolio data not saved',
-    conflict: 'The data changed in another browser. Your last change was not saved. Reload the current server data and repeat the change if needed.',
-    unavailable: 'The account API is unavailable or your session has expired. Changes are not possible right now. Reload the page when the connection is back.',
-    rejected: 'The account API rejected the change. It was not saved. Reload the server data and check your access and input.',
+    conflict:
+      'The data changed in another browser. Your last change was not saved. Reload the current server data and repeat the change if needed.',
+    unavailable:
+      'The account API is unavailable or your session has expired. Changes are not possible right now. Reload the page when the connection is back.',
+    rejected:
+      'The account API rejected the change. It was not saved. Reload the server data and check your access and input.',
     reload: 'Reload server data',
   },
 
   legacy: {
     title: 'Existing browser portfolios',
-    intro: 'This browser contains portfolios from before user accounts were introduced. Only the setup account may import them.',
-    alreadyImported: 'The one-time legacy import has already been used. You can export additional portfolios from this browser one at a time and restore them in your account.',
+    intro:
+      'This browser contains portfolios from before user accounts were introduced. Only the setup account may import them.',
+    alreadyImported:
+      'The one-time legacy import has already been used. You can export additional portfolios from this browser one at a time and restore them in your account.',
     source: 'Source',
     browser: 'This browser profile',
     target: 'Target account',
     portfolios: 'Portfolios',
     positions: 'positions',
-    importHint: 'Import adds these portfolios to the server. Existing server portfolios and settings remain. This can only be done once. Until imported, the data remains readable through this browser profile’s developer tools.',
-    restoreHint: 'A second bulk import is blocked. Export each portfolio you need and restore the file through Backup/Restore.',
+    importHint:
+      'Import adds these portfolios to the server. Existing server portfolios and settings remain. This can only be done once. Until imported, the data remains readable through this browser profile’s developer tools.',
+    restoreHint:
+      'A second bulk import is blocked. Export each portfolio you need and restore the file through Backup/Restore.',
     import: 'Import portfolios now',
     export: 'Export file',
     later: 'Decide later',
@@ -258,7 +284,8 @@ export const en: MessageSchema = {
   },
   views: {
     instrumentsTitle: 'Assets',
-    instrumentsComingSoon: 'The catalogue of all instruments from the StockInfo API will appear here — including the allow-list toggle for portfolio selection.',
+    instrumentsComingSoon:
+      'The catalogue of all instruments from the StockInfo API will appear here — including the allow-list toggle for portfolio selection.',
     settingsTitle: 'Settings',
   },
 
@@ -293,20 +320,65 @@ export const en: MessageSchema = {
     missingQuote: 'No valid quote — not counted',
     inactive: 'inactive',
     warningTitle: 'Foreign currency',
-    warningBody: 'Valid exchange rates into {base} are missing: {list}. Affected positions are excluded from totals.',
+    warningBody:
+      'Valid exchange rates into {base} are missing: {list}. Affected positions are excluded from totals.',
     verb: 'is quoted | are quoted',
     counts: 'is | are',
   },
 
   errors: {
-    ambiguousSymbol: 'Symbol "{symbol}" is ambiguous. No unique quote is available.',
     staleQuote: 'An outdated quote is being used.',
-    invalidResponse: 'Invalid StockInfo response: field "{field}" is missing or invalid. The quote was not accepted.',
-    unsupportedIdentity: 'StockInfo returned an unsupported identity: "{kind}". The quote was not accepted.',
+    invalidResponse:
+      'Invalid StockInfo response: field "{field}" is missing or invalid. The quote was not accepted.',
+    unsupportedIdentity:
+      'StockInfo returned an unsupported identity: "{kind}". The quote was not accepted.',
     stockinfo: {
-      stockinfo_unreachable: 'StockInfo cannot be reached from the StockPortfolio server. Check STOCKINFO_API_URL and whether StockInfo is running.',
+      stockinfo_unreachable:
+        'StockInfo cannot be reached from the StockPortfolio server. Check STOCKINFO_API_URL and whether StockInfo is running.',
       stockinfo_timeout: 'StockInfo did not answer in time.',
       stockinfo_not_configured: 'STOCKINFO_API_URL is not set on the StockPortfolio server.',
+    },
+    reason: {
+      quote_unavailable:
+        'StockInfo could not look it up at any source: {identifier}. Whether the security exists is therefore open.',
+      instrument_not_found:
+        'None of the sources configured in StockInfo found a security for {identifier}.',
+      unsupported_instrument_type:
+        '{symbol} is a {instrument_type}. StockInfo does not currently accept this instrument type.',
+      quote_currency_mismatch:
+        '{symbol} is quoted in {expected} but the source delivered {delivered}. That is a different instrument.',
+      identity_conflict:
+        'Two stored entries in StockInfo claim the same identity ({identity}). This has to be resolved in StockInfo.',
+      symbol_ambiguous: 'Symbol "{symbol}" is ambiguous. No unique quote is available.',
+      invalid_isin_format: '{isin} is not shaped like an ISIN.',
+      invalid_symbol_format: '{symbol} is not shaped like a symbol.',
+      daily_series_not_found:
+        'None of the sources configured in StockInfo carries a price history for {identifier}.',
+      daily_source_unavailable:
+        'The price history for {identifier} could not be fetched. At least one source did not answer.',
+      fx_pair_not_found:
+        'None of the sources configured in StockInfo carries the rate {base}/{quote}.',
+      fx_source_unavailable:
+        'The rate {base}/{quote} could not be fetched. At least one source did not answer.',
+      invalid_currency_code: '{base} and {quote} must be three-letter currency codes.',
+      identifier_empty: 'Nothing was entered.',
+      identifier_unknown_form:
+        '{identifier} is neither an ISIN nor a symbol with an exchange suffix.',
+      exchange_not_covered: 'StockInfo has no quote source for the trading venue {mic}.',
+      ambiguous_exchange_suffix:
+        'The exchange suffix matches more than one trading venue. The input does not say which one is meant.',
+      symbol_without_exchange_suffix:
+        'The symbol has no exchange suffix. The trading venue cannot be derived from it alone.',
+      unknown_exchange_suffix:
+        'The exchange suffix in the symbol is unknown and matches no trading venue.',
+      non_canonical_ticker:
+        'The ticker does not match the canonical spelling of its trading venue.',
+      migration_pending:
+        'StockInfo is waiting for a data migration and answers no requests until then.',
+      startup_running: 'StockInfo is still starting. Please try again in a moment.',
+      startup_failed: 'StockInfo could not start and answers no requests.',
+      contract_unavailable: 'StockInfo cannot read its field description right now.',
+      unknown: 'StockInfo reports an error that StockPortfolio does not know: {code}.',
     },
   },
 
@@ -323,7 +395,8 @@ export const en: MessageSchema = {
     unknownError: 'Unknown error',
     quotesMissingBody: '{quotes} could not be loaded — {details}',
     targetsExceededTitle: 'Targets above 100 %',
-    targetsExceededBody: 'Target shares add up to {sum} — more than 100 %. While that is the case, the buy and sell amounts do not add up either.',
+    targetsExceededBody:
+      'Target shares add up to {sum} — more than 100 %. While that is the case, the buy and sell amounts do not add up either.',
     assetsFailedTitle: 'Assets could not be loaded',
     backupTitle: 'Backup',
     doneTitle: 'Done',
@@ -418,7 +491,8 @@ export const en: MessageSchema = {
     },
     themeActive: 'active',
     languageHeading: 'Language',
-    languageHint: 'Applies to labels, numbers and dates. The choice is kept in this browser; without one, the browser language decides.',
+    languageHint:
+      'Applies to labels, numbers and dates. The choice is kept in this browser; without one, the browser language decides.',
     linksHeading: 'External links',
   },
 
@@ -435,7 +509,8 @@ export const en: MessageSchema = {
     checked: 'Checked',
     reason: 'Reason',
     reports: '— reports “{status}”',
-    offlineHint: 'Without the API there are no prices and therefore no key figures. The prices loaded last remain stored and are still used — their age is shown in the header.',
+    offlineHint:
+      'Without the API there are no prices and therefore no key figures. The prices loaded last remain stored and are still used — their age is shown in the header.',
     states: {
       unknown: 'not checked yet',
       checking: 'checking …',
@@ -446,7 +521,8 @@ export const en: MessageSchema = {
 
   portfolios: {
     heading: 'Portfolios',
-    intro: 'Several portfolios side by side — one for the kids, say, or a variant to think through. Only the active one is used for calculations; its name is shown in the status bar. Base currency, safety buffer and minimum trade amount belong to each portfolio. Tolerance bands and appearance are shared.',
+    intro:
+      'Several portfolios side by side — one for the kids, say, or a variant to think through. Only the active one is used for calculations; its name is shown in the status bar. Base currency, safety buffer and minimum trade amount belong to each portfolio. Tolerance bands and appearance are shared.',
     active: 'active',
     namePlaceholder: 'Portfolio name',
     newPlaceholder: 'Name of the new portfolio',
@@ -459,7 +535,8 @@ export const en: MessageSchema = {
 
   backup: {
     heading: 'Backup and restore',
-    intro: 'Your portfolio and settings are stored in your account on the server. The backup file is an additional copy for you to keep. Prices are not included — the app fetches those anyway.',
+    intro:
+      'Your portfolio and settings are stored in your account on the server. The backup file is an additional copy for you to keep. Prices are not included — the app fetches those anyway.',
     download: 'Download backup',
     restore: 'Restore backup …',
     confirmHeading: 'Restore this backup?',
@@ -471,7 +548,8 @@ export const en: MessageSchema = {
     savedAt: 'Saved on',
     appVersion: 'App version',
     unknown: 'unknown',
-    replaceWarning: 'The current portfolio with {positions} and all settings will be replaced. This cannot be undone — if in doubt, download your own backup first.',
+    replaceWarning:
+      'The current portfolio with {positions} and all settings will be replaced. This cannot be undone — if in doubt, download your own backup first.',
     replaceNow: 'Replace now',
     confirmReplace: 'Really overwrite the current portfolio?',
     saved: 'Saved: {file}',
@@ -502,7 +580,7 @@ export const en: MessageSchema = {
     bandsLabel: 'Bands: −{lower} / +{upper}',
     columns: {
       delta: 'Delta',
-      trade: 'Buy / sell',
+      trade: '± Units',
       value: 'Value',
       relativeDeviationAfter: 'Rel. dev.',
       relativePercent: 'Rel. %',
@@ -511,8 +589,14 @@ export const en: MessageSchema = {
     shareAfterLabel: 'Share after: {share}',
     relativeUndefined: 'Undefined for a 0 % target',
     tradeTooltip: 'Positive values mean buying, negative values mean selling.',
-    relativeDeviationTooltip: 'Relative deviation from the target after the planned trade. Example: a 9.5 % share against a 10 % target gives −5 % relative deviation. The number is green or red according to its sign; the bar colour indicates the band status.',
-    deviationTooltip: 'Difference from the target after the planned trade, in percentage points. Example: a 9.5 % share minus a 10 % target gives −0.5 percentage points.',
+    bandPriceLower: '↓ {price}',
+    bandPriceUpper: '↑ {price}',
+    bandPriceTooltip:
+      'Band prices: at this price the share after the plan reaches the lower (↓) or upper (↑) band. Calculated on the assumption that all other prices stay the same; if the whole market falls, the limit is lower.',
+    relativeDeviationTooltip:
+      'Relative deviation from the target after the planned trade. Example: a 9.5 % share against a 10 % target gives −5 % relative deviation. The number is green or red according to its sign; the bar colour indicates the band status.',
+    deviationTooltip:
+      'Difference from the target after the planned trade, in percentage points. Example: a 9.5 % share minus a 10 % target gives −0.5 percentage points.',
     deltaTooltip:
       'Units to reach the target: positive means buy, negative means sell. Click to put the value into the input.',
     deltaTooltipMore:
@@ -524,6 +608,9 @@ export const en: MessageSchema = {
     footerBalanced: 'Purchases and sales cancel out.',
     footerLeftOver: '{amount} left over.',
     footerShort: '{amount} comes from the reserve.',
+    footerTargetsBalanced: 'Targets add up to 100 %',
+    footerTargetsOver: '{deviation} too much',
+    footerTargetsUnder: '{deviation} missing',
     underfundedTitle: 'Plan not covered',
     underfundedBody:
       '{amount} is missing for the planned purchases. Sell an instrument or withdraw from cash or money market — enter the withdrawal there as a negative number.',
@@ -597,7 +684,8 @@ export const en: MessageSchema = {
     typesSource: 'Asset types are supplied by StockInfo.',
     typesLoading: 'Loading asset types …',
     typesFailed: 'Could not load asset types: {reason}. Saved filters are preserved.',
-    typesIncomplete: 'The type catalog is incomplete. Known types are selectable; saved filters are preserved.',
+    typesIncomplete:
+      'The type catalog is incomplete. Known types are selectable; saved filters are preserved.',
     typesEmpty: 'StockInfo currently offers no asset types. Saved filters are preserved.',
     reloadTypes: 'Reload types',
     typeNotOffered: '{type} (not in the current catalog)',
@@ -659,6 +747,8 @@ export const en: MessageSchema = {
       'Bands relative to the target have a flip side. They do fix the blindness towards small positions — 6 % of 2 % is 6 % of 2 %, however small the share — but they make them oversensitive in euro terms: in a €100,000 portfolio a 2 % target already signals at €120 of deviation. No order is worth that; the fee eats the benefit.',
     bandsMinTrade2:
       'The minimum trade size in the settings counters this. If a position sits outside its band but the missing amount is smaller than that limit, the status stays ✓ (OK) and the row gets a small “min”. The deviation does not disappear — it remains in the delta column — only the ↓ or ↑ symbol does. The default is 0, i.e. off.',
+    bandsBandPrice:
+      'Band prices: below each price in the trade table you see the price at which the share after the plan reaches the lower (↓) or upper (↑) band. They are calculated from the values after the planned trade and on the assumption that all other prices stay the same; if the whole market falls, the limit is lower. A limit the share has already left is shown in red.',
 
     triggerHeading: 'Bands, schedule — or both',
     triggerBody:
@@ -702,8 +792,7 @@ export const en: MessageSchema = {
   hints: {
     statusBands:
       '↓ below, ↑ above target, each outside your bands ({lower} / {upper} relative to target). ✓ within the bands. → still inside the band but close to the limit: between {lower} and {nearLower} and between {nearUpper} and {upper}. ✓ with “min”: outside the band, amount below the minimum trade size.',
-    statusDueDate:
-      'On a due date any deviation from the target counts.',
+    statusDueDate: 'On a due date any deviation from the target counts.',
     statusCalendar:
       '↓ below, ↑ above target: on a due date for any deviation. ✓ no date due or exactly on target. ✓ with “min”: amount below the minimum trade size.',
     baseCurrency:
@@ -777,10 +866,12 @@ export const en: MessageSchema = {
     providerCity: '6363 Westendorf',
     providerCountry: 'Austria',
     websiteLink: 'MangoLila website',
-    intro: 'StockPortfolio gets quotes from StockInfo and calculates values from your holdings, target shares and settings.',
+    intro:
+      'StockPortfolio gets quotes from StockInfo and calculates values from your holdings, target shares and settings.',
     data: 'Data may be missing, outdated or incorrect. Displayed prices are not binding trading prices.',
     use: 'The status symbols ↓ and ↑ show deviations from the targets and limits you set yourself. Buy and sell amounts and unit counts show which changes would be needed, by calculation, to reach these targets. The app does not check whether a trade or a financial instrument suits you, and it does not place orders. Check data, prices, costs and risks before you trade.',
-    legal: 'The software is licensed under EUPL 1.2. MangoLila’s consumer declaration explains the applicable warranty and liability rules.',
+    legal:
+      'The software is licensed under EUPL 1.2. MangoLila’s consumer declaration explains the applicable warranty and liability rules.',
     licenseLink: 'EUPL 1.2 (English)',
     licensingLink: 'Licensing and consumer declaration',
     sourceLink: 'License page and source archive',

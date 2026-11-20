@@ -104,6 +104,7 @@ The default image build targets `linux/amd64` for x86 Unraid servers.
 | App data | Map `/mnt/user/appdata/stockportfolio` to container path `/data` for accounts and private portfolios. Back up this directory. |
 | Public origin | Set `STOCKPORTFOLIO_PUBLIC_ORIGIN` to the exact browser origin when using a reverse proxy: scheme, host and port only, for example `https://portfolio.example.com`. A trailing slash is ignored; a path stops the start with an error in the container log. If setup or login reports that the browser address does not match the server configuration, compare this field with the address bar. |
 | Secure cookies | Set `STOCKPORTFOLIO_SECURE_COOKIES=true` for HTTPS access. |
+| Session idle days | `STOCKPORTFOLIO_SESSION_IDLE_DAYS`: days without use before users have to sign in again; defaults to 7. Every use starts the period anew. Whole days from 1 to 365. |
 | Timezone | Container log timezone; defaults to UTC |
 
 Open browsers with the same account receive portfolio change notices through

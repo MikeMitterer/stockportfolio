@@ -9,4 +9,5 @@ import {
 export const createPortfolioRepository = (): PortfolioRepository => new PortfolioRepository()
 export const createSettingsRepository = (): SettingsRepository => new SettingsRepository()
 export const createAllowlistRepository = (): AllowlistRepository => new AllowlistRepository()
-export const createValueSnapshotRepository = (): ValueSnapshotRepository => new ValueSnapshotRepository()
+export const createValueSnapshotRepository = (): ValueSnapshotRepository =>
+  new ValueSnapshotRepository()

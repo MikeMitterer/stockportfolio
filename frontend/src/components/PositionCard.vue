@@ -9,7 +9,12 @@ import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionReadDetails from '@/components/PositionReadDetails.vue'
 import AssetTypeHint from '@/components/AssetTypeHint.vue'
 import { assetColor } from '@/domain/assetColors'
-import { positionIsin, positionPrimaryLabel, positionSymbol, positionType } from '@/domain/positionIdentity'
+import {
+  positionIsin,
+  positionPrimaryLabel,
+  positionSymbol,
+  positionType,
+} from '@/domain/positionIdentity'
 import { useQuoteIssue } from '@/composables/useQuoteIssue'
 import { integer, money, percent } from '@/domain/formatters'
 import type { PositionResult } from '@/domain/rebalancing'
@@ -36,7 +41,7 @@ const isCash = computed(() => props.row.position.group === 'cash')
 const color = computed(() => assetColor(props.row.position.group))
 
 const title = computed(() => positionPrimaryLabel(props.row))
-const isin = computed(() => positionSymbol(props.row) ? positionIsin(props.row) : null)
+const isin = computed(() => (positionSymbol(props.row) ? positionIsin(props.row) : null))
 const { formatMoney } = usePortfolioCurrency()
 
 function toggleDetails(): void {
@@ -51,16 +56,20 @@ function toggleDetails(): void {
       <!-- Kopf: Papier und Status -->
       <div class="poscard__head">
         <div class="poscard__ident">
-          <span
-            class="poscard__dot"
-            :style="{ backgroundColor: color }"
-            aria-hidden="true"
-          ></span>
+          <span class="poscard__dot" :style="{ backgroundColor: color }" aria-hidden="true"></span>
           <div class="poscard__names">
             <div class="poscard__title-row">
               <span class="poscard__title">{{ title }}</span>
-              <span v-if="isin" class="poscard__isin"><span aria-hidden="true">|</span> {{ isin }}</span>
-              <span v-if="!row.isActive" class="poscard__tag">{{ row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : row.excludedReason === 'currency' ? row.quote?.currency : t('currency.inactive') }}</span>
+              <span v-if="isin" class="poscard__isin"
+                ><span aria-hidden="true">|</span> {{ isin }}</span
+              >
+              <span v-if="!row.isActive" class="poscard__tag">{{
+                row.excludedReason === 'missing-quote'
+                  ? t('currency.missingQuote')
+                  : row.excludedReason === 'currency'
+                    ? row.quote?.currency
+                    : t('currency.inactive')
+              }}</span>
             </div>
             <div v-if="!isCash" class="poscard__name-row">
               <span class="poscard__subtitle">{{ row.position.displayName }}</span>
@@ -78,7 +87,14 @@ function toggleDetails(): void {
             class="poscard__badge"
           />
           <span v-else class="poscard__excluded">{{ t('currency.notCounted') }}</span>
-          <NButton size="small" quaternary circle :aria-label="t(detailsOpen ? 'drilldown.closeDetails' : 'drilldown.openDetails')" :aria-expanded="detailsOpen" @click.stop="toggleDetails">
+          <NButton
+            size="small"
+            quaternary
+            circle
+            :aria-label="t(detailsOpen ? 'drilldown.closeDetails' : 'drilldown.openDetails')"
+            :aria-expanded="detailsOpen"
+            @click.stop="toggleDetails"
+          >
             <UxCaret :open="detailsOpen" motion="turn" size="sm" />
           </NButton>
         </div>
@@ -89,11 +105,21 @@ function toggleDetails(): void {
         <span class="poscard__meta tabular-nums">
           <template v-if="!isCash">
             {{ t('common.units', { count: integer(row.position.units) }) }}
-            <template v-if="row.quote"> · {{ money(row.quote.price, row.quote.currency, 2) }}</template>
+            <template v-if="row.quote">
+              · {{ money(row.quote.price, row.quote.currency, 2) }}</template
+            >
           </template>
           <template v-else>{{ row.position.displayName }}</template>
         </span>
-        <span class="poscard__value tabular-nums">{{ row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : row.quote ? money(row.originalMarketValue, row.quote.currency) : isCash ? formatMoney(row.marketValue) : '—' }}</span>
+        <span class="poscard__value tabular-nums">{{
+          row.basePrice !== null
+            ? money(row.marketValue, row.baseCurrency)
+            : row.quote
+              ? money(row.originalMarketValue, row.quote.currency)
+              : isCash
+                ? formatMoney(row.marketValue)
+                : '—'
+        }}</span>
       </div>
 
       <!-- Ziel gegen IST -->
@@ -131,9 +157,14 @@ function toggleDetails(): void {
   border-radius: var(--radius-sm);
   background-color: token(--surface-card);
 
-  &--inactive { opacity: 0.55; }
+  &--inactive {
+    opacity: 0.55;
+  }
 
-  &__summary { @include stack(var(--space-2)); cursor: pointer; }
+  &__summary {
+    @include stack(var(--space-2));
+    cursor: pointer;
+  }
 
   &__head {
     display: flex;
@@ -155,7 +186,9 @@ function toggleDetails(): void {
     border-radius: var(--radius-full);
   }
 
-  &__names { min-width: 0; }
+  &__names {
+    min-width: 0;
+  }
 
   &__title-row {
     @include row(var(--space-2));
@@ -186,12 +219,25 @@ function toggleDetails(): void {
     white-space: nowrap;
   }
 
-  &__name-row { display: flex; align-items: baseline; gap: var(--space-2); min-width: 0; }
+  &__name-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-width: 0;
+  }
 
-  &__isin { @include muted(var(--font-xs)); font-variant-numeric: tabular-nums; }
+  &__isin {
+    @include muted(var(--font-xs));
+    font-variant-numeric: tabular-nums;
+  }
 
-  &__badge { flex-shrink: 0; }
-  &__head-actions { @include row(var(--space-1)); flex-shrink: 0; }
+  &__badge {
+    flex-shrink: 0;
+  }
+  &__head-actions {
+    @include row(var(--space-1));
+    flex-shrink: 0;
+  }
 
   &__excluded {
     flex-shrink: 0;
@@ -205,15 +251,21 @@ function toggleDetails(): void {
     gap: var(--space-3);
     font-size: var(--font-xs);
 
-    &--base { font-size: var(--font-sm); }
+    &--base {
+      font-size: var(--font-sm);
+    }
   }
 
   &__meta {
     @include muted(var(--font-xs));
   }
 
-  &__value { font-weight: 500; }
+  &__value {
+    font-weight: 500;
+  }
 
-  &__muted { @include muted(null); }
+  &__muted {
+    @include muted(null);
+  }
 }
 </style>

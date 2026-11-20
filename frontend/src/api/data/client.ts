@@ -8,7 +8,10 @@ export interface PrivateResource<T> {
 }
 
 export class PrivateDataError extends Error {
-  constructor(public readonly status: number, public readonly code: string) {
+  constructor(
+    public readonly status: number,
+    public readonly code: string,
+  ) {
     super(code)
   }
 }
@@ -45,16 +48,23 @@ export class PrivateDataClient {
     await this.pending.get(this.key(kind, id))?.catch(() => undefined)
   }
 
-  private async request<T>(url: string, method = 'GET', data?: object, reportConflict = true): Promise<T> {
+  private async request<T>(
+    url: string,
+    method = 'GET',
+    data?: object,
+    reportConflict = true,
+  ): Promise<T> {
     let response: Response
     try {
       response = await this.fetcher(url, {
         method,
         credentials: 'same-origin',
-        ...(method === 'GET' ? {} : {
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data ?? {}),
-        }),
+        ...(method === 'GET'
+          ? {}
+          : {
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data ?? {}),
+            }),
       })
     } catch {
       const error = new PrivateDataError(0, 'unavailable')
@@ -62,9 +72,12 @@ export class PrivateDataClient {
       throw error
     }
     if (!response.ok) {
-      const result = await response.json().catch(() => null) as { error?: string } | null
+      const result = (await response.json().catch(() => null)) as { error?: string } | null
       const error = new PrivateDataError(response.status, result?.error ?? 'request_failed')
-      if ((response.status !== 404 || method !== 'GET') && (reportConflict || response.status !== 409)) {
+      if (
+        (response.status !== 404 || method !== 'GET') &&
+        (reportConflict || response.status !== 409)
+      ) {
         window.dispatchEvent(new CustomEvent(DATA_ERROR_EVENT, { detail: error }))
       }
       throw error
@@ -90,7 +103,8 @@ export class PrivateDataClient {
     for (const key of this.revisions.keys()) {
       if (key.startsWith(`${kind}:`) && !present.has(key)) this.revisions.delete(key)
     }
-    for (const resource of result.resources) this.revisions.set(this.key(kind, resource.resourceId), resource.revision)
+    for (const resource of result.resources)
+      this.revisions.set(this.key(kind, resource.resourceId), resource.revision)
     return result.resources
   }
 
@@ -111,7 +125,10 @@ export class PrivateDataClient {
   save<T>(kind: ResourceKind, id: string, value: T): Promise<number> {
     return this.exclusive(kind, id, async () => {
       const revision = this.revisions.get(this.key(kind, id)) ?? 0
-      const result = await this.request<{ revision: number }>(path(kind, id), 'PUT', { revision, value })
+      const result = await this.request<{ revision: number }>(path(kind, id), 'PUT', {
+        revision,
+        value,
+      })
       this.revisions.set(this.key(kind, id), result.revision)
       this.writtenRevisions.set(this.key(kind, id), result.revision)
       return result.revision
@@ -128,15 +145,25 @@ export class PrivateDataClient {
       for (let attempt = 0; ; attempt += 1) {
         const current = await this.get<T>(kind, id)
         try {
-          const result = await this.request<{ revision: number }>(path(kind, id), 'PUT', {
-            revision: current?.revision ?? 0,
-            value: change(current?.value ?? null),
-          }, options.reportConflict ?? true)
+          const result = await this.request<{ revision: number }>(
+            path(kind, id),
+            'PUT',
+            {
+              revision: current?.revision ?? 0,
+              value: change(current?.value ?? null),
+            },
+            options.reportConflict ?? true,
+          )
           this.revisions.set(this.key(kind, id), result.revision)
           this.writtenRevisions.set(this.key(kind, id), result.revision)
           return result.revision
         } catch (error) {
-          if (!(error instanceof PrivateDataError) || error.status !== 409 || attempt >= (options.conflictRetries ?? 0)) throw error
+          if (
+            !(error instanceof PrivateDataError) ||
+            error.status !== 409 ||
+            attempt >= (options.conflictRetries ?? 0)
+          )
+            throw error
         }
       }
     })
@@ -144,7 +171,8 @@ export class PrivateDataClient {
 
   remove(kind: ResourceKind, id: string): Promise<void> {
     return this.exclusive(kind, id, async () => {
-      const revision = this.revisions.get(this.key(kind, id)) ?? (await this.get(kind, id))?.revision
+      const revision =
+        this.revisions.get(this.key(kind, id)) ?? (await this.get(kind, id))?.revision
       if (revision === undefined) return
       await this.request(path(kind, id), 'DELETE', { revision })
       this.revisions.delete(this.key(kind, id))

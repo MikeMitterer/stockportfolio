@@ -8,11 +8,21 @@ import { createApiRouter, type ApiOptions } from './routers/api.js'
 export interface ServerOptions extends ApiOptions {
   setupCodeHash: string | null
   publicDirectory: string
+  /** Leerlauffrist aus `STOCKPORTFOLIO_SESSION_IDLE_DAYS`; fehlt sie, gilt der Default. */
+  sessionIdleMs?: number
 }
 
-export function createServerApp(repository: AccountRepository, options: ServerOptions): Hono<{ Bindings: HttpBindings }> {
+export function createServerApp(
+  repository: AccountRepository,
+  options: ServerOptions,
+): Hono<{ Bindings: HttpBindings }> {
   const app = new Hono<{ Bindings: HttpBindings }>()
-  const service = new AccountService(repository, options.setupCodeHash)
+  const service = new AccountService(
+    repository,
+    options.setupCodeHash,
+    Date.now,
+    options.sessionIdleMs,
+  )
 
   app.get('/healthz', (context) => context.json({ status: 'ok' }))
   app.get('/admin/users', (context) => context.redirect('/#/admin/users', 302))

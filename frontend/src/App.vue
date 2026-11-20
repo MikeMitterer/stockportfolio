@@ -23,6 +23,7 @@ import { useRelativeTime } from '@/composables/useRelativeTime'
 import { useMinimumDuration } from '@/composables/useMinimumDuration'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { useTradePlanDraftSync } from '@/composables/useTradePlanDraftSync'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
 import { useLiveSyncStore } from '@/stores/liveSync'
@@ -67,7 +68,11 @@ onUnmounted(() => {
 
 const dataFailureMessage = computed(() => {
   if (dataFailure.value?.status === 409) return t('privateData.conflict')
-  if (dataFailure.value?.status === 0 || dataFailure.value?.status === 401 || (dataFailure.value?.status ?? 0) >= 500) {
+  if (
+    dataFailure.value?.status === 0 ||
+    dataFailure.value?.status === 401 ||
+    (dataFailure.value?.status ?? 0) >= 500
+  ) {
     return t('privateData.unavailable')
   }
   return t('privateData.rejected')
@@ -78,9 +83,16 @@ function reloadServerData(): void {
 }
 
 // Typänderungen auch nach Aktualisierung außerhalb des Dashboards speichern.
-watch(() => [quotesStore.quotes, portfolioStore.portfolio?.id], () => {
-  void portfolioStore.syncKinds(quotesStore.quotes)
-}, { immediate: true })
+watch(
+  () => [quotesStore.quotes, portfolioStore.portfolio?.id],
+  () => {
+    void portfolioStore.syncKinds(quotesStore.quotes)
+  },
+  { immediate: true },
+)
+
+// Der Rebalancing-Plan in Arbeit folgt Depot und Beständen, gleich in welcher Ansicht.
+useTradePlanDraftSync()
 
 const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)
@@ -90,9 +102,14 @@ const ageLabel = useRelativeTime(lastRefreshAt)
  * Die Mindestdauer verhindert, dass er bei schnellen Abrufen nur aufblitzt.
  * Der Knopf bleibt während eines eigenen Kursabrufs gesperrt.
  */
-const progressVisible = useMinimumDuration(computed(() =>
-  (route.name === 'dashboard' && (!portfolioStore.loaded || !settingsStore.loaded)) || quotesStore.busy || liveSync.syncing,
-))
+const progressVisible = useMinimumDuration(
+  computed(
+    () =>
+      (route.name === 'dashboard' && (!portfolioStore.loaded || !settingsStore.loaded)) ||
+      quotesStore.busy ||
+      liveSync.syncing,
+  ),
+)
 const refreshing = useMinimumDuration(computed(() => quotesStore.forcing))
 
 /*
@@ -102,9 +119,9 @@ const refreshing = useMinimumDuration(computed(() => quotesStore.forcing))
  * steht wegen der Mindestdauer aber noch einen Moment. Ohne diese Zeile fiele
  * sie in diesem Moment von 80 % auf den Anfang zurück und verschwände dann.
  */
-const progressPercent = computed(() => (
-  quotesStore.busy ? quotesStore.progressPercent : liveSync.syncing ? null : 100
-))
+const progressPercent = computed(() =>
+  quotesStore.busy ? quotesStore.progressPercent : liveSync.syncing ? null : 100,
+)
 
 // Die Altersangabe hängt am tatsächlichen Laden, nicht am Klick: Sie sagt, dass
 // die Zahl daneben gerade nicht stimmt — und das gilt in beiden Fällen.
@@ -137,7 +154,6 @@ onMounted(() => {
    * Die Kurse fallen still auf den Cache zurück und schweigen.
    */
   if (client && apiStatus.state === 'unknown') void apiStatus.check(client)
-
 })
 
 /*
@@ -225,7 +241,13 @@ async function refresh(): Promise<void> {
             <AppProgressBar
               :active="progressVisible"
               :percent="progressPercent"
-              :label="t(liveSync.syncing && !quotesStore.busy ? 'status.syncLoading' : 'status.quotesLoading')"
+              :label="
+                t(
+                  liveSync.syncing && !quotesStore.busy
+                    ? 'status.syncLoading'
+                    : 'status.quotesLoading',
+                )
+              "
             />
 
             <UxAppShell>
@@ -241,7 +263,9 @@ async function refresh(): Promise<void> {
                 <NAlert type="error" :title="t('privateData.title')">
                   <div class="private-data-alert__content">
                     <p>{{ dataFailureMessage }}</p>
-                    <NButton type="primary" @click="reloadServerData">{{ t('privateData.reload') }}</NButton>
+                    <NButton type="primary" @click="reloadServerData">{{
+                      t('privateData.reload')
+                    }}</NButton>
                   </div>
                 </NAlert>
               </div>
@@ -259,6 +283,10 @@ async function refresh(): Promise<void> {
 </template>
 
 <style scoped lang="scss">
-.private-data-alert { padding: var(--space-6); }
-.private-data-alert__content { @include stack(var(--space-4)); }
+.private-data-alert {
+  padding: var(--space-6);
+}
+.private-data-alert__content {
+  @include stack(var(--space-4));
+}
 </style>

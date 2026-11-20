@@ -8,8 +8,14 @@
  */
 
 import { ApiError } from './errors'
-import { normalizeFields, normalizeFx, normalizeInstruments, normalizeInstrumentTypes, normalizeQuote } from './normalizers'
-import { translate } from '@/i18n'
+import {
+  normalizeFields,
+  normalizeFx,
+  normalizeInstruments,
+  normalizeInstrumentTypes,
+  normalizeQuote,
+} from './normalizers'
+import { i18n, translate } from '@/i18n'
 import type {
   DailyPoint,
   FieldsResponse,
@@ -39,7 +45,10 @@ export class StockInfoClient {
    *   des eigenen Servers. Tests geben eine eigene Adresse an.
    * @param fetchFn Optionale fetch-Implementierung (Default: globales `fetch`).
    */
-  constructor(baseUrl: string = STOCKINFO_PROXY_PATH, fetchFn: FetchFn = globalThis.fetch.bind(globalThis)) {
+  constructor(
+    baseUrl: string = STOCKINFO_PROXY_PATH,
+    fetchFn: FetchFn = globalThis.fetch.bind(globalThis),
+  ) {
     this.baseUrl = baseUrl.replace(/\/+$/, '')
     this.fetchFn = fetchFn
   }
@@ -61,7 +70,10 @@ export class StockInfoClient {
 
   /** Katalog aller bekannten Instrumente. */
   async getInstruments(): Promise<InstrumentSummary[]> {
-    return normalizeInstruments(await this.request<unknown>('/instruments'), `${this.baseUrl}/instruments`)
+    return normalizeInstruments(
+      await this.request<unknown>('/instruments'),
+      `${this.baseUrl}/instruments`,
+    )
   }
 
   /** Felddefinitionen werden unabhängig von den Kursen geladen. */
@@ -71,7 +83,10 @@ export class StockInfoClient {
 
   /** Verfügbare Plugin-Typen, unabhängig von bereits aufgenommenen Assets. */
   async getInstrumentTypes(): Promise<InstrumentTypesResponse> {
-    return normalizeInstrumentTypes(await this.request<unknown>('/instrument-types'), `${this.baseUrl}/instrument-types`)
+    return normalizeInstrumentTypes(
+      await this.request<unknown>('/instrument-types'),
+      `${this.baseUrl}/instrument-types`,
+    )
   }
 
   /** Eine Einheit Ausgangswährung entspricht rate Einheiten Zielwährung. */
@@ -92,9 +107,7 @@ export class StockInfoClient {
 
   /** Tages-Schlusskurse (EOD) zu einer ISIN. */
   async getDailyHistory(isin: string, period: Period = '3m'): Promise<DailyPoint[]> {
-    return this.request<DailyPoint[]>(
-      `/quote/${encodeURIComponent(isin)}/daily?period=${period}`,
-    )
+    return this.request<DailyPoint[]>(`/quote/${encodeURIComponent(isin)}/daily?period=${period}`)
   }
 
   /**
@@ -122,10 +135,7 @@ export class StockInfoClient {
    * „neu laden" hätte den zwischengespeicherten Kurs geliefert.
    */
   async refreshBySymbol(symbol: string): Promise<QuoteResponse> {
-    return this.requestQuote(
-      `/refresh/by-symbol/${encodeURIComponent(symbol)}`,
-      'POST',
-    )
+    return this.requestQuote(`/refresh/by-symbol/${encodeURIComponent(symbol)}`, 'POST')
   }
 
   /** Health-Check der API. */
@@ -147,7 +157,11 @@ export class StockInfoClient {
    * @returns Deserialisierter Response-Body.
    * @throws {ApiError} Bei Netzwerkfehler (`status: 0`) oder HTTP-Status >= 400.
    */
-  private async request<T>(path: string, method: 'GET' | 'POST' = 'GET', relative = true): Promise<T> {
+  private async request<T>(
+    path: string,
+    method: 'GET' | 'POST' = 'GET',
+    relative = true,
+  ): Promise<T> {
     const url = relative ? `${this.baseUrl}${path}` : path
 
     let response: Response
@@ -155,9 +169,10 @@ export class StockInfoClient {
       response = await this.fetchFn(url, {
         method,
         // Der eigene Server verlangt bei POST JSON und prüft die Herkunft.
-        headers: method === 'POST'
-          ? { Accept: 'application/json', 'Content-Type': 'application/json' }
-          : { Accept: 'application/json' },
+        headers:
+          method === 'POST'
+            ? { Accept: 'application/json', 'Content-Type': 'application/json' }
+            : { Accept: 'application/json' },
       })
     } catch (cause) {
       const detail = cause instanceof Error ? cause.message : 'Netzwerkfehler'
@@ -172,33 +187,78 @@ export class StockInfoClient {
   }
 }
 
+/** Form einer StockInfo-Kennung: Kleinbuchstaben und Ziffern, mindestens ein Unterstrich. */
+const STOCKINFO_CODE = /^[a-z][a-z0-9]*(_[a-z0-9]+)+$/
+
+/** Katalogschlüssel des Satzes zu einer StockInfo-Kennung. */
+function reasonKey(code: string): string {
+  return `errors.reason.${code}`
+}
+
+/** Meldet, ob StockPortfolio für die Kennung einen eigenen Satz hat. */
+function isKnownStockInfoCode(code: string): boolean {
+  return /^[a-z_]+$/.test(code) && code !== 'unknown' && i18n.global.te(reasonKey(code), 'en')
+}
+
 /**
- * Liest das `detail`-Feld einer FastAPI-Fehlerantwort.
- * Fällt auf den HTTP-Statustext zurück, wenn der Body nicht lesbar ist.
+ * Bildet aus StockInfos `{code, params}` einen übersetzten Satz. Nur Werte aus
+ * Text oder Zahl gehen in die Platzhalter ein. `identity_conflict` trägt je
+ * Identitätsform andere Werte; der Satz nennt deshalb die vorhandenen als eine
+ * Angabe. Eine unbekannte Kennung ergibt den allgemeinen Satz mit der Kennung.
+ */
+function describeStockInfoCode(code: string, params: unknown): string {
+  if (!isKnownStockInfoCode(code)) return translate('errors.reason.unknown', { code })
+  const values: Record<string, string> = {}
+  if (params && typeof params === 'object') {
+    for (const [name, value] of Object.entries(params)) {
+      if (typeof value === 'string' || typeof value === 'number') values[name] = String(value)
+    }
+  }
+  if (code === 'identity_conflict') {
+    const listing = [values.ticker, values.mic].filter(Boolean).join('/')
+    values.identity = [listing, values.isin].filter(Boolean).join(', ') || values.kind || code
+  }
+  return translate(reasonKey(code), values)
+}
+
+/**
+ * Bildet die Meldung zu einer Fehlerantwort: Fehler der eigenen Weiterleitung
+ * (`stockinfo_*`), StockInfos Kennungen (`code` oder Kennung als `detail`) als
+ * übersetzter Satz, ein `detail`-Satz im alten Format unverändert.
+ * Fällt auf den HTTP-Statustext zurück, wenn der Body nichts davon trägt.
  */
 async function readErrorDetail(response: Response): Promise<string> {
   try {
-    const body: unknown = await response.json()
-    // Fehler der Weiterleitung selbst: StockInfo nicht erreichbar, zu langsam
-    // oder nicht konfiguriert. Die übrigen Antworten stammen von StockInfo.
-    if (body && typeof body === 'object' && 'error' in body && typeof body.error === 'string' && body.error.startsWith('stockinfo_')) {
-      return translate(`errors.stockinfo.${body.error}`)
-    }
-    if (body && typeof body === 'object' && 'code' in body && typeof body.code === 'string') {
-      if (body.code === 'symbol_ambiguous' && 'params' in body && body.params && typeof body.params === 'object' && 'symbol' in body.params && typeof body.params.symbol === 'string') {
-        return translate('errors.ambiguousSymbol', { symbol: body.params.symbol })
-      }
-      return body.code
-    }
-    if (body && typeof body === 'object' && 'detail' in body) {
-      const detail = (body as { detail: unknown }).detail
-      if (typeof detail === 'string') return detail
-      return JSON.stringify(detail)
-    }
+    const message = errorBodyMessage(await response.json())
+    if (message !== null) return message
   } catch {
     // Body war kein JSON — Statustext genügt.
   }
   return response.statusText || translate('notify.unknownError')
+}
+
+/** Meldung aus einem Fehler-Body, oder `null`, wenn er keine trägt. */
+function errorBodyMessage(body: unknown): string | null {
+  if (!body || typeof body !== 'object') return null
+  const fields = body as Record<string, unknown>
+  // Fehler der Weiterleitung selbst: StockInfo nicht erreichbar, zu langsam
+  // oder nicht konfiguriert. Die übrigen Antworten stammen von StockInfo.
+  if (typeof fields.error === 'string' && fields.error.startsWith('stockinfo_')) {
+    return translate(`errors.stockinfo.${fields.error}`)
+  }
+  if (typeof fields.code === 'string') return describeStockInfoCode(fields.code, fields.params)
+  return detailMessage(fields.detail)
+}
+
+/** Meldung aus `detail`; Objekte und Listen nie als JSON zeigen. */
+function detailMessage(detail: unknown): string | null {
+  if (typeof detail !== 'string') return null
+  // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`. Auch eine
+  // unbekannte Kennung in dieser Form (Kleinbuchstaben mit Unterstrich, etwa
+  // maintenance_running) geht über den allgemeinen Satz, nie roh in die Oberfläche.
+  if (STOCKINFO_CODE.test(detail)) return describeStockInfoCode(detail, undefined)
+  // Ein Satz im alten Format bleibt lesbar.
+  return detail
 }
 
 /** Injection-Key für den Client (Vue provide/inject). */

@@ -1,5 +1,5 @@
 /**
- * Unit-Tests für src/domain/rebalancing.ts.
+ * Unit-Tests für src/domain/rebalancing.ts und src/domain/valuation.ts.
  * Fokus: die Regel, nicht der Wert — jede Formel isoliert mit klaren
  * synthetischen Inputs, plus Edge-Cases und ein kleines konstruiertes
  * Portfolio als Aggregator-Sanity.
@@ -10,24 +10,26 @@ import {
   actualPercent,
   applyMinTrade,
   combineSuggestion,
-  groupMarketValue,
-  hasForeignCurrency,
   computeLiquidity,
   computeRebalancing,
   isNearBand,
   lowerBand,
-  marketValue,
-  quoteFor,
-  quoteKey,
   relativeDeltaPercent,
-  roundToPlace,
   suggestion,
   targetPercentSum,
   targetValue,
-  totalValue,
   unitsDelta,
   upperBand,
 } from '@/domain/rebalancing'
+import {
+  groupMarketValue,
+  hasForeignCurrency,
+  marketValue,
+  quoteFor,
+  quoteKey,
+  roundToPlace,
+  totalValue,
+} from '@/domain/valuation'
 import type {
   Bands,
   Portfolio,
@@ -445,8 +447,22 @@ describe('Mindest-Handelsvolumen im Aggregat', () => {
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     positions: [
-      makePosition({ id: 'klein', isin: 'K', symbol: 'K.DE', group: 'stocks', units: 188, targetPercent: 2 }),
-      makePosition({ id: 'rest', isin: null, symbol: 'CASH', group: 'cash', units: 98120, targetPercent: 98 }),
+      makePosition({
+        id: 'klein',
+        isin: 'K',
+        symbol: 'K.DE',
+        group: 'stocks',
+        units: 188,
+        targetPercent: 2,
+      }),
+      makePosition({
+        id: 'rest',
+        isin: null,
+        symbol: 'CASH',
+        group: 'cash',
+        units: 98120,
+        targetPercent: 98,
+      }),
     ],
   }
 
@@ -531,7 +547,14 @@ describe('Auslöser im Aggregat', () => {
     lastRebalancedAt: '2026-01-01T00:00:00.000Z',
     positions: [
       makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 99, targetPercent: 50 }),
-      makePosition({ id: 'c', isin: null, symbol: 'CASH', group: 'cash', units: 101, targetPercent: 50 }),
+      makePosition({
+        id: 'c',
+        isin: null,
+        symbol: 'CASH',
+        group: 'cash',
+        units: 101,
+        targetPercent: 50,
+      }),
     ],
   }
 
@@ -617,8 +640,22 @@ describe('computeRebalancing', () => {
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     positions: [
-      makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', group: 'stocks', units: 10, targetPercent: 70 }),
-      makePosition({ id: 'b', isin: 'B', symbol: 'B.DE', group: 'bonds', units: 2, targetPercent: 20 }),
+      makePosition({
+        id: 'a',
+        isin: 'A',
+        symbol: 'A.DE',
+        group: 'stocks',
+        units: 10,
+        targetPercent: 70,
+      }),
+      makePosition({
+        id: 'b',
+        isin: 'B',
+        symbol: 'B.DE',
+        group: 'bonds',
+        units: 2,
+        targetPercent: 20,
+      }),
       makePosition({
         id: 'c',
         isin: null,
@@ -857,10 +894,7 @@ describe('computeLiquidity', () => {
     ]),
   )
 
-  function settingsWithBuffer(
-    buffer: number,
-    mode: 'percent' | 'absolute' = 'absolute',
-  ): Settings {
+  function settingsWithBuffer(buffer: number, mode: 'percent' | 'absolute' = 'absolute'): Settings {
     return {
       activePortfolioId: 'p1',
       totalRounding: 0,
@@ -945,9 +979,9 @@ describe('computeLiquidity', () => {
 
   it('gibt den Puffer zur Anzeige mit zurück', () => {
     const portfolio = portfolioWith([{ group: 'cash', units: 500 }])
-    expect(computeLiquidity(portfolio, quotes, settingsWithBuffer(170_000), 1000).securityBuffer).toBe(
-      170_000,
-    )
+    expect(
+      computeLiquidity(portfolio, quotes, settingsWithBuffer(170_000), 1000).securityBuffer,
+    ).toBe(170_000)
   })
 
   it('ignoriert deaktivierte Positionen', () => {
@@ -1050,7 +1084,11 @@ describe('Fremdwährung', () => {
   it('behält die Zeile in der Liste, mit Grund', () => {
     // Ein unsichtbarer Ausschluss ist schlimmer als eine falsche Summe: Man
     // kann ihn nicht einmal suchen.
-    const result = computeRebalancing(portfolioWithCurrencies([{ isin: 'F' }]), quotesWithCurrencies({ F: 'USD' }), settings)
+    const result = computeRebalancing(
+      portfolioWithCurrencies([{ isin: 'F' }]),
+      quotesWithCurrencies({ F: 'USD' }),
+      settings,
+    )
 
     expect(result.rows).toHaveLength(1)
     expect(result.rows[0]?.isActive).toBe(false)
@@ -1061,7 +1099,11 @@ describe('Fremdwährung', () => {
     // „Abgeschaltet" ist eine Entscheidung des Nutzers, „fremde Währung" ein
     // Zustand, den er so nicht gewollt hat.
     const portfolio = portfolioWithCurrencies([{ isin: 'E', enabled: false }, { isin: 'F' }])
-    const result = computeRebalancing(portfolio, quotesWithCurrencies({ E: 'EUR', F: 'USD' }), settings)
+    const result = computeRebalancing(
+      portfolio,
+      quotesWithCurrencies({ E: 'EUR', F: 'USD' }),
+      settings,
+    )
 
     expect(result.rows[0]?.excludedReason).toBe('disabled')
     expect(result.rows[1]?.excludedReason).toBe('currency')
@@ -1071,7 +1113,11 @@ describe('Fremdwährung', () => {
     // In ihrer eigenen Währung ist die Zahl richtig — sie passt nur nicht in
     // die Summe. Sie zu verstecken hieße, dem Nutzer seine Position zu
     // unterschlagen.
-    const result = computeRebalancing(portfolioWithCurrencies([{ isin: 'F' }]), quotesWithCurrencies({ F: 'USD' }), settings)
+    const result = computeRebalancing(
+      portfolioWithCurrencies([{ isin: 'F' }]),
+      quotesWithCurrencies({ F: 'USD' }),
+      settings,
+    )
 
     expect(result.rows[0]?.originalMarketValue).toBe(1000)
     expect(result.rows[0]?.basePrice).toBeNull()

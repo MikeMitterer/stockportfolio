@@ -24,10 +24,7 @@ const ALLOWED: Record<'GET' | 'POST', RegExp[]> = {
     /^\/quote\/(?!by-symbol$)[^/]+\/daily$/,
     /^\/quote\/by-symbol\/[^/]+\/daily$/,
   ],
-  POST: [
-    /^\/refresh\/(?!by-symbol$)[^/]+$/,
-    /^\/refresh\/by-symbol\/[^/]+$/,
-  ],
+  POST: [/^\/refresh\/(?!by-symbol$)[^/]+$/, /^\/refresh\/by-symbol\/[^/]+$/],
 }
 
 /** Kopfzeilen der StockInfo-Antwort, die der Browser zu sehen bekommt. */
@@ -87,7 +84,8 @@ export async function forwardToStockInfo(
     })
   } catch (error) {
     const name = error instanceof Error ? error.name : ''
-    if (name === 'TimeoutError' || name === 'AbortError') return errorResponse(504, 'stockinfo_timeout')
+    if (name === 'TimeoutError' || name === 'AbortError')
+      return errorResponse(504, 'stockinfo_timeout')
     return errorResponse(502, 'stockinfo_unreachable')
   }
   const headers = new Headers()

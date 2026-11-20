@@ -5,13 +5,7 @@
  * Private Kontodaten laufen über `src/data/` zur Konto-API.
  */
 
-import {
-  allowlistId,
-  getDb,
-  SETTINGS_KEY,
-  type AllowlistEntry,
-  type HistoryEntry,
-} from './schema'
+import { allowlistId, getDb, SETTINGS_KEY, type AllowlistEntry, type HistoryEntry } from './schema'
 import type { ValueSnapshotEntry } from '@/db/schema'
 import type { Portfolio, QuoteCacheEntry, Settings } from '@/types/portfolio'
 
@@ -191,7 +185,9 @@ export class ValueSnapshotRepository {
   async findByPortfolio(portfolioId: string): Promise<ValueSnapshotEntry[]> {
     const db = await getDb()
     const entries = await db.getAllFromIndex('valueSnapshots', 'byPortfolio', portfolioId)
-    return [...new Map(entries.map(entry => [`${entry.date}/${entry.currency}`, entry])).values()].sort((a, b) => a.date.localeCompare(b.date))
+    return [
+      ...new Map(entries.map((entry) => [`${entry.date}/${entry.currency}`, entry])).values(),
+    ].sort((a, b) => a.date.localeCompare(b.date))
   }
 
   /**
@@ -203,7 +199,13 @@ export class ValueSnapshotRepository {
    */
   async put(portfolioId: string, date: string, total: number, currency: string): Promise<void> {
     const db = await getDb()
-    await db.put('valueSnapshots', { key: `${portfolioId}::${currency}::${date}`, portfolioId, date, total, currency })
+    await db.put('valueSnapshots', {
+      key: `${portfolioId}::${currency}::${date}`,
+      portfolioId,
+      date,
+      total,
+      currency,
+    })
   }
 
   /** Verwirft alle Tageswerte eines Depots — für „Depot gelöscht". */

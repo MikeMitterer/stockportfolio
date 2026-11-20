@@ -10,19 +10,16 @@ import PriceSparkline from '@/components/PriceSparkline.vue'
 import SuggestionBadge from '@/components/SuggestionBadge.vue'
 import PositionDrilldown from '@/components/PositionDrilldown.vue'
 import PositionGroupHeader from '@/components/PositionGroupHeader.vue'
-import { safeStorage, UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
-import LinkIcons from '@/components/LinkIcons.vue'
-import AssetTypeHint from '@/components/AssetTypeHint.vue'
-import { useQuoteIssue } from '@/composables/useQuoteIssue'
+import { UxCaret, UxInlineNumber } from '@mmit/ux-foundation'
+import PositionIdentityCell from '@/components/PositionIdentityCell.vue'
+import { useCollapsedGroups } from '@/composables/useCollapsedGroups'
+import { usePositionSparklines } from '@/composables/usePositionSparklines'
 import { useFieldsStore } from '@/stores/fields'
 import { projectDetailFields } from '@/domain/detailFields'
-import { positionIsin, positionPrimaryLabel, positionSymbol, positionType } from '@/domain/positionIdentity'
 import { integer, money, percent } from '@/domain/formatters'
+import { rowsByGroup } from '@/domain/positionGroups'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
-import type { AssetGroup, ExternalLink, Position } from '@/types/portfolio'
-import { useHistoryStore, type HistorySeries } from '@/stores/history'
-import { HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
-import { useSettingsStore } from '@/stores/settings'
+import type { ExternalLink, Position } from '@/types/portfolio'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 
 type RowKey = string | number
@@ -53,55 +50,10 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const statusHint = useStatusHint()
-const quoteIssue = useQuoteIssue()
 const fieldsStore = useFieldsStore()
 
-/**
- * Kursverlauf für die Zeilen.
- *
- * Kurzer Zeitraum: In 60 Pixeln Breite ist ein Jahr nur noch Zickzack. Welcher
- * es genau ist, entscheidet der Nutzer in den Einstellungen.
- *
- * Für „ein Tag" wird die Woche geholt und daraus nur der letzte Schritt
- * gezeigt: Zwischen zwei Schlusskursen gibt es keinen Verlauf, wohl aber eine
- * Veränderung — vom letzten Handelstag auf heute. Ein eigener Abruf dafür
- * wäre Verschwendung, die Wochendaten enthalten ihn bereits.
- */
 const client = inject<StockInfoClient>(STOCK_INFO_CLIENT) ?? null
-const historyStore = useHistoryStore()
-const settingsStore = useSettingsStore()
-
-const sparkPeriod = computed(() => settingsStore.settings.ui.historyPeriod)
-const periodInfo = computed(() => HISTORY_PERIOD_INFO[sparkPeriod.value])
-const apiPeriod = computed(() => periodInfo.value.apiPeriod)
-
-/** Beschriftung der Spalte — der Zeitraum gehört einmal in den Kopf. */
-const periodLabel = computed(() => t(`history.short.${periodInfo.value.shortKey}`))
-
-/**
- * Punkte für eine Zeile, auf den eingestellten Zeitraum zugeschnitten.
- *
- * Nur „ein Tag" schneidet: Dort interessieren der vorige Schluss und der
- * aktuelle Kurs, nicht die Woche davor.
- */
-function pointsFor(position: PositionResult['position']): HistorySeries {
-  const series = historyStore.get(position, apiPeriod.value)
-  const { limit } = periodInfo.value
-  if (limit === 0) return series
-  return { ...series, points: series.points.slice(-limit) }
-}
-
-// Nachladen, sobald die Zeilen stehen oder der Zeitraum wechselt. Der Store
-// holt nur, was fehlt oder von gestern ist — meist kostet das keine Anfrage.
-watch(
-  [() => props.rows.map((row) => row.position.id).join(','), apiPeriod],
-  () => {
-    for (const row of props.rows) {
-      void historyStore.ensure(client, row.position, apiPeriod.value)
-    }
-  },
-  { immediate: true },
-)
+const { periodLabel, pointsFor } = usePositionSparklines(() => props.rows)
 
 const expandedRowKeys = ref<RowKey[]>([])
 const historyRequests = ref<Record<string, number>>({})
@@ -127,85 +79,14 @@ function toggleRow(id: RowKey): void {
 
 // ─── Gruppierung ────────────────────────────────────────────────────────────
 
-interface RenderedGroup {
-  group: GroupResult
-  rows: PositionResult[]
-}
-
-/** Nur Gruppen mit Positionen — leere Kopfzeilen wären Rauschen. */
-const renderedGroups = computed<RenderedGroup[]>(() =>
-  props.groups
-    .map((group) => ({
-      group,
-      rows: props.rows.filter((row) => row.position.group === group.group),
-    }))
-    .filter((entry) => entry.rows.length > 0),
+const renderedGroups = computed(() =>
+  rowsByGroup(props.groups, props.rows, (row) => row.position.group),
 )
 
-const COLLAPSED_KEY = 'stockportfolio.table.collapsedGroups'
-const collapsedGroups = ref<Set<AssetGroup>>(loadCollapsed())
-
-/** Liest die eingeklappten Gruppen aus dem Speicher. */
-function loadCollapsed(): Set<AssetGroup> {
-  const stored = safeStorage.read(COLLAPSED_KEY)
-  if (!stored) return new Set()
-
-  // Das `try` gilt nur noch dem Inhalt: Was dort steht, hat eine frühere
-  // Fassung geschrieben und muss nicht mehr passen. Der Zugriff selbst ist
-  // abgesichert.
-  try {
-    const parsed: unknown = JSON.parse(stored)
-    if (!Array.isArray(parsed)) return new Set()
-    return new Set(parsed as AssetGroup[])
-  } catch {
-    return new Set()
-  }
-}
-
-watch(
-  collapsedGroups,
-  (groups) => {
-    safeStorage.write(COLLAPSED_KEY, JSON.stringify([...groups]))
-  },
-  { deep: true },
-)
-
-function isCollapsed(group: AssetGroup): boolean {
-  return collapsedGroups.value.has(group)
-}
-
-function collapseAllGroups(): void {
-  collapsedGroups.value = new Set(renderedGroups.value.map(entry => entry.group.group))
-}
-
-function openAllGroups(): void {
-  collapsedGroups.value = new Set()
-}
+const { isCollapsed, collapseAllGroups, openAllGroups, toggleGroup, headedGroup } =
+  useCollapsedGroups(renderedGroups)
 
 defineExpose({ collapseAllGroups, openAllGroups })
-
-/**
- * Die Gruppe, deren Tabelle die Spaltenkopfzeile trägt — die erste, die
- * tatsächlich sichtbar ist. Alle darunter erben sie visuell.
- *
- * Nach DOM-Position (`:first-of-type`) ging das schief: `v-show` lässt die
- * Tabelle einer eingeklappten Gruppe im Dokument stehen. Klappt man die oberste
- * Gruppe zu, fiele die Kopfzeile ausgerechnet der versteckten Tabelle zu — und
- * die ganze Ansicht stünde ohne Spaltennamen da.
- */
-const headedGroup = computed<AssetGroup | null>(
-  () => renderedGroups.value.find((entry) => !isCollapsed(entry.group.group))?.group.group ?? null,
-)
-
-function toggleGroup(group: AssetGroup): void {
-  const next = new Set(collapsedGroups.value)
-  if (next.has(group)) {
-    next.delete(group)
-  } else {
-    next.add(group)
-  }
-  collapsedGroups.value = next
-}
 
 /**
  * Aufklapp-Pfeil der Zeile — derselbe Pfeil wie am Gruppenkopf.
@@ -224,24 +105,32 @@ function renderExpandIcon({ expanded }: { expanded: boolean }) {
 
 // ─── Spalten ────────────────────────────────────────────────────────────────
 
-const dynamicColumns = computed<PositionColumn[]>(() => [...new Set(props.detailColumns ?? [])].map(key => {
-  const fieldFor = (row: PositionResult) => projectDetailFields(row.quote, fieldsStore.catalog?.definitions ?? [], [], locale.value)
-    .find(field => field.key === key)
-  return {
-    key: `detail:${key}`,
-    title: props.rows.map(fieldFor).find(field => field)?.label ?? key,
-    width: 160,
-    stockInfoFields: row => fieldFor(row) ? [key] : [],
-    render: row => {
-      const field = fieldFor(row)
-      return field ? h('span', { 'data-main-field': key }, field.value) : '—'
-    },
-  }
-}))
+const dynamicColumns = computed<PositionColumn[]>(() =>
+  [...new Set(props.detailColumns ?? [])].map((key) => {
+    const fieldFor = (row: PositionResult) =>
+      projectDetailFields(row.quote, fieldsStore.catalog?.definitions ?? [], [], locale.value).find(
+        (field) => field.key === key,
+      )
+    return {
+      key: `detail:${key}`,
+      title: props.rows.map(fieldFor).find((field) => field)?.label ?? key,
+      width: 160,
+      stockInfoFields: (row) => (fieldFor(row) ? [key] : []),
+      render: (row) => {
+        const field = fieldFor(row)
+        return field ? h('span', { 'data-main-field': key }, field.value) : '—'
+      },
+    }
+  }),
+)
 
-watch(() => props.detailColumns, keys => {
-  if (keys?.length && client) void fieldsStore.load(client)
-}, { immediate: true, deep: true })
+watch(
+  () => props.detailColumns,
+  (keys) => {
+    if (keys?.length && client) void fieldsStore.load(client)
+  },
+  { immediate: true, deep: true },
+)
 
 const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
@@ -252,7 +141,9 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         row,
         total: props.total,
         links: props.links,
-        visibleStockInfoFields: columns.value.flatMap(column => column.stockInfoFields?.(row) ?? []),
+        visibleStockInfoFields: columns.value.flatMap(
+          (column) => column.stockInfoFields?.(row) ?? [],
+        ),
         historyRequest: historyRequests.value[row.position.id] ?? 0,
         refreshing: props.refreshingIds?.has(row.position.id) ?? false,
         onUpdate: (id: string, changes: Partial<Position>) => emit('update', id, changes),
@@ -263,82 +154,21 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
     title: t('table.position'),
     key: 'symbol',
-    stockInfoFields: row => row.position.group === 'cash' ? [] : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
+    stockInfoFields: (row) =>
+      row.position.group === 'cash'
+        ? []
+        : ['symbol', ...(row.position.displayName === row.quote?.name ? ['name'] : [])],
     // Nur Mindestbreite: Diese Spalte nimmt übrigen Platz auf. Die übrigen
     // Spalten behalten ihre Breite, und die Status-Spalte liegt damit genau
     // unter dem Statusfeld des Gruppenkopfs.
     minWidth: 280,
     render: (row) =>
-      h('div', { class: 'cell-stack' }, [
-        // Kürzel und Verweis-Symbole in einer Zeile — die Links gehören zum
-        // Papier, nicht in eine eigene Spalte, die die Tabelle breiter macht.
-        h('div', { class: 'cell-row' }, [
-          h(
-            'button',
-            {
-              class: 'cell-symbol cell-openable',
-              type: 'button',
-              title: t('table.openDetails'),
-              'aria-expanded': expandedRowKeys.value.includes(row.position.id),
-              onClick: (event: MouseEvent) => {
-                event.stopPropagation()
-                toggleRow(row.position.id)
-              },
-            },
-            positionPrimaryLabel(row),
-          ),
-          positionSymbol(row) && positionIsin(row)
-            ? h('span', { class: 'cell-isin' }, [
-                h('span', { 'aria-hidden': 'true' }, '|'),
-                positionIsin(row)!,
-              ])
-            : null,
-          // Fremde Währung sieht aus wie „inaktiv", ist aber keine
-          // Entscheidung des Nutzers — deshalb eigene Farbe und eigener Text.
-          row.excludedReason === 'currency'
-            ? h(
-                'span',
-                {
-                  class: 'cell-tag cell-tag--warning',
-                  title: t('currency.badgeTitle', { currency: row.quote?.currency ?? '?' }),
-                },
-                row.quote?.currency ?? t('currency.warningTitle'),
-              )
-            : null,
-          row.excludedReason === 'disabled'
-            ? h(
-                'span',
-                {
-                  class: 'cell-tag',
-                },
-                t('currency.inactive'),
-              )
-            : null,
-          row.position.group !== 'cash'
-            ? h(LinkIcons, {
-                position: row.position,
-                links: props.links,
-                quoteType: row.quote?.type,
-              })
-            : null,
-        ]),
-        row.position.group !== 'cash'
-          ? h('div', { class: 'cell-name-row' }, [h(
-              'button',
-              {
-                class: 'cell-name cell-openable',
-                type: 'button',
-                title: t('table.openDetails'),
-                onClick: (event: MouseEvent) => {
-                  event.stopPropagation()
-                  toggleRow(row.position.id)
-                },
-              },
-              row.position.displayName,
-            ), h(AssetTypeHint, { type: positionType(row), label: t('links.appliesToKind') })])
-          : null,
-        quoteIssue(row) ? h('span', { class: 'cell-num--missing' }, quoteIssue(row)) : null,
-      ]),
+      h(PositionIdentityCell, {
+        row,
+        links: props.links,
+        expanded: expandedRowKeys.value.includes(row.position.id),
+        onToggle: () => toggleRow(row.position.id),
+      }),
   },
   {
     title: t('table.units'),
@@ -363,7 +193,7 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
   {
     title: t('table.price'),
     key: 'price',
-    stockInfoFields: row => row.quote ? ['price', 'currency'] : [],
+    stockInfoFields: (row) => (row.quote ? ['price', 'currency'] : []),
     align: 'right',
     width: 100,
     render: (row) =>
@@ -398,25 +228,32 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         return h('span', { class: 'cell-empty' }, '—')
       }
       const series = pointsFor(row.position)
-      return h('button', {
-        type: 'button',
-        class: 'cell-openable',
-        'data-open-history': row.position.id,
-        'aria-label': `${t('drilldown.sectionHistory')}: ${row.position.displayName}`,
-        'aria-expanded': expandedRowKeys.value.includes(row.position.id),
-        onClick: (event: MouseEvent) => {
-          event.stopPropagation()
-          toggleRow(row.position.id)
-          if (expandedRowKeys.value.includes(row.position.id)) {
-            historyRequests.value[row.position.id] = (historyRequests.value[row.position.id] ?? 0) + 1
-          }
+      return h(
+        'button',
+        {
+          type: 'button',
+          class: 'cell-openable',
+          'data-open-history': row.position.id,
+          'aria-label': `${t('drilldown.sectionHistory')}: ${row.position.displayName}`,
+          'aria-expanded': expandedRowKeys.value.includes(row.position.id),
+          onClick: (event: MouseEvent) => {
+            event.stopPropagation()
+            toggleRow(row.position.id)
+            if (expandedRowKeys.value.includes(row.position.id)) {
+              historyRequests.value[row.position.id] =
+                (historyRequests.value[row.position.id] ?? 0) + 1
+            }
+          },
         },
-      }, [h(PriceSparkline, {
-        points: series.points,
-        loading: series.loading,
-        width: 62,
-        periodLabel: periodLabel.value,
-      })])
+        [
+          h(PriceSparkline, {
+            points: series.points,
+            loading: series.loading,
+            width: 62,
+            periodLabel: periodLabel.value,
+          }),
+        ],
+      )
     },
   },
   {
@@ -430,8 +267,12 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         'span',
         { class: 'cell-num cell-num--strong' },
         row.quote
-          ? row.basePrice !== null ? money(row.marketValue, row.baseCurrency) : money(row.originalMarketValue, row.quote.currency)
-          : row.position.group === 'cash' ? formatMoney(row.marketValue) : '—',
+          ? row.basePrice !== null
+            ? money(row.marketValue, row.baseCurrency)
+            : money(row.originalMarketValue, row.quote.currency)
+          : row.position.group === 'cash'
+            ? formatMoney(row.marketValue)
+            : '—',
       ),
   },
   {
@@ -517,24 +358,29 @@ const columns: ComputedRef<PositionColumn[]> = computed(() => [
         },
         row.excludedReason === 'currency'
           ? t('currency.statusForeign')
-          : row.excludedReason === 'missing-quote' ? t('currency.missingQuote') : t('currency.notCounted'),
+          : row.excludedReason === 'missing-quote'
+            ? t('currency.missingQuote')
+            : t('currency.notCounted'),
       )
     },
   },
   ...dynamicColumns.value,
 ])
-const displayedColumns = computed<PositionColumn[]>(() => columns.value.map(column => ({
-  ...column,
-  cellProps: row => ({
-    style: {
-      backgroundColor: hoveredRowKey.value === row.position.id && !expandedRowKeys.value.includes(row.position.id)
-        ? 'rgb(var(--surface-raised))'
-        : 'transparent',
-    },
-  }),
-})))
+const displayedColumns = computed<PositionColumn[]>(() =>
+  columns.value.map((column) => ({
+    ...column,
+    cellProps: (row) => ({
+      style: {
+        backgroundColor:
+          hoveredRowKey.value === row.position.id &&
+          !expandedRowKeys.value.includes(row.position.id)
+            ? 'rgb(var(--surface-raised))'
+            : 'transparent',
+      },
+    }),
+  })),
+)
 const { formatMoney } = usePortfolioCurrency()
-
 </script>
 
 <template>

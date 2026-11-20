@@ -3,8 +3,15 @@ import { computed, onMounted, onUnmounted, provide, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { NButton, NCheckbox, NConfigProvider, NFormItem, NInput, NPopconfirm, NSpace, darkTheme, type GlobalThemeOverrides } from 'naive-ui'
-import { buildNaiveOverrides, THEMES, UxInfoHint } from '@mmit/ux-foundation'
+import {
+  NButton,
+  NConfigProvider,
+  NPopconfirm,
+  NSpace,
+  darkTheme,
+  type GlobalThemeOverrides,
+} from 'naive-ui'
+import { buildNaiveOverrides, THEMES } from '@mmit/ux-foundation'
 import { STOCK_INFO_CLIENT, StockInfoClient } from '@/api/stockinfo/client'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { naiveLocales } from '@/i18n/naiveLocale'
@@ -12,12 +19,17 @@ import { readStoredTheme } from '@/stores/theme'
 import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/api/data/client'
 import { clearMarketCaches } from '@/db/cache'
 import { useLegacyStore } from '@/stores/legacy'
+import { useTradePlanDraftStore } from '@/stores/tradePlanDraft'
 import AuthenticatedApp from './AuthenticatedApp.vue'
-import EmphasizedText from '@/components/EmphasizedText.vue'
+import LegacyPortfolioList from './LegacyPortfolioList.vue'
+import LoginForm from './LoginForm.vue'
+import PasswordChangeForm from './PasswordChangeForm.vue'
+import SetupForm from './SetupForm.vue'
 import { PortfolioAuthClient, PortfolioApiError, type PortfolioUser } from '@/api/account/client'
 import { AUTH_CLIENT, AUTH_LOGOUT, AUTH_USER } from './context'
 
-type View = 'loading' | 'setup' | 'login' | 'change' | 'app' | 'legacy' | 'missingStockInfo' | 'unavailable'
+type View =
+  'loading' | 'setup' | 'login' | 'change' | 'app' | 'legacy' | 'missingStockInfo' | 'unavailable'
 
 const { t, te, locale } = useI18n()
 const router = useRouter()
@@ -44,6 +56,7 @@ const noticeAccepted = ref(false)
 const stockInfoClient = new StockInfoClient()
 const apiStatus = useApiStatusStore()
 const legacyStore = useLegacyStore()
+const tradePlanDraft = useTradePlanDraftStore()
 const { legacyData } = storeToRefs(legacyStore)
 const isDark = THEMES[readStoredTheme()].isDark
 const naiveOverrides = ref<GlobalThemeOverrides>({})
@@ -115,7 +128,9 @@ async function initialize(): Promise<void> {
   view.value = 'loading'
   showStartupStatus.value = false
   if (startupTimer !== null) clearTimeout(startupTimer)
-  startupTimer = setTimeout(() => { showStartupStatus.value = true }, 350)
+  startupTimer = setTimeout(() => {
+    showStartupStatus.value = true
+  }, 350)
   try {
     const setup = await client.setupStatus()
     if (setup.required) {
@@ -188,6 +203,8 @@ async function logout(): Promise<void> {
     await client.logout()
     deactivatePrivateData()
     legacyStore.clearPreview()
+    // Der Rebalancing-Plan lebt im Tab-Speicher; nach der Abmeldung gehört er niemandem mehr.
+    tradePlanDraft.useFor(null)
     user.value = null
     view.value = 'login'
     errorCode.value = ''
@@ -232,112 +249,109 @@ function continueWithoutImport(): void {
   view.value = 'app'
 }
 
-function exportLegacy(index: number): void {
-  const exported = legacyStore.exportAt(index)
-  if (!exported) return
-  const url = URL.createObjectURL(new Blob([JSON.stringify(exported.backup, null, 2)], { type: 'application/json' }))
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = exported.fileName
-  anchor.click()
-  URL.revokeObjectURL(url)
-}
-
 onMounted(() => {
   naiveOverrides.value = buildNaiveOverrides()
   void initialize()
 })
-onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
+onUnmounted(() => {
+  if (startupTimer !== null) clearTimeout(startupTimer)
+})
 </script>
 
 <template>
-  <NConfigProvider :locale="locale === 'de' ? naiveLocales.de : naiveLocales.en" :theme="isDark ? darkTheme : null" :theme-overrides="naiveOverrides" inline-theme-disabled>
+  <NConfigProvider
+    :locale="locale === 'de' ? naiveLocales.de : naiveLocales.en"
+    :theme="isDark ? darkTheme : null"
+    :theme-overrides="naiveOverrides"
+    inline-theme-disabled
+  >
     <AuthenticatedApp v-if="view === 'app'" />
-    <main v-else-if="view !== 'loading' || showStartupStatus" class="auth-page" :class="{ 'auth-page--login': view === 'login' }">
+    <main
+      v-else-if="view !== 'loading' || showStartupStatus"
+      class="auth-page"
+      :class="{ 'auth-page--login': view === 'login' }"
+    >
       <section class="auth-panel" :class="{ 'auth-panel--wide': view === 'login' }">
         <header class="auth-panel__header">
           <h1 class="auth-panel__brand">
-            <img class="auth-panel__logo" src="/favicon.svg" alt="" aria-hidden="true" width="48" height="48">
-            <span>{{ t('app.brandLead') }}<span class="auth-panel__brand-accent">{{ t('app.brandAccent') }}</span></span>
+            <img
+              class="auth-panel__logo"
+              src="/favicon.svg"
+              alt=""
+              aria-hidden="true"
+              width="48"
+              height="48"
+            />
+            <span
+              >{{ t('app.brandLead')
+              }}<span class="auth-panel__brand-accent">{{ t('app.brandAccent') }}</span></span
+            >
           </h1>
         </header>
         <p v-if="view === 'loading'" role="status">{{ t('auth.loading') }}</p>
         <template v-else-if="view === 'setup'">
           <h2 class="auth-panel__title">{{ t('auth.setupTitle') }}</h2>
           <p class="auth-panel__intro">{{ t('auth.setupHint') }}</p>
-          <form class="auth-panel__form" @submit.prevent="submitSetup">
-            <NFormItem>
-              <template #label>
-                <span class="auth-panel__field-label">{{ t('auth.setupCode') }} <UxInfoHint :text="t('auth.setupCodeHelp')" /></span>
-              </template>
-              <NInput v-model:value="setupCode" :input-props="{ 'aria-label': t('auth.setupCode') }" autocomplete="one-time-code" />
-            </NFormItem>
-            <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
-            <div class="auth-panel__password-field">
-              <NFormItem :label="t('auth.password')" :show-feedback="false"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password'), 'aria-describedby': 'auth-password-requirements' }" type="password" show-password-on="click" autocomplete="new-password" /></NFormItem>
-              <p id="auth-password-requirements" class="auth-panel__field-hint">{{ t('auth.passwordRequirements') }}</p>
-            </div>
-            <NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.createAdmin') }}</NButton>
-          </form>
+          <SetupForm
+            v-model:setup-code="setupCode"
+            v-model:username="username"
+            v-model:password="password"
+            class="auth-panel__form"
+            :busy="busy"
+            @submit="submitSetup"
+          />
         </template>
         <template v-else-if="view === 'login'">
           <h2 class="auth-panel__title">{{ t('auth.loginTitle') }}</h2>
-          <!--
-            Mobil steht der Hinweis unter den Eingabefeldern, ab `md` daneben.
-            Haken und Knopf folgen immer darunter über die ganze Breite.
-          -->
-          <form class="auth-panel__form auth-login" @submit.prevent="submitLogin">
-            <div class="auth-login__fields">
-              <NFormItem :label="t('auth.username')"><NInput v-model:value="username" :input-props="{ 'aria-label': t('auth.username') }" autocomplete="username" /></NFormItem>
-              <NFormItem :label="t('auth.password')"><NInput v-model:value="password" :input-props="{ 'aria-label': t('auth.password') }" type="password" show-password-on="click" autocomplete="current-password" /></NFormItem>
-            </div>
-            <div id="auth-investment-notice" class="auth-login__notice"><EmphasizedText :text="t('auth.investmentNotice')" /></div>
-            <div class="auth-login__confirm">
-              <NCheckbox v-model:checked="noticeAccepted" aria-describedby="auth-investment-notice">{{ t('auth.investmentConfirm') }}</NCheckbox>
-            </div>
-            <div class="auth-login__action">
-              <NButton type="primary" attr-type="submit" :loading="busy" :disabled="!noticeAccepted">{{ t('auth.login') }}</NButton>
-            </div>
-          </form>
+          <LoginForm
+            v-model:username="username"
+            v-model:password="password"
+            v-model:notice-accepted="noticeAccepted"
+            class="auth-panel__form"
+            :busy="busy"
+            @submit="submitLogin"
+          />
         </template>
         <template v-else-if="view === 'change'">
           <h2 class="auth-panel__title">{{ t('auth.changeTitle') }}</h2>
           <p class="auth-panel__intro">{{ t('auth.changeHint') }}</p>
-          <form class="auth-panel__form" @submit.prevent="submitPassword">
-            <div class="auth-panel__password-field">
-              <NFormItem :label="t('auth.newPassword')" :show-feedback="false"><NInput v-model:value="newPassword" :input-props="{ 'aria-label': t('auth.newPassword'), 'aria-describedby': 'auth-password-requirements' }" type="password" show-password-on="click" autocomplete="new-password" /></NFormItem>
-              <p id="auth-password-requirements" class="auth-panel__field-hint">{{ t('auth.passwordRequirements') }}</p>
-            </div>
-            <NSpace><NButton type="primary" attr-type="submit" :loading="busy">{{ t('auth.changePassword') }}</NButton><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></NSpace>
-          </form>
+          <PasswordChangeForm
+            v-model="newPassword"
+            class="auth-panel__form"
+            :busy="busy"
+            @submit="submitPassword"
+            @logout="logout"
+          />
         </template>
         <template v-else-if="view === 'legacy'">
           <h2 class="auth-panel__title">{{ t('legacy.title') }}</h2>
           <p class="auth-panel__intro">
             {{ user?.legacyImported ? t('legacy.alreadyImported') : t('legacy.intro') }}
           </p>
-          <dl class="legacy-facts">
-            <dt>{{ t('legacy.source') }}</dt>
-            <dd>{{ t('legacy.browser') }}</dd>
-            <dt>{{ t('legacy.target') }}</dt>
-            <dd>{{ user?.username }}</dd>
-            <dt>{{ t('legacy.portfolios') }}</dt>
-            <dd>{{ legacyData?.portfolios.length }}</dd>
-          </dl>
-          <ul class="legacy-list">
-            <li v-for="(entry, index) in legacyData?.portfolios ?? []" :key="entry.portfolio.id">
-              <span>{{ entry.portfolio.name }} · {{ entry.portfolio.positions.length }} {{ t('legacy.positions') }}</span>
-              <NButton v-if="user?.legacyImported" size="small" @click="exportLegacy(index)">{{ t('legacy.export') }}</NButton>
-            </li>
-          </ul>
+          <LegacyPortfolioList
+            :username="user?.username ?? ''"
+            :imported="user?.legacyImported ?? false"
+          />
           <p class="auth-panel__intro">
             {{ user?.legacyImported ? t('legacy.restoreHint') : t('legacy.importHint') }}
           </p>
           <NSpace class="legacy-actions">
-            <NButton v-if="!user?.legacyImported" type="primary" :loading="busy" @click="importLegacy">{{ t('legacy.import') }}</NButton>
-            <NButton :disabled="busy" @click="continueWithoutImport">{{ t('legacy.later') }}</NButton>
+            <NButton
+              v-if="!user?.legacyImported"
+              type="primary"
+              :loading="busy"
+              @click="importLegacy"
+              >{{ t('legacy.import') }}</NButton
+            >
+            <NButton :disabled="busy" @click="continueWithoutImport">{{
+              t('legacy.later')
+            }}</NButton>
             <NPopconfirm @positive-click="discardLegacy">
-              <template #trigger><NButton type="error" ghost :disabled="busy">{{ t('legacy.discard') }}</NButton></template>
+              <template #trigger
+                ><NButton type="error" ghost :disabled="busy">{{
+                  t('legacy.discard')
+                }}</NButton></template
+              >
               {{ t('legacy.discardConfirm') }}
             </NPopconfirm>
           </NSpace>
@@ -345,12 +359,16 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
         <template v-else-if="view === 'missingStockInfo'">
           <h2 class="auth-panel__title">{{ t('startup.noApiUrlTitle') }}</h2>
           <p>{{ t('startup.noApiUrlBody') }}</p>
-          <div class="auth-actions"><NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton></div>
+          <div class="auth-actions">
+            <NButton :disabled="busy" @click="logout">{{ t('auth.logout') }}</NButton>
+          </div>
         </template>
         <template v-else>
           <h2 class="auth-panel__title">{{ t('auth.unavailableTitle') }}</h2>
           <p>{{ t('auth.unavailableHint') }}</p>
-          <div class="auth-actions"><NButton @click="initialize">{{ t('auth.retry') }}</NButton></div>
+          <div class="auth-actions">
+            <NButton @click="initialize">{{ t('auth.retry') }}</NButton>
+          </div>
         </template>
         <p v-if="errorMessage" role="alert" class="auth-error">{{ errorMessage }}</p>
       </section>
@@ -364,7 +382,8 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
   display: grid;
   place-items: center;
   padding: var(--space-6);
-  background: radial-gradient(circle at 50% 0, rgb(var(--brand-from) / 0.12), transparent 55%),
+  background:
+    radial-gradient(circle at 50% 0, rgb(var(--brand-from) / 0.12), transparent 55%),
     rgb(var(--surface-page));
 }
 
@@ -372,7 +391,9 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
 .auth-page--login {
   padding-bottom: calc(var(--space-6) + 23.6vh);
 
-  @media (max-height: 650px) { padding-bottom: var(--space-6); }
+  @media (max-height: 650px) {
+    padding-bottom: var(--space-6);
+  }
 }
 
 .auth-panel {
@@ -383,7 +404,9 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
   background: rgb(var(--surface-card));
   box-shadow: var(--shadow-lg);
 
-  &__header { margin-bottom: var(--space-8); }
+  &__header {
+    margin-bottom: var(--space-8);
+  }
   &__brand {
     display: flex;
     align-items: center;
@@ -395,59 +418,47 @@ onUnmounted(() => { if (startupTimer !== null) clearTimeout(startupTimer) })
     letter-spacing: -0.035em;
     line-height: 1.15;
   }
-  &__brand-accent { color: rgb(var(--brand-word)); }
-  &__logo { flex: none; width: 3rem; height: 3rem; }
+  &__brand-accent {
+    color: rgb(var(--brand-word));
+  }
+  &__logo {
+    flex: none;
+    width: 3rem;
+    height: 3rem;
+  }
   &__title {
     margin: 0 0 var(--space-3);
     font-family: var(--font-display);
     font-size: 1.375rem;
     line-height: 1.3;
   }
-  &__intro { margin: 0; color: rgb(var(--text-secondary)); }
-  &__form { margin-top: var(--space-6); }
-  &__field-label { display: inline-flex; align-items: center; gap: var(--space-2); }
-  &__password-field { margin-bottom: var(--space-4); }
-  &__field-hint { margin: 0; color: rgb(var(--text-secondary)); font-size: 0.8125rem; }
+  &__intro {
+    margin: 0;
+    color: rgb(var(--text-secondary));
+  }
+  &__form {
+    margin-top: var(--space-6);
+  }
 
   // Login mit Hinweis braucht auf breiten Bildschirmen Platz für zwei Spalten.
-  &--wide { @include up(md) { width: min(100%, 54rem); } }
-  p { line-height: 1.5; }
+  &--wide {
+    @include up(md) {
+      width: min(100%, 54rem);
+    }
+  }
+  p {
+    line-height: 1.5;
+  }
 }
 
-.auth-login {
-  display: grid;
-  grid-template-areas: "fields" "notice" "confirm" "action";
-
-  @include up(md) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: "fields notice" "confirm confirm" "action action";
-    column-gap: var(--space-8);
-    align-items: start;
-  }
-
-  &__fields { grid-area: fields; }
-  &__notice {
-    grid-area: notice;
-    margin: 0 0 var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    // Dezent: Der Strich gliedert, er soll nicht mit dem Text konkurrieren.
-    border-left: 2px solid rgb(var(--border-subtle));
-    color: rgb(var(--text-secondary));
-    font-size: 0.8125rem;
-
-    // Neben den Feldern beginnt der Hinweis auf Höhe der ersten Beschriftung.
-    @include up(md) { margin: 0 0 var(--space-6); }
-  }
-  &__confirm { grid-area: confirm; margin-bottom: var(--space-4); }
-  &__action { grid-area: action; }
+.auth-actions {
+  margin-top: var(--space-6);
 }
-
-.auth-actions { margin-top: var(--space-6); }
-.auth-error { color: rgb(var(--status-out)); margin-top: var(--space-4); }
-.legacy-facts { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); margin: var(--space-6) 0; }
-.legacy-facts dt { color: rgb(var(--text-secondary)); }
-.legacy-facts dd { margin: 0; }
-.legacy-list { display: grid; gap: var(--space-2); margin: 0 0 var(--space-6); padding-left: var(--space-6); }
-.legacy-list li { padding-left: var(--space-1); }
-.legacy-actions { margin-top: var(--space-6); }
+.auth-error {
+  color: rgb(var(--status-out));
+  margin-top: var(--space-4);
+}
+.legacy-actions {
+  margin-top: var(--space-6);
+}
 </style>

@@ -104,9 +104,7 @@ const domain = computed(() => {
   return { min: list[0] as number, max: list[list.length - 1] as number }
 })
 
-const line = computed(() =>
-  buildSparkline(points.value, plotWidth.value, plotHeight, domain.value),
-)
+const line = computed(() => buildSparkline(points.value, plotWidth.value, plotHeight, domain.value))
 
 const stroke = computed(() =>
   line.value.rising ? 'rgb(var(--status-ok))' : 'rgb(var(--status-out))',
@@ -254,11 +252,7 @@ watch(
     </div>
 
     <div ref="container" class="chart__canvas">
-      <NSpin
-        v-if="series.loading && points.length === 0"
-        size="small"
-        class="chart__spinner"
-      />
+      <NSpin v-if="series.loading && points.length === 0" size="small" class="chart__spinner" />
 
       <svg
         v-else-if="line.path"
@@ -368,11 +362,7 @@ watch(
         positioniert werden, und ein Hintergrund hinter Text gäbe es nicht
         ohne zusätzliches Rechteck.
       -->
-      <div
-        v-if="hoveredPoint"
-        class="chart__tip"
-        :style="tooltipStyle"
-      >
+      <div v-if="hoveredPoint" class="chart__tip" :style="tooltipStyle">
         <div class="chart__tip-date">{{ fullDate(hoveredPoint.date) }}</div>
         <div class="chart__tip-price tabular-nums">{{ price(hoveredPoint.close) }}</div>
         <div
@@ -414,8 +404,12 @@ watch(
   &__change {
     font-size: var(--font-sm);
 
-    &--rising { color: token(--status-ok); }
-    &--falling { color: token(--status-out); }
+    &--rising {
+      color: token(--status-ok);
+    }
+    &--falling {
+      color: token(--status-out);
+    }
   }
 
   &__canvas {
@@ -467,7 +461,9 @@ watch(
     font-size: 0.6875rem;
   }
 
-  &__tip-date { @include muted(null); }
+  &__tip-date {
+    @include muted(null);
+  }
 
   &__tip-price {
     font-size: var(--font-sm);

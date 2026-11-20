@@ -57,7 +57,8 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
     loaded.value = false
     const entries = await repository.findByPortfolio(portfolioId)
     if (sequence !== loadSequence) return
-    snapshots.value = entries.filter(entry => entry.currency === currency)
+    snapshots.value = entries
+      .filter((entry) => entry.currency === currency)
       .map((entry) => ({ date: entry.date, total: entry.total, currency: entry.currency }))
     loaded.value = true
   }
@@ -82,17 +83,30 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
    * @param total       Gesamtwert in der Basiswährung.
    * @param now         Gegenwart — als Parameter, damit es prüfbar bleibt.
    */
-  async function record(portfolioId: string, total: number, currency: string, now = new Date()): Promise<void> {
+  async function record(
+    portfolioId: string,
+    total: number,
+    currency: string,
+    now = new Date(),
+  ): Promise<void> {
     if (!portfolioId || !Number.isFinite(total) || total <= 0 || !isCurrency(currency)) return
 
     const date = isoDay(now)
-    if (activePortfolio === portfolioId && activeCurrency === currency &&
-      snapshots.value.some((entry) => entry.date === date && entry.currency === currency && entry.total === total)) return
+    if (
+      activePortfolio === portfolioId &&
+      activeCurrency === currency &&
+      snapshots.value.some(
+        (entry) => entry.date === date && entry.currency === currency && entry.total === total,
+      )
+    )
+      return
     try {
       await repository.put(portfolioId, date, total, currency)
       if (activePortfolio !== portfolioId || activeCurrency !== currency) return
       const others = snapshots.value.filter((entry) => entry.date !== date)
-      snapshots.value = [...others, { date, total, currency }].sort((a, b) => a.date.localeCompare(b.date))
+      snapshots.value = [...others, { date, total, currency }].sort((a, b) =>
+        a.date.localeCompare(b.date),
+      )
     } catch (cause) {
       // Ein fehlender Tageswert ist kein Drama — die Kurve hat dann eine Lücke.
       consola.warn('valueHistory: Tageswert nicht gespeichert', { date, cause })
@@ -107,7 +121,8 @@ export const useValueHistoryStore = defineStore('valueHistory', () => {
   /** Backups erhalten alle Währungsreihen; die Anzeige filtert separat. */
   async function exportAll(portfolioId: string): Promise<ValueSnapshot[]> {
     const entries = await repository.findByPortfolio(portfolioId)
-    return entries.filter(entry => isCurrency(entry.currency))
+    return entries
+      .filter((entry) => isCurrency(entry.currency))
       .map(({ date, total, currency }) => ({ date, total, currency }))
   }
 

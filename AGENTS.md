@@ -15,7 +15,7 @@ Fehler im falschen Repository.
 
 - [StockPortfolio hängt an StockInfo](#stockportfolio-hängt-an-stockinfo)
 - [Vor Arbeitsbeginn](#vor-arbeitsbeginn)
-- [Ein Arbeitsort: der Projekt-Root](#ein-arbeitsort-der-projekt-root)
+- [Arbeitsort und Integration folgen dem Board](#arbeitsort-und-integration-folgen-dem-board)
 - [Bezeichner sind englisch. Ausnahmslos.](#bezeichner-sind-englisch-ausnahmslos)
 - [Wächter-Tests prüfen das Muster, nicht die Fundstelle](#wächter-tests-prüfen-das-muster-nicht-die-fundstelle)
 - [Bauen und prüfen](#bauen-und-prüfen)
@@ -82,6 +82,11 @@ Projekts.
 - **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
 
+- **StockInfo-Fehler sind Kennungen, die Sätze bildet StockPortfolio** (T-117).
+  `readErrorDetail` in `frontend/src/api/stockinfo/client.ts` übersetzt
+  `{code, params}` über `errors.reason` im Katalog; die Liste der Kennungen
+  steht in der [Entwicklerdoku](docs/development.md#sprache-und-texte).
+
 - **Den Vertrag liefert StockInfo maschinenlesbar mit.**
   `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
@@ -90,9 +95,9 @@ Projekts.
   StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
   `frontend/src/api/stockinfo/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
   unter `frontend/tests/fixtures/stockinfo/`. Die Bewertung steht in
-  [T-37](_tickets/40-done/T-37-stockinfo-quote-vertrag-und-dynamische-felder.md),
+  T-37,
   Generation und Währung in
-  [T-35](_tickets/10-backlog/T-35-stockinfo-generation-und-waehrung.md).
+  T-35.
   T-37 ist als Bewertung abgeschlossen. T-39 normalisiert Identität und prüft
   Kurs-Pflichtfelder einschließlich Währung; eine neue Depotposition setzt
   einen erfolgreichen eindeutigen Kursabruf voraus. T-40 ergänzt `/fields`,
@@ -120,26 +125,27 @@ ist die Vorgabe aus `.env.example`.
 fachlichen Durchlauf `VERSION` prüfen; beim ersten Einstieg und nach einer
 Änderung `PACKAGE.md` und `PROJECT-RULES.md` (Arbeitsfreigabe, sensible
 Dateien, Ticketabschluss) lesen. Die Abschnitte dieser Datei und Mikes
-Entscheidungen haben Vorrang; insbesondere gilt unten die dauerhafte Freigabe
-für Merge **und Push** nach Ticketabschluss, die das Paket allein nicht
-erteilt. Fehlt das Paket, das melden; keine alte Regelkopie fortschreiben.
+Entscheidungen haben Vorrang. Fehlt das Paket, das melden; keine alte
+Regelkopie fortschreiben.
 
-**Coder und Verifier werden ausschließlich in
-[`_tickets/STATUS.md`](_tickets/STATUS.md) zugeordnet.** `implementer`
-bezeichnet den Coder, `reviewer` den unabhängigen Verifier, `owner` die Instanz
-am Zug, `observer` eine eigenständige dritte Instanz. Diese Felder prüft die
-eigene Instanz vor jedem Turn; `none` und `unassigned` sind inaktive Werte,
-keine Instanznamen.
+**Board, Rollen und Ablauf verwaltet agent-lessons** (seit 2026-10-21).
+Das Board liegt auf dem Branch `board` und ist lokal unter `_tickets/`
+ausgecheckt; es gehört nicht zum Code-Baum von `master`, Links aus diesem
+Repository zeigen deshalb nie hinein — Tickets werden mit ihrer Kennung
+(etwa T-37) genannt. Welche Laufzeit `implementer` (Coder), `reviewer`
+(unabhängiger Verifier) oder `observer` ist, und alle Board-Einstellungen
+stehen in `_tickets/.board/project.yaml`. Stand, Tickets, Fragen,
+Tätigkeitsmeldungen und Lessons liefern die MCP-Werkzeuge von agent-lessons
+(`next`, `get_status`, `get_ticket`, `get_questions`, `get_lessons`); für
+Mike zeigen `agent-lessons status`, `agent-lessons ticket ls` und
+`agent-lessons activity` dasselbe.
 
 Nur der zuständige Coder implementiert. Wer nicht am Zug ist, verändert keinen
-Produktcode. Arbeit beginnt nur am ausdrücklich aktivierten Ticket unter
-`30-doing/`; Backlog, Done, Iced und Rejected erzeugen keinen Auftrag.
-
-- [`_tickets/README.md`](_tickets/README.md) — Ablage und der Weg von der Aufnahme bis zum Abschluss.
-- `_tickets/ACTIVITY.md` — kurze Meldungen für den Nutzer, neueste oben; Agenten schreiben über den globalen `agent-activity` und lesen die Datei nicht als Kontext. Die Datei bleibt lokal und wird über `_tickets/.gitignore` nicht in Git versioniert (Mike, 2026-09-28). Pflege für alle Tickets nach dem [Workflow](_tickets/.agents/AGENT-WORKFLOW.md#aktuelle-tätigkeit).
-- [`_tickets/.agents/AGENT-WORKFLOW.md`](_tickets/.agents/AGENT-WORKFLOW.md) — Rollen, Übergabe, Review, Abschluss, Observer.
-- [`_tickets/.agents/AGENT-ACTIVATION.md`](_tickets/.agents/AGENT-ACTIVATION.md) — laufzeitspezifische Startwege, getrennt vom fachlichen Ablauf.
-- [`CLAUDE-LESSONS.md`](_tickets/.agents/CLAUDE-LESSONS.md) und [`CODEX-LESSONS.md`](_tickets/.agents/CODEX-LESSONS.md) — der Coder liest vor Umsetzung und Übergabe seine Sammlung, der Verifier die des Autors der geprüften Fassung; bei gemischter Autorenschaft beide. Vorbeugung, Gegenproben und die Lessons-Pflege durch den Observer regelt der gemeinsame Workflow.
+Produktcode. Arbeit beginnt nur an dem Ticket, das `next` nennt und das mit
+`start_ticket` in Doing steht; Backlog, Done, Iced und Rejected erzeugen
+keinen Auftrag. Lessons und Erkenntnisse liefert `start_ticket` beziehungsweise
+`next` passend zum Ticket; der Coder nennt bei der Übergabe, welche ihn
+gelenkt haben.
 
 **Das Board hier ist der neuere Stand, nicht die Kopie aus StockInfo.**
 Die Struktur wurde am 2026-09-10 von dort übernommen und seither
@@ -151,48 +157,36 @@ Dateinamen und Produktnamen sind keine Rollenverteilung. Der Autor kann seine
 eigene Fassung nicht unabhängig abnehmen, und eine technische Freigabe ist noch
 kein Ticketabschluss.
 
-**Abgeschlossene Tickets sofort integrieren** (Mike, 2026-09-27): Sobald
-technische Freigabe und menschlicher Abschluss vorliegen, die zugehörigen
-Änderungen einschließlich Ticketabschluss committen, nach `master` mergen
-und zu `origin` pushen. Anschließend im Arbeitsverzeichnis wieder auf
-`master` wechseln und prüfen, dass `master` der aktive Branch ist und mit
-`origin/master` übereinstimmt. Mike hat diese Schritte dauerhaft autorisiert;
-eine weitere Rückfrage ist nicht nötig. Fremde uncommittete Änderungen
-bleiben außerhalb dieser Integration.
-
-Lokale Lessons liegen als Einzeldateien unter `_tickets/.agents/lessons/`.
-Die alten Sammeldateien sind Linkeinstiege. Verzeichnisinventar, gemeinsamer
-AgentLessons-Bestand und Herkunft folgen
-[Lessons lesen und pflegen](_tickets/.agents/LESSONS-ACCESS.md); die gemeinsame
-Sammlung wird noch nicht automatisch aktualisiert.
+Wie freigegebene und abgenommene Tickets integriert werden, regelt der
+Board-Workflow ([Arbeitsort und Integration folgen dem
+Board](#arbeitsort-und-integration-folgen-dem-board)).
 
 [↑ Übersicht](#übersicht)
 
-## Ein Arbeitsort: der Projekt-Root
+## Arbeitsort und Integration folgen dem Board
 
-**Alle Instanzen arbeiten ausschließlich im Projekt-Root
-`/Volumes/DevLocal/DevWeb/Production/StockPortfolio`** (Mike, 2026-10-01).
-Keine `git worktree add`, keine Kopien unter `/private/tmp` oder anderswo —
-außer Mike ordnet es ausdrücklich an. Grund: Mike muss Board und Quellstand
-jederzeit an einer Stelle sehen und von dort testen können.
+**Wo gearbeitet wird, auf welchem Branch und welcher Stand geprüft wird,
+legt der Board-Workflow von agent-lessons fest** (Mike, 2026-11-20, q-5:
+„Variante A“). Die wirksamen Einstellungen liefert `get_config`; diese Datei
+wiederholt keine Werte daraus.
 
-- **Ein Board.** `_tickets/` gibt es nur im Root. Board-Änderungen kommen auf
-  den gerade ausgecheckten Branch; es gibt keine STATUS-Kopien abzugleichen.
-- **Branch im Root.** Der Ticketbranch wird im Root ausgecheckt
-  (`git switch`). STATUS nennt ihn im Feld `branch`. Vor jedem Durchlauf
-  prüft jede Instanz `git branch --show-current` gegen dieses Feld; bei
-  Abweichung meldet sie den Konflikt und arbeitet nicht weiter.
-- **Nur der Owner schaltet den Branch.** Der Verifier prüft den im Root
-  ausgecheckten Übergabestand und wechselt den Branch nicht; ältere Fassungen
-  liest er mit `git show` und `git diff`.
-- **Früh integrieren.** Nach der technischen Freigabe wird der Ticketbranch
-  sofort nach `master` gemergt und der Root auf `master` zurückgestellt.
-  Mikes Abnahme findet auf `master` statt; Nacharbeit beginnt auf einem neuen
-  Branch von `master`. Ketten, die nur auf Seitenbranches existieren, entstehen
-  so nicht.
-- **Hilfsinstanzen nur aus dem Root,** mit den dokumentierten Ports, und nach
-  dem Lauf beenden. Der Teststack startet aus dem Root
-  ([Bauen und prüfen](#bauen-und-prüfen)).
+- **Arbeitsort und Branch je Rolle:** Der Coder (`implementer`) arbeitet in
+  dem Workspace, den `start_ticket` nennt, auf dem Ticketbranch, den es dort
+  auscheckt. Für den Reviewer stellt `next` Arbeitsort und Prüfstand her,
+  etwa den Übergabe-Commit in seinem Workspace. Ein eigenes
+  `git worktree add`, Kopien an anderer Stelle oder ein Branchwechsel von Hand
+  gehören nicht dazu.
+- **Abnahme:** Einen Prüf-Worktree richtet der Workflow bei Bedarf mit dem
+  Befehl aus `worktree_setup` ein; ob er einen schon grün geprüften Stand
+  übernimmt, entscheidet der Workflow.
+- **Integration und Push:** Wie gemergt, abgenommen und gepusht wird, folgt
+  aus den Stufen in `git.stages`; `get_config` zeigt die daraus abgeleiteten
+  wirksamen Werte `merge_after` und `push_after`. Darüber hinaus gibt es keine
+  dauerhafte Freigabe zum Push.
+- **Board:** `_tickets/` ist der Worktree des Branches `board`;
+  Board-Änderungen laufen über die Werkzeuge von agent-lessons.
+- **Hilfsinstanzen** wie den Teststack mit den dokumentierten Ports starten
+  und nach dem Lauf beenden ([Bauen und prüfen](#bauen-und-prüfen)).
 
 [↑ Übersicht](#übersicht)
 
@@ -247,29 +241,43 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ## Bauen und prüfen
 
 ```bash
+make setup      # npm-Pakete, .venv und Werkzeuge in .tools/ einrichten
 make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
 make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
+make check      # lint, typecheck, format-check und test für TS, Python und Bash
+make security   # gitleaks über die Git-History, bandit für Python
 make test       # Frontend- und API-Tests, einmalig
-make clean      # generierte Dateien in Root, Frontend und API entfernen
+make clean      # erzeugte Dateien, .venv und .tools/ entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README
 ```
 
-`make hints` zeigt URLs und Setup-Schritte, `make help` alle Ziele. Das
+`make hints` zeigt Links, URLs und Tipps, `make help` alle Ziele.
+`make setup` ist der einzige Einrichtungsweg, auch für die Workspaces und
+den Prüf-Worktree der Abnahme (agent-lessons, Schlüssel `worktree_setup`);
+Prüfziele wie `make test` richten nichts selbst ein und nennen bei fehlender
+oder veralteter Einrichtung `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
+kommen in der Version aus `.dev-tools.conf.sh` nach `.tools/`, nicht als
+Links. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
-stehen `make dev-up`, `make dev-down`, `make test` und
-`make clean`. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
-Vor einer Übergabe laufen mindestens `make test`, `npm --prefix frontend run lint`,
-`npm --prefix api run lint`, `npm --prefix frontend run typecheck` und
-`npm --prefix api run typecheck`. Das Ergebnis gehört als Beleg ins Ticket.
+stehen `make dev-up`, `make dev-down` und `make clean`, unter Prüfen ein
+Target je Prüfart (`check`, `lint`, `typecheck`, `format`, `format-check`,
+`test`, `security`, `audit`, `quality`); darin läuft je Sprache das passende
+Werkzeug. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
+Vor einer Übergabe laufen mindestens `make check` und `make security`. Das
+Ergebnis gehört als Beleg ins Ticket. `make audit` braucht Netz,
+`make quality` ist nur ein Bericht; beide gehören nicht zur Abnahme. Woran
+ein gutes Ergebnis zu erkennen ist, auch wo kein Werkzeug misst, steht im
+[Qualitätsprofil](docs/quality-profile.md); der Qualitätslauf am Sprintende
+prüft den Code dagegen.
 
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
 temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
-das verlinkte ProjectTools-Paket aus `requirements-dev.txt`, wenn es fehlt.
-Vor dem Anlegen prüft Setup die Python-Version; bestehende `.venv` werden
-wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
+dort die Pakete aus `requirements-dev.txt`, darunter die gepinnten Prüfwerkzeuge
+(ruff, bandit, pip-audit). Vor dem Anlegen prüft Setup die
+Python-Version; bestehende `.venv` werden wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
 Aus diesem Repository aufrufen:
 
@@ -280,7 +288,8 @@ Aus diesem Repository aufrufen:
 ```
 
 Der StockInfo-Kindprozess verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
-diese Umgebung nicht. `make clean` behält StockPortfolios `.venv`.
+diese Umgebung nicht. `make clean` entfernt StockPortfolios `.venv`; danach
+legt `make setup` sie neu an.
 
 Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen
 diesen Stack mit `--demo-accounts`:
@@ -326,7 +335,8 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
   `capture-screenshots.mjs` (Bilder für die Anleitungen) und
   `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
-  in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
+  in DE und EN, dazu die Handelstabelle mit Bandkursen, gekürztem Kopf und
+  ohne waagrechtes Scrollen) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
   und Zusatzinformationen aller Positionen und dass ein offener Reiter
   den Live-Abgleich übersteht) und `stockinfo-proxy-check.mjs` (T-82:
@@ -365,7 +375,7 @@ Stand um.
 
 **Arbeit an Themes, Token und Kontrast gehört ins Fundament, nicht hierher.**
 Hier entstünden sonst lokale Kopien, die beim nächsten Update auseinanderlaufen.
-[T-36](_tickets/10-backlog/T-36-eslint-waechter-aus-dem-fundament.md) wartet aus
+T-36 wartet aus
 demselben Grund auf eine installierbare Fundament-Fassung.
 
 UX-Konventionen: Skill `ux-conventions`.
@@ -412,8 +422,8 @@ Kurzbeschreibung steht ein gut sichtbarer Link zum GitHub-Repository. Sie
 erklärt Start, Konfiguration, Browser-Daten, Backups und Updates;
 Entwicklungsdetails stehen im Projekt-README.
 
-Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Helfer
-`.libs/ProjectTools/src/bash/dockerhub-readme.sh` die Hub-Fassung: Pandoc
+Aus `docker/README.md` erzeugt der gemeinsame ProjectTools-Befehl
+`dockerhub-readme` (aus `.tools/`, `make setup`) die Hub-Fassung: Pandoc
 wandelt relative Links in absolute GitHub-Links um, das Ergebnis darf
 höchstens **25.000 UTF-8-Bytes** enthalten; absolute Bild- und Dokumentlinks
 zählen mit. `make push` schreibt zuerst die Vorschau
@@ -421,7 +431,7 @@ zählen mit. `make push` schreibt zuerst die Vorschau
 nach Docker Hub. Die Vorschau ist ein Erzeugnis und wird nie von Hand
 bearbeitet. Nach Änderungen an `docker/README.md` die Vorschau neu erzeugen
 und prüfen:
-`./.libs/ProjectTools/src/bash/dockerhub-readme.sh --readme docker/README.md --preview --ref master`.
+`.tools/bin/dockerhub-readme --readme docker/README.md --preview --ref master`.
 Das Werkzeug bricht bei Überschreitung ab, ohne abzuschneiden. Die Grenze
 gilt für die Hub-Beschreibung, nicht für das Projekt-README.
 `DOCKER_README_REF` muss einen bereits veröffentlichten GitHub-Stand nennen.
@@ -451,11 +461,13 @@ eine Basis wie `README.md` oder `docker/README.md` nach ihrer abhängigen Datei
 der eingetragenen Frist ein Problem. Die Vorschau gehört in denselben Commit
 wie `docker/README.md`. Alle Zeiten kommen aus git, nicht vom Dateidatum oder
 Tagesdatum. Verlangt eine Änderung nichts, wird die Meldung nach dem Prüfen
-mit `docs-check.sh --ack <datei>` quittiert und `.docs-check.ack`
+mit `docs-check --ack <datei>` quittiert und `.docs-check.ack`
 mitcommittet; ungesehen quittieren ist kein Weg, eine Meldung loszuwerden. Es
 läuft vor jedem Commit (`.githooks/pre-commit`) und prüft dort genau den
 vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
-auf. `--no-verify` nur im Notfall und mit Begründung im Bericht.
+auf. Fehlen der Starter `devtools` oder ProjectTools in `.tools/`, warnt der
+Hook nur und lässt den Commit durch; das ist keine bestandene Doku-Prüfung,
+`make test` bleibt die harte Grenze. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
 

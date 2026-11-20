@@ -165,6 +165,27 @@ sind grün, negative rot. Bei einem Ziel von null ist die relative Abweichung
 nicht definiert. Die gepunkteten Spaltenköpfe erklären die Begriffe beim
 Darüberfahren.
 
+Unter jedem Kurs stehen die **Bandkurse** `↓ unterer · ↑ oberer`: der Kurs, bei
+dem der Anteil nach dem Plan das untere bzw. obere Band erreicht, rechnerisch
+und unter der Annahme, dass alle anderen Kurse gleich bleiben. Hat der Anteil
+eine Grenze schon verlassen, steht sie rot. Das „?“ im Spaltenkopf _Kurs_
+erklärt die Bandkurse beim Darüberfahren; angeklickt oder per Tastatur
+geöffnet führt es zur ausführlichen Erklärung auf der Methodenseite. Die
+Spalte _± Stück_ nimmt die geplante Stückzahl auf.
+
+Der Plan bleibt stehen, wenn du zwischendurch eine andere Seite der App
+öffnest. Er gilt für das gewählte Depot; ein Depotwechsel, die Abmeldung,
+_Plan leeren_ oder ein Neuladen der Seite leeren ihn. Änderst du inzwischen
+den Bestand einer Position, etwa im Dashboard, fällt ihr Eintrag aus dem
+Plan; die übrigen bleiben.
+
+Die letzte Zeile beantwortet „Geht der Plan auf?“ zweimal: Unter _Ziel %_
+steht die Summe aller Ziele, auch der probeweise geänderten, mit der
+Abweichung von 100 % (etwa „+1,0 % zu viel“ oder „−0,03 % fehlen“). Grün
+heißt, die Ziele ergeben zusammen 100 %; eine Abweichung bis 0,01 % gilt
+noch als ausgeglichen. Rot heißt, ihre Summe liegt weiter darüber oder
+darunter. Rechts daneben steht die Geldbilanz der Käufe und Verkäufe.
+
 Auf schmalen Bildschirmen verschwinden zuerst der Balken (unter 1280 px), dann
 der Simulationshinweis (unter 1160 px). Unter 890 px scrollen Zusammenfassung
 und Tabelle gemeinsam waagrecht, auch per Tastatur.

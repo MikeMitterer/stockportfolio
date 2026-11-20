@@ -57,8 +57,8 @@ docker/.last-build-tag*
 docker/.last_login
 docker/logs/
 
-# Local libs (symlinks, not tracked)
-.libs/
+# Entwicklungswerkzeuge aus make setup (devtools --project install)
+.tools/
 
 # Cache
 .cache/
@@ -68,3 +68,5 @@ docker/logs/
 # Claude Code (lokale Werkzeug-Konfiguration)
 .claude/
 .overmind.sock
+/_tickets/
+/.worktrees/

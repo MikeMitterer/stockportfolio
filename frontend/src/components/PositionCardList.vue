@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import PositionCard from '@/components/PositionCard.vue'
 import { assetColor } from '@/domain/assetColors'
 import { percent } from '@/domain/formatters'
+import { rowsByGroup } from '@/domain/positionGroups'
 import type { GroupResult, PositionResult } from '@/domain/rebalancing'
 import type { ExternalLink } from '@/types/portfolio'
 
@@ -23,32 +24,17 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-interface RenderedGroup {
-  group: GroupResult
-  rows: PositionResult[]
-}
-
-/** Nur Gruppen mit Positionen — leere Überschriften wären Rauschen. */
-const renderedGroups = computed<RenderedGroup[]>(() =>
-  props.groups
-    .map((group) => ({
-      group,
-      rows: props.rows.filter((row) => row.position.group === group.group),
-    }))
-    .filter((entry) => entry.rows.length > 0),
+const renderedGroups = computed(() =>
+  rowsByGroup(props.groups, props.rows, (row) => row.position.group),
 )
 const { formatMoney } = usePortfolioCurrency()
-
 </script>
 
 <template>
   <div class="cardlist">
     <template v-for="entry in renderedGroups" :key="entry.group.group">
       <!-- Gruppen-Trenner: gleicher Farbton wie am Desktop -->
-      <div
-        class="cardlist__group"
-        :style="{ '--group-color': assetColor(entry.group.group) }"
-      >
+      <div class="cardlist__group" :style="{ '--group-color': assetColor(entry.group.group) }">
         <span class="cardlist__name">
           <span class="cardlist__dot" aria-hidden="true"></span>
           {{ t(`groups.${entry.group.group}`) }}
@@ -60,12 +46,7 @@ const { formatMoney } = usePortfolioCurrency()
         </span>
       </div>
 
-      <PositionCard
-        v-for="row in entry.rows"
-        :key="row.position.id"
-        :row="row"
-        :links="links"
-      />
+      <PositionCard v-for="row in entry.rows" :key="row.position.id" :row="row" :links="links" />
     </template>
   </div>
 </template>
@@ -94,7 +75,9 @@ const { formatMoney } = usePortfolioCurrency()
     @include muted(null);
   }
 
-  &__group:not(:first-child) { margin-top: var(--space-2); }
+  &__group:not(:first-child) {
+    margin-top: var(--space-2);
+  }
 
   &__name {
     @include row(var(--space-2));
@@ -109,7 +92,9 @@ const { formatMoney } = usePortfolioCurrency()
     background-color: var(--group-color);
   }
 
-  &__actual { opacity: 0.6; }
+  &__actual {
+    opacity: 0.6;
+  }
 
   &__value {
     margin-left: var(--space-2);

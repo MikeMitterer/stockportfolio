@@ -53,11 +53,7 @@ const emit = defineEmits<{
     Fragezeichen mit Verweisen darin wäre verschachtelte Bedienung, und jeder
     Klick darauf klappte das Diagramm mit auf.
   -->
-  <div
-    class="kpi"
-    :class="{ 'kpi--expandable': expandable }"
-    @click="expandable && emit('toggle')"
-  >
+  <div class="kpi" :class="{ 'kpi--expandable': expandable }" @click="expandable && emit('toggle')">
     <div class="kpi__label">
       {{ label }}
       <InfoHint
@@ -176,16 +172,26 @@ const emit = defineEmits<{
     /* „+€ 5.000" darf nicht zwischen Vorzeichen und Betrag umbrechen. */
     white-space: nowrap;
 
-    &--default { color: token(--text-primary); }
-    &--positive { color: token(--status-ok); }
-    &--warning { color: token(--status-near); }
-    &--danger { color: token(--status-out); }
+    &--default {
+      color: token(--text-primary);
+    }
+    &--positive {
+      color: token(--status-ok);
+    }
+    &--warning {
+      color: token(--status-near);
+    }
+    &--danger {
+      color: token(--status-out);
+    }
   }
 
   &--expandable {
     cursor: pointer;
 
-    &:hover .kpi__chevron { opacity: 1; }
+    &:hover .kpi__chevron {
+      opacity: 1;
+    }
   }
 
   /*
@@ -208,10 +214,15 @@ const emit = defineEmits<{
     font: inherit;
     cursor: inherit;
 
-    &:focus-visible { outline: 2px solid token(--accent); outline-offset: 2px; }
+    &:focus-visible {
+      outline: 2px solid token(--accent);
+      outline-offset: 2px;
+    }
   }
 
-  &__trend { flex-shrink: 0; }
+  &__trend {
+    flex-shrink: 0;
+  }
 
   /*
    * Form, Größe und Drehung stehen in `UxCaret` (Fundament). Hier bleibt nur,

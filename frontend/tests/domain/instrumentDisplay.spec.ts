@@ -5,9 +5,17 @@ import type { DetailDefinition } from '@/types/details'
 
 function terDefinition(instrumentTypes: string[], identityKinds: string[]): DetailDefinition {
   return {
-    name: 'ter', kind: 'number', unit: 'percent', labelEn: 'TER', labelDe: 'TER', overridable: true,
-    sources: ['justetf'], scopes: [{ source: 'justetf', instrumentTypes, identityKinds }],
-    minimum: 0, maximum: 5, currencyRequired: false,
+    name: 'ter',
+    kind: 'number',
+    unit: 'percent',
+    labelEn: 'TER',
+    labelDe: 'TER',
+    overridable: true,
+    sources: ['justetf'],
+    scopes: [{ source: 'justetf', instrumentTypes, identityKinds }],
+    minimum: 0,
+    maximum: 5,
+    currencyRequired: false,
   }
 }
 

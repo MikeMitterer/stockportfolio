@@ -377,13 +377,12 @@ describe('useQuotesStore — Fortschritt', () => {
 
   it('lässt den Knopf in Ruhe, wenn es gar nichts zu holen gibt', async () => {
     const store = useQuotesStore()
-    let seen = false
 
     // Nur Cash: `loadQuotes` bricht ab, bevor irgendein Abruf ergeht.
     await store.loadQuotes(mockClient(), [makePosition({ group: 'cash', isin: null })], {
       force: true,
     })
-    seen = store.forcing || store.busy
+    const seen = store.forcing || store.busy
 
     expect(seen).toBe(false)
   })
@@ -458,40 +457,49 @@ describe('useQuotesStore — loadQuotesIfStale', () => {
     ['im selben Tab', false, false],
     ['nach neuem Seitenaufbau', true, false],
     ['im selben Tab bei blockiertem localStorage', false, true],
-  ])('hält die ursprüngliche Frist nach Teilabruf und erneutem hydrate — %s', async (_label, reload, blocked) => {
-    if (blocked) {
-      Object.defineProperty(window, 'localStorage', {
-        configurable: true,
-        get: () => { throw new DOMException('blockiert', 'SecurityError') },
-      })
-    }
-    vi.useFakeTimers({ toFake: ['Date'] })
-    vi.setSystemTime(new Date('2026-10-01T10:00:00Z'))
-    const client = mockClient({
-      getQuoteByIsin: vi.fn(async (isin: string) => ({
-        ...makeQuoteResponse('AAA.DE', 100, isin),
-        fetched_at: new Date().toISOString(),
-      })),
-    } as Partial<StockInfoClient>)
-    const first = makePosition({ id: 'a', isin: 'IE0000000001' })
-    const added = makePosition({ id: 'b', isin: 'IE0000000002' })
-    await useQuotesStore().loadQuotes(client, [first])
+  ])(
+    'hält die ursprüngliche Frist nach Teilabruf und erneutem hydrate — %s',
+    async (_label, reload, blocked) => {
+      if (blocked) {
+        Object.defineProperty(window, 'localStorage', {
+          configurable: true,
+          get: () => {
+            throw new DOMException('blockiert', 'SecurityError')
+          },
+        })
+      }
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-10-01T10:00:00Z'))
+      const client = mockClient({
+        getQuoteByIsin: vi.fn(async (isin: string) => ({
+          ...makeQuoteResponse('AAA.DE', 100, isin),
+          fetched_at: new Date().toISOString(),
+        })),
+      } as Partial<StockInfoClient>)
+      const first = makePosition({ id: 'a', isin: 'IE0000000001' })
+      const added = makePosition({ id: 'b', isin: 'IE0000000002' })
+      await useQuotesStore().loadQuotes(client, [first])
 
-    vi.setSystemTime(new Date('2026-10-01T10:30:00Z'))
-    await useQuotesStore().loadQuotesIfStale(client, [first, added], 60)
+      vi.setSystemTime(new Date('2026-10-01T10:30:00Z'))
+      await useQuotesStore().loadQuotesIfStale(client, [first, added], 60)
 
-    vi.setSystemTime(new Date('2026-10-01T10:31:00Z'))
-    if (reload) setActivePinia(createPinia())
-    const store = useQuotesStore()
-    await store.hydrate()
-    expect(store.lastRefreshAt).toBe('2026-10-01T10:00:00.000Z')
+      vi.setSystemTime(new Date('2026-10-01T10:31:00Z'))
+      if (reload) setActivePinia(createPinia())
+      const store = useQuotesStore()
+      await store.hydrate()
+      expect(store.lastRefreshAt).toBe('2026-10-01T10:00:00.000Z')
 
-    vi.setSystemTime(new Date('2026-10-01T11:01:00Z'))
-    vi.mocked(client.getQuoteByIsin).mockClear()
-    await store.loadQuotesIfStale(client, [first, added], 60)
-    expect(vi.mocked(client.getQuoteByIsin).mock.calls.map(([isin]) => isin).sort())
-      .toEqual(['IE0000000001', 'IE0000000002'])
-  })
+      vi.setSystemTime(new Date('2026-10-01T11:01:00Z'))
+      vi.mocked(client.getQuoteByIsin).mockClear()
+      await store.loadQuotesIfStale(client, [first, added], 60)
+      expect(
+        vi
+          .mocked(client.getQuoteByIsin)
+          .mock.calls.map(([isin]) => isin)
+          .sort(),
+      ).toEqual(['IE0000000001', 'IE0000000002'])
+    },
+  )
 
   /** Eine dauerhaft fehlende Position löste vorher bei jedem Wechsel einen vollen Durchgang aus. */
   it('holt innerhalb der Frist nur fehlende Kurse und behält Bestand, Ausfälle und Zeitstempel', async () => {
@@ -508,9 +516,16 @@ describe('useQuotesStore — loadQuotesIfStale', () => {
     const stamp = store.lastRefreshAt
     vi.mocked(client.getQuoteByIsin).mockClear()
 
-    await store.loadQuotesIfStale(client, [first, makePosition({ id: 'b', isin: 'IE0000000002' }), broken], 60)
+    await store.loadQuotesIfStale(
+      client,
+      [first, makePosition({ id: 'b', isin: 'IE0000000002' }), broken],
+      60,
+    )
 
-    expect(vi.mocked(client.getQuoteByIsin).mock.calls.map(([isin]) => isin)).toEqual(['IE0000000002', 'IE0000000003'])
+    expect(vi.mocked(client.getQuoteByIsin).mock.calls.map(([isin]) => isin)).toEqual([
+      'IE0000000002',
+      'IE0000000003',
+    ])
     expect([...store.quotes.keys()].sort()).toEqual(['IE0000000001', 'IE0000000002'])
     expect(store.failures.map((failure) => failure.key)).toEqual(['IE0000000003'])
     expect(store.lastRefreshAt).toBe(stamp)

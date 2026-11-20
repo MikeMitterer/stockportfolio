@@ -17,6 +17,7 @@ import { consola } from 'consola'
 import { translate } from '@/i18n'
 import { ApiError } from '@/api/stockinfo/errors'
 import { HistoryRepository } from '@/db/repository'
+import type { HistoryEntry } from '@/db/schema'
 import type { StockInfoClient } from '@/api/stockinfo/client'
 import type { Period } from '@/api/stockinfo/types'
 import type { HistoryPoint } from '@/domain/sparkline'
@@ -83,11 +84,7 @@ export const useHistoryStore = defineStore('history', () => {
     if (position.group === 'cash') return
 
     const key = historyKey(position, period)
-    const current = series.value.get(key)
-    if (current?.loading) return
-    if (current && current.points.length > 0 && current.fetchedAt) {
-      if (isFromToday(current.fetchedAt, new Date())) return
-    }
+    if (isUpToDateInMemory(key)) return
 
     const stored = await repository.load(key)
     if (stored && isFromToday(stored.fetchedAt, new Date())) {
@@ -101,7 +98,36 @@ export const useHistoryStore = defineStore('history', () => {
     }
 
     if (!client) return
+    await fetchSeries(client, position, period, stored)
+  }
 
+  /** Lädt der Verlauf gerade, oder liegt er von heute schon im Speicher? */
+  function isUpToDateInMemory(key: string): boolean {
+    const current = series.value.get(key)
+    if (current?.loading) return true
+    return Boolean(
+      current &&
+      current.points.length > 0 &&
+      current.fetchedAt &&
+      isFromToday(current.fetchedAt, new Date()),
+    )
+  }
+
+  /**
+   * Holt den Verlauf von der API und legt ihn im Zwischenspeicher ab.
+   *
+   * Bis die Antwort da ist und nach einem Fehler bleibt der gespeicherte
+   * Verlauf sichtbar.
+   *
+   * @param stored Eintrag aus IndexedDB, falls vorhanden (auch ein älterer).
+   */
+  async function fetchSeries(
+    client: StockInfoClient,
+    position: Position,
+    period: Period,
+    stored: HistoryEntry | null,
+  ): Promise<void> {
+    const key = historyKey(position, period)
     set(key, { points: stored?.points ?? [], loading: true, error: null, fetchedAt: null })
 
     try {
@@ -124,8 +150,7 @@ export const useHistoryStore = defineStore('history', () => {
         fetchedAt,
       })
     } catch (cause) {
-      const reason =
-        cause instanceof ApiError ? cause.detail : translate('notify.historyFailed')
+      const reason = cause instanceof ApiError ? cause.detail : translate('notify.historyFailed')
       // Ein fehlender Verlauf ist kein Drama — die Zeile zeigt dann eben keine
       // Linie. Deshalb nur ins Protokoll, keine Meldung an den Nutzer.
       consola.warn('history: Laden fehlgeschlagen', { key, reason })

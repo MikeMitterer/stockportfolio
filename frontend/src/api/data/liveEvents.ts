@@ -29,9 +29,13 @@ function parseResource(data: string): ResourceEvent | null {
     if (typeof value !== 'object' || value === null || Array.isArray(value)) return null
     const record = value as Record<string, unknown>
     if (
-      record.kind !== 'portfolio' && record.kind !== 'settings' &&
-      record.kind !== 'allowlist' && record.kind !== 'snapshots' && record.kind !== 'quote-refresh'
-    ) return null
+      record.kind !== 'portfolio' &&
+      record.kind !== 'settings' &&
+      record.kind !== 'allowlist' &&
+      record.kind !== 'snapshots' &&
+      record.kind !== 'quote-refresh'
+    )
+      return null
     if (typeof record.resourceId !== 'string' || !record.resourceId) return null
     if (!Number.isSafeInteger(record.revision) || (record.revision as number) < 1) return null
     return { kind: record.kind, resourceId: record.resourceId, revision: record.revision as number }
@@ -45,7 +49,9 @@ export class LiveEventsClient {
   private retryTimer: ReturnType<typeof setTimeout> | null = null
   private retryMs = firstRetryMs
 
-  constructor(private readonly createSource: (url: string) => EventStream = (url) => new EventSource(url)) {}
+  constructor(
+    private readonly createSource: (url: string) => EventStream = (url) => new EventSource(url),
+  ) {}
 
   start(handlers: LiveEventHandlers): void {
     this.stop()

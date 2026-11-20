@@ -36,6 +36,7 @@ isNumericId() {
 # Runde 1). Andere Dateien in /data gehen die App nichts an und blockieren den
 # Start nicht (Review Runde 2). Die API öffnet <DATA_DIR>/stockportfolio.sqlite
 # (api/src/index.ts). Gibt den ersten gesperrten Pfad aus und endet mit 1.
+# shellcheck disable=SC2016  # expandiert erst in der Unter-Shell, die das Skript ausführt
 CHECK_SCRIPT='
 PROBE_FILE="$1/.stockportfolio-write-test"
 if ! touch "$PROBE_FILE" 2>/dev/null; then echo "$1"; exit 1; fi

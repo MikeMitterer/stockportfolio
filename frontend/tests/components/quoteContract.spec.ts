@@ -24,16 +24,36 @@ beforeEach(() => setActivePinia(createPinia()))
 
 const payload = quoteFixture.response.body
 const portfolio: Portfolio = {
-  id: 'test', name: 'Test', createdAt: '', updatedAt: '',
-  positions: [{ id: 'a', isin: payload.identity.isin, symbol: payload.symbol, displayName: payload.name,
-    group: 'stocks', kind: 'etf', units: 10, targetPercent: 100, enabled: true }],
+  id: 'test',
+  name: 'Test',
+  createdAt: '',
+  updatedAt: '',
+  positions: [
+    {
+      id: 'a',
+      isin: payload.identity.isin,
+      symbol: payload.symbol,
+      displayName: payload.name,
+      group: 'stocks',
+      kind: 'etf',
+      units: 10,
+      targetPercent: 100,
+      enabled: true,
+    },
+  ],
 }
 
 async function rowFor(currency: string | null) {
   const quotes = new Map()
   if (currency) {
-    const client = new StockInfoClient('https://contract.test', async () => new Response(JSON.stringify({ ...payload, currency })))
-    quotes.set(payload.identity.isin, toQuoteCacheEntry(await client.getQuoteBySymbol(payload.symbol)))
+    const client = new StockInfoClient(
+      'https://contract.test',
+      async () => new Response(JSON.stringify({ ...payload, currency })),
+    )
+    quotes.set(
+      payload.identity.isin,
+      toQuoteCacheEntry(await client.getQuoteBySymbol(payload.symbol)),
+    )
   }
   return computeRebalancing(portfolio, quotes, defaultSettings('test')).rows[0]!
 }
@@ -41,19 +61,33 @@ async function rowFor(currency: string | null) {
 describe('Kursvertrag in der Oberfläche', () => {
   it('unterscheidet bei gleichem Symbol die gewählten Börsenlistings', async () => {
     const raw = catalogFixture.response.body[0]!
-    const listings = ['XNAS', 'XNYS'].map(mic => ({
-      ...raw, listing_id: `dual-${mic}`, symbol: 'DUAL', name: mic,
+    const listings = ['XNAS', 'XNYS'].map((mic) => ({
+      ...raw,
+      listing_id: `dual-${mic}`,
+      symbol: 'DUAL',
+      name: mic,
       identity: { kind: 'listed', ticker: 'DUAL', mic },
     }))
-    const client = new StockInfoClient('https://contract.test', async () => new Response(JSON.stringify(listings)))
+    const client = new StockInfoClient(
+      'https://contract.test',
+      async () => new Response(JSON.stringify(listings)),
+    )
     const available = await client.getInstruments()
     let checked = ''
     const wrapper = shallowMount(AddPositionDialog, {
       props: {
-        show: true, available, existingKeys: [], remainingTargetPercent: 100,
-        validateInstrument: async instrument => { checked = instrument.listing_id },
+        show: true,
+        available,
+        existingKeys: [],
+        remainingTargetPercent: 100,
+        validateInstrument: async (instrument) => {
+          checked = instrument.listing_id
+        },
       },
-      global: { renderStubDefaultSlot: true, stubs: { Card: { template: '<div><slot /><slot name="footer" /></div>' } } },
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { Card: { template: '<div><slot /><slot name="footer" /></div>' } },
+      },
     })
     const select = wrapper.findComponent(NSelect)
     expect(select.props('options')).toEqual([
@@ -63,10 +97,15 @@ describe('Kursvertrag in der Oberfläche', () => {
     select.vm.$emit('update:value', 'dual-XNYS')
     wrapper.findComponent(NInputNumber).vm.$emit('update:value', 2)
     await wrapper.vm.$nextTick()
-    wrapper.findAllComponents(NButton).find(b => b.props('type') === 'primary')!.vm.$emit('click')
+    wrapper
+      .findAllComponents(NButton)
+      .find((b) => b.props('type') === 'primary')!
+      .vm.$emit('click')
     await flushPromises()
     expect(checked).toBe('dual-XNYS')
-    expect(wrapper.emitted('add')?.[0]?.[0]).toMatchObject({ instrument: { identity: { mic: 'XNYS' } } })
+    expect(wrapper.emitted('add')?.[0]?.[0]).toMatchObject({
+      instrument: { identity: { mic: 'XNYS' } },
+    })
     wrapper.unmount()
   })
 
@@ -100,77 +139,117 @@ describe('Kursvertrag in der Oberfläche', () => {
     card.unmount()
   })
 
-  it.each(['USD', 'GBp'])('erhält Originalwährung %s im Detail und auf Mobilkarten', async (currency) => {
-    const row = await rowFor(currency)
-    const wrapper = mount(PositionDrilldown, { props: { row, total: 0, links: [] } })
-    const historyButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionHistory'))
-    await historyButton?.trigger('click')
-    expect(wrapper.findComponent(PriceChart).props('currency')).toBe(currency)
-    const assetButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionAsset'))
-    await assetButton?.trigger('click')
-    expect(wrapper.findAll('.position-details__facts dt').map(label => label.text())).not.toContain(translate('table.price'))
-    // Ohne Umrechnung und ohne wiederholte Typangabe gibt es keinen Faktenblock.
-    expect(wrapper.find('.position-details__facts').exists()).toBe(false)
-    wrapper.unmount()
-    const card = mount(PositionCard, { props: { row } })
-    expect(card.find('.poscard__line--base').text()).not.toContain('€')
-    expect(card.text()).toContain(currency === 'GBp' ? 'GBp' : '$')
-    card.unmount()
-  })
+  it.each(['USD', 'GBp'])(
+    'erhält Originalwährung %s im Detail und auf Mobilkarten',
+    async (currency) => {
+      const row = await rowFor(currency)
+      const wrapper = mount(PositionDrilldown, { props: { row, total: 0, links: [] } })
+      const historyButton = wrapper
+        .findAll('button')
+        .find((button) => button.text() === translate('drilldown.sectionHistory'))
+      await historyButton?.trigger('click')
+      expect(wrapper.findComponent(PriceChart).props('currency')).toBe(currency)
+      const assetButton = wrapper
+        .findAll('button')
+        .find((button) => button.text() === translate('drilldown.sectionAsset'))
+      await assetButton?.trigger('click')
+      expect(
+        wrapper.findAll('.position-details__facts dt').map((label) => label.text()),
+      ).not.toContain(translate('table.price'))
+      // Ohne Umrechnung und ohne wiederholte Typangabe gibt es keinen Faktenblock.
+      expect(wrapper.find('.position-details__facts').exists()).toBe(false)
+      wrapper.unmount()
+      const card = mount(PositionCard, { props: { row } })
+      expect(card.find('.poscard__line--base').text()).not.toContain('€')
+      expect(card.text()).toContain(currency === 'GBp' ? 'GBp' : '$')
+      card.unmount()
+    },
+  )
 
   it('benennt Pence beim Formatieren nicht in Pfund um', () => {
     expect(money(1234, 'GBp')).toContain('GBp')
     expect(money(1234, 'GBp')).not.toContain('£')
   })
 
-  it.each([true, false])('wählt normalisierte Katalogeinträge aus und sperrt Dubletten (ISIN: %s)', async (withIsin) => {
+  it.each([true, false])(
+    'wählt normalisierte Katalogeinträge aus und sperrt Dubletten (ISIN: %s)',
+    async (withIsin) => {
+      const raw = catalogFixture.response.body[0]!
+      const identity = withIsin ? raw.identity : { kind: 'listed', ticker: 'EUNL', mic: 'XETR' }
+      const client = new StockInfoClient(
+        'https://contract.test',
+        async () => new Response(JSON.stringify([{ ...raw, identity, latest_currency: 'USD' }])),
+      )
+      const available = await client.getInstruments()
+      const key = withIsin ? raw.identity.isin : raw.symbol
+      const wrapper = shallowMount(AddPositionDialog, {
+        props: {
+          show: true,
+          available,
+          existingKeys: [],
+          remainingTargetPercent: 100,
+          validateInstrument: async () => {},
+        },
+        global: {
+          renderStubDefaultSlot: true,
+          stubs: { Card: { template: '<div><slot /><slot name="footer" /></div>' } },
+        },
+      })
+      const select = wrapper.findComponent(NSelect)
+      expect(select.props('options')).toEqual([expect.objectContaining({ value: raw.listing_id })])
+      select.vm.$emit('update:value', raw.listing_id)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.addpos__facts').text()).toContain('$')
+      wrapper.findComponent(NInputNumber).vm.$emit('update:value', 10)
+      await wrapper.vm.$nextTick()
+      const submit = wrapper
+        .findAllComponents(NButton)
+        .find((button) => button.props('type') === 'primary')!
+      submit.vm.$emit('click')
+      await flushPromises()
+      const event = wrapper.emitted('add')?.[0]?.[0]
+      expect(event).toMatchObject({
+        instrument: { isin: withIsin ? raw.identity.isin : null, identity },
+        units: 10,
+      })
+      await wrapper.setProps({ existingKeys: [key] })
+      expect(wrapper.findComponent(NSelect).exists()).toBe(false)
+      expect(wrapper.text()).toContain(translate('addPosition.allInPortfolio'))
+      wrapper.unmount()
+    },
+  )
+
+  it('nimmt bei fehlgeschlagener Kursprüfung nichts auf und lässt den Dialog mit Grund offen', async () => {
     const raw = catalogFixture.response.body[0]!
-    const identity = withIsin ? raw.identity : { kind: 'listed', ticker: 'EUNL', mic: 'XETR' }
-    const client = new StockInfoClient('https://contract.test', async () => new Response(JSON.stringify([{ ...raw, identity, latest_currency: 'USD' }])))
+    const client = new StockInfoClient(
+      'https://contract.test',
+      async () => new Response(JSON.stringify([raw])),
+    )
     const available = await client.getInstruments()
-    const key = withIsin ? raw.identity.isin : raw.symbol
+    const reason = 'Symbol DUAL ist mehrdeutig'
     const wrapper = shallowMount(AddPositionDialog, {
-      props: { show: true, available, existingKeys: [], remainingTargetPercent: 100, validateInstrument: async () => {} },
+      props: {
+        show: true,
+        available,
+        existingKeys: [],
+        remainingTargetPercent: 100,
+        validateInstrument: async () => {
+          throw new ApiError(409, reason, 'https://contract.test/quote')
+        },
+      },
       global: {
         renderStubDefaultSlot: true,
         stubs: { Card: { template: '<div><slot /><slot name="footer" /></div>' } },
       },
     })
-    const select = wrapper.findComponent(NSelect)
-    expect(select.props('options')).toEqual([expect.objectContaining({ value: raw.listing_id })])
-    select.vm.$emit('update:value', raw.listing_id)
-    await wrapper.vm.$nextTick()
-    expect(wrapper.find('.addpos__facts').text()).toContain('$')
-    wrapper.findComponent(NInputNumber).vm.$emit('update:value', 10)
-    await wrapper.vm.$nextTick()
-    const submit = wrapper.findAllComponents(NButton).find((button) => button.props('type') === 'primary')!
-    submit.vm.$emit('click')
-    await flushPromises()
-    const event = wrapper.emitted('add')?.[0]?.[0]
-    expect(event).toMatchObject({ instrument: { isin: withIsin ? raw.identity.isin : null, identity }, units: 10 })
-    await wrapper.setProps({ existingKeys: [key] })
-    expect(wrapper.findComponent(NSelect).exists()).toBe(false)
-    expect(wrapper.text()).toContain(translate('addPosition.allInPortfolio'))
-    wrapper.unmount()
-  })
-
-  it('nimmt bei fehlgeschlagener Kursprüfung nichts auf und lässt den Dialog mit Grund offen', async () => {
-    const raw = catalogFixture.response.body[0]!
-    const client = new StockInfoClient('https://contract.test', async () => new Response(JSON.stringify([raw])))
-    const available = await client.getInstruments()
-    const reason = 'Symbol DUAL ist mehrdeutig'
-    const wrapper = shallowMount(AddPositionDialog, {
-      props: {
-        show: true, available, existingKeys: [], remainingTargetPercent: 100,
-        validateInstrument: async () => { throw new ApiError(409, reason, 'https://contract.test/quote') },
-      },
-      global: { renderStubDefaultSlot: true, stubs: { Card: { template: '<div><slot /><slot name="footer" /></div>' } } },
-    })
     wrapper.findComponent(NSelect).vm.$emit('update:value', raw.listing_id)
     await wrapper.vm.$nextTick()
     wrapper.findComponent(NInputNumber).vm.$emit('update:value', 10)
     await wrapper.vm.$nextTick()
-    wrapper.findAllComponents(NButton).find(b => b.props('type') === 'primary')!.vm.$emit('click')
+    wrapper
+      .findAllComponents(NButton)
+      .find((b) => b.props('type') === 'primary')!
+      .vm.$emit('click')
     await flushPromises()
     expect(wrapper.emitted('add')).toBeUndefined()
     expect(wrapper.emitted('update:show')).toBeUndefined()

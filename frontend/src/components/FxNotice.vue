@@ -8,13 +8,25 @@ import type { RebalancingResult } from '@/domain/rebalancing'
 const props = defineProps<{ result: RebalancingResult | null; loading: boolean }>()
 const emit = defineEmits<{ retry: [] }>()
 const { t, locale } = useI18n()
-const issues = computed(() => [...new Map((props.result?.rows ?? [])
-  .filter(row => row.excludedReason === 'currency' || (row.isActive && row.fx?.stale))
-  .map(row => {
-    const pair = fxKey(majorCurrency(row.quote!.currency), row.baseCurrency)
-    const time = row.fx ? new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(row.fx.quoteTime)) : ''
-    return [pair, row.fx ? t('fx.stalePair', { pair, time }) : t('fx.missingPair', { pair })] as const
-  })).values()])
+const issues = computed(() => [
+  ...new Map(
+    (props.result?.rows ?? [])
+      .filter((row) => row.excludedReason === 'currency' || (row.isActive && row.fx?.stale))
+      .map((row) => {
+        const pair = fxKey(majorCurrency(row.quote!.currency), row.baseCurrency)
+        const time = row.fx
+          ? new Intl.DateTimeFormat(locale.value, {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            }).format(new Date(row.fx.quoteTime))
+          : ''
+        return [
+          pair,
+          row.fx ? t('fx.stalePair', { pair, time }) : t('fx.missingPair', { pair }),
+        ] as const
+      }),
+  ).values(),
+])
 </script>
 
 <template>

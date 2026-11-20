@@ -22,14 +22,44 @@ import values from '../fixtures/stockinfo/detail-values.json'
 beforeEach(() => setActivePinia(createPinia()))
 async function sample() {
   const body = quoteFixture.response.body
-  const client = new StockInfoClient('https://details.test', async input => new Response(JSON.stringify(
-    String(input).endsWith('/fields') ? catalogFixture : String(input).includes('/daily') ? [] : { ...body, details: values },
-  )))
+  const client = new StockInfoClient(
+    'https://details.test',
+    async (input) =>
+      new Response(
+        JSON.stringify(
+          String(input).endsWith('/fields')
+            ? catalogFixture
+            : String(input).includes('/daily')
+              ? []
+              : { ...body, details: values },
+        ),
+      ),
+  )
   const quote = toQuoteCacheEntry(await client.getQuoteByIsin(body.identity.isin))
   useFieldsStore().catalog = toFieldCatalog(await client.getFields())
-  const result = computeRebalancing({ id: 'test', name: 'Test', createdAt: '', updatedAt: '', positions: [{
-    id: 'a', isin: body.identity.isin, symbol: body.symbol, displayName: body.name, group: 'stocks', kind: 'etf', units: 1, targetPercent: 100, enabled: true,
-  }] }, new Map([[body.identity.isin, quote]]), defaultSettings('test'))
+  const result = computeRebalancing(
+    {
+      id: 'test',
+      name: 'Test',
+      createdAt: '',
+      updatedAt: '',
+      positions: [
+        {
+          id: 'a',
+          isin: body.identity.isin,
+          symbol: body.symbol,
+          displayName: body.name,
+          group: 'stocks',
+          kind: 'etf',
+          units: 1,
+          targetPercent: 100,
+          enabled: true,
+        },
+      ],
+    },
+    new Map([[body.identity.isin, quote]]),
+    defaultSettings('test'),
+  )
   return { quote, client, result }
 }
 
@@ -38,10 +68,14 @@ describe('Zusatzinformationen in der echten Detailansicht', () => {
     const { result } = await sample()
     const wrapper = mount(PositionCard, { props: { row: result.rows[0]! } })
     expect(wrapper.find('[data-detail-field="risk-a.score"]').exists()).toBe(false)
-    const button = wrapper.findAll('button').find(button => button.attributes('aria-label') === translate('drilldown.openDetails'))
+    const button = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === translate('drilldown.openDetails'))
     expect(button).toBeDefined()
     await button?.trigger('click')
-    const detailsButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionAsset'))
+    const detailsButton = wrapper
+      .findAll('button')
+      .find((button) => button.text() === translate('drilldown.sectionAsset'))
     expect(detailsButton).toBeDefined()
     await detailsButton?.trigger('click')
     await flushPromises()
@@ -67,10 +101,17 @@ describe('Zusatzinformationen in der echten Detailansicht', () => {
     const { quote } = await sample()
     const riskB = quote.details?.['risk-b.score']
     if (!riskB) throw new Error('Testfeld fehlt')
-    const wrapper = mount(PositionDetailFields, { props: { quote: {
-      ...quote,
-      details: { ...quote.details, 'risk-b.score': { ...riskB, value: 2, origin: 'provider', source: 'Demo Source B' } },
-    } } })
+    const wrapper = mount(PositionDetailFields, {
+      props: {
+        quote: {
+          ...quote,
+          details: {
+            ...quote.details,
+            'risk-b.score': { ...riskB, value: 2, origin: 'provider', source: 'Demo Source B' },
+          },
+        },
+      },
+    })
 
     expect(wrapper.find('[data-detail-field="risk-a.score"]').exists()).toBe(true)
     expect(wrapper.find('[data-detail-field="risk-b.score"]').exists()).toBe(true)
@@ -82,12 +123,25 @@ describe('Zusatzinformationen in der echten Detailansicht', () => {
     const { quote } = await sample()
     const riskA = quote.details?.['risk-a.score']
     if (!riskA) throw new Error('Testfeld fehlt')
-    const wrapper = mount(PositionDetailFields, { props: { quote: {
-      ...quote,
-      details: { ...quote.details, 'risk-a.score': {
-        ...riskA, value: null, origin: null, source: null, asOf: null, shadowed: false, manualValue: null,
-      } },
-    } } })
+    const wrapper = mount(PositionDetailFields, {
+      props: {
+        quote: {
+          ...quote,
+          details: {
+            ...quote.details,
+            'risk-a.score': {
+              ...riskA,
+              value: null,
+              origin: null,
+              source: null,
+              asOf: null,
+              shadowed: false,
+              manualValue: null,
+            },
+          },
+        },
+      },
+    })
 
     expect(wrapper.findAll('[data-detail-field$=".score"]').length).toBe(1)
     wrapper.unmount()
@@ -117,15 +171,35 @@ describe('Zusatzinformationen in der echten Detailansicht', () => {
     const { client, result } = await sample()
     const detailColumns = ref<string[]>([])
     const wrapper = mount(NConfigProvider, {
-      slots: { default: () => h(PositionsTable, { rows: result.rows, groups: result.groups, total: result.total, targetsExceeded: false, links: [], detailColumns: detailColumns.value }) },
+      slots: {
+        default: () =>
+          h(PositionsTable, {
+            rows: result.rows,
+            groups: result.groups,
+            total: result.total,
+            targetsExceeded: false,
+            links: [],
+            detailColumns: detailColumns.value,
+          }),
+      },
       global: {
         provide: { [STOCK_INFO_CLIENT]: client },
-        plugins: [createRouter({ history: createMemoryHistory(), routes: ['/', '/method', '/settings'].map(path => ({ path, component: { render: () => null } })) })],
+        plugins: [
+          createRouter({
+            history: createMemoryHistory(),
+            routes: ['/', '/method', '/settings'].map((path) => ({
+              path,
+              component: { render: () => null },
+            })),
+          }),
+        ],
       },
     })
     await wrapper.find('button[data-open-history]').trigger('click')
     await flushPromises()
-    const detailsButton = wrapper.findAll('button').find(button => button.text() === translate('drilldown.sectionAsset'))
+    const detailsButton = wrapper
+      .findAll('button')
+      .find((button) => button.text() === translate('drilldown.sectionAsset'))
     expect(detailsButton).toBeDefined()
     await detailsButton?.trigger('click')
     await flushPromises()

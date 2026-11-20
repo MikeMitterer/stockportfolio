@@ -13,14 +13,15 @@ import { safeStorage } from '@mmit/ux-foundation'
 import { translate } from '@/i18n'
 import { ApiError, describeFailure } from '@/api/stockinfo/errors'
 import { toQuoteCacheEntry } from '@/api/stockinfo/mappers'
+import {
+  MAX_CONCURRENT_REQUESTS,
+  mapWithConcurrency,
+  requestQuote,
+} from '@/api/stockinfo/quoteRequests'
 import { QuoteCacheRepository } from '@/db/repository'
-import { quoteKey } from '@/domain/rebalancing'
+import { quoteKey } from '@/domain/valuation'
 import type { StockInfoClient } from '@/api/stockinfo/client'
-import type { QuoteResponse } from '@/api/stockinfo/types'
 import type { Position, QuoteCacheEntry, QuoteMap } from '@/types/portfolio'
-
-/** Maximale Anzahl gleichzeitiger Kursabfragen — schont die API. */
-const MAX_CONCURRENT_REQUESTS = 6
 
 /**
  * Zeitpunkt des letzten vollständigen Durchgangs, über Seitenaufbauten hinweg.
@@ -95,9 +96,7 @@ export const useQuotesStore = defineStore('quotes', () => {
   const busy = computed<boolean>(() => progressTotal.value > 0)
 
   const progressPercent = computed<number>(() =>
-    progressTotal.value === 0
-      ? 0
-      : Math.round((progressDone.value / progressTotal.value) * 100),
+    progressTotal.value === 0 ? 0 : Math.round((progressDone.value / progressTotal.value) * 100),
   )
 
   /** Meldet `count` beginnende Abrufe an. */
@@ -121,11 +120,15 @@ export const useQuotesStore = defineStore('quotes', () => {
 
     quotes.value = cached
     // Gespeicherter Vollabruf, sonst der dieser Sitzung; erst ohne beides der jüngste Kurs.
-    lastRefreshAt.value = safeStorage.read(LAST_REFRESH_KEY) ?? lastRefreshAt.value ?? newestFetchedAt(cached)
+    lastRefreshAt.value =
+      safeStorage.read(LAST_REFRESH_KEY) ?? lastRefreshAt.value ?? newestFetchedAt(cached)
   }
 
   /** Prüft einen Aufnahmekandidaten; Fehler gehen vor jeder Depotänderung zurück. */
-  async function loadOne(client: StockInfoClient, instrument: Pick<Position, 'isin' | 'symbol'>): Promise<void> {
+  async function loadOne(
+    client: StockInfoClient,
+    instrument: Pick<Position, 'isin' | 'symbol'>,
+  ): Promise<void> {
     const entry = toQuoteCacheEntry(await requestQuote(client, instrument, false))
     const key = quoteKey(instrument)
     await repository.put(key, entry)
@@ -284,8 +287,10 @@ export const useQuotesStore = defineStore('quotes', () => {
       await loadQuotes(client, positions)
       return
     }
-    const missing = positions.filter((position) =>
-      position.enabled && position.group !== 'cash' && !quotes.value.has(quoteKey(position)))
+    const missing = positions.filter(
+      (position) =>
+        position.enabled && position.group !== 'cash' && !quotes.value.has(quoteKey(position)),
+    )
     if (missing.length > 0) await loadMissing(client, missing)
   }
 
@@ -301,11 +306,15 @@ export const useQuotesStore = defineStore('quotes', () => {
     loadingRuns.value += 1
     beginProgress(missing.length)
     try {
-      const results = await mapWithConcurrency(missing, MAX_CONCURRENT_REQUESTS, async (position) => {
-        const outcome = await fetchOne(client, position, false)
-        stepProgress()
-        return outcome
-      })
+      const results = await mapWithConcurrency(
+        missing,
+        MAX_CONCURRENT_REQUESTS,
+        async (position) => {
+          const outcome = await fetchOne(client, position, false)
+          stepProgress()
+          return outcome
+        },
+      )
       const sorted = sortOutcomes(results, quotes.value)
       const touched = new Set(results.map((outcome) => outcome.key))
       const nextQuotes: QuoteMap = new Map(quotes.value)
@@ -351,7 +360,8 @@ export const useQuotesStore = defineStore('quotes', () => {
         quotes.value = new Map(quotes.value).set(key, stale)
         await repository.put(key, stale)
       }
-      const reason = error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
+      const reason =
+        error instanceof ApiError ? describeFailure(error) : translate('notify.unknownError')
       consola.error('quotes: Einzel-Refresh fehlgeschlagen', {
         symbol: position.symbol,
         reason,
@@ -414,26 +424,6 @@ interface FetchOutcome {
   reason?: string
 }
 
-/**
- * Wählt den Endpunkt für eine Position.
- *
- * Zwei Achsen: ISIN oder Symbol — und ob die TTL des Dienstes gilt. Ohne
- * `force` liefert er innerhalb von sechs Stunden den Kurs aus seinem eigenen
- * Speicher; mit `force` beschafft er ihn live.
- */
-function requestQuote(
-  client: StockInfoClient,
-  position: Pick<Position, 'isin' | 'symbol'>,
-  force: boolean,
-): Promise<QuoteResponse> {
-  if (position.isin) {
-    return force ? client.refreshByIsin(position.isin) : client.getQuoteByIsin(position.isin)
-  }
-  return force
-    ? client.refreshBySymbol(position.symbol)
-    : client.getQuoteBySymbol(position.symbol)
-}
-
 /** Holt den Kurs einer Position und macht aus einem Fehler ein Ergebnis. */
 async function fetchOne(
   client: StockInfoClient,
@@ -451,39 +441,6 @@ async function fetchOne(
     const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
     return { key, symbol: position.symbol, entry: null, reason }
   }
-}
-
-/**
- * Führt `task` über alle `items` aus, aber höchstens `limit` gleichzeitig.
- * Wirft nie — Fehler müssen im Task selbst behandelt werden.
- *
- * @param items Eingabeliste.
- * @param limit Maximale Parallelität (>= 1).
- * @param task  Auszuführende Funktion je Element.
- * @returns Ergebnisse in der Reihenfolge der Eingabe.
- */
-async function mapWithConcurrency<TItem, TResult>(
-  items: TItem[],
-  limit: number,
-  task: (item: TItem) => Promise<TResult>,
-): Promise<TResult[]> {
-  const results = new Array<TResult>(items.length)
-  let cursor = 0
-
-  async function worker(): Promise<void> {
-    while (cursor < items.length) {
-      const index = cursor
-      cursor += 1
-      const item = items[index]
-      if (item === undefined) continue
-      results[index] = await task(item)
-    }
-  }
-
-  const workerCount = Math.min(Math.max(limit, 1), items.length)
-  await Promise.all(Array.from({ length: workerCount }, () => worker()))
-
-  return results
 }
 
 /*

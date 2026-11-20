@@ -26,7 +26,13 @@ async function fixture(heartbeatMs?: number) {
   })
   await service.setup('setup-code', 'setup', 'Setup-password-123', '127.0.0.1')
   const login = await service.login('setup', 'Setup-password-123', '127.0.0.1')
-  return { app, repository, service, cookie: `stockportfolio_session=${login.token}`, token: login.token }
+  return {
+    app,
+    repository,
+    service,
+    cookie: `stockportfolio_session=${login.token}`,
+    token: login.token,
+  }
 }
 
 async function readFrame(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<string> {
@@ -56,19 +62,30 @@ describe('private Depotereignisse', () => {
     const reader = response.body!.getReader()
     expect(await readFrame(reader)).toContain(': connected')
 
-    expect((await app.request(`${origin}/api/data/portfolio/depot`, {
-      method: 'PUT',
-      headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ revision: 0, value: { id: 'depot', name: 'Privat', positions: [] } }),
-    })).status).toBe(200)
+    expect(
+      (
+        await app.request(`${origin}/api/data/portfolio/depot`, {
+          method: 'PUT',
+          headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            revision: 0,
+            value: { id: 'depot', name: 'Privat', positions: [] },
+          }),
+        })
+      ).status,
+    ).toBe(200)
     const event = await readFrame(reader)
     expect(event).toContain('event: resource')
     expect(event).toContain('"kind":"portfolio","resourceId":"depot","revision":1')
-    expect((await app.request(`${origin}/api/data/quote-refresh/current`, {
-      method: 'PUT',
-      headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ revision: 0, value: { refreshedAt: '2026-09-30T20:00:00.000Z' } }),
-    })).status).toBe(200)
+    expect(
+      (
+        await app.request(`${origin}/api/data/quote-refresh/current`, {
+          method: 'PUT',
+          headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ revision: 0, value: { refreshedAt: '2026-09-30T20:00:00.000Z' } }),
+        })
+      ).status,
+    ).toBe(200)
     const quoteEvent = await readFrame(reader)
     expect(quoteEvent).toContain('"kind":"quote-refresh","resourceId":"current","revision":1')
     expect(quoteEvent).not.toContain('refreshedAt')
@@ -79,21 +96,43 @@ describe('private Depotereignisse', () => {
   it('meldet das Löschen erst nach erfolgreichem Commit mit neuer Revision', async () => {
     const { app, repository, cookie } = await fixture()
     const headers = { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' }
-    expect((await app.request(`${origin}/api/data/portfolio/depot`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({ revision: 0, value: { id: 'depot', name: 'Privat', positions: [] } }),
-    })).status).toBe(200)
+    expect(
+      (
+        await app.request(`${origin}/api/data/portfolio/depot`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({
+            revision: 0,
+            value: { id: 'depot', name: 'Privat', positions: [] },
+          }),
+        })
+      ).status,
+    ).toBe(200)
     const response = await app.request(`${origin}/api/data/events`, { headers: { Cookie: cookie } })
     const reader = response.body!.getReader()
     await readFrame(reader)
 
-    expect((await app.request(`${origin}/api/data/portfolio/depot`, {
-      method: 'DELETE', headers, body: JSON.stringify({ revision: 0 }),
-    })).status).toBe(409)
-    expect((await app.request(`${origin}/api/data/portfolio/depot`, {
-      method: 'DELETE', headers, body: JSON.stringify({ revision: 1 }),
-    })).status).toBe(200)
-    await expect(readFrame(reader)).resolves.toContain('"kind":"portfolio","resourceId":"depot","revision":2')
+    expect(
+      (
+        await app.request(`${origin}/api/data/portfolio/depot`, {
+          method: 'DELETE',
+          headers,
+          body: JSON.stringify({ revision: 0 }),
+        })
+      ).status,
+    ).toBe(409)
+    expect(
+      (
+        await app.request(`${origin}/api/data/portfolio/depot`, {
+          method: 'DELETE',
+          headers,
+          body: JSON.stringify({ revision: 1 }),
+        })
+      ).status,
+    ).toBe(200)
+    await expect(readFrame(reader)).resolves.toContain(
+      '"kind":"portfolio","resourceId":"depot","revision":2',
+    )
     await reader.cancel()
     repository.close()
   })
@@ -101,10 +140,12 @@ describe('private Depotereignisse', () => {
   it('lässt den internen Kurs-Hinweis nicht löschen, damit seine Revision weiterzählt', async () => {
     const { app, repository, cookie } = await fixture()
     const headers = { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' }
-    const announce = async (revision: number) => app.request(`${origin}/api/data/quote-refresh/current`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({ revision, value: { refreshedAt: new Date().toISOString() } }),
-    })
+    const announce = async (revision: number) =>
+      app.request(`${origin}/api/data/quote-refresh/current`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ revision, value: { refreshedAt: new Date().toISOString() } }),
+      })
     expect(await (await announce(0)).json()).toEqual({ revision: 1 })
     expect(await (await announce(1)).json()).toEqual({ revision: 2 })
 
@@ -112,14 +153,18 @@ describe('private Depotereignisse', () => {
     const reader = response.body!.getReader()
     await readFrame(reader)
     const deleted = await app.request(`${origin}/api/data/quote-refresh/current`, {
-      method: 'DELETE', headers, body: JSON.stringify({ revision: 2 }),
+      method: 'DELETE',
+      headers,
+      body: JSON.stringify({ revision: 2 }),
     })
     expect(deleted.status).toBe(405)
     expect(await deleted.json()).toEqual({ error: 'not_deletable' })
 
     // Offene Fenster merken sich Revision 2; ein neuer Hinweis muss darüber liegen.
     expect(await (await announce(2)).json()).toEqual({ revision: 3 })
-    await expect(readFrame(reader)).resolves.toContain('"kind":"quote-refresh","resourceId":"current","revision":3')
+    await expect(readFrame(reader)).resolves.toContain(
+      '"kind":"quote-refresh","resourceId":"current","revision":3',
+    )
     await reader.cancel()
     repository.close()
   })
@@ -135,14 +180,23 @@ describe('private Depotereignisse', () => {
     const secondReader = secondResponse.body!.getReader()
     expect(await readFrame(secondReader)).toContain(': connected')
 
-    const ownResponse = await app.request(`${origin}/api/data/events`, { headers: { Cookie: cookie } })
+    const ownResponse = await app.request(`${origin}/api/data/events`, {
+      headers: { Cookie: cookie },
+    })
     const ownReader = ownResponse.body!.getReader()
     expect(await readFrame(ownReader)).toContain(': connected')
-    expect((await app.request(`${origin}/api/data/portfolio/private-depot`, {
-      method: 'PUT',
-      headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ revision: 0, value: { id: 'private-depot', name: 'Privat', positions: [] } }),
-    })).status).toBe(200)
+    expect(
+      (
+        await app.request(`${origin}/api/data/portfolio/private-depot`, {
+          method: 'PUT',
+          headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            revision: 0,
+            value: { id: 'private-depot', name: 'Privat', positions: [] },
+          }),
+        })
+      ).status,
+    ).toBe(200)
     expect(await readFrame(ownReader)).toContain('private-depot')
     expect(await readFrame(secondReader)).not.toContain('private-depot')
 
@@ -156,20 +210,34 @@ describe('private Depotereignisse', () => {
   it('meldet nach einem atomaren Restore alle betroffenen Ressourcen ohne Inhalte', async () => {
     const { app, repository, cookie } = await fixture()
     const headers = { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' }
-    expect((await app.request(`${origin}/api/data/portfolio/old`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({ revision: 0, value: { id: 'old', name: 'Altes Depot', positions: [] } }),
-    })).status).toBe(200)
-    expect((await app.request(`${origin}/api/data/settings/current`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({ revision: 0, value: { activePortfolioId: 'old' } }),
-    })).status).toBe(200)
+    expect(
+      (
+        await app.request(`${origin}/api/data/portfolio/old`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({
+            revision: 0,
+            value: { id: 'old', name: 'Altes Depot', positions: [] },
+          }),
+        })
+      ).status,
+    ).toBe(200)
+    expect(
+      (
+        await app.request(`${origin}/api/data/settings/current`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({ revision: 0, value: { activePortfolioId: 'old' } }),
+        })
+      ).status,
+    ).toBe(200)
     const response = await app.request(`${origin}/api/data/events`, { headers: { Cookie: cookie } })
     const reader = response.body!.getReader()
     await readFrame(reader)
 
     const restored = await app.request(`${origin}/api/data/restore`, {
-      method: 'POST', headers,
+      method: 'POST',
+      headers,
       body: JSON.stringify({
         portfolio: { id: 'new', name: 'Geheimes Depot', positions: [] },
         settings: { activePortfolioId: 'new' },

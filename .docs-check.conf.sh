@@ -90,8 +90,8 @@ MAX_ALERTS=2
 
 # ─── Variablen zwischen Doku und Code ──────────────────────────────────────────
 
-# Variablen, die die Doku nennt, die aber nur in MakeLib unter .libs/ stehen
-# (von git ignoriert), oder allgemeine Standards sind.
+# Variablen, die die Doku nennt, die aber nicht im Code des Projekts stehen,
+# etwa allgemeine Standards.
 KNOWN_VARIABLES=(
 )
 
@@ -144,18 +144,18 @@ REQUIRED=(
     "./CLAUDE.md|verweist Claude auf AGENTS.md"
 
     # Ticket-Board
-    "_tickets/README.md|Ablage und Ablauf der Tickets"
-    "_tickets/STATUS.md|Rollen und Kommunikationsstatus"
-    "_tickets/QUESTIONS.md|Fragen beim Testen"
-    "_tickets/.agents/AGENT-ACTIVATION.md"
-    "_tickets/.agents/AGENT-WORKFLOW.md"
-    "_tickets/.agents/CLAUDE-LESSONS.md"
-    "_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md"
-    "_tickets/.agents/CODEX-LESSONS.md"
-    "_tickets/.agents/LESSONS-ACCESS.md"
-    "_tickets/.agents/LESSONS-PROCESS.md"
-    "_tickets/.agents/OBSERVER-VERIFICATION.md"
-    "_tickets/.agents/TICKET-TEMPLATE.md"
+    # "_tickets/README.md|Ablage und Ablauf der Tickets"
+    # "_tickets/STATUS.md|Rollen und Kommunikationsstatus"
+    # "_tickets/QUESTIONS.md|Fragen beim Testen"
+    # "_tickets/.agents/AGENT-ACTIVATION.md"
+    # "_tickets/.agents/AGENT-WORKFLOW.md"
+    # "_tickets/.agents/CLAUDE-LESSONS.md"
+    # "_tickets/.agents/CODEX-IN-CONTEXT-SCHEDULER.md"
+    # "_tickets/.agents/CODEX-LESSONS.md"
+    # "_tickets/.agents/LESSONS-ACCESS.md"
+    # "_tickets/.agents/LESSONS-PROCESS.md"
+    # "_tickets/.agents/OBSERVER-VERIFICATION.md"
+    # "_tickets/.agents/TICKET-TEMPLATE.md"
 
     # Design und Planung
     # "docs/stockinfo-integration-proposal.md|StockInfo-Anbindung"
@@ -179,9 +179,9 @@ REQUIRED=(
 # (Tippfehler im README, Codeänderung ohne sichtbare Folge), die Meldung aus
 # SCREENSHOTS, DEPENDS oder DEPENDS_HINT nach dem Prüfen quittieren:
 #
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images/dashboard.png
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack docs/images   # ganzer Ordner
-#   .libs/ProjectTools/src/bash/docs-check.sh --ack               # alle offenen
+#   .tools/bin/docs-check --ack docs/images/dashboard.png
+#   .tools/bin/docs-check --ack docs/images   # ganzer Ordner
+#   .tools/bin/docs-check --ack               # alle offenen
 #
 # Das schreibt je Paar den letzten Commit der Basis nach .docs-check.ack; die
 # Datei mitcommitten. Die Quittung gilt, bis die Basis einen neueren Commit

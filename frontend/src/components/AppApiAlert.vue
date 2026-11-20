@@ -127,8 +127,7 @@ function zurStatusseite(): void {
   >
     <div class="apialert">
       <p class="apialert__reason">
-        {{ reason.vor
-        }}<!--
+        {{ reason.vor }}<!--
           Neues Fenster: Ein Klick soll die App nicht verlassen — man will die
           Adresse prüfen und dann hier weitermachen.
         --><a
@@ -137,7 +136,8 @@ function zurStatusseite(): void {
           :href="reason.url"
           target="_blank"
           rel="noreferrer"
-          >{{ reason.url }}</a>{{ reason.nach }}
+          >{{ reason.url }}</a
+        >{{ reason.nach }}
       </p>
       <p class="apialert__body">{{ t('notify.apiOfflineBody') }}</p>
     </div>
@@ -147,10 +147,7 @@ function zurStatusseite(): void {
         <NButton secondary @click="zurStatusseite">
           {{ t('notify.apiOfflineSettings') }}
         </NButton>
-        <NButton
-          type="primary"
-          :loading="apiStatus.state === 'checking'" @click="pruefeErneut"
-        >
+        <NButton type="primary" :loading="apiStatus.state === 'checking'" @click="pruefeErneut">
           {{ t('notify.apiOfflineRetry') }}
         </NButton>
       </NSpace>

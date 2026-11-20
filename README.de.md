@@ -73,7 +73,9 @@ Position bei 9,4 % aus.
 
 Unter _Rebalancing_ übernimmst du vorgeschlagene Geschäfte oder gibst eigene
 Stückzahlen und Probe-Zielanteile ein. Der Plan zeigt die Kosten, die
-resultierenden Anteile und Bänder und ob das Geld reicht. Reicht es nicht,
+resultierenden Anteile und Bänder und ob das Geld reicht. Unter jedem Kurs
+stehen die Bandkurse: der Kurs, bei dem der Anteil das untere oder obere Band
+erreichen würde, wenn alle anderen Kurse gleich blieben. Reicht es nicht,
 schlägt _Decken aus_ liquide Positionen zum Verkauf vor.
 
 > [!NOTE]
@@ -182,6 +184,7 @@ Für Unraid siehe die [Unraid-Anleitung](unraid/README.md) (englisch).
 | Port `8080/tcp` | `8080` | Weboberfläche; auf einen beliebigen Host-Port abbilden. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | – | Genaue Adresse in der Adresszeile des Browsers, wenn ein Reverse Proxy StockPortfolio ausliefert (etwa über HTTPS): Schema, Host und Port, z. B. `https://portfolio.example.com`. Einrichtung und Anmeldung prüfen sie. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | `false` | Auf `true` setzen, wenn der Browser HTTPS verwendet. |
+| `STOCKPORTFOLIO_SESSION_IDLE_DAYS` | `7` | Tage ohne Nutzung, bis du dich neu anmelden musst. Jede Nutzung startet die Frist neu. Ganze Tage von 1 bis 365. |
 
 Alle Einstellungen, Hinweise zu Reverse Proxys und die Statusseite beschreibt
 die [Docker-Anleitung](docker/README.md#configuration).

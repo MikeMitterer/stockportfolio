@@ -1,3 +1,17 @@
-# Python-Werkzeuge für die Entwicklung von StockPortfolio (make setup).
+# Python-Pakete der .venv für die Entwicklung von StockPortfolio (make setup).
 # Die App selbst braucht kein Python; das Image enthält diese Pakete nicht.
--e ./.libs/ProjectTools
+# ProjectTools kommt als Befehl über .dev-tools.conf.sh nach .tools/, nicht hierher.
+# Git-Quellen installiert make setup über devtools exec; auf dem Entwicklungsrechner
+# ersetzt dessen rechnerlokale Zuordnung GitHub durch das lokale Repo.
+#
+# Farben, Abstände und argparse-Hilfe der Teststack-Skripte (scripts/terminal_style.py).
+mmit-clitheme @ git+https://github.com/MikeMitterer/python-clitheme.git@v0.12.0+261119.1304.0816b
+#
+# Gepinnte Prüfwerkzeuge für make lint, format-check, security, audit und quality (T-99).
+ruff==0.17.1
+bandit==1.9.4
+pip-audit==2.10.1
+# Untergrenzen für die .venv selbst: ältere Fassungen haben bekannte Lücken,
+# setuptools PYSEC-2026-3447 (T-100), pip PYSEC-2026-196 und PYSEC-2026-3721 (T-126).
+setuptools>=83
+pip>=26.2

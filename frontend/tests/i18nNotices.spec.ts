@@ -9,8 +9,20 @@ import { en } from '@/i18n/en'
  */
 describe('Hinweise zu Kauf- und Verkaufswerten', () => {
   it.each([
-    ['de', de, 'Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus.', 'Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.', /Anlageberatung|Empfehlung zum Handeln|Orientierungshilfe/],
-    ['en', en, 'The app does not check whether a trade or a financial instrument suits you, and it does not place orders.', 'Check data, prices, costs and risks before you trade.', /investment advice|recommendations? to trade|guides/],
+    [
+      'de',
+      de,
+      'Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus.',
+      'Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
+      /Anlageberatung|Empfehlung zum Handeln|Orientierungshilfe/,
+    ],
+    [
+      'en',
+      en,
+      'The app does not check whether a trade or a financial instrument suits you, and it does not place orders.',
+      'Check data, prices, costs and risks before you trade.',
+      /investment advice|recommendations? to trade|guides/,
+    ],
   ] as const)('sind in „%s“ stimmig', (_locale, catalog, limit, check, oldDisclaimer) => {
     // Der Login-Hinweis hebt Kernaussagen mit `**…**` hervor; verglichen wird der Text.
     const plain = (text: string) => text.replace(/\*\*/g, '')

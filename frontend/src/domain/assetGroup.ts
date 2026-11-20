@@ -75,7 +75,7 @@ export function upgradeAssetGroups(portfolio: Portfolio): Portfolio {
   return {
     ...portfolio,
     assetGroupVersion: 2,
-    positions: portfolio.positions.map(position =>
+    positions: portfolio.positions.map((position) =>
       position.group === 'stocks' && position.kind === 'etf'
         ? { ...position, group: 'etfs' }
         : position,

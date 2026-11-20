@@ -73,7 +73,9 @@ at 9.4 %.
 
 In _Rebalancing_ you take over suggested trades or enter your own unit counts
 and trial target shares. The plan shows the costs, the resulting shares and
-bands and whether the money is there. If it is not, _Cover from_ suggests liquid
+bands and whether the money is there. Below each price it shows the band
+prices: the price at which the share would reach the lower or upper band if all
+other prices stayed the same. If it is not, _Cover from_ suggests liquid
 positions to sell.
 
 > [!NOTE]
@@ -180,6 +182,7 @@ For Unraid, see the [Unraid guide](unraid/README.md).
 | Port `8080/tcp` | `8080` | Web interface; map it to any host port. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | – | Exact address in the browser's address bar when a reverse proxy serves StockPortfolio (e.g. over HTTPS): scheme, host and port, e.g. `https://portfolio.example.com`. Setup and login check it. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | `false` | Set to `true` when the browser uses HTTPS. |
+| `STOCKPORTFOLIO_SESSION_IDLE_DAYS` | `7` | Days without use before you have to sign in again. Every use starts the period anew. Whole days from 1 to 365. |
 
 All settings, reverse-proxy notes and the status page are described in the
 [Docker guide](docker/README.md#configuration).

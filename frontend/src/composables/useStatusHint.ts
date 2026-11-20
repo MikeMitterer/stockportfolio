@@ -13,7 +13,10 @@ import { useSettingsStore } from '@/stores/settings'
  * bis `+upper`. Bei Bändern unter 1 % wechseln diese Schwellen das Vorzeichen;
  * sie dürfen deshalb nicht bei 0 abgeschnitten werden.
  */
-export function nearThresholds(lowerPercent: number, upperPercent: number): { nearLower: number; nearUpper: number } {
+export function nearThresholds(
+  lowerPercent: number,
+  upperPercent: number,
+): { nearLower: number; nearUpper: number } {
   return { nearLower: 1 - lowerPercent, nearUpper: upperPercent - 1 }
 }
 
