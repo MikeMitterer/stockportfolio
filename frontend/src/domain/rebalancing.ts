@@ -6,8 +6,9 @@
  */
 
 import { resolveAmount } from './amount'
-import { baseCurrencyOf, convertedPrice } from './fx'
+import { baseCurrencyOf, convertedPrice, type ConvertedPrice } from './fx'
 import type { FxMap, FxRate } from '@/types/fx'
+import { groupMarketValue, marketValue, quoteFor, totalValue } from './valuation'
 import { daysUntilDue, isDue, usesBands, usesCalendar } from './schedule'
 import { ASSET_GROUPS } from '@/types/portfolio'
 import type {
@@ -21,95 +22,6 @@ import type {
   Settings,
   Suggestion,
 } from '@/types/portfolio'
-
-/** Cache-Key-Konvention: ISIN bevorzugt, Symbol als Fallback. */
-export function quoteKey(position: Pick<Position, 'isin' | 'symbol'>): string {
-  return position.isin ?? position.symbol
-}
-
-/** Kurs zu einer Position aus der QuoteMap holen (kann `null` sein für Cash). */
-export function quoteFor(position: Position, quotes: QuoteMap): QuoteCacheEntry | null {
-  if (position.group === 'cash') return null
-  return quotes.get(quoteKey(position)) ?? null
-}
-
-/**
- * Marktwert einer Position in ihrer Kurswährung (Excel Spalte K = G × I).
- * Für Cash: `units` ist der Betrag in der Depotwährung.
- * Für Wertpapiere: `units × Kurs`. Kein Kurs → 0 (mit Warning).
- */
-export function marketValue(position: Position, quote: QuoteCacheEntry | null): number {
-  if (position.group === 'cash') return position.units
-  if (!quote) return 0
-  return position.units * quote.price
-}
-
-/** Marktwert-Summe aller aktiven Positionen einer Gruppe. */
-export function groupMarketValue(
-  group: AssetGroup,
-  portfolio: Portfolio,
-  quotes: QuoteMap,
-  baseCurrency = baseCurrencyOf(portfolio),
-  rates: FxMap = new Map(),
-): number {
-  return portfolio.positions
-    .filter(
-      (position) => position.group === group && countsIn(position, quotes, baseCurrency, rates),
-    )
-    .reduce(
-      (sum, position) =>
-        sum +
-        (position.group === 'cash'
-          ? position.units
-          : position.units *
-            (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)),
-      0,
-    )
-}
-
-/**
- * Gesamtsumme des Portfolios (Excel I3 = ROUND(K7+K14+K16+K19, -3)).
- * Rundung auf `settings.totalRounding` (z.B. -3 → Tausender).
- */
-export function totalValue(
-  portfolio: Portfolio,
-  quotes: QuoteMap,
-  rounding: number,
-  baseCurrency = baseCurrencyOf(portfolio),
-  rates: FxMap = new Map(),
-): number {
-  const raw = portfolio.positions
-    .filter((position) => countsIn(position, quotes, baseCurrency, rates))
-    .reduce(
-      (sum, position) =>
-        sum +
-        (position.group === 'cash'
-          ? position.units
-          : position.units *
-            (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)),
-      0,
-    )
-  return roundToPlace(raw, rounding)
-}
-
-/** Notierungswährung und Depotwährung sind unabhängig; GBp ist eine Einheit von GBP. */
-export function hasForeignCurrency(quote: QuoteCacheEntry | null, baseCurrency: string): boolean {
-  return !!quote && quote.currency.toUpperCase() !== baseCurrency.toUpperCase()
-}
-
-/** Nur vollständige Bewertungen zählen; ausgeschlossene Zeilen bleiben sichtbar. */
-function countsIn(
-  position: Position,
-  quotes: QuoteMap,
-  baseCurrency: string,
-  rates: FxMap,
-): boolean {
-  return (
-    position.enabled &&
-    (position.group === 'cash' ||
-      convertedPrice(quoteFor(position, quotes), baseCurrency, rates) !== null)
-  )
-}
 
 /** IST-% am Gesamtvermögen (Excel L = K × 100 / I3). */
 export function actualPercent(positionValue: number, total: number): number {
@@ -153,18 +65,6 @@ export function unitsDelta(
 ): number {
   if (!quote || quote.price === 0) return 0
   return (targetAmount - actualValue) / quote.price
-}
-
-/**
- * Rundet analog zu Excel `ROUND(value, place)`:
- * - place = 0 → auf Ganze
- * - place = -2 → auf 100er
- * - place = -3 → auf 1000er
- * - place = 2 → auf 2 Nachkommastellen
- */
-export function roundToPlace(value: number, place: number): number {
-  const factor = Math.pow(10, -place)
-  return Math.round(value / factor) * factor
 }
 
 /**
@@ -393,6 +293,138 @@ function groupTargetPercent(group: AssetGroup, portfolio: Portfolio): number {
     .reduce((sum, position) => sum + position.targetPercent, 0)
 }
 
+/** Was Zeile und Gruppe für ihr Urteil brauchen; einmal je Berechnung bestimmt. */
+interface RowContext {
+  quotes: QuoteMap
+  rates: FxMap
+  baseCurrency: string
+  total: number
+  bands: Bands
+  minTrade: number
+  trigger: RebalancingTrigger
+  due: boolean
+}
+
+/** Bänder und Urteil aus Band, Termin und Mindestorder; dieselbe Regel für Zeile und Gruppe. */
+function verdictFor(
+  actual: number,
+  target: number,
+  context: RowContext,
+): { low: number; high: number; suggestion: Suggestion; belowMinTrade: boolean } {
+  const low = lowerBand(target, context.bands)
+  const high = upperBand(target, context.bands)
+  const verdict = applyMinTrade(
+    combineSuggestion(suggestion(actual, low, high), context.trigger, context.due, actual, target),
+    target - actual,
+    context.minTrade,
+  )
+  return { low, high, ...verdict }
+}
+
+/** Warum eine Position nicht mitzählt; `null`, wenn sie vollständig bewertet ist. */
+function excludedReasonOf(
+  position: Position,
+  quote: QuoteCacheEntry | null,
+  converted: Pick<ConvertedPrice, 'price'> | null,
+): PositionResult['excludedReason'] {
+  if (!position.enabled) return 'disabled'
+  if (position.group !== 'cash' && !quote) return 'missing-quote'
+  if (!converted) return 'currency'
+  return null
+}
+
+/** Stückzahl bis zum Ziel; Cash und Papiere ohne umrechenbaren Kurs bekommen keinen Vorschlag. */
+function unitsToTarget(
+  position: Position,
+  converted: Pick<ConvertedPrice, 'price'> | null,
+  target: number,
+  value: number,
+): number {
+  if (position.group === 'cash' || !converted || converted.price <= 0) return 0
+  return (target - value) / converted.price
+}
+
+/** Zeile einer Position; ausgeschlossene Positionen bleiben mit leeren Kennzahlen sichtbar. */
+function positionRow(position: Position, context: RowContext): PositionResult {
+  const quote = quoteFor(position, context.quotes)
+  const converted: Pick<ConvertedPrice, 'price' | 'fx'> | null =
+    position.group === 'cash'
+      ? { price: 1, fx: null }
+      : convertedPrice(quote, context.baseCurrency, context.rates)
+  const mv = converted ? position.units * converted.price : 0
+  const base = {
+    position,
+    quote,
+    marketValue: mv,
+    basePrice: converted?.price ?? null,
+    baseCurrency: context.baseCurrency,
+    originalMarketValue: marketValue(position, quote),
+    fx: converted?.fx ?? null,
+  }
+
+  const excludedReason = excludedReasonOf(position, quote, converted)
+  if (excludedReason) {
+    return {
+      ...base,
+      actualPercent: 0,
+      targetValue: 0,
+      lowerBand: 0,
+      upperBand: 0,
+      suggestion: 'ok',
+      unitsDelta: 0,
+      relativeDeltaPercent: 0,
+      isNearBand: false,
+      isActive: false,
+      excludedReason,
+      belowMinTrade: false,
+    }
+  }
+
+  const target = targetValue(position, context.total)
+  const verdict = verdictFor(mv, target, context)
+  return {
+    ...base,
+    actualPercent: actualPercent(mv, context.total),
+    targetValue: target,
+    lowerBand: verdict.low,
+    upperBand: verdict.high,
+    suggestion: verdict.suggestion,
+    belowMinTrade: verdict.belowMinTrade,
+    unitsDelta: unitsToTarget(position, converted, target, mv),
+    relativeDeltaPercent: relativeDeltaPercent(mv, target),
+    // Ohne laufendes Band gibt es kein „knapp davor" — nur den Termin.
+    isNearBand: usesBands(context.trigger) && isNearBand(mv, verdict.low, verdict.high, target),
+    isActive: true,
+    excludedReason: null,
+  }
+}
+
+/** Zeile einer Assetklasse; was sich als Order nicht lohnt, gibt auch als Gruppe kein Signal. */
+function groupRow(group: AssetGroup, portfolio: Portfolio, context: RowContext): GroupResult {
+  const actualValue = groupMarketValue(
+    group,
+    portfolio,
+    context.quotes,
+    context.baseCurrency,
+    context.rates,
+  )
+  const targetPercent = groupTargetPercent(group, portfolio)
+  const target = (context.total * targetPercent) / 100
+  const verdict = verdictFor(actualValue, target, context)
+  return {
+    group,
+    actualValue,
+    actualPercent: actualPercent(actualValue, context.total),
+    targetPercent,
+    targetValue: target,
+    lowerBand: verdict.low,
+    upperBand: verdict.high,
+    suggestion: verdict.suggestion,
+    belowMinTrade: verdict.belowMinTrade,
+    deltaEuro: target - actualValue,
+  }
+}
+
 /**
  * Hauptaggregator: liefert für ein Portfolio + Kurse + Settings alle
  * abgeleiteten Werte fürs UI.
@@ -409,7 +441,6 @@ export function computeRebalancing(
 ): RebalancingResult {
   const baseCurrency = baseCurrencyOf(portfolio)
   const total = totalValue(portfolio, quotes, settings.totalRounding, baseCurrency, rates)
-  const bands = settings.bands
   const minTrade = resolveAmount(
     portfolio.amountSettings?.minTradeSize ?? settings.minTradeSize,
     total,
@@ -419,112 +450,21 @@ export function computeRebalancing(
     usesCalendar(trigger) &&
     isDue(portfolio.lastRebalancedAt, settings.rebalancing.intervalMonths, now)
 
+  const context: RowContext = {
+    quotes,
+    rates,
+    baseCurrency,
+    total,
+    bands: settings.bands,
+    minTrade,
+    trigger,
+    due,
+  }
   // Auch deaktivierte Positionen kommen in die Liste: wer eine abschaltet,
   // muss sie wiederfinden können. Ihre Kennzahlen bleiben leer, damit klar
   // ist, dass sie nirgends mitzählen.
-  const rows: PositionResult[] = portfolio.positions.map((position) => {
-    const quote = quoteFor(position, quotes)
-    const converted =
-      position.group === 'cash'
-        ? { price: 1, fx: null }
-        : convertedPrice(quote, baseCurrency, rates)
-    const originalMarketValue = marketValue(position, quote)
-    const mv = converted ? position.units * converted.price : 0
-    const valuation = {
-      basePrice: converted?.price ?? null,
-      baseCurrency,
-      originalMarketValue,
-      fx: converted?.fx ?? null,
-    }
-
-    const excludedReason: PositionResult['excludedReason'] = !position.enabled
-      ? 'disabled'
-      : position.group !== 'cash' && !quote
-        ? 'missing-quote'
-        : !converted
-          ? 'currency'
-          : null
-    if (excludedReason) {
-      return {
-        position,
-        quote,
-        marketValue: mv,
-        ...valuation,
-        actualPercent: 0,
-        targetValue: 0,
-        lowerBand: 0,
-        upperBand: 0,
-        suggestion: 'ok' as Suggestion,
-        unitsDelta: 0,
-        relativeDeltaPercent: 0,
-        isNearBand: false,
-        isActive: false,
-        excludedReason,
-        belowMinTrade: false,
-      }
-    }
-
-    const target = targetValue(position, total)
-    const low = lowerBand(target, bands)
-    const high = upperBand(target, bands)
-    const verdict = applyMinTrade(
-      combineSuggestion(suggestion(mv, low, high), trigger, due, mv, target),
-      target - mv,
-      minTrade,
-    )
-
-    return {
-      position,
-      quote,
-      marketValue: mv,
-      ...valuation,
-      actualPercent: actualPercent(mv, total),
-      targetValue: target,
-      lowerBand: low,
-      upperBand: high,
-      suggestion: verdict.suggestion,
-      belowMinTrade: verdict.belowMinTrade,
-      unitsDelta:
-        position.group === 'cash'
-          ? 0
-          : converted && converted.price > 0
-            ? (target - mv) / converted.price
-            : 0,
-      relativeDeltaPercent: relativeDeltaPercent(mv, target),
-      // Ohne laufendes Band gibt es kein „knapp davor" — nur den Termin.
-      isNearBand: usesBands(trigger) && isNearBand(mv, low, high, target),
-      isActive: true,
-      excludedReason: null,
-    }
-  })
-
-  const groups: GroupResult[] = ASSET_GROUPS.map((group) => {
-    const actualValue = groupMarketValue(group, portfolio, quotes, baseCurrency, rates)
-    const targetPercent = groupTargetPercent(group, portfolio)
-    const target = (total * targetPercent) / 100
-    const low = lowerBand(target, bands)
-    const high = upperBand(target, bands)
-    // Dieselbe Regel wie in den Zeilen: Was sich als Order nicht lohnt, gibt
-    // auch als Gruppe kein Signal.
-    const verdict = applyMinTrade(
-      combineSuggestion(suggestion(actualValue, low, high), trigger, due, actualValue, target),
-      target - actualValue,
-      minTrade,
-    )
-
-    return {
-      group,
-      actualValue,
-      actualPercent: actualPercent(actualValue, total),
-      targetPercent,
-      targetValue: target,
-      lowerBand: low,
-      upperBand: high,
-      suggestion: verdict.suggestion,
-      belowMinTrade: verdict.belowMinTrade,
-      deltaEuro: target - actualValue,
-    }
-  })
+  const rows = portfolio.positions.map((position) => positionRow(position, context))
+  const groups = ASSET_GROUPS.map((group) => groupRow(group, portfolio, context))
 
   const liquidity = computeLiquidity(portfolio, quotes, settings, total, rates)
 

@@ -12,12 +12,11 @@ import {
   applyMinTrade,
   combineSuggestion,
   lowerBand,
-  marketValue,
-  quoteFor,
   suggestion,
   upperBand,
   type PositionResult,
 } from './rebalancing'
+import { marketValue, quoteFor } from './valuation'
 import type { Bands, Portfolio, QuoteMap, RebalancingTrigger, Suggestion } from '@/types/portfolio'
 
 /** Geplante Stückzahlen je Position (`+` kaufen, `−` verkaufen). */
@@ -373,6 +372,26 @@ export function emptyTargets(): TargetMap {
  */
 export function hasTrades(trades: TradeMap): boolean {
   return Object.values(trades).some((units) => units !== 0)
+}
+
+/** Nachkommastellen eines Zielanteils in Eingabe und Anzeige. */
+export const TARGET_DIGITS = 2
+/** Abweichung der Zielsumme von 100 % in Prozentpunkten, die noch als ausgeglichen gilt (T-97). */
+const TARGET_SUM_TOLERANCE = 0.01
+
+export type TargetSumState = 'balanced' | 'over' | 'under'
+
+/**
+ * Lage der Zielsumme, auch probeweiser Ziele, zu 100 % — für Meldung und
+ * Fußzeile aus derselben Quelle (T-97). Die Toleranz schluckt Rundungsreste
+ * der Eingabe.
+ */
+export function targetSumState(targetSum: number): TargetSumState {
+  const deviation = targetSum - 100
+  // Vereinbarte Toleranz aus T-97; der kleine Zuschlag fängt Rundungsreste der Gleitkommasumme
+  // ab, damit etwa 90 % + 10,01 % noch als ausgeglichen gilt.
+  if (Math.abs(deviation) <= TARGET_SUM_TOLERANCE + 1e-9) return 'balanced'
+  return deviation > 0 ? 'over' : 'under'
 }
 
 /** Marktwert einer Position vor dem Trade — für die Anzeige. */

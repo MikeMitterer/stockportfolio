@@ -1,7 +1,8 @@
 /** Derselbe konkrete Kursfehler in Tabelle, Detail und Mobilansicht. */
 import { useI18n } from 'vue-i18n'
 import { useQuotesStore } from '@/stores/quotes'
-import { quoteKey, type PositionResult } from '@/domain/rebalancing'
+import type { PositionResult } from '@/domain/rebalancing'
+import { quoteKey } from '@/domain/valuation'
 
 export function useQuoteIssue(): (row: PositionResult) => string {
   const store = useQuotesStore()

@@ -1,5 +1,5 @@
 /**
- * Unit-Tests für src/domain/rebalancing.ts.
+ * Unit-Tests für src/domain/rebalancing.ts und src/domain/valuation.ts.
  * Fokus: die Regel, nicht der Wert — jede Formel isoliert mit klaren
  * synthetischen Inputs, plus Edge-Cases und ein kleines konstruiertes
  * Portfolio als Aggregator-Sanity.
@@ -10,24 +10,26 @@ import {
   actualPercent,
   applyMinTrade,
   combineSuggestion,
-  groupMarketValue,
-  hasForeignCurrency,
   computeLiquidity,
   computeRebalancing,
   isNearBand,
   lowerBand,
-  marketValue,
-  quoteFor,
-  quoteKey,
   relativeDeltaPercent,
-  roundToPlace,
   suggestion,
   targetPercentSum,
   targetValue,
-  totalValue,
   unitsDelta,
   upperBand,
 } from '@/domain/rebalancing'
+import {
+  groupMarketValue,
+  hasForeignCurrency,
+  marketValue,
+  quoteFor,
+  quoteKey,
+  roundToPlace,
+  totalValue,
+} from '@/domain/valuation'
 import type {
   Bands,
   Portfolio,

@@ -25,7 +25,7 @@ import { useAppNotification } from '@/composables/useAppNotification'
 import { useQuotesStore } from '@/stores/quotes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useInstrumentsStore } from '@/stores/instruments'
-import { quoteKey } from '@/domain/rebalancing'
+import { quoteKey } from '@/domain/valuation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
 import type { Position } from '@/types/portfolio'
 
