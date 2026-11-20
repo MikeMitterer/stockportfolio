@@ -12,6 +12,7 @@ import { readStoredTheme } from '@/stores/theme'
 import { activatePrivateData, deactivatePrivateData, PrivateDataClient } from '@/api/data/client'
 import { clearMarketCaches } from '@/db/cache'
 import { useLegacyStore } from '@/stores/legacy'
+import { useTradePlanDraftStore } from '@/stores/tradePlanDraft'
 import AuthenticatedApp from './AuthenticatedApp.vue'
 import EmphasizedText from '@/components/EmphasizedText.vue'
 import { PortfolioAuthClient, PortfolioApiError, type PortfolioUser } from '@/api/account/client'
@@ -44,6 +45,7 @@ const noticeAccepted = ref(false)
 const stockInfoClient = new StockInfoClient()
 const apiStatus = useApiStatusStore()
 const legacyStore = useLegacyStore()
+const tradePlanDraft = useTradePlanDraftStore()
 const { legacyData } = storeToRefs(legacyStore)
 const isDark = THEMES[readStoredTheme()].isDark
 const naiveOverrides = ref<GlobalThemeOverrides>({})
@@ -188,6 +190,8 @@ async function logout(): Promise<void> {
     await client.logout()
     deactivatePrivateData()
     legacyStore.clearPreview()
+    // Der Rebalancing-Plan lebt im Tab-Speicher; nach der Abmeldung gehört er niemandem mehr.
+    tradePlanDraft.useFor(null)
     user.value = null
     view.value = 'login'
     errorCode.value = ''

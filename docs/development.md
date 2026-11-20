@@ -240,7 +240,7 @@ im Kopfkommentar. Prüfskripte enden mit Exit-Code 1 bei Abweichung.
 |---|---|
 | `smoke:live-sync` | Live-Abgleich zwischen zwei Browsern desselben Kontos (braucht `--demo-accounts`) |
 | `screenshots` | erzeugt die Bilder unter `docs/images/` |
-| `check:notice-texts` | Hinweistexte auf Methodenseite und Rebalancing, DE und EN |
+| `check:notice-texts` | Hinweistexte auf Methodenseite und Rebalancing, Handelstabelle mit Bandkursen, DE und EN |
 | `check:demo-data` | lesbare Demodaten aus `--demo-details` |
 | `check:stockinfo-proxy` | Weiterleitung an StockInfo: jede freigegebene Route, 401 ohne Sitzung, 404 außerhalb der Liste |
 | `check:setup-dialog` | Info-Fenster am Einrichtungscode (braucht einen frischen Stack ohne `--demo-accounts`) |
@@ -271,6 +271,15 @@ und speichert `login.png`, `dashboard.png`, `drilldown.png`, `rebalancing.png`,
 Alle sichtbaren Texte stehen im Katalog unter `frontend/src/i18n/`. Eine
 ESLint-Regel macht fest eingetragenen Text im Template zum Fehler, und die
 Typprüfung meldet jeden Schlüssel, der in einer Sprache fehlt.
+
+**StockInfo-Fehler** kommen als Kennung mit Werten (`{code, params}`), bei
+503 während einer Migration oder eines Starts als Kennung in `detail`. Den
+Satz bildet StockPortfolio selbst aus `errors.reason` im Katalog; eine
+unbekannte Kennung erscheint in einem allgemeinen Satz, ein Satz im alten
+Format unverändert. Welche Kennungen es mit welchen Werten gibt, steht im
+StockInfo-Repository: im REST-Vertrag (rest-core-contract.md unter docs) und im
+Katalog `errors.reason` der StockInfo-Oberfläche. Eine neue Kennung bekommt in beiden Sprachen einen
+Satz und einen Eintrag in `frontend/tests/api/errorReasons.spec.ts`.
 
 ## Docker-Image bauen und veröffentlichen
 

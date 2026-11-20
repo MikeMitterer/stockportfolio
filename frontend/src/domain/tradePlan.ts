@@ -62,6 +62,20 @@ export interface TradePlanRow {
   /** Bandgrenzen als Anteil am Gesamtvermögen (Excel AE / AG). */
   lowerBandPercent: number
   upperBandPercent: number
+  /**
+   * Kurs, bei dem der Anteil nach dem Plan die untere bzw. obere Bandgrenze
+   * erreicht, wenn alle anderen Kurse gleich bleiben (`bandPrice`). `null`,
+   * wo es keinen solchen Kurs gibt.
+   */
+  lowerBandPrice: number | null
+  upperBandPrice: number | null
+  /**
+   * Welche Bandgrenze der Anteil nach dem Plan verlassen hat, `null` im Band.
+   * Rein aus dem Vergleich mit den Grenzen, anders als `suggestionAfter`: Am
+   * Kalendertermin meldet der Status auch im Band „Kaufen“, die Grenze ist
+   * dann aber nicht überschritten.
+   */
+  bandBreachAfter: 'lower' | 'upper' | null
   /** Status nach Ausführung — landet die Position im Band? */
   suggestionAfter: Suggestion
   /** Danach außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen. */
@@ -216,6 +230,9 @@ export function computeTradePlan(
         targetOverridden: override !== undefined,
         lowerBandPercent: lowerPct,
         upperBandPercent: upperPct,
+        lowerBandPrice: row.position.group === 'cash' ? null : bandPrice(price, marketValueAfter, total, lowerPct),
+        upperBandPrice: row.position.group === 'cash' ? null : bandPrice(price, marketValueAfter, total, upperPct),
+        bandBreachAfter: percentAfter < lowerPct ? 'lower' : percentAfter > upperPct ? 'upper' : null,
         // Dieselbe Mindestgröße wie im Dashboard: Sonst meldet die Simulation
         // „Buy" für einen Betrag, für den die Übersicht daneben „OK" sagt.
         suggestionAfter: verdict.suggestion,
@@ -297,6 +314,39 @@ function coverageUnitsFor(
   const taken = Math.min(needed, available)
 
   return row.tradeUnits - taken
+}
+
+/**
+ * Kurs, bei dem der Anteil einer Position eine Bandgrenze erreicht.
+ *
+ * Ändert sich nur der Kurs dieser Position um den Faktor r, gilt für ihren
+ * Anteil s = r·Vᵢ / (V − Vᵢ + r·Vᵢ). Gleichgesetzt mit dem Grenzanteil a
+ * folgt r = a·(V − Vᵢ) / (Vᵢ·(1 − a)); der Bandkurs ist Kurs × r. Alle anderen
+ * Kurse bleiben dabei gleich — fällt der Markt breit, liegt die Grenze tiefer.
+ *
+ * Beispiel: Grenze 11 % × 0,93 = 10,23 %, Anteil 10,49 %, Kurs 248,20 €
+ * → r ≈ 0,972, Bandkurs ≈ 241 €.
+ *
+ * @param price          Kurs je Stück in der Depotwährung.
+ * @param valueAfter     Wert der Position nach dem Plan (Vᵢ).
+ * @param total          Depotwert, Bezugsgröße des Anteils (V).
+ * @param boundaryPercent Grenzanteil in Prozent (a · 100).
+ * @returns Den Kurs oder `null`, wenn es keinen gibt: kein Kurs, kein
+ *          Bestand, Grenzanteil 0 oder ab 100 %, oder die Position ist das
+ *          ganze Depot.
+ */
+export function bandPrice(
+  price: number,
+  valueAfter: number,
+  total: number,
+  boundaryPercent: number,
+): number | null {
+  const share = boundaryPercent / 100
+  if (!(price > 0) || !(valueAfter > 0) || !(total > valueAfter) || !(share > 0) || share >= 1) {
+    return null
+  }
+  const ratio = (share * (total - valueAfter)) / (valueAfter * (1 - share))
+  return Number.isFinite(ratio) && ratio > 0 ? price * ratio : null
 }
 
 /** Kurs je Stück; Cash rechnet mit 1, weil `units` dort der Betrag ist. */

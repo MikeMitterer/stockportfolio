@@ -35,6 +35,7 @@ const { t } = useI18n()
       <p>{{ t('method.bandsBody4') }}</p>
       <p>{{ t('method.bandsMinTrade') }}</p>
       <p>{{ t('method.bandsMinTrade2') }}</p>
+      <p>{{ t('method.bandsBandPrice') }}</p>
     </section>
 
     <section id="trigger" class="method__section">

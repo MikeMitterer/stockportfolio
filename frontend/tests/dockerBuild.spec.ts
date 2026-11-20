@@ -139,7 +139,7 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.calls()).not.toContain('image-push')
   })
 
-  it.each([
+  it.each<{ name: string; environment: Record<string, string>; expected: string[] }>([
     {
       name: 'nur lokal liegt',
       environment: { REMOTE_TAG_SHA: '' },
