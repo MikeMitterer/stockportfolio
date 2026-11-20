@@ -81,14 +81,26 @@ hier zur Schranke oder ihr Grund steht unter [Bewusste Ausnahmen](#bewusste-ausn
     IndexedDB-Altbestand und den Kurs-Zwischenspeicher.
   - Durchgesetzt ist davon nur der Netzzugriff (`networkAccess.spec.ts`); der
     Rest ist Konvention.
-- **API-Aufbau,** so wie er ist: `routers/api.ts` nimmt HTTP an und prüft
-  Eingaben. Konten, Anmeldung und Sitzungen ruft es über `AccountService`
-  (`auth/service.ts`). Private Depotdaten liest und schreibt es direkt über das
-  Repository (`persistence/repository.ts`, etwa `findResource`,
-  `saveResource`); eine eigene Fachschicht dafür gibt es nicht. `data/events.ts`
-  verteilt Änderungsereignisse an offene Verbindungen, `stockinfo/proxy.ts`
-  leitet an StockInfo weiter. `persistence/` importiert keine der anderen
-  Schichten. Konvention.
+- **API-Aufbau,** so wie er ist (Importsuche nach `from '../` unter
+  `api/src/routers/` und `api/src/persistence/` in beide Richtungen):
+  - `routers/api.ts` setzt den Router zusammen: Fehlerform, Origin- und
+    JSON-Prüfung, Sitzungstausch am Ende der Anfrage, StockInfo-Weiterleitung
+    (`stockinfo/proxy.ts`). Die Routen der Bereiche stehen in
+    `routers/accounts.ts` (Einrichtung, Anmeldung, Benutzer) und
+    `routers/privateData.ts` (private Depotdaten, Prüfung je Ressourcenart,
+    Ereignisstrom). Sitzungscookie und Anmeldeprüfung stehen in
+    `routers/session.ts`, gemeinsame Anfrage-Leser in `routers/request.ts`.
+  - Konten, Anmeldung und Sitzungen ruft der Router über `AccountService`
+    (`auth/service.ts`). Private Depotdaten liest und schreibt
+    `routers/privateData.ts` direkt über das Repository (etwa
+    `findResource`, `saveResource`); eine eigene Fachschicht dafür gibt es
+    nicht.
+  - `persistence/repository.ts` hält Konten, Sitzungen und Anmeldeversuche
+    und setzt mit `persistence/privateData.ts` (Depotdaten je Konto) ein
+    `AccountRepository` zusammen. `persistence/` importiert keine der anderen
+    Schichten.
+  - `data/events.ts` verteilt Änderungsereignisse an offene Verbindungen.
+  - Konvention.
 - **Oberfläche aus dem Fundament:** Token, Themes und Bausteine kommen aus
   `@mmit/ux-foundation` ([AGENTS.md](../AGENTS.md#oberfläche-und-theme-kommen-aus-ux-foundation));
   durchgesetzt von den Wächtern für Token, Utility-Klassen, Komponentenstile,
