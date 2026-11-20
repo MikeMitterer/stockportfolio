@@ -3,7 +3,7 @@ import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import Database from 'better-sqlite3'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, lt } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import { loginAttempts, privateResources, sessions, users } from './schema.js'
@@ -51,6 +51,10 @@ export interface SessionRecord {
   userId: string
   createdAt: number
   lastSeenAt: number
+  /** Gesetzt, sobald ein neues Token diese Sitzung ersetzt hat. */
+  replacedAt?: number | null
+  /** Hash des Nachfolger-Tokens, gesetzt zusammen mit `replacedAt`. */
+  replacedBy?: string | null
 }
 
 export interface AttemptRecord {
@@ -81,6 +85,10 @@ export interface AccountRepository {
   findSession(tokenHash: string): SessionRecord | null
   touchSession(tokenHash: string, now: number): void
   deleteSession(tokenHash: string): void
+  /** Löscht die Sitzung samt Vorgängern und Nachfolgern aus Token-Täuschen. */
+  deleteSessionChain(tokenHash: string): void
+  /** Legt die Nachfolgesitzung an, markiert die alte als ersetzt und löscht vor `expiredBefore` ersetzte Sitzungen. */
+  replaceSession(oldTokenHash: string, successor: SessionRecord, expiredBefore: number): void
   deleteUserSessions(userId: string): void
   getAttempt(key: string): AttemptRecord | null
   recordFailure(key: string, now: number): AttemptRecord
@@ -273,6 +281,30 @@ export function createSqliteRepository(filePath: string): AccountRepository {
     },
     deleteSession(tokenHash) {
       database.delete(sessions).where(eq(sessions.tokenHash, tokenHash)).run()
+    },
+    deleteSessionChain(tokenHash) {
+      database.transaction((transaction) => {
+        const pending = [tokenHash]
+        const chain = new Set<string>()
+        while (pending.length > 0) {
+          const current = pending.pop()!
+          if (chain.has(current)) continue
+          chain.add(current)
+          const record = transaction.select().from(sessions).where(eq(sessions.tokenHash, current)).get()
+          if (record?.replacedBy) pending.push(record.replacedBy)
+          for (const predecessor of transaction.select({ tokenHash: sessions.tokenHash }).from(sessions).where(eq(sessions.replacedBy, current)).all()) {
+            pending.push(predecessor.tokenHash)
+          }
+        }
+        for (const hash of chain) transaction.delete(sessions).where(eq(sessions.tokenHash, hash)).run()
+      })
+    },
+    replaceSession(oldTokenHash, successor, expiredBefore) {
+      database.transaction((transaction) => {
+        transaction.insert(sessions).values(successor).run()
+        transaction.update(sessions).set({ replacedAt: successor.createdAt, replacedBy: successor.tokenHash }).where(eq(sessions.tokenHash, oldTokenHash)).run()
+        transaction.delete(sessions).where(lt(sessions.replacedAt, expiredBefore)).run()
+      })
     },
     deleteUserSessions(userId) {
       database.delete(sessions).where(eq(sessions.userId, userId)).run()

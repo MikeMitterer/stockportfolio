@@ -17,6 +17,10 @@ export const sessions = sqliteTable('sessions', {
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   createdAt: integer('created_at').notNull(),
   lastSeenAt: integer('last_seen_at').notNull(),
+  // Zeitpunkt des Token-Tauschs; danach gilt das alte Token nur noch kurz (T-98).
+  replacedAt: integer('replaced_at'),
+  // Hash des Nachfolgers; Abmelden beendet Vorgänger und Nachfolger gemeinsam.
+  replacedBy: text('replaced_by'),
 })
 
 export const loginAttempts = sqliteTable('login_attempts', {
