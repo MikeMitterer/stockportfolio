@@ -69,6 +69,13 @@ export interface TradePlanRow {
    */
   lowerBandPrice: number | null
   upperBandPrice: number | null
+  /**
+   * Welche Bandgrenze der Anteil nach dem Plan verlassen hat, `null` im Band.
+   * Rein aus dem Vergleich mit den Grenzen, anders als `suggestionAfter`: Am
+   * Kalendertermin meldet der Status auch im Band „Kaufen“, die Grenze ist
+   * dann aber nicht überschritten.
+   */
+  bandBreachAfter: 'lower' | 'upper' | null
   /** Status nach Ausführung — landet die Position im Band? */
   suggestionAfter: Suggestion
   /** Danach außerhalb des Bandes, aber unter dem Mindest-Handelsvolumen. */
@@ -225,6 +232,7 @@ export function computeTradePlan(
         upperBandPercent: upperPct,
         lowerBandPrice: row.position.group === 'cash' ? null : bandPrice(price, marketValueAfter, total, lowerPct),
         upperBandPrice: row.position.group === 'cash' ? null : bandPrice(price, marketValueAfter, total, upperPct),
+        bandBreachAfter: percentAfter < lowerPct ? 'lower' : percentAfter > upperPct ? 'upper' : null,
         // Dieselbe Mindestgröße wie im Dashboard: Sonst meldet die Simulation
         // „Buy" für einen Betrag, für den die Übersicht daneben „OK" sagt.
         suggestionAfter: verdict.suggestion,

@@ -1,6 +1,7 @@
 // Prüft sichtbare Hinweistexte auf Methodenseite und Rebalancing in DE und EN,
 // dazu die Handelstabelle: gekürzter Kopf „± Stück“, Bandkurse unter dem Kurs
-// ohne Umbruch, ihr Tooltip und die Tabelle ohne waagrechtes Scrollen (T-108).
+// ohne Umbruch, ihr Hinweis im Spaltenkopf (Text, fokussierbar, auch schmal
+// erreichbar) und die Tabelle ohne waagrechtes Scrollen (T-108).
 //
 // Die App rechnet aus, was zu den selbst gesetzten Zielen führt; Hinweise
 // sprechen deshalb von Lage zum Ziel und von rechnerischen Beträgen, nicht
@@ -92,8 +93,8 @@ function verify(label, text, { required, forbidden }) {
 
 /**
  * Handelstabelle (T-108): Kopf der Stückzahl-Spalte, Bandkurse in der
- * Kurs-Zelle ohne Umbruch, ihr Tooltip und kein waagrechtes Scrollen bei
- * Desktop-Breite. Mit Bildordner je ein Bild in Desktop- und schmalster Breite.
+ * Kurs-Zelle ohne Umbruch, ihr Hinweis im Kopf der Kurs-Spalte und kein
+ * waagrechtes Scrollen bei Desktop-Breite. Mit Bildordner je ein Bild in Desktop- und schmalster Breite.
  */
 async function checkTradeTable(page, locale, expected) {
   const label = `${locale} · Handelstabelle`
@@ -112,19 +113,26 @@ async function checkTradeTable(page, locale, expected) {
   const overflow = await page.locator('.reb__workspace').evaluate((element) => element.scrollWidth - element.clientWidth)
   if (overflow > 1) failures.push(`${label}: Tabelle scrollt waagrecht um ${overflow} px`)
 
-  await bands.first().hover()
-  const tooltip = page.locator('.reb__tooltip').filter({ hasText: expected.bandPrices.required[0] }).first()
-  await tooltip.waitFor({ timeout: 5000 })
-  verify(label, await tooltip.innerText(), expected.bandPrices)
+  // Die Erklärung steht als bedienbarer Hinweis (UxInfoHint) im Kopf der Kurs-Spalte:
+  // Text im aria-label, der Auslöser ist per Tastatur fokussierbar.
+  const hint = page
+    .locator(`.reb__table thead .ux-hint__trigger[aria-label*="${expected.bandPrices.required[0]}"]`)
+    .first()
+  await hint.waitFor({ timeout: 5000 })
+  verify(label, (await hint.getAttribute('aria-label')) ?? '', expected.bandPrices)
+  await hint.focus()
+  if (!(await hint.evaluate((element) => element === document.activeElement))) {
+    failures.push(`${label}: Hinweis zu den Bandkursen ist nicht fokussierbar`)
+  }
+  await page.locator('body').click({ position: { x: 1, y: 1 } })
 
-  // Tooltip schließen, damit er auf den Bildern keine Zeile verdeckt.
-  await page.mouse.move(0, 0)
-  await tooltip.waitFor({ state: 'hidden', timeout: 5000 })
   if (imageDir) await page.locator('.reb__table').screenshot({ path: resolve(imageDir, `trade-table-${locale}.png`) })
 
   // Schmalste Breite: Die Tabelle scrollt dort in ihrem Bereich; die Kurs-Spalte
   // kommt ins Bild, und auch hier bricht kein Bandkurs um.
   await page.setViewportSize(narrowViewport)
+  await hint.scrollIntoViewIfNeeded()
+  if (!(await hint.isVisible())) failures.push(`${label}: Hinweis zu den Bandkursen in schmaler Breite nicht erreichbar`)
   await bands.first().scrollIntoViewIfNeeded()
   const wrappedNarrow = await countWrapped(bands)
   if (wrappedNarrow > 0) failures.push(`${label}: ${wrappedNarrow} Bandkurs-Zeilen brechen in schmaler Breite um`)

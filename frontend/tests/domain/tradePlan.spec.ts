@@ -826,6 +826,34 @@ describe('computeTradePlan — Bandkurse', () => {
     expect(rowAfter.upperBandPrice!).toBeGreaterThan(rowAfter.lowerBandPrice!)
   })
 
+  it.each([
+    { name: 'im Band, am Kalendertermin trotzdem „Kaufen“', target: 52, breach: null },
+    { name: 'unter der unteren Grenze', target: 60, breach: 'lower' },
+    { name: 'über der oberen Grenze', target: 40, breach: 'upper' },
+  ] as const)('markiert nur eine tatsächlich verlassene Grenze: $name', ({ target, breach }) => {
+    // A: 1.000 € von 2.000 € = 50 %. Bänder −10 % / +20 %: Ziel 52 % → 46,8–62,4 %.
+    const portfolio: Portfolio = {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: [
+        makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: target }),
+        makePosition({ id: 'b', isin: 'B', symbol: 'B.DE', units: 10, targetPercent: 100 - target }),
+      ],
+    }
+    const quotes: QuoteMap = new Map([
+      ['A', makeQuote({ isin: 'A', price: 100 })],
+      ['B', makeQuote({ isin: 'B', price: 100 })],
+    ])
+    const result = computeRebalancing(portfolio, quotes, SETTINGS)
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { trigger: 'calendar', due: true })
+    const row = plan.rows.find((entry) => entry.current.position.id === 'a')!
+
+    if (breach === null) expect(row.suggestionAfter).toBe('buy')
+    expect(row.bandBreachAfter).toBe(breach)
+  })
+
   it('zeigt für Cash und für Ziel 0 % keine Bandkurse', () => {
     const portfolio: Portfolio = {
       id: 'p1',
