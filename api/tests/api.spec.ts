@@ -328,3 +328,37 @@ describe('eigene Konto-API', () => {
     }
   })
 })
+
+describe('Origin-Prüfung für alle Pfadformen (T-125)', () => {
+  // Absicherung zu GHSA-h7mg-cq63-vhpq (hono): Wildcard-Middleware übersprungen bei
+  // kodiertem Zeilenende. Schon vor der Anhebung grün; der Test hält das Verhalten fest.
+  // GHSA-jpvv-r467-5p4w (Backslash als Pfadtrenner) liegt in der Pfadauswertung von
+  // @hono/node-server, die app.request nicht durchläuft; belegt ist sie nur durch die
+  // Versionsanhebung.
+  it.each(['/api/admin/users%0A', '/api/admin/users%0D', '/api/admin/users%0D%0A'])(
+    'weist eine schreibende Anfrage fremder Herkunft auf %s ab',
+    async (path) => {
+      const { app, repository } = createFixture()
+      await app.request(
+        `${origin}/api/setup`,
+        jsonRequest({ code: 'setup-code', username: 'mike', password: 'Test-password-123' }),
+      )
+      const login = await app.request(
+        `${origin}/api/auth/login`,
+        jsonRequest({ username: 'mike', password: 'Test-password-123' }),
+      )
+      const cookie = login.headers.get('set-cookie') ?? ''
+      const response = await app.request(
+        `${origin}${path}`,
+        jsonRequest(
+          { username: 'eve', password: 'Eve-password-123', role: 'admin' },
+          cookie,
+          'https://foreign.example',
+        ),
+      )
+      expect(response.status).toBe(403)
+      expect(repository.listUsers().map((user) => user.username)).not.toContain('eve')
+      repository.close()
+    },
+  )
+})
