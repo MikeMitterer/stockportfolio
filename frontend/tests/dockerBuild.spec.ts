@@ -6,6 +6,9 @@ import { spawnSync } from 'node:child_process'
 import { PROJECT_ROOT } from './helpers/projectRoot'
 
 const temporaryDirectories: string[] = []
+/** Tag-Objekt des Release-Tags beim Build und ein anderes für einen umgesetzten Tag. */
+const BUILT_TAG = '1'.repeat(40)
+const OTHER_TAG = '2'.repeat(40)
 afterEach(() => {
   for (const directory of temporaryDirectories.splice(0)) rmSync(directory, { recursive: true, force: true })
 })
@@ -28,7 +31,7 @@ RED='' NC='' YELLOW='' GREEN='' BLUE='' MACHINE=Darwin ARCHITECTURE=arm64
 usageLine() { :; }
 showSamples() { :; }
 `)
-  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\n')
+  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\ngitReleaseTag() { echo v0.2.0+test; }\n')
   writeFileSync(join(libraries, 'docker.lib.sh'), `
 buildSingleArchImage() { echo "local:$1" >> "$TRACE"; return "\${BUILD_RC:-0}"; }
 showImages() { :; }
@@ -36,6 +39,18 @@ pushImage2DockerHub() { echo image-push >> "$TRACE"; return "\${PUSH_RC:-0}"; }
 pushImage2GHCR() { echo ghcr-push >> "$TRACE"; }
 pushImage2Amazon() { echo ecr-push >> "$TRACE"; }
 `)
+  // Tag-Objekt des Release-Tags lokal (rev-parse) und auf origin (ls-remote); Vorgabe ist das
+  // Objekt des Builds, leer heißt: Tag fehlt dort.
+  writeFileSync(join(bin, 'git'), `#!/usr/bin/env bash
+if [[ "$1" == rev-parse ]]; then
+  [[ -n "\${LOCAL_TAG_SHA-${BUILT_TAG}}" ]] || exit 1
+  echo "\${LOCAL_TAG_SHA-${BUILT_TAG}}"
+elif [[ "$1" == ls-remote ]]; then
+  [[ -z "\${REMOTE_TAG_SHA-${BUILT_TAG}}" ]] || printf '%s\\trefs/tags/v0.2.0+test\\n' "\${REMOTE_TAG_SHA-${BUILT_TAG}}"
+else
+  echo "git:$*" >> "$TRACE"
+fi
+`, { mode: 0o755 })
   writeFileSync(join(bin, 'docker'), `#!/usr/bin/env bash
 if [[ "$1 $2" == 'image inspect' ]]; then echo '${imageId}';
 else echo "docker:$*" >> "$TRACE"; fi
@@ -123,6 +138,47 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.run(args, environment).status).not.toBe(0)
     expect(fixture.run(['--push']).status).not.toBe(0)
     expect(fixture.calls()).not.toContain('image-push')
+  })
+
+  it.each([
+    {
+      name: 'nur lokal liegt',
+      environment: { REMOTE_TAG_SHA: '' },
+      expected: ['liegt nur lokal', 'git push --follow-tags origin master'],
+    },
+    {
+      name: 'auf origin auf ein anderes Objekt zeigt',
+      environment: { REMOTE_TAG_SHA: OTHER_TAG },
+      expected: [`Auf origin zeigt er auf ${OTHER_TAG}`, 'make build'],
+    },
+    {
+      name: 'nach dem Build umgesetzt und so veröffentlicht wurde',
+      environment: { LOCAL_TAG_SHA: OTHER_TAG, REMOTE_TAG_SHA: OTHER_TAG },
+      expected: [`gebaut wurde ${BUILT_TAG}`, 'make build'],
+    },
+    {
+      name: 'fehlt und lokal umgesetzt wurde',
+      environment: { LOCAL_TAG_SHA: OTHER_TAG, REMOTE_TAG_SHA: '' },
+      expected: ['zeigt lokal nicht mehr auf den gebauten Stand', 'make build'],
+    },
+  ])('verweigert den Push, wenn der Release-Tag $name', ({ environment, expected }) => {
+    const fixture = createBuildFixture()
+    expect(fixture.run(['--build']).status).toBe(0)
+    const result = fixture.run(['--push'], environment)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('v0.2.0+test passt nicht zum Build')
+    for (const text of expected) expect(result.stderr).toContain(text)
+    if (environment.REMOTE_TAG_SHA !== '') expect(result.stderr).not.toContain('--follow-tags')
+    expect(fixture.calls()).toEqual(['local:linux/arm64'])
+  })
+
+  it('sperrt den Push, wenn der Release-Tag beim Build kein Tag-Objekt hatte', () => {
+    const fixture = createBuildFixture()
+    expect(fixture.run(['--build'], { LOCAL_TAG_SHA: '' }).status).toBe(0)
+    const result = fixture.run(['--push'])
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('Ungültiger Build-Marker')
+    expect(fixture.calls()).toEqual(['local:linux/arm64'])
   })
 
   it('stoppt bei Vorschaufehler vor der Veröffentlichung und bei Pushfehler vor dem README', () => {
