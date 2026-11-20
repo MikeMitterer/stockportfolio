@@ -1,6 +1,13 @@
 # syntax=docker/dockerfile:1
 
+# npm 11 wie in der Entwicklung (engines, T-106): node:22 bringt npm 10 mit,
+# unter dem die Freigaben in allowScripts nicht greifen. Gebraucht wird npm nur
+# in den Build-Stufen; das Laufzeitbild startet node direkt.
+ARG NPM_VERSION=11.21.2
+
 FROM node:22-bookworm-slim AS frontend-build
+ARG NPM_VERSION
+RUN npm install -g "npm@${NPM_VERSION}"
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
@@ -8,6 +15,8 @@ COPY . /app
 RUN npm run build
 
 FROM node:22-bookworm-slim AS api-build
+ARG NPM_VERSION
+RUN npm install -g "npm@${NPM_VERSION}"
 WORKDIR /app
 # Native SQLite- und Argon2-Module brauchen auf Plattformen ohne fertiges
 # Binary einen Compiler. Die Toolchain bleibt außerhalb des Laufzeitbilds.
