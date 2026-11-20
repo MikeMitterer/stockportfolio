@@ -502,7 +502,7 @@ export const en: MessageSchema = {
     bandsLabel: 'Bands: −{lower} / +{upper}',
     columns: {
       delta: 'Delta',
-      trade: 'Buy / sell',
+      trade: '± Units',
       value: 'Value',
       relativeDeviationAfter: 'Rel. dev.',
       relativePercent: 'Rel. %',
@@ -511,6 +511,10 @@ export const en: MessageSchema = {
     shareAfterLabel: 'Share after: {share}',
     relativeUndefined: 'Undefined for a 0 % target',
     tradeTooltip: 'Positive values mean buying, negative values mean selling.',
+    bandPriceLower: '↓ {price}',
+    bandPriceUpper: '↑ {price}',
+    bandPriceTooltip:
+      'Band prices: at this price the share after the plan reaches the lower (↓) or upper (↑) band. Calculated on the assumption that all other prices stay the same; if the whole market falls, the limit is lower.',
     relativeDeviationTooltip: 'Relative deviation from the target after the planned trade. Example: a 9.5 % share against a 10 % target gives −5 % relative deviation. The number is green or red according to its sign; the bar colour indicates the band status.',
     deviationTooltip: 'Difference from the target after the planned trade, in percentage points. Example: a 9.5 % share minus a 10 % target gives −0.5 percentage points.',
     deltaTooltip:

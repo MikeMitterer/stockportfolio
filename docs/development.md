@@ -232,7 +232,7 @@ im Kopfkommentar. Prüfskripte enden mit Exit-Code 1 bei Abweichung.
 |---|---|
 | `smoke:live-sync` | Live-Abgleich zwischen zwei Browsern desselben Kontos (braucht `--demo-accounts`) |
 | `screenshots` | erzeugt die Bilder unter `docs/images/` |
-| `check:notice-texts` | Hinweistexte auf Methodenseite und Rebalancing, DE und EN |
+| `check:notice-texts` | Hinweistexte auf Methodenseite und Rebalancing, Handelstabelle mit Bandkursen, DE und EN |
 | `check:demo-data` | lesbare Demodaten aus `--demo-details` |
 | `check:stockinfo-proxy` | Weiterleitung an StockInfo: jede freigegebene Route, 401 ohne Sitzung, 404 außerhalb der Liste |
 | `check:setup-dialog` | Info-Fenster am Einrichtungscode (braucht einen frischen Stack ohne `--demo-accounts`) |

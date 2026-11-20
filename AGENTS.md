@@ -322,7 +322,8 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
   `capture-screenshots.mjs` (Bilder für die Anleitungen) und
   `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
-  in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
+  in DE und EN, dazu die Handelstabelle mit Bandkursen, gekürztem Kopf und
+  ohne waagrechtes Scrollen) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
   und Zusatzinformationen aller Positionen und dass ein offener Reiter
   den Live-Abgleich übersteht) und `stockinfo-proxy-check.mjs` (T-82:

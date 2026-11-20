@@ -215,6 +215,11 @@ function deviationLabel(row: NonNullable<typeof plan.value>['rows'][number]): st
   return decimalSigned(row.deviationAfter)
 }
 
+/** Bandkurs in der Formatierung der Kursspalte; ohne Kurs an der Grenze „—“. */
+function bandPriceLabel(price: number | null): string {
+  return price === null ? '—' : formatMoneyCents(price)
+}
+
 /** Kurs je Stück — für die Anzeige in der Zeile. */
 function priceOf(row: NonNullable<typeof plan.value>['rows'][number]): number | null {
   if (row.current.position.group === 'cash') return null
@@ -384,7 +389,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                       </div>
                     </NTooltip>
                   </th>
-                  <th class="reb__th reb__th--w32">
+                  <th class="reb__th reb__th--w24">
                     <NTooltip trigger="hover">
                       <template #trigger>
                         <span class="reb__hinted">{{ t('rebalancing.columns.trade') }}</span>
@@ -393,7 +398,7 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                     </NTooltip>
                   </th>
                   <th class="reb__th reb__th--w28">{{ t('rebalancing.columns.value') }}</th>
-                  <th class="reb__th reb__th--left reb__th--w56 reb__band-column">
+                  <th class="reb__th reb__th--left reb__th--w38 reb__band-column">
                     <NTooltip trigger="hover">
                       <template #trigger>
                         <span class="reb__hinted">{{ t('rebalancing.columns.relativeDeviationAfter') }}</span>
@@ -465,6 +470,29 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
 
                     <td class="reb__td reb__td--num reb__td--secondary tabular-nums">
                       {{ priceOf(row) !== null ? formatMoneyCents(priceOf(row)!) : '—' }}
+                      <!--
+                      Bandkurse unter dem Kurs: Wo stehe ich im Korridor, ohne
+                      Blicksprung. Die überschrittene Grenze trägt die Statusfarbe.
+                    -->
+                      <NTooltip v-if="priceOf(row) !== null" trigger="hover">
+                        <template #trigger>
+                          <div class="reb__band-prices">
+                            <span
+                              class="reb__band-price"
+                              :class="{ 'reb__band-price--out': row.suggestionAfter === 'buy' }"
+                            >
+                              {{ t('rebalancing.bandPriceLower', { price: bandPriceLabel(row.lowerBandPrice) }) }}
+                            </span>
+                            <span
+                              class="reb__band-price"
+                              :class="{ 'reb__band-price--out': row.suggestionAfter === 'sell' }"
+                            >
+                              {{ t('rebalancing.bandPriceUpper', { price: bandPriceLabel(row.upperBandPrice) }) }}
+                            </span>
+                          </div>
+                        </template>
+                        <div class="reb__tooltip">{{ t('rebalancing.bandPriceTooltip') }}</div>
+                      </NTooltip>
                     </td>
 
                     <td class="reb__td reb__td--num reb__td--secondary reb__td--percent tabular-nums">
@@ -783,6 +811,23 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     @include muted(0.6875rem);
   }
 
+  &__band-prices {
+    margin-top: var(--space-1);
+    white-space: nowrap;
+    @include muted(0.6875rem);
+  }
+
+  &__band-price {
+    // Trenner zwischen unterer und oberer Grenze: „↓ 241,20 · ↑ 290,10“.
+    & + &::before {
+      content: '·';
+      margin: 0 0.3em;
+      color: token(--text-muted);
+    }
+
+    &--out { color: token(--status-out); }
+  }
+
   &__band-column {
     @include below(xl) { display: none; }
   }
@@ -815,9 +860,10 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     &--left { text-align: left; }
     &--center { text-align: center; }
     &--wide { padding-right: var(--space-4); padding-left: var(--space-4); }
+    &--w24 { width: 6rem; }
     &--w28 { width: 7rem; }
     &--w32 { width: 8rem; }
-    &--w56 { width: 14rem; }
+    &--w38 { width: 9.5rem; }
   }
 
   &__status-head {

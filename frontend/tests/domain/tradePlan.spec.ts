@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { computeRebalancing } from '@/domain/rebalancing'
-import { computeTradePlan, hasTrades, type TradePlanResult } from '@/domain/tradePlan'
+import { bandPrice, computeTradePlan, hasTrades, type TradePlanResult } from '@/domain/tradePlan'
 import type { Portfolio, Position, QuoteCacheEntry, QuoteMap, Settings } from '@/types/portfolio'
 
 function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
@@ -780,5 +780,70 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
     const row = plan.rows.find((entry) => entry.current.position.id === 'small')!
     expect(row.suggestionAfter).toBe('sell')
     expect(row.belowMinTradeAfter).toBe(false)
+  })
+})
+
+describe('bandPrice — Kurs an der Bandgrenze', () => {
+  it('rechnet das CEBL-Beispiel nach: Ziel 11 %, Band −7 %, Anteil 10,49 %, Kurs 248,20 €', () => {
+    // Anteil 10,49 % von 100, untere Grenze 11 % × 0,93 = 10,23 %.
+    expect(bandPrice(248.2, 10.49, 100, 11 * 0.93)).toBeCloseTo(241.2, 0)
+  })
+
+  it('trifft bei diesem Kurs genau den Grenzanteil, wenn alle anderen Kurse bleiben', () => {
+    const price = 248.2
+    const value = 10.49
+    const total = 100
+    const ratio = bandPrice(price, value, total, 10.23)! / price
+    expect((ratio * value * 100) / (total - value + ratio * value)).toBeCloseTo(10.23, 10)
+  })
+
+  it.each([
+    { name: 'Ziel 0 %', price: 100, value: 500, total: 2000, boundary: 0 },
+    { name: 'Bestand 0', price: 100, value: 0, total: 2000, boundary: 22.5 },
+    { name: 'kein Kurs', price: 0, value: 500, total: 2000, boundary: 22.5 },
+    { name: 'Grenzanteil 100 %', price: 100, value: 500, total: 2000, boundary: 100 },
+    { name: 'Grenzanteil über 100 %', price: 100, value: 500, total: 2000, boundary: 120 },
+    { name: 'Position ist das ganze Depot', price: 100, value: 2000, total: 2000, boundary: 50 },
+  ])('liefert für $name keinen Kurs statt NaN oder eines negativen Werts', ({ price, value, total, boundary }) => {
+    expect(bandPrice(price, value, total, boundary)).toBeNull()
+  })
+})
+
+describe('computeTradePlan — Bandkurse', () => {
+  it('verschiebt die Bandkurse mit einem geplanten Kauf', () => {
+    // B: 10 × 100 € von 2.000 €, Ziel 75 %, Bänder −10 % / +20 % → 67,5 % bzw. 90 %.
+    const { result } = makeSetup()
+    const before = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
+    const after = computeTradePlan(result.rows, { b: 3 }, result.total, SETTINGS.bands, 0)
+    const rowBefore = before.rows.find((row) => row.current.position.id === 'b')!
+    const rowAfter = after.rows.find((row) => row.current.position.id === 'b')!
+
+    // Ohne Kauf: r = 0,675 · 1.000 / (1.000 · 0,325) ≈ 2,077 → 207,69 €.
+    expect(rowBefore.lowerBandPrice).toBeCloseTo(207.69, 2)
+    // Nach 3 Stück Kauf: Wert 1.300 €, r = 0,675 · 700 / (1.300 · 0,325) ≈ 1,118 → 111,83 €.
+    expect(rowAfter.lowerBandPrice).toBeCloseTo(111.83, 2)
+    expect(rowAfter.upperBandPrice).not.toBeNull()
+    expect(rowAfter.upperBandPrice!).toBeGreaterThan(rowAfter.lowerBandPrice!)
+  })
+
+  it('zeigt für Cash und für Ziel 0 % keine Bandkurse', () => {
+    const portfolio: Portfolio = {
+      id: 'p1',
+      name: 'Test',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      positions: [
+        makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 0 }),
+        makePosition({ id: 'cash', isin: null, symbol: 'CASH', group: 'cash', kind: 'cash', units: 1000, targetPercent: 100 }),
+      ],
+    }
+    const quotes: QuoteMap = new Map([['A', makeQuote({ isin: 'A', price: 100 })]])
+    const result = computeRebalancing(portfolio, quotes, SETTINGS)
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0)
+
+    for (const row of plan.rows) {
+      expect(row.lowerBandPrice).toBeNull()
+      expect(row.upperBandPrice).toBeNull()
+    }
   })
 })

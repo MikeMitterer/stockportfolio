@@ -516,7 +516,7 @@ export const de = {
     bandsLabel: 'Bänder: −{lower} / +{upper}',
     columns: {
       delta: 'Delta',
-      trade: 'Kauf / Verkauf',
+      trade: '± Stück',
       value: 'Wert',
       relativeDeviationAfter: 'Rel. Abw.',
       relativePercent: 'Rel. %',
@@ -525,6 +525,10 @@ export const de = {
     shareAfterLabel: 'Anteil nachher: {share}',
     relativeUndefined: 'Bei Ziel 0 % nicht definiert',
     tradeTooltip: 'Positive Werte bedeuten Kauf, negative Werte Verkauf.',
+    bandPriceLower: '↓ {price}',
+    bandPriceUpper: '↑ {price}',
+    bandPriceTooltip:
+      'Bandkurse: Bei diesem Kurs erreicht der Anteil nach dem Plan das untere (↓) bzw. obere (↑) Band. Rechnerisch und unter der Annahme, dass alle anderen Kurse gleich bleiben; fällt der Markt breit, liegt die Grenze tiefer.',
     relativeDeviationTooltip: 'Relative Abweichung vom Ziel nach dem geplanten Handel. Beispiel: 9,5 % Anteil bei 10 % Ziel ergeben −5 % relative Abweichung. Die Zahl ist je nach Vorzeichen grün oder rot; die Balkenfarbe zeigt den Bandstatus.',
     deviationTooltip: 'Abweichung vom Ziel nach dem geplanten Handel in Prozentpunkten. Beispiel: 9,5 % Anteil minus 10 % Ziel ergeben −0,5 Prozentpunkte.',
     deltaTooltip: 'Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen. Anklicken übernimmt den Wert in die Eingabe.',
