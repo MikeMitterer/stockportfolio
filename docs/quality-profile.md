@@ -57,13 +57,32 @@ hier zur Schranke oder ihr Grund steht unter [Bewusste Ausnahmen](#bewusste-ausn
   durchgesetzt von `frontend/tests/networkAccess.spec.ts`. StockInfo erreicht
   der Browser nur über die Weiterleitung `api/src/stockinfo/proxy.ts` mit
   Freigabeliste.
-- **Frontend-Schichten:** Views und Komponenten nutzen Stores; Stores nutzen
-  `api/`, `domain/` und `db/`; `domain/` rechnet ohne Vue, Pinia und Netz und
-  kennt aus `api/` nur Typen. Konvention, im Qualitätslauf 2026-11-20 per
-  Importsuche bestätigt.
-- **API-Schichten:** `routers/` nimmt HTTP an und prüft Eingaben, `auth/` und
-  `data/` tragen die Fachlogik, `persistence/` spricht allein mit SQLite.
-  Konvention.
+- **Frontend-Aufbau,** so wie er ist (Importsuche im Qualitätslauf
+  2026-11-20 über `frontend/src`):
+  - `views/`, `components/` und `composables/` lesen Zustand aus `stores/`.
+    Den StockInfo-Client holen sie über `inject(STOCK_INFO_CLIENT)`, den
+    `auth/AuthRoot.vue` bereitstellt; Typen und Fehlerformen importieren sie
+    aus `frontend/src/api/stockinfo/`.
+  - Die Konto-API (`frontend/src/api/account/`) rufen `auth/` und `views/UserAdminView.vue`
+    direkt auf; private Depotdaten gehen über `data/repository.ts`, das
+    `frontend/src/api/data/` kapselt und von den Stores genutzt wird.
+  - `stores/` nutzen `api/`, `data/`, `db/` und `domain/`, aber keine Views
+    oder Komponenten (0 Treffer für `from '@/(views|components)/'` unter
+    `stores/`; dieselbe Suche findet unter `views/` 3 Dateien).
+  - `domain/` rechnet ohne Vue und Pinia (0 Treffer für `from '(vue|pinia)'`,
+    unter `stores/` 16) und kennt aus `api/` nur Typen (`historyPeriod.ts`).
+  - `router/` ordnet Ansichten zu, `types/` hält gemeinsame Typen, `db/` den
+    IndexedDB-Altbestand und den Kurs-Zwischenspeicher.
+  - Durchgesetzt ist davon nur der Netzzugriff (`networkAccess.spec.ts`); der
+    Rest ist Konvention.
+- **API-Aufbau,** so wie er ist: `routers/api.ts` nimmt HTTP an und prüft
+  Eingaben. Konten, Anmeldung und Sitzungen ruft es über `AccountService`
+  (`auth/service.ts`). Private Depotdaten liest und schreibt es direkt über das
+  Repository (`persistence/repository.ts`, etwa `findResource`,
+  `saveResource`); eine eigene Fachschicht dafür gibt es nicht. `data/events.ts`
+  verteilt Änderungsereignisse an offene Verbindungen, `stockinfo/proxy.ts`
+  leitet an StockInfo weiter. `persistence/` importiert keine der anderen
+  Schichten. Konvention.
 - **Oberfläche aus dem Fundament:** Token, Themes und Bausteine kommen aus
   `@mmit/ux-foundation` ([AGENTS.md](../AGENTS.md#oberfläche-und-theme-kommen-aus-ux-foundation));
   durchgesetzt von den Wächtern für Token, Utility-Klassen, Komponentenstile,
