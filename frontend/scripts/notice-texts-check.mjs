@@ -108,7 +108,12 @@ async function verifyTargetSum(page, locale, expected) {
   const cell = page.locator('tfoot .reb__foot-target')
   await cell.waitFor({ timeout: 20000 })
   const [before] = numbersIn(await cell.innerText(), locale)
-  const startsBalanced = Math.abs(before - 100) <= 0.01
+  // Fehlt eine Zahl, wird jede Rechnung NaN und jeder Vergleich falsch; das wäre ein stilles OK.
+  if (!Number.isFinite(before)) {
+    failures.push(`${label}: keine Summe in „${await cell.innerText()}“`)
+    return
+  }
+  const startsBalanced = Math.abs(before - 100) < 0.005
   if (startsBalanced && !(await cell.innerText()).includes(expected.balanced)) {
     failures.push(`${label}: ausgeglichene Summe ohne „${expected.balanced}“`)
   }
@@ -123,8 +128,10 @@ async function verifyTargetSum(page, locale, expected) {
   const text = await cell.innerText()
   const [after, deviation] = numbersIn(text, locale)
   const classes = (await cell.getAttribute('class')) ?? ''
-  if (Math.abs(after - before - 1) > 0.05) failures.push(`${label}: Summe ${before} → ${after}, erwartet +1`)
-  else if (after > 100.01) {
+  if (!Number.isFinite(after)) failures.push(`${label}: keine Summe nach der Änderung in „${text}“`)
+  else if (after > 100.005 && !Number.isFinite(deviation)) failures.push(`${label}: keine Abweichung in „${text}“`)
+  else if (Math.abs(after - before - 1) > 0.05) failures.push(`${label}: Summe ${before} → ${after}, erwartet +1`)
+  else if (after > 100.005) {
     if (Math.abs(deviation - (after - 100)) > 0.05) failures.push(`${label}: Abweichung ${deviation} passt nicht zur Summe ${after}`)
     if (!text.includes(expected.over)) failures.push(`${label}: „${expected.over}“ fehlt in „${text}“`)
     if (!classes.includes('reb__flow--out')) failures.push(`${label}: Zustand „über 100 %“ nicht markiert`)

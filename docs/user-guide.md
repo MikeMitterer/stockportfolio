@@ -181,9 +181,10 @@ Plan; die übrigen bleiben.
 
 Die letzte Zeile beantwortet „Geht der Plan auf?“ zweimal: Unter _Ziel %_
 steht die Summe aller Ziele, auch der probeweise geänderten, mit der
-Abweichung von 100 % (etwa „+1,0 % zu viel“). Grün heißt, die Ziele ergeben
-100 %; rot heißt, eine Position bekommt mehr oder weniger, als eine andere
-abgibt. Rechts daneben steht die Geldbilanz der Käufe und Verkäufe.
+Abweichung von 100 % (etwa „+1,0 % zu viel“ oder „−0,03 % fehlen“). Grün
+heißt, die Ziele ergeben zusammen genau 100 %; rot heißt, ihre Summe liegt
+darüber oder darunter. Rechts daneben steht die Geldbilanz der Käufe und
+Verkäufe.
 
 Auf schmalen Bildschirmen verschwinden zuerst der Balken (unter 1280 px), dann
 der Simulationshinweis (unter 1160 px). Unter 890 px scrollen Zusammenfassung

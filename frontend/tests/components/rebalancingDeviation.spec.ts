@@ -157,6 +157,9 @@ describe('Zielsumme in der Fußzeile (T-97)', () => {
   it.each([
     [11, '101,0 %', '+1,0 % zu viel'],
     [9, '99,0 %', '−1,0 % fehlen'],
+    // Das Zielfeld nimmt zwei Nachkommastellen an; knapp neben 100 % muss die Abweichung lesbar bleiben.
+    [10.04, '100,04 %', '+0,04 % zu viel'],
+    [9.97, '99,97 %', '−0,03 % fehlen'],
   ])('zeigt probeweises Ziel %s als Summe %s mit „%s“', async (target, sum, deviation) => {
     const row = await renderPlan()
     const cell = await setAssetTarget(row, target)
