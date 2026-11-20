@@ -8,6 +8,7 @@ import { useStatusHint } from '@/composables/useStatusHint'
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { assetColor } from '@/domain/assetColors'
 import { percent, percentSigned } from '@/domain/formatters'
+import { rowsByGroup } from '@/domain/positionGroups'
 import type { GroupResult } from '@/domain/rebalancing'
 import { TARGET_DIGITS, targetSumState, type TradePlanResult } from '@/domain/tradePlan'
 import { useSettingsStore } from '@/stores/settings'
@@ -34,12 +35,7 @@ const settingsStore = useSettingsStore()
 const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
 const groupedRows = computed(() =>
-  props.groups
-    .map((group) => ({
-      group,
-      rows: props.plan.rows.filter((row) => row.current.position.group === group.group),
-    }))
-    .filter((entry) => entry.rows.length > 0),
+  rowsByGroup(props.groups, props.plan.rows, (row) => row.current.position.group),
 )
 
 const sumState = computed(() => targetSumState(props.plan.targetSum))

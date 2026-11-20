@@ -287,6 +287,8 @@ watch(
 </template>
 
 <style scoped lang="scss">
+@use '@/assets/detail-tile' as *;
+
 .position-details {
   @include stack(var(--space-3));
   min-width: 0;
@@ -355,10 +357,7 @@ watch(
     overflow-wrap: anywhere;
   }
   &__facts--valuation > div {
-    padding: var(--space-2);
-    border: 1px solid color-mix(in srgb, token(--border-default) 45%, token(--border-subtle));
-    border-radius: var(--radius-sm);
-    background-color: color-mix(in srgb, token(--surface-raised) 40%, token(--surface-card));
+    @include detail-tile;
   }
   &__facts--asset {
     display: flex;
