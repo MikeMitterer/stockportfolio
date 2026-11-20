@@ -7,7 +7,13 @@
 
 import { describe, expect, it } from 'vitest'
 import { computeRebalancing } from '@/domain/rebalancing'
-import { bandPrice, computeTradePlan, hasTrades, type TradePlanResult } from '@/domain/tradePlan'
+import {
+  bandPrice,
+  computeTradePlan,
+  hasTrades,
+  targetSumState,
+  type TradePlanResult,
+} from '@/domain/tradePlan'
 import type { Portfolio, Position, QuoteCacheEntry, QuoteMap, Settings } from '@/types/portfolio'
 
 function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
@@ -900,5 +906,20 @@ describe('computeTradePlan — Bandkurse', () => {
       expect(row.lowerBandPrice).toBeNull()
       expect(row.upperBandPrice).toBeNull()
     }
+  })
+})
+
+describe('targetSumState (T-97, T-130)', () => {
+  it('nimmt Abweichungen bis 0,01 Prozentpunkte samt Gleitkommarest als ausgeglichen', () => {
+    expect(targetSumState(100)).toBe('balanced')
+    expect(targetSumState(100.01)).toBe('balanced')
+    expect(targetSumState(99.99)).toBe('balanced')
+    expect(targetSumState(90 + 10.01)).toBe('balanced')
+  })
+
+  it('meldet darüber zu viel oder zu wenig', () => {
+    expect(targetSumState(100.02)).toBe('over')
+    expect(targetSumState(99.98)).toBe('under')
+    expect(targetSumState(0)).toBe('under')
   })
 })
