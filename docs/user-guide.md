@@ -169,8 +169,13 @@ Unter jedem Kurs stehen die **Bandkurse** `↓ unterer · ↑ oberer`: der Kurs,
 dem der Anteil nach dem Plan das untere bzw. obere Band erreicht, rechnerisch
 und unter der Annahme, dass alle anderen Kurse gleich bleiben. Hat der Anteil
 eine Grenze schon verlassen, steht sie rot. Das „?“ im Spaltenkopf _Kurs_
-erklärt die Bandkurse, auch per Tastatur. Die Spalte _± Stück_ nimmt die
-geplante Stückzahl auf.
+erklärt die Bandkurse beim Darüberfahren; angeklickt oder per Tastatur
+geöffnet führt es zur ausführlichen Erklärung auf der Methodenseite. Die
+Spalte _± Stück_ nimmt die geplante Stückzahl auf.
+
+Der Plan bleibt stehen, wenn du zwischendurch eine andere Seite der App
+öffnest. Er gilt für das gewählte Depot; ein Depotwechsel, die Abmeldung,
+_Plan leeren_ oder ein Neuladen der Seite leeren ihn.
 
 Auf schmalen Bildschirmen verschwinden zuerst der Balken (unter 1280 px), dann
 der Simulationshinweis (unter 1160 px). Unter 890 px scrollen Zusammenfassung

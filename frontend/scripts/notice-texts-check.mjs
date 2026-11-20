@@ -1,7 +1,8 @@
 // Prüft sichtbare Hinweistexte auf Methodenseite und Rebalancing in DE und EN,
 // dazu die Handelstabelle: gekürzter Kopf „± Stück“, Bandkurse unter dem Kurs
 // ohne Umbruch, ihr Hinweis im Spaltenkopf (Text, fokussierbar, auch schmal
-// erreichbar) und die Tabelle ohne waagrechtes Scrollen (T-108).
+// erreichbar, führt zur Erklärung auf der Methodenseite, ohne dass der Plan
+// verloren geht) und die Tabelle ohne waagrechtes Scrollen (T-108).
 //
 // Die App rechnet aus, was zu den selbst gesetzten Zielen führt; Hinweise
 // sprechen deshalb von Lage zum Ziel und von rechnerischen Beträgen, nicht
@@ -56,6 +57,10 @@ const expectations = {
       required: ['Bandkurse', 'alle anderen Kurse gleich bleiben'],
       forbidden: ['Zielkurs', 'Kursziel', 'Empfehlung', 'günstig', 'Vorschlag'],
     },
+    bandPricesMethod: {
+      required: ['Bandkurse:', 'alle anderen Kurse gleich bleiben'],
+      forbidden: ['Zielkurs', 'Kursziel', 'Empfehlung', 'günstig', 'Vorschlag'],
+    },
   },
   en: {
     saveLabel: 'Save password',
@@ -73,6 +78,10 @@ const expectations = {
     tradeHeader: '± Units',
     bandPrices: {
       required: ['Band prices', 'all other prices stay the same'],
+      forbidden: ['target price', 'price target', 'recommend', 'cheap', 'suggestion'],
+    },
+    bandPricesMethod: {
+      required: ['Band prices:', 'all other prices stay the same'],
       forbidden: ['target price', 'price target', 'recommend', 'cheap', 'suggestion'],
     },
   },
@@ -140,6 +149,35 @@ async function checkTradeTable(page, locale, expected) {
   await closeHints(page)
   if (imageDir) await page.screenshot({ path: resolve(imageDir, `trade-table-${locale}-narrow.png`) })
   await page.setViewportSize(viewport)
+
+  await checkPlanSurvivesHint(page, label, hint, expected)
+}
+
+/**
+ * Der Hinweis im Kurs-Kopf führt per Tastatur auf die Methodenseite (#bands). Dort
+ * steht die Erklärung der Bandkurse, und nach dem Zurückgehen ist der Plan noch da:
+ * Eine eingetragene Stückzahl darf der Abstecher nicht verwerfen.
+ */
+async function checkPlanSurvivesHint(page, label, hint, expected) {
+  const tradeCell = () => page.locator('.reb__table tbody tr')
+    .filter({ has: page.locator('.reb__band-prices') }).first()
+    .locator('.inline-number').nth(1)
+  await tradeCell().locator('.inline-number__display').click()
+  await tradeCell().locator('.inline-number__field').fill('5')
+  await tradeCell().locator('.inline-number__field').press('Enter')
+  const before = (await tradeCell().locator('.inline-number__display').innerText()).trim()
+  if (before !== '5') failures.push(`${label}: Stückzahl 5 nicht eingetragen („${before}“)`)
+
+  await hint.focus()
+  await page.keyboard.press('Enter')
+  await page.locator('#bands').waitFor({ timeout: 10000 })
+  verify(`${label} · Methodenseite`, await page.locator('#bands').innerText(), expected.bandPricesMethod)
+
+  await page.goBack()
+  await page.locator('.reb__band-prices').first().waitFor({ timeout: 10000 })
+  const after = (await tradeCell().locator('.inline-number__display').innerText()).trim()
+  if (after !== before) failures.push(`${label}: Plan nach der Methodenseite verloren („${before}“ → „${after}“)`)
+  else console.log(`OK  ${label} · Plan bleibt nach der Methodenseite`)
 }
 
 /** Schließt offene Hinweise (Fokus und Maus weg), damit sie auf den Bildern nichts verdecken. */

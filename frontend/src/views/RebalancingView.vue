@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { NButton, NEmpty, NIcon, NSpin, NTooltip } from 'naive-ui'
 import DeltaBar from '@/components/DeltaBar.vue'
@@ -17,13 +18,9 @@ import { positionIsin, positionPrimaryLabel, positionSymbol } from '@/domain/pos
 import type { GroupResult } from '@/domain/rebalancing'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import FxNotice from '@/components/FxNotice.vue'
-import {
-  computeTradePlan,
-  hasTrades,
-  type TargetMap,
-  type TradeMap,
-} from '@/domain/tradePlan'
+import { computeTradePlan, hasTrades } from '@/domain/tradePlan'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { useTradePlanDraftStore } from '@/stores/tradePlanDraft'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
 import { useApiStatusStore } from '@/stores/apiStatus'
@@ -69,16 +66,18 @@ onMounted(async () => {
 
 // ─── Der Plan ───────────────────────────────────────────────────────────────
 
-const trades = ref<TradeMap>({})
-
 /**
- * Probeweise Ziele — leben nur in diesem Tab.
+ * Geplante Stückzahlen und probeweise Ziele — leben nur in diesem Tab.
  *
  * Das Rebalancing ist eine Simulation. Ins Depot wandert eine Zieländerung
  * erst, wenn die Trades wirklich durch sind; das macht man dann selbst im
  * Dashboard. Bis dahin darf hier nichts am Bestand oder am Ziel hängen bleiben.
+ * Der Plan liegt im Store, damit er einen Abstecher auf die Methodenseite
+ * übersteht; er gehört zum gerade gewählten Depot.
  */
-const targets = ref<TargetMap>({})
+const draft = useTradePlanDraftStore()
+const { trades, targets } = storeToRefs(draft)
+watch(() => portfolioStore.portfolio?.id ?? null, (id) => draft.useFor(id), { immediate: true })
 
 const plan = computed(() => {
   const portfolio = portfolioStore.portfolio
@@ -114,18 +113,7 @@ const targetSumOff = computed(
   () => hasHoldings.value && plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
 )
 
-function setTrade(positionId: string, units: number): void {
-  trades.value = { ...trades.value, [positionId]: units }
-}
-
-function setTarget(positionId: string, targetPercent: number): void {
-  targets.value = { ...targets.value, [positionId]: targetPercent }
-}
-
-function clearPlan(): void {
-  trades.value = {}
-  targets.value = {}
-}
+const { setTrade, setTarget, clear: clearPlan } = draft
 
 /**
  * Liquide Zeilen, die die offene Lücke schließen könnten.
