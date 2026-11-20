@@ -109,6 +109,6 @@ describe('StockInfo — gemeinsame Vertragsgrenze', () => {
 
   it('erklärt StockInfos echten Mehrdeutigkeitscode verständlich', async () => {
     await expect(clientFor({ code: 'symbol_ambiguous', params: { symbol: 'DUAL' } }, 409).getQuoteBySymbol('DUAL'))
-      .rejects.toMatchObject({ status: 409, detail: translate('errors.ambiguousSymbol', { symbol: 'DUAL' }) })
+      .rejects.toMatchObject({ status: 409, detail: translate('errors.reason.symbol_ambiguous', { symbol: 'DUAL' }) })
   })
 })

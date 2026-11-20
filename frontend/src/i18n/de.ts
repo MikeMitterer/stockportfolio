@@ -305,7 +305,6 @@ export const de = {
    * der StockInfo-Abfragen weiterleitet (T-82).
    */
   errors: {
-    ambiguousSymbol: 'Symbol „{symbol}“ ist mehrdeutig. Kein eindeutiger Kurs verfügbar.',
     staleQuote: 'Ein veralteter Kurs wird verwendet.',
     invalidResponse: 'Ungültige StockInfo-Antwort: Feld „{field}“ fehlt oder ist ungültig. Der Kurs wird nicht übernommen.',
     unsupportedIdentity: 'StockInfo liefert eine nicht unterstützte Identität: „{kind}“. Der Kurs wird nicht übernommen.',
@@ -313,6 +312,51 @@ export const de = {
       stockinfo_unreachable: 'StockInfo ist vom StockPortfolio-Server aus nicht erreichbar. Prüfe STOCKINFO_API_URL und ob StockInfo läuft.',
       stockinfo_timeout: 'StockInfo hat nicht rechtzeitig geantwortet.',
       stockinfo_not_configured: 'STOCKINFO_API_URL ist am StockPortfolio-Server nicht gesetzt.',
+    },
+    /*
+     * StockInfos Fehler als Kennung (`code`) mit Werten (`params`); den Satz
+     * bildet StockPortfolio selbst (T-117). Kennungen und Platzhalter folgen
+     * dem StockInfo-Katalog `errors.reason` und `migration.reason` in
+     * dashboard/src/i18n. Die Gate-Kennungen `migration_pending`,
+     * `startup_running` und `startup_failed` kommen bei 503 als `detail`.
+     */
+    reason: {
+      quote_unavailable:
+        'StockInfo konnte bei keiner Quelle nachsehen: {identifier}. Ob es das Papier gibt, ist damit offen.',
+      instrument_not_found:
+        'Zu {identifier} hat keine der in StockInfo eingerichteten Quellen ein Wertpapier gefunden.',
+      unsupported_instrument_type:
+        '{symbol} ist ein {instrument_type}. Diese Gattung nimmt StockInfo derzeit nicht auf.',
+      quote_currency_mismatch:
+        '{symbol} notiert in {expected}, die Quelle lieferte {delivered}. Das ist ein anderes Instrument.',
+      identity_conflict:
+        'In StockInfo beanspruchen zwei gespeicherte Einträge dieselbe Identität ({identity}). Das muss in StockInfo bereinigt werden.',
+      symbol_ambiguous: 'Symbol „{symbol}“ ist mehrdeutig. Kein eindeutiger Kurs verfügbar.',
+      invalid_isin_format: '{isin} hat nicht das Format einer ISIN.',
+      invalid_symbol_format: '{symbol} hat nicht das Format eines Symbols.',
+      daily_series_not_found:
+        'Für {identifier} führt keine der in StockInfo eingerichteten Quellen eine Kurshistorie.',
+      daily_source_unavailable:
+        'Die Kurshistorie zu {identifier} war nicht abrufbar. Mindestens eine Quelle hat nicht geantwortet.',
+      fx_pair_not_found: 'Keine der in StockInfo eingerichteten Quellen führt den Kurs {base}/{quote}.',
+      fx_source_unavailable:
+        'Der Kurs {base}/{quote} war nicht abrufbar. Mindestens eine Quelle hat nicht geantwortet.',
+      invalid_currency_code: '{base} und {quote} müssen dreibuchstabige Währungscodes sein.',
+      identifier_empty: 'Es wurde nichts eingegeben.',
+      identifier_unknown_form: '{identifier} ist weder eine ISIN noch ein Symbol mit Börsenkürzel.',
+      exchange_not_covered: 'Für den Handelsplatz {mic} ist in StockInfo keine Kursquelle verfügbar.',
+      ambiguous_exchange_suffix:
+        'Das Börsenkürzel im Symbol passt auf mehrere Handelsplätze. Welcher gemeint ist, sagt die Eingabe nicht.',
+      symbol_without_exchange_suffix:
+        'Dem Symbol fehlt das Börsenkürzel. Aus ihm allein lässt sich der Handelsplatz nicht ableiten.',
+      unknown_exchange_suffix:
+        'Das Börsenkürzel im Symbol ist unbekannt und lässt sich keinem Handelsplatz zuordnen.',
+      non_canonical_ticker: 'Der Ticker entspricht nicht der kanonischen Schreibweise des Handelsplatzes.',
+      migration_pending: 'StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.',
+      startup_running: 'StockInfo startet noch. Bitte gleich noch einmal versuchen.',
+      startup_failed: 'StockInfo konnte nicht starten und beantwortet keine Abfragen.',
+      contract_unavailable: 'StockInfo kann seine Feldbeschreibung gerade nicht lesen.',
+      unknown: 'StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: {code}.',
     },
   },
 

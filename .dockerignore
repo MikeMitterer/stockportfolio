@@ -18,7 +18,7 @@ coverage
 .claude
 .codex
 .agents
-.libs
+.tools
 
 docker/logs
 docker/preview
