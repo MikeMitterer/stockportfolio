@@ -21,7 +21,9 @@ export function parseSessionIdleMs(value: string | undefined): number {
   if (!trimmed) return DEFAULT_SESSION_IDLE_DAYS * dayMs
   const days = /^\d+$/.test(trimmed) ? Number(trimmed) : Number.NaN
   if (!Number.isSafeInteger(days) || days < 1 || days > maxSessionIdleDays) {
-    throw new Error(`STOCKPORTFOLIO_SESSION_IDLE_DAYS is invalid: expected whole days from 1 to ${maxSessionIdleDays}, for example ${DEFAULT_SESSION_IDLE_DAYS}`)
+    throw new Error(
+      `STOCKPORTFOLIO_SESSION_IDLE_DAYS is invalid: expected whole days from 1 to ${maxSessionIdleDays}, for example ${DEFAULT_SESSION_IDLE_DAYS}`,
+    )
   }
   return days * dayMs
 }

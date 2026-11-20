@@ -83,10 +83,7 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
       <div class="delta__target"></div>
     </div>
 
-    <span
-      v-if="!hideValue"
-      class="delta__value tabular-nums"
-    >{{ text }}</span>
+    <span v-if="!hideValue" class="delta__value tabular-nums">{{ text }}</span>
   </div>
 </template>
 
@@ -108,7 +105,9 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
     border-radius: 0.25rem;
     background-color: token(--surface-sunken);
 
-    &--compact { height: 1rem; }
+    &--compact {
+      height: 1rem;
+    }
   }
 
   /*
@@ -124,9 +123,15 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
     bottom: 3px;
     transition: all 0.15s ease;
 
-    &--ok { background-color: token(--status-ok); }
-    &--near { background-color: token(--status-near); }
-    &--out { background-color: token(--status-out); }
+    &--ok {
+      background-color: token(--status-ok);
+    }
+    &--near {
+      background-color: token(--status-near);
+    }
+    &--out {
+      background-color: token(--status-out);
+    }
   }
 
   &__target {
@@ -148,7 +153,6 @@ const text = computed(() => props.label ?? percentSigned(props.relativePercent))
     font-size: var(--font-xs);
     text-align: right;
     color: token(--text-secondary);
-
   }
 }
 </style>

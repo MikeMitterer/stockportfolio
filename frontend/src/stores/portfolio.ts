@@ -8,7 +8,11 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { consola } from 'consola'
-import { createAllowlistRepository, createPortfolioRepository, createSettingsRepository } from '@/data/repository'
+import {
+  createAllowlistRepository,
+  createPortfolioRepository,
+  createSettingsRepository,
+} from '@/data/repository'
 import { cashPosition, demoPortfolio, emptyPortfolio } from '@/db/seed'
 import { baseCurrencyOf, isCurrency } from '@/domain/fx'
 import { upgradeAssetGroups } from '@/domain/assetGroup'
@@ -90,7 +94,8 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   /** Übernimmt den Serverstand ohne die Erststart-Vorgabe erneut anzulegen. */
   async function refreshFromServer(): Promise<void> {
     const entries = await repository.findAll()
-    portfolio.value = entries.find((entry) => entry.id === portfolio.value?.id) ?? entries[0] ?? null
+    portfolio.value =
+      entries.find((entry) => entry.id === portfolio.value?.id) ?? entries[0] ?? null
     showList(entries)
     loaded.value = true
   }
@@ -115,9 +120,12 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   }
 
   function hasCurrencyAmounts(entry: Portfolio): boolean {
-    return entry.positions.some(position => position.group === 'cash' && position.units !== 0)
-      || [entry.amountSettings?.securityBuffer, entry.amountSettings?.minTradeSize]
-        .some(setting => setting?.mode === 'absolute' && setting.value !== 0)
+    return (
+      entry.positions.some((position) => position.group === 'cash' && position.units !== 0) ||
+      [entry.amountSettings?.securityBuffer, entry.amountSettings?.minTradeSize].some(
+        (setting) => setting?.mode === 'absolute' && setting.value !== 0,
+      )
+    )
   }
 
   /** Bestände neu bewerten; nur gespeicherte Geldbeträge einmalig umrechnen. */
@@ -126,7 +134,14 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     const entry = id === portfolio.value?.id ? portfolio.value : await repository.findById(id)
     if (!entry || baseCurrencyOf(entry) === currency) return
     const needsRate = hasCurrencyAmounts(entry)
-    if (needsRate && (!fx || fx.base !== baseCurrencyOf(entry) || fx.quote !== currency || !Number.isFinite(fx.rate) || fx.rate <= 0)) {
+    if (
+      needsRate &&
+      (!fx ||
+        fx.base !== baseCurrencyOf(entry) ||
+        fx.quote !== currency ||
+        !Number.isFinite(fx.rate) ||
+        fx.rate <= 0)
+    ) {
       throw new Error(translate('fx.changeUnavailable'))
     }
     const rate = needsRate ? fx!.rate : 1
@@ -136,25 +151,38 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       return result
     }
     const convertSetting = (setting: AmountSetting): AmountSetting => ({
-      ...setting, value: setting.mode === 'absolute' ? convert(setting.value) : setting.value,
+      ...setting,
+      value: setting.mode === 'absolute' ? convert(setting.value) : setting.value,
     })
     const changed: Portfolio = {
-      ...entry, baseCurrency: currency, updatedAt: new Date().toISOString(),
-      positions: entry.positions.map(position => position.group === 'cash' ? { ...position, units: convert(position.units) } : position),
-      ...(entry.amountSettings ? { amountSettings: {
-        securityBuffer: convertSetting(entry.amountSettings.securityBuffer),
-        minTradeSize: convertSetting(entry.amountSettings.minTradeSize),
-      } } : {}),
+      ...entry,
+      baseCurrency: currency,
+      updatedAt: new Date().toISOString(),
+      positions: entry.positions.map((position) =>
+        position.group === 'cash' ? { ...position, units: convert(position.units) } : position,
+      ),
+      ...(entry.amountSettings
+        ? {
+            amountSettings: {
+              securityBuffer: convertSetting(entry.amountSettings.securityBuffer),
+              minTradeSize: convertSetting(entry.amountSettings.minTradeSize),
+            },
+          }
+        : {}),
     }
     await repository.save(changed)
     if (id === portfolio.value?.id) portfolio.value = changed
     await refreshList()
   }
 
-  async function setAmountSetting(name: 'securityBuffer' | 'minTradeSize', setting: AmountSetting): Promise<void> {
+  async function setAmountSetting(
+    name: 'securityBuffer' | 'minTradeSize',
+    setting: AmountSetting,
+  ): Promise<void> {
     if (!portfolio.value || !Number.isFinite(setting.value) || setting.value < 0) return
     const current = portfolio.value.amountSettings ?? {
-      securityBuffer: { mode: 'percent' as const, value: 0 }, minTradeSize: { mode: 'absolute' as const, value: 0 },
+      securityBuffer: { mode: 'percent' as const, value: 0 },
+      minTradeSize: { mode: 'absolute' as const, value: 0 },
     }
     portfolio.value = { ...portfolio.value, amountSettings: { ...current, [name]: setting } }
     await persist()
@@ -323,9 +351,15 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
   /** Cash ist ein Depotbetrag und braucht weder Identität noch Kursabruf. */
   async function addCashPosition(units: number, targetPercent: number): Promise<void> {
-    if (positions.value.some(position => position.group === 'cash')) return
-    if (!Number.isFinite(units) || units < 0 || !Number.isFinite(targetPercent)
-      || targetPercent < 0 || targetPercent > 100) return
+    if (positions.value.some((position) => position.group === 'cash')) return
+    if (
+      !Number.isFinite(units) ||
+      units < 0 ||
+      !Number.isFinite(targetPercent) ||
+      targetPercent < 0 ||
+      targetPercent > 100
+    )
+      return
     await addPosition(cashPosition(units, targetPercent))
   }
 

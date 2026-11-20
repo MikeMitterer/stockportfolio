@@ -27,7 +27,6 @@ const targetPosition = computed(() => ({
   left: `${(props.group.targetPercent / barMax.value) * 100}%`,
 }))
 const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
-
 </script>
 
 <template>
@@ -140,10 +139,16 @@ const { formatMoney, formatMoneySigned } = usePortfolioCurrency()
     @include muted(null);
   }
 
-  &__delta { width: 8rem; }
+  &__delta {
+    width: 8rem;
+  }
 
-  &__up { color: token(--status-ok); }
-  &__down { color: token(--status-out); }
+  &__up {
+    color: token(--status-ok);
+  }
+  &__down {
+    color: token(--status-out);
+  }
 
   &__status {
     display: flex;

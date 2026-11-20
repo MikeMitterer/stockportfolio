@@ -75,4 +75,5 @@ export const useTradePlanDraftStore = defineStore('tradePlanDraft', () => {
   return { trades, targets, portfolioId, useFor, setTrade, setTarget, clear, dropStale }
 })
 
-if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useTradePlanDraftStore, import.meta.hot))
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useTradePlanDraftStore, import.meta.hot))

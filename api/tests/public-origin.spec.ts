@@ -21,16 +21,28 @@ describe('STOCKPORTFOLIO_PUBLIC_ORIGIN', () => {
   })
 
   it('entfernt den Schrägstrich am Ende, wie ihn der Browser nie sendet', () => {
-    expect(normalizePublicOrigin('https://portfolio.example.com/')).toBe('https://portfolio.example.com')
+    expect(normalizePublicOrigin('https://portfolio.example.com/')).toBe(
+      'https://portfolio.example.com',
+    )
     expect(normalizePublicOrigin('http://192.168.1.10:8088/')).toBe('http://192.168.1.10:8088')
-    expect(normalizePublicOrigin(' https://portfolio.example.com ')).toBe('https://portfolio.example.com')
+    expect(normalizePublicOrigin(' https://portfolio.example.com ')).toBe(
+      'https://portfolio.example.com',
+    )
   })
 
   it('schreibt Schema und Host klein und lässt den Standardport weg', () => {
-    expect(normalizePublicOrigin('HTTPS://Portfolio.Example.COM')).toBe('https://portfolio.example.com')
-    expect(normalizePublicOrigin('https://portfolio.example.com:443')).toBe('https://portfolio.example.com')
-    expect(normalizePublicOrigin('http://portfolio.example.com:80/')).toBe('http://portfolio.example.com')
-    expect(normalizePublicOrigin('https://portfolio.example.com:8443')).toBe('https://portfolio.example.com:8443')
+    expect(normalizePublicOrigin('HTTPS://Portfolio.Example.COM')).toBe(
+      'https://portfolio.example.com',
+    )
+    expect(normalizePublicOrigin('https://portfolio.example.com:443')).toBe(
+      'https://portfolio.example.com',
+    )
+    expect(normalizePublicOrigin('http://portfolio.example.com:80/')).toBe(
+      'http://portfolio.example.com',
+    )
+    expect(normalizePublicOrigin('https://portfolio.example.com:8443')).toBe(
+      'https://portfolio.example.com:8443',
+    )
   })
 
   it.each([
@@ -48,7 +60,9 @@ describe('STOCKPORTFOLIO_PUBLIC_ORIGIN', () => {
     ['https://portfolio.example.com/#top', 'must not contain a fragment'],
     ['https://portfolio.example.com#', 'must not contain a fragment'],
   ])('bricht bei %s mit klarer Meldung ab', (value, reason) => {
-    expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`)
+    expect(() => normalizePublicOrigin(value)).toThrow(
+      `STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`,
+    )
   })
 
   it.each([
@@ -58,10 +72,15 @@ describe('STOCKPORTFOLIO_PUBLIC_ORIGIN', () => {
     ['user:synthetic-password@portfolio.example.com', 'scheme must be http or https'],
     ['https://portfolio.example.com?token=synthetic-password', 'must not contain a query'],
     ['https://portfolio.example.com/?token=synthetic-password', 'must not contain a query'],
-    ['https://portfolio.example.com/#access_token=synthetic-password', 'must not contain a fragment'],
+    [
+      'https://portfolio.example.com/#access_token=synthetic-password',
+      'must not contain a fragment',
+    ],
     ['https://portfolio.example.com/app?token=synthetic-password', 'must not contain a path'],
   ])('schreibt bei %s kein Geheimnis in die Meldung', (value, reason) => {
-    expect(() => normalizePublicOrigin(value)).toThrow(`STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`)
+    expect(() => normalizePublicOrigin(value)).toThrow(
+      `STOCKPORTFOLIO_PUBLIC_ORIGIN is invalid: ${reason}`,
+    )
     expect(() => normalizePublicOrigin(value)).not.toThrow(/synthetic-password/)
   })
 

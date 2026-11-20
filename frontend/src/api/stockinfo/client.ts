@@ -8,7 +8,13 @@
  */
 
 import { ApiError } from './errors'
-import { normalizeFields, normalizeFx, normalizeInstruments, normalizeInstrumentTypes, normalizeQuote } from './normalizers'
+import {
+  normalizeFields,
+  normalizeFx,
+  normalizeInstruments,
+  normalizeInstrumentTypes,
+  normalizeQuote,
+} from './normalizers'
 import { i18n, translate } from '@/i18n'
 import type {
   DailyPoint,
@@ -39,7 +45,10 @@ export class StockInfoClient {
    *   des eigenen Servers. Tests geben eine eigene Adresse an.
    * @param fetchFn Optionale fetch-Implementierung (Default: globales `fetch`).
    */
-  constructor(baseUrl: string = STOCKINFO_PROXY_PATH, fetchFn: FetchFn = globalThis.fetch.bind(globalThis)) {
+  constructor(
+    baseUrl: string = STOCKINFO_PROXY_PATH,
+    fetchFn: FetchFn = globalThis.fetch.bind(globalThis),
+  ) {
     this.baseUrl = baseUrl.replace(/\/+$/, '')
     this.fetchFn = fetchFn
   }
@@ -61,7 +70,10 @@ export class StockInfoClient {
 
   /** Katalog aller bekannten Instrumente. */
   async getInstruments(): Promise<InstrumentSummary[]> {
-    return normalizeInstruments(await this.request<unknown>('/instruments'), `${this.baseUrl}/instruments`)
+    return normalizeInstruments(
+      await this.request<unknown>('/instruments'),
+      `${this.baseUrl}/instruments`,
+    )
   }
 
   /** Felddefinitionen werden unabhängig von den Kursen geladen. */
@@ -71,7 +83,10 @@ export class StockInfoClient {
 
   /** Verfügbare Plugin-Typen, unabhängig von bereits aufgenommenen Assets. */
   async getInstrumentTypes(): Promise<InstrumentTypesResponse> {
-    return normalizeInstrumentTypes(await this.request<unknown>('/instrument-types'), `${this.baseUrl}/instrument-types`)
+    return normalizeInstrumentTypes(
+      await this.request<unknown>('/instrument-types'),
+      `${this.baseUrl}/instrument-types`,
+    )
   }
 
   /** Eine Einheit Ausgangswährung entspricht rate Einheiten Zielwährung. */
@@ -92,9 +107,7 @@ export class StockInfoClient {
 
   /** Tages-Schlusskurse (EOD) zu einer ISIN. */
   async getDailyHistory(isin: string, period: Period = '3m'): Promise<DailyPoint[]> {
-    return this.request<DailyPoint[]>(
-      `/quote/${encodeURIComponent(isin)}/daily?period=${period}`,
-    )
+    return this.request<DailyPoint[]>(`/quote/${encodeURIComponent(isin)}/daily?period=${period}`)
   }
 
   /**
@@ -122,10 +135,7 @@ export class StockInfoClient {
    * „neu laden" hätte den zwischengespeicherten Kurs geliefert.
    */
   async refreshBySymbol(symbol: string): Promise<QuoteResponse> {
-    return this.requestQuote(
-      `/refresh/by-symbol/${encodeURIComponent(symbol)}`,
-      'POST',
-    )
+    return this.requestQuote(`/refresh/by-symbol/${encodeURIComponent(symbol)}`, 'POST')
   }
 
   /** Health-Check der API. */
@@ -147,7 +157,11 @@ export class StockInfoClient {
    * @returns Deserialisierter Response-Body.
    * @throws {ApiError} Bei Netzwerkfehler (`status: 0`) oder HTTP-Status >= 400.
    */
-  private async request<T>(path: string, method: 'GET' | 'POST' = 'GET', relative = true): Promise<T> {
+  private async request<T>(
+    path: string,
+    method: 'GET' | 'POST' = 'GET',
+    relative = true,
+  ): Promise<T> {
     const url = relative ? `${this.baseUrl}${path}` : path
 
     let response: Response
@@ -155,9 +169,10 @@ export class StockInfoClient {
       response = await this.fetchFn(url, {
         method,
         // Der eigene Server verlangt bei POST JSON und prüft die Herkunft.
-        headers: method === 'POST'
-          ? { Accept: 'application/json', 'Content-Type': 'application/json' }
-          : { Accept: 'application/json' },
+        headers:
+          method === 'POST'
+            ? { Accept: 'application/json', 'Content-Type': 'application/json' }
+            : { Accept: 'application/json' },
       })
     } catch (cause) {
       const detail = cause instanceof Error ? cause.message : 'Netzwerkfehler'
@@ -217,7 +232,13 @@ async function readErrorDetail(response: Response): Promise<string> {
     const body: unknown = await response.json()
     // Fehler der Weiterleitung selbst: StockInfo nicht erreichbar, zu langsam
     // oder nicht konfiguriert. Die übrigen Antworten stammen von StockInfo.
-    if (body && typeof body === 'object' && 'error' in body && typeof body.error === 'string' && body.error.startsWith('stockinfo_')) {
+    if (
+      body &&
+      typeof body === 'object' &&
+      'error' in body &&
+      typeof body.error === 'string' &&
+      body.error.startsWith('stockinfo_')
+    ) {
       return translate(`errors.stockinfo.${body.error}`)
     }
     if (body && typeof body === 'object' && 'code' in body && typeof body.code === 'string') {
@@ -228,7 +249,8 @@ async function readErrorDetail(response: Response): Promise<string> {
       // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`. Auch eine
       // unbekannte Kennung in dieser Form (Kleinbuchstaben mit Unterstrich, etwa
       // maintenance_running) geht über den allgemeinen Satz, nie roh in die Oberfläche.
-      if (typeof detail === 'string' && STOCKINFO_CODE.test(detail)) return describeStockInfoCode(detail, undefined)
+      if (typeof detail === 'string' && STOCKINFO_CODE.test(detail))
+        return describeStockInfoCode(detail, undefined)
       // Ein Satz im alten Format bleibt lesbar; Objekte und Listen nie als JSON zeigen.
       if (typeof detail === 'string') return detail
     }

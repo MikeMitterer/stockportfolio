@@ -41,8 +41,15 @@ async function renderPlan(units = 95, targetPercent = 10) {
   portfolio.portfolio.positions[0]!.units = 10000 - units * 10
   portfolio.portfolio.positions[0]!.targetPercent = 100 - targetPercent
   portfolio.portfolio.positions.push({
-    id: 'asset', isin: null, symbol: 'TEST', displayName: 'Bandprobe-Aktie',
-    kind: 'stock', group: 'stocks', units, targetPercent, enabled: true,
+    id: 'asset',
+    isin: null,
+    symbol: 'TEST',
+    displayName: 'Bandprobe-Aktie',
+    kind: 'stock',
+    group: 'stocks',
+    units,
+    targetPercent,
+    enabled: true,
   })
   portfolio.loaded = true
   const settings = useSettingsStore()
@@ -51,22 +58,35 @@ async function renderPlan(units = 95, targetPercent = 10) {
   settings.settings.refresh.autoOnLoad = false
   const quotes = useQuotesStore()
   vi.spyOn(quotes, 'hydrate').mockResolvedValue()
-  quotes.quotes.set('TEST', toQuoteCacheEntry(normalizeQuote({
-    ...fixture.response.body, price: 10, currency: 'EUR',
-  }, 'test')))
+  quotes.quotes.set(
+    'TEST',
+    toQuoteCacheEntry(
+      normalizeQuote(
+        {
+          ...fixture.response.body,
+          price: 10,
+          currency: 'EUR',
+        },
+        'test',
+      ),
+    ),
+  )
   const Host = defineComponent({
     setup: () => () => h(NNotificationProvider, null, { default: () => h(RebalancingView) }),
   })
   wrapper = mount(Host, {
     global: {
-      plugins: [createRouter({ history: createMemoryHistory(), routes: [
-        { path: '/:pathMatch(.*)*', component: { template: '<div />' } },
-      ] })],
+      plugins: [
+        createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: '/:pathMatch(.*)*', component: { template: '<div />' } }],
+        }),
+      ],
       provide: { [STOCK_INFO_CLIENT as symbol]: null },
     },
   })
   await flushPromises()
-  return wrapper.findAll('tbody tr').find(row => row.text().includes('Bandprobe-Aktie'))!
+  return wrapper.findAll('tbody tr').find((row) => row.text().includes('Bandprobe-Aktie'))!
 }
 
 describe('Relative Abweichung im Rebalancing', () => {
@@ -82,17 +102,23 @@ describe('Relative Abweichung im Rebalancing', () => {
   })
 
   it.each([
-    [93, '−7,0 %', 'out', 'negative'], [94, '−6,0 %', 'ok', 'negative'],
-    [100, '+0,0 %', 'ok', 'neutral'], [105, '+5,0 %', 'ok', 'positive'],
-    [115, '+15,0 %', 'ok', 'positive'], [116, '+16,0 %', 'out', 'positive'],
-  ])('zeigt bei %s Stück Vorzeichenfarbe unabhängig vom Bandstatus', async (units, label, state, sign) => {
-    const row = await renderPlan(Number(units))
-    expect(row.find('.reb__relative-value').text()).toBe(label)
-    expect(row.find(`.delta__fill--${state}`).exists()).toBe(true)
-    const value = row.find('.reb__relative-value')
-    expect(value.classes().includes('reb__relative-value--positive')).toBe(sign === 'positive')
-    expect(value.classes().includes('reb__relative-value--negative')).toBe(sign === 'negative')
-  })
+    [93, '−7,0 %', 'out', 'negative'],
+    [94, '−6,0 %', 'ok', 'negative'],
+    [100, '+0,0 %', 'ok', 'neutral'],
+    [105, '+5,0 %', 'ok', 'positive'],
+    [115, '+15,0 %', 'ok', 'positive'],
+    [116, '+16,0 %', 'out', 'positive'],
+  ])(
+    'zeigt bei %s Stück Vorzeichenfarbe unabhängig vom Bandstatus',
+    async (units, label, state, sign) => {
+      const row = await renderPlan(Number(units))
+      expect(row.find('.reb__relative-value').text()).toBe(label)
+      expect(row.find(`.delta__fill--${state}`).exists()).toBe(true)
+      const value = row.find('.reb__relative-value')
+      expect(value.classes().includes('reb__relative-value--positive')).toBe(sign === 'positive')
+      expect(value.classes().includes('reb__relative-value--negative')).toBe(sign === 'negative')
+    },
+  )
 
   it('aktualisiert Zahl und Balken nach Trade und probeweisem Zielwechsel', async () => {
     const row = await renderPlan()
@@ -107,13 +133,17 @@ describe('Relative Abweichung im Rebalancing', () => {
     await flushPromises()
     expect(row.find('.reb__relative-value').text()).toBe('+110,0 %')
     expect(row.find('.delta__fill--out').exists()).toBe(true)
-    expect(usePortfolioStore().positions.find(position => position.id === 'asset')!.targetPercent).toBe(10)
+    expect(
+      usePortfolioStore().positions.find((position) => position.id === 'asset')!.targetPercent,
+    ).toBe(10)
   })
 
   it('kennzeichnet Ziel null ohne irreführende relative Nullabweichung', async () => {
     const row = await renderPlan(95, 0)
     expect(row.find('.reb__relative-value').text()).toBe('—')
-    expect(row.find('.reb__relative-value--positive, .reb__relative-value--negative').exists()).toBe(false)
+    expect(
+      row.find('.reb__relative-value--positive, .reb__relative-value--negative').exists(),
+    ).toBe(false)
     expect(row.text()).toContain('Bei Ziel 0 % nicht definiert')
     expect(row.text()).not.toMatch(/NaN|Infinity/)
     expect(row.find('.delta__fill--out').exists()).toBe(true)
@@ -131,7 +161,10 @@ describe('Relative Abweichung im Rebalancing', () => {
 
 describe('Zielsumme in der Fußzeile (T-97)', () => {
   /** Zielfeld der Testzeile probeweise setzen; die Bargeldzeile hält 90 %. */
-  async function setAssetTarget(row: Awaited<ReturnType<typeof renderPlan>>, targetPercent: number) {
+  async function setAssetTarget(
+    row: Awaited<ReturnType<typeof renderPlan>>,
+    targetPercent: number,
+  ) {
     row.findAllComponents(UxInlineNumber)[0]!.vm.$emit('commit', targetPercent)
     await flushPromises()
     return wrapper!.find('tfoot .reb__foot-target')
@@ -139,9 +172,13 @@ describe('Zielsumme in der Fußzeile (T-97)', () => {
 
   it('steht unter der Spalte „Ziel %“', async () => {
     await renderPlan()
-    const headers = wrapper!.findAll('thead th').map(cell => cell.text())
+    const headers = wrapper!.findAll('thead th').map((cell) => cell.text())
     const footCells = wrapper!.findAll('tfoot td')
-    const column = footCells.slice(0, footCells.findIndex(cell => cell.classes('reb__foot-target')))
+    const column = footCells
+      .slice(
+        0,
+        footCells.findIndex((cell) => cell.classes('reb__foot-target')),
+      )
       .reduce((sum, cell) => sum + Number(cell.attributes('colspan') ?? 1), 0)
     expect(headers[column]).toBe(i18n.global.t('table.targetPercent'))
   })
@@ -197,7 +234,7 @@ describe('Zielsumme in der Fußzeile (T-97)', () => {
     await renderPlan()
     const portfolio = usePortfolioStore().portfolio!
     // Nur Bargeld: Die Ziele ergeben 90 %, gelten aber noch als leeres Depot.
-    portfolio.positions = portfolio.positions.filter(position => position.group === 'cash')
+    portfolio.positions = portfolio.positions.filter((position) => position.group === 'cash')
     await flushPromises()
     expect(wrapper!.find('tfoot .reb__foot-target').exists()).toBe(false)
     expect(document.body.textContent).not.toContain('Ziele ergeben nicht 100 %')

@@ -28,13 +28,18 @@ export interface ConvertedPrice {
   fx: FxRate | null
 }
 
-export function convertedPrice(quote: QuoteCacheEntry | null, target: string, rates: FxMap): ConvertedPrice | null {
+export function convertedPrice(
+  quote: QuoteCacheEntry | null,
+  target: string,
+  rates: FxMap,
+): ConvertedPrice | null {
   if (!quote || !Number.isFinite(quote.price) || quote.price <= 0) return null
   const base = majorCurrency(quote.currency)
   const scale = quote.currency === 'GBp' ? 0.01 : 1
   if (base === target) return { price: quote.price * scale, rate: scale, fx: null }
   const fx = rates.get(fxKey(base, target))
-  if (!fx || fx.base !== base || fx.quote !== target || !Number.isFinite(fx.rate) || fx.rate <= 0) return null
+  if (!fx || fx.base !== base || fx.quote !== target || !Number.isFinite(fx.rate) || fx.rate <= 0)
+    return null
   const rate = scale * fx.rate
   const price = quote.price * rate
   return Number.isFinite(price) && price > 0 ? { price, rate, fx } : null

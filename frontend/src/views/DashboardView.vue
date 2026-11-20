@@ -57,9 +57,7 @@ const failures = computed(() => quotesStore.failures)
 
 const initialLoading = ref(true)
 const demoLoading = ref(false)
-const ready = computed(() =>
-  portfolioStore.loaded && settingsStore.loaded && !initialLoading.value,
-)
+const ready = computed(() => portfolioStore.loaded && settingsStore.loaded && !initialLoading.value)
 const hasHoldings = computed(() => portfolioStore.hasHoldings)
 
 /** Lädt das Beispiel-Depot und holt gleich die passenden Kurse. */
@@ -75,11 +73,15 @@ async function onLoadDemo(): Promise<void> {
 }
 
 const { result, fx, loadFx, retryFx } = usePortfolioValuation()
-const visibleGroups = computed(() => (result.value?.groups ?? []).filter(
-  group => group.actualPercent !== 0 || group.targetPercent !== 0,
-))
+const visibleGroups = computed(() =>
+  (result.value?.groups ?? []).filter(
+    (group) => group.actualPercent !== 0 || group.targetPercent !== 0,
+  ),
+)
 const positionsTable = ref<InstanceType<typeof PositionsTable> | null>(null)
-const positionGroupCount = computed(() => new Set(result.value?.rows.map(row => row.position.group) ?? []).size)
+const positionGroupCount = computed(
+  () => new Set(result.value?.rows.map((row) => row.position.group) ?? []).size,
+)
 
 function collapsePositionGroups(): void {
   positionsTable.value?.collapseAllGroups()
@@ -129,12 +131,15 @@ const foreignCurrencyRows = computed(() =>
  * das Papier notiert in fremder Währung. In beiden Fällen fehlt der Position
  * ein Marktwert in der Basiswährung, und sie zählt in keine Summe.
  */
-const incompleteCount = computed(() => new Set([
-  ...failures.value.map(failure => failure.key),
-  ...(result.value?.rows ?? [])
-    .filter(row => row.position.enabled && row.excludedReason !== null)
-    .map(row => quoteKey(row.position)),
-]).size)
+const incompleteCount = computed(
+  () =>
+    new Set([
+      ...failures.value.map((failure) => failure.key),
+      ...(result.value?.rows ?? [])
+        .filter((row) => row.position.enabled && row.excludedReason !== null)
+        .map((row) => quoteKey(row.position)),
+    ]).size,
+)
 
 /*
  * Positiv formuliert: Der Normalfall ist „Vollständig", nicht „keine
@@ -324,17 +329,28 @@ const valueChartOpen = ref<boolean>(false)
 const valueHistoryLoading = ref<boolean>(false)
 
 /** Bestände mit ihrem Kursverlauf — Grundlage des Rückblicks. */
-const needsHistoricalFx = computed(() => (result.value?.rows ?? []).some(row => row.position.enabled && row.quote && majorCurrency(row.quote.currency) !== row.baseCurrency))
-const completeValuation = computed(() => !!result.value && result.value.rows.every(row => !row.position.enabled || row.isActive))
+const needsHistoricalFx = computed(() =>
+  (result.value?.rows ?? []).some(
+    (row) =>
+      row.position.enabled && row.quote && majorCurrency(row.quote.currency) !== row.baseCurrency,
+  ),
+)
+const completeValuation = computed(
+  () => !!result.value && result.value.rows.every((row) => !row.position.enabled || row.isActive),
+)
 const backtestInputs = computed<BacktestInput[]>(() =>
-  needsHistoricalFx.value || !completeValuation.value ? [] :
-  (result.value?.rows ?? [])
-    .filter((row) => row.isActive)
-    .map((row) => ({
-      units: row.position.units,
-      points: historyStore.get(row.position, BACKTEST_PERIOD).points.map(point => ({ ...point, close: row.quote?.currency === 'GBp' ? point.close / 100 : point.close })),
-      constantValue: row.marketValue,
-    })),
+  needsHistoricalFx.value || !completeValuation.value
+    ? []
+    : (result.value?.rows ?? [])
+        .filter((row) => row.isActive)
+        .map((row) => ({
+          units: row.position.units,
+          points: historyStore.get(row.position, BACKTEST_PERIOD).points.map((point) => ({
+            ...point,
+            close: row.quote?.currency === 'GBp' ? point.close / 100 : point.close,
+          })),
+          constantValue: row.marketValue,
+        })),
 )
 
 /**
@@ -396,8 +412,13 @@ onMounted(async () => {
    * beim kalten Start ohne jeden Kurs bleibt die Ladeanzeige, bis der erste
    * Durchgang Werte geholt hat.
    */
-  const priced = portfolioStore.positions.filter((position) => position.enabled && position.group !== 'cash')
-  if (priced.length === 0 || priced.some((position) => quotesStore.quotes.has(quoteKey(position)))) {
+  const priced = portfolioStore.positions.filter(
+    (position) => position.enabled && position.group !== 'cash',
+  )
+  if (
+    priced.length === 0 ||
+    priced.some((position) => quotesStore.quotes.has(quoteKey(position)))
+  ) {
     initialLoading.value = false
   }
 
@@ -437,12 +458,17 @@ async function recordCurrentValue(): Promise<void> {
   await valueHistory.record(portfolio.id, result.value?.total ?? 0, baseCurrencyOf(portfolio))
 }
 
-watch(() => [result.value, fx.loading], () => {
-  valueHistory.computeBacktest(backtestInputs.value)
-  void recordCurrentValue()
-})
+watch(
+  () => [result.value, fx.loading],
+  () => {
+    valueHistory.computeBacktest(backtestInputs.value)
+    void recordCurrentValue()
+  },
+)
 // Einzelne Quellen: Ein neu geladenes, gleiches Depot stößt nichts an (T-83).
-watch([() => portfolioStore.portfolio?.id, () => portfolioStore.portfolio?.baseCurrency], () => { if (ready.value) void loadValueHistory() })
+watch([() => portfolioStore.portfolio?.id, () => portfolioStore.portfolio?.baseCurrency], () => {
+  if (ready.value) void loadValueHistory()
+})
 
 watch(groupsCollapsed, (collapsed) => {
   safeStorage.write(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')
@@ -452,15 +478,21 @@ function toggleGroups(): void {
   groupsCollapsed.value = !groupsCollapsed.value
 }
 const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
-
 </script>
 
 <template>
   <div class="dashboard" :aria-busy="!ready">
     <FxNotice v-if="ready" :result="result" :loading="fx.loading" @retry="retryFx" />
-    <p v-if="ready && needsHistoricalFx" class="dashboard__history-note">{{ t('fx.historyUnavailable') }}</p>
+    <p v-if="ready && needsHistoricalFx" class="dashboard__history-note">
+      {{ t('fx.historyUnavailable') }}
+    </p>
     <!-- Platzhalter halten den Aufbau stabil, bis Depot und Bewertung geladen sind. -->
-    <div v-if="!ready" class="dashboard__loading" role="status" :aria-label="t('dashboard.loading')">
+    <div
+      v-if="!ready"
+      class="dashboard__loading"
+      role="status"
+      :aria-label="t('dashboard.loading')"
+    >
       <div class="dashboard__loading-kpis" aria-hidden="true">
         <div v-for="index in 4" :key="index" class="dashboard__loading-kpi">
           <span class="dashboard__loading-line dashboard__loading-line--short" />
@@ -491,7 +523,11 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
             <NButton size="small" secondary :loading="demoLoading" @click="onLoadDemo">
               {{ t('dashboard.loadDemo') }}
             </NButton>
-            <NButton size="small" secondary @click="router.push({ path: '/settings', query: { tab: 'backup' } })">
+            <NButton
+              size="small"
+              secondary
+              @click="router.push({ path: '/settings', query: { tab: 'backup' } })"
+            >
               {{ t('backup.restore') }}
             </NButton>
           </div>
@@ -529,7 +565,9 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
           anchor="reserve"
           settings-tab="calc"
           :value="percent(result.liquidity.investmentReservePercent)"
-          :hint="t('kpi.securityBufferHint', { buffer: formatMoney(result.liquidity.securityBuffer) })"
+          :hint="
+            t('kpi.securityBufferHint', { buffer: formatMoney(result.liquidity.securityBuffer) })
+          "
         />
         <!--
           Beschreibt die Datenlage, nicht die Lage zum Ziel: Ein „Below" in der
@@ -593,18 +631,18 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
                 v-for="group in visibleGroups"
                 :key="group.group"
                 class="dashboard__summary-item"
-                :class="group.suggestion === 'ok' ? 'dashboard__summary-item--ok' : 'dashboard__summary-item--flagged'"
+                :class="
+                  group.suggestion === 'ok'
+                    ? 'dashboard__summary-item--ok'
+                    : 'dashboard__summary-item--flagged'
+                "
               >
                 {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
               </span>
             </span>
           </button>
 
-          <div
-            v-show="!groupsCollapsed"
-            id="dashboard-groups-panel"
-            class="dashboard__group-list"
-          >
+          <div v-show="!groupsCollapsed" id="dashboard-groups-panel" class="dashboard__group-list">
             <GroupBar v-for="group in visibleGroups" :key="group.group" :group="group" />
           </div>
         </section>
@@ -617,10 +655,22 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
                 {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
               </h2>
               <div v-if="!isCompact && positionGroupCount > 1" class="dashboard__group-actions">
-                <button type="button" class="dashboard__group-action" :aria-label="t('table.collapseAllGroups')" :title="t('table.collapseAllGroups')" @click="collapsePositionGroups">
+                <button
+                  type="button"
+                  class="dashboard__group-action"
+                  :aria-label="t('table.collapseAllGroups')"
+                  :title="t('table.collapseAllGroups')"
+                  @click="collapsePositionGroups"
+                >
                   <GroupActionIcon class="dashboard__group-symbol" action="collapse" />
                 </button>
-                <button type="button" class="dashboard__group-action" :aria-label="t('table.expandAllGroups')" :title="t('table.expandAllGroups')" @click="openPositionGroups">
+                <button
+                  type="button"
+                  class="dashboard__group-action"
+                  :aria-label="t('table.expandAllGroups')"
+                  :title="t('table.expandAllGroups')"
+                  @click="openPositionGroups"
+                >
                   <GroupActionIcon class="dashboard__group-symbol" action="expand" />
                 </button>
               </div>
@@ -651,9 +701,7 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
                   />
                 </template>
                 <span v-if="result.schedule.active" class="dashboard__schedule">
-                  <span :class="{ 'dashboard__due': result.schedule.due }">{{
-                    scheduleLabel
-                  }}</span>
+                  <span :class="{ dashboard__due: result.schedule.due }">{{ scheduleLabel }}</span>
                   <InfoHint
                     :text="t('hints.trigger')"
                     anchor="trigger"
@@ -669,7 +717,12 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
             </div>
           </div>
 
-          <PositionCardList v-if="isCompact" :rows="result.rows" :groups="result.groups" :links="settingsStore.settings.links" />
+          <PositionCardList
+            v-if="isCompact"
+            :rows="result.rows"
+            :groups="result.groups"
+            :links="settingsStore.settings.links"
+          />
 
           <PositionsTable
             v-else
@@ -693,7 +746,7 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
       v-model:show="showAddDialog"
       :available="instrumentsStore.allowedInstruments"
       :existing-keys="existingKeys"
-      :allow-cash="!portfolioStore.positions.some(position => position.group === 'cash')"
+      :allow-cash="!portfolioStore.positions.some((position) => position.group === 'cash')"
       :remaining-target-percent="remainingTargetPercent"
       :validate-instrument="validateNewInstrument"
       @add="onAddPosition"
@@ -724,11 +777,16 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     display: grid;
     grid-template-columns: 1fr;
 
-    @include up(sm) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    @include up(lg) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @include up(sm) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @include up(lg) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
-  &__loading-kpi, &__loading-table {
+  &__loading-kpi,
+  &__loading-table {
     @include stack(var(--space-4));
 
     padding: var(--space-4);
@@ -736,8 +794,12 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     border-radius: var(--radius-sm);
   }
 
-  &__loading-kpi { min-height: 7rem; }
-  &__loading-table { min-height: 16rem; }
+  &__loading-kpi {
+    min-height: 7rem;
+  }
+  &__loading-table {
+    min-height: 16rem;
+  }
 
   &__loading-line {
     display: block;
@@ -746,13 +808,23 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     border-radius: var(--radius-sm);
     background-color: token(--border-subtle);
 
-    &--short { width: 35%; }
-    &--value { width: 65%; height: 1.5rem; }
+    &--short {
+      width: 35%;
+    }
+    &--value {
+      width: 65%;
+      height: 1.5rem;
+    }
   }
 
-  &__loading-caption { color: token(--text-secondary); font-size: var(--font-sm); }
+  &__loading-caption {
+    color: token(--text-secondary);
+    font-size: var(--font-sm);
+  }
 
-  &__empty { padding: var(--space-8) 0; }
+  &__empty {
+    padding: var(--space-8) 0;
+  }
 
   &__empty-actions {
     @include stack(var(--space-3));
@@ -783,8 +855,12 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     display: grid;
     grid-template-columns: 1fr;
 
-    @include up(sm) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    @include up(lg) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @include up(sm) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @include up(lg) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   /*
@@ -804,13 +880,17 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
    * — Polster plus Blockabstand — und die Kopfzeile hing bei ihrer Nachbarin
    * statt bei ihrem Inhalt.
    */
-  &__table-area { @include stack(0); }
+  &__table-area {
+    @include stack(0);
+  }
 
   &__groups {
     display: none;
     border-top: 1px solid token(--border-default);
 
-    @include up(md) { display: block; }
+    @include up(md) {
+      display: block;
+    }
   }
 
   &__groups-toggle {
@@ -822,9 +902,10 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     color: token(--text-secondary);
     transition: color 0.15s ease;
 
-    &:hover { color: token(--text-primary); }
+    &:hover {
+      color: token(--text-primary);
+    }
   }
-
 
   &__section-title {
     font-size: var(--font-xs);
@@ -843,10 +924,16 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
   &__summary-item {
     display: none;
 
-    @include up(sm) { display: inline; }
+    @include up(sm) {
+      display: inline;
+    }
 
-    &--ok { @include muted(null); }
-    &--flagged { color: token(--status-near); }
+    &--ok {
+      @include muted(null);
+    }
+    &--flagged {
+      color: token(--status-near);
+    }
   }
 
   &__group-list {
@@ -854,7 +941,9 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
     padding-bottom: var(--space-4);
 
-    > * + * { border-top: 1px solid token(--border-subtle); }
+    > * + * {
+      border-top: 1px solid token(--border-subtle);
+    }
   }
 
   &__panel {
@@ -893,8 +982,12 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     color: token(--text-secondary);
   }
 
-  &__panel-heading { @include row(var(--space-2)); }
-  &__group-actions { @include row(0); }
+  &__panel-heading {
+    @include row(var(--space-2));
+  }
+  &__group-actions {
+    @include row(0);
+  }
 
   &__group-action {
     display: inline-grid;
@@ -905,20 +998,39 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     color: token(--text-muted);
     cursor: pointer;
 
-    &:hover { color: token(--text-primary); }
-    &:focus-visible { outline: 2px solid token(--text-primary); outline-offset: 2px; }
+    &:hover {
+      color: token(--text-primary);
+    }
+    &:focus-visible {
+      outline: 2px solid token(--text-primary);
+      outline-offset: 2px;
+    }
   }
 
-  &__group-symbol { display: block; width: 1rem; height: 1rem; }
+  &__group-symbol {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+  }
 
-  &__panel-meta { @include row(1.25rem); }
+  &__panel-meta {
+    @include row(1.25rem);
+  }
 
-  &__bands { @include muted; }
+  &__bands {
+    @include muted;
+  }
 
-  &__hint { margin-left: var(--space-1); }
+  &__hint {
+    margin-left: var(--space-1);
+  }
 
-  &__schedule { margin-left: var(--space-2); }
+  &__schedule {
+    margin-left: var(--space-2);
+  }
 
-  &__due { color: token(--status-out); }
+  &__due {
+    color: token(--status-out);
+  }
 }
 </style>

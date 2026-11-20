@@ -50,7 +50,10 @@ function mockClient() {
     { date: '2026-08-02', close: 55, currency: 'EUR' },
   ])
   return {
-    client: { getDailyHistory: byIsin, getDailyHistoryBySymbol: bySymbol } as unknown as StockInfoClient,
+    client: {
+      getDailyHistory: byIsin,
+      getDailyHistoryBySymbol: bySymbol,
+    } as unknown as StockInfoClient,
     byIsin,
     bySymbol,
   }
@@ -73,7 +76,9 @@ describe('isFromToday', () => {
   })
 
   it('erkennt den Vortag', () => {
-    expect(isFromToday('2026-08-10T23:59:00.000Z', new Date('2026-08-11T00:01:00.000Z'))).toBe(false)
+    expect(isFromToday('2026-08-10T23:59:00.000Z', new Date('2026-08-11T00:01:00.000Z'))).toBe(
+      false,
+    )
   })
 })
 

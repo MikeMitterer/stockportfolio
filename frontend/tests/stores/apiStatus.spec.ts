@@ -223,7 +223,8 @@ describe('useApiStatusStore — Adresse des Fehlschlags', () => {
 describe('useApiStatusStore — ensureChecked neben laufendem check', () => {
   it('startet keinen zweiten Health-Check, wenn schon einer läuft', async () => {
     const client = clientWith(
-      () => new Promise((resolve) => setTimeout(() => resolve({ status: 'ok', version: '1.0' }), 20)),
+      () =>
+        new Promise((resolve) => setTimeout(() => resolve({ status: 'ok', version: '1.0' }), 20)),
     )
     const store = useApiStatusStore()
 
@@ -240,7 +241,10 @@ describe('useApiStatusStore — ensureChecked neben laufendem check', () => {
     const client = clientWith(
       () =>
         new Promise((_resolve, reject) =>
-          setTimeout(() => reject(new ApiError(0, 'Failed to fetch', 'https://x.example/health')), 20),
+          setTimeout(
+            () => reject(new ApiError(0, 'Failed to fetch', 'https://x.example/health')),
+            20,
+          ),
         ),
     )
     const store = useApiStatusStore()

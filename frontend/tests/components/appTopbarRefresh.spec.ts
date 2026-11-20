@@ -37,8 +37,13 @@ async function topbar(refreshing: boolean, role: PortfolioUser['role'] = 'user')
       plugins: [router],
       provide: {
         [AUTH_USER as symbol]: ref<PortfolioUser>({
-          id: 'user-1', username: 'mike', role, active: true, mustChangePassword: false,
-          isSetupAccount: false, legacyImported: false,
+          id: 'user-1',
+          username: 'mike',
+          role,
+          active: true,
+          mustChangePassword: false,
+          isSetupAccount: false,
+          legacyImported: false,
         }),
         [AUTH_LOGOUT as symbol]: async () => {},
       },

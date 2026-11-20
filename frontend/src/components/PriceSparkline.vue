@@ -36,7 +36,9 @@ const line = computed(() => buildSparkline(props.points, props.width, props.heig
  * Grün und Rot heißen hier „gestiegen" und „gefallen" — nicht „gut" und
  * „schlecht". Für den Handlungsbedarf gibt es die Statusspalte.
  */
-const stroke = computed(() => (line.value.rising ? 'rgb(var(--status-ok))' : 'rgb(var(--status-out))'))
+const stroke = computed(() =>
+  line.value.rising ? 'rgb(var(--status-ok))' : 'rgb(var(--status-out))',
+)
 
 const label = computed(() => percentSigned(line.value.changePercent))
 </script>
@@ -114,9 +116,15 @@ const label = computed(() => percentSigned(line.value.changePercent))
     font-size: 0.6875rem;
     text-align: right;
 
-    &--rising { color: token(--status-ok); }
-    &--falling { color: token(--status-out); }
-    &--empty { @include muted(null); }
+    &--rising {
+      color: token(--status-ok);
+    }
+    &--falling {
+      color: token(--status-out);
+    }
+    &--empty {
+      @include muted(null);
+    }
   }
 }
 </style>

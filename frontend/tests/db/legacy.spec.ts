@@ -11,21 +11,35 @@ beforeEach(async () => {
   await deleteDB(DB_NAME)
 })
 
-afterEach(async () => { await closeDb() })
+afterEach(async () => {
+  await closeDb()
+})
 
 describe('besitzerloser Browserbestand', () => {
   it('liest Depot und Einstellungen und verwirft nur private Altbestandsdaten', async () => {
     const portfolio: Portfolio = {
-      id: 'old-portfolio', name: 'Alt', positions: [],
-      createdAt: '2026-09-01T00:00:00.000Z', updatedAt: '2026-09-01T00:00:00.000Z',
+      id: 'old-portfolio',
+      name: 'Alt',
+      positions: [],
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-01T00:00:00.000Z',
     }
     await new PortfolioRepository().save(portfolio)
     await new SettingsRepository().save(defaultSettings(portfolio.id))
     await new QuoteCacheRepository().put('IE0000000001', {
       identity: { kind: 'isin_only', isin: 'IE0000000001' },
-      isin: 'IE0000000001', symbol: 'OLD', price: 100, currency: 'EUR',
-      type: null, volatility: null, name: null, ter: null, accumulating: null,
-      fetchedAt: '2026-09-01T00:00:00.000Z', cached: true, stale: false,
+      isin: 'IE0000000001',
+      symbol: 'OLD',
+      price: 100,
+      currency: 'EUR',
+      type: null,
+      volatility: null,
+      name: null,
+      ter: null,
+      accumulating: null,
+      fetchedAt: '2026-09-01T00:00:00.000Z',
+      cached: true,
+      stale: false,
     })
 
     const legacy = await readLegacyData()

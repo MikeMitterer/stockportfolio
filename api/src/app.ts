@@ -12,9 +12,17 @@ export interface ServerOptions extends ApiOptions {
   sessionIdleMs?: number
 }
 
-export function createServerApp(repository: AccountRepository, options: ServerOptions): Hono<{ Bindings: HttpBindings }> {
+export function createServerApp(
+  repository: AccountRepository,
+  options: ServerOptions,
+): Hono<{ Bindings: HttpBindings }> {
   const app = new Hono<{ Bindings: HttpBindings }>()
-  const service = new AccountService(repository, options.setupCodeHash, Date.now, options.sessionIdleMs)
+  const service = new AccountService(
+    repository,
+    options.setupCodeHash,
+    Date.now,
+    options.sessionIdleMs,
+  )
 
   app.get('/healthz', (context) => context.json({ status: 'ok' }))
   app.get('/admin/users', (context) => context.redirect('/#/admin/users', 302))

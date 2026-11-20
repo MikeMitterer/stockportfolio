@@ -147,9 +147,9 @@ describe('instrumentToQuoteCacheEntry', () => {
   })
 
   it('weist fehlende Kurswährung auch bei bekannter Instrumentwährung ab', () => {
-    expect(() => instrumentToQuoteCacheEntry(
-      instrument({ currency: 'USD', latest_currency: null }),
-    )).toThrow('latest_currency')
+    expect(() =>
+      instrumentToQuoteCacheEntry(instrument({ currency: 'USD', latest_currency: null })),
+    ).toThrow('latest_currency')
   })
 })
 

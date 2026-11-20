@@ -7,18 +7,27 @@ import AddPositionDialog from '@/components/AddPositionDialog.vue'
 import { translate } from '@/i18n'
 
 beforeEach(() => setActivePinia(createPinia()))
-afterEach(() => { document.body.innerHTML = '' })
+afterEach(() => {
+  document.body.innerHTML = ''
+})
 
 describe('Verrechnungskonto hinzufügen', () => {
   it('nimmt Cash ohne Wertpapierkatalog und ohne Kursprüfung auf', async () => {
     const validateInstrument = vi.fn(async () => {})
-    const wrapper = mount(AddPositionDialog, { props: {
-      show: true, available: [], existingKeys: [], remainingTargetPercent: 10,
-      allowCash: true, validateInstrument,
-    } })
+    const wrapper = mount(AddPositionDialog, {
+      props: {
+        show: true,
+        available: [],
+        existingKeys: [],
+        remainingTargetPercent: 10,
+        allowCash: true,
+        validateInstrument,
+      },
+    })
     await flushPromises()
-    const cashChoice = [...document.querySelectorAll('label')]
-      .find(label => label.textContent?.includes(translate('seed.cashAccount')))
+    const cashChoice = [...document.querySelectorAll('label')].find((label) =>
+      label.textContent?.includes(translate('seed.cashAccount')),
+    )
     expect(cashChoice).toBeDefined()
     cashChoice!.click()
     await flushPromises()
@@ -31,8 +40,9 @@ describe('Verrechnungskonto hinzufügen', () => {
     inputs[1]!.dispatchEvent(new Event('input', { bubbles: true }))
     inputs[1]!.dispatchEvent(new Event('blur'))
     await flushPromises()
-    const submit = [...document.querySelectorAll('button')]
-      .find(button => button.textContent === translate('actions.addPosition'))!
+    const submit = [...document.querySelectorAll('button')].find(
+      (button) => button.textContent === translate('actions.addPosition'),
+    )!
     submit.click()
     await flushPromises()
     expect(wrapper.emitted('add-cash')?.[0]?.[0]).toEqual({ units: 500.25, targetPercent: 10 })

@@ -96,7 +96,10 @@ describe('buildBacktest', () => {
     const random = seededRandom(92)
     const inputs: BacktestInput[] = Array.from({ length: 8 }, (_, index) => ({
       units: Math.round(random() * 1000) / 7,
-      points: tradingDays(2018 + (index % 3), 2026, random, 0.08).map((date) => ({ date, close: 10 + random() * 500 })),
+      points: tradingDays(2018 + (index % 3), 2026, random, 0.08).map((date) => ({
+        date,
+        close: 10 + random() * 500,
+      })),
     }))
     inputs.push({ units: 3, points: [], constantValue: 1234.56 })
 
@@ -130,11 +133,21 @@ function seededRandom(seed: number): () => number {
 }
 
 /** Werktage vom 1. Januar `fromYear` bis Jahresende `toYear`; `gapRate` lässt Tage zufällig aus. */
-function tradingDays(fromYear: number, toYear: number, random: () => number, gapRate: number): string[] {
+function tradingDays(
+  fromYear: number,
+  toYear: number,
+  random: () => number,
+  gapRate: number,
+): string[] {
   const days: string[] = []
-  for (let day = new Date(Date.UTC(fromYear, 0, 1)); day.getUTCFullYear() <= toYear; day.setUTCDate(day.getUTCDate() + 1)) {
+  for (
+    let day = new Date(Date.UTC(fromYear, 0, 1));
+    day.getUTCFullYear() <= toYear;
+    day.setUTCDate(day.getUTCDate() + 1)
+  ) {
     const weekday = day.getUTCDay()
-    if (weekday !== 0 && weekday !== 6 && random() >= gapRate) days.push(day.toISOString().slice(0, 10))
+    if (weekday !== 0 && weekday !== 6 && random() >= gapRate)
+      days.push(day.toISOString().slice(0, 10))
   }
   return days
 }
@@ -168,7 +181,10 @@ function previousBuildBacktest(inputs: BacktestInput[]): HistoryPoint[] {
     date,
     close:
       constant +
-      priced.reduce((sum, input) => sum + input.units * (closeOnOrBefore(input.points, date) ?? 0), 0),
+      priced.reduce(
+        (sum, input) => sum + input.units * (closeOnOrBefore(input.points, date) ?? 0),
+        0,
+      ),
   }))
 }
 

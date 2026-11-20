@@ -72,7 +72,13 @@ function validRaw(mutate: (data: Record<string, unknown>) => void = () => {}): s
 
 describe('buildBackup', () => {
   it('kennzeichnet die Datei, damit fremdes JSON nicht durchrutscht', () => {
-    const backup = buildBackup(makePortfolio(), defaultSettings('d'), makeAllowlist(), '0.1.0', 'jetzt')
+    const backup = buildBackup(
+      makePortfolio(),
+      defaultSettings('d'),
+      makeAllowlist(),
+      '0.1.0',
+      'jetzt',
+    )
 
     expect(backup.kind).toBe(BACKUP_KIND)
     expect(backup.schemaVersion).toBe(BACKUP_SCHEMA_VERSION)
@@ -140,10 +146,15 @@ describe('parseBackup — der gute Fall', () => {
   })
 
   it('bewahrt die Gruppenfassung und Verweisfilter für eine spätere Wiederherstellung', () => {
-    const portfolio = { ...makePortfolio([makePosition({ group: 'stocks', kind: 'etf' })]), assetGroupVersion: 2 as const }
+    const portfolio = {
+      ...makePortfolio([makePosition({ group: 'stocks', kind: 'etf' })]),
+      assetGroupVersion: 2 as const,
+    }
     const settings = defaultSettings('depot-1')
     settings.links[0]!.appliesToGroups = ['bonds']
-    const raw = JSON.stringify(buildBackup(portfolio, settings, makeAllowlist(), '0.2.0', '2026-09-25T00:00:00.000Z'))
+    const raw = JSON.stringify(
+      buildBackup(portfolio, settings, makeAllowlist(), '0.2.0', '2026-09-25T00:00:00.000Z'),
+    )
     const result = parseBackup(raw)
     expect(result.ok).toBe(true)
     if (!result.ok) return
@@ -212,7 +223,9 @@ describe('parseBackup — der gute Fall', () => {
 
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    expect(result.backup.valueHistory).toEqual([{ date: '2026-08-09', total: 160000, currency: 'EUR' }])
+    expect(result.backup.valueHistory).toEqual([
+      { date: '2026-08-09', total: 160000, currency: 'EUR' },
+    ])
   })
 
   it('nimmt ein Backup ohne Tageswerte an', () => {
@@ -420,36 +433,63 @@ describe('Freigabeliste', () => {
   })
 })
 
-
 describe('Depotwährung und Geldschwellen in Backups', () => {
-  it.each([null, {}, { securityBuffer: { mode: 'absolute', value: -1 }, minTradeSize: { mode: 'absolute', value: 0 } }, { securityBuffer: { mode: 'absolute', value: 300 }, minTradeSize: { mode: 'other', value: 20 } }])('lehnt fehlerhafte Geldschwellen ab statt sie still auf null zu setzen', amountSettings => {
-    const result = parseBackup(validRaw(data => {
-      Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
-    }))
+  it.each([
+    null,
+    {},
+    {
+      securityBuffer: { mode: 'absolute', value: -1 },
+      minTradeSize: { mode: 'absolute', value: 0 },
+    },
+    {
+      securityBuffer: { mode: 'absolute', value: 300 },
+      minTradeSize: { mode: 'other', value: 20 },
+    },
+  ])('lehnt fehlerhafte Geldschwellen ab statt sie still auf null zu setzen', (amountSettings) => {
+    const result = parseBackup(
+      validRaw((data) => {
+        Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
+      }),
+    )
     expect(result).toEqual({ ok: false, error: { key: 'invalidAmountSettings' } })
   })
 
   it('erhält USD-Geldschwellen und gekennzeichnete Währungsreihen', () => {
-    const amountSettings = { securityBuffer: { mode: 'absolute', value: 300 }, minTradeSize: { mode: 'absolute', value: 20 } }
-    const result = parseBackup(validRaw(data => {
-      Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
-      data.valueHistory = [{ date: '2026-09-01', total: 100, currency: 'USD' }, { date: '2026-09-02', total: 90, currency: 'EUR' }, { date: '2026-09-03', total: 80 }]
-    }))
+    const amountSettings = {
+      securityBuffer: { mode: 'absolute', value: 300 },
+      minTradeSize: { mode: 'absolute', value: 20 },
+    }
+    const result = parseBackup(
+      validRaw((data) => {
+        Object.assign(data.portfolio as object, { baseCurrency: 'USD', amountSettings })
+        data.valueHistory = [
+          { date: '2026-09-01', total: 100, currency: 'USD' },
+          { date: '2026-09-02', total: 90, currency: 'EUR' },
+          { date: '2026-09-03', total: 80 },
+        ]
+      }),
+    )
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.backup.portfolio.baseCurrency).toBe('USD')
     expect(result.backup.portfolio.amountSettings).toEqual(amountSettings)
-    expect(result.backup.valueHistory).toEqual([{ date: '2026-09-01', total: 100, currency: 'USD' }, { date: '2026-09-02', total: 90, currency: 'EUR' }])
+    expect(result.backup.valueHistory).toEqual([
+      { date: '2026-09-01', total: 100, currency: 'USD' },
+      { date: '2026-09-02', total: 90, currency: 'EUR' },
+    ])
   })
 })
-
 
 describe('Dynamische Typen in Backups', () => {
   it('erhält neue Positions-Typen und Linkfilter unverändert', () => {
     const portfolio = makePortfolio([makePosition({ kind: 'future-type' })])
     const settings = defaultSettings('depot-1')
     settings.links[0]!.appliesTo = ['fund', 'future-type']
-    const result = parseBackup(JSON.stringify(buildBackup(portfolio, settings, makeAllowlist(), '0.2.0', '2026-09-26T00:00:00Z')))
+    const result = parseBackup(
+      JSON.stringify(
+        buildBackup(portfolio, settings, makeAllowlist(), '0.2.0', '2026-09-26T00:00:00Z'),
+      ),
+    )
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.backup.portfolio.positions[0]?.kind).toBe('future-type')

@@ -51,7 +51,10 @@ function row(group: AssetGroup): PositionResult {
   return {
     position: position(group),
     quote: null,
-    basePrice: null, baseCurrency: 'EUR', originalMarketValue: 0, fx: null,
+    basePrice: null,
+    baseCurrency: 'EUR',
+    originalMarketValue: 0,
+    fx: null,
     marketValue: 1000,
     actualPercent: 33,
     targetValue: 1000,
@@ -186,11 +189,11 @@ describe('Spaltenkopfzeile der Positionstabelle', () => {
 
     wrapper.vm.collapseAllGroups()
     await wrapper.vm.$nextTick()
-    expect(tables(wrapper).every(entry => !entry.visible)).toBe(true)
+    expect(tables(wrapper).every((entry) => !entry.visible)).toBe(true)
     expect(JSON.parse(localStorage.getItem(COLLAPSED_KEY) ?? '[]')).toEqual(GROUPS)
 
     wrapper.vm.openAllGroups()
     await wrapper.vm.$nextTick()
-    expect(tables(wrapper).every(entry => entry.visible)).toBe(true)
+    expect(tables(wrapper).every((entry) => entry.visible)).toBe(true)
   })
 })

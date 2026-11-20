@@ -37,7 +37,11 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
 
   async function refreshQuotes(): Promise<void> {
     if (!quoteClient || !portfolio.portfolio) return
-    await quotes.loadQuotesIfStale(quoteClient, portfolio.positions, settings.settings.refresh.staleAfterMinutes)
+    await quotes.loadQuotesIfStale(
+      quoteClient,
+      portfolio.positions,
+      settings.settings.refresh.staleAfterMinutes,
+    )
   }
 
   /** Nach einem ausdrücklichen Kursabruf sehen andere Fenster desselben Kontos frische Kurse. */
@@ -45,15 +49,26 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     const dataClient = privateDataClient()
     if (!dataClient) return
     const revision = await dataClient.update<{ refreshedAt: string }>(
-      'quote-refresh', 'current', () => ({ refreshedAt: new Date().toISOString() }),
+      'quote-refresh',
+      'current',
+      () => ({ refreshedAt: new Date().toISOString() }),
       { conflictRetries: 2, reportConflict: false },
     )
     lastQuoteRevision = revision
   }
 
   async function refreshAnnouncedQuotes(): Promise<boolean> {
-    const resource = await privateDataClient()?.get<{ refreshedAt: string }>('quote-refresh', 'current')
-    if (!resource || resource.revision === lastQuoteRevision || !quoteClient || !portfolio.portfolio) return false
+    const resource = await privateDataClient()?.get<{ refreshedAt: string }>(
+      'quote-refresh',
+      'current',
+    )
+    if (
+      !resource ||
+      resource.revision === lastQuoteRevision ||
+      !quoteClient ||
+      !portfolio.portfolio
+    )
+      return false
     await quotes.loadQuotes(quoteClient, portfolio.positions)
     lastQuoteRevision = resource.revision
     return true
@@ -90,11 +105,25 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
       await settings.refreshFromServer()
       await selectActivePortfolio()
       await refreshQuotes()
-    } else if (event.kind === 'allowlist' && instruments.loaded && portfolio.portfolio?.id === event.resourceId) {
+    } else if (
+      event.kind === 'allowlist' &&
+      instruments.loaded &&
+      portfolio.portfolio?.id === event.resourceId
+    ) {
       await instruments.hydrateAllowlist()
-    } else if (event.kind === 'snapshots' && history.loaded && portfolio.portfolio?.id === event.resourceId) {
+    } else if (
+      event.kind === 'snapshots' &&
+      history.loaded &&
+      portfolio.portfolio?.id === event.resourceId
+    ) {
       await history.load(event.resourceId, baseCurrencyOf(portfolio.portfolio))
-    } else if (event.kind === 'quote-refresh' && event.resourceId === 'current' && event.revision !== lastQuoteRevision && quoteClient && portfolio.portfolio) {
+    } else if (
+      event.kind === 'quote-refresh' &&
+      event.resourceId === 'current' &&
+      event.revision !== lastQuoteRevision &&
+      quoteClient &&
+      portfolio.portfolio
+    ) {
       await quotes.loadQuotes(quoteClient, portfolio.positions)
       lastQuoteRevision = event.revision
     }
@@ -103,34 +132,45 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
   function queue(action: () => Promise<void>, showLoader = false): void {
     const queuedGeneration = generation
     let loaderStarted = false
-    const loaderTimer = showLoader ? setTimeout(() => {
-      if (queuedGeneration !== generation) return
-      loaderStarted = true
-      visiblePending += 1
-      syncing.value = true
-    }, 250) : null
-    pending = pending.catch(() => undefined).then(async () => {
-      if (queuedGeneration !== generation) return
-      await action()
-      // Nur ein erfolgreicher Gesamtabgleich holt alles Verpasste nach und hebt
-      // eine frühere Warnung auf. Ein einzelnes Ereignis, das womöglich gar
-      // nichts lädt, tut das nicht (T-85).
-      if (action === refreshAll && queuedGeneration === generation && streamConnected && status.value !== 'connected') {
-        setStatus('connected')
-      }
-    }).catch((error: unknown) => {
-      if (queuedGeneration !== generation) return
-      // Nur die Warnung: Der Strom steht womöglich weiter, der Ersatzabruf
-      // richtet sich allein nach ihm.
-      setStatus('disconnected')
-      console.error('Private data synchronization failed', error)
-    }).finally(() => {
-      if (loaderTimer !== null) clearTimeout(loaderTimer)
-      if (loaderStarted && queuedGeneration === generation) {
-        visiblePending -= 1
-        syncing.value = visiblePending > 0
-      }
-    })
+    const loaderTimer = showLoader
+      ? setTimeout(() => {
+          if (queuedGeneration !== generation) return
+          loaderStarted = true
+          visiblePending += 1
+          syncing.value = true
+        }, 250)
+      : null
+    pending = pending
+      .catch(() => undefined)
+      .then(async () => {
+        if (queuedGeneration !== generation) return
+        await action()
+        // Nur ein erfolgreicher Gesamtabgleich holt alles Verpasste nach und hebt
+        // eine frühere Warnung auf. Ein einzelnes Ereignis, das womöglich gar
+        // nichts lädt, tut das nicht (T-85).
+        if (
+          action === refreshAll &&
+          queuedGeneration === generation &&
+          streamConnected &&
+          status.value !== 'connected'
+        ) {
+          setStatus('connected')
+        }
+      })
+      .catch((error: unknown) => {
+        if (queuedGeneration !== generation) return
+        // Nur die Warnung: Der Strom steht womöglich weiter, der Ersatzabruf
+        // richtet sich allein nach ihm.
+        setStatus('disconnected')
+        console.error('Private data synchronization failed', error)
+      })
+      .finally(() => {
+        if (loaderTimer !== null) clearTimeout(loaderTimer)
+        if (loaderStarted && queuedGeneration === generation) {
+          visiblePending -= 1
+          syncing.value = visiblePending > 0
+        }
+      })
   }
 
   /*
@@ -159,11 +199,22 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
   async function onResource(event: ResourceEvent, eventsClient: LiveEventsClient): Promise<void> {
     const dataClient = privateDataClient()
     await dataClient?.whenIdle(event.kind, event.resourceId)
-    if (client !== eventsClient || dataClient?.wroteRevision(event.kind, event.resourceId, event.revision)) return
-    queue(() => refreshResource(event), event.kind === 'portfolio' || event.kind === 'settings' || event.kind === 'quote-refresh')
+    if (
+      client !== eventsClient ||
+      dataClient?.wroteRevision(event.kind, event.resourceId, event.revision)
+    )
+      return
+    queue(
+      () => refreshResource(event),
+      event.kind === 'portfolio' || event.kind === 'settings' || event.kind === 'quote-refresh',
+    )
   }
 
-  function start(eventsClient = new LiveEventsClient(), fallbackIntervalMs = 30_000, stockInfoClient?: StockInfoClient): void {
+  function start(
+    eventsClient = new LiveEventsClient(),
+    fallbackIntervalMs = 30_000,
+    stockInfoClient?: StockInfoClient,
+  ): void {
     stop()
     client = eventsClient
     quoteClient = stockInfoClient ?? null
@@ -181,7 +232,9 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
         streamConnected = false
         setStatus('disconnected')
       },
-      resource: (event) => { void onResource(event, eventsClient) },
+      resource: (event) => {
+        void onResource(event, eventsClient)
+      },
     })
     document.addEventListener('visibilitychange', onVisibilityChange)
   }

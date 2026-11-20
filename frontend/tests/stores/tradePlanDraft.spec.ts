@@ -9,13 +9,26 @@ import type { Portfolio, Position } from '@/types/portfolio'
 
 function position(id: string, units: number): Position {
   return {
-    id, isin: null, symbol: `${id}.DE`, displayName: id, group: 'stocks', kind: 'etf',
-    units, targetPercent: 50, enabled: true,
+    id,
+    isin: null,
+    symbol: `${id}.DE`,
+    displayName: id,
+    group: 'stocks',
+    kind: 'etf',
+    units,
+    targetPercent: 50,
+    enabled: true,
   }
 }
 
 function depot(id: string, positions: Position[]): Portfolio {
-  return { id, name: id, positions, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+  return {
+    id,
+    name: id,
+    positions,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  }
 }
 
 /** Setzt das gewählte Depot so, wie es Laden, Wechsel oder eine Bestandsänderung tun. */

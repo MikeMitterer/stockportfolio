@@ -27,7 +27,9 @@ import type { FxRate } from '@/types/fx'
 const { t, locale } = useI18n()
 const client = inject(STOCK_INFO_CLIENT, null)
 const fx = useFxStore()
-const pendingCurrency = ref<{ id: string; from: string; to: string; rate: FxRate | null } | null>(null)
+const pendingCurrency = ref<{ id: string; from: string; to: string; rate: FxRate | null } | null>(
+  null,
+)
 const currencyDialog = ref(false)
 const changeDescription = computed(() => {
   const pending = pendingCurrency.value
@@ -35,7 +37,10 @@ const changeDescription = computed(() => {
   const description = t('fx.changeConfirm', { from: pending.from, to: pending.to })
   if (!pending.rate) return description
   const rate = pending.rate
-  const time = new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(rate.quoteTime))
+  const time = new Intl.DateTimeFormat(locale.value, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(rate.quoteTime))
   return `${description} ${t('fx.changeRate', { from: rate.base, to: rate.quote, rate: rate.rate, time })}${rate.stale ? ` ${t('fx.stalePair', { pair: fxKey(rate.base, rate.quote), time })}` : ''}`
 })
 
@@ -44,7 +49,7 @@ const settingsStore = useSettingsStore()
 
 const newName = ref<string>('')
 const newCurrency = ref('EUR')
-const currencyOptions = ISO_CURRENCIES.map(value => ({ value, label: value }))
+const currencyOptions = ISO_CURRENCIES.map((value) => ({ value, label: value }))
 const busy = ref<boolean>(false)
 const error = ref<string | null>(null)
 
@@ -91,7 +96,7 @@ async function rename(id: string, name: string): Promise<void> {
 }
 
 async function changeCurrency(id: string, currency: string): Promise<void> {
-  const entry = portfolioStore.all.find(entry => entry.id === id)
+  const entry = portfolioStore.all.find((entry) => entry.id === id)
   if (!entry || entry.baseCurrency === currency) return
   busy.value = true
   error.value = null
@@ -150,20 +155,21 @@ function messageOf(cause: unknown): string {
 <template>
   <div class="depots">
     <NModal
-      v-model:show="currencyDialog" preset="dialog" :title="t('fx.changeTitle')"
-      :content="changeDescription" :positive-text="t('actions.apply')" :negative-text="t('actions.cancel')"
-      :loading="busy" @positive-click="confirmCurrency"
+      v-model:show="currencyDialog"
+      preset="dialog"
+      :title="t('fx.changeTitle')"
+      :content="changeDescription"
+      :positive-text="t('actions.apply')"
+      :negative-text="t('actions.cancel')"
+      :loading="busy"
+      @positive-click="confirmCurrency"
     />
     <p class="depots__intro">
       {{ t('portfolios.intro') }}
     </p>
 
     <div class="depots__list">
-      <div
-        v-for="entry in portfolioStore.all"
-        :key="entry.id"
-        class="depots__row"
-      >
+      <div v-for="entry in portfolioStore.all" :key="entry.id" class="depots__row">
         <!--
           Der Name ist direkt editierbar, ohne Umschaltknopf: Umbenennen ist
           eine häufige Bearbeitung des Depots.
@@ -182,14 +188,22 @@ function messageOf(cause: unknown): string {
 
         <div class="depots__currency" :title="t('fx.baseCurrency')">
           <NSelect
-            :value="entry.baseCurrency" :options="currencyOptions" filterable size="small"
-            :disabled="busy" :input-props="{ 'aria-label': t('fx.baseCurrency') }"
+            :value="entry.baseCurrency"
+            :options="currencyOptions"
+            filterable
+            size="small"
+            :disabled="busy"
+            :input-props="{ 'aria-label': t('fx.baseCurrency') }"
             @update:value="(currency: string) => changeCurrency(entry.id, currency)"
           />
         </div>
 
         <span class="depots__meta tabular-nums">
-          {{ t('units.positions', entry.positionCount, { named: { count: integer(entry.positionCount) } }) }}
+          {{
+            t('units.positions', entry.positionCount, {
+              named: { count: integer(entry.positionCount) },
+            })
+          }}
         </span>
 
         <span class="depots__meta depots__meta--wide">
@@ -248,7 +262,13 @@ function messageOf(cause: unknown): string {
         {{ t('portfolios.create') }}
       </NButton>
       <div class="depots__currency">
-        <NSelect v-model:value="newCurrency" :options="currencyOptions" filterable size="small" :input-props="{ 'aria-label': t('fx.baseCurrency') }" />
+        <NSelect
+          v-model:value="newCurrency"
+          :options="currencyOptions"
+          filterable
+          size="small"
+          :input-props="{ 'aria-label': t('fx.baseCurrency') }"
+        />
       </div>
     </div>
 
@@ -280,11 +300,18 @@ function messageOf(cause: unknown): string {
     flex-wrap: wrap;
     padding: var(--space-2) 0;
 
-    & + & { border-top: 1px solid token(--border-default); }
+    & + & {
+      border-top: 1px solid token(--border-default);
+    }
   }
 
-  &__name { max-width: 18rem; }
-  &__currency { width: 7rem; flex-shrink: 0; }
+  &__name {
+    max-width: 18rem;
+  }
+  &__currency {
+    width: 7rem;
+    flex-shrink: 0;
+  }
 
   &__meta {
     @include muted(var(--font-xs));
@@ -293,7 +320,9 @@ function messageOf(cause: unknown): string {
     &--wide {
       display: none;
 
-      @include up(sm) { display: inline; }
+      @include up(sm) {
+        display: inline;
+      }
     }
   }
 
@@ -302,12 +331,17 @@ function messageOf(cause: unknown): string {
     margin-left: auto;
   }
 
-  &__row > &__meta { white-space: nowrap; }
+  &__row > &__meta {
+    white-space: nowrap;
+  }
 
   &__row > &__name {
     flex-basis: 100%;
     max-width: none;
-    @include up(md) { flex-basis: auto; max-width: 18rem; }
+    @include up(md) {
+      flex-basis: auto;
+      max-width: 18rem;
+    }
   }
 
   &__add {

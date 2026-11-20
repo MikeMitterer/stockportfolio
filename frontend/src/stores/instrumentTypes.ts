@@ -45,4 +45,5 @@ export const useInstrumentTypesStore = defineStore('instrumentTypes', () => {
   return { catalog, apiBaseUrl, error, loading, load }
 })
 
-if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useInstrumentTypesStore, import.meta.hot))
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useInstrumentTypesStore, import.meta.hot))

@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { computed, h, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  NDataTable,
-  NInput,
-  NSelect,
-  NSwitch,
-  NTag,
-  NSpin,
-  type DataTableColumns,
-} from 'naive-ui'
+import { NDataTable, NInput, NSelect, NSwitch, NTag, NSpin, type DataTableColumns } from 'naive-ui'
 import { money, integer, percent } from '@/domain/formatters'
 import { instrumentTypeLabelKey, terApplies } from '@/domain/instrumentDisplay'
 import { useFieldsStore } from '@/stores/fields'
@@ -83,7 +75,9 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
         h('div', { class: 'cell-row' }, [
           h('span', { class: 'cell-symbol' }, row.identity.kind === 'isin_only' ? '—' : row.symbol),
           heldKeys.value.has(instrumentsStore.keyOf(row))
-            ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () => t('instruments.inPortfolio'))
+            ? h(NTag, { size: 'tiny', type: 'success', bordered: false }, () =>
+                t('instruments.inPortfolio'),
+              )
             : null,
         ]),
         h('span', { class: 'cell-name' }, row.name ?? '—'),
@@ -100,9 +94,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'type',
     width: 90,
     render: (row) =>
-      h(NTag, { size: 'small', bordered: false }, () => (
-        row.type ? typeLabel(row.type) : '—'
-      )),
+      h(NTag, { size: 'small', bordered: false }, () => (row.type ? typeLabel(row.type) : '—')),
   },
   {
     title: t('table.price'),
@@ -112,7 +104,11 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     sorter: (a, b) => (a.latest_price ?? 0) - (b.latest_price ?? 0),
     render: (row) =>
       row.latest_price !== null
-        ? h('span', { class: 'cell-num' }, row.latest_currency ? money(row.latest_price, row.latest_currency, 2) : '—')
+        ? h(
+            'span',
+            { class: 'cell-num' },
+            row.latest_currency ? money(row.latest_price, row.latest_currency, 2) : '—',
+          )
         : h('span', { class: 'cell-num cell-num--muted cell-empty' }, 'noch keiner'),
   },
   {
@@ -122,7 +118,8 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     width: 90,
     // Zwei Nachkommastellen: 0,03 % darf nicht als „0,0 %“ erscheinen.
     render: (row) =>
-      row.ter !== null && terApplies(row.type ?? '', row.identity.kind, fieldsStore.catalog?.definitions ?? null)
+      row.ter !== null &&
+      terApplies(row.type ?? '', row.identity.kind, fieldsStore.catalog?.definitions ?? null)
         ? h('span', { class: 'cell-num' }, percent(row.ter, 2))
         : h('span', { class: 'cell-empty' }, '—'),
   },
@@ -142,8 +139,7 @@ const columns = computed<DataTableColumns<InstrumentSummary>>(() => [
     key: 'history_count',
     align: 'right',
     width: 110,
-    render: (row) =>
-      h('span', { class: 'cell-num cell-num--muted' }, integer(row.history_count)),
+    render: (row) => h('span', { class: 'cell-num cell-num--muted' }, integer(row.history_count)),
   },
   {
     title: t('instruments.inSelection'),
@@ -178,7 +174,6 @@ notify(
     content: () => instrumentsStore.error ?? '',
   },
 )
-
 </script>
 
 <template>
@@ -186,7 +181,12 @@ notify(
     <div class="instruments__head">
       <h1 class="instruments__title">{{ t('views.instrumentsTitle') }}</h1>
       <span class="instruments__count tabular-nums">
-        {{ t('instruments.countLabel', { shown: filtered.length, total: instrumentsStore.instruments.length }) }}
+        {{
+          t('instruments.countLabel', {
+            shown: filtered.length,
+            total: instrumentsStore.instruments.length,
+          })
+        }}
       </span>
     </div>
     <p class="instruments__intro">
@@ -254,8 +254,12 @@ notify(
     margin-bottom: var(--space-4);
   }
 
-  &__search { max-width: 20rem; }
-  &__select { max-width: 10rem; }
+  &__search {
+    max-width: 20rem;
+  }
+  &__select {
+    max-width: 10rem;
+  }
 
   &__loading {
     display: flex;

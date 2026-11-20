@@ -3,12 +3,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NPopconfirm } from 'naive-ui'
 import { consola } from 'consola'
-import {
-  backupFileName,
-  buildBackup,
-  parseBackup,
-  type Backup,
-} from '@/domain/backup'
+import { backupFileName, buildBackup, parseBackup, type Backup } from '@/domain/backup'
 import { money, formatterLocale, integer } from '@/domain/formatters'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { baseCurrencyOf } from '@/domain/fx'
@@ -46,7 +41,9 @@ const pending = ref<Backup | null>(null)
 const error = ref<string | null>(null)
 const done = ref<string | null>(null)
 
-const historyDayCount = computed(() => new Set(pending.value?.valueHistory.map(entry => entry.date)).size)
+const historyDayCount = computed(
+  () => new Set(pending.value?.valueHistory.map((entry) => entry.date)).size,
+)
 
 const positionCount = computed(() => pending.value?.portfolio.positions.length ?? 0)
 
@@ -55,9 +52,7 @@ const exportedAtLabel = computed(() => {
   const raw = pending.value?.exportedAt
   if (!raw) return 'unbekannt'
   const date = new Date(raw)
-  return Number.isNaN(date.getTime())
-    ? t('backup.unknown')
-    : date.toLocaleString(formatterLocale())
+  return Number.isNaN(date.getTime()) ? t('backup.unknown') : date.toLocaleString(formatterLocale())
 })
 
 // ─── Sichern ────────────────────────────────────────────────────────────────
@@ -168,17 +163,23 @@ function discardPending(): void {
 // sollen die Karte darunter nicht auseinanderschieben.
 const { notify } = useAppNotification()
 
-notify(computed(() => error.value !== null), {
-  title: t('notify.backupTitle'),
-  type: 'error',
-  content: () => error.value ?? '',
-})
+notify(
+  computed(() => error.value !== null),
+  {
+    title: t('notify.backupTitle'),
+    type: 'error',
+    content: () => error.value ?? '',
+  },
+)
 
-notify(computed(() => done.value !== null), {
-  title: t('notify.doneTitle'),
-  type: 'info',
-  content: () => done.value ?? '',
-})
+notify(
+  computed(() => done.value !== null),
+  {
+    title: t('notify.doneTitle'),
+    type: 'info',
+    content: () => done.value ?? '',
+  },
+)
 
 /**
  * Wie viele Assets das Backup ausblendet.
@@ -238,7 +239,9 @@ const pendingCashTotal = computed(() =>
         <dd class="tabular-nums">{{ positionCount }}</dd>
 
         <dt v-if="pendingCashTotal > 0" class="backup__term">{{ t('backup.ofWhichCash') }}</dt>
-        <dd v-if="pendingCashTotal > 0" class="tabular-nums">{{ money(pendingCashTotal, baseCurrencyOf(pending.portfolio)) }}</dd>
+        <dd v-if="pendingCashTotal > 0" class="tabular-nums">
+          {{ money(pendingCashTotal, baseCurrencyOf(pending.portfolio)) }}
+        </dd>
 
         <dt v-if="hiddenCount > 0" class="backup__term">{{ t('backup.hidden') }}</dt>
         <dd v-if="hiddenCount > 0" class="tabular-nums">
@@ -253,9 +256,11 @@ const pendingCashTotal = computed(() =>
           {{ t('backup.valueHistory') }}
         </dt>
         <dd v-if="pending.valueHistory.length > 0" class="tabular-nums">
-          {{ t('units.days', historyDayCount, {
-            named: { count: integer(historyDayCount) },
-          }) }}
+          {{
+            t('units.days', historyDayCount, {
+              named: { count: integer(historyDayCount) },
+            })
+          }}
         </dd>
 
         <dt class="backup__term">{{ t('backup.savedAt') }}</dt>
@@ -306,7 +311,9 @@ const pendingCashTotal = computed(() =>
   }
 
   /* Die Dateiauswahl bedient der Knopf daneben — sichtbar wäre sie doppelt. */
-  &__file { display: none; }
+  &__file {
+    display: none;
+  }
 
   /*
    * Was hineinkommt, steht vor dem Einspielen da: Überschrieben wird nichts,
@@ -332,7 +339,9 @@ const pendingCashTotal = computed(() =>
     font-size: var(--font-sm);
   }
 
-  &__term { @include muted(null); }
+  &__term {
+    @include muted(null);
+  }
 
   &__warning {
     font-size: var(--font-xs);

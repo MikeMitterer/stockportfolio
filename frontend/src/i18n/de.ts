@@ -1,26 +1,39 @@
 /** Deutscher Message-Katalog. Source of Truth für Key-Struktur. */
 export const de = {
-  tradeNotice: 'Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um deine selbst gesetzten Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
+  tradeNotice:
+    'Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um deine selbst gesetzten Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
   fx: {
-    baseCurrency: 'Basiswährung', invalidCurrency: 'Bitte eine gültige Basiswährung wählen.',
+    baseCurrency: 'Basiswährung',
+    invalidCurrency: 'Bitte eine gültige Basiswährung wählen.',
     changeTitle: 'Basiswährung ändern',
-    changeHint: 'Die Basiswährung kann jederzeit geändert werden. Cash und absolute Geldschwellen werden dabei umgerechnet.',
-    changeConfirm: 'Von {from} zu {to} wechseln? Cash und absolute Geldschwellen werden umgerechnet; Stückzahlen und Prozentgrenzen bleiben erhalten. Der Verlauf zeigt die Reihe der neuen Währung. Frühere Reihen bleiben gespeichert.',
+    changeHint:
+      'Die Basiswährung kann jederzeit geändert werden. Cash und absolute Geldschwellen werden dabei umgerechnet.',
+    changeConfirm:
+      'Von {from} zu {to} wechseln? Cash und absolute Geldschwellen werden umgerechnet; Stückzahlen und Prozentgrenzen bleiben erhalten. Der Verlauf zeigt die Reihe der neuen Währung. Frühere Reihen bleiben gespeichert.',
     changeRate: '1 {from} = {rate} {to}, Kursstand {time}.',
-    changeUnavailable: 'Kein gültiger Devisenkurs für die gespeicherten Geldbeträge. Die Basiswährung wurde nicht geändert.',
-    title: 'Devisenkurse', retry: 'Devisenkurse erneut laden',
+    changeUnavailable:
+      'Kein gültiger Devisenkurs für die gespeicherten Geldbeträge. Die Basiswährung wurde nicht geändert.',
+    title: 'Devisenkurse',
+    retry: 'Devisenkurse erneut laden',
     stalePair: '{pair}: Veralteter Devisenkurs vom {time} wird weiterverwendet.',
-    missingPair: '{pair}: Kein gültiger Devisenkurs. Betroffene Positionen zählen nicht in Summen und Handelsbeträge.',
+    missingPair:
+      '{pair}: Kein gültiger Devisenkurs. Betroffene Positionen zählen nicht in Summen und Handelsbeträge.',
     converted: 'Bewertet mit {price} je Stück · {pair}',
-    historyUnavailable: 'Für Fremdwährungspositionen fehlen historische Devisenkurse. Der Rückblick bleibt deshalb leer; aufgezeichnete Tageswerte werden in der Depotwährung angezeigt.',
+    historyUnavailable:
+      'Für Fremdwährungspositionen fehlen historische Devisenkurse. Der Rückblick bleibt deshalb leer; aufgezeichnete Tageswerte werden in der Depotwährung angezeigt.',
     amountCurrency: 'Betrag in {currency}',
   },
   detailFields: {
     title: 'Zusatzinformationen',
-    yes: 'Ja', no: 'Nein', ter: 'TER',
-    ratio: 'Anteil', basisPoints: 'Basispunkte', millions: 'Mio.',
+    yes: 'Ja',
+    no: 'Nein',
+    ter: 'TER',
+    ratio: 'Anteil',
+    basisPoints: 'Basispunkte',
+    millions: 'Mio.',
     amountMillions: '{amount} Mio. {currency}',
-    provider: 'Quelle', manual: 'Manuell',
+    provider: 'Quelle',
+    manual: 'Manuell',
     asOf: 'Stand: {value}',
     shadowed: 'Manueller Wert (durch Quelle ersetzt): {value}',
     unavailable: 'Zusatzinformationen sind derzeit nicht verfügbar. Die Kurse bleiben nutzbar.',
@@ -44,15 +57,18 @@ export const de = {
     setupTitle: 'Erstes Admin-Konto einrichten',
     setupHint: 'Lege das erste Admin-Konto für diese Installation an.',
     setupCode: 'Einrichtungscode',
-    setupCodeHelp: 'Den Code findest du im Log von StockPortfolio in der Zeile „StockPortfolio setup code: …“. Unter Unraid: Reiter „Docker“, auf das StockPortfolio-Symbol klicken, „Logs“ wählen. Mit Docker: docker logs <Containername>, zum Beispiel docker logs stockportfolio. Solange es kein Admin-Konto gibt, entsteht bei jedem Neustart ein neuer Code; verwende immer den neuesten. Nach dem Anlegen des Admin-Kontos erscheint diese Seite nicht mehr.',
+    setupCodeHelp:
+      'Den Code findest du im Log von StockPortfolio in der Zeile „StockPortfolio setup code: …“. Unter Unraid: Reiter „Docker“, auf das StockPortfolio-Symbol klicken, „Logs“ wählen. Mit Docker: docker logs <Containername>, zum Beispiel docker logs stockportfolio. Solange es kein Admin-Konto gibt, entsteht bei jedem Neustart ein neuer Code; verwende immer den neuesten. Nach dem Anlegen des Admin-Kontos erscheint diese Seite nicht mehr.',
     username: 'Benutzername',
     password: 'Passwort',
     newPassword: 'Neues Passwort',
-    passwordRequirements: '12 bis 1024 Zeichen, mindestens ein Großbuchstabe, eine Zahl und ein Sonderzeichen.',
+    passwordRequirements:
+      '12 bis 1024 Zeichen, mindestens ein Großbuchstabe, eine Zahl und ein Sonderzeichen.',
     createAdmin: 'Admin-Konto anlegen',
     loginTitle: 'Anmelden',
     login: 'Anmelden',
-    investmentNotice: 'StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen, deinen selbst festgelegten Zielen und Toleranzbändern sowie externen Kursdaten.\n\nDie Statussymbole ↓ und ↑ zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen **rechnerisch** nötig wären, um diese Ziele zu erreichen.\n\nDie App **prüft nicht**, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und **führt keine Orders aus**. Kurse und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. **Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.**',
+    investmentNotice:
+      'StockPortfolio berechnet Depotwerte und Abweichungen aus deinen Beständen, deinen selbst festgelegten Zielen und Toleranzbändern sowie externen Kursdaten.\n\nDie Statussymbole ↓ und ↑ zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen **rechnerisch** nötig wären, um diese Ziele zu erreichen.\n\nDie App **prüft nicht**, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und **führt keine Orders aus**. Kurse und Berechnungen können verzögert, unvollständig oder fehlerhaft sein. **Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.**',
     investmentConfirm: 'Ich habe den Hinweis gelesen.',
     logout: 'Abmelden',
     accountMenu: 'Konto {username}: Menü öffnen',
@@ -60,7 +76,8 @@ export const de = {
     changeHint: 'Für dieses Konto ist vor der weiteren Nutzung ein neues Passwort nötig.',
     changePassword: 'Passwort speichern',
     unavailableTitle: 'Anmeldung nicht erreichbar',
-    unavailableHint: 'Die StockPortfolio-API antwortet nicht. Prüfe den Dienst und versuche es erneut.',
+    unavailableHint:
+      'Die StockPortfolio-API antwortet nicht. Prüfe den Dienst und versuche es erneut.',
     retry: 'Erneut versuchen',
     adminHint: 'Benutzerkonten und Zugänge dieser Instanz verwalten.',
     manageUsers: 'Benutzerverwaltung öffnen',
@@ -71,7 +88,8 @@ export const de = {
     accountsTitle: 'Vorhandene Konten',
     createUser: 'Konto anlegen',
     temporaryPassword: 'Temporäres Passwort',
-    temporaryPasswordHelp: 'Du vergibst dieses Passwort für die erste Anmeldung oder nach einem Zurücksetzen. Die Person muss es beim nächsten Login ändern.',
+    temporaryPasswordHelp:
+      'Du vergibst dieses Passwort für die erste Anmeldung oder nach einem Zurücksetzen. Die Person muss es beim nächsten Login ändern.',
     role: 'Rolle',
     userRole: 'Nutzer',
     adminRole: 'Admin',
@@ -88,8 +106,10 @@ export const de = {
     errors: {
       request_failed: 'Die Anfrage ist fehlgeschlagen. Bitte versuche es erneut.',
       invalid_credentials: 'Benutzername, Passwort oder Einrichtungscode stimmen nicht.',
-      invalid_username: 'Der Benutzername muss 3 bis 64 Zeichen aus Buchstaben, Zahlen, Punkt, Bindestrich oder Unterstrich enthalten.',
-      invalid_password: 'Das Passwort braucht 12 bis 1024 Zeichen, einen Großbuchstaben, eine Zahl und ein Sonderzeichen.',
+      invalid_username:
+        'Der Benutzername muss 3 bis 64 Zeichen aus Buchstaben, Zahlen, Punkt, Bindestrich oder Unterstrich enthalten.',
+      invalid_password:
+        'Das Passwort braucht 12 bis 1024 Zeichen, einen Großbuchstaben, eine Zahl und ein Sonderzeichen.',
       rate_limited: 'Zu viele Fehlversuche. Bitte warte und versuche es später erneut.',
       setup_closed: 'Die Ersteinrichtung ist bereits abgeschlossen.',
       invalid_origin: 'Die Browseradresse stimmt nicht mit der Serverkonfiguration überein.',
@@ -138,23 +158,30 @@ export const de = {
 
   privateData: {
     title: 'Depotdaten nicht gespeichert',
-    conflict: 'Der Stand wurde in einem anderen Browser geändert. Deine letzte Änderung wurde nicht gespeichert. Lade den aktuellen Serverstand neu und wiederhole sie bei Bedarf.',
-    unavailable: 'Die Konto-API ist nicht erreichbar oder die Sitzung ist abgelaufen. Änderungen sind derzeit nicht möglich. Lade die Seite neu, sobald die Verbindung wieder besteht.',
-    rejected: 'Die Konto-API hat die Änderung abgelehnt. Sie wurde nicht gespeichert. Lade den Serverstand neu und prüfe deine Berechtigung und Eingabe.',
+    conflict:
+      'Der Stand wurde in einem anderen Browser geändert. Deine letzte Änderung wurde nicht gespeichert. Lade den aktuellen Serverstand neu und wiederhole sie bei Bedarf.',
+    unavailable:
+      'Die Konto-API ist nicht erreichbar oder die Sitzung ist abgelaufen. Änderungen sind derzeit nicht möglich. Lade die Seite neu, sobald die Verbindung wieder besteht.',
+    rejected:
+      'Die Konto-API hat die Änderung abgelehnt. Sie wurde nicht gespeichert. Lade den Serverstand neu und prüfe deine Berechtigung und Eingabe.',
     reload: 'Serverstand neu laden',
   },
 
   legacy: {
     title: 'Vorhandene Browserdepots',
-    intro: 'In diesem Browser liegen Depots aus der Zeit vor den Benutzerkonten. Nur das Einrichtungskonto darf sie übernehmen.',
-    alreadyImported: 'Der einmalige Altimport wurde bereits durchgeführt. Weitere Depots aus diesem Browser kannst du einzeln als Datei sichern und anschließend im Konto wiederherstellen.',
+    intro:
+      'In diesem Browser liegen Depots aus der Zeit vor den Benutzerkonten. Nur das Einrichtungskonto darf sie übernehmen.',
+    alreadyImported:
+      'Der einmalige Altimport wurde bereits durchgeführt. Weitere Depots aus diesem Browser kannst du einzeln als Datei sichern und anschließend im Konto wiederherstellen.',
     source: 'Quelle',
     browser: 'Dieses Browserprofil',
     target: 'Zielkonto',
     portfolios: 'Depots',
     positions: 'Positionen',
-    importHint: 'Die Übernahme ergänzt die Depots auf dem Server. Vorhandene Serverdepots und Einstellungen bleiben erhalten. Der Vorgang ist nur einmal möglich. Ohne Übernahme bleiben die Daten in diesem Browserprofil über Browserwerkzeuge lesbar.',
-    restoreHint: 'Ein weiterer pauschaler Import ist gesperrt. Exportiere jedes benötigte Depot und spiele die Datei über Backup/Wiederherstellung ein.',
+    importHint:
+      'Die Übernahme ergänzt die Depots auf dem Server. Vorhandene Serverdepots und Einstellungen bleiben erhalten. Der Vorgang ist nur einmal möglich. Ohne Übernahme bleiben die Daten in diesem Browserprofil über Browserwerkzeuge lesbar.',
+    restoreHint:
+      'Ein weiterer pauschaler Import ist gesperrt. Exportiere jedes benötigte Depot und spiele die Datei über Backup/Wiederherstellung ein.',
     import: 'Depots jetzt übernehmen',
     export: 'Datei exportieren',
     later: 'Später entscheiden',
@@ -306,10 +333,13 @@ export const de = {
    */
   errors: {
     staleQuote: 'Ein veralteter Kurs wird verwendet.',
-    invalidResponse: 'Ungültige StockInfo-Antwort: Feld „{field}“ fehlt oder ist ungültig. Der Kurs wird nicht übernommen.',
-    unsupportedIdentity: 'StockInfo liefert eine nicht unterstützte Identität: „{kind}“. Der Kurs wird nicht übernommen.',
+    invalidResponse:
+      'Ungültige StockInfo-Antwort: Feld „{field}“ fehlt oder ist ungültig. Der Kurs wird nicht übernommen.',
+    unsupportedIdentity:
+      'StockInfo liefert eine nicht unterstützte Identität: „{kind}“. Der Kurs wird nicht übernommen.',
     stockinfo: {
-      stockinfo_unreachable: 'StockInfo ist vom StockPortfolio-Server aus nicht erreichbar. Prüfe STOCKINFO_API_URL und ob StockInfo läuft.',
+      stockinfo_unreachable:
+        'StockInfo ist vom StockPortfolio-Server aus nicht erreichbar. Prüfe STOCKINFO_API_URL und ob StockInfo läuft.',
       stockinfo_timeout: 'StockInfo hat nicht rechtzeitig geantwortet.',
       stockinfo_not_configured: 'STOCKINFO_API_URL ist am StockPortfolio-Server nicht gesetzt.',
     },
@@ -338,21 +368,25 @@ export const de = {
         'Für {identifier} führt keine der in StockInfo eingerichteten Quellen eine Kurshistorie.',
       daily_source_unavailable:
         'Die Kurshistorie zu {identifier} war nicht abrufbar. Mindestens eine Quelle hat nicht geantwortet.',
-      fx_pair_not_found: 'Keine der in StockInfo eingerichteten Quellen führt den Kurs {base}/{quote}.',
+      fx_pair_not_found:
+        'Keine der in StockInfo eingerichteten Quellen führt den Kurs {base}/{quote}.',
       fx_source_unavailable:
         'Der Kurs {base}/{quote} war nicht abrufbar. Mindestens eine Quelle hat nicht geantwortet.',
       invalid_currency_code: '{base} und {quote} müssen dreibuchstabige Währungscodes sein.',
       identifier_empty: 'Es wurde nichts eingegeben.',
       identifier_unknown_form: '{identifier} ist weder eine ISIN noch ein Symbol mit Börsenkürzel.',
-      exchange_not_covered: 'Für den Handelsplatz {mic} ist in StockInfo keine Kursquelle verfügbar.',
+      exchange_not_covered:
+        'Für den Handelsplatz {mic} ist in StockInfo keine Kursquelle verfügbar.',
       ambiguous_exchange_suffix:
         'Das Börsenkürzel im Symbol passt auf mehrere Handelsplätze. Welcher gemeint ist, sagt die Eingabe nicht.',
       symbol_without_exchange_suffix:
         'Dem Symbol fehlt das Börsenkürzel. Aus ihm allein lässt sich der Handelsplatz nicht ableiten.',
       unknown_exchange_suffix:
         'Das Börsenkürzel im Symbol ist unbekannt und lässt sich keinem Handelsplatz zuordnen.',
-      non_canonical_ticker: 'Der Ticker entspricht nicht der kanonischen Schreibweise des Handelsplatzes.',
-      migration_pending: 'StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.',
+      non_canonical_ticker:
+        'Der Ticker entspricht nicht der kanonischen Schreibweise des Handelsplatzes.',
+      migration_pending:
+        'StockInfo wartet auf eine Datenmigration und beantwortet bis dahin keine Abfragen.',
       startup_running: 'StockInfo startet noch. Bitte gleich noch einmal versuchen.',
       startup_failed: 'StockInfo konnte nicht starten und beantwortet keine Abfragen.',
       contract_unavailable: 'StockInfo kann seine Feldbeschreibung gerade nicht lesen.',
@@ -422,8 +456,10 @@ export const de = {
     dueSince: 'Seit {days} Tagen fällig.',
     dueIn: 'Noch {days} Tage — nächster Termin {date}.',
     bandsHeading: 'Toleranzbänder',
-    lowerHint: 'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Status ↓ (unter Ziel).',
-    upperHint: 'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Status ↑ (über Ziel).',
+    lowerHint:
+      'Unterschreitet der Marktwert das Ziel um mehr als diesen Anteil → Status ↓ (unter Ziel).',
+    upperHint:
+      'Überschreitet der Marktwert das Ziel um mehr als diesen Anteil → Status ↑ (über Ziel).',
     metricsHeading: 'Liquidität',
     securityBuffer: 'Sicherheitspuffer',
     minTradeSize: 'Mindest-Handelsvolumen',
@@ -490,7 +526,8 @@ export const de = {
     checked: 'Geprüft',
     reason: 'Grund',
     reports: '— meldet „{status}"',
-    offlineHint: 'Ohne die API gibt es keine Kurse und damit keine Kennzahlen. Die zuletzt geladenen Kurse bleiben gespeichert und werden weiter verwendet — erkennbar am Alter in der Kopfzeile.',
+    offlineHint:
+      'Ohne die API gibt es keine Kurse und damit keine Kennzahlen. Die zuletzt geladenen Kurse bleiben gespeichert und werden weiter verwendet — erkennbar am Alter in der Kopfzeile.',
     states: {
       unknown: 'noch nicht geprüft',
       checking: 'wird geprüft …',
@@ -573,9 +610,12 @@ export const de = {
     bandPriceUpper: '↑ {price}',
     bandPriceTooltip:
       'Bandkurse: Bei diesem Kurs erreicht der Anteil nach dem Plan das untere (↓) bzw. obere (↑) Band. Rechnerisch und unter der Annahme, dass alle anderen Kurse gleich bleiben; fällt der Markt breit, liegt die Grenze tiefer.',
-    relativeDeviationTooltip: 'Relative Abweichung vom Ziel nach dem geplanten Handel. Beispiel: 9,5 % Anteil bei 10 % Ziel ergeben −5 % relative Abweichung. Die Zahl ist je nach Vorzeichen grün oder rot; die Balkenfarbe zeigt den Bandstatus.',
-    deviationTooltip: 'Abweichung vom Ziel nach dem geplanten Handel in Prozentpunkten. Beispiel: 9,5 % Anteil minus 10 % Ziel ergeben −0,5 Prozentpunkte.',
-    deltaTooltip: 'Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen. Anklicken übernimmt den Wert in die Eingabe.',
+    relativeDeviationTooltip:
+      'Relative Abweichung vom Ziel nach dem geplanten Handel. Beispiel: 9,5 % Anteil bei 10 % Ziel ergeben −5 % relative Abweichung. Die Zahl ist je nach Vorzeichen grün oder rot; die Balkenfarbe zeigt den Bandstatus.',
+    deviationTooltip:
+      'Abweichung vom Ziel nach dem geplanten Handel in Prozentpunkten. Beispiel: 9,5 % Anteil minus 10 % Ziel ergeben −0,5 Prozentpunkte.',
+    deltaTooltip:
+      'Stückzahl bis zum Ziel: positiv kaufen, negativ verkaufen. Anklicken übernimmt den Wert in die Eingabe.',
     deltaTooltipMore:
       'Ergeben die Ziel-Anteile zusammen 100 %, heben sich alle Deltas gegenseitig auf — wer allen folgt, bekommt einen Plan, der von selbst aufgeht.',
     adoptDelta: 'In die Eingabe übernehmen',
@@ -610,7 +650,8 @@ export const de = {
     scheduleDue: 'Termin fällig',
     scheduleNext: 'Nächster Termin {date}',
     emptyTitle: 'Noch keine Wertpapiere im Depot',
-    emptyHint: 'Lege deine erste Position an, lade ein Beispiel-Depot oder spiele ein vorhandenes Backup ein.',
+    emptyHint:
+      'Lege deine erste Position an, lade ein Beispiel-Depot oder spiele ein vorhandenes Backup ein.',
     loadDemo: 'Beispiel-Depot laden',
     reloadQuote: 'Kurs neu laden',
     noMatchingLinks: 'Keine passenden Links — unter „Einstellungen" konfigurierbar.',
@@ -645,7 +686,8 @@ export const de = {
 
   addPosition: {
     heading: 'Position hinzufügen',
-    allInPortfolio: 'Alle freigegebenen Papiere sind bereits im Depot. Weitere lassen sich unter „Assets" freischalten.',
+    allInPortfolio:
+      'Alle freigegebenen Papiere sind bereits im Depot. Weitere lassen sich unter „Assets" freischalten.',
     instrument: 'Wertpapier',
     searchPlaceholder: 'Symbol, ISIN oder Name',
     group: 'Gruppe',
@@ -659,9 +701,12 @@ export const de = {
   links: {
     typesSource: 'Asset-Typen werden von StockInfo vorgegeben.',
     typesLoading: 'Asset-Typen werden geladen …',
-    typesFailed: 'Asset-Typen konnten nicht geladen werden: {reason}. Gespeicherte Filter bleiben erhalten.',
-    typesIncomplete: 'Die Typauskunft ist unvollständig. Bekannte Typen sind auswählbar; gespeicherte Filter bleiben erhalten.',
-    typesEmpty: 'StockInfo bietet derzeit keine Asset-Typen an. Gespeicherte Filter bleiben erhalten.',
+    typesFailed:
+      'Asset-Typen konnten nicht geladen werden: {reason}. Gespeicherte Filter bleiben erhalten.',
+    typesIncomplete:
+      'Die Typauskunft ist unvollständig. Bekannte Typen sind auswählbar; gespeicherte Filter bleiben erhalten.',
+    typesEmpty:
+      'StockInfo bietet derzeit keine Asset-Typen an. Gespeicherte Filter bleiben erhalten.',
     reloadTypes: 'Typen neu laden',
     typeNotOffered: '{type} (nicht im aktuellen Katalog)',
     typeUnconfirmed: '{type} (gespeichert, derzeit unbestätigt)',
@@ -767,8 +812,7 @@ export const de = {
   hints: {
     statusBands:
       '↓ unter, ↑ über dem Ziel, jeweils außerhalb deiner Bänder ({lower} / {upper} relativ zum Ziel). ✓ innerhalb der Bänder. → noch im Band, aber nahe der Grenze: zwischen {lower} und {nearLower} sowie zwischen {nearUpper} und {upper}. ✓ mit „min“: außerhalb des Bands, Betrag unter dem Mindest-Handelsvolumen.',
-    statusDueDate:
-      'An einem fälligen Termin zählt jede Abweichung vom Ziel.',
+    statusDueDate: 'An einem fälligen Termin zählt jede Abweichung vom Ziel.',
     statusCalendar:
       '↓ unter, ↑ über dem Ziel: an einem fälligen Termin bei jeder Abweichung. ✓ kein Termin fällig oder genau im Ziel. ✓ mit „min“: Betrag unter dem Mindest-Handelsvolumen.',
     baseCurrency:
@@ -842,10 +886,12 @@ export const de = {
     providerCity: '6363 Westendorf',
     providerCountry: 'Österreich',
     websiteLink: 'Website von MangoLila',
-    intro: 'StockPortfolio übernimmt Kurse aus StockInfo und berechnet Werte aus deinen Beständen, Zielanteilen und Einstellungen.',
+    intro:
+      'StockPortfolio übernimmt Kurse aus StockInfo und berechnet Werte aus deinen Beständen, Zielanteilen und Einstellungen.',
     data: 'Daten können fehlen, veraltet oder fehlerhaft sein. Angezeigte Kurse sind keine verbindlichen Handelskurse.',
     use: 'Die Statussymbole ↓ und ↑ zeigen Abweichungen von deinen selbst gesetzten Zielen und Grenzwerten. Kauf- und Verkaufsbeträge und Stückzahlen zeigen, welche Änderungen rechnerisch nötig wären, um diese Ziele zu erreichen. Die App prüft nicht, ob ein Geschäft oder ein Finanzinstrument für dich geeignet ist, und führt keine Orders aus. Prüfe Daten, Kurse, Kosten und Risiken, bevor du handelst.',
-    legal: 'Die Software steht unter der EUPL 1.2. MangoLilas Erklärung für Verbraucher erläutert die geltenden Regeln zu Gewährleistung und Haftung.',
+    legal:
+      'Die Software steht unter der EUPL 1.2. MangoLilas Erklärung für Verbraucher erläutert die geltenden Regeln zu Gewährleistung und Haftung.',
     licenseLink: 'EUPL 1.2 (Deutsch)',
     licensingLink: 'Lizenz- und Verbrauchererklärung',
     sourceLink: 'Lizenzseite und Quellarchiv',

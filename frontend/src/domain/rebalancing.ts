@@ -53,8 +53,18 @@ export function groupMarketValue(
   rates: FxMap = new Map(),
 ): number {
   return portfolio.positions
-    .filter((position) => position.group === group && countsIn(position, quotes, baseCurrency, rates))
-    .reduce((sum, position) => sum + (position.group === 'cash' ? position.units : position.units * (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)), 0)
+    .filter(
+      (position) => position.group === group && countsIn(position, quotes, baseCurrency, rates),
+    )
+    .reduce(
+      (sum, position) =>
+        sum +
+        (position.group === 'cash'
+          ? position.units
+          : position.units *
+            (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)),
+      0,
+    )
 }
 
 /**
@@ -70,7 +80,15 @@ export function totalValue(
 ): number {
   const raw = portfolio.positions
     .filter((position) => countsIn(position, quotes, baseCurrency, rates))
-    .reduce((sum, position) => sum + (position.group === 'cash' ? position.units : position.units * (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)), 0)
+    .reduce(
+      (sum, position) =>
+        sum +
+        (position.group === 'cash'
+          ? position.units
+          : position.units *
+            (convertedPrice(quoteFor(position, quotes), baseCurrency, rates)?.price ?? 0)),
+      0,
+    )
   return roundToPlace(raw, rounding)
 }
 
@@ -80,8 +98,17 @@ export function hasForeignCurrency(quote: QuoteCacheEntry | null, baseCurrency: 
 }
 
 /** Nur vollständige Bewertungen zählen; ausgeschlossene Zeilen bleiben sichtbar. */
-function countsIn(position: Position, quotes: QuoteMap, baseCurrency: string, rates: FxMap): boolean {
-  return position.enabled && (position.group === 'cash' || convertedPrice(quoteFor(position, quotes), baseCurrency, rates) !== null)
+function countsIn(
+  position: Position,
+  quotes: QuoteMap,
+  baseCurrency: string,
+  rates: FxMap,
+): boolean {
+  return (
+    position.enabled &&
+    (position.group === 'cash' ||
+      convertedPrice(quoteFor(position, quotes), baseCurrency, rates) !== null)
+  )
 }
 
 /** IST-% am Gesamtvermögen (Excel L = K × 100 / I3). */
@@ -144,7 +171,12 @@ export function roundToPlace(value: number, place: number): number {
  * Ist die Position „nahe" der Bandgrenze (Vorwarnstufe, gelber Badge)?
  * Kriterium: relatives Delta ist innerhalb 1 %-Punkt der Bandgrenze.
  */
-export function isNearBand(actualValue: number, low: number, high: number, target: number): boolean {
+export function isNearBand(
+  actualValue: number,
+  low: number,
+  high: number,
+  target: number,
+): boolean {
   if (target === 0) return false
   if (actualValue < low || actualValue > high) return false
   const upperMargin = ((high - actualValue) * 100) / target
@@ -305,7 +337,10 @@ export function computeLiquidity(
     groupMarketValue('moneymarket', portfolio, quotes, baseCurrencyOf(portfolio), rates) +
     groupMarketValue('cash', portfolio, quotes, baseCurrencyOf(portfolio), rates)
 
-  const securityBuffer = resolveAmount(portfolio.amountSettings?.securityBuffer ?? settings.securityBuffer, total)
+  const securityBuffer = resolveAmount(
+    portfolio.amountSettings?.securityBuffer ?? settings.securityBuffer,
+    total,
+  )
   const investmentReserve = liquidAssets - securityBuffer
 
   return {
@@ -375,7 +410,10 @@ export function computeRebalancing(
   const baseCurrency = baseCurrencyOf(portfolio)
   const total = totalValue(portfolio, quotes, settings.totalRounding, baseCurrency, rates)
   const bands = settings.bands
-  const minTrade = resolveAmount(portfolio.amountSettings?.minTradeSize ?? settings.minTradeSize, total)
+  const minTrade = resolveAmount(
+    portfolio.amountSettings?.minTradeSize ?? settings.minTradeSize,
+    total,
+  )
   const trigger = settings.rebalancing.trigger
   const due =
     usesCalendar(trigger) &&
@@ -386,16 +424,26 @@ export function computeRebalancing(
   // ist, dass sie nirgends mitzählen.
   const rows: PositionResult[] = portfolio.positions.map((position) => {
     const quote = quoteFor(position, quotes)
-    const converted = position.group === 'cash' ? { price: 1, fx: null } : convertedPrice(quote, baseCurrency, rates)
+    const converted =
+      position.group === 'cash'
+        ? { price: 1, fx: null }
+        : convertedPrice(quote, baseCurrency, rates)
     const originalMarketValue = marketValue(position, quote)
     const mv = converted ? position.units * converted.price : 0
-    const valuation = { basePrice: converted?.price ?? null, baseCurrency, originalMarketValue, fx: converted?.fx ?? null }
+    const valuation = {
+      basePrice: converted?.price ?? null,
+      baseCurrency,
+      originalMarketValue,
+      fx: converted?.fx ?? null,
+    }
 
     const excludedReason: PositionResult['excludedReason'] = !position.enabled
       ? 'disabled'
       : position.group !== 'cash' && !quote
         ? 'missing-quote'
-        : !converted ? 'currency' : null
+        : !converted
+          ? 'currency'
+          : null
     if (excludedReason) {
       return {
         position,
@@ -436,7 +484,12 @@ export function computeRebalancing(
       upperBand: high,
       suggestion: verdict.suggestion,
       belowMinTrade: verdict.belowMinTrade,
-      unitsDelta: position.group === 'cash' ? 0 : converted && converted.price > 0 ? (target - mv) / converted.price : 0,
+      unitsDelta:
+        position.group === 'cash'
+          ? 0
+          : converted && converted.price > 0
+            ? (target - mv) / converted.price
+            : 0,
       relativeDeltaPercent: relativeDeltaPercent(mv, target),
       // Ohne laufendes Band gibt es kein „knapp davor" — nur den Termin.
       isNearBand: usesBands(trigger) && isNearBand(mv, low, high, target),

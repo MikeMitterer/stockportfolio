@@ -110,9 +110,10 @@ describe('Utility-Klassen', () => {
 
     const bericht = alle.map((f) => `${f.datei} (${f.wo}): .${f.name}`).join('\n')
 
-    expect(alle, `Utility-Klasse gefunden — wirkungslos, seit Tailwind raus ist:\n${bericht}`).toEqual(
-      [],
-    )
+    expect(
+      alle,
+      `Utility-Klasse gefunden — wirkungslos, seit Tailwind raus ist:\n${bericht}`,
+    ).toEqual([])
   })
 
   it('erkennt sie im Markup — sonst prüft der Wächter nichts', () => {
@@ -135,7 +136,8 @@ describe('Utility-Klassen', () => {
   })
 
   it('lässt eigene Klassen in Ruhe, die nur ähnlich heißen', () => {
-    const beispiel = '<template>\n  <span class="visually-hidden tabular-nums kpi__value">x</span>\n</template>'
+    const beispiel =
+      '<template>\n  <span class="visually-hidden tabular-nums kpi__value">x</span>\n</template>'
 
     expect(ausMarkup(beispiel, 'beispiel.vue')).toEqual([])
   })

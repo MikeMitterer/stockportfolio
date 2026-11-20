@@ -14,7 +14,7 @@ import type { DetailValue } from './details'
  */
 /** Gemeinsame Reihenfolge für Berechnung, Anzeige, Formulare und Backups. */
 export const ASSET_GROUPS = ['etfs', 'stocks', 'bonds', 'metals', 'moneymarket', 'cash'] as const
-export type AssetGroup = typeof ASSET_GROUPS[number]
+export type AssetGroup = (typeof ASSET_GROUPS)[number]
 
 export type Suggestion = 'buy' | 'sell' | 'ok'
 

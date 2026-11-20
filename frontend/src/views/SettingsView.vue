@@ -57,10 +57,12 @@ const SETTINGS_TABS = [
   'language',
   'about',
 ]
-const tabOptions = computed(() => SETTINGS_TABS.map((value) => ({
-  label: t(`settings.tabs.${value}`),
-  value,
-})))
+const tabOptions = computed(() =>
+  SETTINGS_TABS.map((value) => ({
+    label: t(`settings.tabs.${value}`),
+    value,
+  })),
+)
 const settingsStore = useSettingsStore()
 const portfolioStore = usePortfolioStore()
 const quotesStore = useQuotesStore()
@@ -167,7 +169,9 @@ function setTabFromSelection(value: string | number | null): void {
   if (typeof value === 'string' && SETTINGS_TABS.includes(value)) setTab(value)
 }
 
-const logoUrl = computed(() => `${import.meta.env.BASE_URL}mangolila-logo-${themeStore.isDark ? 'dark' : 'light'}.png`)
+const logoUrl = computed(
+  () => `${import.meta.env.BASE_URL}mangolila-logo-${themeStore.isDark ? 'dark' : 'light'}.png`,
+)
 
 async function setLowerBand(value: number | null): Promise<void> {
   if (value === null) return
@@ -207,7 +211,13 @@ const instrumentTypes = useInstrumentTypesStore()
 function loadInstrumentTypes(): void {
   if (client) void instrumentTypes.load(client)
 }
-watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immediate: true })
+watch(
+  activeTab,
+  (tab) => {
+    if (tab === 'links') loadInstrumentTypes()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -377,7 +387,10 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
               -->
               <AmountSettingField
                 :label="t('settings.minTradeSize')"
-                :setting="portfolioStore.portfolio?.amountSettings?.minTradeSize ?? settingsStore.settings.minTradeSize"
+                :setting="
+                  portfolioStore.portfolio?.amountSettings?.minTradeSize ??
+                  settingsStore.settings.minTradeSize
+                "
                 :total="total"
                 :hint="t('hints.minTradeSize')"
                 anchor="bands"
@@ -402,7 +415,10 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
               -->
               <AmountSettingField
                 :label="t('settings.securityBuffer')"
-                :setting="portfolioStore.portfolio?.amountSettings?.securityBuffer ?? settingsStore.settings.securityBuffer"
+                :setting="
+                  portfolioStore.portfolio?.amountSettings?.securityBuffer ??
+                  settingsStore.settings.securityBuffer
+                "
                 :total="total"
                 :hint="t('hints.securityBuffer')"
                 anchor="reserve"
@@ -453,10 +469,7 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
               :aria-pressed="themeStore.current === theme.id"
               @click="themeStore.setTheme(theme.id)"
             >
-              <span
-                class="theme-tile__preview"
-                :style="{ backgroundColor: theme.preview.page }"
-              >
+              <span class="theme-tile__preview" :style="{ backgroundColor: theme.preview.page }">
                 <span
                   class="theme-tile__card"
                   :style="{ backgroundColor: theme.preview.card }"
@@ -473,10 +486,7 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
 
               <span class="theme-tile__name">
                 <span class="theme-tile__label">{{ t(`settings.themeNames.${theme.id}`) }}</span>
-                <span
-                  v-if="themeStore.current === theme.id"
-                  class="theme-tile__active"
-                >
+                <span v-if="themeStore.current === theme.id" class="theme-tile__active">
                   {{ t('settings.themeActive') }}
                 </span>
               </span>
@@ -662,7 +672,8 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
                     :href="localeStore.current === 'de' ? './LICENSE.de.txt' : './LICENSE.txt'"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >{{ t('about.licenseLink') }}</a>
+                    >{{ t('about.licenseLink') }}</a
+                  >
                 </li>
                 <li>
                   <a href="./LICENSING.md" target="_blank" rel="noopener noreferrer">
@@ -679,14 +690,16 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
                     href="https://www.mangolila.at/impressum/haftungsausschluss-disclaimer-finanzinhalte/"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >{{ t('about.financialContentLink') }}</a>
+                    >{{ t('about.financialContentLink') }}</a
+                  >
                 </li>
               </ul>
             </div>
             <div class="settings__provider">
               <img :src="logoUrl" alt="" width="200" height="57" />
               <address class="settings__provider-address">
-                <strong>{{ t('about.providerName') }}</strong><br />
+                <strong>{{ t('about.providerName') }}</strong
+                ><br />
                 {{ t('about.providerStreet') }}<br />
                 {{ t('about.providerCity') }}<br />
                 {{ t('about.providerCountry') }}
@@ -726,11 +739,18 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
 .settings {
   @include content-frame(var(--space-8));
 
-  &__mobile-tabs { display: none; }
+  &__mobile-tabs {
+    display: none;
+  }
 
   @include below(md) {
-    &__mobile-tabs { display: block; margin-bottom: var(--space-4); }
-    :deep(.n-tabs-nav) { display: none; }
+    &__mobile-tabs {
+      display: block;
+      margin-bottom: var(--space-4);
+    }
+    :deep(.n-tabs-nav) {
+      display: none;
+    }
   }
 
   &__title {
@@ -749,19 +769,27 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     grid-template-columns: 1fr;
     gap: var(--space-4);
 
-    @include up(xl) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include up(xl) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
-  &__cards { @include stack(var(--space-4)); }
+  &__cards {
+    @include stack(var(--space-4));
+  }
 
   &__card {
     background-color: token(--surface-card) !important;
 
     /* Karten einer Zeile füllen die Zeilenhöhe aus — sonst enden sie versetzt. */
-    &--full { height: 100%; }
+    &--full {
+      height: 100%;
+    }
 
     /* Über beide Spalten — für Inhalte, die in einer halben Breite eng werden. */
-    &--wide { grid-column: 1 / -1; }
+    &--wide {
+      grid-column: 1 / -1;
+    }
   }
 
   &__card-title {
@@ -778,7 +806,9 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
   &__group {
     @include stack(var(--space-4));
 
-    &--tight { gap: var(--space-2); }
+    &--tight {
+      gap: var(--space-2);
+    }
   }
 
   &__pair {
@@ -786,7 +816,9 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     grid-template-columns: 1fr;
     gap: var(--space-6);
 
-    @include up(sm) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include up(sm) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   &__stack-wide {
@@ -795,9 +827,13 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     gap: var(--space-6);
   }
 
-  &__below { margin-top: var(--space-6); }
+  &__below {
+    margin-top: var(--space-6);
+  }
 
-  &__narrow { max-width: 28rem; }
+  &__narrow {
+    max-width: 28rem;
+  }
 
   /*
    * Beschriftung und Schalter in einer Zeile, der Schalter rechts. `center`
@@ -822,9 +858,13 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     gap: var(--space-2);
   }
 
-  &__grow { flex: 1; }
+  &__grow {
+    flex: 1;
+  }
 
-  &__label { @include muted(null); }
+  &__label {
+    @include muted(null);
+  }
 
   &__hint {
     @include muted;
@@ -835,7 +875,9 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     }
   }
 
-  &__option { font-size: var(--font-sm); }
+  &__option {
+    font-size: var(--font-sm);
+  }
 
   &__option-hint {
     @include muted;
@@ -848,30 +890,46 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
 
-    @include up(md) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @include up(md) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
   &__about-layout {
     display: grid;
     gap: var(--space-6);
 
-    @include up(md) { grid-template-columns: minmax(0, 1fr) 17rem; }
+    @include up(md) {
+      grid-template-columns: minmax(0, 1fr) 17rem;
+    }
 
     a {
       color: token(--accent);
       text-decoration: none;
 
-      &:hover { opacity: 0.8; }
-      &:focus-visible { outline: 2px solid token(--accent); outline-offset: 2px; }
+      &:hover {
+        opacity: 0.8;
+      }
+      &:focus-visible {
+        outline: 2px solid token(--accent);
+        outline-offset: 2px;
+      }
     }
   }
 
   &__about-content {
     min-width: 0;
 
-    p { margin: 0 0 var(--space-3); }
-    ul { margin: 0; padding-inline-start: var(--space-6); }
-    li + li { margin-top: var(--space-2); }
+    p {
+      margin: 0 0 var(--space-3);
+    }
+    ul {
+      margin: 0;
+      padding-inline-start: var(--space-6);
+    }
+    li + li {
+      margin-top: var(--space-2);
+    }
   }
 
   &__provider {
@@ -880,7 +938,11 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     align-items: flex-start;
     gap: var(--space-3);
 
-    img { display: block; max-width: 100%; height: auto; }
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
 
     @include up(md) {
       border-inline-start: 1px solid token(--border-default);
@@ -905,7 +967,9 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
   text-align: left;
   transition: border-color 0.15s ease;
 
-  &:hover { border-color: token(--text-muted); }
+  &:hover {
+    border-color: token(--text-muted);
+  }
 
   &--active {
     border-color: token(--accent);
@@ -930,11 +994,19 @@ watch(activeTab, tab => { if (tab === 'links') loadInstrumentTypes() }, { immedi
     border-radius: 0.25rem;
   }
 
-  &__card { flex: 1; }
-  &__ink { width: 0.5rem; }
-  &__accent { width: 1rem; }
+  &__card {
+    flex: 1;
+  }
+  &__ink {
+    width: 0.5rem;
+  }
+  &__accent {
+    width: 1rem;
+  }
 
-  &__name { @include row; }
+  &__name {
+    @include row;
+  }
 
   &__label {
     font-size: var(--font-sm);

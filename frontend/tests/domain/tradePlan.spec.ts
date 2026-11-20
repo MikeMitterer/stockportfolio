@@ -100,11 +100,7 @@ describe('computeTradePlan — Geldfluss', () => {
 
   it('trennt Erlöse und Einsatz', () => {
     const { result } = makeSetup()
-    const plan = computeTradePlan(
-      result.rows,
-      { a: -5, b: 3 },
-      result.total,
-      SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { a: -5, b: 3 }, result.total, SETTINGS.bands, 0)
 
     expect(plan.proceeds).toBe(500)
     expect(plan.outlay).toBe(300)
@@ -113,11 +109,7 @@ describe('computeTradePlan — Geldfluss', () => {
   it('der Nettofluss zeigt, ob der Plan aufgeht', () => {
     const { result } = makeSetup()
     // 5 verkaufen, 5 kaufen — gleicht sich aus.
-    const plan = computeTradePlan(
-      result.rows,
-      { a: -5, b: 5 },
-      result.total,
-      SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { a: -5, b: 5 }, result.total, SETTINGS.bands, 0)
 
     expect(plan.netCashFlow).toBe(0)
   })
@@ -259,11 +251,21 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
         position.id === 'target' ? { ...position, targetPercent: 0 } : position,
       ),
     }
-    const recalculated = computeRebalancing(withoutTarget, new Map([
-      ['Z', makeQuote({ isin: 'Z', price: 100 })],
-      ['R', makeQuote({ isin: 'R', price: 100 })],
-    ]), SETTINGS)
-    const plan = computeTradePlan(recalculated.rows, { target: 5 }, recalculated.total, SETTINGS.bands, 0)
+    const recalculated = computeRebalancing(
+      withoutTarget,
+      new Map([
+        ['Z', makeQuote({ isin: 'Z', price: 100 })],
+        ['R', makeQuote({ isin: 'R', price: 100 })],
+      ]),
+      SETTINGS,
+    )
+    const plan = computeTradePlan(
+      recalculated.rows,
+      { target: 5 },
+      recalculated.total,
+      SETTINGS.bands,
+      0,
+    )
     const row = plan.rows.find((entry) => entry.current.position.id === 'target')
 
     expect(row?.relativeDeviationAfter).toBe(0)
@@ -277,11 +279,7 @@ describe('computeTradePlan — Deckung', () => {
    */
   it('gedeckt, wenn Verkäufe die Käufe tragen', () => {
     const { result } = makeSetup()
-    const plan = computeTradePlan(
-      result.rows,
-      { a: -5, b: 5 },
-      result.total,
-      SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { a: -5, b: 5 }, result.total, SETTINGS.bands, 0)
 
     expect(plan.underfunded).toBe(false)
     expect(plan.netCashFlow).toBe(0)
@@ -298,11 +296,7 @@ describe('computeTradePlan — Deckung', () => {
   it('teilweise gedeckt bleibt ungedeckt', () => {
     const { result } = makeSetup()
     // 500 € kaufen, nur 400 € verkaufen → 100 € fehlen
-    const plan = computeTradePlan(
-      result.rows,
-      { a: -4, b: 5 },
-      result.total,
-      SETTINGS.bands, 0)
+    const plan = computeTradePlan(result.rows, { a: -4, b: 5 }, result.total, SETTINGS.bands, 0)
 
     expect(plan.underfunded).toBe(true)
     expect(plan.netCashFlow).toBe(-100)
@@ -349,7 +343,9 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
       result.rows,
       { cash: -600, stock: 6 },
       result.total,
-      SETTINGS.bands, 400)
+      SETTINGS.bands,
+      400,
+    )
 
     expect(plan.liquidAfter).toBe(400)
     expect(plan.bufferBreached).toBe(false)
@@ -361,7 +357,9 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
       result.rows,
       { cash: -700, stock: 7 },
       result.total,
-      SETTINGS.bands, 400)
+      SETTINGS.bands,
+      400,
+    )
 
     expect(plan.liquidAfter).toBe(300)
     expect(plan.bufferBreached).toBe(true)
@@ -373,7 +371,9 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
       result.rows,
       { cash: -500, stock: 5 },
       result.total,
-      SETTINGS.bands, 0)
+      SETTINGS.bands,
+      0,
+    )
 
     expect(plan.proceeds).toBe(500)
     expect(plan.outlay).toBe(500)
@@ -432,7 +432,9 @@ describe('Ablauf aus der Praxis', () => {
       result.rows,
       { large: -14, small1: 7, small2: 7 },
       result.total,
-      SETTINGS.bands, 0)
+      SETTINGS.bands,
+      0,
+    )
 
     expect(plan.proceeds).toBe(1_400)
     expect(plan.outlay).toBe(1_400)
@@ -504,7 +506,9 @@ describe('computeTradePlan — probeweise Ziele', () => {
   it('rechnet Delta und Bänder gegen das probeweise Ziel', () => {
     // A steht bei 50 %; mit Probeziel 50 % ist nichts mehr zu tun.
     const { result } = makeSetup()
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, {
+      targets: { a: 50 },
+    })
     const a = plan.rows.find((row) => row.current.position.id === 'a')
 
     expect(a?.deltaUnits).toBe(0)
@@ -514,7 +518,9 @@ describe('computeTradePlan — probeweise Ziele', () => {
 
   it('markiert nur die Zeilen, deren Ziel probeweise gesetzt wurde', () => {
     const { result } = makeSetup()
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, {
+      targets: { a: 50 },
+    })
 
     expect(plan.rows.find((row) => row.current.position.id === 'a')?.targetOverridden).toBe(true)
     expect(plan.rows.find((row) => row.current.position.id === 'b')?.targetOverridden).toBe(false)
@@ -530,7 +536,9 @@ describe('computeTradePlan — probeweise Ziele', () => {
 
   it('meldet über targetSum, wenn die Ziele nicht mehr 100 % ergeben', () => {
     const { result } = makeSetup()
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { targets: { a: 50 } })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, {
+      targets: { a: 50 },
+    })
 
     expect(plan.targetSum).toBeCloseTo(125, 6)
   })
@@ -573,19 +581,16 @@ describe('computeTradePlan — probeweise Ziele', () => {
     // Ohne Zielanpassung fällt der Geldmarkt auf 10 % bei Ziel 30 % — die
     // Zeile stünde dauerhaft auf „Kaufen", obwohl das so gewollt war.
     const withoutAdjustment = computeTradePlan(result.rows, trades, result.total, SETTINGS.bands, 0)
-    const moneyMarketWithoutAdjustment = withoutAdjustment.rows.find((row) => row.current.position.id === 'moneyMarket')
+    const moneyMarketWithoutAdjustment = withoutAdjustment.rows.find(
+      (row) => row.current.position.id === 'moneyMarket',
+    )
     expect(moneyMarketWithoutAdjustment?.percentAfter).toBeCloseTo(10, 6)
     expect(moneyMarketWithoutAdjustment?.inBandAfter).toBe(false)
 
     // Mit probeweise nachgezogenen Zielen geht die Rechnung auf.
-    const withAdjustment = computeTradePlan(
-      result.rows,
-      trades,
-      result.total,
-      SETTINGS.bands,
-      0,
-      { targets: { eqqq: 50, ftse: 40, moneyMarket: 10 } },
-    )
+    const withAdjustment = computeTradePlan(result.rows, trades, result.total, SETTINGS.bands, 0, {
+      targets: { eqqq: 50, ftse: 40, moneyMarket: 10 },
+    })
     expect(withAdjustment.targetSum).toBeCloseTo(100, 6)
     expect(withAdjustment.rows.every((row) => row.inBandAfter)).toBe(true)
   })
@@ -765,7 +770,9 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
 
   it('schweigt, solange die fehlende Summe unter der Grenze liegt', () => {
     const result = computeRebalancing(portfolio, quotes, settings)
-    const plan = computeTradePlan(result.rows, {}, result.total, settings.bands, 0, { minTrade: 500 })
+    const plan = computeTradePlan(result.rows, {}, result.total, settings.bands, 0, {
+      minTrade: 500,
+    })
     const row = plan.rows.find((entry) => entry.current.position.id === 'small')!
     expect(row.suggestionAfter).toBe('ok')
     expect(row.belowMinTradeAfter).toBe(true)
@@ -804,9 +811,12 @@ describe('bandPrice — Kurs an der Bandgrenze', () => {
     { name: 'Grenzanteil 100 %', price: 100, value: 500, total: 2000, boundary: 100 },
     { name: 'Grenzanteil über 100 %', price: 100, value: 500, total: 2000, boundary: 120 },
     { name: 'Position ist das ganze Depot', price: 100, value: 2000, total: 2000, boundary: 50 },
-  ])('liefert für $name keinen Kurs statt NaN oder eines negativen Werts', ({ price, value, total, boundary }) => {
-    expect(bandPrice(price, value, total, boundary)).toBeNull()
-  })
+  ])(
+    'liefert für $name keinen Kurs statt NaN oder eines negativen Werts',
+    ({ price, value, total, boundary }) => {
+      expect(bandPrice(price, value, total, boundary)).toBeNull()
+    },
+  )
 })
 
 describe('computeTradePlan — Bandkurse', () => {
@@ -839,7 +849,13 @@ describe('computeTradePlan — Bandkurse', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
         makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: target }),
-        makePosition({ id: 'b', isin: 'B', symbol: 'B.DE', units: 10, targetPercent: 100 - target }),
+        makePosition({
+          id: 'b',
+          isin: 'B',
+          symbol: 'B.DE',
+          units: 10,
+          targetPercent: 100 - target,
+        }),
       ],
     }
     const quotes: QuoteMap = new Map([
@@ -847,7 +863,10 @@ describe('computeTradePlan — Bandkurse', () => {
       ['B', makeQuote({ isin: 'B', price: 100 })],
     ])
     const result = computeRebalancing(portfolio, quotes, SETTINGS)
-    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, { trigger: 'calendar', due: true })
+    const plan = computeTradePlan(result.rows, {}, result.total, SETTINGS.bands, 0, {
+      trigger: 'calendar',
+      due: true,
+    })
     const row = plan.rows.find((entry) => entry.current.position.id === 'a')!
 
     if (breach === null) expect(row.suggestionAfter).toBe('buy')
@@ -862,7 +881,15 @@ describe('computeTradePlan — Bandkurse', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
       positions: [
         makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 0 }),
-        makePosition({ id: 'cash', isin: null, symbol: 'CASH', group: 'cash', kind: 'cash', units: 1000, targetPercent: 100 }),
+        makePosition({
+          id: 'cash',
+          isin: null,
+          symbol: 'CASH',
+          group: 'cash',
+          kind: 'cash',
+          units: 1000,
+          targetPercent: 100,
+        }),
       ],
     }
     const quotes: QuoteMap = new Map([['A', makeQuote({ isin: 'A', price: 100 })]])

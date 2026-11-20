@@ -21,7 +21,11 @@ import type { HistoryPoint } from '@/domain/sparkline'
 function reihe(tage: number, start = 1000): HistoryPoint[] {
   const heute = new Date()
   return Array.from({ length: tage }, (_, index) => {
-    const tag = new Date(heute.getFullYear(), heute.getMonth(), heute.getDate() - (tage - 1 - index))
+    const tag = new Date(
+      heute.getFullYear(),
+      heute.getMonth(),
+      heute.getDate() - (tage - 1 - index),
+    )
     const iso = `${tag.getFullYear()}-${String(tag.getMonth() + 1).padStart(2, '0')}-${String(tag.getDate()).padStart(2, '0')}`
     return { date: iso, close: start + index }
   })

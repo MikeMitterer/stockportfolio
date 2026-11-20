@@ -4,7 +4,19 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { counted, eur, eurCent, eurSigned, integer, money, number, percent, percentInt, percentSigned, pluralize } from '@/domain/formatters'
+import {
+  counted,
+  eur,
+  eurCent,
+  eurSigned,
+  integer,
+  money,
+  number,
+  percent,
+  percentInt,
+  percentSigned,
+  pluralize,
+} from '@/domain/formatters'
 
 // Non-breaking-space (U+00A0) — Intl fügt ihn vor „€" ein.
 // String-Vergleiche machen wir daher meist über includes/regex.

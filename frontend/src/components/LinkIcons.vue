@@ -70,7 +70,9 @@ function abbreviate(label: string): string {
     font-size: 0.625rem;
     font-weight: 500;
     @include muted(null);
-    transition: color 0.15s ease, border-color 0.15s ease;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
 
     &:hover {
       border-color: token(--accent, 0.6);

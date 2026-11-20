@@ -45,9 +45,7 @@ export function fillTemplate(
 ): string | null {
   if (template.includes('{isin}') && !values.isin) return null
 
-  return template
-    .replace(/\{isin\}/g, values.isin ?? '')
-    .replace(/\{symbol\}/g, values.symbol)
+  return template.replace(/\{isin\}/g, values.isin ?? '').replace(/\{symbol\}/g, values.symbol)
 }
 
 /**
@@ -77,7 +75,9 @@ export function resolveLinks(
   return links
     .filter((link) => link.enabled)
     .filter((link) => appliesToKind(link, kind))
-    .filter((link) => !link.appliesToGroups?.length || link.appliesToGroups.includes(position.group))
+    .filter(
+      (link) => !link.appliesToGroups?.length || link.appliesToGroups.includes(position.group),
+    )
     .map((link) => {
       const url = fillTemplate(link.urlTemplate, {
         isin: position.isin,

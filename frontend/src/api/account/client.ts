@@ -9,7 +9,10 @@ export interface PortfolioUser {
 }
 
 export class PortfolioApiError extends Error {
-  constructor(public readonly status: number, public readonly code: string) {
+  constructor(
+    public readonly status: number,
+    public readonly code: string,
+  ) {
     super(code)
   }
 }
@@ -21,13 +24,15 @@ export class PortfolioAuthClient {
     const response = await this.fetcher(path, {
       method,
       credentials: 'same-origin',
-      ...(method === 'GET' ? {} : {
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data ?? {}),
-      }),
+      ...(method === 'GET'
+        ? {}
+        : {
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data ?? {}),
+          }),
     })
     if (!response.ok) {
-      const body = await response.json().catch(() => null) as { error?: string } | null
+      const body = (await response.json().catch(() => null)) as { error?: string } | null
       throw new PortfolioApiError(response.status, body?.error ?? 'request_failed')
     }
     return response.json() as Promise<T>
@@ -66,12 +71,18 @@ export class PortfolioAuthClient {
     return this.request('/api/admin/users')
   }
 
-  createUser(username: string, password: string, role: 'admin' | 'user'): Promise<{ user: PortfolioUser }> {
+  createUser(
+    username: string,
+    password: string,
+    role: 'admin' | 'user',
+  ): Promise<{ user: PortfolioUser }> {
     return this.request('/api/admin/users', 'POST', { username, password, role })
   }
 
   resetPassword(id: string, password: string): Promise<{ ok: boolean }> {
-    return this.request(`/api/admin/users/${encodeURIComponent(id)}/reset-password`, 'POST', { password })
+    return this.request(`/api/admin/users/${encodeURIComponent(id)}/reset-password`, 'POST', {
+      password,
+    })
   }
 
   deactivateUser(id: string): Promise<{ ok: boolean }> {

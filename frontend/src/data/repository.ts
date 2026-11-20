@@ -18,7 +18,10 @@ class ServerPortfolioRepository {
   }
 
   async save(portfolio: Portfolio): Promise<void> {
-    await activeClient().save('portfolio', portfolio.id, { ...portfolio, updatedAt: new Date().toISOString() })
+    await activeClient().save('portfolio', portfolio.id, {
+      ...portfolio,
+      updatedAt: new Date().toISOString(),
+    })
   }
 
   async remove(id: string): Promise<void> {
@@ -47,7 +50,10 @@ class ServerAllowlistRepository {
   }
 
   async setEnabled(portfolioId: string, key: string, enabled: boolean): Promise<void> {
-    await activeClient().update<Record<string, boolean>>('allowlist', portfolioId, (current) => ({ ...current, [key]: enabled }))
+    await activeClient().update<Record<string, boolean>>('allowlist', portfolioId, (current) => ({
+      ...current,
+      [key]: enabled,
+    }))
   }
 
   async removeForPortfolio(portfolioId: string): Promise<void> {
@@ -62,15 +68,25 @@ class ServerAllowlistRepository {
 class ServerValueSnapshotRepository {
   async findByPortfolio(portfolioId: string): Promise<ValueSnapshotEntry[]> {
     const resource = await activeClient().get<ValueSnapshotEntry[]>('snapshots', portfolioId)
-    return [...(resource?.value ?? [])].sort((first, second) => first.date.localeCompare(second.date))
+    return [...(resource?.value ?? [])].sort((first, second) =>
+      first.date.localeCompare(second.date),
+    )
   }
 
   async put(portfolioId: string, date: string, total: number, currency: string): Promise<void> {
-    await activeClient().update<ValueSnapshotEntry[]>('snapshots', portfolioId, (current) => {
-      const entries = current ?? []
-      const next = entries.filter((entry) => entry.date !== date || entry.currency !== currency)
-      return [...next, { key: `${portfolioId}::${currency}::${date}`, portfolioId, date, total, currency }]
-    }, { conflictRetries: 2, reportConflict: false })
+    await activeClient().update<ValueSnapshotEntry[]>(
+      'snapshots',
+      portfolioId,
+      (current) => {
+        const entries = current ?? []
+        const next = entries.filter((entry) => entry.date !== date || entry.currency !== currency)
+        return [
+          ...next,
+          { key: `${portfolioId}::${currency}::${date}`, portfolioId, date, total, currency },
+        ]
+      },
+      { conflictRetries: 2, reportConflict: false },
+    )
   }
 
   async clearPortfolio(portfolioId: string): Promise<void> {

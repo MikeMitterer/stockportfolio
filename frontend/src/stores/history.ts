@@ -124,8 +124,7 @@ export const useHistoryStore = defineStore('history', () => {
         fetchedAt,
       })
     } catch (cause) {
-      const reason =
-        cause instanceof ApiError ? cause.detail : translate('notify.historyFailed')
+      const reason = cause instanceof ApiError ? cause.detail : translate('notify.historyFailed')
       // Ein fehlender Verlauf ist kein Drama — die Zeile zeigt dann eben keine
       // Linie. Deshalb nur ins Protokoll, keine Meldung an den Nutzer.
       consola.warn('history: Laden fehlgeschlagen', { key, reason })

@@ -1,7 +1,15 @@
 /** Gemeinsame Laufzeitprüfung für Quote, Refresh und Instrumentkatalog. */
 import { ApiError } from './errors'
 import { translate } from '@/i18n'
-import type { DetailDefinitionResponse, DetailValueResponse, FieldsResponse, FxResponse, InstrumentTypesResponse, InstrumentSummary, QuoteResponse } from './types'
+import type {
+  DetailDefinitionResponse,
+  DetailValueResponse,
+  FieldsResponse,
+  FxResponse,
+  InstrumentTypesResponse,
+  InstrumentSummary,
+  QuoteResponse,
+} from './types'
 import type { DetailScalar } from '@/types/details'
 import type { InstrumentIdentity } from '@/types/portfolio'
 
@@ -10,14 +18,23 @@ const currencies = new Set<string>(Intl.supportedValuesOf('currency'))
 /** Das Antwortpaar muss genau zur angefragten Umrechnung gehören. */
 export function normalizeFx(input: unknown, base: string, quote: string, url: string): FxResponse {
   const data = object(input, 'fx', url)
-  if (!currencies.has(base) || !currencies.has(quote) || data.base !== base || data.quote !== quote) invalid('fx.base/quote', url)
+  if (!currencies.has(base) || !currencies.has(quote) || data.base !== base || data.quote !== quote)
+    invalid('fx.base/quote', url)
   const rate = finiteNumber(data.rate, 'fx.rate', url)
   if (rate <= 0) invalid('fx.rate', url)
   const cached = boolean(data.cached, 'fx.cached', url)
   const stale = boolean(data.stale, 'fx.stale', url)
   if (stale && !cached) invalid('fx.stale/cached', url)
-  return { base, quote, rate, cached, stale, source: optionalText(data.source),
-    quote_time: timestamp(data.quote_time, 'fx.quote_time', url), fetched_at: timestamp(data.fetched_at, 'fx.fetched_at', url) }
+  return {
+    base,
+    quote,
+    rate,
+    cached,
+    stale,
+    source: optionalText(data.source),
+    quote_time: timestamp(data.quote_time, 'fx.quote_time', url),
+    fetched_at: timestamp(data.fetched_at, 'fx.fetched_at', url),
+  }
 }
 
 function invalid(field: string, url: string): never {
@@ -46,7 +63,8 @@ function boolean(value: unknown, field: string, url: string): boolean {
 
 function timestamp(value: unknown, field: string, url: string): string {
   const result = text(value, field, url)
-  if (!/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(result) || !Number.isFinite(Date.parse(result))) invalid(field, url)
+  if (!/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(result) || !Number.isFinite(Date.parse(result)))
+    invalid(field, url)
   return result
 }
 
@@ -65,7 +83,8 @@ function identityOf(value: unknown, url: string): InstrumentIdentity {
         ticker: text(data.ticker, 'identity.ticker', url),
         mic: text(data.mic, 'identity.mic', url),
       }
-      if (data.isin !== undefined) identity.isin = data.isin === null ? null : text(data.isin, 'identity.isin', url)
+      if (data.isin !== undefined)
+        identity.isin = data.isin === null ? null : text(data.isin, 'identity.isin', url)
       return identity
     }
     case 'pair':
@@ -77,7 +96,11 @@ function identityOf(value: unknown, url: string): InstrumentIdentity {
     case 'isin_only':
       return { kind: 'isin_only', isin: text(data.isin, 'identity.isin', url) }
     default:
-      throw new ApiError(200, translate('errors.unsupportedIdentity', { kind: String(data.kind) }), url)
+      throw new ApiError(
+        200,
+        translate('errors.unsupportedIdentity', { kind: String(data.kind) }),
+        url,
+      )
   }
 }
 
@@ -95,7 +118,7 @@ function metadata(data: Record<string, unknown>, url: string) {
   return {
     identity,
     details: normalizeDetails(data.details),
-    isin: identity.kind === 'pair' ? null : identity.isin ?? null,
+    isin: identity.kind === 'pair' ? null : (identity.isin ?? null),
     symbol: text(data.symbol, 'symbol', url),
     name: text(data.name, 'name', url),
     type: text(data.type, 'type', url),
@@ -128,13 +151,15 @@ export function normalizeQuote(input: unknown, url: string): QuoteResponse {
 }
 
 function stringList(value: unknown, field: string, url: string): string[] {
-  if (!Array.isArray(value) || !value.every((item): item is string => typeof item === 'string')) invalid(field, url)
+  if (!Array.isArray(value) || !value.every((item): item is string => typeof item === 'string'))
+    invalid(field, url)
   return value
 }
 
 function normalizeInstrument(input: unknown, url: string): InstrumentSummary {
   const data = object(input, 'instrument', url)
-  const price = data.latest_price == null ? null : finiteNumber(data.latest_price, 'latest_price', url)
+  const price =
+    data.latest_price == null ? null : finiteNumber(data.latest_price, 'latest_price', url)
   const historyCount = finiteNumber(data.history_count, 'history_count', url)
   if (!Number.isInteger(historyCount) || historyCount < 0) invalid('history_count', url)
   return {
@@ -145,10 +170,20 @@ function normalizeInstrument(input: unknown, url: string): InstrumentSummary {
     history_count: historyCount,
     currency: optionalText(data.currency),
     latest_price: price,
-    latest_currency: price === null ? optionalText(data.latest_currency) : requireCurrency(data.latest_currency, 'latest_currency', url),
-    latest_quote_time: data.latest_quote_time == null ? null : timestamp(data.latest_quote_time, 'latest_quote_time', url),
-    latest_fetched_at: data.latest_fetched_at == null ? null : timestamp(data.latest_fetched_at, 'latest_fetched_at', url),
-    meta_fetched_at: data.meta_fetched_at == null ? null : timestamp(data.meta_fetched_at, 'meta_fetched_at', url),
+    latest_currency:
+      price === null
+        ? optionalText(data.latest_currency)
+        : requireCurrency(data.latest_currency, 'latest_currency', url),
+    latest_quote_time:
+      data.latest_quote_time == null
+        ? null
+        : timestamp(data.latest_quote_time, 'latest_quote_time', url),
+    latest_fetched_at:
+      data.latest_fetched_at == null
+        ? null
+        : timestamp(data.latest_fetched_at, 'latest_fetched_at', url),
+    meta_fetched_at:
+      data.meta_fetched_at == null ? null : timestamp(data.meta_fetched_at, 'meta_fetched_at', url),
   }
 }
 
@@ -158,8 +193,12 @@ export function normalizeInstruments(input: unknown, url: string): InstrumentSum
 }
 
 function isScalar(value: unknown): value is DetailScalar | null {
-  return value === null || typeof value === 'string' || typeof value === 'boolean'
-    || (typeof value === 'number' && Number.isFinite(value))
+  return (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'boolean' ||
+    (typeof value === 'number' && Number.isFinite(value))
+  )
 }
 
 function optionalCurrency(value: unknown): string | null {
@@ -171,17 +210,29 @@ function normalizeDetails(input: unknown): Record<string, DetailValueResponse> |
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null
   const entries: [string, DetailValueResponse][] = []
   for (const [key, raw] of Object.entries(input)) {
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw) || !('value' in raw) || !isScalar(raw.value)) continue
+    if (
+      !raw ||
+      typeof raw !== 'object' ||
+      Array.isArray(raw) ||
+      !('value' in raw) ||
+      !isScalar(raw.value)
+    )
+      continue
     const data = raw as Record<string, unknown>
-    entries.push([key, {
-      value: raw.value,
-      unit: optionalText(data.unit), currency: optionalCurrency(data.currency),
-      origin: data.origin === 'provider' || data.origin === 'manual' ? data.origin : null,
-      source: optionalText(data.source), as_of: optionalText(data.as_of),
-      shadowed: data.shadowed === true,
-      manual_value: isScalar(data.manual_value) ? data.manual_value : null,
-      manual_currency: optionalCurrency(data.manual_currency),
-    }])
+    entries.push([
+      key,
+      {
+        value: raw.value,
+        unit: optionalText(data.unit),
+        currency: optionalCurrency(data.currency),
+        origin: data.origin === 'provider' || data.origin === 'manual' ? data.origin : null,
+        source: optionalText(data.source),
+        as_of: optionalText(data.as_of),
+        shadowed: data.shadowed === true,
+        manual_value: isScalar(data.manual_value) ? data.manual_value : null,
+        manual_currency: optionalCurrency(data.manual_currency),
+      },
+    ])
   }
   return Object.fromEntries(entries)
 }
@@ -191,21 +242,30 @@ function normalizeDefinition(input: unknown, url: string): DetailDefinitionRespo
   try {
     const data = object(input, 'details.definition', url)
     if (data.kind !== 'number' && data.kind !== 'text' && data.kind !== 'boolean') return null
-    if (data.currency_required !== undefined && typeof data.currency_required !== 'boolean') return null
+    if (data.currency_required !== undefined && typeof data.currency_required !== 'boolean')
+      return null
     if (data.unit != null && typeof data.unit !== 'string') return null
     if (!Array.isArray(data.scopes)) return null
     return {
-      name: text(data.name, 'details.name', url), kind: data.kind,
-      unit: optionalText(data.unit), label_en: optionalText(data.label_en) ?? '', label_de: optionalText(data.label_de) ?? '',
+      name: text(data.name, 'details.name', url),
+      kind: data.kind,
+      unit: optionalText(data.unit),
+      label_en: optionalText(data.label_en) ?? '',
+      label_de: optionalText(data.label_de) ?? '',
       overridable: data.overridable === true,
       currency_required: data.currency_required === true,
       sources: stringList(data.sources, 'details.sources', url),
-      minimum: optionalNumber(data.minimum), maximum: optionalNumber(data.maximum),
-      scopes: data.scopes.map(inputScope => {
+      minimum: optionalNumber(data.minimum),
+      maximum: optionalNumber(data.maximum),
+      scopes: data.scopes.map((inputScope) => {
         const scope = object(inputScope, 'details.scopes', url)
         return {
           source: text(scope.source, 'details.scopes.source', url),
-          instrument_types: stringList(scope.instrument_types, 'details.scopes.instrument_types', url),
+          instrument_types: stringList(
+            scope.instrument_types,
+            'details.scopes.instrument_types',
+            url,
+          ),
           identity_kinds: stringList(scope.identity_kinds, 'details.scopes.identity_kinds', url),
         }
       }),
@@ -221,8 +281,11 @@ export function normalizeFields(input: unknown, url: string): FieldsResponse {
   const version = finiteNumber(data.details_version, 'details_version', url)
   if (!Number.isInteger(version) || version < 0) invalid('details_version', url)
   if (!Array.isArray(data.details)) invalid('details', url)
-  const details = data.details.map(entry => normalizeDefinition(entry, url)).filter((entry): entry is DetailDefinitionResponse => entry !== null)
-  if (new Set(details.map(entry => entry.name)).size !== details.length) invalid('details.name', url)
+  const details = data.details
+    .map((entry) => normalizeDefinition(entry, url))
+    .filter((entry): entry is DetailDefinitionResponse => entry !== null)
+  if (new Set(details.map((entry) => entry.name)).size !== details.length)
+    invalid('details.name', url)
   return {
     generation_id: text(data.generation_id, 'generation_id', url),
     core_version: text(data.core_version, 'core_version', url),
@@ -231,23 +294,26 @@ export function normalizeFields(input: unknown, url: string): FieldsResponse {
   }
 }
 
-
 /** Typkennungen bleiben offen; nur Form und Pflichtfelder des Katalogs prüfen. */
 export function normalizeInstrumentTypes(input: unknown, url: string): InstrumentTypesResponse {
   const data = object(input, 'instrument-types', url)
   function types(value: unknown, field: string): string[] {
     if (!Array.isArray(value)) invalid(field, url)
-    return [...new Set(value.map(entry => {
-      const identifier = text(entry, field, url)
-      if (identifier.trim() !== identifier) invalid(field, url)
-      return identifier
-    }))]
+    return [
+      ...new Set(
+        value.map((entry) => {
+          const identifier = text(entry, field, url)
+          if (identifier.trim() !== identifier) invalid(field, url)
+          return identifier
+        }),
+      ),
+    ]
   }
   if (!Array.isArray(data.sources)) invalid('sources', url)
   return {
     instrument_types: types(data.instrument_types, 'instrument_types'),
     complete: boolean(data.complete, 'complete', url),
-    sources: data.sources.map(entry => {
+    sources: data.sources.map((entry) => {
       const source = object(entry, 'sources', url)
       return {
         name: text(source.name, 'sources.name', url),

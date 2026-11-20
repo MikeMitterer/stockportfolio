@@ -14,7 +14,9 @@ export const users = sqliteTable('users', {
 
 export const sessions = sqliteTable('sessions', {
   tokenHash: text('token_hash').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   createdAt: integer('created_at').notNull(),
   lastSeenAt: integer('last_seen_at').notNull(),
   // Zeitpunkt des Token-Tauschs; danach gilt das alte Token nur noch kurz (T-98).
@@ -30,10 +32,18 @@ export const loginAttempts = sqliteTable('login_attempts', {
   blockedUntil: integer('blocked_until'),
 })
 
-export const privateResources = sqliteTable('private_resources', {
-  ownerId: text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  kind: text('kind', { enum: ['portfolio', 'settings', 'allowlist', 'snapshots', 'quote-refresh'] }).notNull(),
-  resourceId: text('resource_id').notNull(),
-  revision: integer('revision').notNull(),
-  value: text('value').notNull(),
-}, (table) => [primaryKey({ columns: [table.ownerId, table.kind, table.resourceId] })])
+export const privateResources = sqliteTable(
+  'private_resources',
+  {
+    ownerId: text('owner_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    kind: text('kind', {
+      enum: ['portfolio', 'settings', 'allowlist', 'snapshots', 'quote-refresh'],
+    }).notNull(),
+    resourceId: text('resource_id').notNull(),
+    revision: integer('revision').notNull(),
+    value: text('value').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.ownerId, table.kind, table.resourceId] })],
+)

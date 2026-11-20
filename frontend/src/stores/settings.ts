@@ -131,7 +131,9 @@ export const useSettingsStore = defineStore('settings', () => {
   /** Liest eine fremde Änderung, ohne dabei selbst einen Schreibvorgang auszulösen. */
   async function refreshFromServer(): Promise<void> {
     const stored = await repository.load()
-    settings.value = stored ? withDefaults(stored) : defaultSettings(settings.value.activePortfolioId)
+    settings.value = stored
+      ? withDefaults(stored)
+      : defaultSettings(settings.value.activePortfolioId)
     loaded.value = true
   }
 

@@ -23,7 +23,8 @@ const props = defineProps<{
 }>()
 
 /** Nie ganz bei null anfangen: Ein unsichtbarer Balken sieht aus wie keiner. */
-const width = () => props.percent === null ? undefined : `${Math.max(2, Math.min(100, props.percent))}%`
+const width = () =>
+  props.percent === null ? undefined : `${Math.max(2, Math.min(100, props.percent))}%`
 </script>
 
 <template>
@@ -69,11 +70,17 @@ const width = () => props.percent === null ? undefined : `${Math.max(2, Math.min
 }
 
 @keyframes progressbar-scan {
-  from { transform: translateX(0); }
-  to { transform: translateX(233%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(233%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .progressbar--indeterminate .progressbar__fill { animation: none; }
+  .progressbar--indeterminate .progressbar__fill {
+    animation: none;
+  }
 }
 </style>

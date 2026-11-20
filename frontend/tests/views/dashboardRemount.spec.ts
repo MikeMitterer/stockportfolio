@@ -19,7 +19,15 @@ import { i18n } from '@/i18n'
 import { setFormatterLocale } from '@/domain/formatters'
 import fixture from '../fixtures/stockinfo/quote-200.json'
 
-const fxBody = { base: 'USD', quote: 'EUR', rate: 0.8, quote_time: '2026-10-01T10:00:00Z', fetched_at: '2026-10-01T10:01:00Z', cached: true, stale: false }
+const fxBody = {
+  base: 'USD',
+  quote: 'EUR',
+  rate: 0.8,
+  quote_time: '2026-10-01T10:00:00Z',
+  fetched_at: '2026-10-01T10:01:00Z',
+  cached: true,
+  stale: false,
+}
 
 let wrappers: VueWrapper[] = []
 let requests: string[] = []
@@ -59,8 +67,15 @@ function prepareLoadedState(fetchedAt: string) {
   const portfolio = usePortfolioStore()
   portfolio.portfolio = emptyPortfolio('Wechselprobe', 'EUR')
   portfolio.portfolio.positions.push({
-    id: 'usd', isin: null, symbol: 'USDX', displayName: 'Dollar-Aktie',
-    kind: 'stock', group: 'stocks', units: 10, targetPercent: 50, enabled: true,
+    id: 'usd',
+    isin: null,
+    symbol: 'USDX',
+    displayName: 'Dollar-Aktie',
+    kind: 'stock',
+    group: 'stocks',
+    units: 10,
+    targetPercent: 50,
+    enabled: true,
   })
   portfolio.loaded = true
   const settings = useSettingsStore()
@@ -68,7 +83,12 @@ function prepareLoadedState(fetchedAt: string) {
   settings.settings.refresh = { autoOnLoad: true, staleAfterMinutes: 60 }
   const quotes = useQuotesStore()
   vi.spyOn(quotes, 'hydrate').mockResolvedValue()
-  const entry = toQuoteCacheEntry(normalizeQuote({ ...fixture.response.body, symbol: 'USDX', price: 10, currency: 'USD' }, 'test'))
+  const entry = toQuoteCacheEntry(
+    normalizeQuote(
+      { ...fixture.response.body, symbol: 'USDX', price: 10, currency: 'USD' },
+      'test',
+    ),
+  )
   quotes.quotes.set('USDX', { ...entry, fetchedAt })
   quotes.lastRefreshAt = fetchedAt
   return { portfolio, settings }
@@ -76,17 +96,22 @@ function prepareLoadedState(fetchedAt: string) {
 
 function mountDashboard(client: StockInfoClient): VueWrapper {
   const Host = defineComponent({
-    setup: () => () => h(NMessageProvider, null, {
-      default: () => h(NDialogProvider, null, {
-        default: () => h(NNotificationProvider, null, { default: () => h(DashboardView) }),
+    setup: () => () =>
+      h(NMessageProvider, null, {
+        default: () =>
+          h(NDialogProvider, null, {
+            default: () => h(NNotificationProvider, null, { default: () => h(DashboardView) }),
+          }),
       }),
-    }),
   })
   const wrapper = mount(Host, {
     global: {
-      plugins: [createRouter({ history: createMemoryHistory(), routes: [
-        { path: '/:pathMatch(.*)*', component: { template: '<div />' } },
-      ] })],
+      plugins: [
+        createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: '/:pathMatch(.*)*', component: { template: '<div />' } }],
+        }),
+      ],
       provide: { [STOCK_INFO_CLIENT as symbol]: client },
     },
   })
@@ -104,7 +129,7 @@ describe('Dashboard beim Ansichtswechsel', () => {
     mountDashboard(client).unmount()
     wrappers = []
     await flushPromises()
-    const fxAfterFirst = requests.filter(path => path === '/fx').length
+    const fxAfterFirst = requests.filter((path) => path === '/fx').length
     expect(fxAfterFirst).toBe(1)
 
     requests = []
@@ -113,7 +138,11 @@ describe('Dashboard beim Ansichtswechsel', () => {
 
     expect(portfolioLoad).not.toHaveBeenCalled()
     expect(settingsLoad).not.toHaveBeenCalled()
-    expect(requests.filter(path => path === '/fx' || path.startsWith('/quote') && !path.endsWith('/daily'))).toEqual([])
+    expect(
+      requests.filter(
+        (path) => path === '/fx' || (path.startsWith('/quote') && !path.endsWith('/daily')),
+      ),
+    ).toEqual([])
     expect(second.text()).toContain('Dollar-Aktie')
   })
 
@@ -126,7 +155,10 @@ describe('Dashboard beim Ansichtswechsel', () => {
     expect(afterMount).toBeGreaterThan(0)
 
     // Der Live-Abgleich liefert dasselbe Depot als neues Objekt (T-83).
-    portfolio.portfolio = { ...portfolio.portfolio!, positions: [...portfolio.portfolio!.positions] }
+    portfolio.portfolio = {
+      ...portfolio.portfolio!,
+      positions: [...portfolio.portfolio!.positions],
+    }
     await flushPromises()
     expect(ensure.mock.calls.length).toBe(afterMount)
 
@@ -142,22 +174,31 @@ describe('Dashboard beim Ansichtswechsel', () => {
     const wrapper = mountDashboard(createClient())
     await flushPromises()
 
-    expect(requests.some(path => path.startsWith('/quote') && !path.endsWith('/daily'))).toBe(true)
+    expect(requests.some((path) => path.startsWith('/quote') && !path.endsWith('/daily'))).toBe(
+      true,
+    )
     expect(wrapper.text()).toContain('Dollar-Aktie')
   })
 
   it('zeigt die Tabelle, während ein einzelner fehlender Kurs nachgeladen wird', async () => {
     const { portfolio } = prepareLoadedState(new Date().toISOString())
     portfolio.portfolio!.positions.push({
-      id: 'new', isin: null, symbol: 'NEUX', displayName: 'Neue Aktie',
-      kind: 'stock', group: 'stocks', units: 1, targetPercent: 0, enabled: true,
+      id: 'new',
+      isin: null,
+      symbol: 'NEUX',
+      displayName: 'Neue Aktie',
+      kind: 'stock',
+      group: 'stocks',
+      units: 1,
+      targetPercent: 0,
+      enabled: true,
     })
     holdQuotes = true
 
     const wrapper = mountDashboard(createClient())
     await flushPromises()
 
-    expect(requests.filter(path => path === '/quote')).toEqual(['/quote'])
+    expect(requests.filter((path) => path === '/quote')).toEqual(['/quote'])
     expect(wrapper.text()).toContain('Dollar-Aktie')
     expect(wrapper.text()).toContain('Neue Aktie')
   })

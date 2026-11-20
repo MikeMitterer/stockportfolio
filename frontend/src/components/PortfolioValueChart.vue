@@ -144,7 +144,10 @@ function x(date: string): number {
 function path(points: HistoryPoint[]): string {
   if (points.length === 0) return ''
   return points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'}${x(point.date).toFixed(1)} ${y(point.close).toFixed(1)}`)
+    .map(
+      (point, index) =>
+        `${index === 0 ? 'M' : 'L'}${x(point.date).toFixed(1)} ${y(point.close).toFixed(1)}`,
+    )
     .join(' ')
 }
 
@@ -216,16 +219,23 @@ const tooltipStyle = computed(() => {
   const left = x(hoveredPoint.value.date)
   // Am rechten Rand nach innen kippen, sonst steht der Kasten außerhalb.
   const flip = left > width.value - 140
-  return { left: `${flip ? left - 12 : left + 12}px`, top: '8px', transform: flip ? 'translateX(-100%)' : '' }
+  return {
+    left: `${flip ? left - 12 : left + 12}px`,
+    top: '8px',
+    transform: flip ? 'translateX(-100%)' : '',
+  }
 })
 const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
-
 </script>
 
 <template>
   <div class="value-chart">
     <div class="value-chart__head">
-      <span v-if="change !== null" class="value-chart__change tabular-nums" :class="change >= 0 ? 'value-chart__change--rising' : 'value-chart__change--falling'">
+      <span
+        v-if="change !== null"
+        class="value-chart__change tabular-nums"
+        :class="change >= 0 ? 'value-chart__change--rising' : 'value-chart__change--falling'"
+      >
         {{ percentSigned(change) }}
       </span>
 
@@ -311,9 +321,17 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
         </text>
 
         <!-- Gerechnet: blass, damit sie nicht wie eine Messung aussieht. -->
-        <path v-if="backtestPath" :d="backtestPath" class="value-chart__line value-chart__line--backtest" />
+        <path
+          v-if="backtestPath"
+          :d="backtestPath"
+          class="value-chart__line value-chart__line--backtest"
+        />
         <!-- Gemessen: kräftig. -->
-        <path v-if="snapshotPath" :d="snapshotPath" class="value-chart__line value-chart__line--snapshot" />
+        <path
+          v-if="snapshotPath"
+          :d="snapshotPath"
+          class="value-chart__line value-chart__line--snapshot"
+        />
 
         <line
           v-if="hoveredPoint"
@@ -334,7 +352,11 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
         <div class="value-chart__tip-value tabular-nums">{{ formatMoney(hoveredPoint.close) }}</div>
         <div
           class="value-chart__tip-change tabular-nums"
-          :class="hoveredPoint.change >= 0 ? 'value-chart__change--rising' : 'value-chart__change--falling'"
+          :class="
+            hoveredPoint.change >= 0
+              ? 'value-chart__change--rising'
+              : 'value-chart__change--falling'
+          "
         >
           {{ percentSigned(hoveredPoint.change) }}
         </div>
@@ -435,7 +457,9 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
     font-size: 0.6875rem;
   }
 
-  &__tip-date { @include muted(null); }
+  &__tip-date {
+    @include muted(null);
+  }
 
   &__tip-value {
     font-size: var(--font-sm);

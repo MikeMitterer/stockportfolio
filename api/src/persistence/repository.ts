@@ -71,15 +71,35 @@ export interface AccountRepository {
   findUserByName(username: string): UserRecord | null
   findUserById(id: string): UserRecord | null
   listUsers(): UserRecord[]
-  createUser(username: string, passwordHash: string, role: 'admin' | 'user', now: number): UserRecord
+  createUser(
+    username: string,
+    passwordHash: string,
+    role: 'admin' | 'user',
+    now: number,
+  ): UserRecord
   replacePassword(id: string, passwordHash: string, mustChangePassword: boolean): boolean
   deactivateUser(id: string): 'done' | 'last_admin' | 'not_found'
   reactivateUser(id: string): boolean
   listResources(userId: string, kind: ResourceKind): PrivateResource[]
   findResource(userId: string, kind: ResourceKind, resourceId: string): PrivateResource | null
-  saveResource(userId: string, kind: ResourceKind, resourceId: string, revision: number, value: unknown): number | 'not_found' | null
-  deleteResource(userId: string, kind: ResourceKind, resourceId: string, revision: number): 'done' | 'not_found' | 'conflict'
-  importLegacy(userId: string, portfolios: LegacyPortfolio[], settings: Record<string, unknown> | null): 'done' | 'forbidden' | 'imported' | 'conflict'
+  saveResource(
+    userId: string,
+    kind: ResourceKind,
+    resourceId: string,
+    revision: number,
+    value: unknown,
+  ): number | 'not_found' | null
+  deleteResource(
+    userId: string,
+    kind: ResourceKind,
+    resourceId: string,
+    revision: number,
+  ): 'done' | 'not_found' | 'conflict'
+  importLegacy(
+    userId: string,
+    portfolios: LegacyPortfolio[],
+    settings: Record<string, unknown> | null,
+  ): 'done' | 'forbidden' | 'imported' | 'conflict'
   restoreBackup(userId: string, data: RestoreData): 'done' | 'not_found' | 'conflict'
   createSession(record: SessionRecord): void
   findSession(tokenHash: string): SessionRecord | null
@@ -111,23 +131,47 @@ export function createSqliteRepository(filePath: string): AccountRepository {
   }
 
   function resourceWhere(userId: string, kind: ResourceKind, resourceId: string) {
-    return and(eq(privateResources.ownerId, userId), eq(privateResources.kind, kind), eq(privateResources.resourceId, resourceId))
+    return and(
+      eq(privateResources.ownerId, userId),
+      eq(privateResources.kind, kind),
+      eq(privateResources.resourceId, resourceId),
+    )
   }
 
   function decodeResource(row: typeof privateResources.$inferSelect): PrivateResource {
-    return { resourceId: row.resourceId, revision: row.revision, value: JSON.parse(row.value) as unknown }
+    return {
+      resourceId: row.resourceId,
+      revision: row.revision,
+      value: JSON.parse(row.value) as unknown,
+    }
   }
 
   return {
     filePath: resolvedPath,
     hasAdmin() {
-      return database.select({ id: users.id }).from(users).where(eq(users.role, 'admin')).get() !== undefined
+      return (
+        database.select({ id: users.id }).from(users).where(eq(users.role, 'admin')).get() !==
+        undefined
+      )
     },
     createFirstAdmin(username, passwordHash, now) {
       return database.transaction((transaction) => {
-        if (transaction.select({ id: users.id }).from(users).where(eq(users.role, 'admin')).get()) return null
+        if (transaction.select({ id: users.id }).from(users).where(eq(users.role, 'admin')).get())
+          return null
         const id = randomUUID()
-        transaction.insert(users).values({ id, username, passwordHash, role: 'admin', active: true, mustChangePassword: false, isSetupAccount: true, createdAt: now }).run()
+        transaction
+          .insert(users)
+          .values({
+            id,
+            username,
+            passwordHash,
+            role: 'admin',
+            active: true,
+            mustChangePassword: false,
+            isSetupAccount: true,
+            createdAt: now,
+          })
+          .run()
         return transaction.select().from(users).where(eq(users.id, id)).get() ?? null
       })
     },
@@ -140,12 +184,28 @@ export function createSqliteRepository(filePath: string): AccountRepository {
     },
     createUser(username, passwordHash, role, now) {
       const id = randomUUID()
-      database.insert(users).values({ id, username, passwordHash, role, active: true, mustChangePassword: true, createdAt: now }).run()
+      database
+        .insert(users)
+        .values({
+          id,
+          username,
+          passwordHash,
+          role,
+          active: true,
+          mustChangePassword: true,
+          createdAt: now,
+        })
+        .run()
       return findUserById(id)!
     },
     replacePassword(id, passwordHash, mustChangePassword) {
       return database.transaction((transaction) => {
-        const changed = transaction.update(users).set({ passwordHash, mustChangePassword }).where(eq(users.id, id)).run().changes > 0
+        const changed =
+          transaction
+            .update(users)
+            .set({ passwordHash, mustChangePassword })
+            .where(eq(users.id, id))
+            .run().changes > 0
         if (changed) transaction.delete(sessions).where(eq(sessions.userId, id)).run()
         return changed
       })
@@ -155,7 +215,11 @@ export function createSqliteRepository(filePath: string): AccountRepository {
         const user = transaction.select().from(users).where(eq(users.id, id)).get()
         if (!user) return 'not_found'
         if (user.role === 'admin' && user.active) {
-          const otherAdmins = transaction.select({ id: users.id }).from(users).where(and(eq(users.role, 'admin'), eq(users.active, true))).all()
+          const otherAdmins = transaction
+            .select({ id: users.id })
+            .from(users)
+            .where(and(eq(users.role, 'admin'), eq(users.active, true)))
+            .all()
           if (otherAdmins.length <= 1) return 'last_admin'
         }
         transaction.update(users).set({ active: false }).where(eq(users.id, id)).run()
@@ -167,42 +231,90 @@ export function createSqliteRepository(filePath: string): AccountRepository {
       return database.update(users).set({ active: true }).where(eq(users.id, id)).run().changes > 0
     },
     listResources(userId, kind) {
-      return database.select().from(privateResources).where(and(eq(privateResources.ownerId, userId), eq(privateResources.kind, kind))).all().map(decodeResource)
+      return database
+        .select()
+        .from(privateResources)
+        .where(and(eq(privateResources.ownerId, userId), eq(privateResources.kind, kind)))
+        .all()
+        .map(decodeResource)
     },
     findResource(userId, kind, resourceId) {
-      const row = database.select().from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+      const row = database
+        .select()
+        .from(privateResources)
+        .where(resourceWhere(userId, kind, resourceId))
+        .get()
       return row ? decodeResource(row) : null
     },
     saveResource(userId, kind, resourceId, revision, value) {
       return database.transaction((transaction) => {
         if (kind === 'allowlist' || kind === 'snapshots') {
-          const parent = transaction.select({ resourceId: privateResources.resourceId }).from(privateResources).where(resourceWhere(userId, 'portfolio', resourceId)).get()
+          const parent = transaction
+            .select({ resourceId: privateResources.resourceId })
+            .from(privateResources)
+            .where(resourceWhere(userId, 'portfolio', resourceId))
+            .get()
           if (!parent) return 'not_found'
         }
         if (kind === 'settings') {
           const activeId = (value as { activePortfolioId: string }).activePortfolioId
-          if (activeId && !transaction.select({ resourceId: privateResources.resourceId }).from(privateResources).where(resourceWhere(userId, 'portfolio', activeId)).get()) return 'not_found'
+          if (
+            activeId &&
+            !transaction
+              .select({ resourceId: privateResources.resourceId })
+              .from(privateResources)
+              .where(resourceWhere(userId, 'portfolio', activeId))
+              .get()
+          )
+            return 'not_found'
         }
-        const current = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+        const current = transaction
+          .select({ revision: privateResources.revision })
+          .from(privateResources)
+          .where(resourceWhere(userId, kind, resourceId))
+          .get()
         if ((current?.revision ?? 0) !== revision) return null
         const nextRevision = revision + 1
         if (current) {
-          transaction.update(privateResources).set({ revision: nextRevision, value: JSON.stringify(value) }).where(resourceWhere(userId, kind, resourceId)).run()
+          transaction
+            .update(privateResources)
+            .set({ revision: nextRevision, value: JSON.stringify(value) })
+            .where(resourceWhere(userId, kind, resourceId))
+            .run()
         } else {
-          transaction.insert(privateResources).values({ ownerId: userId, kind, resourceId, revision: nextRevision, value: JSON.stringify(value) }).run()
+          transaction
+            .insert(privateResources)
+            .values({
+              ownerId: userId,
+              kind,
+              resourceId,
+              revision: nextRevision,
+              value: JSON.stringify(value),
+            })
+            .run()
         }
         return nextRevision
       })
     },
     deleteResource(userId, kind, resourceId, revision) {
       return database.transaction((transaction) => {
-        const current = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+        const current = transaction
+          .select({ revision: privateResources.revision })
+          .from(privateResources)
+          .where(resourceWhere(userId, kind, resourceId))
+          .get()
         if (!current) return 'not_found'
         if (current.revision !== revision) return 'conflict'
-        transaction.delete(privateResources).where(resourceWhere(userId, kind, resourceId)).run()
+        transaction
+          .delete(privateResources)
+          .where(resourceWhere(userId, kind, resourceId))
+          .run()
         if (kind === 'portfolio') {
           for (const childKind of ['allowlist', 'snapshots'] as const) {
-            transaction.delete(privateResources).where(resourceWhere(userId, childKind, resourceId)).run()
+            transaction
+              .delete(privateResources)
+              .where(resourceWhere(userId, childKind, resourceId))
+              .run()
           }
         }
         return 'done'
@@ -213,12 +325,25 @@ export function createSqliteRepository(filePath: string): AccountRepository {
         const user = transaction.select().from(users).where(eq(users.id, userId)).get()
         if (!user?.isSetupAccount) return 'forbidden'
         if (user.legacyImported) return 'imported'
-        const existing = transaction.select({ kind: privateResources.kind, resourceId: privateResources.resourceId }).from(privateResources).where(eq(privateResources.ownerId, userId)).all()
+        const existing = transaction
+          .select({ kind: privateResources.kind, resourceId: privateResources.resourceId })
+          .from(privateResources)
+          .where(eq(privateResources.ownerId, userId))
+          .all()
         const importedIds = new Set(portfolios.map((entry) => entry.portfolio.id))
-        if (existing.some((row) => row.kind === 'portfolio' && importedIds.has(row.resourceId))) return 'conflict'
-        if (settings && !existing.some((row) => row.kind === 'settings' && row.resourceId === 'current')) {
+        if (existing.some((row) => row.kind === 'portfolio' && importedIds.has(row.resourceId)))
+          return 'conflict'
+        if (
+          settings &&
+          !existing.some((row) => row.kind === 'settings' && row.resourceId === 'current')
+        ) {
           const activeId = String(settings.activePortfolioId)
-          if (activeId && !importedIds.has(activeId) && !existing.some((row) => row.kind === 'portfolio' && row.resourceId === activeId)) return 'conflict'
+          if (
+            activeId &&
+            !importedIds.has(activeId) &&
+            !existing.some((row) => row.kind === 'portfolio' && row.resourceId === activeId)
+          )
+            return 'conflict'
         }
         for (const entry of portfolios) {
           const resourceId = String(entry.portfolio.id)
@@ -227,11 +352,32 @@ export function createSqliteRepository(filePath: string): AccountRepository {
             ['allowlist', entry.allowlist],
             ['snapshots', entry.snapshots],
           ] as const) {
-            transaction.insert(privateResources).values({ ownerId: userId, kind, resourceId, revision: 1, value: JSON.stringify(value) }).run()
+            transaction
+              .insert(privateResources)
+              .values({
+                ownerId: userId,
+                kind,
+                resourceId,
+                revision: 1,
+                value: JSON.stringify(value),
+              })
+              .run()
           }
         }
-        if (settings && !existing.some((row) => row.kind === 'settings' && row.resourceId === 'current')) {
-          transaction.insert(privateResources).values({ ownerId: userId, kind: 'settings', resourceId: 'current', revision: 1, value: JSON.stringify(settings) }).run()
+        if (
+          settings &&
+          !existing.some((row) => row.kind === 'settings' && row.resourceId === 'current')
+        ) {
+          transaction
+            .insert(privateResources)
+            .values({
+              ownerId: userId,
+              kind: 'settings',
+              resourceId: 'current',
+              revision: 1,
+              value: JSON.stringify(settings),
+            })
+            .run()
         }
         transaction.update(users).set({ legacyImported: true }).where(eq(users.id, userId)).run()
         return 'done'
@@ -241,7 +387,11 @@ export function createSqliteRepository(filePath: string): AccountRepository {
       return database.transaction((transaction) => {
         const id = String(data.portfolio.id)
         if (data.replacedId && data.replacedId !== id) {
-          const previous = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, 'portfolio', data.replacedId)).get()
+          const previous = transaction
+            .select({ revision: privateResources.revision })
+            .from(privateResources)
+            .where(resourceWhere(userId, 'portfolio', data.replacedId))
+            .get()
           if (!previous) return 'not_found'
           if (previous.revision !== data.revisions.replaced) return 'conflict'
         }
@@ -252,19 +402,39 @@ export function createSqliteRepository(filePath: string): AccountRepository {
           ['snapshots', id, data.snapshots, data.revisions.snapshots],
         ] as const
         for (const [kind, resourceId, , revision] of resources) {
-          const current = transaction.select({ revision: privateResources.revision }).from(privateResources).where(resourceWhere(userId, kind, resourceId)).get()
+          const current = transaction
+            .select({ revision: privateResources.revision })
+            .from(privateResources)
+            .where(resourceWhere(userId, kind, resourceId))
+            .get()
           if ((current?.revision ?? 0) !== revision) return 'conflict'
         }
         for (const [kind, resourceId, value, revision] of resources) {
           if (revision === 0) {
-            transaction.insert(privateResources).values({ ownerId: userId, kind, resourceId, revision: 1, value: JSON.stringify(value) }).run()
+            transaction
+              .insert(privateResources)
+              .values({
+                ownerId: userId,
+                kind,
+                resourceId,
+                revision: 1,
+                value: JSON.stringify(value),
+              })
+              .run()
           } else {
-            transaction.update(privateResources).set({ revision: revision + 1, value: JSON.stringify(value) }).where(resourceWhere(userId, kind, resourceId)).run()
+            transaction
+              .update(privateResources)
+              .set({ revision: revision + 1, value: JSON.stringify(value) })
+              .where(resourceWhere(userId, kind, resourceId))
+              .run()
           }
         }
         if (data.replacedId && data.replacedId !== id) {
           for (const kind of ['portfolio', 'allowlist', 'snapshots'] as const) {
-            transaction.delete(privateResources).where(resourceWhere(userId, kind, data.replacedId)).run()
+            transaction
+              .delete(privateResources)
+              .where(resourceWhere(userId, kind, data.replacedId))
+              .run()
           }
         }
         return 'done'
@@ -277,7 +447,11 @@ export function createSqliteRepository(filePath: string): AccountRepository {
       return database.select().from(sessions).where(eq(sessions.tokenHash, tokenHash)).get() ?? null
     },
     touchSession(tokenHash, now) {
-      database.update(sessions).set({ lastSeenAt: now }).where(eq(sessions.tokenHash, tokenHash)).run()
+      database
+        .update(sessions)
+        .set({ lastSeenAt: now })
+        .where(eq(sessions.tokenHash, tokenHash))
+        .run()
     },
     deleteSession(tokenHash) {
       database.delete(sessions).where(eq(sessions.tokenHash, tokenHash)).run()
@@ -290,19 +464,32 @@ export function createSqliteRepository(filePath: string): AccountRepository {
           const current = pending.pop()!
           if (chain.has(current)) continue
           chain.add(current)
-          const record = transaction.select().from(sessions).where(eq(sessions.tokenHash, current)).get()
+          const record = transaction
+            .select()
+            .from(sessions)
+            .where(eq(sessions.tokenHash, current))
+            .get()
           if (record?.replacedBy) pending.push(record.replacedBy)
-          for (const predecessor of transaction.select({ tokenHash: sessions.tokenHash }).from(sessions).where(eq(sessions.replacedBy, current)).all()) {
+          for (const predecessor of transaction
+            .select({ tokenHash: sessions.tokenHash })
+            .from(sessions)
+            .where(eq(sessions.replacedBy, current))
+            .all()) {
             pending.push(predecessor.tokenHash)
           }
         }
-        for (const hash of chain) transaction.delete(sessions).where(eq(sessions.tokenHash, hash)).run()
+        for (const hash of chain)
+          transaction.delete(sessions).where(eq(sessions.tokenHash, hash)).run()
       })
     },
     replaceSession(oldTokenHash, successor, expiredBefore) {
       database.transaction((transaction) => {
         transaction.insert(sessions).values(successor).run()
-        transaction.update(sessions).set({ replacedAt: successor.createdAt, replacedBy: successor.tokenHash }).where(eq(sessions.tokenHash, oldTokenHash)).run()
+        transaction
+          .update(sessions)
+          .set({ replacedAt: successor.createdAt, replacedBy: successor.tokenHash })
+          .where(eq(sessions.tokenHash, oldTokenHash))
+          .run()
         transaction.delete(sessions).where(lt(sessions.replacedAt, expiredBefore)).run()
       })
     },
@@ -314,11 +501,24 @@ export function createSqliteRepository(filePath: string): AccountRepository {
     },
     recordFailure(key, now) {
       return database.transaction((transaction) => {
-        const previous = transaction.select().from(loginAttempts).where(eq(loginAttempts.key, key)).get()
-        const firstFailedAt = previous && now - previous.firstFailedAt < 15 * 60_000 ? previous.firstFailedAt : now
-        const failureCount = previous && firstFailedAt === previous.firstFailedAt ? previous.failureCount + 1 : 1
+        const previous = transaction
+          .select()
+          .from(loginAttempts)
+          .where(eq(loginAttempts.key, key))
+          .get()
+        const firstFailedAt =
+          previous && now - previous.firstFailedAt < 15 * 60_000 ? previous.firstFailedAt : now
+        const failureCount =
+          previous && firstFailedAt === previous.firstFailedAt ? previous.failureCount + 1 : 1
         const blockedUntil = failureCount >= 5 ? now + 15 * 60_000 : null
-        transaction.insert(loginAttempts).values({ key, firstFailedAt, failureCount, blockedUntil }).onConflictDoUpdate({ target: loginAttempts.key, set: { firstFailedAt, failureCount, blockedUntil } }).run()
+        transaction
+          .insert(loginAttempts)
+          .values({ key, firstFailedAt, failureCount, blockedUntil })
+          .onConflictDoUpdate({
+            target: loginAttempts.key,
+            set: { firstFailedAt, failureCount, blockedUntil },
+          })
+          .run()
         return { key, firstFailedAt, failureCount, blockedUntil }
       })
     },

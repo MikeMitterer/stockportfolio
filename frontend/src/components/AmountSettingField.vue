@@ -61,7 +61,6 @@ function setMode(mode: AmountSetting['mode']): void {
   emit('update', convertAmount(props.setting, mode, props.total))
 }
 const { formatMoney, baseCurrency } = usePortfolioCurrency()
-
 </script>
 
 <template>
@@ -96,7 +95,9 @@ const { formatMoney, baseCurrency } = usePortfolioCurrency()
     -->
     <span :id="hintId" class="amount__hint">
       <template v-if="setting.value === 0">{{ zeroHint }}</template>
-      <template v-else>{{ t('settings.bufferEquals', { amount: formatMoney(resolvedValue) }) }}</template>
+      <template v-else>{{
+        t('settings.bufferEquals', { amount: formatMoney(resolvedValue) })
+      }}</template>
     </span>
   </div>
 </template>

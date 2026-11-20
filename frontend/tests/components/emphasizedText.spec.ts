@@ -4,7 +4,9 @@ import EmphasizedText from '@/components/EmphasizedText.vue'
 
 describe('Hervorgehobener Katalogtext', () => {
   it('macht aus Leerzeilen Absätze und aus **…** Fettdruck, ohne HTML auszuführen', () => {
-    const wrapper = mount(EmphasizedText, { props: { text: 'Erster **wichtig** Satz.\n\nZweiter <b>kein HTML</b>.' } })
+    const wrapper = mount(EmphasizedText, {
+      props: { text: 'Erster **wichtig** Satz.\n\nZweiter <b>kein HTML</b>.' },
+    })
     const paragraphs = wrapper.findAll('p')
     expect(paragraphs).toHaveLength(2)
     expect(paragraphs[0]!.get('strong').text()).toBe('wichtig')

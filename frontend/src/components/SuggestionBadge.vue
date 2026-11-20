@@ -57,10 +57,14 @@ const color = computed(() => {
 
 const arrow = computed(() => {
   switch (state.value) {
-    case 'buy': return '↓'
-    case 'sell': return '↑'
-    case 'near': return '→'
-    default: return '✓'
+    case 'buy':
+      return '↓'
+    case 'sell':
+      return '↑'
+    case 'near':
+      return '→'
+    default:
+      return '✓'
   }
 })
 </script>

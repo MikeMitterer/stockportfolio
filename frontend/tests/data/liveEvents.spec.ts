@@ -11,9 +11,13 @@ class FakeEventStream extends EventTarget {
   }
 
   emit(kind: string, value?: object | string): void {
-    this.dispatchEvent(kind === 'resource'
-      ? new MessageEvent(kind, { data: typeof value === 'string' ? value : JSON.stringify(value) })
-      : new Event(kind))
+    this.dispatchEvent(
+      kind === 'resource'
+        ? new MessageEvent(kind, {
+            data: typeof value === 'string' ? value : JSON.stringify(value),
+          })
+        : new Event(kind),
+    )
   }
 }
 
@@ -36,7 +40,11 @@ describe('private SSE-Hinweise', () => {
     expect(connected).toHaveBeenCalledOnce()
     expect(resource).toHaveBeenCalledTimes(2)
     expect(resource).toHaveBeenCalledWith({ kind: 'portfolio', resourceId: 'depot', revision: 2 })
-    expect(resource).toHaveBeenCalledWith({ kind: 'quote-refresh', resourceId: 'current', revision: 1 })
+    expect(resource).toHaveBeenCalledWith({
+      kind: 'quote-refresh',
+      resourceId: 'current',
+      revision: 1,
+    })
     expect(disconnected).toHaveBeenCalledOnce()
     client.stop()
     expect(stream.closed).toBe(true)

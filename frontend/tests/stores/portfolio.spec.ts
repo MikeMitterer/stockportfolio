@@ -149,20 +149,23 @@ describe('usePortfolioStore — load', () => {
     const repository = new PortfolioRepository()
     const now = '2026-01-01T00:00:00.000Z'
     await repository.save({
-      id: 'legacy', name: 'Alt', createdAt: now, updatedAt: now,
+      id: 'legacy',
+      name: 'Alt',
+      createdAt: now,
+      updatedAt: now,
       positions: [makePosition({ id: 'etf' }), makePosition({ id: 'bond', group: 'bonds' })],
     })
 
     const first = usePortfolioStore()
     await first.load('legacy')
-    expect(first.positions.map(position => position.group)).toEqual(['etfs', 'bonds'])
+    expect(first.positions.map((position) => position.group)).toEqual(['etfs', 'bonds'])
     expect((await repository.findById('legacy'))?.assetGroupVersion).toBe(2)
 
     await first.updatePosition('etf', { group: 'stocks' })
     setActivePinia(createPinia())
     const second = usePortfolioStore()
     await second.load('legacy')
-    expect(second.positions.find(position => position.id === 'etf')?.group).toBe('stocks')
+    expect(second.positions.find((position) => position.id === 'etf')?.group).toBe('stocks')
   })
 })
 
@@ -384,17 +387,23 @@ describe('Verrechnungskonto wieder anlegen', () => {
   it('speichert den neuen Betrag nach Löschen und verhindert doppelte Cash-Zeilen', async () => {
     const store = usePortfolioStore()
     await store.load()
-    const previous = store.positions.find(position => position.group === 'cash')!
+    const previous = store.positions.find((position) => position.group === 'cash')!
     await store.removePosition(previous.id)
     await store.addCashPosition(500.25, 10)
     await store.addCashPosition(900, 20)
     const saved = await new PortfolioRepository().findById(store.portfolio!.id)
-    expect(saved?.positions.filter(position => position.group === 'cash')).toEqual([
-      expect.objectContaining({ isin: null, symbol: 'CASH', kind: null, units: 500.25, targetPercent: 10, enabled: true }),
+    expect(saved?.positions.filter((position) => position.group === 'cash')).toEqual([
+      expect.objectContaining({
+        isin: null,
+        symbol: 'CASH',
+        kind: null,
+        units: 500.25,
+        targetPercent: 10,
+        enabled: true,
+      }),
     ])
   })
 })
-
 
 describe('Aktuelle dynamische Typen speichern', () => {
   it('ersetzt alte Typen ohne manuelle Gruppenzuordnung zu verändern und überlebt Neuladen', async () => {
@@ -407,8 +416,13 @@ describe('Aktuelle dynamische Typen speichern', () => {
     setActivePinia(createPinia())
     const reloaded = usePortfolioStore()
     await reloaded.load()
-    expect(reloaded.positions.find(position => position.id === 'dynamic')).toMatchObject({ kind: 'future-type', group: 'bonds' })
+    expect(reloaded.positions.find((position) => position.id === 'dynamic')).toMatchObject({
+      kind: 'future-type',
+      group: 'bonds',
+    })
     await reloaded.syncKinds(new Map())
-    expect(reloaded.positions.find(position => position.id === 'dynamic')?.kind).toBe('future-type')
+    expect(reloaded.positions.find((position) => position.id === 'dynamic')?.kind).toBe(
+      'future-type',
+    )
   })
 })

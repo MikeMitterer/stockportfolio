@@ -104,8 +104,8 @@ const isActive = (name: string): boolean => route.name === name
         v-for="item in navItems"
         :key="item.name"
         :class="{
-          'topbar__dashboard': item.name === 'dashboard',
-          'topbar__rebalancing': item.name === 'rebalancing',
+          topbar__dashboard: item.name === 'dashboard',
+          topbar__rebalancing: item.name === 'rebalancing',
         }"
         :icon="item.icon"
         :label="item.label"
@@ -120,7 +120,15 @@ const isActive = (name: string): boolean => route.name === name
         :to="{ name: 'admin-users' }"
         :aria-label="t('nav.users')"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <circle cx="9" cy="8" r="3" />
           <path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5" />
         </svg>
@@ -134,12 +142,7 @@ const isActive = (name: string): boolean => route.name === name
       </span>
 
       <!-- Der Fortschritt steht am Seitenrand; der Knopf verhindert Doppelabrufe. -->
-      <NButton
-        size="small"
-        secondary
-        :disabled="refreshing"
-        @click="emit('refresh')"
-      >
+      <NButton size="small" secondary :disabled="refreshing" @click="emit('refresh')">
         <template #icon>
           <NIcon>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -155,10 +158,22 @@ const isActive = (name: string): boolean => route.name === name
         <span class="topbar__refresh-label">{{ t('actions.refresh') }}</span>
       </NButton>
       <NDropdown trigger="click" :options="accountOptions" @select="selectAccountOption">
-        <NButton size="small" secondary :aria-label="t('auth.accountMenu', { username: authenticatedUser?.username ?? '' })">
+        <NButton
+          size="small"
+          secondary
+          :aria-label="t('auth.accountMenu', { username: authenticatedUser?.username ?? '' })"
+        >
           <template #icon>
             <NIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
                 <circle cx="12" cy="8" r="3" />
                 <path d="M5 20a7 7 0 0 1 14 0" />
               </svg>
@@ -181,8 +196,6 @@ const isActive = (name: string): boolean => route.name === name
  * wandern. Verschachtelt griffe keine einzige Regel.
  */
 
-
-
 /*
  * Fünf Ziele samt Konto und Aktualisieren passen mit Text erst ab xl in eine
  * Zeile. Unter sm sparen kleinere Gruppenzwischenräume den Platz für das
@@ -190,16 +203,24 @@ const isActive = (name: string): boolean => route.name === name
  */
 .portfolio-topbar {
   @include below(sm) {
-    :deep(.ux-topbar__inner) { gap: var(--space-2); }
-    :deep(.ux-topbar__actions) { gap: var(--space-1); }
+    :deep(.ux-topbar__inner) {
+      gap: var(--space-2);
+    }
+    :deep(.ux-topbar__actions) {
+      gap: var(--space-1);
+    }
   }
 
   @include below(md) {
-    :deep(.ux-topbar__wordmark) { display: none; }
+    :deep(.ux-topbar__wordmark) {
+      display: none;
+    }
   }
 
   @include below(xl) {
-    :deep(.ux-navitem__label) { display: none; }
+    :deep(.ux-navitem__label) {
+      display: none;
+    }
   }
 }
 
@@ -207,8 +228,12 @@ const isActive = (name: string): boolean => route.name === name
 .topbar__rebalancing {
   @include below(md) {
     @media (min-width: 23rem) {
-      :deep(svg) { display: none; }
-      :deep(.ux-navitem__label) { display: inline; }
+      :deep(svg) {
+        display: none;
+      }
+      :deep(.ux-navitem__label) {
+        display: inline;
+      }
     }
   }
 }
@@ -224,7 +249,9 @@ const isActive = (name: string): boolean => route.name === name
   white-space: nowrap;
   color: token(--text-bar-muted);
 
-  @include up(lg) { display: inline; }
+  @include up(lg) {
+    display: inline;
+  }
 }
 
 /*
@@ -234,7 +261,9 @@ const isActive = (name: string): boolean => route.name === name
 .topbar__refresh-label {
   display: none;
 
-  @include up(lg) { display: inline; }
+  @include up(lg) {
+    display: inline;
+  }
 }
 
 // Auf schmalen Schirmen bleibt das Konto über Symbol und zugänglichen Namen erreichbar.
@@ -246,12 +275,16 @@ const isActive = (name: string): boolean => route.name === name
   vertical-align: middle;
   white-space: nowrap;
 
-  @include below(xl) { display: none; }
+  @include below(xl) {
+    display: none;
+  }
 }
 
 // Auf Telefonen führt die Plakette zur Übersicht; ihr zweiter Menüpunkt entfällt.
 .topbar__dashboard {
-  @include below(sm) { display: none; }
+  @include below(sm) {
+    display: none;
+  }
 }
 
 /* Die Kontoverwaltung gehört nur zu dieser App und führt direkt zur Liste. */
@@ -263,9 +296,17 @@ const isActive = (name: string): boolean => route.name === name
   color: token(--text-bar-secondary);
   font-size: var(--font-sm);
   text-decoration: none;
-  svg { width: 1rem; height: 1rem; }
-  &:hover { background: token(--surface-bar-raised, 0.12); color: token(--text-bar); }
-  &--active { color: token(--text-bar); }
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  &:hover {
+    background: token(--surface-bar-raised, 0.12);
+    color: token(--text-bar);
+  }
+  &--active {
+    color: token(--text-bar);
+  }
   &--active::after {
     position: absolute;
     right: var(--space-2);
@@ -276,6 +317,10 @@ const isActive = (name: string): boolean => route.name === name
     background: token(--accent);
     content: '';
   }
-  @include below(xl) { span { display: none; } }
+  @include below(xl) {
+    span {
+      display: none;
+    }
+  }
 }
 </style>

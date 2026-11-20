@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NModal, NCard, NSelect, NInputNumber, NButton, NAlert, NTag, NRadioGroup, NRadioButton } from 'naive-ui'
+import {
+  NModal,
+  NCard,
+  NSelect,
+  NInputNumber,
+  NButton,
+  NAlert,
+  NTag,
+  NRadioGroup,
+  NRadioButton,
+} from 'naive-ui'
 import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
 import { suggestAssetGroup } from '@/domain/assetGroup'
 import { describeFailure } from '@/api/stockinfo/errors'
@@ -65,14 +75,14 @@ const options = computed(() =>
 )
 
 const selected = computed<InstrumentSummary | null>(
-  () =>
-    selectable.value.find(
-      (instrument) => instrument.listing_id === selectedKey.value,
-    ) ?? null,
+  () => selectable.value.find((instrument) => instrument.listing_id === selectedKey.value) ?? null,
 )
 
 const groupOptions = computed<{ label: string; value: AssetGroup }[]>(() =>
-  ASSET_GROUPS.filter(value => value !== 'cash').map(value => ({ label: t(`groups.${value}`), value })),
+  ASSET_GROUPS.filter((value) => value !== 'cash').map((value) => ({
+    label: t(`groups.${value}`),
+    value,
+  })),
 )
 
 // Bei Auswahl eines Papiers die Gruppe vorschlagen — überschreibbar.
@@ -82,9 +92,14 @@ watch(selected, (instrument) => {
   group.value = suggestAssetGroup(instrument.name, instrument.type)
 })
 
-const canSubmit = computed(() => Number.isFinite(units.value) && Number.isFinite(targetPercent.value)
-  && targetPercent.value >= 0 && targetPercent.value <= 100
-  && (isCash.value ? units.value >= 0 : selected.value !== null && units.value > 0))
+const canSubmit = computed(
+  () =>
+    Number.isFinite(units.value) &&
+    Number.isFinite(targetPercent.value) &&
+    targetPercent.value >= 0 &&
+    targetPercent.value <= 100 &&
+    (isCash.value ? units.value >= 0 : selected.value !== null && units.value > 0),
+)
 
 /** Warnt, wenn die Summe der Ziel-Anteile über 100 % laufen würde. */
 const exceedsTarget = computed(() => targetPercent.value > props.remainingTargetPercent)
@@ -143,7 +158,12 @@ watch(
 </script>
 
 <template>
-  <NModal :show="show" :mask-closable="!submitting" :close-on-esc="!submitting" @update:show="emit('update:show', $event)">
+  <NModal
+    :show="show"
+    :mask-closable="!submitting"
+    :close-on-esc="!submitting"
+    @update:show="emit('update:show', $event)"
+  >
     <NCard
       class="addpos__card"
       :bordered="false"
@@ -153,7 +173,13 @@ watch(
     >
       <div class="addpos">
         <NAlert v-if="admissionError" type="error" :bordered="false">{{ admissionError }}</NAlert>
-        <NRadioGroup v-if="allowCash" v-model:value="category" :disabled="submitting" :aria-label="t('addPosition.heading')" size="small">
+        <NRadioGroup
+          v-if="allowCash"
+          v-model:value="category"
+          :disabled="submitting"
+          :aria-label="t('addPosition.heading')"
+          size="small"
+        >
           <NRadioButton value="security">{{ t('addPosition.instrument') }}</NRadioButton>
           <NRadioButton value="cash">{{ t('seed.cashAccount') }}</NRadioButton>
         </NRadioGroup>
@@ -174,10 +200,7 @@ watch(
           </label>
 
           <!-- Kontext zum gewählten Papier, damit die Eingabe nicht blind erfolgt -->
-          <div
-            v-if="selected && !isCash"
-            class="addpos__facts"
-          >
+          <div v-if="selected && !isCash" class="addpos__facts">
             <div>
               <div class="addpos__label">ISIN</div>
               <div class="tabular-nums">{{ selected.isin ?? '—' }}</div>
@@ -185,7 +208,11 @@ watch(
             <div>
               <div class="addpos__label">{{ t('table.price') }}</div>
               <div class="tabular-nums">
-                {{ selected.latest_price !== null && selected.latest_currency ? money(selected.latest_price, selected.latest_currency, 2) : t('currency.missingQuote') }}
+                {{
+                  selected.latest_price !== null && selected.latest_currency
+                    ? money(selected.latest_price, selected.latest_currency, 2)
+                    : t('currency.missingQuote')
+                }}
               </div>
             </div>
             <div v-if="selected.ter !== null">
@@ -197,7 +224,9 @@ watch(
               <div class="tabular-nums">{{ percent(selected.volatility) }}</div>
             </div>
             <div class="addpos__tags">
-              <NTag size="small" :bordered="false">{{ selected.type ?? t('instruments.unknownType') }}</NTag>
+              <NTag size="small" :bordered="false">{{
+                selected.type ?? t('instruments.unknownType')
+              }}</NTag>
               <NTag v-if="selected.provider" size="small" :bordered="false" class="addpos__tag">
                 {{ selected.provider }}
               </NTag>
@@ -206,8 +235,16 @@ watch(
 
           <div class="addpos__pair">
             <label class="addpos__field">
-              <span class="addpos__label">{{ isCash ? t('dashboard.amountEuro', { currency: baseCurrency }) : t('table.units') }}</span>
-              <NInputNumber v-model:value="units" :disabled="submitting" :min="0" :precision="isCash ? 2 : 0" :step="isCash ? 100 : 1" />
+              <span class="addpos__label">{{
+                isCash ? t('dashboard.amountEuro', { currency: baseCurrency }) : t('table.units')
+              }}</span>
+              <NInputNumber
+                v-model:value="units"
+                :disabled="submitting"
+                :min="0"
+                :precision="isCash ? 2 : 0"
+                :step="isCash ? 100 : 1"
+              />
             </label>
 
             <label class="addpos__field">
@@ -242,7 +279,9 @@ watch(
 
       <template #footer>
         <div class="addpos__footer">
-          <NButton size="small" quaternary :disabled="submitting" @click="close">{{ t('actions.cancel') }}</NButton>
+          <NButton size="small" quaternary :disabled="submitting" @click="close">{{
+            t('actions.cancel')
+          }}</NButton>
           <NButton
             v-if="isCash || selectable.length > 0"
             size="small"
@@ -263,14 +302,18 @@ watch(
 .addpos {
   @include stack(var(--space-4));
 
-  &__card { max-width: min(32rem, calc(100vw - 2 * var(--space-4))); }
+  &__card {
+    max-width: min(32rem, calc(100vw - 2 * var(--space-4)));
+  }
 
   &__field {
     @include stack(var(--space-1));
     font-size: var(--font-sm);
   }
 
-  &__label { @include muted(null); }
+  &__label {
+    @include muted(null);
+  }
 
   &__hint {
     @include muted(var(--font-xs));
@@ -287,9 +330,13 @@ watch(
     font-size: var(--font-xs);
   }
 
-  &__tags { grid-column: span 2; }
+  &__tags {
+    grid-column: span 2;
+  }
 
-  &__tag { margin-left: var(--space-2); }
+  &__tag {
+    margin-left: var(--space-2);
+  }
 
   &__pair {
     display: grid;

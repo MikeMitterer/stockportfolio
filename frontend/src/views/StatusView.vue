@@ -21,7 +21,9 @@ const stateLabel = computed<Record<string, string>>(() => ({
   offline: t('statusPage.states.offline'),
 }))
 
-onMounted(() => { void api.check(client) })
+onMounted(() => {
+  void api.check(client)
+})
 </script>
 
 <template>
@@ -30,7 +32,12 @@ onMounted(() => { void api.check(client) })
     <section class="status-page__card">
       <header class="status-page__header">
         <h2>{{ t('statusPage.heading') }}</h2>
-        <NButton size="small" secondary :loading="api.state === 'checking'" @click="api.check(client)">
+        <NButton
+          size="small"
+          secondary
+          :loading="api.state === 'checking'"
+          @click="api.check(client)"
+        >
           {{ t('statusPage.recheck') }}
         </NButton>
       </header>
@@ -38,15 +45,25 @@ onMounted(() => { void api.check(client) })
       <dl class="status-page__facts">
         <dt>{{ t('statusPage.address') }}</dt>
         <dd class="status-page__address">
-          <a v-if="api.target" :href="api.target" target="_blank" rel="noopener noreferrer">{{ api.target }}</a>
+          <a v-if="api.target" :href="api.target" target="_blank" rel="noopener noreferrer">{{
+            api.target
+          }}</a>
           <span v-else>{{ t('statusPage.noAddress') }}</span>
         </dd>
 
         <dt>{{ t('statusPage.state') }}</dt>
         <dd class="status-page__state">
-          <span class="status-page__light" :class="`status-page__light--${tone}`" aria-hidden="true"></span>
-          <span class="status-page__state-label" :class="`status-page__state-label--${tone}`">{{ stateLabel[api.state] }}</span>
-          <span v-if="api.status" class="status-page__secondary">{{ t('statusPage.reports', { status: api.status }) }}</span>
+          <span
+            class="status-page__light"
+            :class="`status-page__light--${tone}`"
+            aria-hidden="true"
+          ></span>
+          <span class="status-page__state-label" :class="`status-page__state-label--${tone}`">{{
+            stateLabel[api.state]
+          }}</span>
+          <span v-if="api.status" class="status-page__secondary">{{
+            t('statusPage.reports', { status: api.status })
+          }}</span>
         </dd>
 
         <template v-if="api.version">
@@ -66,7 +83,9 @@ onMounted(() => { void api.check(client) })
           <dd class="status-page__error">{{ api.error }}</dd>
         </template>
       </dl>
-      <p v-if="api.state === 'offline'" class="status-page__note">{{ t('statusPage.offlineHint') }}</p>
+      <p v-if="api.state === 'offline'" class="status-page__note">
+        {{ t('statusPage.offlineHint') }}
+      </p>
     </section>
   </div>
 </template>
@@ -75,7 +94,11 @@ onMounted(() => { void api.check(client) })
 .status-page {
   @include content-frame(var(--space-8));
 
-  &__title { margin: 0 0 var(--space-4); font-family: var(--font-display); font-size: 1.5rem; }
+  &__title {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+  }
   &__card {
     @include card-surface;
     padding: var(--space-6);
@@ -88,7 +111,11 @@ onMounted(() => { void api.check(client) })
     justify-content: space-between;
     gap: var(--space-4);
     margin-bottom: var(--space-6);
-    h2 { margin: 0; font-family: var(--font-display); font-size: 1.25rem; }
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+    }
   }
   &__facts {
     display: grid;
@@ -96,13 +123,25 @@ onMounted(() => { void api.check(client) })
     gap: var(--space-3) var(--space-6);
     margin: 0;
     font-size: var(--font-sm);
-    @include up(sm) { grid-template-columns: 10rem minmax(0, 1fr); }
-    dt { color: token(--text-muted); }
-    dd { margin: 0; }
+    @include up(sm) {
+      grid-template-columns: 10rem minmax(0, 1fr);
+    }
+    dt {
+      color: token(--text-muted);
+    }
+    dd {
+      margin: 0;
+    }
   }
-  &__address { overflow-wrap: anywhere; }
-  &__address a { color: token(--accent); }
-  &__state { @include row; }
+  &__address {
+    overflow-wrap: anywhere;
+  }
+  &__address a {
+    color: token(--accent);
+  }
+  &__state {
+    @include row;
+  }
   &__light {
     display: inline-block;
     flex-shrink: 0;
@@ -110,16 +149,35 @@ onMounted(() => { void api.check(client) })
     height: 0.5rem;
     border-radius: var(--radius-full);
     background: token(--text-muted);
-    &--ok { background: token(--status-ok); }
-    &--out { background: token(--status-out); }
+    &--ok {
+      background: token(--status-ok);
+    }
+    &--out {
+      background: token(--status-out);
+    }
   }
   &__state-label {
-    &--ok { color: token(--status-ok); }
-    &--out { color: token(--status-out); }
-    &--neutral { color: token(--text-muted); }
+    &--ok {
+      color: token(--status-ok);
+    }
+    &--out {
+      color: token(--status-out);
+    }
+    &--neutral {
+      color: token(--text-muted);
+    }
   }
-  &__secondary { color: token(--text-secondary); }
-  &__error { color: token(--status-out); overflow-wrap: anywhere; }
-  &__note { margin: var(--space-4) 0 0; color: token(--text-secondary); line-height: 1.625; }
+  &__secondary {
+    color: token(--text-secondary);
+  }
+  &__error {
+    color: token(--status-out);
+    overflow-wrap: anywhere;
+  }
+  &__note {
+    margin: var(--space-4) 0 0;
+    color: token(--text-secondary);
+    line-height: 1.625;
+  }
 }
 </style>

@@ -161,7 +161,19 @@ export const useApiStatusStore = defineStore('apiStatus', () => {
     return Date.now() - stand < maxAgeMinutes * 60_000
   }
 
-  return { state, status, version, latencyMs, checkedAt, error, check, ensureChecked, errorUrl, target, setTarget }
+  return {
+    state,
+    status,
+    version,
+    latencyMs,
+    checkedAt,
+    error,
+    check,
+    ensureChecked,
+    errorUrl,
+    target,
+    setTarget,
+  }
 })
 
 /*
