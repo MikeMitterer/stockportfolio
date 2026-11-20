@@ -220,10 +220,10 @@ clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
 
 ##@ Prüfen
 
-# Dateilisten aus git, NUL-getrennt über xargs -0 als einzelne Argumente: Ein Dateiname mit
-# Leerzeichen oder Shell-Zeichen wird so nie zu Befehlstext.
-PY_FILES = git ls-files -z -- '*.py'
-SH_FILES = { git ls-files -z -- '*.sh'; printf '%s\0' .githooks/pre-commit; }
+# Python- und Shell-Werkzeuge bekommen die versionierten Dateien über scripts/check-files.sh:
+# jeder Pfad ein eigenes Argument mit „./“, und ein Fehler von git bricht das Ziel ab.
+CHECK_PY := scripts/check-files.sh python
+CHECK_SH := scripts/check-files.sh shell
 # Ein Prettier für beide Pakete; die Regeln stehen in .prettierrc.
 PRETTIER := frontend/node_modules/.bin/prettier
 PRETTIER_FILES := "frontend/src/**/*.{vue,ts,tsx,css,json}" "frontend/tests/**/*.ts" "api/src/**/*.ts" "api/tests/**/*.ts"
@@ -241,10 +241,10 @@ check: lint typecheck format-check test ## Alles geprüft, was die Abnahme verla
 lint: require-setup ## Lint geprüft: ESLint (Frontend, API), ruff, shellcheck
 	@npm run lint --prefix frontend
 	@npm run lint --prefix api
-	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff check
-	@$(SH_FILES) | xargs -0 -n 1 bash -n
+	@$(CHECK_PY) $(VENV)/bin/ruff check
+	@$(CHECK_SH) --each bash -n
 	$(call require_tool,shellcheck,brew install shellcheck)
-	@$(SH_FILES) | xargs -0 shellcheck
+	@$(CHECK_SH) shellcheck
 
 typecheck: require-setup ## Typen geprüft: vue-tsc (Frontend), tsc (API)
 	@npm run typecheck --prefix frontend
@@ -252,11 +252,11 @@ typecheck: require-setup ## Typen geprüft: vue-tsc (Frontend), tsc (API)
 
 format: require-setup ## Quellen formatiert: Prettier (Frontend, API), ruff format
 	@$(PRETTIER) --write --log-level warn $(PRETTIER_FILES)
-	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff format
+	@$(CHECK_PY) $(VENV)/bin/ruff format
 
 format-check: require-setup ## Formatierung geprüft, keine Datei geändert
 	@$(PRETTIER) --check --log-level warn $(PRETTIER_FILES)
-	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff format --check
+	@$(CHECK_PY) $(VENV)/bin/ruff format --check
 
 test: docs-check require-setup ## Doku, Frontend- und API-Tests einmal geprüft
 	@npm run test --prefix frontend
@@ -270,7 +270,7 @@ docs-check: require-tools ## Doku geprüft: Links, Befehle, Variablen, verbotene
 security: require-setup ## Keine Geheimnisse in der Git-History, Python ohne Befund ab mittel
 	$(call require_tool,gitleaks,brew install gitleaks)
 	@gitleaks git --redact --no-banner .
-	@$(PY_FILES) | xargs -0 $(VENV)/bin/python -m bandit -q -ll
+	@$(CHECK_PY) $(VENV)/bin/python -m bandit -q -ll
 
 # Braucht Netz; nicht in der Abnahme. Alle drei laufen, auch wenn einer Lücken findet; der
 # Exit-Code meldet am Ende, ob einer davon fehlschlug.
@@ -289,7 +289,7 @@ quality: require-setup ## Bericht zu Komplexität, Dateigröße und doppeltem Co
 	@node frontend/scripts/quality-report.mjs frontend src
 	@node frontend/scripts/quality-report.mjs api src
 	@echo "Komplexität und Vereinfachungen Python (ruff C90, SIM, PLR09, RET)"
-	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff check --select C90,SIM,PLR09,RET --output-format concise --exit-zero
+	@$(CHECK_PY) $(VENV)/bin/ruff check --select C90,SIM,PLR09,RET --output-format concise --exit-zero
 	@echo "Doppelter Code über TypeScript, Vue und Python (jscpd)"
 	@frontend/node_modules/.bin/jscpd --reporters console --min-tokens 70 \
 		frontend/src frontend/tests api/src api/tests scripts $(wildcard .agents/bin)
