@@ -167,21 +167,21 @@ Board](#arbeitsort-und-integration-folgen-dem-board)).
 
 **Wo gearbeitet wird, auf welchem Branch und welcher Stand geprüft wird,
 legt der Board-Workflow von agent-lessons fest** (Mike, 2026-11-20, q-5:
-„Variante A“). Die wirksamen Einstellungen liefert `get_config`, vor allem
-`git.workspace`, `git.stages`, `merge_after` und `push_after`; Ticket,
-Workspace und Prüfstand nennen `next` und `start_ticket`. Diese Datei
+„Variante A“). Die wirksamen Einstellungen liefert `get_config`; diese Datei
 wiederholt keine Werte daraus.
 
-- **Arbeitsort und Branch:** Jede Instanz arbeitet in dem Workspace, den
-  `start_ticket` nennt, und auf dem Ticketbranch, den es dort auscheckt. Ein
-  eigenes `git worktree add`, Kopien an anderer Stelle oder ein Branchwechsel
-  von Hand gehören nicht dazu.
-- **Prüfstand:** Der Reviewer prüft den Übergabestand, den `next` nennt. Die
-  Abnahme prüft im Prüf-Worktree, den `make setup` einrichtet
-  (`worktree_setup`, siehe [Bauen und prüfen](#bauen-und-prüfen)).
-- **Integration und Push:** Gemergt wird über die Stufen aus `git.stages`
-  und `merge_after`, abgenommen mit `agent-lessons ticket accept`. Gepusht
-  wird nur, soweit `push_after` es vorsieht; darüber hinaus gibt es keine
+- **Arbeitsort und Branch je Rolle:** Der Coder (`implementer`) arbeitet in
+  dem Workspace, den `start_ticket` nennt, auf dem Ticketbranch, den es dort
+  auscheckt. Für den Reviewer stellt `next` Arbeitsort und Prüfstand her,
+  etwa den Übergabe-Commit in seinem Workspace. Ein eigenes
+  `git worktree add`, Kopien an anderer Stelle oder ein Branchwechsel von Hand
+  gehören nicht dazu.
+- **Abnahme:** Einen Prüf-Worktree richtet der Workflow bei Bedarf mit dem
+  Befehl aus `worktree_setup` ein; ob er einen schon grün geprüften Stand
+  übernimmt, entscheidet der Workflow.
+- **Integration und Push:** Wie gemergt, abgenommen und gepusht wird, folgt
+  aus den Stufen in `git.stages`; `get_config` zeigt die daraus abgeleiteten
+  wirksamen Werte `merge_after` und `push_after`. Darüber hinaus gibt es keine
   dauerhafte Freigabe zum Push.
 - **Board:** `_tickets/` ist der Worktree des Branches `board`;
   Board-Änderungen laufen über die Werkzeuge von agent-lessons.
