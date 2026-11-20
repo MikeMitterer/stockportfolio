@@ -160,9 +160,14 @@ readonly STRICT=${STRICT:-2}
 if [[ "${CMDLINE}" == "-b" || "${CMDLINE}" == "--build" ]]; then
     _TAG_RC=0
     TAG="$(gitDockerTag "${STRICT}")" || _TAG_RC=$?
+    # Release-Tag, aus dem der Docker-Tag stammt, und sein Tag-Objekt beim Build; push
+    # prüft, dass genau dieses Objekt auf origin liegt.
+    GIT_TAG="$(gitReleaseTag HEAD)" || GIT_TAG=''
+    GIT_TAG_OBJECT=''
+    [[ -z "${GIT_TAG}" ]] || GIT_TAG_OBJECT="$(git rev-parse -q --verify "refs/tags/${GIT_TAG}")" || GIT_TAG_OBJECT=''
     if [[ $_TAG_RC -eq 2 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} Kein Git-Tag gefunden." >&2
-        echo -e "${YELLOW}Tipp:${NC} Release-Tag gemäß versioning-conventions anlegen (Bump pusht). Lokal: git tag -a v0.1.0+$(date +%y%m%d.%H%M) -m 'Initial release'\n" >&2
+        echo -e "${YELLOW}Tipp:${NC} Release-Tag mit ${BLUE}make tag-patch${NC} anlegen (nur lokal), danach ${BLUE}git push --follow-tags${NC}\n" >&2
         exit 1
     elif [[ $_TAG_RC -eq 3 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} Working-Tree ist dirty." >&2
@@ -170,7 +175,7 @@ if [[ "${CMDLINE}" == "-b" || "${CMDLINE}" == "--build" ]]; then
         exit 1
     elif [[ $_TAG_RC -eq 4 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} Repo ist ahead vom letzten Tag (STRICT=1)." >&2
-        echo -e "${YELLOW}Tipp:${NC} Release-Tag anlegen (Bump pusht) — oder mit ${BLUE}STRICT=2 ./build.sh --build${NC} (ahead erlaubt)\n" >&2
+        echo -e "${YELLOW}Tipp:${NC} Release-Tag mit ${BLUE}make tag-patch${NC} anlegen — oder mit ${BLUE}STRICT=2 ./build.sh --build${NC} (ahead erlaubt)\n" >&2
         exit 1
     elif [[ $_TAG_RC -ne 0 ]]; then
         echo -e "\n${RED}Build abgebrochen:${NC} gitDockerTag fehlgeschlagen (rc=${_TAG_RC}).\n" >&2
@@ -178,8 +183,10 @@ if [[ "${CMDLINE}" == "-b" || "${CMDLINE}" == "--build" ]]; then
     fi
 else
     TAG="$(gitDockerTag 0 2>/dev/null)" || TAG="n/a"
+    GIT_TAG=''
+    GIT_TAG_OBJECT=''
 fi
-readonly TAG
+readonly TAG GIT_TAG GIT_TAG_OBJECT
 
 #------------------------------------------------------------------------------
 # Functions
@@ -249,7 +256,7 @@ saveBuild() {
     local _TIMESTAMP _TEMP
     _TIMESTAMP=$(date +%s)
     _TEMP=$(mktemp "${TAGFILE}.XXXXXX")
-    if ! printf '%s\n' "${TAG}" "${_TIMESTAMP}" "${_KIND}" "${_IMAGE_ID}" > "${_TEMP}"; then
+    if ! printf '%s\n' "${TAG}" "${_TIMESTAMP}" "${_KIND}" "${_IMAGE_ID}" "${GIT_TAG}" "${GIT_TAG_OBJECT}" > "${_TEMP}"; then
         unlink "${_TEMP}"
         return 1
     fi
@@ -281,16 +288,52 @@ loadBuild() {
     fi
     {
         IFS= read -r SAVED_TAG && IFS= read -r _TIMESTAMP &&
-        IFS= read -r _KIND && IFS= read -r SAVED_IMAGE_ID
+        IFS= read -r _KIND && IFS= read -r SAVED_IMAGE_ID && IFS= read -r SAVED_GIT_TAG &&
+        IFS= read -r SAVED_GIT_TAG_OBJECT
     } < "${TAGFILE}" || { echo 'Alter/unvollständiger Build-Marker. Neu bauen.' >&2; return 1; }
     [[ "${_KIND}" == single ]] || { echo 'Kein fertiger lokaler Singlearch-Build; --push gesperrt.' >&2; return 1; }
     [[ "${SAVED_TAG}" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$ &&
        "${SAVED_IMAGE_ID}" =~ ^sha256:[0-9a-f]{64}$ &&
-       "${_TIMESTAMP}" =~ ^[1-9][0-9]{0,10}$ ]] || { echo 'Ungültiger Build-Marker.' >&2; return 1; }
+       "${_TIMESTAMP}" =~ ^[1-9][0-9]{0,10}$ &&
+       "${SAVED_GIT_TAG}" =~ ^v[0-9][a-zA-Z0-9_.+-]*$ &&
+       "${SAVED_GIT_TAG_OBJECT}" =~ ^[0-9a-f]{40}([0-9a-f]{24})?$ ]] || { echo 'Ungültiger Build-Marker.' >&2; return 1; }
     _NOW=$(date +%s)
     if (( (_NOW - _TIMESTAMP) / 86400 >= WARN_DAYS )); then
         printf '%bWarnung: Build ist mindestens %s Tage alt.%b\n' "${YELLOW}" "${WARN_DAYS}" "${NC}" >&2
     fi
+}
+
+# requirePublishedTag — Bricht ab, wenn der Release-Tag des Builds nicht so auf origin liegt
+#
+#   make tag-* taggt nur lokal; ein Image darf erst raus, wenn sein Tag veröffentlicht ist,
+#   sonst zeigt die Registry eine Version, die es im Repository nicht gibt. Verglichen wird
+#   das Tag-Objekt auf origin mit dem, das der Build gespeichert hat: Wurde der Tag nach dem
+#   Build umgesetzt, gehört das Image zum alten Stand, auch wenn lokal und origin übereinstimmen.
+#
+#   Params:
+#     - Release-Tag aus dem Build-Marker
+#     - Tag-Objekt beim Build aus dem Build-Marker
+#
+requirePublishedTag() {
+    local -r _GIT_TAG=${1:?} _BUILT=${2:?}
+    local _LOCAL _REMOTE
+    _LOCAL=$(git rev-parse -q --verify "refs/tags/${_GIT_TAG}") || _LOCAL=''
+    _REMOTE=$(git ls-remote --tags origin "refs/tags/${_GIT_TAG}") || _REMOTE=''
+    _REMOTE=${_REMOTE%%[[:space:]]*}
+    [[ "${_REMOTE}" == "${_BUILT}" ]] && return 0
+
+    echo -e "\n${RED}Push abgebrochen:${NC} Release-Tag ${_GIT_TAG} passt nicht zum Build." >&2
+    if [[ -n "${_REMOTE}" ]]; then
+        echo -e "Auf origin zeigt er auf ${_REMOTE}, gebaut wurde ${_BUILT}." >&2
+        echo -e "${YELLOW}Tipp:${NC} den veröffentlichten Stand neu bauen (${BLUE}make build${NC}), danach ${BLUE}make push${NC}\n" >&2
+    elif [[ "${_LOCAL}" != "${_BUILT}" ]]; then
+        echo -e "Er liegt nicht auf origin und zeigt lokal nicht mehr auf den gebauten Stand." >&2
+        echo -e "${YELLOW}Tipp:${NC} neu bauen (${BLUE}make build${NC}), Tag veröffentlichen, danach ${BLUE}make push${NC}\n" >&2
+    else
+        echo -e "Er liegt nur lokal und noch nicht auf origin." >&2
+        echo -e "${YELLOW}Tipp:${NC} ${BLUE}git push --follow-tags origin master${NC}, danach erneut ${BLUE}make push${NC}\n" >&2
+    fi
+    exit 1
 }
 
 # Bindet Version und latest an dieselbe gespeicherte Image-ID und pusht via BashLib.
@@ -298,6 +341,7 @@ loadBuild() {
 push() {
     local _ACTUAL_ID
     loadBuild
+    requirePublishedTag "${SAVED_GIT_TAG}" "${SAVED_GIT_TAG_OBJECT}"
     _ACTUAL_ID=$(docker image inspect "${SAVED_IMAGE_ID}" --format '{{.Id}}')
     [[ "${_ACTUAL_ID}" == "${SAVED_IMAGE_ID}" ]] || { echo 'Gespeichertes Image fehlt.' >&2; exit 1; }
     docker tag "${SAVED_IMAGE_ID}" "${IMAGE}:${SAVED_TAG}"

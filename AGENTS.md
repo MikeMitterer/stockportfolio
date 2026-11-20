@@ -82,6 +82,11 @@ Projekts.
 - **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
 
+- **StockInfo-Fehler sind Kennungen, die Sätze bildet StockPortfolio** (T-117).
+  `readErrorDetail` in `frontend/src/api/stockinfo/client.ts` übersetzt
+  `{code, params}` über `errors.reason` im Katalog; die Liste der Kennungen
+  steht in der [Entwicklerdoku](docs/development.md#sprache-und-texte).
+
 - **Den Vertrag liefert StockInfo maschinenlesbar mit.**
   `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
@@ -328,7 +333,8 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
   `capture-screenshots.mjs` (Bilder für die Anleitungen) und
   `notice-texts-check.mjs` (Hinweistexte auf Methodenseite und Rebalancing
-  in DE und EN) und `demo-data-check.mjs` (lesbare Demodaten aus
+  in DE und EN, dazu die Handelstabelle mit Bandkursen, gekürztem Kopf und
+  ohne waagrechtes Scrollen) und `demo-data-check.mjs` (lesbare Demodaten aus
   `--demo-details`: spielt das Backup-Testdepot ein, prüft Assets-Übersicht
   und Zusatzinformationen aller Positionen und dass ein offener Reiter
   den Live-Abgleich übersteht) und `stockinfo-proxy-check.mjs` (T-82:
@@ -453,11 +459,13 @@ eine Basis wie `README.md` oder `docker/README.md` nach ihrer abhängigen Datei
 der eingetragenen Frist ein Problem. Die Vorschau gehört in denselben Commit
 wie `docker/README.md`. Alle Zeiten kommen aus git, nicht vom Dateidatum oder
 Tagesdatum. Verlangt eine Änderung nichts, wird die Meldung nach dem Prüfen
-mit `docs-check.sh --ack <datei>` quittiert und `.docs-check.ack`
+mit `docs-check --ack <datei>` quittiert und `.docs-check.ack`
 mitcommittet; ungesehen quittieren ist kein Weg, eine Meldung loszuwerden. Es
 läuft vor jedem Commit (`.githooks/pre-commit`) und prüft dort genau den
 vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
-auf. `--no-verify` nur im Notfall und mit Begründung im Bericht.
+auf. Fehlen der Starter `devtools` oder ProjectTools in `.tools/`, warnt der
+Hook nur und lässt den Commit durch; das ist keine bestandene Doku-Prüfung,
+`make test` bleibt die harte Grenze. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.
 
