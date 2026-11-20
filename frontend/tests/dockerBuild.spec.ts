@@ -28,7 +28,7 @@ RED='' NC='' YELLOW='' GREEN='' BLUE='' MACHINE=Darwin ARCHITECTURE=arm64
 usageLine() { :; }
 showSamples() { :; }
 `)
-  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\n')
+  writeFileSync(join(libraries, 'version.lib.sh'), 'gitDockerTag() { echo 0.2.0-test; return "${TAG_RC:-0}"; }\ngitReleaseTag() { echo v0.2.0+test; }\n')
   writeFileSync(join(libraries, 'docker.lib.sh'), `
 buildSingleArchImage() { echo "local:$1" >> "$TRACE"; return "\${BUILD_RC:-0}"; }
 showImages() { :; }
@@ -36,6 +36,17 @@ pushImage2DockerHub() { echo image-push >> "$TRACE"; return "\${PUSH_RC:-0}"; }
 pushImage2GHCR() { echo ghcr-push >> "$TRACE"; }
 pushImage2Amazon() { echo ecr-push >> "$TRACE"; }
 `)
+  // Release-Tag lokal und auf origin; LOCAL_TAG_SHA bzw. REMOTE_TAG_SHA leer = Tag fehlt dort.
+  writeFileSync(join(bin, 'git'), `#!/usr/bin/env bash
+if [[ "$1" == rev-parse ]]; then
+  [[ -n "\${LOCAL_TAG_SHA-abc123}" ]] || exit 1
+  echo "\${LOCAL_TAG_SHA-abc123}"
+elif [[ "$1" == ls-remote ]]; then
+  [[ -z "\${REMOTE_TAG_SHA-abc123}" ]] || printf '%s\\trefs/tags/v0.2.0+test\\n' "\${REMOTE_TAG_SHA-abc123}"
+else
+  echo "git:$*" >> "$TRACE"
+fi
+`, { mode: 0o755 })
   writeFileSync(join(bin, 'docker'), `#!/usr/bin/env bash
 if [[ "$1 $2" == 'image inspect' ]]; then echo '${imageId}';
 else echo "docker:$*" >> "$TRACE"; fi
@@ -123,6 +134,20 @@ describe('Docker-Build und README-Übertragung', () => {
     expect(fixture.run(args, environment).status).not.toBe(0)
     expect(fixture.run(['--push']).status).not.toBe(0)
     expect(fixture.calls()).not.toContain('image-push')
+  })
+
+  it.each([
+    { name: 'fehlt', environment: { REMOTE_TAG_SHA: '' } },
+    { name: 'auf ein anderes Objekt zeigt', environment: { REMOTE_TAG_SHA: 'def456' } },
+    { name: 'lokal fehlt', environment: { LOCAL_TAG_SHA: '' } },
+  ])('verweigert den Push, wenn der Release-Tag auf origin $name', ({ environment }) => {
+    const fixture = createBuildFixture()
+    expect(fixture.run(['--build']).status).toBe(0)
+    const result = fixture.run(['--push'], environment)
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('v0.2.0+test liegt nicht auf origin')
+    expect(result.stderr).toContain('git push --follow-tags')
+    expect(fixture.calls()).toEqual(['local:linux/arm64'])
   })
 
   it('stoppt bei Vorschaufehler vor der Veröffentlichung und bei Pushfehler vor dem README', () => {
