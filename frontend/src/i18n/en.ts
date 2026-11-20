@@ -561,6 +561,9 @@ export const en: MessageSchema = {
     footerBalanced: 'Purchases and sales cancel out.',
     footerLeftOver: '{amount} left over.',
     footerShort: '{amount} comes from the reserve.',
+    footerTargetsBalanced: 'Targets add up to 100 %',
+    footerTargetsOver: '{deviation} too much',
+    footerTargetsUnder: '{deviation} missing',
     underfundedTitle: 'Plan not covered',
     underfundedBody:
       '{amount} is missing for the planned purchases. Sell an instrument or withdraw from cash or money market — enter the withdrawal there as a negative number.',

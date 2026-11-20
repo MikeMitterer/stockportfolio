@@ -96,21 +96,34 @@ const plan = computed(() => {
   )
 })
 
+/** Nachkommastellen eines Zielanteils in Eingabe und Anzeige. */
+const TARGET_DIGITS = 2
+/** Abweichung der Zielsumme von 100 % in Prozentpunkten, die noch als ausgeglichen gilt (T-97). */
+const TARGET_SUM_TOLERANCE = 0.01
+
 const planHasEntries = computed(
   () => hasTrades(trades.value) || Object.keys(targets.value).length > 0,
 )
 
-/** Weichen die probeweisen Ziele in Summe von 100 % ab? */
 /**
- * Weichen die Ziele in Summe von 100 % ab?
+ * Lage der Zielsumme, auch probeweiser Ziele, zu 100 % — für Toast und
+ * Fußzeile aus derselben Quelle (T-97). Die Toleranz schluckt Rundungsreste
+ * der Eingabe.
  *
- * Nicht im leeren Depot: Dort ist die Summe naturgemäß 0, und eine Warnung
+ * `null` im leeren Depot: Dort ist die Summe naturgemäß 0, und eine Warnung
  * darüber wäre die erste Meldung, die ein neuer Nutzer zu sehen bekäme — für
  * einen Zustand, den er gar nicht herbeigeführt hat.
  */
-const targetSumOff = computed(
-  () => hasHoldings.value && plan.value !== null && Math.abs(plan.value.targetSum - 100) > 0.01,
-)
+const targetSumState = computed<'balanced' | 'over' | 'under' | null>(() => {
+  if (!hasHoldings.value || plan.value === null) return null
+  const deviation = plan.value.targetSum - 100
+  // Vereinbarte Toleranz aus T-97; der kleine Zuschlag fängt Rundungsreste der Gleitkommasumme
+  // ab, damit etwa 90 % + 10,01 % noch als ausgeglichen gilt.
+  if (Math.abs(deviation) <= TARGET_SUM_TOLERANCE + 1e-9) return 'balanced'
+  return deviation > 0 ? 'over' : 'under'
+})
+
+const targetSumOff = computed(() => targetSumState.value === 'over' || targetSumState.value === 'under')
 
 const { clear: clearPlan } = draft
 
@@ -170,7 +183,7 @@ notify(
 notify(targetSumOff, {
   title: t('rebalancing.targetSumTitle'),
   type: 'warning',
-  content: () => t('rebalancing.targetSumBody', { sum: percent(plan.value?.targetSum ?? 0) }),
+  content: () => t('rebalancing.targetSumBody', { sum: percent(plan.value?.targetSum ?? 0, TARGET_DIGITS) }),
 })
 
 notify(
@@ -527,8 +540,8 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
                           :clear-label="t('common.clear')"
                           class="reb__grow"
                           :value="row.targetPercent"
-                          :display="percent(row.targetPercent)"
-                          :precision="2"
+                          :display="percent(row.targetPercent, TARGET_DIGITS)"
+                          :precision="TARGET_DIGITS"
                           :min="0"
                           :max="100"
                           @commit="
@@ -637,9 +650,33 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
               <!-- Bilanz des Plans -->
               <tfoot>
                 <tr class="reb__foot">
-                  <td colspan="7" class="reb__foot-label">
+                  <td colspan="4" class="reb__foot-label">
                     {{ t('rebalancing.footerQuestion') }}
                   </td>
+                  <!--
+                  Unter „Ziel %“: Summe und Abweichung zweizeilig statt als
+                  Tooltip — beim Tippen in die Zielspalte soll die Antwort
+                  ohne Zeigen direkt darunter stehen, wie die Geldbilanz.
+                  -->
+                  <td
+                    class="reb__foot-value reb__foot-target tabular-nums"
+                    :class="{
+                      'reb__flow--in': targetSumState === 'balanced',
+                      'reb__flow--out': targetSumOff,
+                    }"
+                  >
+                    {{ percent(plan.targetSum, TARGET_DIGITS) }}
+                    <span v-if="targetSumState" class="reb__foot-deviation">
+                      <template v-if="targetSumState === 'balanced'">{{ t('rebalancing.footerTargetsBalanced') }}</template>
+                      <template v-else-if="targetSumState === 'over'">
+                        {{ t('rebalancing.footerTargetsOver', { deviation: percentSigned(plan.targetSum - 100, TARGET_DIGITS) }) }}
+                      </template>
+                      <template v-else>
+                        {{ t('rebalancing.footerTargetsUnder', { deviation: percentSigned(plan.targetSum - 100, TARGET_DIGITS) }) }}
+                      </template>
+                    </span>
+                  </td>
+                  <td colspan="2"></td>
                   <td
                     class="reb__foot-value tabular-nums"
                     :class="
@@ -977,6 +1014,15 @@ const { formatMoney, formatMoneyCents, formatMoneySigned } = usePortfolioCurrenc
     padding: var(--space-2);
     font-weight: 600;
     text-align: right;
+  }
+
+  &__foot-target { vertical-align: top; }
+
+  &__foot-deviation {
+    display: block;
+    font-size: var(--font-xs);
+    font-weight: 400;
+    white-space: nowrap;
   }
 
   &__foot-note {
