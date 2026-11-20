@@ -1,4 +1,4 @@
-import type { ResourceKind } from '../persistence/repository.js'
+import type { ResourceKind } from '../persistence/privateData.js'
 
 export interface ResourceEvent {
   kind: ResourceKind

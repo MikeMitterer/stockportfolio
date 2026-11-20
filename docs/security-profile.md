@@ -14,8 +14,10 @@ Leere Abschnitte heißen „noch nicht entschieden“; „keine“ ist eine Ents
 
 ## Anmeldung
 
-Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und
-`api/src/routers/api.ts`.
+Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und den
+Routen unter `api/src/routers/`: Sitzungscookie und Token-Tausch in
+`session.ts`, Anmelderouten in `accounts.ts`, Origin- und JSON-Prüfung in
+`api.ts` (Aufteilung T-134).
 
 - **Konten:** Benutzername und Passwort, Passwörter als Argon2id-Hash in der
   SQLite-Datenbank der Konto-API. Das erste Admin-Konto entsteht über einen
