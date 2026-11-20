@@ -246,7 +246,7 @@ make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
 make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
 make check      # lint, typecheck, format-check und test für TS, Python und Bash
 make security   # gitleaks über die Git-History, bandit für Python
-make test       # Frontend- und API-Tests, einmalig
+make test       # Doku, Frontend-, API- und Python-Tests, einmalig
 make clean      # erzeugte Dateien, .venv und .tools/ entfernen
 make build          # Docker-Image lokal bauen (linux/amd64)
 make push           # geprüftes Image veröffentlichen, danach Hub-README

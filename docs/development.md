@@ -27,7 +27,7 @@ beschreibt der [Docker-Guide](../docker/README.md).
   Freigaben in `allowScripts` nicht: `npm install -g npm@11`
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
-- Python 3.11+ für den Teststack; ruff, bandit und pip-audit installiert
+- Python 3.11+ für den Teststack; ruff, bandit, pip-audit und pytest installiert
   `make setup` gepinnt in die `.venv`
 - shellcheck und gitleaks für `make lint` und `make security`
   (macOS: `brew install shellcheck gitleaks`)
@@ -94,7 +94,7 @@ den Alltag.
 | `make lint` | ESLint (Frontend, API), ruff (Python), `bash -n` und shellcheck (Bash) |
 | `make typecheck` | vue-tsc (Frontend) und tsc (API) |
 | `make format` / `make format-check` | Prettier (Frontend, API) und ruff format anwenden / nur prüfen |
-| `make test` | Doku-Prüfung, Frontend- und API-Tests, einmalig |
+| `make test` | Doku-Prüfung, Frontend-, API- und Python-Tests, einmalig |
 | `make security` | gitleaks über die Git-History, bandit ab mittlerer Schwere |
 | `make audit` | Abhängigkeiten auf bekannte Lücken: npm (Laufzeit) und Python; braucht Netz |
 | `make quality` | Bericht zu Komplexität, Dateigröße und doppeltem Code (jscpd); endet bei Befunden mit 0 |
@@ -171,6 +171,7 @@ api/                 Konto-API (Node, SQLite)
   src/stockinfo/     Weiterleitung an StockInfo mit Freigabeliste
 docker/              Dockerfile, Build-, Smoke- und Browserprüfung, Docker-Hub-README
 scripts/             Teststack mit StockInfo-Testdaten
+  tests/             pytest-Tests der Teststack-Skripte
 unraid/              Unraid-Anleitung
 ```
 
@@ -236,6 +237,12 @@ Makefiles und StockInfo-Dateien bleiben unverändert. Die Ports 5175 und 8080
 sind fest, weil Vites Proxy sie erwartet. Ein Portkonflikt bricht den Start
 ab; fremde Prozesse werden nicht beendet. Liegt StockInfo nicht neben diesem
 Repository, braucht `--stockinfo-root` einen absoluten Pfad.
+
+Das Verhalten der Teststack-Skripte prüfen pytest-Tests unter
+`scripts/tests/`: Zustandsdatei, belegte Ports, nur eigene Prozesse und
+Testdaten beenden oder entfernen, unlesbare Zustandsdatei, nur http(s) in
+`request()`. Sie laufen in `make test`, ohne Netz und ohne StockInfo, API oder
+Vite; einzeln mit `.venv/bin/python -m pytest scripts/tests`.
 
 Der StockInfo-Kindprozess nutzt `../StockInfo/.venv/bin/python`. Nur den
 StockInfo-Testserver ohne Stack startest du direkt mit StockInfos Python:

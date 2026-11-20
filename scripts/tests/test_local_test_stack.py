@@ -11,7 +11,9 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from local_test_stack import process_identity, remove_data, require_free_port, stop_children
+
+import local_test_stack
+from local_test_stack import process_identity, remove_data, request, require_free_port, stop_children
 
 SCRIPTS = Path(__file__).resolve().parent.parent
 SERVER_SCRIPT = SCRIPTS / "stockinfo-test-server.py"
@@ -103,7 +105,10 @@ def test_removes_only_own_test_directory(tmp_path: Path) -> None:
 def run_status(temp_dir: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(SERVER_SCRIPT), "--stack", "--status"],
-        capture_output=True, text=True, check=False, timeout=30,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
         env={**os.environ, "TMPDIR": str(temp_dir), "NO_COLOR": "1"},
     )
 
@@ -132,3 +137,15 @@ def test_unreadable_state_file_is_reported_and_kept(tmp_path: Path) -> None:
     assert result.returncode == 2
     assert str(state_path) in result.stderr
     assert state_path.read_text() == "{kein json"
+
+
+@pytest.mark.parametrize("url", ["file:///etc/passwd", "ftp://127.0.0.1/", "127.0.0.1:8080/healthz"])
+def test_request_refuses_non_http_urls_without_opening_them(url: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    """request() lehnt alles außer http(s) ab, bevor eine Verbindung entsteht (bandit B310)."""
+    opened: list[object] = []
+    monkeypatch.setattr(local_test_stack, "urlopen", lambda *args, **kwargs: opened.append(args))
+
+    with pytest.raises(ValueError, match="Only http"):
+        request(url)
+
+    assert opened == []

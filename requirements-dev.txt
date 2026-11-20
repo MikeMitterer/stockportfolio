@@ -11,6 +11,8 @@ mmit-clitheme @ git+https://github.com/MikeMitterer/python-clitheme.git@v0.12.0+
 ruff==0.17.1
 bandit==1.9.4
 pip-audit==2.10.1
+# Verhaltenstests der Teststack-Skripte unter scripts/tests/ (make test, T-101).
+pytest==9.2.0
 # Untergrenzen für die .venv selbst: ältere Fassungen haben bekannte Lücken,
 # setuptools PYSEC-2026-3447 (T-100), pip PYSEC-2026-196 und PYSEC-2026-3721 (T-126).
 setuptools>=83
