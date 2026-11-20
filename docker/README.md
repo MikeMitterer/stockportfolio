@@ -135,6 +135,7 @@ Start with `docker compose up -d`.
 | `/data` volume | Persistent SQLite accounts and sessions. Reuse it when recreating the container. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | Exact browser origin, including scheme and port, without a path (for example `https://portfolio.example.com`). A trailing slash is ignored. Required behind a reverse proxy. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | Set to `true` when the browser uses HTTPS. Local HTTP testing uses `false`. |
+| `STOCKPORTFOLIO_SESSION_IDLE_DAYS` | Days without use before users have to sign in again; defaults to `7`. Every use starts the period anew. Whole days from 1 to 365; any other value stops the start with an error in the log. |
 | `TZ` | Container log timezone; defaults to `UTC`. The interface uses the browser's timezone. |
 
 Restart the container after changing its environment variables.

@@ -6,6 +6,7 @@ import { createServerApp } from './app.js'
 import { hashSetupCode } from './auth/service.js'
 import { createSqliteRepository } from './persistence/repository.js'
 import { normalizePublicOrigin } from './publicOrigin.js'
+import { parseSessionIdleMs } from './sessionIdle.js'
 import { normalizeStockInfoUrl } from './stockinfo/proxy.js'
 
 const dataDirectory = resolve(process.env.STOCKPORTFOLIO_DATA_DIR ?? '/data')
@@ -26,6 +27,15 @@ const publicOrigin = (() => {
 })()
 if (publicOrigin) console.info(`Public origin: ${publicOrigin}`)
 
+const sessionIdleMs = (() => {
+  try {
+    return parseSessionIdleMs(process.env.STOCKPORTFOLIO_SESSION_IDLE_DAYS)
+  } catch (error) {
+    console.error((error as Error).message)
+    process.exit(1)
+  }
+})()
+
 const stockInfoUrl = normalizeStockInfoUrl(process.env.STOCKINFO_API_URL)
 if (!stockInfoUrl) console.warn('STOCKINFO_API_URL is not set; StockInfo requests answer 503')
 
@@ -39,6 +49,7 @@ const app = createServerApp(repository, {
   publicOrigin,
   secureCookies: process.env.STOCKPORTFOLIO_SECURE_COOKIES === 'true',
   stockInfoUrl,
+  sessionIdleMs,
   remoteAddress: (context) => context.env?.incoming?.socket.remoteAddress ?? 'unknown',
 })
 

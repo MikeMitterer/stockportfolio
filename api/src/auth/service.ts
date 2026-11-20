@@ -1,9 +1,12 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import argon2 from 'argon2'
-import type { AccountRepository, UserRecord } from '../persistence/repository.js'
+import type { AccountRepository, SessionRecord, UserRecord } from '../persistence/repository.js'
+import { parseSessionIdleMs } from '../sessionIdle.js'
 
-const idleLimitMs = 12 * 60 * 60_000
-const absoluteLimitMs = 7 * 24 * 60 * 60_000
+/** Ab diesem Alter bekommt die nächste Nutzung ein neues Token; abgemeldet wird nur nach der Leerlauffrist (T-98). */
+const tokenRotationMs = 24 * 60 * 60_000
+/** So lange gilt ein ersetztes Token noch, für parallele Anfragen und andere Reiter desselben Browsers. */
+const replacedGraceMs = 60_000
 // Gleiche Argon2id-Parameter wie bei echten Konten, damit unbekannte Namen keinen kürzeren Login-Pfad haben.
 const placeholderPasswordHash = '$argon2id$v=19$m=65536,p=4,t=3$I2q0ZM23ZTSD1i05A5Gxuw$kVyn3VeN0V2F2B2rwTwUX465a4odogCqqZOBLu2+XbM'
 
@@ -73,6 +76,8 @@ export class AccountService {
     private readonly repository: AccountRepository,
     private setupCodeHash: string | null,
     private readonly now: () => number = Date.now,
+    /** Frist ohne Anfrage bis zum Ablauf; jede Nutzung startet sie neu, Höchstdauer gibt es keine (T-98). */
+    readonly sessionIdleMs: number = parseSessionIdleMs(undefined),
   ) {}
 
   setupRequired(): boolean {
@@ -132,12 +137,21 @@ export class AccountService {
     return token
   }
 
-  session(token: string): PublicUser {
+  /**
+   * Prüft ein Token. Ein ersetztes Token gilt nur noch während der
+   * Übergangsfrist und verlängert nichts. Sonst startet `extend` die
+   * Leerlauffrist neu — nur dort, wo auch das Cookie neu gesetzt werden kann,
+   * damit Browser- und Serverfrist gleich bleiben.
+   */
+  private validSession(token: string, extend: boolean): { session: SessionRecord; user: PublicUser } {
     const tokenHash = digest(token)
     const session = this.repository.findSession(tokenHash)
     if (!session) throw new ServiceError(401, 'unauthorized')
     const now = this.now()
-    if (now - session.lastSeenAt >= idleLimitMs || now - session.createdAt >= absoluteLimitMs) {
+    const expired = session.replacedAt != null
+      ? now - session.replacedAt >= replacedGraceMs
+      : now - session.lastSeenAt >= this.sessionIdleMs
+    if (expired) {
       this.repository.deleteSession(tokenHash)
       throw new ServiceError(401, 'unauthorized')
     }
@@ -146,12 +160,59 @@ export class AccountService {
       this.repository.deleteSession(tokenHash)
       throw new ServiceError(401, 'unauthorized')
     }
-    this.repository.touchSession(tokenHash, now)
-    return publicUser(user)
+    if (extend && session.replacedAt == null) this.repository.touchSession(tokenHash, now)
+    return { session, user: publicUser(user) }
   }
 
+  /** Prüft die Sitzung ohne Token-Tausch und verlängert sie. */
+  session(token: string): PublicUser {
+    return this.validSession(token, true).user
+  }
+
+  /**
+   * Prüft, ob eine Sitzung noch gilt, ohne sie zu verlängern oder zu
+   * tauschen — für eine offene Ereignisverbindung, die kein Cookie mehr
+   * setzen kann. Verlängerte sie, lebte die Sitzung serverseitig weiter,
+   * während das Cookie im Browser abläuft.
+   */
+  isActive(token: string): boolean {
+    try {
+      this.validSession(token, false)
+      return true
+    } catch (error) {
+      if (error instanceof ServiceError) return false
+      throw error
+    }
+  }
+
+  /**
+   * Prüft die Sitzung und tauscht ein Token, das älter als einen Tag ist (T-98).
+   * Das alte Token gilt danach noch `replacedGraceMs`, damit parallele
+   * Anfragen und offene Ereignisverbindungen anderer Reiter nicht abmelden.
+   * Die Datenbankzugriffe laufen synchron; zwei gleichzeitige Anfragen
+   * tauschen deshalb nicht doppelt.
+   *
+   * @returns Benutzer und das Token, das der Browser künftig senden soll;
+   *   `null` bei einem bereits ersetzten Token: Dessen Cookie darf das neue,
+   *   das der Browser schon erhalten hat, nicht überschreiben.
+   */
+  authenticate(token: string): { user: PublicUser; token: string | null } {
+    const { session, user } = this.validSession(token, true)
+    if (session.replacedAt != null) return { user, token: null }
+    const now = this.now()
+    if (now - session.createdAt < tokenRotationMs) return { user, token }
+    const successor = randomBytes(32).toString('hex')
+    this.repository.replaceSession(
+      session.tokenHash,
+      { tokenHash: digest(successor), userId: session.userId, createdAt: now, lastSeenAt: now },
+      now - replacedGraceMs,
+    )
+    return { user, token: successor }
+  }
+
+  /** Beendet die Sitzung samt Vorgänger und Nachfolger aus einem Token-Tausch, auch während der Übergangsfrist. */
   logout(token: string): void {
-    this.repository.deleteSession(digest(token))
+    this.repository.deleteSessionChain(digest(token))
   }
 
   async changePassword(userId: string, password: string): Promise<string> {
