@@ -62,8 +62,8 @@ from pathlib import Path
 from types import FrameType
 from typing import Any
 
-from terminal_style import HelpFormatter, has_theme, print_message
 from local_test_stack import process_identity, run_stack_cli, translate
+from terminal_style import HelpFormatter, has_theme, print_message
 from test_state import OwnedStateFile
 
 

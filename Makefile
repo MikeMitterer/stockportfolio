@@ -279,7 +279,7 @@ audit: require-setup ## Abhängigkeiten ohne bekannte Lücken: npm (Laufzeit), P
 # Nur Bericht: Befunde enden mit 0, die Schwellen sind Anhaltspunkte. Läuft ein Werkzeug gar
 # nicht, scheitert das Target; ein leerer Bericht wäre sonst ein falsches Grün. Die Schwellen
 # für TypeScript stehen in frontend/scripts/quality-report.mjs.
-quality: require-setup ## Bericht: Komplexität, Dateigröße, doppelter Code (nicht in der Abnahme)
+quality: require-setup ## Bericht zu Komplexität, Dateigröße und doppeltem Code
 	@echo "Komplexität und Dateigröße TypeScript/Vue (ESLint)"
 	@node frontend/scripts/quality-report.mjs frontend src
 	@node frontend/scripts/quality-report.mjs api src
