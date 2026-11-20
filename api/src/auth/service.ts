@@ -186,42 +186,44 @@ export class AccountService {
   }
 
   /**
-   * Prüft die Sitzung und tauscht ein Token, das älter als einen Tag ist (T-98).
-   * Das alte Token gilt danach noch `replacedGraceMs`, damit parallele
-   * Anfragen und offene Ereignisverbindungen anderer Reiter nicht abmelden.
-   * Die Datenbankzugriffe laufen synchron; zwei gleichzeitige Anfragen
-   * tauschen deshalb nicht doppelt.
+   * Gibt das Token zurück, mit dem die Antwort das Cookie setzt, und tauscht
+   * es dabei, wenn es älter als einen Tag ist (T-98). Läuft erst am Ende der
+   * Anfrage: Die Übergangsfrist `replacedGraceMs` des alten Tokens beginnt so
+   * erst, wenn das neue Cookie unterwegs ist, und eine lange Anfrage verbraucht
+   * sie nicht. Die Datenbankzugriffe laufen synchron; zwei gleichzeitige
+   * Anfragen tauschen deshalb nicht doppelt.
    *
-   * @returns Benutzer und das Token, das der Browser künftig senden soll;
-   *   `null` bei einem bereits ersetzten Token: Dessen Cookie darf das neue,
-   *   das der Browser schon erhalten hat, nicht überschreiben.
+   * @returns das Token für das Cookie; `null`, wenn die Sitzung inzwischen
+   *   fehlt oder eine andere Anfrage sie schon getauscht hat: Dann hat der
+   *   Browser den Nachfolger bereits, und diese Antwort darf ihn nicht
+   *   überschreiben.
    */
-  authenticate(token: string): { user: PublicUser; token: string | null } {
-    const { session, user } = this.validSession(token, true)
-    if (session.replacedAt != null) return { user, token: null }
+  renew(token: string): string | null {
+    const session = this.repository.findSession(digest(token))
+    if (!session || session.replacedAt != null) return null
     const now = this.now()
-    if (now - session.createdAt < tokenRotationMs) return { user, token }
+    if (now - session.createdAt < tokenRotationMs) return token
     const successor = randomBytes(32).toString('hex')
     this.repository.replaceSession(
       session.tokenHash,
       { tokenHash: digest(successor), userId: session.userId, createdAt: now, lastSeenAt: now },
       now - replacedGraceMs,
     )
-    return { user, token: successor }
+    return successor
   }
 
   /**
-   * Ist das Token das aktuelle seiner Sitzung, also weder abgelaufen noch
-   * ersetzt? Eine Antwort setzt ihr Cookie nur dann; sonst hätte eine andere
-   * Anfrage den Browser inzwischen schon auf den Nachfolger gebracht.
+   * Beendet die Sitzung samt Vorgänger und Nachfolger aus einem Token-Tausch,
+   * auch während der Übergangsfrist. Nur ein noch gültiges Token darf das:
+   * Ein abgelaufener Vorgänger widerruft die aktuelle Sitzung nicht mehr.
    */
-  isCurrent(token: string): boolean {
-    const session = this.repository.findSession(digest(token))
-    return session != null && session.replacedAt == null
-  }
-
-  /** Beendet die Sitzung samt Vorgänger und Nachfolger aus einem Token-Tausch, auch während der Übergangsfrist. */
   logout(token: string): void {
+    try {
+      this.validSession(token, false)
+    } catch (error) {
+      if (error instanceof ServiceError) return
+      throw error
+    }
     this.repository.deleteSessionChain(digest(token))
   }
 

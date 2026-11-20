@@ -345,3 +345,56 @@ describe('Cookie beim Token-Tausch (Runde 2)', () => {
   })
 })
 
+describe('Übergangsfrist und Abmeldung (Runde 3)', () => {
+  it('verbraucht die Übergangsfrist nicht während einer langen Anfrage (R2-F1)', async () => {
+    const { repository, cookie, advance, post, session } = await signedIn()
+    try {
+      const before = cookie()
+      advance(dayMs + 1_000)
+      // Die erste Anfrage nach der Tauschgrenze dauert länger als die 60-s-Übergangsfrist.
+      const slow = post('/api/admin/users', { username: 'anna', password: 'Test-password-456', role: 'user' }, before)
+      await new Promise((resolve) => setImmediate(resolve))
+      advance(61_000)
+      // Der Browser hat noch kein neues Cookie; eine parallele Anfrage muss mit dem alten durchgehen.
+      expect((await session()).status).toBe(200)
+      expect((await slow).status).toBe(201)
+      expect((await session()).status).toBe(200)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('widerruft die Sitzung nicht mit einem abgelaufenen Vorgänger (R2-F2)', async () => {
+    const { repository, cookie, advance, post, send, session } = await signedIn()
+    try {
+      const before = cookie()
+      advance(dayMs + 1_000)
+      expect((await session()).status).toBe(200)
+      const rotated = cookie()
+      expect(rotated).not.toBe(before)
+      advance(61_000)
+      // Abmelden mit dem alten Token, etwa aus einer Kopie; der Browser behält das neue.
+      await post('/api/auth/logout', {}, before)
+      expect((await send(rotated)).status).toBe(200)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('beendet mit einem gültigen Vorgänger in der Übergangsfrist weiter beide Tokens (R2-F2)', async () => {
+    const { repository, cookie, advance, post, send, session } = await signedIn()
+    try {
+      const before = cookie()
+      advance(dayMs + 1_000)
+      expect((await session()).status).toBe(200)
+      const rotated = cookie()
+      advance(30_000)
+      await post('/api/auth/logout', {}, before)
+      expect((await send(rotated)).status).toBe(401)
+      expect((await send(before)).status).toBe(401)
+    } finally {
+      repository.close()
+    }
+  })
+})
+

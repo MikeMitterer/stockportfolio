@@ -104,13 +104,17 @@ async function body(context: ServerContext): Promise<Record<string, unknown>> {
   }
 }
 
+/** Token einer authentifizierten Anfrage; nach dem Tausch am Ende der Anfrage der Nachfolger. */
+interface SessionRenewal { token: string }
+
 /**
- * Sitzungscookie, das die Antwort am Ende der Anfrage setzen soll. Es wird erst
- * dort geschrieben: So erreicht es auch Antworten, die eine Route selbst baut
- * (StockInfo-Weiterleitung), und eine langsamere ältere Antwort setzt kein
- * Token mehr, das eine andere Anfrage inzwischen getauscht hat.
+ * Sitzungscookie, das die Antwort am Ende der Anfrage setzt, samt Token-Tausch
+ * (T-98). Erst dort: So erreicht es auch Antworten, die eine Route selbst baut
+ * (StockInfo-Weiterleitung), eine lange Anfrage verbraucht die Übergangsfrist
+ * des alten Tokens nicht, und eine langsamere ältere Antwort setzt kein Token
+ * mehr, das eine andere Anfrage inzwischen getauscht hat.
  */
-const pendingSessionCookie = new WeakMap<ServerContext, string>()
+const pendingSessionCookie = new WeakMap<ServerContext, SessionRenewal>()
 
 function token(context: ServerContext): string {
   const value = getCookie(context, cookieName)
@@ -119,20 +123,21 @@ function token(context: ServerContext): string {
 }
 
 /**
- * Prüft die Sitzung und merkt für die Antwort das Cookie mit der vollen
- * Leerlauffrist vor, bei Bedarf mit dem getauschten Token (T-98). Server und
+ * Prüft und verlängert die Sitzung und merkt für die Antwort das Cookie mit
+ * der vollen Leerlauffrist vor; getauscht wird am Ende der Anfrage. Server und
  * Browser zählen so ab derselben Nutzung. `null` lässt das Cookie unverändert,
  * wenn die Route selbst ein neues setzt — zwei `Set-Cookie` desselben Namens
  * ließen offen, welches der Browser behält.
  *
- * @returns Benutzer und das Token, mit dem der Browser weiterarbeitet.
+ * @returns Benutzer und das Token, mit dem der Browser weiterarbeitet; nach
+ *   dem Tausch am Ende der Anfrage steht dort der Nachfolger.
  */
-function authenticated(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): { user: PublicUser; token: string } {
-  const sessionToken = token(context)
-  const result = cookie ? service.authenticate(sessionToken) : { user: service.session(sessionToken), token: null }
-  if (cookie && result.token) pendingSessionCookie.set(context, result.token)
-  if (result.user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
-  return { user: result.user, token: result.token ?? sessionToken }
+function authenticated(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): { user: PublicUser; session: SessionRenewal } {
+  const session: SessionRenewal = { token: token(context) }
+  const user = service.session(session.token)
+  if (cookie) pendingSessionCookie.set(context, session)
+  if (user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
+  return { user, session }
 }
 
 function currentUser(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): PublicUser {
@@ -177,7 +182,11 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
     }
     await next()
     const pending = pendingSessionCookie.get(context)
-    if (pending !== undefined && service.isCurrent(pending)) setSessionCookie(context, pending, cookie)
+    if (pending === undefined) return
+    const renewed = service.renew(pending.token)
+    if (renewed === null) return
+    pending.token = renewed
+    setSessionCookie(context, renewed, cookie)
   })
 
   app.get('/api/setup/status', (context) => context.json({ required: service.setupRequired() }))
@@ -250,7 +259,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
 
   app.get('/api/data/events', (context) => {
     // Das Token nach einem möglichen Tausch: Die offene Verbindung prüft es weiter.
-    const { user, token: sessionToken } = authenticated(context, service, cookie)
+    const { user, session } = authenticated(context, service, cookie)
     context.header('Cache-Control', 'no-cache')
     context.header('X-Accel-Buffering', 'no')
     return streamSSE(context, async (stream) => {
@@ -261,7 +270,7 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
         while (!stream.aborted) {
           const event = await subscription.next(options.heartbeatMs ?? 15_000)
           if (stream.aborted) break
-          if (!service.isActive(sessionToken)) break
+          if (!service.isActive(session.token)) break
           if (event) await stream.writeSSE({ event: 'resource', data: JSON.stringify(event) })
           else await stream.write(': keep-alive\n\n')
         }

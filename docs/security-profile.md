@@ -34,21 +34,24 @@ Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und
   offenen Ereignisverbindung (Live-Abgleich) verlängert nicht, weil sie kein
   Cookie mehr setzen kann; sonst liefe das Cookie vor der Sitzung ab.
 - **Token-Tausch (Mike, 2026-10-21, T-98):** Ist das Token älter als einen
-  Tag, bekommt die nächste authentifizierte Anfrage ein neues. Das alte gilt
-  danach noch 60 Sekunden, ohne selbst zu verlängern, zu tauschen oder ein
-  Cookie zu setzen; so melden parallele Anfragen und andere Reiter desselben
-  Browsers nicht ab. Das Cookie schreibt jede Antwort erst am Ende der
-  Anfrage, auch die StockInfo-Weiterleitung, und nur, wenn sein Token dann
-  noch das aktuelle ist; eine langsamere ältere Antwort setzt so kein schon
-  getauschtes Token zurück. Ersetzte Sitzungen löscht der nächste Tausch. Eine
+  Tag, bekommt die nächste authentifizierte Anfrage ein neues. Getauscht wird
+  am Ende der Anfrage, direkt bevor die Antwort das Cookie setzt, auch bei der
+  StockInfo-Weiterleitung; eine lange Anfrage verbraucht so die Übergangsfrist
+  nicht. Das alte Token gilt danach noch 60 Sekunden, ohne selbst zu
+  verlängern, zu tauschen oder ein Cookie zu setzen; so melden parallele
+  Anfragen und andere Reiter desselben Browsers nicht ab. Hat eine andere
+  Anfrage schon getauscht, setzt eine Antwort kein Cookie; eine langsamere
+  ältere Antwort setzt so kein schon getauschtes Token zurück. Ersetzte
+  Sitzungen löscht der nächste Tausch. Eine
   offene Ereignisverbindung tauscht nicht, weil sie kein Cookie mehr setzen
   kann; nach Ablauf ihres ersetzten Tokens verbindet der Browser neu. Ein
   kopiertes Token verliert damit seine Gültigkeit, sobald der rechtmäßige
   Browser nach einem Tausch wieder anfragt; nutzt ihn der Angreifer zuerst,
   wird der rechtmäßige Browser abgemeldet. Jede Anmeldung in einem weiteren
   Browser ist eine eigene Sitzung mit eigenem Tausch.
-- **Widerruf:** Abmelden löscht die Sitzung samt Vorgänger und Nachfolger
-  aus einem Token-Tausch, auch während der Übergangsfrist. Passwortwechsel,
+- **Widerruf:** Abmelden mit einem noch gültigen Token löscht die Sitzung
+  samt Vorgänger und Nachfolger aus einem Token-Tausch, auch während der
+  Übergangsfrist. Ein abgelaufenes Token widerruft nichts mehr. Passwortwechsel,
   Passwort-Reset durch einen Admin und Deaktivieren löschen alle Sitzungen
   des Kontos; der Passwortwechsel stellt danach eine neue aus.
 - **Schreibende Anfragen** verlangen einen `Origin`, der zum Server oder zu
