@@ -13,14 +13,15 @@ import { safeStorage } from '@mmit/ux-foundation'
 import { translate } from '@/i18n'
 import { ApiError, describeFailure } from '@/api/stockinfo/errors'
 import { toQuoteCacheEntry } from '@/api/stockinfo/mappers'
+import {
+  MAX_CONCURRENT_REQUESTS,
+  mapWithConcurrency,
+  requestQuote,
+} from '@/api/stockinfo/quoteRequests'
 import { QuoteCacheRepository } from '@/db/repository'
 import { quoteKey } from '@/domain/valuation'
 import type { StockInfoClient } from '@/api/stockinfo/client'
-import type { QuoteResponse } from '@/api/stockinfo/types'
 import type { Position, QuoteCacheEntry, QuoteMap } from '@/types/portfolio'
-
-/** Maximale Anzahl gleichzeitiger Kursabfragen — schont die API. */
-const MAX_CONCURRENT_REQUESTS = 6
 
 /**
  * Zeitpunkt des letzten vollständigen Durchgangs, über Seitenaufbauten hinweg.
@@ -423,24 +424,6 @@ interface FetchOutcome {
   reason?: string
 }
 
-/**
- * Wählt den Endpunkt für eine Position.
- *
- * Zwei Achsen: ISIN oder Symbol — und ob die TTL des Dienstes gilt. Ohne
- * `force` liefert er innerhalb von sechs Stunden den Kurs aus seinem eigenen
- * Speicher; mit `force` beschafft er ihn live.
- */
-function requestQuote(
-  client: StockInfoClient,
-  position: Pick<Position, 'isin' | 'symbol'>,
-  force: boolean,
-): Promise<QuoteResponse> {
-  if (position.isin) {
-    return force ? client.refreshByIsin(position.isin) : client.getQuoteByIsin(position.isin)
-  }
-  return force ? client.refreshBySymbol(position.symbol) : client.getQuoteBySymbol(position.symbol)
-}
-
 /** Holt den Kurs einer Position und macht aus einem Fehler ein Ergebnis. */
 async function fetchOne(
   client: StockInfoClient,
@@ -458,39 +441,6 @@ async function fetchOne(
     const reason = error instanceof ApiError ? error.detail : translate('notify.unknownError')
     return { key, symbol: position.symbol, entry: null, reason }
   }
-}
-
-/**
- * Führt `task` über alle `items` aus, aber höchstens `limit` gleichzeitig.
- * Wirft nie — Fehler müssen im Task selbst behandelt werden.
- *
- * @param items Eingabeliste.
- * @param limit Maximale Parallelität (>= 1).
- * @param task  Auszuführende Funktion je Element.
- * @returns Ergebnisse in der Reihenfolge der Eingabe.
- */
-async function mapWithConcurrency<TItem, TResult>(
-  items: TItem[],
-  limit: number,
-  task: (item: TItem) => Promise<TResult>,
-): Promise<TResult[]> {
-  const results = new Array<TResult>(items.length)
-  let cursor = 0
-
-  async function worker(): Promise<void> {
-    while (cursor < items.length) {
-      const index = cursor
-      cursor += 1
-      const item = items[index]
-      if (item === undefined) continue
-      results[index] = await task(item)
-    }
-  }
-
-  const workerCount = Math.min(Math.max(limit, 1), items.length)
-  await Promise.all(Array.from({ length: workerCount }, () => worker()))
-
-  return results
 }
 
 /*

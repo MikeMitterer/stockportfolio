@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { LiveEventsClient, type ResourceEvent } from '@/api/data/liveEvents'
-import { DATA_RECOVERED_EVENT, privateDataClient } from '@/api/data/client'
+import { DATA_RECOVERED_EVENT, privateDataClient, type ResourceKind } from '@/api/data/client'
 import type { StockInfoClient } from '@/api/stockinfo/client'
 import { baseCurrencyOf } from '@/domain/fx'
 import { useInstrumentsStore } from '@/stores/instruments'
@@ -95,38 +95,42 @@ export const useLiveSyncStore = defineStore('liveSync', () => {
     window.dispatchEvent(new Event(DATA_RECOVERED_EVENT))
   }
 
-  async function refreshResource(event: ResourceEvent): Promise<void> {
-    if (!portfolio.loaded) return
-    if (event.kind === 'portfolio') {
+  /**
+   * Was ein Änderungsereignis je Ressourcenart neu lädt. Ereignisse zu einem
+   * anderen als dem offenen Depot oder zu noch nicht geladenen Daten gehen
+   * ohne Abruf vorbei.
+   */
+  const resourceRefreshers: Record<ResourceKind, (event: ResourceEvent) => Promise<void>> = {
+    async portfolio() {
       await portfolio.refreshFromServer()
       await selectActivePortfolio()
       await refreshQuotes()
-    } else if (event.kind === 'settings' && settings.loaded) {
+    },
+    async settings() {
+      if (!settings.loaded) return
       await settings.refreshFromServer()
       await selectActivePortfolio()
       await refreshQuotes()
-    } else if (
-      event.kind === 'allowlist' &&
-      instruments.loaded &&
-      portfolio.portfolio?.id === event.resourceId
-    ) {
+    },
+    async allowlist(event) {
+      if (!instruments.loaded || portfolio.portfolio?.id !== event.resourceId) return
       await instruments.hydrateAllowlist()
-    } else if (
-      event.kind === 'snapshots' &&
-      history.loaded &&
-      portfolio.portfolio?.id === event.resourceId
-    ) {
+    },
+    async snapshots(event) {
+      if (!history.loaded || portfolio.portfolio?.id !== event.resourceId) return
       await history.load(event.resourceId, baseCurrencyOf(portfolio.portfolio))
-    } else if (
-      event.kind === 'quote-refresh' &&
-      event.resourceId === 'current' &&
-      event.revision !== lastQuoteRevision &&
-      quoteClient &&
-      portfolio.portfolio
-    ) {
+    },
+    async 'quote-refresh'(event) {
+      if (event.resourceId !== 'current' || event.revision === lastQuoteRevision) return
+      if (!quoteClient || !portfolio.portfolio) return
       await quotes.loadQuotes(quoteClient, portfolio.positions)
       lastQuoteRevision = event.revision
-    }
+    },
+  }
+
+  async function refreshResource(event: ResourceEvent): Promise<void> {
+    if (!portfolio.loaded) return
+    await resourceRefreshers[event.kind](event)
   }
 
   function queue(action: () => Promise<void>, showLoader = false): void {

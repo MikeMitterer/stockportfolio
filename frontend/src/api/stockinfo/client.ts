@@ -229,35 +229,36 @@ function describeStockInfoCode(code: string, params: unknown): string {
  */
 async function readErrorDetail(response: Response): Promise<string> {
   try {
-    const body: unknown = await response.json()
-    // Fehler der Weiterleitung selbst: StockInfo nicht erreichbar, zu langsam
-    // oder nicht konfiguriert. Die übrigen Antworten stammen von StockInfo.
-    if (
-      body &&
-      typeof body === 'object' &&
-      'error' in body &&
-      typeof body.error === 'string' &&
-      body.error.startsWith('stockinfo_')
-    ) {
-      return translate(`errors.stockinfo.${body.error}`)
-    }
-    if (body && typeof body === 'object' && 'code' in body && typeof body.code === 'string') {
-      return describeStockInfoCode(body.code, 'params' in body ? body.params : undefined)
-    }
-    if (body && typeof body === 'object' && 'detail' in body) {
-      const detail = (body as { detail: unknown }).detail
-      // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`. Auch eine
-      // unbekannte Kennung in dieser Form (Kleinbuchstaben mit Unterstrich, etwa
-      // maintenance_running) geht über den allgemeinen Satz, nie roh in die Oberfläche.
-      if (typeof detail === 'string' && STOCKINFO_CODE.test(detail))
-        return describeStockInfoCode(detail, undefined)
-      // Ein Satz im alten Format bleibt lesbar; Objekte und Listen nie als JSON zeigen.
-      if (typeof detail === 'string') return detail
-    }
+    const message = errorBodyMessage(await response.json())
+    if (message !== null) return message
   } catch {
     // Body war kein JSON — Statustext genügt.
   }
   return response.statusText || translate('notify.unknownError')
+}
+
+/** Meldung aus einem Fehler-Body, oder `null`, wenn er keine trägt. */
+function errorBodyMessage(body: unknown): string | null {
+  if (!body || typeof body !== 'object') return null
+  const fields = body as Record<string, unknown>
+  // Fehler der Weiterleitung selbst: StockInfo nicht erreichbar, zu langsam
+  // oder nicht konfiguriert. Die übrigen Antworten stammen von StockInfo.
+  if (typeof fields.error === 'string' && fields.error.startsWith('stockinfo_')) {
+    return translate(`errors.stockinfo.${fields.error}`)
+  }
+  if (typeof fields.code === 'string') return describeStockInfoCode(fields.code, fields.params)
+  return detailMessage(fields.detail)
+}
+
+/** Meldung aus `detail`; Objekte und Listen nie als JSON zeigen. */
+function detailMessage(detail: unknown): string | null {
+  if (typeof detail !== 'string') return null
+  // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`. Auch eine
+  // unbekannte Kennung in dieser Form (Kleinbuchstaben mit Unterstrich, etwa
+  // maintenance_running) geht über den allgemeinen Satz, nie roh in die Oberfläche.
+  if (STOCKINFO_CODE.test(detail)) return describeStockInfoCode(detail, undefined)
+  // Ein Satz im alten Format bleibt lesbar.
+  return detail
 }
 
 /** Injection-Key für den Client (Vue provide/inject). */
