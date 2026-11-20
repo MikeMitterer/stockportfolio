@@ -184,6 +184,7 @@ Für Unraid siehe die [Unraid-Anleitung](unraid/README.md) (englisch).
 | Port `8080/tcp` | `8080` | Weboberfläche; auf einen beliebigen Host-Port abbilden. |
 | `STOCKPORTFOLIO_PUBLIC_ORIGIN` | – | Genaue Adresse in der Adresszeile des Browsers, wenn ein Reverse Proxy StockPortfolio ausliefert (etwa über HTTPS): Schema, Host und Port, z. B. `https://portfolio.example.com`. Einrichtung und Anmeldung prüfen sie. |
 | `STOCKPORTFOLIO_SECURE_COOKIES` | `false` | Auf `true` setzen, wenn der Browser HTTPS verwendet. |
+| `STOCKPORTFOLIO_SESSION_IDLE_DAYS` | `7` | Tage ohne Nutzung, bis du dich neu anmelden musst. Jede Nutzung startet die Frist neu. Ganze Tage von 1 bis 365. |
 
 Alle Einstellungen, Hinweise zu Reverse Proxys und die Statusseite beschreibt
 die [Docker-Anleitung](docker/README.md#configuration).

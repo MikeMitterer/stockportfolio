@@ -80,7 +80,8 @@ describe('StockInfo-Weiterleitung über den eigenen Server (T-82)', () => {
     expect(response.status).toBe(404)
     expect(await response.text()).toBe('{"detail":"kein Kurs"}')
     expect(response.headers.get('content-type')).toBe('application/json')
-    expect(response.headers.get('set-cookie')).toBeNull()
+    // Nur das eigene Sitzungscookie mit gleitender Frist (T-98), keines von StockInfo.
+    expect(response.headers.getSetCookie().every((value) => value.startsWith('stockportfolio_session='))).toBe(true)
     expect(response.headers.get('x-internal')).toBeNull()
     expect(seen).toHaveLength(1)
     expect(seen[0]?.url).toBe(`${stockInfo}/quote/by-symbol/VGWL.DE/daily?period=3m`)
