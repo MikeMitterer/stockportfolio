@@ -21,6 +21,10 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
+// Der erste Import von `@/main` übersetzt die ganze App. Im frischen Prüf-Worktree der Abnahme
+// fehlt der Übersetzungs-Cache; unter Last dauerte das dort länger als die üblichen 5 s.
+const fullAppImportTimeout = 30_000
+
 describe('Start ohne StockInfo-Adresse', () => {
   it.each([
     { theme: 'mangolila', scheme: 'dark' },
@@ -31,11 +35,14 @@ describe('Start ohne StockInfo-Adresse', () => {
     storage.setItem('stockportfolio.locale', 'de')
 
     await import('@/main')
-    await vi.waitFor(() => expect(document.querySelector('#app h2')?.textContent).toBe('Keine API-Adresse gesetzt'))
+    await vi.waitFor(
+      () => expect(document.querySelector('#app h2')?.textContent).toBe('Keine API-Adresse gesetzt'),
+      { timeout: fullAppImportTimeout },
+    )
 
     expect(document.querySelector('#app h1')?.textContent).toBe('StockPortfolio')
     expect(document.querySelector('#app h2')?.textContent).toBe('Keine API-Adresse gesetzt')
     expect(document.documentElement.dataset.theme).toBe(theme)
     expect(document.documentElement.style.colorScheme).toBe(scheme)
-  })
+  }, fullAppImportTimeout)
 })
