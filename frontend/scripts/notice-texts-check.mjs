@@ -1,4 +1,8 @@
-// Prüft sichtbare Hinweistexte auf Methodenseite und Rebalancing in DE und EN.
+// Prüft sichtbare Hinweistexte auf Methodenseite und Rebalancing in DE und EN,
+// dazu die Handelstabelle: gekürzter Kopf „± Stück“, Bandkurse unter dem Kurs
+// ohne Umbruch, ihr Hinweis im Spaltenkopf (Text, fokussierbar, auch schmal
+// erreichbar, führt zur Erklärung auf der Methodenseite, ohne dass der Plan
+// verloren geht) und die Tabelle ohne waagrechtes Scrollen (T-108).
 //
 // Die App rechnet aus, was zu den selbst gesetzten Zielen führt; Hinweise
 // sprechen deshalb von Lage zum Ziel und von rechnerischen Beträgen, nicht
@@ -19,6 +23,8 @@ import { chromium } from 'playwright-core'
 const origin = 'http://127.0.0.1:5175'
 const chromePath = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const viewport = { width: 1440, height: 1000 }
+// Schmalste unterstützte Breite für das Bild der Handelstabelle.
+const narrowViewport = { width: 360, height: 800 }
 const credentialsPath = process.argv[2]
 const imageDir = process.argv[3] ? resolve(process.argv[3]) : undefined
 if (!credentialsPath) {
@@ -46,6 +52,15 @@ const expectations = {
       required: ['nennt der Plan die Stückzahl'],
       forbidden: ['Vorschlag'],
     },
+    tradeHeader: '± Stück',
+    bandPrices: {
+      required: ['Bandkurse', 'alle anderen Kurse gleich bleiben'],
+      forbidden: ['Zielkurs', 'Kursziel', 'Empfehlung', 'günstig', 'Vorschlag'],
+    },
+    bandPricesMethod: {
+      required: ['Bandkurse:', 'alle anderen Kurse gleich bleiben'],
+      forbidden: ['Zielkurs', 'Kursziel', 'Empfehlung', 'günstig', 'Vorschlag'],
+    },
   },
   en: {
     saveLabel: 'Save password',
@@ -59,6 +74,15 @@ const expectations = {
     coverHint: {
       required: ['the plan gives the units'],
       forbidden: ['suggestion'],
+    },
+    tradeHeader: '± Units',
+    bandPrices: {
+      required: ['Band prices', 'all other prices stay the same'],
+      forbidden: ['target price', 'price target', 'recommend', 'cheap', 'suggestion'],
+    },
+    bandPricesMethod: {
+      required: ['Band prices:', 'all other prices stay the same'],
+      forbidden: ['target price', 'price target', 'recommend', 'cheap', 'suggestion'],
     },
   },
 }
@@ -74,6 +98,101 @@ function verify(label, text, { required, forbidden }) {
     if (text.toLowerCase().includes(phrase.toLowerCase())) failures.push(`${label}: ausgeschlossener Text gefunden: „${phrase}“`)
   }
   if (!failures.some((failure) => failure.startsWith(`${label}:`))) console.log(`OK  ${label}`)
+}
+
+/**
+ * Handelstabelle (T-108): Kopf der Stückzahl-Spalte, Bandkurse in der
+ * Kurs-Zelle ohne Umbruch, ihr Hinweis im Kopf der Kurs-Spalte und kein
+ * waagrechtes Scrollen bei Desktop-Breite. Mit Bildordner je ein Bild in Desktop- und schmalster Breite.
+ */
+async function checkTradeTable(page, locale, expected) {
+  const label = `${locale} · Handelstabelle`
+  // Der Kopf steht per CSS in Großbuchstaben; innerText liefert ihn so.
+  const head = await page.locator('.reb__table thead').innerText()
+  if (!head.toLowerCase().includes(expected.tradeHeader.toLowerCase())) failures.push(`${label}: Spaltenkopf „${expected.tradeHeader}“ fehlt`)
+
+  const bands = page.locator('.reb__band-prices')
+  await bands.first().waitFor({ timeout: 10000 })
+  const texts = await bands.allInnerTexts()
+  if (texts.length === 0 || !texts.every((text) => /↓\s*\S.*↑\s*\S/s.test(text))) {
+    failures.push(`${label}: Bandkurse fehlen oder sind unvollständig: ${JSON.stringify(texts)}`)
+  }
+  const wrapped = await countWrapped(bands)
+  if (wrapped > 0) failures.push(`${label}: ${wrapped} Bandkurs-Zeilen brechen um`)
+  const overflow = await page.locator('.reb__workspace').evaluate((element) => element.scrollWidth - element.clientWidth)
+  if (overflow > 1) failures.push(`${label}: Tabelle scrollt waagrecht um ${overflow} px`)
+
+  // Die Erklärung steht als bedienbarer Hinweis (UxInfoHint) im Kopf der Kurs-Spalte:
+  // Text im aria-label, der Auslöser ist per Tastatur fokussierbar.
+  const hint = page
+    .locator(`.reb__table thead .ux-hint__trigger[aria-label*="${expected.bandPrices.required[0]}"]`)
+    .first()
+  await hint.waitFor({ timeout: 5000 })
+  verify(label, (await hint.getAttribute('aria-label')) ?? '', expected.bandPrices)
+  await hint.focus()
+  if (!(await hint.evaluate((element) => element === document.activeElement))) {
+    failures.push(`${label}: Hinweis zu den Bandkursen ist nicht fokussierbar`)
+  }
+  await closeHints(page)
+
+  if (imageDir) await page.locator('.reb__table').screenshot({ path: resolve(imageDir, `trade-table-${locale}.png`) })
+
+  // Schmalste Breite: Die Tabelle scrollt dort in ihrem Bereich; die Kurs-Spalte
+  // kommt ins Bild, und auch hier bricht kein Bandkurs um.
+  await page.setViewportSize(narrowViewport)
+  await closeHints(page)
+  await hint.scrollIntoViewIfNeeded()
+  if (!(await hint.isVisible())) failures.push(`${label}: Hinweis zu den Bandkursen in schmaler Breite nicht erreichbar`)
+  await bands.first().scrollIntoViewIfNeeded()
+  const wrappedNarrow = await countWrapped(bands)
+  if (wrappedNarrow > 0) failures.push(`${label}: ${wrappedNarrow} Bandkurs-Zeilen brechen in schmaler Breite um`)
+  await closeHints(page)
+  if (imageDir) await page.screenshot({ path: resolve(imageDir, `trade-table-${locale}-narrow.png`) })
+  await page.setViewportSize(viewport)
+
+  await checkPlanSurvivesHint(page, label, hint, expected)
+}
+
+/**
+ * Der Hinweis im Kurs-Kopf führt per Tastatur auf die Methodenseite (#bands). Dort
+ * steht die Erklärung der Bandkurse, und nach dem Zurückgehen ist der Plan noch da:
+ * Eine eingetragene Stückzahl darf der Abstecher nicht verwerfen.
+ */
+async function checkPlanSurvivesHint(page, label, hint, expected) {
+  const tradeCell = () => page.locator('.reb__table tbody tr')
+    .filter({ has: page.locator('.reb__band-prices') }).first()
+    .locator('.inline-number').nth(1)
+  await tradeCell().locator('.inline-number__display').click()
+  await tradeCell().locator('.inline-number__field').fill('5')
+  await tradeCell().locator('.inline-number__field').press('Enter')
+  const before = (await tradeCell().locator('.inline-number__display').innerText()).trim()
+  if (before !== '5') failures.push(`${label}: Stückzahl 5 nicht eingetragen („${before}“)`)
+
+  await hint.focus()
+  await page.keyboard.press('Enter')
+  await page.locator('#bands').waitFor({ timeout: 10000 })
+  verify(`${label} · Methodenseite`, await page.locator('#bands').innerText(), expected.bandPricesMethod)
+
+  await page.goBack()
+  await page.locator('.reb__band-prices').first().waitFor({ timeout: 10000 })
+  const after = (await tradeCell().locator('.inline-number__display').innerText()).trim()
+  if (after !== before) failures.push(`${label}: Plan nach der Methodenseite verloren („${before}“ → „${after}“)`)
+  else console.log(`OK  ${label} · Plan bleibt nach der Methodenseite`)
+}
+
+/** Schließt offene Hinweise (Fokus und Maus weg), damit sie auf den Bildern nichts verdecken. */
+async function closeHints(page) {
+  await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur())
+  await page.mouse.move(0, 0)
+  await page.waitForFunction(() => !document.querySelector('.ux-hint__body'), null, { timeout: 5000 })
+}
+
+/** Zählt Bandkurs-Zeilen, deren untere und obere Grenze nicht auf einer Linie stehen. */
+async function countWrapped(bands) {
+  return bands.evaluateAll((cells) => cells.filter((cell) => {
+    const [lower, upper] = cell.querySelectorAll('.reb__band-price')
+    return !lower || !upper || Math.abs(lower.getBoundingClientRect().top - upper.getBoundingClientRect().top) > 1
+  }).length)
 }
 
 const browser = await chromium.launch({ executablePath: chromePath, headless: false, args: ['--no-first-run'] })
@@ -122,6 +241,8 @@ try {
     await trigger.hover()
     await page.locator('.ux-hint__body').first().waitFor({ timeout: 5000 })
     if (imageDir) await page.screenshot({ path: resolve(imageDir, `notice-rebalancing-${locale}.png`) })
+
+    await checkTradeTable(page, locale, expected)
 
     await context.close()
   }

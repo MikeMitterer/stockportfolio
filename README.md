@@ -73,7 +73,9 @@ at 9.4 %.
 
 In _Rebalancing_ you take over suggested trades or enter your own unit counts
 and trial target shares. The plan shows the costs, the resulting shares and
-bands and whether the money is there. If it is not, _Cover from_ suggests liquid
+bands and whether the money is there. Below each price it shows the band
+prices: the price at which the share would reach the lower or upper band if all
+other prices stayed the same. If it is not, _Cover from_ suggests liquid
 positions to sell.
 
 > [!NOTE]

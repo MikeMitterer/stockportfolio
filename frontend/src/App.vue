@@ -23,6 +23,7 @@ import { useRelativeTime } from '@/composables/useRelativeTime'
 import { useMinimumDuration } from '@/composables/useMinimumDuration'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { usePortfolioStore } from '@/stores/portfolio'
+import { useTradePlanDraftSync } from '@/composables/useTradePlanDraftSync'
 import { useSettingsStore } from '@/stores/settings'
 import { useQuotesStore } from '@/stores/quotes'
 import { useLiveSyncStore } from '@/stores/liveSync'
@@ -81,6 +82,9 @@ function reloadServerData(): void {
 watch(() => [quotesStore.quotes, portfolioStore.portfolio?.id], () => {
   void portfolioStore.syncKinds(quotesStore.quotes)
 }, { immediate: true })
+
+// Der Rebalancing-Plan in Arbeit folgt Depot und Beständen, gleich in welcher Ansicht.
+useTradePlanDraftSync()
 
 const lastRefreshAt = computed(() => quotesStore.lastRefreshAt)
 const ageLabel = useRelativeTime(lastRefreshAt)

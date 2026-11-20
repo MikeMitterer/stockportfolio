@@ -535,7 +535,7 @@ export const en: MessageSchema = {
     bandsLabel: 'Bands: −{lower} / +{upper}',
     columns: {
       delta: 'Delta',
-      trade: 'Buy / sell',
+      trade: '± Units',
       value: 'Value',
       relativeDeviationAfter: 'Rel. dev.',
       relativePercent: 'Rel. %',
@@ -544,6 +544,10 @@ export const en: MessageSchema = {
     shareAfterLabel: 'Share after: {share}',
     relativeUndefined: 'Undefined for a 0 % target',
     tradeTooltip: 'Positive values mean buying, negative values mean selling.',
+    bandPriceLower: '↓ {price}',
+    bandPriceUpper: '↑ {price}',
+    bandPriceTooltip:
+      'Band prices: at this price the share after the plan reaches the lower (↓) or upper (↑) band. Calculated on the assumption that all other prices stay the same; if the whole market falls, the limit is lower.',
     relativeDeviationTooltip: 'Relative deviation from the target after the planned trade. Example: a 9.5 % share against a 10 % target gives −5 % relative deviation. The number is green or red according to its sign; the bar colour indicates the band status.',
     deviationTooltip: 'Difference from the target after the planned trade, in percentage points. Example: a 9.5 % share minus a 10 % target gives −0.5 percentage points.',
     deltaTooltip:
@@ -692,6 +696,8 @@ export const en: MessageSchema = {
       'Bands relative to the target have a flip side. They do fix the blindness towards small positions — 6 % of 2 % is 6 % of 2 %, however small the share — but they make them oversensitive in euro terms: in a €100,000 portfolio a 2 % target already signals at €120 of deviation. No order is worth that; the fee eats the benefit.',
     bandsMinTrade2:
       'The minimum trade size in the settings counters this. If a position sits outside its band but the missing amount is smaller than that limit, the status stays ✓ (OK) and the row gets a small “min”. The deviation does not disappear — it remains in the delta column — only the ↓ or ↑ symbol does. The default is 0, i.e. off.',
+    bandsBandPrice:
+      'Band prices: below each price in the trade table you see the price at which the share after the plan reaches the lower (↓) or upper (↑) band. They are calculated from the values after the planned trade and on the assumption that all other prices stay the same; if the whole market falls, the limit is lower. A limit the share has already left is shown in red.',
 
     triggerHeading: 'Bands, schedule — or both',
     triggerBody:
