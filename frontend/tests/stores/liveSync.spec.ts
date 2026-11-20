@@ -53,7 +53,7 @@ describe('Live-Abgleich der Stores', () => {
     const fallbackMs = 20
     live.start(new LiveEventsClient(() => stream), fallbackMs)
     // Bricht der Test ab, darf kein 20-ms-Takt in den nächsten Test laufen.
-    let afterReconnect = 0
+    let afterReconnect: number
     try {
       // Vor dem ersten Verbinden springt der Ersatzabruf ein.
       await vi.waitFor(() => expect(refresh).toHaveBeenCalled())

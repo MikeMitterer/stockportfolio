@@ -147,7 +147,10 @@ setup: ## Bereit zum Entwickeln: npm-Pakete, .venv, Werkzeuge in .tools/
 
 # Stempelregeln: nur setup und build erreichen sie; neu, sobald die Lock- bzw. Config-Datei
 # neuer ist.
-%/node_modules/.installed: %/package-lock.json
+# Neu auch bei geändertem Manifest: `npm install-scripts approve/deny` schreibt nur package.json.
+# Vorher Node und npm gegen `engines` prüfen; npm selbst meldet eine Unterschreitung nur.
+%/node_modules/.installed: %/package-lock.json %/package.json
+	@node scripts/check-engines.mjs "$*"
 	@npm ci --prefix "$*" --no-audit --no-fund
 	@touch "$@"
 
