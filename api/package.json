@@ -4,7 +4,8 @@
   "license": "EUPL-1.2",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.13.0",
+    "npm": ">=11.18.0"
   },
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=../.env src/index.ts",

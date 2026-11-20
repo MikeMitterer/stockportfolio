@@ -20,7 +20,10 @@ beschreibt der [Docker-Guide](../docker/README.md).
 
 ## Voraussetzungen
 
-- Node.js 22 und npm
+- Node.js 22.13 oder neuer und npm 11.18 oder neuer; `make setup` prüft
+  beides vor der Installation (Werte aus `engines` in den `package.json`).
+  Node 22 bringt npm 10 mit, darunter greifen die Freigaben in `allowScripts`
+  nicht: `npm install -g npm@11`
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
 - Python 3.11+ für den Teststack

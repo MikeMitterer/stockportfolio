@@ -5,7 +5,8 @@
   "description": "Tolerance-band rebalancing web app für persönliches Portfolio (Excel-Ersatz)",
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.13.0",
+    "npm": ">=11.18.0"
   },
   "scripts": {
     "dev": "vite --config vite.config.ts",
