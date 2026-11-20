@@ -1,4 +1,8 @@
 # Python-Pakete der .venv für die Entwicklung von StockPortfolio (make setup).
 # Die App selbst braucht kein Python; das Image enthält diese Pakete nicht.
-# Die Skripte des Teststacks kommen mit der Standardbibliothek aus; ProjectTools
-# kommt als Befehl über .dev-tools.conf.sh nach .tools/, nicht in die .venv.
+# ProjectTools kommt als Befehl über .dev-tools.conf.sh nach .tools/, nicht hierher.
+# Git-Quellen installiert make setup über devtools exec; auf dem Entwicklungsrechner
+# ersetzt dessen rechnerlokale Zuordnung GitHub durch das lokale Repo.
+#
+# Farben, Abstände und argparse-Hilfe der Teststack-Skripte (scripts/terminal_style.py).
+mmit-clitheme @ git+https://github.com/MikeMitterer/python-clitheme.git@v0.12.0+261119.1304.0816b

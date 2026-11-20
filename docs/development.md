@@ -194,6 +194,11 @@ Konto-API und Vite gemeinsam. Er berührt keine echten Daten.
 .venv/bin/python scripts/stockinfo-test-server.py --stack --stop
 ```
 
+Hilfe und Meldungen gestaltet das Paket `cli_theme` (CLITheme), das
+`make setup` in der Version aus `requirements-dev.txt` in die `.venv` bringt;
+Farben und Abstände folgen dem gewählten Theme (`clitheme use`). Ohne das
+Paket laufen die Skripte ohne Farben weiter.
+
 Der Start kehrt zurück, sobald Vite (`127.0.0.1:5175`), Konto-API
 (`127.0.0.1:8080`) und StockInfo-Testserver (`127.0.0.1:8899`) bereit sind.
 Er prüft Health, einen Testkurs und die Weiterleitung über Vite zur Konto-API.

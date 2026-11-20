@@ -63,13 +63,13 @@ import time
 from types import FrameType
 from typing import Any
 
-from cli_theme import HelpFormatter, has_theme, print_message
+from terminal_style import HelpFormatter, has_theme, print_message
 from local_test_stack import process_identity, run_stack_cli, translate
 from test_state import OwnedStateFile
 
 
 class ScriptArgumentParser(argparse.ArgumentParser):
-    """Gestaltet Fehler wie die ProjectTools-CLI, falls sie installiert ist."""
+    """Gestaltet Fehler nach dem CLITheme, falls cli_theme installiert ist."""
 
     def error(self, message: str) -> None:
         if not has_theme():

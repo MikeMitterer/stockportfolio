@@ -154,9 +154,11 @@ $(PYTHON):
 	@"$${PYTHON_BOOTSTRAP}" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
 	@"$${PYTHON_BOOTSTRAP}" -m venv $(VENV)
 
+# Über devtools exec: Mit rechnerlokaler Zuordnung kommen Git-Abhängigkeiten (CLITheme) aus den
+# lokalen Repos, auch mit ungepushtem Tag.
 $(VENV)/.installed: requirements-dev.txt | $(PYTHON)
 	@$(PYTHON) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
-	@$(PYTHON) -m pip install -q --disable-pip-version-check -r requirements-dev.txt
+	@$(REQUIRE_STARTER); devtools exec -- $(PYTHON) -m pip install -q --disable-pip-version-check -r requirements-dev.txt
 	@touch "$@"
 
 # Werkzeuge auf Quelle und Tag aus .dev-tools.conf.sh nach .tools/; devtools meldet je Werkzeug
