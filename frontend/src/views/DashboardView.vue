@@ -1,40 +1,33 @@
 <script setup lang="ts">
-import { usePortfolioCurrency } from '@/composables/usePortfolioCurrency'
-import { computed, inject, onMounted, ref, watch } from 'vue'
-import GroupActionIcon from '@/components/GroupActionIcon.vue'
-import { UxCaret } from '@mmit/ux-foundation'
+import { computed, inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NEmpty, NButton } from 'naive-ui'
-import InfoHint from '@/components/InfoHint.vue'
-import KpiCard from '@/components/KpiCard.vue'
+import DashboardGroups from '@/components/DashboardGroups.vue'
+import DashboardKpis from '@/components/DashboardKpis.vue'
+import DashboardLoading from '@/components/DashboardLoading.vue'
+import DashboardPositionsHead from '@/components/DashboardPositionsHead.vue'
 import PortfolioValueChart from '@/components/PortfolioValueChart.vue'
-import { useHistoryStore } from '@/stores/history'
-import { useValueHistoryStore } from '@/stores/valueHistory'
-import { withinDays, type BacktestInput } from '@/domain/portfolioHistory'
-import GroupBar from '@/components/GroupBar.vue'
 import PositionsTable from '@/components/PositionsTable.vue'
-import { integer, percent, shortDate } from '@/domain/formatters'
+import { integer, percent } from '@/domain/formatters'
+import { useAddPosition } from '@/composables/useAddPosition'
+import { useDashboardValueHistory } from '@/composables/useDashboardValueHistory'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import FxNotice from '@/components/FxNotice.vue'
-import { baseCurrencyOf, majorCurrency } from '@/domain/fx'
-import { nextDueDate, usesBands } from '@/domain/schedule'
+import { baseCurrencyOf } from '@/domain/fx'
 import AddPositionDialog from '@/components/AddPositionDialog.vue'
-import TargetAllocationBar from '@/components/TargetAllocationBar.vue'
 import PositionCardList from '@/components/PositionCardList.vue'
 import TradeNotice from '@/components/TradeNotice.vue'
-import { safeStorage, useIsCompact } from '@mmit/ux-foundation'
+import { useIsCompact } from '@mmit/ux-foundation'
 import { usePortfolioStore } from '@/stores/portfolio'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppNotification } from '@/composables/useAppNotification'
 import { useQuotesStore } from '@/stores/quotes'
 import { useApiStatusStore } from '@/stores/apiStatus'
 import { useInstrumentsStore } from '@/stores/instruments'
-import { newId } from '@/db/seed'
 import { quoteKey } from '@/domain/valuation'
 import { STOCK_INFO_CLIENT, type StockInfoClient } from '@/api/stockinfo/client'
-import type { InstrumentSummary } from '@/api/stockinfo/types'
-import type { AssetGroup, Position } from '@/types/portfolio'
+import type { Position } from '@/types/portfolio'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -73,16 +66,7 @@ async function onLoadDemo(): Promise<void> {
 }
 
 const { result, fx, loadFx, retryFx } = usePortfolioValuation()
-const visibleGroups = computed(() =>
-  (result.value?.groups ?? []).filter(
-    (group) => group.actualPercent !== 0 || group.targetPercent !== 0,
-  ),
-)
 const positionsTable = ref<InstanceType<typeof PositionsTable> | null>(null)
-const positionGroupCount = computed(
-  () => new Set(result.value?.rows.map((row) => row.position.group) ?? []).size,
-)
-
 function collapsePositionGroups(): void {
   positionsTable.value?.collapseAllGroups()
 }
@@ -90,27 +74,6 @@ function collapsePositionGroups(): void {
 function openPositionGroups(): void {
   positionsTable.value?.openAllGroups()
 }
-
-const bandsActive = computed(() => usesBands(settingsStore.settings.rebalancing.trigger))
-
-/** „Termin fällig" oder „nächster Termin am …" — je nach Stand. */
-const scheduleLabel = computed(() => {
-  const schedule = result.value?.schedule
-  if (!schedule) return ''
-  if (schedule.due) return t('dashboard.scheduleDue')
-  return t('dashboard.scheduleNext', {
-    date: shortDate(
-      nextDueDate(schedule.lastRebalancedAt, settingsStore.settings.rebalancing.intervalMonths),
-    ),
-  })
-})
-
-const liquidityTone = computed<'positive' | 'warning' | 'danger'>(() => {
-  const buffer = result.value?.liquidity.investmentReserve ?? 0
-  if (buffer >= 0) return 'positive'
-  if (buffer > -50_000) return 'warning'
-  return 'danger'
-})
 
 /**
  * Positionen, die in einer anderen Währung notieren als der Basiswährung.
@@ -139,21 +102,6 @@ const incompleteCount = computed(
         .filter((row) => row.position.enabled && row.excludedReason !== null)
         .map((row) => quoteKey(row.position)),
     ]).size,
-)
-
-/*
- * Positiv formuliert: Der Normalfall ist „Vollständig", nicht „keine
- * Probleme". Eine Kennzahl, die im Guten eine Verneinung zeigt, liest sich wie
- * ein Mangel, den man gerade noch abgewendet hat.
- */
-const dataStatusValue = computed(() =>
-  incompleteCount.value === 0
-    ? t('kpi.dataComplete')
-    : t('kpi.dataIncomplete', { count: integer(incompleteCount.value) }),
-)
-
-const dataStatusTone = computed<'positive' | 'danger'>(() =>
-  incompleteCount.value === 0 ? 'positive' : 'danger',
 )
 
 // ─── Meldungen ──────────────────────────────────────────────────────────────
@@ -219,55 +167,14 @@ notify(
 
 // ─── Position hinzufügen ──────────────────────────────────────────────────
 
-const showAddDialog = ref<boolean>(false)
-
-/** Schlüssel der bereits enthaltenen Papiere — verhindert Dubletten. */
-const existingKeys = computed(() =>
-  portfolioStore.positions
-    .filter((position) => position.group !== 'cash')
-    .map((position) => position.isin ?? position.symbol),
-)
-
-/** Noch nicht vergebener Ziel-Anteil. */
-const remainingTargetPercent = computed(() => {
-  const assigned = portfolioStore.positions.reduce(
-    (sum, position) => sum + position.targetPercent,
-    0,
-  )
-  return Math.max(0, 100 - assigned)
-})
-
-async function openAddDialog(): Promise<void> {
-  showAddDialog.value = true
-  if (!instrumentsStore.loaded && client) await instrumentsStore.load(client)
-}
-
-async function validateNewInstrument(instrument: InstrumentSummary): Promise<void> {
-  if (!client) throw new Error(t('notify.noClient'))
-  await quotesStore.loadOne(client, instrument)
-}
-
-async function onAddPosition(payload: {
-  instrument: InstrumentSummary
-  units: number
-  targetPercent: number
-  group: AssetGroup
-}): Promise<void> {
-  const { instrument, units, targetPercent, group } = payload
-
-  await portfolioStore.addPosition({
-    id: newId(),
-    isin: instrument.isin,
-    symbol: instrument.symbol,
-    // Gattung mitschreiben — sie entscheidet später über die externen Verweise.
-    kind: quotesStore.quotes.get(instrument.isin ?? instrument.symbol)?.type ?? instrument.type,
-    displayName: instrument.name ?? instrument.symbol,
-    group,
-    units,
-    targetPercent,
-    enabled: true,
-  })
-}
+const {
+  showAddDialog,
+  existingKeys,
+  remainingTargetPercent,
+  openAddDialog,
+  validateNewInstrument,
+  onAddPosition,
+} = useAddPosition(client)
 
 // ─── Editier-Aktionen — gehen an den Store, der sofort persistiert ─────────
 
@@ -286,113 +193,16 @@ async function onRefreshOne(id: string): Promise<void> {
   if (position && client) await quotesStore.refreshOne(client, position)
 }
 
-// ─── Assetklassen-Block ein-/ausklappbar ──────────────────────────────────
-
-const GROUPS_COLLAPSED_KEY = 'stockportfolio.dashboard.groupsCollapsed'
-const groupsCollapsed = ref<boolean>(false)
-
-// ─── Wertverlauf ────────────────────────────────────────────────────────────
-//
-// Überblick oben, Einzelheiten auf Klick: In der Gesamtwert-Kachel steht eine
-// kleine Linie, das ausführliche Diagramm klappt darunter auf. Dauerhaft
-// sichtbar würde es die Tabelle nach unten drücken — und die ist der Grund,
-// warum jemand das Dashboard öffnet.
-
-const historyStore = useHistoryStore()
-const valueHistory = useValueHistoryStore()
-
-/**
- * Zeitraum, den der Rückblick lädt.
- *
- * Der längste, den die API kennt: Das Diagramm schneidet daraus zu, statt je
- * Schaltfläche eine eigene Abfrage zu stellen.
- */
-const BACKTEST_PERIOD = 'max' as const
-
-/**
- * Fenster der kleinen Linie in der Kachel — dasselbe wie die Vorgabe des
- * Diagramms.
- *
- * Über „max" stünde dort ein Prozentwert von mehreren hundert Prozent neben
- * dem Gesamtwert. Das läse sich wie eine Wertentwicklung, ist aber der
- * Rückblick: der heutige Bestand, gegen Kurse von vor Jahren gerechnet.
- */
-const TREND_DAYS = 90
-
-/** Gemessene Werte, solange es genug davon gibt; sonst der Rückblick. */
-const trendPoints = computed(() => {
-  const source =
-    valueHistory.snapshotLine.length > 1 ? valueHistory.snapshotLine : valueHistory.backtest
-  return withinDays(source, TREND_DAYS, new Date())
-})
 const valueChartOpen = ref<boolean>(false)
-const valueHistoryLoading = ref<boolean>(false)
-
-/** Bestände mit ihrem Kursverlauf — Grundlage des Rückblicks. */
-const needsHistoricalFx = computed(() =>
-  (result.value?.rows ?? []).some(
-    (row) =>
-      row.position.enabled && row.quote && majorCurrency(row.quote.currency) !== row.baseCurrency,
-  ),
-)
-const completeValuation = computed(
-  () => !!result.value && result.value.rows.every((row) => !row.position.enabled || row.isActive),
-)
-const backtestInputs = computed<BacktestInput[]>(() =>
-  needsHistoricalFx.value || !completeValuation.value
-    ? []
-    : (result.value?.rows ?? [])
-        .filter((row) => row.isActive)
-        .map((row) => ({
-          units: row.position.units,
-          points: historyStore.get(row.position, BACKTEST_PERIOD).points.map((point) => ({
-            ...point,
-            close: row.quote?.currency === 'GBp' ? point.close / 100 : point.close,
-          })),
-          constantValue: row.marketValue,
-        })),
-)
-
-/**
- * Holt den langen Verlauf für alle Positionen und rechnet den Rückblick.
- *
- * Ein Zeitraum reicht: Das Diagramm schneidet daraus zu, statt für jede
- * Schaltfläche neu zu laden.
- */
-async function loadValueHistory(): Promise<void> {
-  const portfolio = portfolioStore.portfolio
-  if (!portfolio) return
-
-  valueHistoryLoading.value = true
-  try {
-    await valueHistory.ensure(portfolio.id, baseCurrencyOf(portfolio))
-
-    await Promise.all(
-      portfolioStore.positions
-        .filter((position) => position.enabled)
-        .map((position) => historyStore.ensure(client ?? null, position, BACKTEST_PERIOD)),
-    )
-
-    if (portfolioStore.portfolio?.id !== portfolio.id) return
-    valueHistory.computeBacktest(backtestInputs.value)
-    await recordCurrentValue()
-  } finally {
-    valueHistoryLoading.value = false
-  }
-}
+const {
+  valueHistory,
+  trendPoints,
+  loading: valueHistoryLoading,
+  needsHistoricalFx,
+  load: loadValueHistory,
+} = useDashboardValueHistory({ client, result, fxLoading: () => fx.loading, ready })
 
 onMounted(async () => {
-  /*
-   * Über `safeStorage`, nicht direkt: Vorher stand hier ein blankes
-   * `localStorage.getItem`. Im privaten Modus wirft schon der Zugriff — und
-   * weil die Zeile vor dem Laden des Depots steht, blieb die ganze Ansicht
-   * leer. Wegen eines eingeklappten Blocks.
-   */
-  const stored = safeStorage.read(GROUPS_COLLAPSED_KEY)
-  if (stored === '1' || stored === '0') {
-    groupsCollapsed.value = stored === '1'
-  }
-
   /*
    * Nur beim ersten Aufbau laden. Ein Ansichtswechsel baut die Seite neu auf;
    * Depot und Einstellungen stehen dann schon in den Stores, und fremde
@@ -450,34 +260,6 @@ onMounted(async () => {
   initialLoading.value = false
   await loadValueHistory()
 })
-
-/** Unvollständige Summen sind keine Tageswerte des ganzen Depots. */
-async function recordCurrentValue(): Promise<void> {
-  const portfolio = portfolioStore.portfolio
-  if (!portfolio || !valueHistory.loaded || fx.loading || !completeValuation.value) return
-  await valueHistory.record(portfolio.id, result.value?.total ?? 0, baseCurrencyOf(portfolio))
-}
-
-watch(
-  () => [result.value, fx.loading],
-  () => {
-    valueHistory.computeBacktest(backtestInputs.value)
-    void recordCurrentValue()
-  },
-)
-// Einzelne Quellen: Ein neu geladenes, gleiches Depot stößt nichts an (T-83).
-watch([() => portfolioStore.portfolio?.id, () => portfolioStore.portfolio?.baseCurrency], () => {
-  if (ready.value) void loadValueHistory()
-})
-
-watch(groupsCollapsed, (collapsed) => {
-  safeStorage.write(GROUPS_COLLAPSED_KEY, collapsed ? '1' : '0')
-})
-
-function toggleGroups(): void {
-  groupsCollapsed.value = !groupsCollapsed.value
-}
-const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 </script>
 
 <template>
@@ -487,24 +269,7 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
       {{ t('fx.historyUnavailable') }}
     </p>
     <!-- Platzhalter halten den Aufbau stabil, bis Depot und Bewertung geladen sind. -->
-    <div
-      v-if="!ready"
-      class="dashboard__loading"
-      role="status"
-      :aria-label="t('dashboard.loading')"
-    >
-      <div class="dashboard__loading-kpis" aria-hidden="true">
-        <div v-for="index in 4" :key="index" class="dashboard__loading-kpi">
-          <span class="dashboard__loading-line dashboard__loading-line--short" />
-          <span class="dashboard__loading-line dashboard__loading-line--value" />
-        </div>
-      </div>
-      <div class="dashboard__loading-table" aria-hidden="true">
-        <span class="dashboard__loading-line dashboard__loading-line--short" />
-        <span v-for="index in 4" :key="index" class="dashboard__loading-line" />
-      </div>
-      <span class="dashboard__loading-caption">{{ t('dashboard.loading') }}</span>
-    </div>
+    <DashboardLoading v-if="!ready" />
 
     <!--
       Leeres Depot: kein Rebalancing möglich, aber auch keine Sackgasse —
@@ -536,53 +301,13 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     </NEmpty>
 
     <template v-else-if="result">
-      <!-- Fehler-Banner bei fehlgeschlagenen Kursen -->
-      <!-- Kennzahlen -->
-      <section class="dashboard__kpis">
-        <KpiCard
-          :label="t('kpi.total')"
-          :value="formatMoney(result.total)"
-          :hint="baseCurrency"
-          :hint-explanation="t('hints.baseCurrency')"
-          hint-settings-tab="data"
-          :trend="trendPoints"
-          expandable
-          :expanded="valueChartOpen"
-          @toggle="valueChartOpen = !valueChartOpen"
-        />
-        <KpiCard
-          :label="t('kpi.investmentReserve')"
-          :explanation="t('hints.investmentReserve')"
-          anchor="reserve"
-          settings-tab="calc"
-          :value="formatMoneySigned(result.liquidity.investmentReserve)"
-          :hint="t('kpi.investmentReserveHint')"
-          :tone="liquidityTone"
-        />
-        <KpiCard
-          :label="t('kpi.investmentReservePercent')"
-          :explanation="t('hints.securityBuffer')"
-          anchor="reserve"
-          settings-tab="calc"
-          :value="percent(result.liquidity.investmentReservePercent)"
-          :hint="
-            t('kpi.securityBufferHint', { buffer: formatMoney(result.liquidity.securityBuffer) })
-          "
-        />
-        <!--
-          Beschreibt die Datenlage, nicht die Lage zum Ziel: Ein „Below" in der
-          Zeile ist ein normaler Zustand, ein fehlender Kurs eine Lücke. Ohne
-          den Hinweis läse sich die Kennzahl neben fünf Below-Zeilen wie ein
-          Widerspruch.
-        -->
-        <KpiCard
-          :label="t('kpi.dataStatus')"
-          :value="dataStatusValue"
-          :tone="dataStatusTone"
-          :explanation="t('hints.dataStatus')"
-          anchor="limits"
-        />
-      </section>
+      <DashboardKpis
+        :result="result"
+        :trend="trendPoints"
+        :expanded="valueChartOpen"
+        :incomplete-count="incompleteCount"
+        @toggle="valueChartOpen = !valueChartOpen"
+      />
 
       <!--
         Der Wertverlauf klappt unter der Kachel auf, nicht daneben: So bleibt
@@ -606,116 +331,18 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
         über ihr.
       -->
       <div class="dashboard__table-area">
-        <!--
-          Gruppen-Balken (ein-/ausklappbar). Auf schmalen Bildschirmen
-          ausgeblendet: die Gruppen-Trenner der Kartenliste zeigen dieselben
-          Zahlen, und die Balkenzeile bräuchte hier acht Spalten Platz.
-        -->
-        <section class="dashboard__groups">
-          <button
-            type="button"
-            class="dashboard__groups-toggle"
-            :aria-expanded="!groupsCollapsed"
-            aria-controls="dashboard-groups-panel"
-            @click="toggleGroups"
-          >
-            <!-- `turn` wie im Gruppenkopf darunter — dieselbe Aussage, dieselbe Bewegung. -->
-            <UxCaret :open="!groupsCollapsed" motion="turn" />
-            <h2 class="dashboard__section-title">
-              {{ t('dashboard.assetClasses') }}
-            </h2>
-
-            <!-- Eingeklappt: kompakte Zusammenfassung statt leerer Fläche -->
-            <span v-if="groupsCollapsed" class="dashboard__summary tabular-nums">
-              <span
-                v-for="group in visibleGroups"
-                :key="group.group"
-                class="dashboard__summary-item"
-                :class="
-                  group.suggestion === 'ok'
-                    ? 'dashboard__summary-item--ok'
-                    : 'dashboard__summary-item--flagged'
-                "
-              >
-                {{ t(`groups.${group.group}`) }} {{ percent(group.actualPercent) }}
-              </span>
-            </span>
-          </button>
-
-          <div v-show="!groupsCollapsed" id="dashboard-groups-panel" class="dashboard__group-list">
-            <GroupBar v-for="group in visibleGroups" :key="group.group" :group="group" />
-          </div>
-        </section>
+        <DashboardGroups :groups="result.groups" />
 
         <!-- Positionen -->
         <section class="dashboard__panel">
-          <div class="dashboard__panel-head">
-            <div class="dashboard__panel-heading">
-              <h2 class="dashboard__panel-title">
-                {{ isCompact ? t('dashboard.positionsShort') : t('dashboard.positionsHeading') }}
-              </h2>
-              <div v-if="!isCompact && positionGroupCount > 1" class="dashboard__group-actions">
-                <button
-                  type="button"
-                  class="dashboard__group-action"
-                  :aria-label="t('table.collapseAllGroups')"
-                  :title="t('table.collapseAllGroups')"
-                  @click="collapsePositionGroups"
-                >
-                  <GroupActionIcon class="dashboard__group-symbol" action="collapse" />
-                </button>
-                <button
-                  type="button"
-                  class="dashboard__group-action"
-                  :aria-label="t('table.expandAllGroups')"
-                  :title="t('table.expandAllGroups')"
-                  @click="openPositionGroups"
-                >
-                  <GroupActionIcon class="dashboard__group-symbol" action="expand" />
-                </button>
-              </div>
-            </div>
-            <div class="dashboard__panel-meta">
-              <TargetAllocationBar
-                v-if="!isCompact"
-                :sum="result.targetPercentSum"
-                :exceeded="result.targetsExceeded"
-              />
-              <div class="dashboard__bands tabular-nums">
-                <!--
-                  Bänder nur nennen, wenn sie gelten: Im reinen Kalendermodus
-                  stünde hier sonst eine Grenze, nach der niemand mehr fragt.
-                -->
-                <template v-if="bandsActive">
-                  {{
-                    t('dashboard.bands', {
-                      lower: percent(settingsStore.settings.bands.lowerPercent),
-                      upper: percent(settingsStore.settings.bands.upperPercent),
-                    })
-                  }}
-                  <InfoHint
-                    :text="t('hints.bands')"
-                    anchor="bands"
-                    settings-tab="calc"
-                    class="dashboard__hint"
-                  />
-                </template>
-                <span v-if="result.schedule.active" class="dashboard__schedule">
-                  <span :class="{ dashboard__due: result.schedule.due }">{{ scheduleLabel }}</span>
-                  <InfoHint
-                    :text="t('hints.trigger')"
-                    anchor="trigger"
-                    settings-tab="calc"
-                    class="dashboard__hint"
-                  />
-                </span>
-                <span v-if="loading" class="dashboard__schedule">{{ t('common.loading') }}</span>
-              </div>
-              <NButton size="tiny" secondary @click="openAddDialog">
-                {{ t('actions.addPosition') }}
-              </NButton>
-            </div>
-          </div>
+          <DashboardPositionsHead
+            :result="result"
+            :compact="isCompact"
+            :loading="loading"
+            @collapse="collapsePositionGroups"
+            @expand="openPositionGroups"
+            @add="openAddDialog"
+          />
 
           <PositionCardList
             v-if="isCompact"
@@ -769,59 +396,6 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
 
   @include content-frame;
 
-  &__loading {
-    @include stack(var(--space-4));
-  }
-
-  &__loading-kpis {
-    display: grid;
-    grid-template-columns: 1fr;
-
-    @include up(sm) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    @include up(lg) {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  &__loading-kpi,
-  &__loading-table {
-    @include stack(var(--space-4));
-
-    padding: var(--space-4);
-    border: 1px solid token(--border-subtle);
-    border-radius: var(--radius-sm);
-  }
-
-  &__loading-kpi {
-    min-height: 7rem;
-  }
-  &__loading-table {
-    min-height: 16rem;
-  }
-
-  &__loading-line {
-    display: block;
-    width: 100%;
-    height: 0.75rem;
-    border-radius: var(--radius-sm);
-    background-color: token(--border-subtle);
-
-    &--short {
-      width: 35%;
-    }
-    &--value {
-      width: 65%;
-      height: 1.5rem;
-    }
-  }
-
-  &__loading-caption {
-    color: token(--text-secondary);
-    font-size: var(--font-sm);
-  }
-
   &__empty {
     padding: var(--space-8) 0;
   }
@@ -851,18 +425,6 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     justify-content: center;
   }
 
-  &__kpis {
-    display: grid;
-    grid-template-columns: 1fr;
-
-    @include up(sm) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    @include up(lg) {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
   /*
    * Die Assetklassen-Balken bleiben dem Desktop vorbehalten: Auf dem Telefon
    * stehen dieselben Zahlen ohnehin über jeder Gruppe in der Kartenliste.
@@ -884,68 +446,6 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
     @include stack(0);
   }
 
-  &__groups {
-    display: none;
-    border-top: 1px solid token(--border-default);
-
-    @include up(md) {
-      display: block;
-    }
-  }
-
-  &__groups-toggle {
-    @include row;
-
-    width: 100%;
-    padding: 0.625rem 0;
-    text-align: left;
-    color: token(--text-secondary);
-    transition: color 0.15s ease;
-
-    &:hover {
-      color: token(--text-primary);
-    }
-  }
-
-  &__section-title {
-    font-size: var(--font-xs);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-  }
-
-  &__summary {
-    @include row(var(--space-3));
-
-    margin-left: auto;
-    font-size: var(--font-xs);
-  }
-
-  &__summary-item {
-    display: none;
-
-    @include up(sm) {
-      display: inline;
-    }
-
-    &--ok {
-      @include muted(null);
-    }
-    &--flagged {
-      color: token(--status-near);
-    }
-  }
-
-  &__group-list {
-    @include stack(0);
-
-    padding-bottom: var(--space-4);
-
-    > * + * {
-      border-top: 1px solid token(--border-subtle);
-    }
-  }
-
   &__panel {
     @include up(md) {
       overflow: hidden;
@@ -953,84 +453,6 @@ const { baseCurrency, formatMoney, formatMoneySigned } = usePortfolioCurrency()
       border-radius: 0.75rem;
       background-color: token(--surface-card);
     }
-  }
-
-  /*
-   * Die Trennlinie sitzt am Kopf, nicht als eigener Divider dazwischen.
-   * Naives `NDivider` bringt 24 px Abstand nach oben und unten mit — 49 px
-   * Leerfläche um einen 1 px-Strich, und das `!my-0` daran war eine
-   * Tailwind-Utility, die es seit dessen Ausbau nicht mehr gibt.
-   */
-  &__panel-head {
-    @include row(var(--space-4));
-
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 0 0 var(--space-2);
-
-    @include up(md) {
-      padding: var(--space-4) 1.25rem;
-      border-bottom: 1px solid token(--border-default);
-    }
-  }
-
-  &__panel-title {
-    font-size: var(--font-xs);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-    color: token(--text-secondary);
-  }
-
-  &__panel-heading {
-    @include row(var(--space-2));
-  }
-  &__group-actions {
-    @include row(0);
-  }
-
-  &__group-action {
-    display: inline-grid;
-    place-items: center;
-    width: 1.5rem;
-    height: 1.75rem;
-    padding: 0;
-    color: token(--text-muted);
-    cursor: pointer;
-
-    &:hover {
-      color: token(--text-primary);
-    }
-    &:focus-visible {
-      outline: 2px solid token(--text-primary);
-      outline-offset: 2px;
-    }
-  }
-
-  &__group-symbol {
-    display: block;
-    width: 1rem;
-    height: 1rem;
-  }
-
-  &__panel-meta {
-    @include row(1.25rem);
-  }
-
-  &__bands {
-    @include muted;
-  }
-
-  &__hint {
-    margin-left: var(--space-1);
-  }
-
-  &__schedule {
-    margin-left: var(--space-2);
-  }
-
-  &__due {
-    color: token(--status-out);
   }
 }
 </style>
