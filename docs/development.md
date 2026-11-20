@@ -107,7 +107,8 @@ den Alltag.
 
 Vor einer Übergabe laufen `make check` und `make security`. Einzelne
 Pakete lassen sich weiter über ihre npm-Skripte prüfen, etwa
-`npm --prefix api run lint`.
+`npm --prefix api run lint`. Was davon die Abnahme bricht und was nur Bericht
+ist, fasst das [Qualitätsprofil](quality-profile.md#messbare-grenzen) zusammen.
 
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit

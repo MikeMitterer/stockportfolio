@@ -266,7 +266,10 @@ Target je Prüfart (`check`, `lint`, `typecheck`, `format`, `format-check`,
 Werkzeug. Befehle für ein einzelnes Paket laufen über dessen npm-Skripte.
 Vor einer Übergabe laufen mindestens `make check` und `make security`. Das
 Ergebnis gehört als Beleg ins Ticket. `make audit` braucht Netz,
-`make quality` ist nur ein Bericht; beide gehören nicht zur Abnahme.
+`make quality` ist nur ein Bericht; beide gehören nicht zur Abnahme. Woran
+ein gutes Ergebnis zu erkennen ist, auch wo kein Werkzeug misst, steht im
+[Qualitätsprofil](docs/quality-profile.md); der Qualitätslauf am Sprintende
+prüft den Code dagegen.
 
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
