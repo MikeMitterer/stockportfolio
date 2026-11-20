@@ -1,10 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { AccountService, hashSetupCode } from '../src/auth/service'
 import { createSqliteRepository } from '../src/persistence/repository'
-import { createApiRouter } from '../src/routers/api'
+import { createApiRouter, type ApiOptions } from '../src/routers/api'
 import { DEFAULT_SESSION_IDLE_DAYS, parseSessionIdleMs } from '../src/sessionIdle'
 
 const directories: string[] = []
@@ -19,13 +19,13 @@ afterEach(() => {
  * Angemeldeter Browser: `cookie` folgt wie im Browser jedem `Set-Cookie`,
  * `send` schickt dagegen ein festes, etwa veraltetes Cookie.
  */
-async function signedIn(sessionIdleMs?: number) {
+async function signedIn(sessionIdleMs?: number, extra: Partial<ApiOptions> = {}) {
   const directory = mkdtempSync(join(tmpdir(), 'stockportfolio-session-'))
   directories.push(directory)
   const repository = createSqliteRepository(join(directory, 'test.sqlite'))
   let currentTime = 100_000
   const service = new AccountService(repository, hashSetupCode('setup-code'), () => currentTime, sessionIdleMs)
-  const app = createApiRouter(service, repository, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1' })
+  const app = createApiRouter(service, repository, { publicOrigin: origin, secureCookies: false, remoteAddress: () => '10.0.0.1', ...extra })
   let jar = ''
   const remember = (response: Response) => {
     const sessionCookie = response.headers.getSetCookie().find((value) => value.startsWith('stockportfolio_session='))
@@ -48,6 +48,7 @@ async function signedIn(sessionIdleMs?: number) {
     post,
     send,
     session: async () => remember(await send(jar)),
+    proxy: async (path: string) => remember(await app.request(`${origin}/api/stockinfo${path}`, { headers: { Cookie: jar } })),
     advance: (milliseconds: number) => { currentTime += milliseconds },
   }
 }
@@ -295,3 +296,52 @@ describe('Ereignisverbindung und Leerlauffrist (R1-F2)', () => {
     }
   })
 })
+
+describe('Cookie beim Token-Tausch (Runde 2)', () => {
+  it('liefert über die StockInfo-Weiterleitung das neue Cookie, nie eines von StockInfo (R1-F1)', async () => {
+    const upstream = vi.fn(async () => new Response('{"status":"ok"}', {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Set-Cookie': 'stockinfo=fremd; Path=/' },
+    }))
+    const { repository, cookie, advance, proxy, send } = await signedIn(undefined, {
+      stockInfoUrl: 'http://stockinfo.test',
+      stockInfoFetch: upstream,
+    })
+    try {
+      const before = cookie()
+      advance(dayMs + 1_000)
+      const response = await proxy('/health')
+      expect(response.status).toBe(200)
+      const setCookies = response.headers.getSetCookie()
+      expect(setCookies.some((value) => value.startsWith('stockinfo='))).toBe(false)
+      expect(cookie()).not.toBe(before)
+      advance(61_000)
+      expect((await send(cookie())).status).toBe(200)
+      expect((await send(before)).status).toBe(401)
+    } finally {
+      repository.close()
+    }
+  })
+
+  it('lässt eine langsamere ältere Antwort das getauschte Cookie nicht zurücksetzen (R1-F2)', async () => {
+    const { repository, cookie, advance, post, session } = await signedIn()
+    try {
+      const before = cookie()
+      advance(dayMs - 1_000)
+      // Die langsame Anfrage prüft die Sitzung noch vor der Tauschgrenze und hasht dann ein Kennwort.
+      const slow = post('/api/admin/users', { username: 'anna', password: 'Test-password-456', role: 'user' }, before)
+      await new Promise((resolve) => setImmediate(resolve))
+      advance(2_000)
+      expect((await session()).status).toBe(200)
+      const rotated = cookie()
+      expect(rotated).not.toBe(before)
+      expect((await slow).status).toBe(201)
+      expect(cookie()).toBe(rotated)
+      advance(61_000)
+      expect((await session()).status).toBe(200)
+    } finally {
+      repository.close()
+    }
+  })
+})
+

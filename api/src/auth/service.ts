@@ -210,6 +210,16 @@ export class AccountService {
     return { user, token: successor }
   }
 
+  /**
+   * Ist das Token das aktuelle seiner Sitzung, also weder abgelaufen noch
+   * ersetzt? Eine Antwort setzt ihr Cookie nur dann; sonst hätte eine andere
+   * Anfrage den Browser inzwischen schon auf den Nachfolger gebracht.
+   */
+  isCurrent(token: string): boolean {
+    const session = this.repository.findSession(digest(token))
+    return session != null && session.replacedAt == null
+  }
+
   /** Beendet die Sitzung samt Vorgänger und Nachfolger aus einem Token-Tausch, auch während der Übergangsfrist. */
   logout(token: string): void {
     this.repository.deleteSessionChain(digest(token))

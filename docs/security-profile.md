@@ -37,7 +37,10 @@ Angelegt mit T-98; beschreibt den Stand von `api/src/auth/service.ts` und
   Tag, bekommt die nächste authentifizierte Anfrage ein neues. Das alte gilt
   danach noch 60 Sekunden, ohne selbst zu verlängern, zu tauschen oder ein
   Cookie zu setzen; so melden parallele Anfragen und andere Reiter desselben
-  Browsers nicht ab. Ersetzte Sitzungen löscht der nächste Tausch. Eine
+  Browsers nicht ab. Das Cookie schreibt jede Antwort erst am Ende der
+  Anfrage, auch die StockInfo-Weiterleitung, und nur, wenn sein Token dann
+  noch das aktuelle ist; eine langsamere ältere Antwort setzt so kein schon
+  getauschtes Token zurück. Ersetzte Sitzungen löscht der nächste Tausch. Eine
   offene Ereignisverbindung tauscht nicht, weil sie kein Cookie mehr setzen
   kann; nach Ablauf ihres ersetzten Tokens verbindet der Browser neu. Ein
   kopiertes Token verliert damit seine Gültigkeit, sobald der rechtmäßige

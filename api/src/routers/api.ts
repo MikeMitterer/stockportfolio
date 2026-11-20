@@ -104,6 +104,14 @@ async function body(context: ServerContext): Promise<Record<string, unknown>> {
   }
 }
 
+/**
+ * Sitzungscookie, das die Antwort am Ende der Anfrage setzen soll. Es wird erst
+ * dort geschrieben: So erreicht es auch Antworten, die eine Route selbst baut
+ * (StockInfo-Weiterleitung), und eine langsamere ältere Antwort setzt kein
+ * Token mehr, das eine andere Anfrage inzwischen getauscht hat.
+ */
+const pendingSessionCookie = new WeakMap<ServerContext, string>()
+
 function token(context: ServerContext): string {
   const value = getCookie(context, cookieName)
   if (!value) throw new ServiceError(401, 'unauthorized')
@@ -111,18 +119,18 @@ function token(context: ServerContext): string {
 }
 
 /**
- * Prüft die Sitzung und gibt dem Cookie die volle Leerlauffrist, bei Bedarf
- * mit dem getauschten Token (T-98). Server und Browser zählen so ab derselben
- * Nutzung. `null` lässt das Cookie unverändert, wenn die Route selbst ein
- * neues setzt — zwei `Set-Cookie` desselben Namens ließen offen, welches der
- * Browser behält.
+ * Prüft die Sitzung und merkt für die Antwort das Cookie mit der vollen
+ * Leerlauffrist vor, bei Bedarf mit dem getauschten Token (T-98). Server und
+ * Browser zählen so ab derselben Nutzung. `null` lässt das Cookie unverändert,
+ * wenn die Route selbst ein neues setzt — zwei `Set-Cookie` desselben Namens
+ * ließen offen, welches der Browser behält.
  *
  * @returns Benutzer und das Token, mit dem der Browser weiterarbeitet.
  */
 function authenticated(context: ServerContext, service: AccountService, cookie: SessionCookie | null, allowPasswordChange = false): { user: PublicUser; token: string } {
   const sessionToken = token(context)
   const result = cookie ? service.authenticate(sessionToken) : { user: service.session(sessionToken), token: null }
-  if (cookie && result.token) setSessionCookie(context, result.token, cookie)
+  if (cookie && result.token) pendingSessionCookie.set(context, result.token)
   if (result.user.mustChangePassword && !allowPasswordChange) throw new ServiceError(403, 'password_change_required')
   return { user: result.user, token: result.token ?? sessionToken }
 }
@@ -168,6 +176,8 @@ export function createApiRouter(service: AccountService, repository: AccountRepo
       if (!/^application\/json(?:\s*;|\s*$)/i.test(contentType)) throw new ServiceError(415, 'json_required')
     }
     await next()
+    const pending = pendingSessionCookie.get(context)
+    if (pending !== undefined && service.isCurrent(pending)) setSessionCookie(context, pending, cookie)
   })
 
   app.get('/api/setup/status', (context) => context.json({ required: service.setupRequired() }))
