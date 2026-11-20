@@ -9,7 +9,7 @@
 
 import { ApiError } from './errors'
 import { normalizeFields, normalizeFx, normalizeInstruments, normalizeInstrumentTypes, normalizeQuote } from './normalizers'
-import { translate } from '@/i18n'
+import { i18n, translate } from '@/i18n'
 import type {
   DailyPoint,
   FieldsResponse,
@@ -172,9 +172,45 @@ export class StockInfoClient {
   }
 }
 
+/** Form einer StockInfo-Kennung: Kleinbuchstaben und Ziffern, mindestens ein Unterstrich. */
+const STOCKINFO_CODE = /^[a-z][a-z0-9]*(_[a-z0-9]+)+$/
+
+/** Katalogschlüssel des Satzes zu einer StockInfo-Kennung. */
+function reasonKey(code: string): string {
+  return `errors.reason.${code}`
+}
+
+/** Meldet, ob StockPortfolio für die Kennung einen eigenen Satz hat. */
+function isKnownStockInfoCode(code: string): boolean {
+  return /^[a-z_]+$/.test(code) && code !== 'unknown' && i18n.global.te(reasonKey(code), 'en')
+}
+
 /**
- * Liest das `detail`-Feld einer FastAPI-Fehlerantwort.
- * Fällt auf den HTTP-Statustext zurück, wenn der Body nicht lesbar ist.
+ * Bildet aus StockInfos `{code, params}` einen übersetzten Satz. Nur Werte aus
+ * Text oder Zahl gehen in die Platzhalter ein. `identity_conflict` trägt je
+ * Identitätsform andere Werte; der Satz nennt deshalb die vorhandenen als eine
+ * Angabe. Eine unbekannte Kennung ergibt den allgemeinen Satz mit der Kennung.
+ */
+function describeStockInfoCode(code: string, params: unknown): string {
+  if (!isKnownStockInfoCode(code)) return translate('errors.reason.unknown', { code })
+  const values: Record<string, string> = {}
+  if (params && typeof params === 'object') {
+    for (const [name, value] of Object.entries(params)) {
+      if (typeof value === 'string' || typeof value === 'number') values[name] = String(value)
+    }
+  }
+  if (code === 'identity_conflict') {
+    const listing = [values.ticker, values.mic].filter(Boolean).join('/')
+    values.identity = [listing, values.isin].filter(Boolean).join(', ') || values.kind || code
+  }
+  return translate(reasonKey(code), values)
+}
+
+/**
+ * Bildet die Meldung zu einer Fehlerantwort: Fehler der eigenen Weiterleitung
+ * (`stockinfo_*`), StockInfos Kennungen (`code` oder Kennung als `detail`) als
+ * übersetzter Satz, ein `detail`-Satz im alten Format unverändert.
+ * Fällt auf den HTTP-Statustext zurück, wenn der Body nichts davon trägt.
  */
 async function readErrorDetail(response: Response): Promise<string> {
   try {
@@ -185,15 +221,16 @@ async function readErrorDetail(response: Response): Promise<string> {
       return translate(`errors.stockinfo.${body.error}`)
     }
     if (body && typeof body === 'object' && 'code' in body && typeof body.code === 'string') {
-      if (body.code === 'symbol_ambiguous' && 'params' in body && body.params && typeof body.params === 'object' && 'symbol' in body.params && typeof body.params.symbol === 'string') {
-        return translate('errors.ambiguousSymbol', { symbol: body.params.symbol })
-      }
-      return body.code
+      return describeStockInfoCode(body.code, 'params' in body ? body.params : undefined)
     }
     if (body && typeof body === 'object' && 'detail' in body) {
       const detail = (body as { detail: unknown }).detail
+      // Das 503 einer Migration oder eines Starts trägt die Kennung als `detail`. Auch eine
+      // unbekannte Kennung in dieser Form (Kleinbuchstaben mit Unterstrich, etwa
+      // maintenance_running) geht über den allgemeinen Satz, nie roh in die Oberfläche.
+      if (typeof detail === 'string' && STOCKINFO_CODE.test(detail)) return describeStockInfoCode(detail, undefined)
+      // Ein Satz im alten Format bleibt lesbar; Objekte und Listen nie als JSON zeigen.
       if (typeof detail === 'string') return detail
-      return JSON.stringify(detail)
     }
   } catch {
     // Body war kein JSON — Statustext genügt.

@@ -82,6 +82,11 @@ Projekts.
 - **Unbekannte Felder werden ignoriert, nicht als Fehler behandelt.**
   Sonst bricht die nächste additive Erweiterung des Dienstes den Konsumenten.
 
+- **StockInfo-Fehler sind Kennungen, die Sätze bildet StockPortfolio** (T-117).
+  `readErrorDetail` in `frontend/src/api/stockinfo/client.ts` übersetzt
+  `{code, params}` über `errors.reason` im Katalog; die Liste der Kennungen
+  steht in der [Entwicklerdoku](docs/development.md#sprache-und-texte).
+
 - **Den Vertrag liefert StockInfo maschinenlesbar mit.**
   `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
   `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
