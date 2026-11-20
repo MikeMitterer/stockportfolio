@@ -128,3 +128,78 @@ describe('Relative Abweichung im Rebalancing', () => {
     expect(wrapper!.find('thead').text()).toContain('Off target')
   })
 })
+
+describe('Zielsumme in der Fußzeile (T-97)', () => {
+  /** Zielfeld der Testzeile probeweise setzen; die Bargeldzeile hält 90 %. */
+  async function setAssetTarget(row: Awaited<ReturnType<typeof renderPlan>>, targetPercent: number) {
+    row.findAllComponents(UxInlineNumber)[0]!.vm.$emit('commit', targetPercent)
+    await flushPromises()
+    return wrapper!.find('tfoot .reb__foot-target')
+  }
+
+  it('steht unter der Spalte „Ziel %“', async () => {
+    await renderPlan()
+    const headers = wrapper!.findAll('thead th').map(cell => cell.text())
+    const footCells = wrapper!.findAll('tfoot td')
+    const column = footCells.slice(0, footCells.findIndex(cell => cell.classes('reb__foot-target')))
+      .reduce((sum, cell) => sum + Number(cell.attributes('colspan') ?? 1), 0)
+    expect(headers[column]).toBe(i18n.global.t('table.targetPercent'))
+  })
+
+  it('zeigt bei 100 % den ausgeglichenen Zustand', async () => {
+    await renderPlan()
+    const cell = wrapper!.find('tfoot .reb__foot-target')
+    expect(cell.text()).toBe('100,0 % Ziele ergeben 100 %')
+    expect(cell.classes()).toContain('reb__flow--in')
+    expect(cell.classes()).not.toContain('reb__flow--out')
+  })
+
+  it.each([
+    [11, '101,0 %', '+1,0 % zu viel'],
+    [9, '99,0 %', '−1,0 % fehlen'],
+    // Das Zielfeld nimmt zwei Nachkommastellen an; knapp neben 100 % muss die Abweichung lesbar bleiben.
+    [10.04, '100,04 %', '+0,04 % zu viel'],
+    [10.02, '100,02 %', '+0,02 % zu viel'],
+    [9.97, '99,97 %', '−0,03 % fehlen'],
+  ])('zeigt probeweises Ziel %s als Summe %s mit „%s“', async (target, sum, deviation) => {
+    const row = await renderPlan()
+    const cell = await setAssetTarget(row, target)
+    expect(cell.text()).toBe(`${sum} ${deviation}`)
+    expect(cell.classes()).toContain('reb__flow--out')
+    expect(cell.classes()).not.toContain('reb__flow--in')
+    expect(document.body.textContent).toContain(`Die Ziele ergeben zusammen ${sum} statt 100 %`)
+  })
+
+  // Bis 0,01 Prozentpunkte gilt die Summe als ausgeglichen (T-97), auch mit mehr Stellen als das
+  // Zielfeld annimmt, etwa aus einem Backup-Import.
+  it.each([
+    [10.006, '100,01 %'],
+    [10.01, '100,01 %'],
+  ])('wertet Ziel %s (Summe %s) innerhalb der Toleranz als ausgeglichen', async (target, sum) => {
+    const row = await renderPlan()
+    const cell = await setAssetTarget(row, target)
+    expect(cell.text()).toBe(`${sum} Ziele ergeben 100 %`)
+    expect(cell.classes()).toContain('reb__flow--in')
+    expect(cell.classes()).not.toContain('reb__flow--out')
+    expect(document.body.textContent).not.toContain('Die Ziele ergeben zusammen')
+  })
+
+  it('beschriftet Summe und Abweichung auf Englisch', async () => {
+    i18n.global.locale.value = 'en'
+    setFormatterLocale('en-GB')
+    const row = await renderPlan()
+    expect(wrapper!.find('tfoot .reb__foot-target').text()).toBe('100.0 % Targets add up to 100 %')
+    expect((await setAssetTarget(row, 12.5)).text()).toBe('102.5 % +2.5 % too much')
+    expect((await setAssetTarget(row, 7)).text()).toBe('97.0 % −3.0 % missing')
+  })
+
+  it('zeigt im leeren Depot keine Fußzeile und keine Abweichung', async () => {
+    await renderPlan()
+    const portfolio = usePortfolioStore().portfolio!
+    // Nur Bargeld: Die Ziele ergeben 90 %, gelten aber noch als leeres Depot.
+    portfolio.positions = portfolio.positions.filter(position => position.group === 'cash')
+    await flushPromises()
+    expect(wrapper!.find('tfoot .reb__foot-target').exists()).toBe(false)
+    expect(document.body.textContent).not.toContain('Ziele ergeben nicht 100 %')
+  })
+})

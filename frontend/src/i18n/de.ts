@@ -585,6 +585,9 @@ export const de = {
     footerBalanced: 'Käufe und Verkäufe gleichen sich aus.',
     footerLeftOver: '{amount} bleiben übrig.',
     footerShort: '{amount} kommen aus der Reserve.',
+    footerTargetsBalanced: 'Ziele ergeben 100 %',
+    footerTargetsOver: '{deviation} zu viel',
+    footerTargetsUnder: '{deviation} fehlen',
     underfundedTitle: 'Plan nicht gedeckt',
     underfundedBody:
       'Für die geplanten Käufe fehlen {amount}. Verkaufe ein Papier oder entnimm aus Cash bzw. Geldmarkt — trage die Entnahme dort als negative Zahl ein.',
