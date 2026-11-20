@@ -220,8 +220,10 @@ clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
 
 ##@ Prüfen
 
-PY_SOURCES := $(shell git ls-files '*.py')
-SH_SOURCES := $(shell git ls-files '*.sh') .githooks/pre-commit
+# Dateilisten aus git, NUL-getrennt über xargs -0 als einzelne Argumente: Ein Dateiname mit
+# Leerzeichen oder Shell-Zeichen wird so nie zu Befehlstext.
+PY_FILES = git ls-files -z -- '*.py'
+SH_FILES = { git ls-files -z -- '*.sh'; printf '%s\0' .githooks/pre-commit; }
 # Ein Prettier für beide Pakete; die Regeln stehen in .prettierrc.
 PRETTIER := frontend/node_modules/.bin/prettier
 PRETTIER_FILES := "frontend/src/**/*.{vue,ts,tsx,css,json}" "frontend/tests/**/*.ts" "api/src/**/*.ts" "api/tests/**/*.ts"
@@ -239,10 +241,10 @@ check: lint typecheck format-check test ## Alles geprüft, was die Abnahme verla
 lint: require-setup ## Lint geprüft: ESLint (Frontend, API), ruff, shellcheck
 	@npm run lint --prefix frontend
 	@npm run lint --prefix api
-	@$(VENV)/bin/ruff check $(PY_SOURCES)
-	@for file in $(SH_SOURCES); do bash -n "$$file" || exit 1; done
+	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff check
+	@$(SH_FILES) | xargs -0 -n 1 bash -n
 	$(call require_tool,shellcheck,brew install shellcheck)
-	@shellcheck $(SH_SOURCES)
+	@$(SH_FILES) | xargs -0 shellcheck
 
 typecheck: require-setup ## Typen geprüft: vue-tsc (Frontend), tsc (API)
 	@npm run typecheck --prefix frontend
@@ -250,11 +252,11 @@ typecheck: require-setup ## Typen geprüft: vue-tsc (Frontend), tsc (API)
 
 format: require-setup ## Quellen formatiert: Prettier (Frontend, API), ruff format
 	@$(PRETTIER) --write --log-level warn $(PRETTIER_FILES)
-	@$(VENV)/bin/ruff format $(PY_SOURCES)
+	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff format
 
 format-check: require-setup ## Formatierung geprüft, keine Datei geändert
 	@$(PRETTIER) --check --log-level warn $(PRETTIER_FILES)
-	@$(VENV)/bin/ruff format --check $(PY_SOURCES)
+	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff format --check
 
 test: docs-check require-setup ## Doku, Frontend- und API-Tests einmal geprüft
 	@npm run test --prefix frontend
@@ -268,13 +270,16 @@ docs-check: require-tools ## Doku geprüft: Links, Befehle, Variablen, verbotene
 security: require-setup ## Keine Geheimnisse in der Git-History, Python ohne Befund ab mittel
 	$(call require_tool,gitleaks,brew install gitleaks)
 	@gitleaks git --redact --no-banner .
-	@$(VENV)/bin/python -m bandit -q -ll $(PY_SOURCES)
+	@$(PY_FILES) | xargs -0 $(VENV)/bin/python -m bandit -q -ll
 
-# Braucht Netz; nicht in der Abnahme.
+# Braucht Netz; nicht in der Abnahme. Alle drei laufen, auch wenn einer Lücken findet; der
+# Exit-Code meldet am Ende, ob einer davon fehlschlug.
 audit: require-setup ## Abhängigkeiten ohne bekannte Lücken: npm (Laufzeit), Python
-	@npm audit --omit=dev --prefix frontend
-	@npm audit --omit=dev --prefix api
-	@$(VENV)/bin/python -m pip_audit --skip-editable
+	@status=0; \
+	npm audit --omit=dev --prefix frontend || status=1; \
+	npm audit --omit=dev --prefix api || status=1; \
+	$(VENV)/bin/python -m pip_audit --skip-editable || status=1; \
+	exit $$status
 
 # Nur Bericht: Befunde enden mit 0, die Schwellen sind Anhaltspunkte. Läuft ein Werkzeug gar
 # nicht, scheitert das Target; ein leerer Bericht wäre sonst ein falsches Grün. Die Schwellen
@@ -284,7 +289,7 @@ quality: require-setup ## Bericht zu Komplexität, Dateigröße und doppeltem Co
 	@node frontend/scripts/quality-report.mjs frontend src
 	@node frontend/scripts/quality-report.mjs api src
 	@echo "Komplexität und Vereinfachungen Python (ruff C90, SIM, PLR09, RET)"
-	@$(VENV)/bin/ruff check $(PY_SOURCES) --select C90,SIM,PLR09,RET --output-format concise --exit-zero
+	@$(PY_FILES) | xargs -0 $(VENV)/bin/ruff check --select C90,SIM,PLR09,RET --output-format concise --exit-zero
 	@echo "Doppelter Code über TypeScript, Vue und Python (jscpd)"
 	@frontend/node_modules/.bin/jscpd --reporters console --min-tokens 70 \
 		frontend/src frontend/tests api/src api/tests scripts $(wildcard .agents/bin)

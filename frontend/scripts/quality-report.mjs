@@ -27,15 +27,23 @@ try {
   const eslint = new ESLint({ cwd, overrideConfig: { rules } })
   const results = await eslint.lintFiles(patterns)
   let findings = 0
+  let unreadable = 0
   for (const result of results) {
+    const file = relative(process.cwd(), result.filePath)
     for (const message of result.messages) {
+      // Ein Parsefehler hat keine Regel: Die Datei ist ungeprüft und darf nicht
+      // als „0 Befunde“ durchgehen.
+      if (message.fatal || message.ruleId === null) {
+        unreadable++
+        console.log(`${file}:${message.line ?? 0}:${message.column ?? 0} nicht auswertbar: ${message.message}`)
+        continue
+      }
       if (!(message.ruleId in rules)) continue
       findings++
-      const file = relative(process.cwd(), result.filePath)
       console.log(`${file}:${message.line}:${message.column} ${message.ruleId} ${message.message}`)
     }
   }
-  console.log(`${packageDir}: ${findings} Befunde`)
+  console.log(`${packageDir}: ${findings} Befunde${unreadable ? `, ${unreadable} nicht auswertbar` : ''}`)
 } catch (error) {
   console.error(`ESLint lief nicht: ${error.message}`)
   process.exit(1)

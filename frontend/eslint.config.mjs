@@ -42,6 +42,21 @@ export default [
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
+    // Zeilenumbrüche und Einrückung im Template legt Prettier fest (make format,
+    // T-99). Diese Layoutregeln aus flat/recommended verlangten eine andere
+    // Darstellung, und make format und make lint widersprächen sich.
+    files: ['**/*.vue'],
+    rules: {
+      'vue/html-indent': 'off',
+      'vue/html-closing-bracket-newline': 'off',
+      'vue/html-closing-bracket-spacing': 'off',
+      'vue/multiline-html-element-content-newline': 'off',
+      'vue/singleline-html-element-content-newline': 'off',
+      'vue/max-attributes-per-line': 'off',
+      'vue/first-attribute-linebreak': 'off',
+    },
+  },
+  {
     // Node-Skripte wie der Browser-Smoketest; Teile davon laufen per
     // Playwright im Browser und brauchen dessen Globals ebenfalls.
     files: ['scripts/**/*.mjs'],
