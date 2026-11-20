@@ -18,8 +18,8 @@
     "check:demo-data": "node scripts/demo-data-check.mjs",
     "check:stockinfo-proxy": "node scripts/stockinfo-proxy-check.mjs",
     "check:setup-dialog": "node scripts/setup-dialog-check.mjs",
-    "lint": "eslint . --ext .vue,.ts,.tsx --cache",
-    "lint:fix": "eslint . --ext .vue,.ts,.tsx --fix",
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{vue,ts,tsx,css,json}\"",
     "test": "cd .. && frontend/node_modules/.bin/vitest run --config frontend/vitest.config.ts",
     "test:watch": "cd .. && frontend/node_modules/.bin/vitest --config frontend/vitest.config.ts",
@@ -39,15 +39,15 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^22.14.1",
-    "@typescript-eslint/eslint-plugin": "^8.32.0",
-    "@typescript-eslint/parser": "^8.32.0",
+    "@typescript-eslint/eslint-plugin": "^8.73.0",
+    "@typescript-eslint/parser": "^8.73.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vitest/coverage-v8": "^3.1.4",
     "@vue/test-utils": "^2.4.6",
-    "eslint": "^9.26.0",
-    "eslint-plugin-vue": "^10.1.0",
+    "eslint": "^10.15.0",
+    "eslint-plugin-vue": "^10.12.1",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^25.0.1",
     "playwright-core": "^1.63.0",
@@ -83,5 +83,9 @@
     "docker/Dockerfile",
     "docker/entrypoint.sh",
     ".dockerignore"
-  ]
+  ],
+  "allowScripts": {
+    "esbuild": true,
+    "@parcel/watcher": false
+  }
 }
