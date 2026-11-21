@@ -1,19 +1,22 @@
 import { describe, expect, it, vi } from 'vitest'
 import { PrivateDataClient, PrivateDataError } from '@/api/data/client'
 
+/** Antwort der Konto-API mit JSON-Rumpf, wie `PrivateDataClient` sie liest. */
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status })
+}
+
+/** Liste mit einem Depot in Revision 2. */
+const LISTED_DEPOT = {
+  resources: [{ resourceId: 'depot', revision: 2, value: { id: 'depot' } }],
+}
+
 describe('private REST-Daten', () => {
   it('merkt die zuletzt geladene Revision für den Ereignisabgleich', async () => {
     const fetcher = vi
       .fn<typeof fetch>()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            resources: [{ resourceId: 'depot', revision: 2, value: { id: 'depot' } }],
-          }),
-          { status: 200 },
-        ),
-      )
-      .mockResolvedValueOnce(new Response(JSON.stringify({ resources: [] }), { status: 200 }))
+      .mockResolvedValueOnce(jsonResponse(LISTED_DEPOT))
+      .mockResolvedValueOnce(jsonResponse({ resources: [] }))
     const client = new PrivateDataClient(fetcher)
 
     expect(client.revisionOf('portfolio', 'depot')).toBeNull()
@@ -26,13 +29,9 @@ describe('private REST-Daten', () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ resourceId: 'depot', revision: 3, value: { id: 'depot' } }), {
-          status: 200,
-        }),
+        jsonResponse({ resourceId: 'depot', revision: 3, value: { id: 'depot' } }),
       )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: 'revision_conflict' }), { status: 409 }),
-      )
+      .mockResolvedValueOnce(jsonResponse({ error: 'revision_conflict' }, 409))
     const client = new PrivateDataClient(fetcher)
 
     expect((await client.get<{ id: string }>('portfolio', 'depot'))?.revision).toBe(3)
@@ -47,21 +46,12 @@ describe('private REST-Daten', () => {
   it('holt nach einem konkurrierenden Hintergrund-Schnappschuss die neue Revision und schreibt erneut', async () => {
     const fetcher = vi
       .fn<typeof fetch>()
+      .mockResolvedValueOnce(jsonResponse({ resourceId: 'depot', revision: 1, value: [] }))
+      .mockResolvedValueOnce(jsonResponse({ error: 'revision_conflict' }, 409))
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ resourceId: 'depot', revision: 1, value: [] }), {
-          status: 200,
-        }),
+        jsonResponse({ resourceId: 'depot', revision: 2, value: [{ total: 100 }] }),
       )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: 'revision_conflict' }), { status: 409 }),
-      )
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({ resourceId: 'depot', revision: 2, value: [{ total: 100 }] }),
-          { status: 200 },
-        ),
-      )
-      .mockResolvedValueOnce(new Response(JSON.stringify({ revision: 3 }), { status: 200 }))
+      .mockResolvedValueOnce(jsonResponse({ revision: 3 }))
     const client = new PrivateDataClient(fetcher)
     const errors: Event[] = []
     const listener = (event: Event): void => {
@@ -99,16 +89,9 @@ describe('private REST-Daten', () => {
   it('verwirft nach einem entfernten Depot dessen alte Revision', async () => {
     const fetcher = vi
       .fn<typeof fetch>()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            resources: [{ resourceId: 'depot', revision: 2, value: { id: 'depot' } }],
-          }),
-          { status: 200 },
-        ),
-      )
-      .mockResolvedValueOnce(new Response(JSON.stringify({ resources: [] }), { status: 200 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ revision: 1 }), { status: 200 }))
+      .mockResolvedValueOnce(jsonResponse(LISTED_DEPOT))
+      .mockResolvedValueOnce(jsonResponse({ resources: [] }))
+      .mockResolvedValueOnce(jsonResponse({ revision: 1 }))
     const client = new PrivateDataClient(fetcher)
 
     await client.list('portfolio')
@@ -122,12 +105,10 @@ describe('private REST-Daten', () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ resourceId: 'depot', revision: 3, value: { id: 'depot' } }), {
-          status: 200,
-        }),
+        jsonResponse({ resourceId: 'depot', revision: 3, value: { id: 'depot' } }),
       )
-      .mockResolvedValueOnce(new Response(JSON.stringify({ error: 'not_found' }), { status: 404 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ revision: 1 }), { status: 200 }))
+      .mockResolvedValueOnce(jsonResponse({ error: 'not_found' }, 404))
+      .mockResolvedValueOnce(jsonResponse({ revision: 1 }))
     const client = new PrivateDataClient(fetcher)
 
     await client.get('portfolio', 'depot')

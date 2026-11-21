@@ -18,13 +18,12 @@
  * (`visually-hidden`, `tabular-nums`), und `:class`-Bindungen mit Vue-Logik.
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { relative } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 import { PROJECT_ROOT } from './helpers/projectRoot'
-
-const SRC = resolve(PROJECT_ROOT, 'frontend/src')
+import { filesUnder, SRC } from './helpers/sourceTree'
 
 /**
  * Tailwind-Muster: Kürzel mit Skalenwert (`mt-4`, `w-1/2`, `text-sm`),
@@ -51,80 +50,71 @@ const UTILITY = new RegExp(
     ')$',
 )
 
-/** Alle Dateien unter `src/`, die Markup oder Stil enthalten. */
-function quellDateien(dir: string = SRC): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const pfad = join(dir, entry.name)
-    if (entry.isDirectory()) return quellDateien(pfad)
-    return /\.(vue|scss|css)$/.test(entry.name) ? [pfad] : []
-  })
-}
-
-interface Fund {
-  datei: string
-  wo: 'Markup' | 'Stil'
+interface Finding {
+  file: string
+  where: 'Markup' | 'Stil'
   name: string
 }
 
 /** Statische `class="…"`-Attribute — `:class`-Bindungen bleiben außen vor. */
-function ausMarkup(quelle: string, datei: string): Fund[] {
+function fromMarkup(source: string, file: string): Finding[] {
   // `slice(1)`: Eine SFC darf mehrere `<template>`-Blöcke haben — heute tut es
   // keine, aber `[1]` würde ab dem zweiten still nur den ersten prüfen.
-  const template = quelle.split('<template>').slice(1).join('\n').split('<style')[0] ?? ''
-  const funde: Fund[] = []
+  const template = source.split('<template>').slice(1).join('\n').split('<style')[0] ?? ''
+  const findings: Finding[] = []
 
-  for (const treffer of template.matchAll(/(?<!:)\bclass="([^"]+)"/g)) {
-    for (const name of (treffer[1] ?? '').split(/\s+/)) {
-      if (UTILITY.test(name)) funde.push({ datei, wo: 'Markup', name })
+  for (const match of template.matchAll(/(?<!:)\bclass="([^"]+)"/g)) {
+    for (const name of (match[1] ?? '').split(/\s+/)) {
+      if (UTILITY.test(name)) findings.push({ file, where: 'Markup', name })
     }
   }
-  return funde
+  return findings
 }
 
 /**
  * Klassen-Selektoren im Stil. Trifft auch die Regel, deren Markup längst
  * umbenannt wurde — genau der Fall, der hier durchgerutscht ist.
  */
-function ausStil(quelle: string, datei: string): Fund[] {
+function fromStyle(source: string, file: string): Finding[] {
   // Alle Stil-Blöcke, nicht nur den ersten: `PositionsTable.vue` und
   // `SettingsView.vue` haben je zwei. Mit `[1]` lag der zweite außerhalb der
   // Prüfung — genau dort hätte ein toter Utility-Selektor unbemerkt überlebt.
-  const stil = datei.endsWith('.vue') ? quelle.split('<style').slice(1).join('\n') : quelle
-  const ohneKommentare = stil.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
-  const funde: Fund[] = []
+  const style = file.endsWith('.vue') ? source.split('<style').slice(1).join('\n') : source
+  const withoutComments = style.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+  const findings: Finding[] = []
 
-  for (const treffer of ohneKommentare.matchAll(/\.([a-zA-Z][\w!/-]*)/g)) {
-    const name = treffer[1] ?? ''
-    if (UTILITY.test(name)) funde.push({ datei, wo: 'Stil', name })
+  for (const match of withoutComments.matchAll(/\.([a-zA-Z][\w!/-]*)/g)) {
+    const name = match[1] ?? ''
+    if (UTILITY.test(name)) findings.push({ file, where: 'Stil', name })
   }
-  return funde
+  return findings
 }
 
 describe('Utility-Klassen', () => {
   it('gibt es nicht mehr — Tailwind ist ausgebaut', () => {
-    const alle = quellDateien().flatMap((pfad) => {
-      const quelle = readFileSync(pfad, 'utf8')
-      const datei = relative(PROJECT_ROOT, pfad)
-      return [...ausMarkup(quelle, datei), ...ausStil(quelle, datei)]
+    const all = filesUnder(SRC, ['.vue', '.scss', '.css']).flatMap((filePath) => {
+      const source = readFileSync(filePath, 'utf8')
+      const file = relative(PROJECT_ROOT, filePath)
+      return [...fromMarkup(source, file), ...fromStyle(source, file)]
     })
 
-    const bericht = alle.map((f) => `${f.datei} (${f.wo}): .${f.name}`).join('\n')
+    const report = all.map((f) => `${f.file} (${f.where}): .${f.name}`).join('\n')
 
     expect(
-      alle,
-      `Utility-Klasse gefunden — wirkungslos, seit Tailwind raus ist:\n${bericht}`,
+      all,
+      `Utility-Klasse gefunden — wirkungslos, seit Tailwind raus ist:\n${report}`,
     ).toEqual([])
   })
 
   it('erkennt sie im Markup — sonst prüft der Wächter nichts', () => {
-    const beispiel = '<template>\n  <div class="postable !my-0 flex">x</div>\n</template>'
-    const namen = ausMarkup(beispiel, 'beispiel.vue').map((f) => f.name)
+    const example = '<template>\n  <div class="postable !my-0 flex">x</div>\n</template>'
+    const names = fromMarkup(example, 'beispiel.vue').map((f) => f.name)
 
-    expect(namen).toEqual(['!my-0', 'flex'])
+    expect(names).toEqual(['!my-0', 'flex'])
   })
 
   it('erkennt sie auch im Stil — das war der Fall, der durchrutschte', () => {
-    const beispiel = [
+    const example = [
       '<style scoped>',
       '/* .flex im Kommentar zählt nicht */',
       '.flex > :not(:first-of-type) :deep(.n-data-table-thead) { display: none; }',
@@ -132,13 +122,13 @@ describe('Utility-Klassen', () => {
       '</style>',
     ].join('\n')
 
-    expect(ausStil(beispiel, 'beispiel.vue').map((f) => f.name)).toEqual(['flex'])
+    expect(fromStyle(example, 'beispiel.vue').map((f) => f.name)).toEqual(['flex'])
   })
 
   it('lässt eigene Klassen in Ruhe, die nur ähnlich heißen', () => {
-    const beispiel =
+    const example =
       '<template>\n  <span class="visually-hidden tabular-nums kpi__value">x</span>\n</template>'
 
-    expect(ausMarkup(beispiel, 'beispiel.vue')).toEqual([])
+    expect(fromMarkup(example, 'beispiel.vue')).toEqual([])
   })
 })

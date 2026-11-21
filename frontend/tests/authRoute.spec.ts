@@ -11,6 +11,37 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+/** Benutzer, wie ihn die Konto-API nach Anmeldung oder Passwortwechsel liefert. */
+function apiUser(mustChangePassword: boolean) {
+  return {
+    id: 'user-1',
+    username: 'mike',
+    role: 'user',
+    active: true,
+    mustChangePassword,
+    isSetupAccount: false,
+    legacyImported: false,
+  }
+}
+
+/**
+ * fetch-Attrappe der Konto-API ohne Sitzung: Einrichtung erledigt, StockInfo
+ * konfiguriert. `answers` ergänzt die Pfade, um die es im Test geht; jede
+ * andere Anfrage lässt den Test scheitern.
+ */
+function signedOutApi(answers: Record<string, () => Response>) {
+  return vi.fn(async (input: string) => {
+    const path = String(input)
+    if (path === '/api/setup/status') return Response.json({ required: false })
+    if (path === '/api/stockinfo-target') return Response.json({ url: 'https://stockinfo.example' })
+    if (path === '/api/auth/session')
+      return Response.json({ error: 'unauthorized' }, { status: 401 })
+    const answer = answers[path]
+    if (answer) return answer()
+    throw new Error(`Unexpected request: ${path}`)
+  })
+}
+
 describe('Adresse nach der Anmeldung', () => {
   it('öffnet nach der Passwortänderung eines Nutzers das Dashboard statt des alten Pfads', async () => {
     const emptyPage = { template: '<div />' }
@@ -26,40 +57,9 @@ describe('Adresse nach der Anmeldung', () => {
 
     vi.stubGlobal(
       'fetch',
-      vi.fn(async (input: string) => {
-        const path = String(input)
-        if (path === '/api/setup/status') return Response.json({ required: false })
-        if (path === '/api/stockinfo-target')
-          return Response.json({ url: 'https://stockinfo.example' })
-        if (path === '/api/auth/session')
-          return Response.json({ error: 'unauthorized' }, { status: 401 })
-        if (path === '/api/auth/login') {
-          return Response.json({
-            user: {
-              id: 'user-1',
-              username: 'mike',
-              role: 'user',
-              active: true,
-              mustChangePassword: true,
-              isSetupAccount: false,
-              legacyImported: false,
-            },
-          })
-        }
-        if (path === '/api/auth/change-password') {
-          return Response.json({
-            user: {
-              id: 'user-1',
-              username: 'mike',
-              role: 'user',
-              active: true,
-              mustChangePassword: false,
-              isSetupAccount: false,
-              legacyImported: false,
-            },
-          })
-        }
-        throw new Error(`Unexpected request: ${path}`)
+      signedOutApi({
+        '/api/auth/login': () => Response.json({ user: apiUser(true) }),
+        '/api/auth/change-password': () => Response.json({ user: apiUser(false) }),
       }),
     )
 
@@ -93,27 +93,8 @@ describe('Hinweis zu Anlageentscheidungen beim Login', () => {
     })
     await router.push('/')
     await router.isReady()
-    const fetcher = vi.fn(async (input: string) => {
-      const path = String(input)
-      if (path === '/api/setup/status') return Response.json({ required: false })
-      if (path === '/api/stockinfo-target')
-        return Response.json({ url: 'https://stockinfo.example' })
-      if (path === '/api/auth/session')
-        return Response.json({ error: 'unauthorized' }, { status: 401 })
-      if (path === '/api/auth/login') {
-        return Response.json({
-          user: {
-            id: 'user-1',
-            username: 'mike',
-            role: 'user',
-            active: true,
-            mustChangePassword: false,
-            isSetupAccount: false,
-            legacyImported: false,
-          },
-        })
-      }
-      throw new Error(`Unexpected request: ${path}`)
+    const fetcher = signedOutApi({
+      '/api/auth/login': () => Response.json({ user: apiUser(false) }),
     })
     vi.stubGlobal('fetch', fetcher)
     const loginCalls = () =>
