@@ -2,6 +2,102 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.8.0+261121.1021.9972d — 2026-11-21
+
+Handelstabelle mit Bandkursen und Zielsumme, Rebalancing-Plan übersteht Depot- und Seitenwechsel; StockInfo-Fehler übersetzt; Sitzung gleitet mit täglichem Token-Tausch; Abhängigkeiten ohne bekannte Lücken; make check, security und quality, Code nach fachlichen Teilen aufgeteilt
+
+### Features
+
+- Sitzung gleitet mit konfigurierbarer Leerlauffrist (`dff99d8`)
+- Sitzungstoken nach einem Tag tauschen, mit 60 s Übergang (`0ddde18`)
+- Zielsumme in der Fußzeile unter „Ziel %“ (`7b31e69`)
+- check, lint, typecheck, format, security, audit und quality (`c3f6c36`)
+- Push nur mit veröffentlichtem Release-Tag (`4138cb5`)
+- Fehlerkennungen von StockInfo selbst übersetzen (`5e8a687`)
+- Bandkurse je Position in der Handelstabelle (`e1679db`)
+
+### Fixes
+
+- Abmelden beendet getauschte Tokens, Live-Abgleich verlängert nicht (`bfd4813`)
+- vue 3.5.44, nanoid und source-map-js ohne bekannte Lücken (`35304eb`)
+- Prüfwerkzeuge getrennt von ProjectTools installieren (`b7fef7d`)
+- Docker-Ziele finden BashLib schon im ersten Aufruf (`a394705`)
+- Starter-Hinweis auf die lokale DevTools-Arbeitskopie (`4d80e77`)
+- Push prüft das beim Build gespeicherte Tag-Objekt (`f29b5eb`)
+- Unbekannte Kennung im detail eines 503 nicht roh zeigen (`200baf5`)
+- Bandkurs rot nur bei verlassener Grenze, Hinweis im Spaltenkopf (`a77905d`)
+- Typ der Push-Fälle in dockerBuild.spec.ts (`f97ac56`)
+- Plan übersteht den Abstecher auf die Methodenseite (`8cc595d`)
+- Plan folgt Depotwechsel und Bestandsänderungen (`e9727fe`)
+- vue-i18n 11.4.23 ohne bekannte Lücken (`bc20849`)
+- Prüfziele nach dem Umbau aus T-116 und T-112 (`0579c60`)
+- Zielsumme mit der Genauigkeit der Eingabe (`c0cae00`)
+- vereinbarte Toleranz der Zielsumme beibehalten (`36df9ca`)
+- Sitzungscookie am Ende der Anfrage und nur mit aktuellem Token (`9438bf6`)
+- Token-Tausch am Ende der Anfrage, Abmelden nur mit gültigem Token (`56deea8`)
+- Dateinamen als Argumente, audit vollständig, Prettier und Vue-Lint einig (`bd721db`)
+- Dateilisten über scripts/check-files.sh, Fehler von git bricht ab (`d9faab2`)
+- hono 4.13.18 und @hono/node-server 2.1.8 (`ca28c67`)
+- Zustandsdatei nur bei gleicher Inode und gleichem Inhalt löschen (`415a793`)
+
+### Other changes
+
+- Makefile nach makefile-conventions, Werkzeuge aus .tools/ (`87f9657`)
+- Teststack-CLI über CLITheme statt projecttools.ui.colors (`72c10df`)
+- Install-Skripte freigeben, ESLint 10 (`37bbc6f`)
+- Node 22.13 und npm 11.18 vor npm ci prüfen, Manifest im Stempel (`36b2daa`)
+- Node ^22.13 oder \>=24, keine Vorabversionen, npm 11 im Image (`7979283`)
+- npm 11 auch im Laufzeitbild (`446d7ed`)
+- pip ohne bekannte Lücken in der Entwicklungs-.venv (`194e896`)
+- doppelten Code zusammenführen, Testnachbau entfernen (`c09a068`)
+- Ansicht und Berechnung nach fachlichen Teilen aufteilen (`db359fa`)
+- Ansicht und Positionstabelle nach fachlichen Teilen aufteilen (`e854830`)
+- Einstellungen, Anmeldung und Backup-Prüfung aufteilen (`5e46cc8`)
+- verzweigte Funktionen in Stores und StockInfo-Client zerlegen (`e13e44b`)
+- Router und Repository nach fachlichen Bereichen aufteilen (`c65899f`)
+- Teststack-Skripte in benannte Schritte zerlegen (`0b4ef99`)
+
+### Documentation
+
+- Lizenzpflichten verständlicher formulieren (`b30d5b4`)
+- EUPL-Pflichten an Weitergabe knüpfen (`0229c8b`)
+- Lizenzabschnitt der Vorlage auf den Skill-Baustein stützen (`486d760`)
+- README-Verweise in AGENTS.md, Vorlage und docs-check bereinigen (`d1aa7af`)
+- Lizenzabschnitt nach dem EUPL-Baustein ausrichten (`ad3458b`)
+- Lizenzabschnitt auf Kurzform mit Verweis aufs README kürzen (`330f00d`)
+- Lizenz nur als Kurzform mit Verweis aufs README (`0f25732`)
+- TRANSLATIONS und Vorlagen-Hinweis in docs-check beschreiben (`82dd028`)
+- Kommandozeilen-Themes entfernen (`12b26bd`)
+- Werkzeug-Erklärungen bei Voraussetzungen kürzen (`10e57d6`)
+- Verweise auf den Skill docs-conventions umstellen (`e2d6e72`)
+- Skills code-conventions und ux-conventions nennen (`d690e5f`)
+- unveränderte Screenshots nach T-97 quittieren (`084a7ce`)
+- Verweise nach der Board-Umstellung auf agent-lessons (`59c83e9`)
+- Prüf-Targets in AGENTS.md und Entwicklerdoku (`de4be49`)
+- Screenshot-Hinweise nach den neuen Fehlersätzen quittiert (`badd634`)
+- Hinweise nach den Bandkursen quittiert (`e03b8c1`)
+- Bandkurse im Nutzerhandbuch, Bild und Quittungen nach develop (`cef0486`)
+- Bildhinweise nach dem Plan-Store quittiert (`305b1ce`)
+- Bildhinweise nach der Plan-Verdrahtung quittiert (`84bcaca`)
+- Rebalancing-Bild mit Bandkursen und Zielsumme (`c12d423`)
+- Bildhinweise nach der Zielsumme quittiert (`592485a`)
+- Bildhinweise nach der Genauigkeit der Zielsumme quittiert (`593bc73`)
+- Bildhinweise nach der Toleranz der Zielsumme quittiert (`1b19b7f`)
+- Bildhinweise nach dem Format-Commit quittiert (`0699740`)
+- Qualitätsprofil aus der agent-lessons-Vorlage (`bf93818`)
+- Aufbau so beschreiben, wie er ist (`60d8865`)
+- Depotdaten-Zugriff nach beiden Importrichtungen (`d11c022`)
+- Screenshot-Hinweise nach T-128 quittiert (`71cbc08`)
+- Screenshot-Hinweise nach T-130 quittiert (`8dd672f`)
+- Screenshot-Hinweise nach dem Abgleich mit develop quittiert (`93ef428`)
+- Screenshot-Hinweise nach T-131 quittiert (`fee2106`)
+- Screenshot-Hinweise nach dem Abgleich mit develop quittiert (`7a51467`)
+- Screenshot-Hinweise nach T-132 quittiert (`1acd5e8`)
+- Screenshot-Hinweise nach dem Abgleich mit develop quittiert (`c475341`)
+- Qualitätsprofil nach dem Lauf vom 2026-11-21 nachgezogen (`263de2e`)
+- db/ vollständig beschreiben, direkte Zugriffe nennen (`be12718`)
+- Screenshot-Hinweise nach T-137 quittiert (`7e39a70`)
+
 ## v0.7.2+261015.1724.c0abc — 2026-10-15
 
 Verbrauchererklärung in Deutsch und Englisch, deutsches README, Doku-Prüfung vor jedem Commit
@@ -27,10 +123,6 @@ Verbrauchererklärung in Deutsch und Englisch, deutsches README, Doku-Prüfung v
 
 Public origin: trailing slash accepted, invalid values stop the start without logging the value. Setup code help points to Unraid and Docker logs. Dashboard opens without delay on long price histories.
 
-### Documentation
-
-- Screenshots für 0.7.0 neu aufnehmen (`94f2f43`)
-
 ### Fixes
 
 - Public Origin beim Start normalisieren und prüfen (`2cecd6a`)
@@ -42,21 +134,23 @@ Public origin: trailing slash accepted, invalid values stop the start without lo
 
 - Rückblick in linearer Zeit rechnen (`fac7055`)
 
+### Documentation
+
+- Screenshots für 0.7.0 neu aufnehmen (`94f2f43`)
+
 ## v0.7.0+261003.1927.b8011 — 2026-10-03
 
 StockInfo über den eigenen Server abfragen: kein CORS mehr, Adresse nur vom Container aus erreichbar, STOCKINFO\_API\_URL ersetzt die Vite-Variable; REST-Clients gebündelt, sichtbare Prüfung aller StockInfo-Routen
 
-### Documentation
+### Features
 
-- Screenshots für 0.6.0 neu aufnehmen (`b05d37c`)
-- StockPortfolio und StockInfo nur im Heimnetz oder per VPN (`c2f2cf2`)
-- Support-Erwartung in README und Docker-Anleitung (T-81) (`2521894`)
-- dev-up und dev-down in README und AGENTS.md (`50f5c4d`)
-- StockInfo läuft über den eigenen Server (T-82) (`0cf50c2`)
-- sichtbare Prüfung der StockInfo-Routen (T-82) (`5b25590`)
-- Sicherheitshinweis zur StockInfo-Adresse an die Weiterleitung angepasst (T-82) (`12055db`)
-- eigener Abschnitt zu StockInfo in den Anleitungen (T-89) (`13ae8db`)
-- PUID/PGID nicht mehr in den Anleitungen (T-90) (`62be315`)
+- lesbarer Demomodus und Fondsgröße in Mio. (T-78) (`b399a1d`)
+- Fondsgröße wie StockInfo, TER und Gattungen in der Übersicht (T-79) (`38e3888`)
+- Ersatzabruf nur ohne SSE-Verbindung (T-85) (`2984a96`)
+- Entwicklungsstack im Hintergrund steuern (`dcd274d`)
+- make dev-down räumt Reste auf und gibt die Ports frei (T-86) (`d6c0ef1`)
+- StockInfo-Abfragen über den eigenen Server weiterleiten (T-82) (`c45b287`)
+- Frontend fragt StockInfo über den eigenen Server ab (T-82) (`58ffc23`)
 
 ### Fixes
 
@@ -70,39 +164,25 @@ StockInfo über den eigenen Server abfragen: kein CORS mehr, Adresse nur vom Con
 - ungenutzte Intraday-Historie nicht weiterleiten (T-82) (`50092ac`)
 - StockInfo-Antworten ohne Rumpf weiterleiten (T-82) (`724f0ba`)
 
-### Features
-
-- lesbarer Demomodus und Fondsgröße in Mio. (T-78) (`b399a1d`)
-- Fondsgröße wie StockInfo, TER und Gattungen in der Übersicht (T-79) (`38e3888`)
-- Ersatzabruf nur ohne SSE-Verbindung (T-85) (`2984a96`)
-- Entwicklungsstack im Hintergrund steuern (`dcd274d`)
-- make dev-down räumt Reste auf und gibt die Ports frei (T-86) (`d6c0ef1`)
-- StockInfo-Abfragen über den eigenen Server weiterleiten (T-82) (`c45b287`)
-- Frontend fragt StockInfo über den eigenen Server ab (T-82) (`58ffc23`)
-
 ### Other changes
 
 - REST- und SSE-Clients unter src/api/ je Gegenstelle (T-88) (`e761812`)
 
+### Documentation
+
+- Screenshots für 0.6.0 neu aufnehmen (`b05d37c`)
+- StockPortfolio und StockInfo nur im Heimnetz oder per VPN (`c2f2cf2`)
+- Support-Erwartung in README und Docker-Anleitung (T-81) (`2521894`)
+- dev-up und dev-down in README und AGENTS.md (`50f5c4d`)
+- StockInfo läuft über den eigenen Server (T-82) (`0cf50c2`)
+- sichtbare Prüfung der StockInfo-Routen (T-82) (`5b25590`)
+- Sicherheitshinweis zur StockInfo-Adresse an die Weiterleitung angepasst (T-82) (`12055db`)
+- eigener Abschnitt zu StockInfo in den Anleitungen (T-89) (`13ae8db`)
+- PUID/PGID nicht mehr in den Anleitungen (T-90) (`62be315`)
+
 ## v0.6.0+261001.2129.d0eba — 2026-10-01
 
 Konten mit eigener API, Depotdaten auf dem Server und Live-Abgleich einführen; Container läuft nach Unraid-Vorgabe als 99:100
-
-### Documentation
-
-- Serverarchitektur und Prüfschritte festhalten (`671522c`)
-- Grenzen der Folgetickets verbindlich entscheiden (`9e843bc`)
-- Mehradmin-Regel und Umsetzungsplan festhalten (`1e5cb95`)
-- Serverdaten und Altimport dokumentieren (`bf490a7`)
-- belege Restore-Nacharbeit und Datenweg (`238723a`)
-- Theme-Bezugsweg und Abnahmebelege festhalten (`bd4faec`)
-- Installationsweg an StockInfo T-82 belassen (`e4db84b`)
-- Geschützten Fernzugriff für Depots erklären (`50a6924`)
-- aktuelle Screenshots mit Login und Benutzerverwaltung (`5821721`)
-- Rebalancing-Simulation aufnehmen, Bildgrößen richtig nennen (`efc290f`)
-- PUID/PGID 99/100 in allen Anleitungen, Rauchtest räumt per Label auf (`e7cda36`)
-- Startbedingung bei fehlendem chown genau beschreiben (`7aea00f`)
-- Einzelserver-Hilfe nutzt das gemeinsame CLI-Theme (`8b6358d`)
 
 ### Features
 
@@ -166,13 +246,25 @@ Konten mit eigener API, Depotdaten auf dem Server und Live-Abgleich einführen; 
 - Backup und Altbestand durch Stores führen (`ec6a783`)
 - entferne verwaiste Restore-Wege (`b2235b8`)
 
+### Documentation
+
+- Serverarchitektur und Prüfschritte festhalten (`671522c`)
+- Grenzen der Folgetickets verbindlich entscheiden (`9e843bc`)
+- Mehradmin-Regel und Umsetzungsplan festhalten (`1e5cb95`)
+- Serverdaten und Altimport dokumentieren (`bf490a7`)
+- belege Restore-Nacharbeit und Datenweg (`238723a`)
+- Theme-Bezugsweg und Abnahmebelege festhalten (`bd4faec`)
+- Installationsweg an StockInfo T-82 belassen (`e4db84b`)
+- Geschützten Fernzugriff für Depots erklären (`50a6924`)
+- aktuelle Screenshots mit Login und Benutzerverwaltung (`5821721`)
+- Rebalancing-Simulation aufnehmen, Bildgrößen richtig nennen (`efc290f`)
+- PUID/PGID 99/100 in allen Anleitungen, Rauchtest räumt per Label auf (`e7cda36`)
+- Startbedingung bei fehlendem chown genau beschreiben (`7aea00f`)
+- Einzelserver-Hilfe nutzt das gemeinsame CLI-Theme (`8b6358d`)
+
 ## v0.5.0+260928.1401.98d5d — 2026-09-28
 
 About mit Anbieterangaben und Datenhinweisen ergänzen; Startmeldung im dunklen Theme lesbar machen
-
-### Documentation
-
-- Verfügbarkeit in Community Applications nennen (`5c619eb`)
 
 ### Features
 
@@ -184,6 +276,10 @@ About mit Anbieterangaben und Datenhinweisen ergänzen; Startmeldung im dunklen 
 - Hinweise und Lizenzzugang richtig platzieren (`2450abf`)
 - Links farblich vom Text abheben (`d8e8e57`)
 - Fehlseite im gewählten Theme lesbar machen (`c8e0ea3`)
+
+### Documentation
+
+- Verfügbarkeit in Community Applications nennen (`5c619eb`)
 
 ## v0.4.0+260927.2137.6687a — 2026-09-27
 
@@ -207,6 +303,28 @@ StockPortfolio auf EUPL 1.2 umstellen und Lizenzdateien mit Docker ausliefern
 ## v0.3.0+260927.1152.7bcff — 2026-09-27
 
 Rebalancing-Anzeige und Backup-Einstieg verbessern
+
+### Features
+
+- Ausschnitt „Echt" zeigt nur die festgehaltenen Tageswerte (`ea9cd51`)
+- Ladeanzeige beim Aktualisieren — global und je Position (`c1a8e8d`)
+- Aktualisieren holt frische Kurse, Fortschritt wird sichtbar (`ed030df`)
+- Aktualisieren lässt sich einstellen (`ec3ab83`)
+- Fehlermeldungen sagen, wo die Adresse steht — und der Ausfall wird gemeldet (`4616cf0`)
+- Identitäten und Kurse vor der Depotaufnahme prüfen (`2cbfbf0`)
+- show catalog-defined instrument information (`71a4ff8`)
+- support base currencies and exchange rates (`674b370`)
+- Basiswährung auch bei bestehenden Depots wechseln (`983b33b`)
+- Positionsdetails nach Aufgaben gliedern (`85af4c9`)
+- Aktien und ETFs als getrennte Gruppen führen (`d38a8f5`)
+- simplify navigation and show position notes (`9aa040f`)
+- merge information and toggle history from sparklines (`ffc39f3`)
+- show asset types and portfolio base currency (`52b6716`)
+- distinguish asset types with subtle SVG icons (`1124b4b`)
+- Typkatalog aus StockInfo gemeinsam verwenden (`2aac1e9`)
+- prepare verified image and Docker Hub overview (`f70516e`)
+- Plan leeren mit Mülleimer-Symbol ergänzen (`5e983a0`)
+- Einstieg im leeren Depot ergänzen und Begriff vereinheitlichen (`ae64b14`)
 
 ### Fixes
 
@@ -240,27 +358,10 @@ Rebalancing-Anzeige und Backup-Einstieg verbessern
 - originales Lucide-Mülleimer-Symbol verwenden (`7e07224`)
 - API-Link direkt zum Status-Tab führen (`031d0e0`)
 
-### Features
+### Other changes
 
-- Ausschnitt „Echt" zeigt nur die festgehaltenen Tageswerte (`ea9cd51`)
-- Ladeanzeige beim Aktualisieren — global und je Position (`c1a8e8d`)
-- Aktualisieren holt frische Kurse, Fortschritt wird sichtbar (`ed030df`)
-- Aktualisieren lässt sich einstellen (`ec3ab83`)
-- Fehlermeldungen sagen, wo die Adresse steht — und der Ausfall wird gemeldet (`4616cf0`)
-- Identitäten und Kurse vor der Depotaufnahme prüfen (`2cbfbf0`)
-- show catalog-defined instrument information (`71a4ff8`)
-- support base currencies and exchange rates (`674b370`)
-- Basiswährung auch bei bestehenden Depots wechseln (`983b33b`)
-- Positionsdetails nach Aufgaben gliedern (`85af4c9`)
-- Aktien und ETFs als getrennte Gruppen führen (`d38a8f5`)
-- simplify navigation and show position notes (`9aa040f`)
-- merge information and toggle history from sparklines (`ffc39f3`)
-- show asset types and portfolio base currency (`52b6716`)
-- distinguish asset types with subtle SVG icons (`1124b4b`)
-- Typkatalog aus StockInfo gemeinsam verwenden (`2aac1e9`)
-- prepare verified image and Docker Hub overview (`f70516e`)
-- Plan leeren mit Mülleimer-Symbol ergänzen (`5e983a0`)
-- Einstieg im leeren Depot ergänzen und Begriff vereinheitlichen (`ae64b14`)
+- use compact navigation on mobile (`573d15b`)
+- kurze Versionierungs-Targets verwenden (`adc36a1`)
 
 ### Documentation
 
@@ -278,11 +379,6 @@ Rebalancing-Anzeige und Backup-Einstieg verbessern
 - Englische Anleitung mit wget-Installation ergänzen (`2d0ce6a`)
 - Anleitung zentral pflegen (`9a1e122`)
 - Apps als Standardinstallation beschreiben (`7e3c5af`)
-
-### Other changes
-
-- use compact navigation on mobile (`573d15b`)
-- kurze Versionierungs-Targets verwenden (`adc36a1`)
 
 ## v0.2.0+260818.1954.3cf6a — 2026-08-18
 
@@ -348,11 +444,6 @@ Sicherung als eigener Reiter, kompakteres Dashboard
 
 Release 0.1.0 — Tolerance-Band-Rebalancing als Web-App
 
-### Documentation
-
-- add rebalancing webapp design spec (`e193d16`)
-- finale README, Roadmap-Stand und Spec-Status für 0.1.0 (`e45e35d`)
-
 ### Features
 
 - Makefile mit Standard-Header + Setup-Script anlegen (`5422133`)
@@ -394,3 +485,8 @@ Release 0.1.0 — Tolerance-Band-Rebalancing als Web-App
 
 - Plan rechnet nur, bucht nicht (`9ae6a36`)
 - Hash-Router, Debian-Basis, Konfiguration nur fürs Caching (`41177c9`)
+
+### Documentation
+
+- add rebalancing webapp design spec (`e193d16`)
+- finale README, Roadmap-Stand und Spec-Status für 0.1.0 (`e45e35d`)
