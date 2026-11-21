@@ -33,7 +33,7 @@ bewirken. Was die Make-Ziele aufrufen, beschreibt die
 | Formatierung (Prettier, ruff format) | `.prettierrc`, `ruff.toml` | bricht `make check` (`format-check`) |
 | Python-Lint (ruff) | `ruff.toml`, Abschnitt `[lint]` | bricht `make check` |
 | Bash (`bash -n`, shellcheck) | Makefile, Ziel `lint` | bricht `make check` |
-| Frontend- und API-Tests, Wächter-Tests | `frontend/tests/`, `api/tests/` | bricht `make test` und damit die Abnahme |
+| Frontend-, API- und Python-Tests, Wächter-Tests | `frontend/tests/`, `api/tests/`, `scripts/tests/` | bricht `make test` und damit die Abnahme |
 | Nutzerdoku (Links, Befehle, Variablen, verbotene Begriffe) | `.docs-check.conf.sh` | bricht `make test` |
 | Geheimnisse in der Git-History, Python-Sicherheit | Makefile, Ziel `security` (gitleaks, bandit `-ll`) | bricht `make security` |
 | Komplexität, Verschachtelung, Dateigröße (TS/Vue) | `frontend/scripts/quality-report.mjs`, `rules` | nur Bericht (`make quality`) |

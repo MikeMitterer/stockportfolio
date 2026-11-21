@@ -261,9 +261,10 @@ format-check: require-setup ## Formatierung geprüft, keine Datei geändert
 	@$(PRETTIER) --check --log-level warn $(PRETTIER_FILES)
 	@$(CHECK_PY) $(VENV)/bin/ruff format --check
 
-test: docs-check require-setup ## Doku, Frontend- und API-Tests einmal geprüft
+test: docs-check require-setup ## Doku, Frontend-, API- und Python-Tests einmal geprüft
 	@npm run test --prefix frontend
 	@npm run test --prefix api
+	@$(VENV)/bin/python -m pytest -q -p no:cacheprovider scripts/tests
 
 # Ohne ProjectTools scheitert es laut, statt die Doku still zu überspringen. Config in
 # .docs-check.conf.sh.
