@@ -13,29 +13,20 @@
  * Template-String ist einer.
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { relative, resolve } from 'node:path'
 
 import ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 import { PROJECT_ROOT } from './helpers/projectRoot'
+import { filesUnder, SRC } from './helpers/sourceTree'
 
-const SRC = resolve(PROJECT_ROOT, 'frontend/src')
 const API_DIR = resolve(SRC, 'api')
 
 /** Konstruktoren, die eine Verbindung öffnen. */
 const NETWORK_CONSTRUCTORS = new Set(['EventSource', 'XMLHttpRequest', 'WebSocket'])
 /** Funktionen, die eine Anfrage absenden — auch als `window.fetch` oder `navigator.sendBeacon`. */
 const NETWORK_CALLS = new Set(['fetch', 'sendBeacon'])
-
-/** Alle Quelldateien unter `src/`, rekursiv. */
-function sourceFiles(dir: string = SRC): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) return sourceFiles(path)
-    return /\.(ts|vue)$/.test(entry.name) ? [path] : []
-  })
-}
 
 /** Der Skriptteil einer Datei; bei `.vue` alle `<script>`-Blöcke. */
 function scriptOf(path: string): string {
@@ -91,7 +82,7 @@ export function networkAccesses(fileName: string, script: string): string[] {
 
 describe('Netzwerkzugriffe des Frontends', () => {
   it('liegen alle unter src/api/', () => {
-    const found = sourceFiles()
+    const found = filesUnder(SRC, ['.ts', '.vue'])
       .filter((path) => !path.startsWith(`${API_DIR}/`))
       .flatMap((path) => networkAccesses(relative(PROJECT_ROOT, path), scriptOf(path)))
 
@@ -129,7 +120,7 @@ describe('Netzwerkzugriffe des Frontends', () => {
 
   it('sieht die Clients unter src/api/ selbst', () => {
     // Gegenprobe: Würde die Suche nichts finden, wäre der erste Test wertlos.
-    const inApi = sourceFiles(API_DIR).flatMap((path) =>
+    const inApi = filesUnder(API_DIR, ['.ts', '.vue']).flatMap((path) =>
       networkAccesses(relative(PROJECT_ROOT, path), scriptOf(path)),
     )
     for (const client of [

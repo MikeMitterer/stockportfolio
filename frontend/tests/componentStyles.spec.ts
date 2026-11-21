@@ -14,16 +14,15 @@
  * `align-*`) — Layout ist Sache der Seite, nicht der Komponente.
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { relative } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 import { PROJECT_ROOT } from './helpers/projectRoot'
-
-const SRC = resolve(PROJECT_ROOT, 'frontend/src')
+import { filesUnder, SRC } from './helpers/sourceTree'
 
 /** Was eine Komponentenbibliothek selbst mitbringt — hier also tabu. */
-const IHRE_SACHE = [
+const LIBRARY_PROPERTIES = [
   'background',
   'border',
   'border-radius',
@@ -38,64 +37,57 @@ const IHRE_SACHE = [
   'margin',
 ]
 
-/** Alle `.vue`-Dateien unter `src/`, rekursiv. */
-function vueFiles(dir: string = SRC): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) return vueFiles(path)
-    return entry.name.endsWith('.vue') ? [path] : []
-  })
-}
-
-interface Fund {
-  datei: string
-  klasse: string
-  eigenschaften: string[]
+interface Finding {
+  file: string
+  className: string
+  properties: string[]
 }
 
 /** Sucht Klassen, die an einer Naive-Komponente hängen und eigenes CSS tragen. */
-function funde(quelle: string, datei: string): Fund[] {
-  const template = quelle.split('<template>')[1]?.split('<style')[0] ?? ''
-  const style = quelle.split('<style')[1] ?? ''
+function findingsIn(source: string, file: string): Finding[] {
+  const template = source.split('<template>')[1]?.split('<style')[0] ?? ''
+  const style = source.split('<style')[1] ?? ''
 
-  const klassen = new Set<string>()
-  for (const treffer of template.matchAll(/<N[A-Za-z]+\b[^>]*?\sclass="([^"]+)"/gs)) {
-    for (const name of (treffer[1] ?? '').split(/\s+/)) klassen.add(name)
+  const classNames = new Set<string>()
+  for (const match of template.matchAll(/<N[A-Za-z]+\b[^>]*?\sclass="([^"]+)"/gs)) {
+    for (const name of (match[1] ?? '').split(/\s+/)) classNames.add(name)
   }
 
-  const gefunden: Fund[] = []
-  for (const klasse of klassen) {
-    const regel = new RegExp(
-      `\\.${klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{((?:[^{}]|\\{[^{}]*\\})*)\\}`,
+  const found: Finding[] = []
+  for (const className of classNames) {
+    const rule = new RegExp(
+      `\\.${className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{((?:[^{}]|\\{[^{}]*\\})*)\\}`,
       'g',
     )
-    for (const treffer of style.matchAll(regel)) {
-      const block = treffer[1] ?? ''
-      const eigenschaften = IHRE_SACHE.filter((name) =>
+    for (const match of style.matchAll(rule)) {
+      const block = match[1] ?? ''
+      const properties = LIBRARY_PROPERTIES.filter((name) =>
         new RegExp(`(?<![\\w-])${name}\\s*:`).test(block),
       )
-      if (eigenschaften.length > 0) gefunden.push({ datei, klasse, eigenschaften })
+      if (properties.length > 0) found.push({ file, className, properties })
     }
   }
-  return gefunden
+  return found
 }
 
 describe('Eigenes CSS auf Naive-Komponenten', () => {
   it('gibt es nicht — Größe über `size`, Bedeutung über `type`', () => {
-    const alle = vueFiles().flatMap((pfad) =>
-      funde(readFileSync(pfad, 'utf8'), relative(PROJECT_ROOT, pfad)),
+    const all = filesUnder(SRC, ['.vue']).flatMap((filePath) =>
+      findingsIn(readFileSync(filePath, 'utf8'), relative(PROJECT_ROOT, filePath)),
     )
 
-    const bericht = alle
-      .map((f) => `${f.datei} → .${f.klasse}: ${f.eigenschaften.join(', ')}`)
+    const report = all
+      .map((f) => `${f.file} → .${f.className}: ${f.properties.join(', ')}`)
       .join('\n')
 
-    expect(alle, `Eigenes CSS auf einer Naive-Komponente:\n${bericht}`).toEqual([])
+    expect(all, `Eigenes CSS auf einer Naive-Komponente:\n${report}`).toEqual([])
   })
 
   it('findet überhaupt Komponenten — sonst prüft der Wächter nichts', () => {
-    const mitNaive = vueFiles().filter((pfad) => /<N[A-Za-z]+/.test(readFileSync(pfad, 'utf8')))
+    const withNaive = filesUnder(SRC, ['.vue']).filter((filePath) =>
+      /<N[A-Za-z]+/.test(readFileSync(filePath, 'utf8')),
+    )
 
-    expect(mitNaive.length).toBeGreaterThan(8)
+    expect(withNaive.length).toBeGreaterThan(8)
   })
 })

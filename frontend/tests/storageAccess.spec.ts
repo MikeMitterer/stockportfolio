@@ -14,13 +14,12 @@
  * bekannten Stellen, sondern jede künftige.
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { relative } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 import { PROJECT_ROOT } from './helpers/projectRoot'
-
-const SRC = resolve(PROJECT_ROOT, 'frontend/src')
+import { filesUnder, SRC } from './helpers/sourceTree'
 
 /** Ein Aufruf am Speicher — nicht bloß das Wort im Fließtext eines Kommentars. */
 const DIRECT_ACCESS = /localStorage\s*\??\.\s*(getItem|setItem|removeItem|clear|key)/
@@ -39,29 +38,20 @@ function withoutComments(source: string): string {
     .join('\n')
 }
 
-/** Alle Quelldateien unter `src/`, rekursiv. */
-function sourceFiles(dir: string = SRC): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) return sourceFiles(path)
-    return /\.(ts|vue)$/.test(entry.name) ? [path] : []
-  })
-}
-
 describe('Zugriff auf den localStorage', () => {
   it('läuft überall über safeStorage aus dem Fundament', () => {
-    const treffer = sourceFiles()
+    const matches = filesUnder(SRC, ['.ts', '.vue'])
       .filter((path) => DIRECT_ACCESS.test(withoutComments(readFileSync(path, 'utf8'))))
       .map((path) => relative(PROJECT_ROOT, path))
 
     expect(
-      treffer,
-      `Direkter Speicherzugriff — stattdessen safeStorage aus @mmit/ux-foundation:\n${treffer.join('\n')}`,
+      matches,
+      `Direkter Speicherzugriff — stattdessen safeStorage aus @mmit/ux-foundation:\n${matches.join('\n')}`,
     ).toEqual([])
   })
 
   it('findet überhaupt Dateien — sonst prüft der Wächter nichts', () => {
     // Ohne das wäre ein Tippfehler im Pfad ein stets grüner Test.
-    expect(sourceFiles().length).toBeGreaterThan(50)
+    expect(filesUnder(SRC, ['.ts', '.vue']).length).toBeGreaterThan(50)
   })
 })

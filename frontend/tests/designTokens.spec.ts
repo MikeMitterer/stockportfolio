@@ -10,22 +10,14 @@
  * als `'--name'` aus einer Style-Bindung kommt.
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 import { PROJECT_ROOT } from './helpers/projectRoot'
+import { filesUnder, SRC } from './helpers/sourceTree'
 
-const SRC = resolve(PROJECT_ROOT, 'frontend/src')
 const FOUNDATION = resolve(PROJECT_ROOT, 'frontend/node_modules/@mmit/ux-foundation/src')
-
-function sourceFiles(dir: string): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) return sourceFiles(path)
-    return /\.(vue|scss|css|ts)$/.test(entry.name) ? [path] : []
-  })
-}
 
 function definedNames(files: string[]): Set<string> {
   const names = new Set<string>()
@@ -38,14 +30,17 @@ function definedNames(files: string[]): Set<string> {
 }
 
 describe('CSS-Variablen', () => {
-  const defined = definedNames([...sourceFiles(FOUNDATION), ...sourceFiles(SRC)])
+  const defined = definedNames([
+    ...filesUnder(FOUNDATION, ['.vue', '.scss', '.css', '.ts']),
+    ...filesUnder(SRC, ['.vue', '.scss', '.css', '.ts']),
+  ])
 
   it('findet überhaupt Definitionen — sonst prüft der Wächter nichts', () => {
     expect(defined.has('--space-4')).toBe(true)
   })
 
   it('verwendet nur Variablen, die definiert sind', () => {
-    const unknown = sourceFiles(SRC).flatMap((file) => {
+    const unknown = filesUnder(SRC, ['.vue', '.scss', '.css', '.ts']).flatMap((file) => {
       const text = readFileSync(file, 'utf8')
       return [...text.matchAll(/var\(\s*(--[\w-]+)/g)]
         .map((match) => match[1]!)

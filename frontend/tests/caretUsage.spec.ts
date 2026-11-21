@@ -12,22 +12,12 @@
  * vierte gibt.
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { relative } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 import { PROJECT_ROOT } from './helpers/projectRoot'
-
-const SRC = resolve(PROJECT_ROOT, 'frontend/src')
-
-/** Alle `.vue`-Dateien unter `src/`, rekursiv. */
-function vueFiles(dir: string = SRC): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) return vueFiles(path)
-    return entry.name.endsWith('.vue') ? [path] : []
-  })
-}
+import { filesUnder, SRC } from './helpers/sourceTree'
 
 /**
  * Ein Pfeil-Pfad, wie ihn alle Fundstellen hatten: zwei Striche, die sich unten
@@ -35,16 +25,19 @@ function vueFiles(dir: string = SRC): string[] {
  * mit Komma oder Leerzeichen — nicht an einem festen String, sonst rutscht die
  * nächste Kopie mit anderer Formatierung durch.
  */
-const PFEIL_PFAD = /\bd="M\s*-?[\d.]+[\s,]+-?[\d.]+\s*[lL][\s,]*-?[\d.]+[\s,]+-?[\d.]+/
+const DRAWN_ARROW = /\bd="M\s*-?[\d.]+[\s,]+-?[\d.]+\s*[lL][\s,]*-?[\d.]+[\s,]+-?[\d.]+/
 
 describe('Pfeil für Aufklappbares', () => {
   it('wird nirgends selbst gezeichnet — UxCaret ist die eine Quelle', () => {
-    const funde = vueFiles()
-      .map((pfad) => ({ pfad: relative(PROJECT_ROOT, pfad), quelle: readFileSync(pfad, 'utf8') }))
-      .filter(({ quelle }) => PFEIL_PFAD.test(quelle))
-      .map(({ pfad }) => pfad)
+    const findings = filesUnder(SRC, ['.vue'])
+      .map((filePath) => ({
+        filePath: relative(PROJECT_ROOT, filePath),
+        source: readFileSync(filePath, 'utf8'),
+      }))
+      .filter(({ source }) => DRAWN_ARROW.test(source))
+      .map(({ filePath }) => filePath)
 
-    expect(funde, `Handgezeichneter Pfeil statt UxCaret in:\n${funde.join('\n')}`).toEqual([])
+    expect(findings, `Handgezeichneter Pfeil statt UxCaret in:\n${findings.join('\n')}`).toEqual([])
   })
 
   /*
@@ -52,8 +45,10 @@ describe('Pfeil für Aufklappbares', () => {
    * Flächen mehr gibt, wäre er stillschweigend nutzlos.
    */
   it('kommt in den aufklappbaren Flächen tatsächlich vor', () => {
-    const mitCaret = vueFiles().filter((pfad) => /<UxCaret\b/.test(readFileSync(pfad, 'utf8')))
+    const withCaret = filesUnder(SRC, ['.vue']).filter((filePath) =>
+      /<UxCaret\b/.test(readFileSync(filePath, 'utf8')),
+    )
 
-    expect(mitCaret.length).toBeGreaterThanOrEqual(3)
+    expect(withCaret.length).toBeGreaterThanOrEqual(3)
   })
 })

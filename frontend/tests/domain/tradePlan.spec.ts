@@ -14,56 +14,15 @@ import {
   targetSumState,
   type TradePlanResult,
 } from '@/domain/tradePlan'
-import type { Portfolio, Position, QuoteCacheEntry, QuoteMap, Settings } from '@/types/portfolio'
+import type { Portfolio, QuoteMap, Settings } from '@/types/portfolio'
+import {
+  makePosition,
+  makeQuote,
+  makeSettings,
+  PORTFOLIO_HEAD,
+} from '../helpers/portfolioFactories'
 
-function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
-  return {
-    identity: { kind: 'isin_only', isin: 'ISIN' },
-    isin: 'ISIN',
-    symbol: 'TEST.DE',
-    price: 100,
-    currency: 'EUR',
-    type: 'etf',
-    volatility: null,
-    name: null,
-    ter: null,
-    accumulating: null,
-    fetchedAt: '2026-01-01T00:00:00.000Z',
-    cached: true,
-    stale: false,
-    ...overrides,
-  }
-}
-
-function makePosition(overrides: Partial<Position> = {}): Position {
-  return {
-    id: 'p-1',
-    isin: 'ISIN',
-    symbol: 'TEST.DE',
-    displayName: 'Test',
-    group: 'stocks',
-    kind: 'etf',
-    units: 10,
-    targetPercent: 50,
-    enabled: true,
-    ...overrides,
-  }
-}
-
-const SETTINGS: Settings = {
-  activePortfolioId: 'p1',
-  totalRounding: 0,
-  bands: { lowerPercent: 10, upperPercent: 20 },
-  securityBuffer: { mode: 'absolute', value: 0 },
-  minTradeSize: { mode: 'absolute', value: 0 },
-  rebalancing: { trigger: 'bands', intervalMonths: 12 },
-  refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
-  links: [],
-  ui: {
-    notificationSeconds: 0,
-    historyPeriod: 'month',
-  },
-}
+const SETTINGS = makeSettings()
 
 /**
  * Ein Depot, bei dem sich alles im Kopf nachrechnen lässt:
@@ -72,10 +31,7 @@ const SETTINGS: Settings = {
  */
 function makeSetup() {
   const portfolio: Portfolio = {
-    id: 'p1',
-    name: 'Test',
-    createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...PORTFOLIO_HEAD,
     positions: [
       makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 25 }),
       makePosition({ id: 'b', isin: 'B', symbol: 'B.DE', units: 10, targetPercent: 75 }),
@@ -181,10 +137,7 @@ describe('computeTradePlan — Abweichung vom Ziel', () => {
    */
   function targetSetup() {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         // Ziel 10 % von 10.000 € = 1.000 €; Kurs 100 € → 10 Stück wären exakt
         makePosition({ id: 'target', isin: 'Z', symbol: 'Z.DE', units: 0, targetPercent: 10 }),
@@ -313,10 +266,7 @@ describe('computeTradePlan — Sicherheitspuffer', () => {
   /** Depot mit Cash und Geldmarkt, damit sich Entnahmen prüfen lassen. */
   function liquidSetup() {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'stock', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 50 }),
         makePosition({
@@ -412,10 +362,7 @@ describe('Ablauf aus der Praxis', () => {
    */
   it('Verkauf finanziert Zukäufe, Plan geht auf null auf', () => {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         // Übergewichtet: soll abgebaut werden
         makePosition({ id: 'large', isin: 'G', symbol: 'G.DE', units: 30, targetPercent: 40 }),
@@ -495,10 +442,7 @@ describe('computeTradePlan — Delta bis zum Ziel', () => {
 
   it('bietet ohne Kurs keinen Handel für die Position an', () => {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [makePosition({ id: 'a', isin: 'A', targetPercent: 100 })],
     }
     const result = computeRebalancing(portfolio, new Map(), SETTINGS)
@@ -554,10 +498,7 @@ describe('computeTradePlan — probeweise Ziele', () => {
     // werden. Der naheliegende Verkaufskandidat wäre FTSE (über Ziel), aber
     // das Geld soll aus dem Geldmarkt kommen — und der liegt exakt auf Ziel.
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'eqqq', isin: 'E', units: 6, targetPercent: 50 }),
         makePosition({ id: 'ftse', isin: 'F', units: 8, targetPercent: 20 }),
@@ -606,10 +547,7 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
   /** Aktie, Geldmarkt und Cash — der Fall „Nachkauf muss finanziert werden". */
   function liquiditySetup() {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'stock', isin: 'A', units: 10, targetPercent: 40 }),
         makePosition({
@@ -666,10 +604,7 @@ describe('computeTradePlan — Deckungsvorschlag', () => {
     // 1 Stück à 100 € gegen Geldmarkt-Kurs 100 € geht auf; bei 250 € Lücke
     // wären 2,5 Stück nötig — verkauft werden müssen 3.
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'stock', isin: 'A', units: 10, targetPercent: 50 }),
         makePosition({
@@ -747,10 +682,7 @@ describe('Mindest-Handelsvolumen in der Simulation', () => {
    * weil sich die Order nicht lohnt, die Simulation daneben „Below".
    */
   const portfolio: Portfolio = {
-    id: 'p1',
-    name: 'Test',
-    createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...PORTFOLIO_HEAD,
     positions: [
       makePosition({ id: 'small', isin: 'K', symbol: 'K.DE', units: 188, targetPercent: 2 }),
       makePosition({
@@ -849,10 +781,7 @@ describe('computeTradePlan — Bandkurse', () => {
   ] as const)('markiert nur eine tatsächlich verlassene Grenze: $name', ({ target, breach }) => {
     // A: 1.000 € von 2.000 € = 50 %. Bänder −10 % / +20 %: Ziel 52 % → 46,8–62,4 %.
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: target }),
         makePosition({
@@ -881,10 +810,7 @@ describe('computeTradePlan — Bandkurse', () => {
 
   it('zeigt für Cash und für Ziel 0 % keine Bandkurse', () => {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 10, targetPercent: 0 }),
         makePosition({

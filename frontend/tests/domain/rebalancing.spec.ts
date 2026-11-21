@@ -30,51 +30,15 @@ import {
   roundToPlace,
   totalValue,
 } from '@/domain/valuation'
-import type {
-  Bands,
-  Portfolio,
-  Position,
-  QuoteCacheEntry,
-  QuoteMap,
-  Settings,
-  Suggestion,
-} from '@/types/portfolio'
+import type { Bands, Portfolio, Position, QuoteMap, Settings, Suggestion } from '@/types/portfolio'
+import {
+  makePosition,
+  makeQuote,
+  makeSettings,
+  PORTFOLIO_HEAD,
+} from '../helpers/portfolioFactories'
 
 // ─── Helpers zum Erzeugen minimaler Test-Inputs ─────────────────────────────
-
-function makeQuote(overrides: Partial<QuoteCacheEntry> = {}): QuoteCacheEntry {
-  return {
-    identity: { kind: 'isin_only', isin: 'IE0000000000' },
-    isin: 'IE0000000000',
-    symbol: 'TEST.DE',
-    price: 100,
-    currency: 'EUR',
-    type: 'etf',
-    volatility: null,
-    name: null,
-    ter: null,
-    accumulating: null,
-    fetchedAt: '2026-01-01T00:00:00.000Z',
-    cached: true,
-    stale: false,
-    ...overrides,
-  }
-}
-
-function makePosition(overrides: Partial<Position> = {}): Position {
-  return {
-    id: 'p-test',
-    isin: 'IE0000000000',
-    symbol: 'TEST.DE',
-    displayName: 'Test',
-    group: 'stocks',
-    kind: 'etf',
-    units: 10,
-    targetPercent: 50,
-    enabled: true,
-    ...overrides,
-  }
-}
 
 // ─── quoteKey / quoteFor ────────────────────────────────────────────────────
 
@@ -315,10 +279,7 @@ describe('isNearBand', () => {
 describe('totalValue', () => {
   it('summiert Marktwerte aller aktiven Positionen und rundet auf', () => {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'a', isin: 'A', units: 10 }), // 10 * 100 = 1000
         makePosition({ id: 'b', isin: 'B', units: 5 }), //   5 * 100 = 500
@@ -333,10 +294,7 @@ describe('totalValue', () => {
 
   it('ignoriert disabled Positionen', () => {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [
         makePosition({ id: 'a', isin: 'A', units: 10, enabled: true }), // 1000
         makePosition({ id: 'b', isin: 'B', units: 5, enabled: false }), // ignored
@@ -351,10 +309,7 @@ describe('totalValue', () => {
 
   it('rundet mit place = -3 auf Tausender', () => {
     const portfolio: Portfolio = {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: [makePosition({ units: 12345, isin: 'A' })],
     }
     const quotes: QuoteMap = new Map([['A', makeQuote({ isin: 'A', price: 1 })]])
@@ -367,10 +322,7 @@ describe('totalValue', () => {
 describe('targetPercentSum', () => {
   function portfolioWith(targets: { percent: number; enabled?: boolean }[]): Portfolio {
     return {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: targets.map((entry, index) =>
         makePosition({
           id: `p-${index}`,
@@ -429,23 +381,10 @@ describe('Mindest-Handelsvolumen im Aggregat', () => {
    * 6 % unter dem Ziel und damit außerhalb eines 5-%-Bandes. Es fehlen aber
    * nur 120 € — genau der Fall, für den die Grenze gedacht ist.
    */
-  const settings: Settings = {
-    activePortfolioId: 'p1',
-    totalRounding: 0,
-    bands: { lowerPercent: 5, upperPercent: 5 },
-    securityBuffer: { mode: 'absolute', value: 0 },
-    minTradeSize: { mode: 'absolute', value: 0 },
-    rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
-    links: [],
-    ui: { notificationSeconds: 0, historyPeriod: 'month' },
-  }
+  const settings = makeSettings({ bands: { lowerPercent: 5, upperPercent: 5 } })
 
   const portfolio: Portfolio = {
-    id: 'p1',
-    name: 'Test',
-    createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...PORTFOLIO_HEAD,
     positions: [
       makePosition({
         id: 'klein',
@@ -527,23 +466,10 @@ describe('combineSuggestion', () => {
 
 describe('Auslöser im Aggregat', () => {
   /** Ziel 50 %, tatsächlich 49,5 % — innerhalb eines 5-%-Bandes. */
-  const base: Settings = {
-    activePortfolioId: 'p1',
-    totalRounding: 0,
-    bands: { lowerPercent: 5, upperPercent: 5 },
-    securityBuffer: { mode: 'absolute', value: 0 },
-    minTradeSize: { mode: 'absolute', value: 0 },
-    rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
-    links: [],
-    ui: { notificationSeconds: 0, historyPeriod: 'month' },
-  }
+  const base = makeSettings({ bands: { lowerPercent: 5, upperPercent: 5 } })
 
   const portfolio: Portfolio = {
-    id: 'p1',
-    name: 'Test',
-    createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...PORTFOLIO_HEAD,
     lastRebalancedAt: '2026-01-01T00:00:00.000Z',
     positions: [
       makePosition({ id: 'a', isin: 'A', symbol: 'A.DE', units: 99, targetPercent: 50 }),
@@ -619,26 +545,10 @@ describe('computeRebalancing', () => {
    * - Cash:                     100 €, Ziel 10 %
    *   → Gesamt = 1.300 € (ungerundet)
    */
-  const settings: Settings = {
-    activePortfolioId: 'p1',
-    totalRounding: 0,
-    bands: { lowerPercent: 10, upperPercent: 20 },
-    securityBuffer: { mode: 'absolute', value: 0 },
-    minTradeSize: { mode: 'absolute', value: 0 },
-    rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
-    links: [],
-    ui: {
-      notificationSeconds: 0,
-      historyPeriod: 'month',
-    },
-  }
+  const settings = makeSettings()
 
   const portfolio: Portfolio = {
-    id: 'p1',
-    name: 'Test',
-    createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...PORTFOLIO_HEAD,
     positions: [
       makePosition({
         id: 'a',
@@ -722,13 +632,18 @@ describe('computeRebalancing', () => {
     expect(stockGroup?.suggestion).toBe('sell')
   })
 
-  it('lässt disabled Positionen aus dem Total heraus', () => {
-    const disabled: Portfolio = {
+  /** Dasselbe Depot mit einer abgeschalteten Position. */
+  function withDisabled(id: string): Portfolio {
+    return {
       ...portfolio,
       positions: portfolio.positions.map((position) =>
-        position.id === 'b' ? { ...position, enabled: false } : position,
+        position.id === id ? { ...position, enabled: false } : position,
       ),
     }
+  }
+
+  it('lässt disabled Positionen aus dem Total heraus', () => {
+    const disabled = withDisabled('b')
     const result = computeRebalancing(disabled, quotes, settings)
     expect(result.total).toBe(1_100) // 1000 Stock + 100 Cash
   })
@@ -739,12 +654,7 @@ describe('computeRebalancing', () => {
    * sie ließ sich nie wieder einschalten. Sie muss sichtbar bleiben.
    */
   it('zeigt disabled Positionen weiterhin in den Rows an', () => {
-    const disabled: Portfolio = {
-      ...portfolio,
-      positions: portfolio.positions.map((position) =>
-        position.id === 'b' ? { ...position, enabled: false } : position,
-      ),
-    }
+    const disabled = withDisabled('b')
     const result = computeRebalancing(disabled, quotes, settings)
 
     expect(result.rows.map((row) => row.position.id)).toEqual(['a', 'b', 'c'])
@@ -757,12 +667,7 @@ describe('computeRebalancing', () => {
   })
 
   it('lässt bei disabled Positionen die Kennzahlen leer', () => {
-    const disabled: Portfolio = {
-      ...portfolio,
-      positions: portfolio.positions.map((position) =>
-        position.id === 'a' ? { ...position, enabled: false } : position,
-      ),
-    }
+    const disabled = withDisabled('a')
     const row = computeRebalancing(disabled, quotes, settings).rows.find(
       (entry) => entry.position.id === 'a',
     )
@@ -776,12 +681,7 @@ describe('computeRebalancing', () => {
   it('zeigt bei disabled Positionen weiterhin den Marktwert', () => {
     // Der Wert ist Information, kein Rechenbeitrag — er hilft beim
     // Wiedereinschalten.
-    const disabled: Portfolio = {
-      ...portfolio,
-      positions: portfolio.positions.map((position) =>
-        position.id === 'a' ? { ...position, enabled: false } : position,
-      ),
-    }
+    const disabled = withDisabled('a')
     const row = computeRebalancing(disabled, quotes, settings).rows.find(
       (entry) => entry.position.id === 'a',
     )
@@ -872,10 +772,7 @@ describe('computeLiquidity', () => {
    */
   function portfolioWith(entries: { group: Position['group']; units: number }[]): Portfolio {
     return {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: entries.map((entry, index) =>
         makePosition({
           id: `p-${index}`,
@@ -895,20 +792,7 @@ describe('computeLiquidity', () => {
   )
 
   function settingsWithBuffer(buffer: number, mode: 'percent' | 'absolute' = 'absolute'): Settings {
-    return {
-      activePortfolioId: 'p1',
-      totalRounding: 0,
-      bands: { lowerPercent: 10, upperPercent: 20 },
-      securityBuffer: { mode, value: buffer },
-      minTradeSize: { mode: 'absolute', value: 0 },
-      rebalancing: { trigger: 'bands', intervalMonths: 12 },
-      refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
-      links: [],
-      ui: {
-        notificationSeconds: 0,
-        historyPeriod: 'month',
-      },
-    }
+    return makeSettings({ securityBuffer: { mode, value: buffer } })
   }
 
   it('zählt Geldmarkt und Cash als verfügbare Liquidität', () => {
@@ -1011,10 +895,7 @@ describe('Fremdwährung', () => {
     entries: { isin: string; group?: Position['group']; enabled?: boolean }[],
   ): Portfolio {
     return {
-      id: 'p1',
-      name: 'Test',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
+      ...PORTFOLIO_HEAD,
       positions: entries.map((entry, index) =>
         makePosition({
           id: `p-${index}`,
@@ -1038,17 +919,7 @@ describe('Fremdwährung', () => {
     )
   }
 
-  const settings: Settings = {
-    activePortfolioId: 'p1',
-    totalRounding: 0,
-    bands: { lowerPercent: 10, upperPercent: 20 },
-    securityBuffer: { mode: 'absolute', value: 0 },
-    minTradeSize: { mode: 'absolute', value: 0 },
-    rebalancing: { trigger: 'bands', intervalMonths: 12 },
-    refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
-    links: [],
-    ui: { notificationSeconds: 0, historyPeriod: 'month' },
-  }
+  const settings = makeSettings()
 
   it('erkennt eine abweichende Notierungswährung', () => {
     expect(hasForeignCurrency(makeQuote({ currency: 'USD' }), 'EUR')).toBe(true)
