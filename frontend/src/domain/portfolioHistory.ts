@@ -84,8 +84,7 @@ export function buildBacktest(inputs: BacktestInput[]): HistoryPoint[] {
 
   const cursors = priced.map(() => -1)
   return dates.map((date) => {
-    // Summe erst über die Positionen, dann der feste Betrag — dieselbe
-    // Reihenfolge wie zuvor, damit die Werte bitgenau gleich bleiben.
+    // Summe erst über die Positionen, dann der feste Betrag.
     let sum = 0
     priced.forEach((input, index) => {
       let cursor = cursors[index]!
