@@ -17,6 +17,7 @@ import tempfile
 import time
 from argparse import Namespace
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from types import FrameType
 from urllib.error import HTTPError, URLError
@@ -109,44 +110,47 @@ def preflight(project_root: Path, stockinfo_root: Path, stockinfo_port: int) -> 
     return stockinfo_python
 
 
-def start_children(
-    project_root: Path,
-    script_path: Path,
-    stockinfo_root: Path,
-    stockinfo_python: Path,
-    data_dir: Path,
-    stockinfo_port: int,
-    children: dict[str, dict[str, object]],
-    demo_details: bool = False,
-    detail_fixtures: Path | None = None,
-    check_cancelled: Callable[[], None] | None = None,
-) -> None:
-    stockinfo_url = f"http://127.0.0.1:{stockinfo_port}"
+@dataclass(frozen=True)
+class StackPlan:
+    """Was ein Stackstart festlegt: Orte, Port und Testdaten-Optionen."""
+
+    project_root: Path
+    script_path: Path
+    stockinfo_root: Path
+    stockinfo_python: Path
+    data_dir: Path
+    stockinfo_port: int
+    demo_details: bool = False
+    detail_fixtures: Path | None = None
+
+
+def child_commands(plan: StackPlan) -> dict[str, list[str]]:
+    """Befehle der drei Kindprozesse; StockInfo läuft mit StockInfos Python."""
     stockinfo_command = [
-        str(stockinfo_python),
+        str(plan.stockinfo_python),
         "-B",
-        str(script_path),
+        str(plan.script_path),
         "--run",
         "--stockinfo-root",
-        str(stockinfo_root),
+        str(plan.stockinfo_root),
         "--port",
-        str(stockinfo_port),
+        str(plan.stockinfo_port),
         "--origin",
         STOCKINFO_CORS_ORIGIN,
     ]
-    if demo_details:
+    if plan.demo_details:
         stockinfo_command.append("--demo-details")
-    if detail_fixtures:
-        stockinfo_command.extend(("--detail-fixtures", str(detail_fixtures.resolve())))
+    if plan.detail_fixtures:
+        stockinfo_command.extend(("--detail-fixtures", str(plan.detail_fixtures.resolve())))
     node = shutil.which("node") or "node"
-    commands = {
+    return {
         "stockinfo": stockinfo_command,
         "api": [node, "--import", "tsx", "src/index.ts"],
         "frontend": [
             node,
-            str(project_root / "frontend/node_modules/vite/bin/vite.js"),
+            str(plan.project_root / "frontend/node_modules/vite/bin/vite.js"),
             "--config",
-            str(project_root / "frontend/vite.config.ts"),
+            str(plan.project_root / "frontend/vite.config.ts"),
             "--host",
             "127.0.0.1",
             "--port",
@@ -154,18 +158,30 @@ def start_children(
             "--strictPort",
         ],
     }
-    environments = {
+
+
+def child_environments(plan: StackPlan) -> dict[str, dict[str, str]]:
+    return {
         "stockinfo": {},
         "api": {
             "PORT": str(API_PORT),
-            "STOCKPORTFOLIO_DATA_DIR": str(data_dir / "accounts"),
+            "STOCKPORTFOLIO_DATA_DIR": str(plan.data_dir / "accounts"),
             "STOCKPORTFOLIO_PUBLIC_ORIGIN": FRONTEND_ORIGIN,
             "STOCKPORTFOLIO_SECURE_COOKIES": "false",
-            "STOCKINFO_API_URL": stockinfo_url,
+            "STOCKINFO_API_URL": f"http://127.0.0.1:{plan.stockinfo_port}",
         },
         "frontend": {},
     }
-    for name, command in commands.items():
+
+
+def start_children(
+    plan: StackPlan,
+    children: dict[str, dict[str, object]],
+    check_cancelled: Callable[[], None] | None = None,
+) -> None:
+    project_root, data_dir = plan.project_root, plan.data_dir
+    environments = child_environments(plan)
+    for name, command in child_commands(plan).items():
         log_path = data_dir / f"{name}.log"
         process: subprocess.Popen[bytes] | None = None
         try:
@@ -386,11 +402,13 @@ def require_owned_processes(state: dict[str, object]) -> None:
             raise RuntimeError(translate("The registered {name} process is not running").format(name=name))
 
 
-def run_stack_cli(args: Namespace, script_path: Path) -> int:
-    project_root = script_path.parent.parent
-    stockinfo_root = (args.stockinfo_root or project_root.parent / "StockInfo").resolve()
+def stack_state_path(project_root: Path) -> Path:
     state_suffix = hashlib.sha256(str(project_root).encode()).hexdigest()[:12]
-    state_path = Path(tempfile.gettempdir()) / f"stockportfolio-t63-stack-{state_suffix}.json"
+    return Path(tempfile.gettempdir()) / f"stockportfolio-t63-stack-{state_suffix}.json"
+
+
+def read_stack_state(state_path: Path, project_root: Path) -> dict[str, object] | None:
+    """Registrierter Stack dieses Projekts; eine unlesbare Datei bleibt liegen."""
     try:
         state = json.loads(state_path.read_text()) if state_path.exists() else None
         if state is not None and not isinstance(state, dict):
@@ -403,31 +421,130 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
         ) from error
     if state and state.get("project_root") != str(project_root):
         raise RuntimeError(translate("The state file belongs to another project: {path}").format(path=state_path))
+    return state
 
-    if args.status:
-        if not state:
-            print_message(translate("No local test stack is registered"), "WARNING")
-            return 1
-        describe_stack(state)
+
+def report_stack_status(state: dict[str, object] | None) -> int:
+    if not state:
+        print_message(translate("No local test stack is registered"), "WARNING")
+        return 1
+    describe_stack(state)
+    try:
+        require_owned_processes(state)
+        check_stack(int(state["port"]), bool(state["demo_accounts"]))
+    except (RuntimeError, URLError, TimeoutError, ValueError) as error:
+        print_message(translate("Stack is not ready: {error}").format(error=error), "DANGER", sys.stderr)
+        return 1
+    print_message(translate("All local endpoints passed"), "SUCCESS")
+    return 0
+
+
+def stop_stack(state: dict[str, object] | None, state_path: Path) -> int:
+    if not state:
+        print_message(translate("No local test stack is registered"), "WARNING")
+        return 0
+    stop_children(dict(state["children"]))
+    remove_data(Path(state["data_dir"]))
+    state_path.unlink()
+    print_message(translate("Own local test stack stopped; temporary account data removed"), "SUCCESS")
+    return 0
+
+
+class Cancellation:
+    """Merkt sich SIGTERM während des Starts; beendet wird an der nächsten Prüfstelle."""
+
+    def __init__(self) -> None:
+        self.requested = False
+
+    def request(self, _signal_number: int, _frame: FrameType | None) -> None:
+        self.requested = True
+
+    def check(self) -> None:
+        if self.requested:
+            raise SystemExit(143)
+
+
+def bring_up_stack(
+    plan: StackPlan,
+    args: Namespace,
+    children: dict[str, dict[str, object]],
+    owned_state: OwnedStateFile,
+    check_cancelled: Callable[[], None],
+) -> None:
+    """Startet die Kindprozesse, vermerkt sie und wartet, bis alle Endpunkte stimmen."""
+    start_children(plan, children, check_cancelled)
+    check_cancelled()
+    state = {
+        "project_root": str(plan.project_root),
+        "port": plan.stockinfo_port,
+        "data_dir": str(plan.data_dir),
+        "demo_accounts": args.demo_accounts,
+        "children": children,
+    }
+    owned_state.publish(state)
+    check_cancelled()
+    wait_ready(plan.stockinfo_port, check_cancelled=check_cancelled)
+    if args.demo_accounts:
+        seed_accounts(plan.data_dir)
+        check_cancelled()
+        wait_ready(plan.stockinfo_port, demo_accounts=True, check_cancelled=check_cancelled)
+    require_owned_processes(state)
+    check_cancelled()
+    describe_stack(state)
+    print_message(translate("All local endpoints passed"), "SUCCESS")
+    check_cancelled()
+
+
+def start_stack(args: Namespace, script_path: Path, stockinfo_root: Path, state_path: Path) -> int:
+    """Startet den Stack; bei Abbruch oder Fehler räumt er eigene Prozesse und Daten weg."""
+    project_root = script_path.parent.parent
+    stockinfo_python = preflight(project_root, stockinfo_root, args.port)
+    data_dir: Path | None = None
+    children: dict[str, dict[str, object]] = {}
+    owned_state = OwnedStateFile(state_path)
+    cancellation = Cancellation()
+    previous_sigterm = signal.getsignal(signal.SIGTERM)
+    try:
+        signal.signal(signal.SIGTERM, cancellation.request)
+        data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t63-"))
+        cancellation.check()
+        plan = StackPlan(
+            project_root,
+            script_path,
+            stockinfo_root,
+            stockinfo_python,
+            data_dir,
+            args.port,
+            args.demo_details,
+            args.detail_fixtures,
+        )
+        bring_up_stack(plan, args, children, owned_state, cancellation.check)
+        return 0
+    except (Exception, KeyboardInterrupt, SystemExit) as error:
+        stop_children(children)
         try:
-            require_owned_processes(state)
-            check_stack(int(state["port"]), bool(state["demo_accounts"]))
-        except (RuntimeError, URLError, TimeoutError, ValueError) as error:
-            print_message(translate("Stack is not ready: {error}").format(error=error), "DANGER", sys.stderr)
-            return 1
-        print_message(translate("All local endpoints passed"), "SUCCESS")
-        return 0
+            owned_state.remove()
+        finally:
+            if data_dir is not None:
+                remove_data(data_dir)
+        if isinstance(error, SystemExit) and cancellation.requested:
+            print_message(
+                translate("Local test stack start cancelled; own processes and data removed"), "WARNING", sys.stderr
+            )
+        raise
+    finally:
+        signal.signal(signal.SIGTERM, previous_sigterm)
 
+
+def run_stack_cli(args: Namespace, script_path: Path) -> int:
+    project_root = script_path.parent.parent
+    stockinfo_root = (args.stockinfo_root or project_root.parent / "StockInfo").resolve()
+    state_path = stack_state_path(project_root)
+    state = read_stack_state(state_path, project_root)
+    if args.status:
+        return report_stack_status(state)
     if args.stop:
-        if not state:
-            print_message(translate("No local test stack is registered"), "WARNING")
-            return 0
-        stop_children(dict(state["children"]))
-        remove_data(Path(state["data_dir"]))
-        state_path.unlink()
-        print_message(translate("Own local test stack stopped; temporary account data removed"), "SUCCESS")
-        return 0
-
+        return stop_stack(state, state_path)
     if state:
         raise RuntimeError(
             translate("A local test stack is already registered; use --stack --stop before starting again")
@@ -438,70 +555,4 @@ def run_stack_cli(args: Namespace, script_path: Path) -> int:
                 origin=FRONTEND_ORIGIN,
             )
         )
-    stockinfo_python = preflight(project_root, stockinfo_root, args.port)
-    data_dir: Path | None = None
-    children: dict[str, dict[str, object]] = {}
-    owned_state = OwnedStateFile(state_path)
-
-    termination_requested = False
-
-    def request_termination(_signal_number: int, _frame: FrameType | None) -> None:
-        nonlocal termination_requested
-        termination_requested = True
-
-    def check_cancelled() -> None:
-        if termination_requested:
-            raise SystemExit(143)
-
-    previous_sigterm = signal.getsignal(signal.SIGTERM)
-    try:
-        signal.signal(signal.SIGTERM, request_termination)
-        data_dir = Path(tempfile.mkdtemp(prefix="stockportfolio-t63-"))
-        check_cancelled()
-        start_children(
-            project_root,
-            script_path,
-            stockinfo_root,
-            stockinfo_python,
-            data_dir,
-            args.port,
-            children,
-            args.demo_details,
-            args.detail_fixtures,
-            check_cancelled,
-        )
-        check_cancelled()
-        state = {
-            "project_root": str(project_root),
-            "port": args.port,
-            "data_dir": str(data_dir),
-            "demo_accounts": args.demo_accounts,
-            "children": children,
-        }
-        owned_state.publish(state)
-        check_cancelled()
-        wait_ready(args.port, check_cancelled=check_cancelled)
-        if args.demo_accounts:
-            seed_accounts(data_dir)
-            check_cancelled()
-            wait_ready(args.port, demo_accounts=True, check_cancelled=check_cancelled)
-        require_owned_processes(state)
-        check_cancelled()
-        describe_stack(state)
-        print_message(translate("All local endpoints passed"), "SUCCESS")
-        check_cancelled()
-        return 0
-    except (Exception, KeyboardInterrupt, SystemExit) as error:
-        stop_children(children)
-        try:
-            owned_state.remove()
-        finally:
-            if data_dir is not None:
-                remove_data(data_dir)
-        if isinstance(error, SystemExit) and termination_requested:
-            print_message(
-                translate("Local test stack start cancelled; own processes and data removed"), "WARNING", sys.stderr
-            )
-        raise
-    finally:
-        signal.signal(signal.SIGTERM, previous_sigterm)
+    return start_stack(args, script_path, stockinfo_root, state_path)
