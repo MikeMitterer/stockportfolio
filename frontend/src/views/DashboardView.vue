@@ -425,10 +425,6 @@ onMounted(async () => {
     justify-content: center;
   }
 
-  /*
-   * Die Assetklassen-Balken bleiben dem Desktop vorbehalten: Auf dem Telefon
-   * stehen dieselben Zahlen ohnehin über jeder Gruppe in der Kartenliste.
-   */
   &__value {
     padding-bottom: var(--space-2);
     border-top: 1px solid token(--border-default);

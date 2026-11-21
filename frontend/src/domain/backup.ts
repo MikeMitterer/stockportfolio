@@ -224,21 +224,21 @@ function parseAllowlist(value: unknown): Record<string, boolean> {
 function parsePortfolio(value: unknown): Portfolio | BackupError {
   if (!isRecord(value)) return { key: 'noPortfolio' }
 
-  const headerError = checkPortfolioHeader(value)
-  if (headerError) return headerError
+  const header = parsePortfolioHeader(value)
+  if ('key' in header) return header
 
   const amountSettings = parseAmountSettings(value.amountSettings)
   if (amountSettings && 'key' in amountSettings) return amountSettings
 
-  const positions = parsePositions(value.positions as unknown[])
+  const positions = parsePositions(header.positions)
   if (!Array.isArray(positions)) return positions
 
   const now = new Date().toISOString()
   return {
-    id: value.id as string,
-    name: value.name as string,
+    id: header.id,
+    name: header.name,
     ...(value.assetGroupVersion === 2 ? { assetGroupVersion: 2 as const } : {}),
-    baseCurrency: (value.baseCurrency as string | undefined) ?? 'EUR',
+    baseCurrency: header.baseCurrency,
     ...(amountSettings ? { amountSettings } : {}),
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : now,
@@ -249,19 +249,27 @@ function parsePortfolio(value: unknown): Portfolio | BackupError {
   }
 }
 
+/** Pflichtfelder des Depots, nach der Prüfung mit ihrem Typ. */
+interface PortfolioHeader {
+  id: string
+  name: string
+  positions: unknown[]
+  baseCurrency: string
+}
+
 /**
  * Prüft die Pflichtfelder des Depots: Kennung, Name, Positionsliste und eine
- * angegebene Basiswährung.
+ * angegebene Basiswährung. Ohne Angabe gilt EUR, wie bei älteren Backups.
  *
- * @returns Grund der Ablehnung, oder `null` wenn alle stimmen.
+ * @returns Die geprüften Felder mit ihrem Typ, oder den Grund der Ablehnung.
  */
-function checkPortfolioHeader(value: Record<string, unknown>): BackupError | null {
+function parsePortfolioHeader(value: Record<string, unknown>): PortfolioHeader | BackupError {
   if (typeof value.id !== 'string' || value.id === '') return { key: 'noPortfolioId' }
   if (typeof value.name !== 'string') return { key: 'noPortfolioName' }
   if (!Array.isArray(value.positions)) return { key: 'noPositions' }
-  if (value.baseCurrency !== undefined && !isCurrency(value.baseCurrency))
-    return { key: 'invalidCurrency' }
-  return null
+  const baseCurrency = value.baseCurrency === undefined ? 'EUR' : value.baseCurrency
+  if (!isCurrency(baseCurrency)) return { key: 'invalidCurrency' }
+  return { id: value.id, name: value.name, positions: value.positions, baseCurrency }
 }
 
 /**

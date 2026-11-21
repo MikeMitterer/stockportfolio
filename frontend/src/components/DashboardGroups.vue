@@ -80,6 +80,10 @@ watch(groupsCollapsed, (collapsed) => {
 
 <style scoped lang="scss">
 .dashboard {
+  /*
+   * Die Assetklassen-Balken bleiben dem Desktop vorbehalten: Auf dem Telefon
+   * stehen dieselben Zahlen ohnehin über jeder Gruppe in der Kartenliste.
+   */
   &__groups {
     display: none;
     border-top: 1px solid token(--border-default);

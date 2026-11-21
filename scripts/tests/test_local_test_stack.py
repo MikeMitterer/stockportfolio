@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import os
 import socket
 import subprocess
@@ -13,7 +12,14 @@ from pathlib import Path
 import pytest
 
 import local_test_stack
-from local_test_stack import process_identity, remove_data, request, require_free_port, stop_children
+from local_test_stack import (
+    process_identity,
+    remove_data,
+    request,
+    require_free_port,
+    stack_state_path,
+    stop_children,
+)
 
 SCRIPTS = Path(__file__).resolve().parent.parent
 SERVER_SCRIPT = SCRIPTS / "stockinfo-test-server.py"
@@ -113,12 +119,6 @@ def run_status(temp_dir: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
-def stack_state_path(temp_dir: Path) -> Path:
-    project_root = SERVER_SCRIPT.parent.parent
-    suffix = hashlib.sha256(str(project_root).encode()).hexdigest()[:12]
-    return temp_dir / f"stockportfolio-t63-stack-{suffix}.json"
-
-
 def test_status_without_registered_stack_exits_one(tmp_path: Path) -> None:
     """Status ohne registrierten Stack endet mit 1 und legt nichts an."""
     result = run_status(tmp_path)
@@ -127,9 +127,11 @@ def test_status_without_registered_stack_exits_one(tmp_path: Path) -> None:
     assert list(tmp_path.iterdir()) == []
 
 
-def test_unreadable_state_file_is_reported_and_kept(tmp_path: Path) -> None:
+def test_unreadable_state_file_is_reported_and_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Eine unlesbare Zustandsdatei wird gemeldet und nicht entfernt."""
-    state_path = stack_state_path(tmp_path)
+    # Derselbe Temp-Ordner wie für den Statusaufruf unten (TMPDIR).
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path))
+    state_path = stack_state_path(SERVER_SCRIPT.parent.parent)
     state_path.write_text("{kein json")
 
     result = run_status(tmp_path)

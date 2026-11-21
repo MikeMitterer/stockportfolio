@@ -56,6 +56,26 @@ def test_keeps_foreign_file_with_same_name(tmp_path: Path) -> None:
     assert json.loads(state_path.read_text()) == {"pid": 2}
 
 
+def test_keeps_foreign_state_in_reused_inode(tmp_path: Path) -> None:
+    """Bekommt eine fremde Datei dieselbe Inode, bleibt sie stehen.
+
+    Linux (ext4) vergibt die Inode einer gelöschten Datei sofort neu. Eine
+    fremde Zustandsdatei gleichen Namens kann so dieselbe Inode tragen wie die
+    eigene; die Inode allein beweist dann kein Eigentum. Nachgestellt durch
+    Überschreiben an Ort und Stelle, das die Inode behält.
+    """
+    state_path = tmp_path / "stack.json"
+    owned = OwnedStateFile(state_path)
+    owned.publish({"pid": 1})
+    own_inode = state_path.stat().st_ino
+    state_path.write_text('{"pid": 2}')
+    assert state_path.stat().st_ino == own_inode
+
+    owned.remove()
+
+    assert json.loads(state_path.read_text()) == {"pid": 2}
+
+
 def test_removes_nothing_without_own_publish(tmp_path: Path) -> None:
     """Entfernt ohne eigene Veröffentlichung nichts."""
     state_path = tmp_path / "stack.json"
