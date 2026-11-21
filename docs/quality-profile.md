@@ -57,8 +57,8 @@ hier zur Schranke oder ihr Grund steht unter [Bewusste Ausnahmen](#bewusste-ausn
   durchgesetzt von `frontend/tests/networkAccess.spec.ts`. StockInfo erreicht
   der Browser nur über die Weiterleitung `api/src/stockinfo/proxy.ts` mit
   Freigabeliste.
-- **Frontend-Aufbau,** so wie er ist (Importsuche im Qualitätslauf
-  2026-11-20 über `frontend/src`):
+- **Frontend-Aufbau,** so wie er ist (Importsuche in den Qualitätsläufen
+  2026-11-20 und 2026-11-21 über `frontend/src`):
   - `views/`, `components/` und `composables/` lesen Zustand aus `stores/`.
     Den StockInfo-Client holen sie über `inject(STOCK_INFO_CLIENT)`, den
     `auth/AuthRoot.vue` bereitstellt; Typen und Fehlerformen importieren sie
@@ -76,7 +76,7 @@ hier zur Schranke oder ihr Grund steht unter [Bewusste Ausnahmen](#bewusste-ausn
     oder Komponenten (0 Treffer für `from '@/(views|components)/'` unter
     `stores/`; dieselbe Suche findet unter `views/` 3 Dateien).
   - `domain/` rechnet ohne Vue und Pinia (0 Treffer für `from '(vue|pinia)'`,
-    unter `stores/` 16) und kennt aus `api/` nur Typen (`historyPeriod.ts`).
+    unter `stores/` 17) und kennt aus `api/` nur Typen (`historyPeriod.ts`).
   - `router/` ordnet Ansichten zu, `types/` hält gemeinsame Typen, `db/` den
     IndexedDB-Altbestand und den Kurs-Zwischenspeicher.
   - Durchgesetzt ist davon nur der Netzzugriff (`networkAccess.spec.ts`); der
@@ -184,5 +184,10 @@ Was zu einer Änderung gehört und welches Dokument wofür steht, regelt
 - **Gleiche Depots in mehreren Backup-Fixtures** unter
   `frontend/tests/fixtures/browser/`: Jede Datei ist ein vollständiges Backup
   für genau eine Browserprüfung und soll ohne die anderen lesbar bleiben.
+- **`mmit-clitheme` ohne pip-audit-Prüfung:** Das Paket kommt per Git aus
+  Mikes eigenem Repository (`requirements-dev.txt`) und steht nicht auf PyPI;
+  `make audit` meldet es deshalb als nicht prüfbar. Es gestaltet nur die
+  Ausgabe der Teststack-Skripte in der Entwicklungs-`.venv` und gehört nicht
+  ins Image.
 
 [↑ Übersicht](#übersicht)
