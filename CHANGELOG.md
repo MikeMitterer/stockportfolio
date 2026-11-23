@@ -2,6 +2,24 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.8.1+261123.1208.06237 — 2026-11-23
+
+make push wieder lauffähig: Python-Mindestversion nur aus pyproject.toml (3.14, wie StockInfo), ProjectTools wählt sein Python selbst; Docker-Build ohne npm-Hinweis; Verweise auf StockInfo-Vertrag 5.0.0
+
+### Fixes
+
+- Python 3.14 für .venv und ProjectTools, npm-Hinweis im Build aus (`657c296`)
+- ruff prüft weiter gegen py311 wegen des StockInfo-Kindprozesses (`6112ef3`)
+- eine Python-Version durchgehend, ruff gegen py314 (`8ef9a45`)
+- Python-Mindestversion nur in pyproject.toml (`40c38d5`)
+- .venv mit ins Leere zeigendem Interpreter neu anlegen (`aa9b9bf`)
+
+### Documentation
+
+- Vertragsverweise auf Core 5.0.0 nachziehen (`e13cb6d`)
+- Vertragsänderungen den richtigen Core-Versionen zuordnen (`80d05db`)
+- Vertragsstände den StockInfo-Releases zuordnen (`00c1b11`)
+
 ## v0.8.0+261121.1021.9972d — 2026-11-21
 
 Handelstabelle mit Bandkursen und Zielsumme, Rebalancing-Plan übersteht Depot- und Seitenwechsel; StockInfo-Fehler übersetzt; Sitzung gleitet mit täglichem Token-Tausch; Abhängigkeiten ohne bekannte Lücken; make check, security und quality, Code nach fachlichen Teilen aufgeteilt
