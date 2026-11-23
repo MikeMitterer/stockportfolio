@@ -143,7 +143,7 @@ def read_owned_state(
         state = json.loads(state_path.read_text())
         if not isinstance(state, dict):
             raise ValueError("State file must contain an object")
-    except (OSError, UnicodeError, ValueError):
+    except OSError, UnicodeError, ValueError:
         parser.error(
             translate("The state file is unreadable: {path}. Check the server before removing it.").format(
                 path=state_path,

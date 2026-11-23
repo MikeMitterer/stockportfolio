@@ -47,22 +47,25 @@ BASHLIB_FROM_TOOLS := $(if $(BASH_LIBS),yes)
 endif
 export BASH_LIBS
 
-# Python für die .venv des Teststacks unter scripts/; von außen überschreibbar, darum in Rezepten
-# nur als "$${PYTHON_BOOTSTRAP}". Derselbe Name wählt den Interpreter der ProjectTools-Befehle aus
-# .tools/ (etwa dockerhub-readme in make push); beide verlangen Python 3.14 oder neuer.
-PYTHON_BOOTSTRAP ?= python3.14
-export PYTHON_BOOTSTRAP
-# Mindestversion für die .venv; ProjectTools verlangt dieselbe (requires-python).
-PYTHON_CHECK := import sys; sys.exit(0 if sys.version_info >= (3, 14) else "Python 3.14 oder neuer erforderlich")
+# Mindestversion von Python, gelesen aus `requires-python = ">=X.Y"` in pyproject.toml, der
+# einzigen Quelle. Leer, wenn die Zeile anders aussieht; setup bricht dann mit Meldung ab.
+PYTHON_MIN := $(shell sed -n 's/^requires-python = ">=\([0-9][0-9.]*\)"$$/\1/p' pyproject.toml)
+# Interpreter, mit dem `make setup` die .venv anlegt: PYTHON_BOOTSTRAP aus der Umgebung, sonst
+# python$(PYTHON_MIN). Als Wert von außen liest ihn die Shell im Rezept, nicht Make. Das Makefile
+# setzt und exportiert PYTHON_BOOTSTRAP nicht: ProjectTools liest denselben Namen als Vorgabe
+# für seine Befehle aus .tools/ und wählt ohne ihn selbst ein passendes Python.
+BOOTSTRAP = "$${PYTHON_BOOTSTRAP:-python$(PYTHON_MIN)}"
+# Python-Ausdruck für `-c`: Exit 0 ab PYTHON_MIN, sonst Abbruch mit der gefundenen Version.
+PYTHON_MIN_CHECK = import sys; sys.exit(0 if sys.version_info >= tuple(map(int, "$(PYTHON_MIN)".split("."))) else "Python $(PYTHON_MIN) oder neuer erforderlich, gefunden " + sys.version.split()[0])
 VENV := .venv
 PYTHON := $(VENV)/bin/python
 
 # Was setup herstellt und require-setup prüft: npm-Pakete beider Teilprojekte, die .venv und
 # die Werkzeuge in .tools/. Jeder Stempel entsteht neu, sobald seine Quelldatei neuer ist.
 TOOLS_STAMP := $(TOOLS_DIR)/.installed
-# Der Stempel der .venv nennt die Mindestversion: Eine mit älterem Python eingerichtete .venv
-# hat ihn nicht, require-setup verlangt dann make setup, und setup legt sie neu an.
-VENV_STAMP := $(VENV)/.installed-py314
+# Der Stempel der .venv trägt die Mindestversion im Namen: Steigt sie, fehlt er, require-setup
+# verlangt make setup, und setup ersetzt eine .venv mit älterem Python.
+VENV_STAMP := $(VENV)/.installed-python$(PYTHON_MIN)
 SETUP_STAMPS := frontend/node_modules/.installed api/node_modules/.installed \
 	$(VENV_STAMP) $(TOOLS_STAMP)
 
@@ -89,7 +92,7 @@ info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
 	@echo
 	@printMakeValue WORKSPACE         "$${WORKSPACE}"
 	@printMakeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
-	@printMakeValue PYTHON_BOOTSTRAP  "$${PYTHON_BOOTSTRAP}"
+	@printMakeValue PYTHON_BOOTSTRAP  "$${PYTHON_BOOTSTRAP:-python$(PYTHON_MIN)}"
 	@printMakeValue STOCKINFO_API_URL "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
 	@printMakeValue PLATFORM          "$${PLATFORM}  (build: x86 | arm)"
 	@printMakeValue TARGET            "$${TARGET:-dockerhub}  (push: dockerhub | ghcr | ecr)"
@@ -160,16 +163,19 @@ setup: ## Bereit zum Entwickeln: npm-Pakete, .venv, Werkzeuge in .tools/
 	@npm ci --prefix "$*" --no-audit --no-fund
 	@touch "$@"
 
-$(PYTHON):
-	@"$${PYTHON_BOOTSTRAP}" -c '$(PYTHON_CHECK)'
-	@"$${PYTHON_BOOTSTRAP}" -m venv $(VENV)
-
+# Eine .venv mit älterem Python wird mit --clear neu angelegt; sie ist ein Erzeugnis von setup.
 # Über devtools exec: Mit rechnerlokaler Zuordnung kommen Git-Abhängigkeiten (CLITheme) aus den
-# lokalen Repos, auch mit ungepushtem Tag.
-$(VENV_STAMP): requirements-dev.txt | $(PYTHON)
-	@$(PYTHON) -c '$(PYTHON_CHECK)' 2>/dev/null || { \
-		echo "  .venv mit älterem Python wird mit $${PYTHON_BOOTSTRAP} neu angelegt"; \
-		"$${PYTHON_BOOTSTRAP}" -c '$(PYTHON_CHECK)' && "$${PYTHON_BOOTSTRAP}" -m venv --clear $(VENV); }
+# lokalen Repos, auch mit ungepushtem Tag. Ältere Stempel (andere Mindestversion) fallen weg.
+$(VENV_STAMP): requirements-dev.txt pyproject.toml
+	@test -n '$(PYTHON_MIN)' || { echo '  ✗ requires-python in pyproject.toml ist nicht als ">=X.Y" lesbar' >&2; exit 1; }
+	@command -v $(BOOTSTRAP) >/dev/null || { echo "  ✗ "$(BOOTSTRAP)" nicht gefunden: Python $(PYTHON_MIN) installieren oder PYTHON_BOOTSTRAP=<Interpreter> make setup" >&2; exit 1; }
+	@$(BOOTSTRAP) -c '$(PYTHON_MIN_CHECK)' || { echo '  ✗ PYTHON_BOOTSTRAP ist zu alt: PYTHON_BOOTSTRAP=python$(PYTHON_MIN) make setup' >&2; exit 1; }
+	@# Ein Zweig für fehlende .venv, ins Leere zeigenden Interpreter-Link und zu altes Python.
+	@if ! $(PYTHON) -c '$(PYTHON_MIN_CHECK)' 2>/dev/null; then \
+		test -e $(VENV) && echo '  ⚠ .venv ohne lauffähiges Python ab $(PYTHON_MIN) wird neu angelegt'; \
+		$(BOOTSTRAP) -m venv --clear $(VENV); \
+	fi
+	@rm -f $(VENV)/.installed $(VENV)/.installed-py*
 	@$(REQUIRE_STARTER); devtools exec -- $(PYTHON) -m pip install -q --disable-pip-version-check -r requirements-dev.txt
 	@touch "$@"
 

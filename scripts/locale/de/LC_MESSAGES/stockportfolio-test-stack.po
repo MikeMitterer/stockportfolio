@@ -150,6 +150,9 @@ msgstr "ps kann diesen Prozess nicht identifizieren"
 msgid "Missing StockInfo Python environment: {path}"
 msgstr "StockInfos Python-Umgebung fehlt: {path}"
 
+msgid "StockInfo Python environment needs Python {version} or newer: {path}; run make setup in StockInfo"
+msgstr "StockInfos Python-Umgebung braucht Python {version} oder neuer: {path}; in StockInfo make setup ausführen"
+
 msgid "Missing {path}; install the declared npm packages first"
 msgstr "{path} fehlt; installiere zuerst die deklarierten npm-Pakete"
 

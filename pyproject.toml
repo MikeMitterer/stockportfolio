@@ -1,0 +1,8 @@
+# Einzige Quelle der Python-Mindestversion von StockPortfolio. Die App selbst braucht kein
+# Python; die .venv dient den Entwicklungswerkzeugen (Teststack unter scripts/). Das Makefile
+# (PYTHON_MIN), ruff (Zielversion) und scripts/local_test_stack.py (Prüfung von StockInfos
+# .venv) lesen requires-python von hier. Kein installierbares Paket.
+[project]
+name = "stockportfolio-dev"
+dynamic = ["version"]
+requires-python = ">=3.14"

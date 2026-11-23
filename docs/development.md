@@ -27,8 +27,8 @@ beschreibt der [Docker-Guide](../docker/README.md).
   Freigaben in `allowScripts` nicht: `npm install -g npm@11`
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
-- Python 3.14+ für den Teststack und die Befehle aus `.tools/`; ruff, bandit,
-  pip-audit und pytest installiert
+- Python 3.14+ für den Teststack und die Befehle aus `.tools/` (Quelle:
+  `requires-python` in `pyproject.toml`); ruff, bandit, pip-audit und pytest installiert
   `make setup` gepinnt in die `.venv`
 - shellcheck und gitleaks für `make lint` und `make security`
   (macOS: `brew install shellcheck gitleaks`)
@@ -50,10 +50,18 @@ make dev-up                # Vite auf :5175, Konto-API auf :8080
 
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
 npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
-3.14+ an (`PYTHON_BOOTSTRAP` wählt den Interpreter, falls `python3.14`
-fehlt; derselbe Wert gilt für die Befehle aus `.tools/`), installiert dort die gepinnten Pakete aus `requirements-dev.txt` und
+3.14+ an, installiert dort die gepinnten Pakete aus `requirements-dev.txt`
+und
 bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
-Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
+Version aus `.dev-tools.conf.sh` nach `.tools/`.
+
+**Python-Mindestversion:** Sie steht nur in `requires-python` in
+`pyproject.toml`. Das Makefile, ruff und die Prüfung von StockInfos `.venv`
+im Teststack lesen sie dort; StockInfo verlangt dieselbe. `make setup` nimmt
+`python<Mindestversion>`, `PYTHON_BOOTSTRAP` überschreibt den Interpreter von
+außen. Derselbe Name wählt auch das Python der Befehle aus `.tools/`
+(ProjectTools); ein gesetzter Wert muss deshalb die Mindestversion erfüllen.
+Das Makefile selbst setzt die Variable nicht. Jeder Schritt läuft nur,
 wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
 zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Prüfziele wie
 `make test` richten nichts selbst ein: Fehlt etwas oder ist es veraltet,
@@ -245,7 +253,11 @@ Testdaten beenden oder entfernen, unlesbare Zustandsdatei, nur http(s) in
 `request()`. Sie laufen in `make test`, ohne Netz und ohne StockInfo, API oder
 Vite; einzeln mit `.venv/bin/python -m pytest scripts/tests`.
 
-Der StockInfo-Kindprozess nutzt `../StockInfo/.venv/bin/python`. Nur den
+Der StockInfo-Kindprozess nutzt `../StockInfo/.venv/bin/python`. Diese
+`.venv` braucht dieselbe Mindestversion wie die eigene, weil der Kindprozess
+Skripte aus `scripts/` lädt. Der Stackstart weist eine ältere ab und nennt
+`make setup` in StockInfo; der direkte Start ohne Stack setzt sie ebenso
+voraus, bricht aber ohne Vorprüfung mit einem SyntaxError ab. Nur den
 StockInfo-Testserver ohne Stack startest du direkt mit StockInfos Python:
 
 ```bash
