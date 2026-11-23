@@ -69,8 +69,24 @@ VENV_STAMP := $(VENV)/.installed-python$(PYTHON_MIN)
 SETUP_STAMPS := frontend/node_modules/.installed api/node_modules/.installed \
 	$(VENV_STAMP) $(TOOLS_STAMP)
 
-# Ports des Dev-Stacks aus derselben Config wie dev-ports; nur Ziffern, darum als Make-Wert.
-DEV_PORTS := $(shell source .dev-ports.conf.sh && echo "$${PORTS[@]}")
+# Ports des Dev-Stacks nennt dev-ports (--port-of NAME) aus ProjectTools; sie stehen dort, wo sie
+# beim Start wirken: die Konto-API als PORT=… in der Zeile `api` von Procfile.dev, das Frontend
+# als server.port in frontend/vite.config.ts. Das Makefile liest keine der Dateien selbst. Ohne
+# dev-ports (vor make setup) nennen info und hints statt der Adresse NO_DEV_PORTS; dev-up und
+# dev-down brechen dann schon in require-tools ab. Nur Ziffern werden übernommen. $(shell) sieht
+# das exportierte PATH erst ab Make 4.4, darum TOOL_ENV; ohne BASH_ENV, das help, info und hints
+# setzen. Ermittelt erst beim ersten Gebrauch und dann gemerkt (eval mit :=).
+TOOL_ENV     = unset BASH_ENV; PATH=$(WORKSPACE_SQ)/$(TOOLS_DIR)/bin:"$$PATH"
+NO_DEV_PORTS := ? (dev-ports fehlt: make setup)
+dev_port     = $(shell $(TOOL_ENV); dev-ports --port-of $(1) 2>/dev/null | grep -xE '[0-9]+')
+# Adresse eines Dienstes, ohne bekannten Port NO_DEV_PORTS.
+dev_url      = $(if $($(1)),http://localhost:$($(1)),$(NO_DEV_PORTS))
+# override: Ein gleichnamiges Make-Argument setzt sie nicht, sonst stünde ein fremder Wert
+# ungeprüft im Rezepttext. unexport: Stehen sie in der Umgebung, gäbe Make sie an $(shell) weiter
+# und müsste sie mitten in ihrer eigenen Ermittlung auswerten.
+override FRONTEND_PORT = $(eval override FRONTEND_PORT := $$(call dev_port,frontend))$(FRONTEND_PORT)
+override API_PORT      = $(eval override API_PORT := $$(call dev_port,api))$(API_PORT)
+unexport FRONTEND_PORT API_PORT
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
 
@@ -116,8 +132,8 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 	@printMakeValue   "Docker Hub"        "https://hub.docker.com/r/mangolila/stockportfolio"
 	@printMakeValue   "StockInfo"         "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
 	@printMakeHeading "URLs (nach make dev-up)"
-	@printMakeValue   "App"               "http://localhost:$(word 1,$(DEV_PORTS))"
-	@printMakeValue   "Konto-API"         "http://localhost:$(word 2,$(DEV_PORTS))"
+	@printMakeValue   "App"               '$(call dev_url,FRONTEND_PORT)'
+	@printMakeValue   "Konto-API"         '$(call dev_url,API_PORT)'
 	@printMakeHeading "Im Alltag"
 	@printMakeValue   "Vor dem Commit"    "make test"
 	@printMakeValue   "Stack hängt"       "make dev-down; danach make dev-up"
@@ -205,19 +221,18 @@ STOCKPORTFOLIO_DATA_DIR ?= $(WORKSPACE)/.local-data
 export STOCKPORTFOLIO_DATA_DIR
 
 # Ein belegter Port bricht den Start ab, statt dass eine App still auf einen anderen ausweicht.
-# Ohne dev-ports (ProjectTools) nur eine Warnung: dev-up und dev-down sind Entwicklungsziele.
+# dev-ports (ProjectTools) ist Voraussetzung (makefile-conventions): Procfile.dev fragt damit die
+# Ports beim Start ab, ohne es fehlt Vite das Proxy-Ziel.
 .PHONY: dev-up dev-down
-dev-up: ## Vite und Konto-API laufen im Hintergrund (Overmind)
+dev-up: require-tools ## Vite und Konto-API laufen im Hintergrund (Overmind)
 	@command -v overmind >/dev/null || { echo "  ✗ overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
 	@command -v tmux >/dev/null || { echo "  ✗ tmux fehlt; tmux installieren." >&2; exit 1; }
-	@if command -v dev-ports >/dev/null; then dev-ports --check; \
-	else echo "  ⚠ dev-ports fehlt (make setup) — Ports vor dem Start nicht geprüft"; fi
+	@dev-ports --check
 	@OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
 
-dev-down: ## Dev-Stack gestoppt, Ports frei
+dev-down: require-tools ## Dev-Stack gestoppt, Ports frei
 	-@overmind quit 2>/dev/null || true
-	@if command -v dev-ports >/dev/null; then dev-ports --kill; \
-	else echo "  ⚠ dev-ports fehlt (make setup) — Reste nach einem Absturz nicht geprüft"; fi
+	@dev-ports --kill
 
 # Setzt den Checkout zurück; danach verlangen die Prüfziele wieder make setup.
 .PHONY: clean

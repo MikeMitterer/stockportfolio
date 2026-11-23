@@ -45,15 +45,19 @@ beschreibt der [Docker-Guide](../docker/README.md).
 ```bash
 make setup                 # npm-Pakete, Python-venv, Werkzeuge in .tools/, Git-Hooks
 cp .env.example .env       # STOCKINFO_API_URL anpassen
-make dev-up                # Vite auf :5175, Konto-API auf :8080
+make dev-up                # Vite und Konto-API; make hints nennt die Adressen
 ```
 
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
 npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
 3.14+ an, installiert dort die gepinnten Pakete aus `requirements-dev.txt`
-und
-bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
-Version aus `.dev-tools.conf.sh` nach `.tools/`.
+und bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
+Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
+wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
+zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Prüfziele wie
+`make test` richten nichts selbst ein: Fehlt etwas oder ist es veraltet,
+brechen sie ab und nennen `make setup`. `make info` zeigt den Werkzeugstand.
+Auch `make dev-up` und `make dev-down` setzen die Werkzeuge voraus.
 
 **Python-Mindestversion:** Sie steht nur in `requires-python` in
 `pyproject.toml`. Das Makefile, ruff und die Prüfung von StockInfos `.venv`
@@ -61,35 +65,46 @@ im Teststack lesen sie dort; StockInfo verlangt dieselbe. `make setup` nimmt
 `python<Mindestversion>`, `PYTHON_BOOTSTRAP` überschreibt den Interpreter von
 außen. Derselbe Name wählt auch das Python der Befehle aus `.tools/`
 (ProjectTools); ein gesetzter Wert muss deshalb die Mindestversion erfüllen.
-Das Makefile selbst setzt die Variable nicht. Jeder Schritt läuft nur,
-wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
-zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Prüfziele wie
-`make test` richten nichts selbst ein: Fehlt etwas oder ist es veraltet,
-brechen sie ab und nennen `make setup`. `make info` zeigt den Werkzeugstand.
+Das Makefile selbst setzt die Variable nicht.
+
+**Ports des Dev-Stacks:** Jeder steht nur dort, wo er beim Start wirkt: der
+Port der Konto-API als `PORT=…` in der Zeile `api` von `Procfile.dev`, der
+Frontend-Port als `server.port` in `frontend/vite.config.ts`. `dev-ports`
+(ProjectTools) liest sie dort und nennt sie mit den Prozessnamen
+(`dev-ports --list`, `dev-ports --port-of api`). `Procfile.dev` übergibt damit
+Vite das Proxy-Ziel (`VITE_DEV_API_TARGET`) und der Konto-API die Herkunft der
+App (`STOCKPORTFOLIO_PUBLIC_ORIGIN`); `make hints` nennt die Adressen. Wer
+einen Port ändert, ändert ihn nur an seiner Stelle.
 
 **Einrichtungscode:** Solange es kein Admin-Konto gibt, gibt die API bei jedem
 Start einen neuen Code nach `StockPortfolio setup code:` aus. Unter
 `make dev-up` liest du ihn mit `overmind connect api` (verlassen mit Ctrl-B,
 dann D); `overmind echo` zeigt nur neue Ausgaben und verpasst den Code.
 
-**Stoppen:** `make dev-down` beendet den Stack und gibt die Ports 5175 und
-8080 frei. Nach einem Absturz räumt es auch Overmind- und tmux-Reste und eine
+**Stoppen:** `make dev-down` beendet den Stack und gibt seine Ports frei. Nach einem Absturz räumt es auch Overmind- und tmux-Reste und eine
 veraltete `.overmind.sock` auf. Prozesse anderer Projekte, etwa StockInfo oder
 Docker, bleiben unberührt. Ein zweiter Aufruf ohne Stack endet mit 0.
 
-**Einzeln starten:** `npm run dev --prefix frontend` startet nur Vite. Nur die
-API aus dem Projekt-Root:
+**Einzeln starten:** jeweils aus dem Projekt-Root, denn `dev-ports` findet
+`Procfile.dev` nur dort. Nur Vite; ohne `VITE_DEV_API_TARGET` bricht der Start
+mit diesem Befehl als Hinweis ab:
+
+```bash
+VITE_DEV_API_TARGET="http://127.0.0.1:$(dev-ports --port-of api)" npm run dev --prefix frontend
+```
+
+Nur die API:
 
 ```bash
 STOCKPORTFOLIO_DATA_DIR="$PWD/.local-data" \
-STOCKPORTFOLIO_PUBLIC_ORIGIN=http://localhost:5175 \
+PORT="$(dev-ports --port-of api)" \
+STOCKPORTFOLIO_PUBLIC_ORIGIN="http://localhost:$(dev-ports --port-of frontend)" \
 npm run dev --prefix api
 ```
 
 Ohne `STOCKPORTFOLIO_DATA_DIR` legt die API lokale Konten unter `.local-data`
 ab. Meldet die Anmeldeseite, dass der Kontodienst nicht erreichbar ist, läuft
-die API auf Port 8080 nicht: Vite allein liefert die Seite, aber keine
-Anmeldung.
+die API nicht: Vite allein liefert die Seite, aber keine Anmeldung.
 
 ## Befehle
 

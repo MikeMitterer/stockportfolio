@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { readFileSync } from 'node:fs'
@@ -13,13 +13,50 @@ const packageVersion: string = JSON.parse(
   readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'),
 ).version
 
+/*
+ * Ziel der Konto-API für den Dev-Proxy. `make dev-up` setzt VITE_DEV_API_TARGET
+ * in Procfile.dev aus `dev-ports --port-of api`; der Port steht nur dort in der
+ * Zeile `api` (PORT=…), hier gibt es keine zweite Angabe. Der Teststack setzt
+ * das Ziel für seine eigene Konto-API. 127.0.0.1 statt localhost: Node löst
+ * localhost womöglich zuerst als ::1 auf.
+ */
+const apiTarget = process.env.VITE_DEV_API_TARGET
+
+// Einzelstart aus dem Projekt-Root: dev-ports findet Procfile.dev nur dort.
+const START_ALONE =
+  'VITE_DEV_API_TARGET="http://127.0.0.1:$(dev-ports --port-of api)" npm run dev --prefix frontend'
+
+/**
+ * Der Dev-Server startet nicht ohne gültiges Proxy-Ziel. Sonst beantwortet er
+ * jede API-Anfrage mit der `index.html`, und der Fehler sieht aus wie eine
+ * kaputte Konto-API. Unvollständig ist ein Ziel, das auf `:` endet: So sieht es
+ * aus, wenn die Portabfrage mit dev-ports scheitert. Build und Vorschau
+ * brauchen kein Ziel.
+ */
+function requireApiTarget(): Plugin {
+  return {
+    name: 'stockportfolio-require-api-target',
+    apply: (_config, { command, isPreview }) => command === 'serve' && !isPreview,
+    configResolved() {
+      if (!apiTarget) {
+        throw new Error(`VITE_DEV_API_TARGET fehlt. make dev-up setzt es; allein: ${START_ALONE}`)
+      }
+      if (apiTarget.endsWith(':') || !URL.canParse(apiTarget)) {
+        throw new Error(
+          `VITE_DEV_API_TARGET unvollständig: "${apiTarget}". Portabfrage im Projekt-Root: ${START_ALONE}`,
+        )
+      }
+    },
+  }
+}
+
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
   envDir: fileURLToPath(new URL('..', import.meta.url)),
   define: {
     __APP_VERSION__: JSON.stringify(packageVersion),
   },
-  plugins: [vue(), {
+  plugins: [vue(), requireApiTarget(), {
     name: 'stockportfolio-license-assets',
     apply: 'build',
     generateBundle() {
@@ -72,14 +109,14 @@ export default defineConfig({
    * man sucht den Fehler in der Anwendung.
    */
   server: {
+    // Der Frontend-Port des Dev-Stacks; dev-ports liest ihn hier (Name `frontend`).
     port: 5175,
-    // port: 5173,
     strictPort: true,
     // Erlaubt dem Dev-Server, Dateien jenseits des Projektordners
     // auszuliefern — das Fundament liegt als Symlink daneben.
     fs: { allow: ['../..'] },
     proxy: {
-      '/api': 'http://127.0.0.1:8080',
+      ...(apiTarget ? { '/api': apiTarget } : {}),
     },
   },
   preview: {
