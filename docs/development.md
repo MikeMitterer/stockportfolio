@@ -327,8 +327,11 @@ Satz bildet StockPortfolio selbst aus `errors.reason` im Katalog; eine
 unbekannte Kennung erscheint in einem allgemeinen Satz, ein Satz im alten
 Format unverändert. Welche Kennungen es mit welchen Werten gibt, steht im
 StockInfo-Repository: im REST-Vertrag (rest-core-contract.md unter docs) und im
-Katalog `errors.reason` der StockInfo-Oberfläche. Eine neue Kennung bekommt in beiden Sprachen einen
-Satz und einen Eintrag in `frontend/tests/api/errorReasons.spec.ts`.
+Katalog `errors.reason` der StockInfo-Oberfläche. StockPortfolios Katalog
+führt alle diese Kennungen, auch die von Wegen, die StockPortfolio heute nicht
+aufruft; ein neuer Weg zeigt so gleich einen eigenen Satz. Eine neue Kennung
+bekommt in beiden Sprachen einen Satz und einen Eintrag in
+`frontend/tests/api/errorReasons.spec.ts`.
 
 ## Docker-Image bauen und veröffentlichen
 

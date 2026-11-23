@@ -390,6 +390,41 @@ export const de = {
       startup_running: 'StockInfo startet noch. Bitte gleich noch einmal versuchen.',
       startup_failed: 'StockInfo konnte nicht starten und beantwortet keine Abfragen.',
       contract_unavailable: 'StockInfo kann seine Feldbeschreibung gerade nicht lesen.',
+      /*
+       * Ab hier Kennungen von StockInfo-Wegen, die StockPortfolio heute nicht
+       * aufruft (Zeitfenster der Historie, Bestandspflege, Detailwerte, Umzug,
+       * Sicherungen, Diagnose). Sie stehen hier, damit ein neuer Weg sofort
+       * einen eigenen Satz zeigt statt des allgemeinen (T-138).
+       */
+      invalid_timestamp: '„{name}“ ist kein ISO-8601-Zeitpunkt: {value}.',
+      time_range_reversed: 'Der Beginn {from} liegt nach dem Ende {to}.',
+      isin_or_symbol_required: 'StockInfo braucht genau eines: ISIN oder Symbol.',
+      refresh_in_progress: 'In StockInfo läuft bereits eine Aktualisierung aller Papiere.',
+      instrument_not_stored: '{identifier} ist nicht im Bestand von StockInfo.',
+      listing_not_found: 'Zu dieser Listing-Kennung gibt es in StockInfo kein Papier.',
+      isin_taken: 'Die ISIN {isin} gehört in StockInfo bereits zu einem anderen Papier.',
+      detail_number_required: '{field}: Hier ist eine endliche Zahl nötig.',
+      detail_below_minimum: '{field}: Der Wert liegt unter dem Minimum {minimum}.',
+      detail_above_maximum: '{field}: Der Wert liegt über dem Maximum {maximum}.',
+      detail_boolean_required: '{field}: Hier ist Ja oder Nein nötig.',
+      detail_text_required:
+        '{field}: Hier ist ein nicht leerer Text nötig (höchstens {max_length} Zeichen).',
+      detail_currency_code_required: '{field}: Hier ist ein dreistelliger Währungscode nötig.',
+      detail_currency_required: '{field}: Der Betrag braucht eine Währung.',
+      detail_currency_not_allowed: '{field}: Dieses Feld trägt keine Währung.',
+      detail_not_declared: '{field}: Dieses Feld gibt es für dieses Papier nicht.',
+      detail_not_editable: '{field}: Dieses Feld lässt sich nicht von Hand ändern.',
+      migration_not_pending:
+        'In StockInfo steht kein Umzug aus, oder Umzug beziehungsweise Start laufen bereits.',
+      backup_not_found: 'Eine StockInfo-Sicherung namens {name} gibt es nicht.',
+      backup_incompatible:
+        'Die Sicherung {name} passt nicht zur laufenden StockInfo-Instanz. Den Grund nennt die Liste der Sicherungen in StockInfo.',
+      backup_schema_too_new:
+        'Die Sicherung {name} stammt aus einer neueren StockInfo-Version und lässt sich dort nicht einspielen.',
+      restore_failed:
+        'StockInfo konnte die Sicherung {name} beim Start nicht einspielen. Das Serverprotokoll von StockInfo nennt den Grund.',
+      provenance_mismatch:
+        'Der Bestand von StockInfo stammt aus der Quellenlage {stamped}, die Instanz läuft unter {running}.',
       unknown: 'StockInfo meldet einen Fehler, den StockPortfolio nicht kennt: {code}.',
     },
   },
