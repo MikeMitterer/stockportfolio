@@ -1,5 +1,5 @@
 /**
- * Geprüfte Client-Antworten gemäß StockInfo Core 4.3.0.
+ * Geprüfte Client-Antworten gemäß StockInfo Core 5.0.0.
  * `isin` wird aus `identity` abgeleitet, nicht als API-Oberfeld erwartet.
  *
  * Feldnamen bleiben snake_case wie die API sie liefert — die Übersetzung
@@ -119,7 +119,7 @@ export interface RefreshResult {
   total: number
   refreshed: number
 }
-/** Devisenkurs gemäß StockInfo Core 4.3.0. */
+/** Devisenkurs gemäß StockInfo Core 5.0.0. */
 export interface FxResponse {
   base: string
   quote: string
