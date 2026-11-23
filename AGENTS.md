@@ -275,8 +275,8 @@ prüft den Code dagegen.
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
 temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
-erstellt dafür StockPortfolios eigene `.venv` mit Python 3.14+
-(`PYTHON_BOOTSTRAP`; derselbe Wert gilt für die Befehle aus `.tools/`) und installiert
+erstellt dafür StockPortfolios eigene `.venv` mit der Python-Mindestversion aus
+`requires-python` in `pyproject.toml` (derzeit 3.14, wie StockInfo) und installiert
 dort die Pakete aus `requirements-dev.txt`, darunter die gepinnten Prüfwerkzeuge
 (ruff, bandit, pip-audit). Vor dem Anlegen prüft Setup die
 Python-Version; eine bestehende `.venv` mit älterem Python legt es neu an. **Browsertests laufen sichtbar, nicht headless** (Mike,
@@ -290,9 +290,9 @@ Aus diesem Repository aufrufen:
 ```
 
 Der StockInfo-Kindprozess verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
-diese Umgebung nicht. Auch sie braucht Python 3.14+, weil der Kindprozess
-Skripte aus `scripts/` lädt; eine ältere weist der Start ab und nennt
-`make setup` in StockInfo. `make clean` entfernt StockPortfolios `.venv`; danach
+diese Umgebung nicht. Auch sie braucht dieselbe Mindestversion, weil der
+Kindprozess Skripte aus `scripts/` lädt; der Stackstart weist eine ältere ab
+und nennt `make setup` in StockInfo. `make clean` entfernt StockPortfolios `.venv`; danach
 legt `make setup` sie neu an.
 
 Den Live-Abgleich zwischen Browsern prüft ein sichtbarer Smoketest gegen

@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import tomllib
 from argparse import Namespace
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -35,9 +36,21 @@ STOCKINFO_CORS_ORIGIN = "http://cors-not-used.invalid"
 QUOTE_PATH = "/quote/IE00B4L5Y983"
 # Devisenweg der USD-Positionen; brach unbemerkt mit StockInfo T-94.
 FX_PATH = "/fx?base=USD&quote=EUR"
-# Mindestversion für StockInfos .venv: Der StockInfo-Kindprozess lädt Skripte aus
-# scripts/, die wie die eigene .venv Python 3.14 voraussetzen (Makefile PYTHON_CHECK).
-MINIMUM_PYTHON = (3, 14)
+PYPROJECT = Path(__file__).resolve().parent.parent / "pyproject.toml"
+
+
+def minimum_python(pyproject: Path) -> tuple[int, ...]:
+    """Mindestversion aus `requires-python = ">=X.Y"`, der einzigen Quelle im Projekt."""
+    with pyproject.open("rb") as file:
+        requirement = tomllib.load(file)["project"]["requires-python"]
+    match = re.fullmatch(r">=(\d+(?:\.\d+)*)", requirement.strip())
+    if not match:
+        raise RuntimeError(f'requires-python must have the form ">=X.Y": {requirement}')
+    return tuple(int(part) for part in match[1].split("."))
+
+
+# Gilt auch für StockInfos .venv: Der StockInfo-Kindprozess lädt Skripte aus scripts/.
+MINIMUM_PYTHON = minimum_python(PYPROJECT)
 translate = gettext.translation(
     "stockportfolio-test-stack",
     localedir=Path(__file__).parent / "locale",
