@@ -51,7 +51,9 @@ make dev-up                # Vite auf :5175, Konto-API auf :8080
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
 npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
 3.14+ an (`PYTHON_BOOTSTRAP` wählt den Interpreter, falls `python3.14`
-fehlt; derselbe Wert gilt für die Befehle aus `.tools/`), installiert dort die gepinnten Pakete aus `requirements-dev.txt` und
+fehlt; derselbe Wert gilt für die Befehle aus `.tools/`, die ebenfalls
+Python 3.14+ verlangen), installiert dort die gepinnten Pakete aus
+`requirements-dev.txt` und
 bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
 Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
 wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
@@ -245,7 +247,10 @@ Testdaten beenden oder entfernen, unlesbare Zustandsdatei, nur http(s) in
 `request()`. Sie laufen in `make test`, ohne Netz und ohne StockInfo, API oder
 Vite; einzeln mit `.venv/bin/python -m pytest scripts/tests`.
 
-Der StockInfo-Kindprozess nutzt `../StockInfo/.venv/bin/python`. Nur den
+Der StockInfo-Kindprozess nutzt `../StockInfo/.venv/bin/python`. Diese
+`.venv` braucht wie die eigene Python 3.14+, weil der Kindprozess Skripte aus
+`scripts/` lädt; eine ältere weist der Start ab und nennt `make setup` in
+StockInfo. Nur den
 StockInfo-Testserver ohne Stack startest du direkt mit StockInfos Python:
 
 ```bash

@@ -35,6 +35,9 @@ STOCKINFO_CORS_ORIGIN = "http://cors-not-used.invalid"
 QUOTE_PATH = "/quote/IE00B4L5Y983"
 # Devisenweg der USD-Positionen; brach unbemerkt mit StockInfo T-94.
 FX_PATH = "/fx?base=USD&quote=EUR"
+# Mindestversion für StockInfos .venv: Der StockInfo-Kindprozess lädt Skripte aus
+# scripts/, die wie die eigene .venv Python 3.14 voraussetzen (Makefile PYTHON_CHECK).
+MINIMUM_PYTHON = (3, 14)
 translate = gettext.translation(
     "stockportfolio-test-stack",
     localedir=Path(__file__).parent / "locale",
@@ -83,6 +86,21 @@ def require_free_port(port: int) -> None:
             ) from error
 
 
+def require_minimum_python(interpreter: Path) -> None:
+    """Bricht ab, wenn der Interpreter älter als MINIMUM_PYTHON ist.
+
+    Ohne diese Prüfung endete eine veraltete StockInfo-.venv erst im Kindprozess
+    mit einem SyntaxError statt mit dem nächsten Schritt.
+    """
+    check = f"import sys; sys.exit(0 if sys.version_info >= {MINIMUM_PYTHON} else 1)"
+    if subprocess.run([str(interpreter), "-c", check], check=False).returncode != 0:  # nosec B603
+        raise RuntimeError(
+            translate(
+                "StockInfo Python environment needs Python {version} or newer: {path}; run make setup in StockInfo"
+            ).format(version=".".join(map(str, MINIMUM_PYTHON)), path=interpreter)
+        )
+
+
 def preflight(project_root: Path, stockinfo_root: Path, stockinfo_port: int) -> Path:
     if not process_identity(os.getpid()):
         raise RuntimeError(translate("ps cannot identify this process"))
@@ -95,6 +113,7 @@ def preflight(project_root: Path, stockinfo_root: Path, stockinfo_port: int) -> 
                 path=stockinfo_python,
             )
         )
+    require_minimum_python(stockinfo_python)
     for executable in (
         project_root / "api/node_modules/.bin/tsx",
         project_root / "frontend/node_modules/vite/bin/vite.js",
@@ -207,7 +226,7 @@ def start_children(
             children[name] = {"pid": process.pid, "identity": identity, "log": str(log_path)}
             if check_cancelled is not None:
                 check_cancelled()
-        except (Exception, KeyboardInterrupt, SystemExit):
+        except Exception, KeyboardInterrupt, SystemExit:
             if process is not None and name not in children and process.poll() is None:
                 os.killpg(process.pid, signal.SIGTERM)
                 process.wait(timeout=10)

@@ -53,6 +53,18 @@ def test_free_port_is_accepted() -> None:
     require_free_port(port)
 
 
+def test_outdated_stockinfo_python_is_rejected_before_start(tmp_path: Path) -> None:
+    """Eine StockInfo-.venv unter der Mindestversion bricht mit dem nächsten Schritt ab."""
+    outdated = tmp_path / "python"
+    outdated.write_text("#!/bin/sh\nexit 1\n")
+    outdated.chmod(0o755)
+
+    with pytest.raises(RuntimeError, match="make setup"):
+        local_test_stack.require_minimum_python(outdated)
+
+    local_test_stack.require_minimum_python(Path(sys.executable))
+
+
 def test_stops_own_child_process(own_process: subprocess.Popen[bytes]) -> None:
     """Beendet den eigenen Kindprozess."""
     identity = process_identity(own_process.pid)

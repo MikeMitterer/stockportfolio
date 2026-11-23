@@ -45,7 +45,7 @@ class OwnedStateFile:
             return
         try:
             unchanged = self.path.read_text() == self._content
-        except (OSError, UnicodeError):
+        except OSError, UnicodeError:
             return
         if unchanged:
             self.path.unlink()
