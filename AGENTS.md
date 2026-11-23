@@ -111,7 +111,7 @@ den Dev-Server:
 
 ```bash
 make dev          # in StockInfo: Backend auf http://localhost:8000, Swagger unter /docs
-make dev-up       # in StockPortfolio: Vite auf :5175 und Konto-API auf :8080
+make dev-up       # in StockPortfolio: Vite und Konto-API, Adressen mit make hints
 ```
 
 Die gehostete Instanz steht unter `https://stockinfo.int.mikemitterer.at`; sie
@@ -244,7 +244,7 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 ```bash
 make setup      # npm-Pakete, .venv und Werkzeuge in .tools/ einrichten
 make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
-make dev-down   # Dev-Stack stoppen, Reste aufräumen, Ports 5175/8080 freigeben
+make dev-down   # Dev-Stack stoppen, Reste aufräumen, seine Ports freigeben
 make check      # lint, typecheck, format-check und test für TS, Python und Bash
 make security   # gitleaks über die Git-History, bandit für Python
 make test       # Doku, Frontend-, API- und Python-Tests, einmalig

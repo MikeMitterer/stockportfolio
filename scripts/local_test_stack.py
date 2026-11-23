@@ -202,7 +202,8 @@ def child_environments(plan: StackPlan) -> dict[str, dict[str, str]]:
             "STOCKPORTFOLIO_SECURE_COOKIES": "false",
             "STOCKINFO_API_URL": f"http://127.0.0.1:{plan.stockinfo_port}",
         },
-        "frontend": {},
+        # Proxy-Ziel der Vite-Konfiguration: die Konto-API dieses Stacks.
+        "frontend": {"VITE_DEV_API_TARGET": f"http://127.0.0.1:{API_PORT}"},
     }
 
 
