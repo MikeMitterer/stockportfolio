@@ -2,6 +2,22 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.9.0+261123.1340.3d334 — 2026-11-23
+
+StockPortfolio kennt alle Fehlerkennungen von StockInfo in DE und EN; Ports des Dev-Stacks nur noch in Procfile.dev und Vite-Konfiguration, dev-ports nennt sie
+
+### Features
+
+- alle StockInfo-Fehlerkennungen im Katalog (`e971f7c`)
+
+### Other changes
+
+- Ports des Dev-Stacks nur dort, wo sie wirken; dev-ports nennt sie (`ebd6ed2`)
+
+### Documentation
+
+- Screenshot-Hinweise nach T-138 quittiert (`0390fae`)
+
 ## v0.8.1+261123.1208.06237 — 2026-11-23
 
 make push wieder lauffähig: Python-Mindestversion nur aus pyproject.toml (3.14, wie StockInfo), ProjectTools wählt sein Python selbst; Docker-Build ohne npm-Hinweis; Verweise auf StockInfo-Vertrag 5.0.0
