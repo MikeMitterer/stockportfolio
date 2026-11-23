@@ -1,7 +1,7 @@
 # Ruff für die Python-Werkzeuge des Projekts (Teststack unter scripts/,
 # Observer-Hilfe unter .agents/bin/). Feste Regelauswahl, damit ein neues
 # Ruff-Release nicht still andere Befunde liefert (T-99).
-target-version = "py311"
+target-version = "py314"
 line-length = 120
 
 [lint]

@@ -4,9 +4,13 @@
 # des Laufzeitbilds: node:22 bringt npm 10 mit, unter dem die Freigaben in
 # allowScripts nicht greifen.
 ARG NPM_VERSION=11.21.2
+# Ohne Hinweis auf neuere npm-Fassungen im Build-Protokoll: Die Version ist
+# oben bewusst gepinnt. Als ARG gilt der Wert nur für RUN, nicht im Image.
+ARG NPM_CONFIG_UPDATE_NOTIFIER=false
 
 FROM node:22-bookworm-slim AS frontend-build
 ARG NPM_VERSION
+ARG NPM_CONFIG_UPDATE_NOTIFIER
 RUN npm install -g "npm@${NPM_VERSION}"
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
@@ -16,6 +20,7 @@ RUN npm run build
 
 FROM node:22-bookworm-slim AS api-build
 ARG NPM_VERSION
+ARG NPM_CONFIG_UPDATE_NOTIFIER
 RUN npm install -g "npm@${NPM_VERSION}"
 WORKDIR /app
 # Native SQLite- und Argon2-Module brauchen auf Plattformen ohne fertiges
@@ -32,6 +37,7 @@ RUN npm run build --prefix api && npm prune --omit=dev --prefix api
 
 FROM node:22-bookworm-slim
 ARG NPM_VERSION
+ARG NPM_CONFIG_UPDATE_NOTIFIER
 RUN npm install -g "npm@${NPM_VERSION}" && npm cache clean --force
 WORKDIR /app/api
 RUN apt-get update \

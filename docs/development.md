@@ -27,7 +27,8 @@ beschreibt der [Docker-Guide](../docker/README.md).
   Freigaben in `allowScripts` nicht: `npm install -g npm@11`
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
-- Python 3.11+ für den Teststack; ruff, bandit, pip-audit und pytest installiert
+- Python 3.14+ für den Teststack und die Befehle aus `.tools/`; ruff, bandit,
+  pip-audit und pytest installiert
   `make setup` gepinnt in die `.venv`
 - shellcheck und gitleaks für `make lint` und `make security`
   (macOS: `brew install shellcheck gitleaks`)
@@ -49,8 +50,8 @@ make dev-up                # Vite auf :5175, Konto-API auf :8080
 
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
 npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
-3.11+ an (`PYTHON_BOOTSTRAP` wählt den Interpreter, falls `python3.11`
-fehlt), installiert dort die gepinnten Pakete aus `requirements-dev.txt` und
+3.14+ an (`PYTHON_BOOTSTRAP` wählt den Interpreter, falls `python3.14`
+fehlt; derselbe Wert gilt für die Befehle aus `.tools/`), installiert dort die gepinnten Pakete aus `requirements-dev.txt` und
 bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
 Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
 wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
