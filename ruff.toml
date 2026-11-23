@@ -1,7 +1,10 @@
 # Ruff für die Python-Werkzeuge des Projekts (Teststack unter scripts/,
 # Observer-Hilfe unter .agents/bin/). Feste Regelauswahl, damit ein neues
 # Ruff-Release nicht still andere Befunde liefert (T-99).
-target-version = "py314"
+# py311, nicht die Mindestversion der .venv: Den StockInfo-Kindprozess des
+# Teststacks startet StockInfos eigene .venv (dort requires-python >=3.11), und
+# er lädt Skripte aus scripts/. Neuere Syntax bräche dort den Start.
+target-version = "py311"
 line-length = 120
 
 [lint]
