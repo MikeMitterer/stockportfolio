@@ -170,11 +170,11 @@ $(VENV_STAMP): requirements-dev.txt pyproject.toml
 	@test -n '$(PYTHON_MIN)' || { echo '  ✗ requires-python in pyproject.toml ist nicht als ">=X.Y" lesbar' >&2; exit 1; }
 	@command -v $(BOOTSTRAP) >/dev/null || { echo "  ✗ "$(BOOTSTRAP)" nicht gefunden: Python $(PYTHON_MIN) installieren oder PYTHON_BOOTSTRAP=<Interpreter> make setup" >&2; exit 1; }
 	@$(BOOTSTRAP) -c '$(PYTHON_MIN_CHECK)' || { echo '  ✗ PYTHON_BOOTSTRAP ist zu alt: PYTHON_BOOTSTRAP=python$(PYTHON_MIN) make setup' >&2; exit 1; }
-	@if test -x $(PYTHON) && ! $(PYTHON) -c '$(PYTHON_MIN_CHECK)' 2>/dev/null; then \
-		echo '  ⚠ .venv mit Python vor $(PYTHON_MIN) wird neu angelegt'; \
+	@# Ein Zweig für fehlende .venv, ins Leere zeigenden Interpreter-Link und zu altes Python.
+	@if ! $(PYTHON) -c '$(PYTHON_MIN_CHECK)' 2>/dev/null; then \
+		test -e $(VENV) && echo '  ⚠ .venv ohne lauffähiges Python ab $(PYTHON_MIN) wird neu angelegt'; \
 		$(BOOTSTRAP) -m venv --clear $(VENV); \
 	fi
-	@test -x $(PYTHON) || $(BOOTSTRAP) -m venv $(VENV)
 	@rm -f $(VENV)/.installed $(VENV)/.installed-py*
 	@$(REQUIRE_STARTER); devtools exec -- $(PYTHON) -m pip install -q --disable-pip-version-check -r requirements-dev.txt
 	@touch "$@"
