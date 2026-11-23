@@ -25,10 +25,12 @@ es seit StockInfo T-110 nicht mehr; diese Kopien sind die einzige Fassung.
 
 Abgleich mit Core 5.0.0 (StockInfo 1.7.0): Die Rümpfe dieser Fixtures
 gelten unverändert. Der Header `StockInfo-Generation` in `quote-200.json`
-stammt aus Core 4.3.0; seit Core 4.4.1 sendet StockInfo ihn nur noch auf
-`/instrument-types`, `/fields` nennt die Kennung im Rumpf als
-`generation_id`. StockPortfolio liest diesen Header nicht. Zwischen 4.3.0
-und 5.0.0 hinzugekommen sind außerdem englische Feldbeschreibungen in
+stammt aus Core 4.3.0; seit Core 4.4.1 (StockInfo 1.6.0) sendet StockInfo
+ihn nur noch auf `/instrument-types`, `/fields` nennt die Kennung im Rumpf
+als `generation_id`. StockPortfolio liest diesen Header nicht. Zwischen
+4.3.0 und 5.0.0 hinzugekommen sind außerdem englische Feldbeschreibungen in
 `/fields` (4.3.1) und die Fehlerform `{code, params}` für jede fachliche
-Ablehnung samt `quote_unavailable` (4.5.0); seit 5.0.0 trägt dessen
-`params` nur noch die Eingabe, nicht mehr den Fehlertext der Quelle.
+Ablehnung samt `quote_unavailable`. Diese kam im Zwischenstand 4.5.0 und
+erschien erst mit 5.0.0 (StockInfo 1.7.0) in einem Release; dessen Vertrag
+datiert sie deshalb auf 5.0.0, und `params` trägt dort nur noch die
+Eingabe, nicht mehr den Fehlertext der Quelle.
