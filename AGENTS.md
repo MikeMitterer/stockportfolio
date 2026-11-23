@@ -88,13 +88,14 @@ Projekts.
   steht in der [Entwicklerdoku](docs/development.md#sprache-und-texte).
 
 - **Den Vertrag liefert StockInfo maschinenlesbar mit.**
-  `contract/core-contract.json`, ein OpenAPI-Schnappschuss und
-  `contract/fixtures/` mit echten HTTP-Antworten samt Status und Headern,
-  absichtlich auch vertragswidrigen. Zur Laufzeit beantwortet `GET /fields`
-  dasselbe. Damit lassen sich Mapper prüfen, ohne StockInfo zu starten.
-  StockPortfolio prüft Quote-, Refresh- und Katalogantworten gemeinsam in
-  `frontend/src/api/stockinfo/normalizers.ts` gegen Core 4.3.0. Versionierte HTTP-Fixtures liegen
-  unter `frontend/tests/fixtures/stockinfo/`. Die Bewertung steht in
+  `contract/core-contract.json` und ein OpenAPI-Schnappschuss
+  (`contract/openapi-core-snapshot.json`); zur Laufzeit beantwortet
+  `GET /fields` dasselbe. Aufgezeichnete HTTP-Antworten liefert StockInfo
+  nicht mehr mit. StockPortfolio prüft Quote-, Refresh- und
+  Katalogantworten gemeinsam in `frontend/src/api/stockinfo/normalizers.ts`
+  gegen Core 5.0.0. Seine eigenen versionierten HTTP-Fixtures samt Status und
+  Headern liegen unter `frontend/tests/fixtures/stockinfo/`; damit lassen
+  sich Mapper prüfen, ohne StockInfo zu starten. Die Bewertung steht in
   T-37,
   Generation und Währung in
   T-35.
