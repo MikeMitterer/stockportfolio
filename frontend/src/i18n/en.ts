@@ -378,6 +378,36 @@ export const en: MessageSchema = {
       startup_running: 'StockInfo is still starting. Please try again in a moment.',
       startup_failed: 'StockInfo could not start and answers no requests.',
       contract_unavailable: 'StockInfo cannot read its field description right now.',
+      // Kennungen von StockInfo-Wegen, die StockPortfolio heute nicht aufruft (siehe de.ts, T-138).
+      invalid_timestamp: '“{name}” is not an ISO 8601 timestamp: {value}.',
+      time_range_reversed: 'The start {from} lies after the end {to}.',
+      isin_or_symbol_required: 'StockInfo needs exactly one of ISIN or symbol.',
+      refresh_in_progress: 'StockInfo is already refreshing all instruments.',
+      instrument_not_stored: '{identifier} is not among the instruments stored in StockInfo.',
+      listing_not_found: 'StockInfo has no instrument with this listing ID.',
+      isin_taken: 'In StockInfo, the ISIN {isin} already belongs to another instrument.',
+      detail_number_required: '{field}: a finite number is required here.',
+      detail_below_minimum: '{field}: the value is below the minimum {minimum}.',
+      detail_above_maximum: '{field}: the value is above the maximum {maximum}.',
+      detail_boolean_required: '{field}: yes or no is required here.',
+      detail_text_required:
+        '{field}: a non-empty text is required here (at most {max_length} characters).',
+      detail_currency_code_required: '{field}: a three-letter currency code is required here.',
+      detail_currency_required: '{field}: the amount needs a currency.',
+      detail_currency_not_allowed: '{field}: this field carries no currency.',
+      detail_not_declared: '{field}: this field does not exist for this instrument.',
+      detail_not_editable: '{field}: this field cannot be changed by hand.',
+      migration_not_pending:
+        'No StockInfo migration is pending, or the migration or startup is already running.',
+      backup_not_found: 'There is no StockInfo backup named {name}.',
+      backup_incompatible:
+        'The backup {name} does not fit the running StockInfo instance. The backup list in StockInfo names the reason.',
+      backup_schema_too_new:
+        'The backup {name} comes from a newer StockInfo version and cannot be restored there.',
+      restore_failed:
+        'StockInfo could not restore the backup {name} at startup. The StockInfo server log names the reason.',
+      provenance_mismatch:
+        'StockInfo’s data comes from source setup {stamped}; the instance runs under {running}.',
       unknown: 'StockInfo reports an error that StockPortfolio does not know: {code}.',
     },
   },
