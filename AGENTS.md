@@ -274,10 +274,10 @@ prüft den Code dagegen.
 Für reproduzierbare Browserprüfungen startet
 `scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
 temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
-erstellt dafür StockPortfolios eigene `.venv` mit Python 3.11+ und installiert
+erstellt dafür StockPortfolios eigene `.venv` mit Python 3.14+ und installiert
 dort die Pakete aus `requirements-dev.txt`, darunter die gepinnten Prüfwerkzeuge
 (ruff, bandit, pip-audit). Vor dem Anlegen prüft Setup die
-Python-Version; bestehende `.venv` werden wiederverwendet. **Browsertests laufen sichtbar, nicht headless** (Mike,
+Python-Version; eine bestehende `.venv` mit älterem Python legt es neu an. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
 Aus diesem Repository aufrufen:
 

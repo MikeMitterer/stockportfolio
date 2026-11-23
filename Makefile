@@ -47,18 +47,24 @@ BASHLIB_FROM_TOOLS := $(if $(BASH_LIBS),yes)
 endif
 export BASH_LIBS
 
-# Python für den Teststack unter scripts/; von außen überschreibbar, darum in Rezepten nur als
-# "$${PYTHON_BOOTSTRAP}".
-PYTHON_BOOTSTRAP ?= python3.11
+# Python für die .venv des Teststacks unter scripts/; von außen überschreibbar, darum in Rezepten
+# nur als "$${PYTHON_BOOTSTRAP}". Derselbe Name wählt den Interpreter der ProjectTools-Befehle aus
+# .tools/ (etwa dockerhub-readme in make push); beide verlangen Python 3.14 oder neuer.
+PYTHON_BOOTSTRAP ?= python3.14
 export PYTHON_BOOTSTRAP
+# Mindestversion für die .venv; ProjectTools verlangt dieselbe (requires-python).
+PYTHON_CHECK := import sys; sys.exit(0 if sys.version_info >= (3, 14) else "Python 3.14 oder neuer erforderlich")
 VENV := .venv
 PYTHON := $(VENV)/bin/python
 
 # Was setup herstellt und require-setup prüft: npm-Pakete beider Teilprojekte, die .venv und
 # die Werkzeuge in .tools/. Jeder Stempel entsteht neu, sobald seine Quelldatei neuer ist.
 TOOLS_STAMP := $(TOOLS_DIR)/.installed
+# Der Stempel der .venv nennt die Mindestversion: Eine mit älterem Python eingerichtete .venv
+# hat ihn nicht, require-setup verlangt dann make setup, und setup legt sie neu an.
+VENV_STAMP := $(VENV)/.installed-py314
 SETUP_STAMPS := frontend/node_modules/.installed api/node_modules/.installed \
-	$(VENV)/.installed $(TOOLS_STAMP)
+	$(VENV_STAMP) $(TOOLS_STAMP)
 
 # Ports des Dev-Stacks aus derselben Config wie dev-ports; nur Ziffern, darum als Make-Wert.
 DEV_PORTS := $(shell source .dev-ports.conf.sh && echo "$${PORTS[@]}")
@@ -155,13 +161,15 @@ setup: ## Bereit zum Entwickeln: npm-Pakete, .venv, Werkzeuge in .tools/
 	@touch "$@"
 
 $(PYTHON):
-	@"$${PYTHON_BOOTSTRAP}" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 oder neuer erforderlich")'
+	@"$${PYTHON_BOOTSTRAP}" -c '$(PYTHON_CHECK)'
 	@"$${PYTHON_BOOTSTRAP}" -m venv $(VENV)
 
 # Über devtools exec: Mit rechnerlokaler Zuordnung kommen Git-Abhängigkeiten (CLITheme) aus den
 # lokalen Repos, auch mit ungepushtem Tag.
-$(VENV)/.installed: requirements-dev.txt | $(PYTHON)
-	@$(PYTHON) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Bestehende .venv benötigt Python 3.11 oder neuer")'
+$(VENV_STAMP): requirements-dev.txt | $(PYTHON)
+	@$(PYTHON) -c '$(PYTHON_CHECK)' 2>/dev/null || { \
+		echo "  .venv mit älterem Python wird mit $${PYTHON_BOOTSTRAP} neu angelegt"; \
+		"$${PYTHON_BOOTSTRAP}" -c '$(PYTHON_CHECK)' && "$${PYTHON_BOOTSTRAP}" -m venv --clear $(VENV); }
 	@$(REQUIRE_STARTER); devtools exec -- $(PYTHON) -m pip install -q --disable-pip-version-check -r requirements-dev.txt
 	@touch "$@"
 
