@@ -75,18 +75,33 @@ fail() {
     exit 1
 }
 
+# Ein Paar umschließender Anführungszeichen entfernen, wie dotenv es tut; $1 Wert.
+unquote() {
+    local -r VALUE="${1}"
+    local -r FIRST="${VALUE:0:1}"
+    if [[ ${#VALUE} -ge 2 && (${FIRST} == '"' || ${FIRST} == "'") && "${VALUE: -1}" == "${FIRST}" ]]; then
+        printf '%s\n' "${VALUE:1:${#VALUE}-2}"
+    else
+        printf '%s\n' "${VALUE}"
+    fi
+}
+
 # Wert aus der Umgebung (make exportiert ihn aus .env), sonst aus .env dieses
 # Checkouts; $1 Name. Gelesen wird nur die Zeile NAME=…, nichts ausgeführt.
+# make übernimmt Anführungszeichen aus .env unverändert; beide Wege laufen
+# deshalb über unquote.
 configValue() {
     local -r NAME="${1}"
+    local VALUE
     if [[ -n "${!NAME:-}" ]]; then
-        printf '%s\n' "${!NAME}"
-        return
+        VALUE="${!NAME}"
+    else
+        local FILE
+        FILE="$(git rev-parse --show-toplevel)/.env"
+        [[ -r "${FILE}" ]] || return 0
+        VALUE="$(sed -n "s/^${NAME}=//p" "${FILE}" | tail -n 1)"
     fi
-    local FILE
-    FILE="$(git rev-parse --show-toplevel)/.env"
-    [[ -r "${FILE}" ]] || return 0
-    sed -n "s/^${NAME}=//p" "${FILE}" | tail -n 1 | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/"
+    unquote "${VALUE}"
 }
 
 # local oder remote aus DEV_STOCKINFO; ohne Angabe local.
