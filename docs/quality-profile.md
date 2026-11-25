@@ -118,6 +118,9 @@ hier zur Schranke oder ihr Grund steht unter [Bewusste Ausnahmen](#bewusste-ausn
 - **Logik in Skripte, nicht ins Makefile:** Das Makefile ruft auf und
   verknüpft; Abläufe stehen in `scripts/` oder in den Paketen (Skill
   `makefile-conventions`). Konvention.
+- **Oben in `scripts/` liegen nur aufrufbare Skripte:** Module, die ein Skript
+  nur importiert, stehen in einem Paket darunter (Teststack:
+  `scripts/teststack/`). Konvention.
 - Ein Modul, das zu lang wird, wird nach einem fachlichen Teil geteilt, nicht
   nach Zeilen; eine zu verzweigte Funktion wird in benannte Schritte zerlegt.
   Konvention.

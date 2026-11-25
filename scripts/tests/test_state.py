@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from test_state import OwnedStateFile
+from teststack.state import OwnedStateFile
 
 
 def test_publishes_complete_json_without_temporary_leftovers(tmp_path: Path) -> None:

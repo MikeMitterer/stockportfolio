@@ -303,7 +303,7 @@ dev-down: require-tools ## Dev-Stack samt von dev-up gestartetem StockInfo gesto
 clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
 	@npm --prefix frontend run clean
 	@npm --prefix api run clean
-	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__ \
+	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/teststack/__pycache__ scripts/tests/__pycache__ \
 		$(VENV) $(TOOLS_DIR) .stamps frontend/node_modules/.installed api/node_modules/.installed
 	@echo "  ✓ aufgeräumt"
 
