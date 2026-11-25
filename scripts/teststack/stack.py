@@ -322,15 +322,22 @@ def request(
         ) from error
 
 
-def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
+def check_stack(stockinfo_port: int, demo_accounts: bool = False, expect_initial_data: bool = True) -> None:
+    """Prüft StockInfo, Konto-API und die Weiterleitung über Vite.
+
+    Beim Start (`expect_initial_data`) müssen Testkurs und Wechselkurs genau
+    die bekannten Werte haben. Der Status verlangt nur gültige Zahlen: Ein
+    „Aktualisieren“ in der App holt aus der Testquelle absichtlich Preis + 1
+    (T-151), der Stack läuft trotzdem.
+    """
     stockinfo_url = f"http://127.0.0.1:{stockinfo_port}"
     for path in ("/health", QUOTE_PATH, FX_PATH):
         status, _, payload = request(stockinfo_url + path)
         if status != 200:
             raise RuntimeError(translate("StockInfo {path} has the wrong response").format(path=path))
-        if path == QUOTE_PATH and json.loads(payload).get("price") != 128.7:
+        if path == QUOTE_PATH and not matches(json.loads(payload).get("price"), 128.7, expect_initial_data):
             raise RuntimeError(translate("The known StockInfo test quote is missing"))
-        if path == FX_PATH and json.loads(payload).get("rate") != 0.8:
+        if path == FX_PATH and not matches(json.loads(payload).get("rate"), 0.8, expect_initial_data):
             raise RuntimeError(translate("The known StockInfo test exchange rate is missing"))
     status, _, _ = request(f"http://127.0.0.1:{API_PORT}/healthz")
     if status != 200:
@@ -347,6 +354,13 @@ def check_stack(stockinfo_port: int, demo_accounts: bool = False) -> None:
             raise RuntimeError(translate("Vite does not forward the StockInfo route to the account API")) from error
     else:
         raise RuntimeError(translate("The StockInfo route answers without a session"))
+
+
+def matches(value: object, initial: float, expect_initial: bool) -> bool:
+    """Genau der Ausgangswert oder, wenn er sich ändern darf, eine positive Zahl."""
+    if expect_initial:
+        return value == initial
+    return isinstance(value, int | float) and not isinstance(value, bool) and value > 0
 
 
 def wait_ready(
@@ -469,7 +483,7 @@ def report_stack_status(state: dict[str, object] | None) -> int:
     describe_stack(state)
     try:
         require_owned_processes(state)
-        check_stack(int(state["port"]), bool(state["demo_accounts"]))
+        check_stack(int(state["port"]), bool(state["demo_accounts"]), expect_initial_data=False)
     except (RuntimeError, URLError, TimeoutError, ValueError) as error:
         print_message(translate("Stack is not ready: {error}").format(error=error), "DANGER", sys.stderr)
         return 1
