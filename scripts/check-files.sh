@@ -1,56 +1,135 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
-# check-files.sh — ruft ein Prüfwerkzeug mit den versionierten Dateien einer
-# Sprache auf (make lint, format, format-check, security, quality; T-99)
+# check-files.sh — Prüfwerkzeug mit allen versionierten Dateien einer Sprache
 #
-#   scripts/check-files.sh python .venv/bin/ruff check
-#   scripts/check-files.sh shell shellcheck
-#   scripts/check-files.sh shell --each bash -n     # einmal je Datei
-#
+# make lint, format, format-check, security und quality rufen es auf (T-99).
 # Die Liste kommt aus `git ls-files -z`: Jeder Pfad bleibt ein eigenes Argument,
 # auch mit Leerzeichen oder Shell-Zeichen, und bekommt ein führendes „./“, damit
-# ein Name mit Bindestrich am Anfang nie als Option gilt. Scheitert git, scheitert
-# das Skript mit dessen Exit-Code, statt mit einer leeren oder halben Liste ein
-# falsches Grün zu liefern.
+# ein Name mit Bindestrich am Anfang nie als Option gilt. Scheitert git,
+# scheitert das Skript mit dessen Exit-Code, statt mit einer leeren oder halben
+# Liste ein falsches Grün zu liefern.
+#
+# Verwendung:
+#   scripts/check-files.sh --python -- .venv/bin/ruff check
+#   scripts/check-files.sh --shell -- shellcheck
+#   scripts/check-files.sh --shell --each -- bash -n
+#   make lint
+#
+# Optionen:
+#   -p | --python   Python-Dateien (*.py)
+#   -s | --shell    Shell-Skripte (*.sh) und der Git-Hook .githooks/pre-commit
+#   -e | --each     Befehl einmal je Datei statt einmal mit allen
+#   -h | --help     Hilfe anzeigen; auch ohne Argumente
 #------------------------------------------------------------------------------
 set -euo pipefail
 
-if [[ $# -lt 2 ]]; then
-    echo "Aufruf: scripts/check-files.sh python|shell [--each] <Befehl> [Argumente …]" >&2
-    exit 2
+BASH_LIBS="${BASH_LIBS:-$(bashlib-path 2>/dev/null || true)}"
+if [[ ! -r "${BASH_LIBS}/tools.lib.sh" ]]; then
+    echo "  ✗ BashLib fehlt: make setup" >&2
+    exit 1
 fi
+# BashLib liegt außerhalb des Repositorys (BASH_LIBS); shellcheck kann ihr nicht folgen.
+# shellcheck disable=SC1091
+if [[ "${__COLORS_LIB__:=""}" == "" ]]; then . "${BASH_LIBS}/colors.lib.sh"; fi
+# shellcheck disable=SC1091
+if [[ "${__TOOLS_LIB__:=""}" == "" ]]; then . "${BASH_LIBS}/tools.lib.sh"; fi
 
-KIND=$1
-shift
-EACH=false
-if [[ $1 == --each ]]; then
-    EACH=true
+readonly APPNAME="${0##*/}"
+
+usage() {
+    echo
+    echo "Usage: ${APPNAME} [ options ] -- BEFEHL [ARGUMENTE …]"
+    echo
+    printThemeOption -p --python "Der Befehl prüft alle versionierten Python-Dateien"
+    printThemeOption -s --shell "Der Befehl prüft alle versionierten Shell-Skripte samt Git-Hook"
+    printThemeOption -e --each "Den Befehl einzeln je Datei aufrufen, für Werkzeuge mit nur einer Datei"
+    printThemeOption -h --help "Diese Hilfe anzeigen"
+    printThemeHeading "Hints"
+    printThemeExample "make lint" "Alle Lint-Prüfungen des Projekts"
+    printThemeExample "${APPNAME} --python -- .venv/bin/ruff check" "Python-Dateien mit ruff prüfen"
+    printThemeExample "${APPNAME} --shell -- shellcheck" "Shell-Skripte mit shellcheck prüfen"
+    printThemeExample "${APPNAME} --shell --each -- bash -n" "Jedes Shell-Skript auf Syntax prüfen"
+    echo
+}
+
+# Fehler mit nächstem Schritt nach stderr; $1 Meldung, weitere Argumente: Hinweise.
+fail() {
+    printThemeStatus "✗" "${1}" ERR >&2
     shift
+    local HINT
+    for HINT in "$@"; do
+        printThemeHint "${HINT}" >&2
+    done
+    echo >&2
+    exit 1
+}
+
+# Versionierte Dateien der Sprache $1 als NUL-getrennte Liste.
+listFiles() {
+    case "${1}" in
+        python) git ls-files -z -- '*.py' ;;
+        shell) git ls-files -z -- '*.sh' .githooks/pre-commit ;;
+    esac
+}
+
+# Ruft den Befehl je Datei auf; prüft alle und meldet am Ende, ob eine scheiterte.
+runEach() {
+    local -n FILES_REF="${1}"
+    shift
+    local FILE
+    local STATUS=0
+    for FILE in "${FILES_REF[@]}"; do
+        "$@" "${FILE}" || STATUS=1
+    done
+    return "${STATUS}"
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
+    exit 0
 fi
 
-LIST=$(mktemp)
-trap 'rm -f "$LIST"' EXIT
+KIND=""
+EACH=false
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+        -p | --python | -s | --shell)
+            [[ -z "${KIND}" ]] || fail "Nur eine Sprache je Aufruf: --python oder --shell" "Hilfe: ${APPNAME} --help"
+            [[ "${1}" == -p || "${1}" == --python ]] && KIND=python || KIND=shell
+            ;;
+        -e | --each) EACH=true ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *) fail "Unbekannte Option: ${1}" "Hilfe: ${APPNAME} --help" ;;
+    esac
+    shift
+done
+readonly KIND EACH
 
-case $KIND in
-    python) git ls-files -z -- '*.py' >"$LIST" ;;
-    shell)
-        git ls-files -z -- '*.sh' >"$LIST"
-        printf '%s\0' .githooks/pre-commit >>"$LIST"
-        ;;
-    *)
-        echo "Unbekannte Sprache: $KIND (python oder shell)" >&2
-        exit 2
-        ;;
-esac
+[[ -n "${KIND}" ]] || fail "Welche Dateien? --python oder --shell angeben" "Hilfe: ${APPNAME} --help"
+[[ $# -gt 0 ]] || fail "Kein Befehl nach --" "Beispiel: ${APPNAME} --${KIND} -- shellcheck" "Hilfe: ${APPNAME} --help"
 
-mapfile -d '' FILES <"$LIST"
-[[ ${#FILES[@]} -eq 0 ]] && exit 0
+LIST="$(mktemp)"
+readonly LIST
+trap 'rm -f "${LIST}"' EXIT
+_RC=0
+listFiles "${KIND}" >"${LIST}" || _RC=$?
+[[ ${_RC} -eq 0 ]] || exit "${_RC}"
+
+mapfile -d '' FILES <"${LIST}"
+if [[ ${#FILES[@]} -eq 0 ]]; then
+    exit 0
+fi
 FILES=("${FILES[@]/#/./}")
 
-if [[ $EACH == true ]]; then
-    for FILE in "${FILES[@]}"; do
-        "$@" "$FILE"
-    done
+if [[ "${EACH}" == true ]]; then
+    runEach FILES "$@"
 else
     "$@" "${FILES[@]}"
 fi
