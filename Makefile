@@ -318,8 +318,8 @@ clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
 
 # Python- und Shell-Werkzeuge bekommen die versionierten Dateien über scripts/check-files.sh:
 # jeder Pfad ein eigenes Argument mit „./“, und ein Fehler von git bricht das Ziel ab.
-CHECK_PY := scripts/check-files.sh python
-CHECK_SH := scripts/check-files.sh shell
+CHECK_PY := scripts/check-files.sh --python --
+CHECK_SH := scripts/check-files.sh --shell --
 # Ein Prettier für beide Pakete; die Regeln stehen in .prettierrc.
 PRETTIER := frontend/node_modules/.bin/prettier
 PRETTIER_FILES := "frontend/src/**/*.{vue,ts,tsx,css,json}" "frontend/tests/**/*.ts" "api/src/**/*.ts" "api/tests/**/*.ts"
@@ -338,7 +338,7 @@ lint: require-setup ## Lint geprüft: ESLint (Frontend, API), ruff, shellcheck
 	@npm run lint --prefix frontend
 	@npm run lint --prefix api
 	@$(CHECK_PY) $(VENV)/bin/ruff check
-	@$(CHECK_SH) --each bash -n
+	@scripts/check-files.sh --shell --each -- bash -n
 	$(call require_tool,shellcheck,brew install shellcheck)
 	@$(CHECK_SH) shellcheck
 
