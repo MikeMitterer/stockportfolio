@@ -47,7 +47,7 @@ das eingebaute Beispiel-Depot mit Testkursen._
 - **[Sicherheitspuffer und Investitionsreserve](#berechnung-sicherheitspuffer-und-investitionsreserve)** – ein Barpolster behalten und sehen, wie viel frei investierbar ist.
 - **Mehrere Depots** – jedes mit eigener Basiswährung, eigenen Beständen, eigener Instrumentauswahl und eigenen Einstellungen.
 - **Währungsumrechnung** – Fremdwährungskurse werden mit Wechselkursen aus StockInfo umgerechnet; veraltete Kurse werden markiert, fehlende schließen die Position aus.
-- **Wertverlauf** – täglich aufgezeichnete Depotwerte und ein Rückblick auf die heutigen Bestände zu früheren Kursen.
+- **Wertverlauf** – täglich aufgezeichnete Depotwerte, ein Rückblick auf die heutigen Bestände zu früheren Kursen und auf Wunsch ein Referenzindex, etwa ein ETF auf den FTSE All-World, als Vergleichslinie.
 - **[Konten und Benutzerverwaltung](#konten-und-benutzerverwaltung)** – jedes Konto hat eigene Depots auf deinem Server.
 - **Live-Abgleich** – offene Browser desselben Kontos aktualisieren sich gegenseitig, ohne neu zu laden.
 - **Backup und Wiederherstellung** – JSON-Export je Depot; beim Einspielen zeigt die App den Inhalt und fragt vor dem Überschreiben nach.

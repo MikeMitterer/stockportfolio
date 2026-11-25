@@ -202,6 +202,30 @@ export const en: MessageSchema = {
       'This view shows only daily values that were actually recorded. It needs at least two — a single one makes no line. The app records one each day from now on.',
   },
 
+  referenceIndex: {
+    heading: 'Reference index',
+    hint: 'Comparison line in the total value chart, for example the FTSE All-World. ISIN or ticker of a security StockInfo knows — it does not have to be in the portfolio. The line starts at the portfolio value on the first day shown and then follows the index; if it runs above, the index did better in that period.',
+    placeholder: 'ISIN or ticker, e.g. IE00BK5BQT80',
+    apply: 'Apply',
+    remove: 'Remove',
+    none: 'No reference index set.',
+    current: '{name} ({key}, {currency})',
+    noClient: 'Without a StockInfo connection, no reference index can be checked.',
+    catalogueFailed: 'The StockInfo catalogue could not be loaded: {reason}',
+    empty: 'Please enter an ISIN or a ticker.',
+    unknown: '“{query}” is not known to StockInfo. The security has to be added there first.',
+    ambiguous:
+      'The ticker matches several listings ({candidates}). Please enter the full symbol or the ISIN.',
+    quote: 'StockInfo returns no price for this security: {reason}',
+    legendSnapshots: 'Portfolio (recorded)',
+    legendBacktest: 'Portfolio (look back)',
+    legendReference: '{name} (normalised)',
+    currencyMismatch:
+      '{name} is quoted in {currency}, the portfolio in {base}. Without historical exchange rates the comparison would be wrong — so there is no comparison line.',
+    noHistory: 'StockInfo returns no price history for {name} — so there is no comparison line.',
+    noOverlap: 'There is no price history for {name} in the period shown.',
+  },
+
   seed: {
     portfolioName: 'My portfolio',
     demoName: 'Sample portfolio',

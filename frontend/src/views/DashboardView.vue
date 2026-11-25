@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { NEmpty, NButton } from 'naive-ui'
@@ -12,6 +12,7 @@ import PositionsTable from '@/components/PositionsTable.vue'
 import { integer, percent } from '@/domain/formatters'
 import { useAddPosition } from '@/composables/useAddPosition'
 import { useDashboardValueHistory } from '@/composables/useDashboardValueHistory'
+import { useReferenceIndex } from '@/composables/useReferenceIndex'
 import { usePortfolioValuation } from '@/composables/usePortfolioValuation'
 import FxNotice from '@/components/FxNotice.vue'
 import { baseCurrencyOf } from '@/domain/fx'
@@ -202,6 +203,33 @@ const {
   load: loadValueHistory,
 } = useDashboardValueHistory({ client, result, fxLoading: () => fx.loading, ready })
 
+/**
+ * Vergleichslinie im Wertverlauf (T-143).
+ *
+ * Geladen erst, wenn das Diagramm aufgeklappt ist — vorher sähe niemand die
+ * Linie, für die die Anfrage liefe.
+ */
+const {
+  selected: selectedReference,
+  reference: chartReference,
+  note: referenceNote,
+  load: loadReference,
+} = useReferenceIndex(
+  client,
+  computed(() => baseCurrencyOf(portfolioStore.portfolio)),
+)
+watch(
+  [
+    valueChartOpen,
+    () => selectedReference.value?.isin,
+    () => selectedReference.value?.symbol,
+    () => baseCurrencyOf(portfolioStore.portfolio),
+  ],
+  ([open]) => {
+    if (open) void loadReference()
+  },
+)
+
 onMounted(async () => {
   /*
    * Nur beim ersten Aufbau laden. Ein Ansichtswechsel baut die Seite neu auf;
@@ -320,6 +348,8 @@ onMounted(async () => {
           :snapshots="valueHistory.snapshotLine"
           :truth-from="valueHistory.truthFrom"
           :loading="valueHistoryLoading"
+          :reference="chartReference"
+          :reference-note="referenceNote"
         />
       </section>
 

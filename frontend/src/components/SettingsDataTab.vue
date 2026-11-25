@@ -1,11 +1,12 @@
 <script setup lang="ts">
 /**
- * Reiter „Daten" der Einstellungen: Zeitraum des Rückblicks, Kursbeschaffung
- * und Depot-Verwaltung.
+ * Reiter „Daten" der Einstellungen: Zeitraum des Rückblicks, Referenzindex
+ * des Gesamtwert-Diagramms, Kursbeschaffung und Depot-Verwaltung.
  */
 import { useI18n } from 'vue-i18n'
 import { NButton, NButtonGroup, NCard, NInputNumber, NSwitch } from 'naive-ui'
 import PortfolioManager from '@/components/PortfolioManager.vue'
+import ReferenceIndexSetting from '@/components/ReferenceIndexSetting.vue'
 import { HISTORY_PERIODS, HISTORY_PERIOD_INFO } from '@/domain/historyPeriod'
 import { useSettingsStore } from '@/stores/settings'
 import type { HistoryPeriod } from '@/types/portfolio'
@@ -68,6 +69,14 @@ async function setStaleAfterMinutes(value: number | null): Promise<void> {
           {{ t('history.periodHint') }}
         </span>
       </div>
+    </NCard>
+
+    <NCard :bordered="false" class="settings__card settings__card--full">
+      <template #header>
+        <span class="settings__card-title">{{ t('referenceIndex.heading') }}</span>
+      </template>
+
+      <ReferenceIndexSetting />
     </NCard>
 
     <!--

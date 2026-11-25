@@ -145,6 +145,8 @@ export interface Settings {
   rebalancing: RebalancingSchedule
   refresh: { autoOnLoad: boolean; staleAfterMinutes: number }
   links: ExternalLink[]
+  /** Vergleichslinie im Gesamtwert-Diagramm; `null` heißt: keine (T-143). */
+  referenceIndex: ReferenceIndex | null
   ui: {
     /**
      * Sekunden, nach denen sich eine Meldung von selbst ausblendet.
@@ -163,6 +165,22 @@ export interface Settings {
      */
     historyPeriod: HistoryPeriod
   }
+}
+
+/**
+ * Referenzindex für das Gesamtwert-Diagramm (T-143).
+ *
+ * Ein Papier aus StockInfo, das nicht im Depot liegen muss. Abgerufen wird es
+ * wie eine Position: über die ISIN, wenn es per ISIN gewählt wurde, sonst über
+ * das vollständige Symbol — so trifft der Verlauf dasselbe Listing wie die
+ * Prüfung beim Festlegen.
+ */
+export interface ReferenceIndex {
+  isin: string | null
+  symbol: string
+  name: string
+  /** Kurswährung laut StockInfo, etwa `EUR` oder `USD`. */
+  currency: string
 }
 
 /** Zeitraum der Verlaufslinie in der Positionstabelle. */

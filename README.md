@@ -47,7 +47,7 @@ sample portfolio with test prices._
 - **[Safety buffer and investment reserve](#calculation-safety-buffer-and-investment-reserve)** – keep a cash cushion and see how much is free to invest.
 - **Several portfolios** – each with its own base currency, holdings, asset selection and settings.
 - **Currency conversion** – foreign prices are converted with StockInfo exchange rates; stale rates are flagged, missing ones exclude the position.
-- **Value history** – recorded daily portfolio values and a look-back of today's holdings at past prices.
+- **Value history** – recorded daily portfolio values, a look-back of today's holdings at past prices and an optional reference index, such as a FTSE All-World ETF, as comparison line.
 - **[Accounts and user management](#accounts-and-user-management)** – each account keeps its own portfolios on your server.
 - **Live sync** – open browsers of the same account update each other without a reload.
 - **Backup and restore** – JSON export per portfolio; restore shows the contents and asks before overwriting.

@@ -349,8 +349,10 @@ und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
   `api/src/stockinfo/proxy.ts` mit 200, 401 ohne Sitzung, 404 außerhalb der
   Liste; mit `--unreachable` der Ausfall als 502) und
   `setup-dialog-check.mjs` (T-91: Info-Fenster am Einrichtungscode in DE
-  und EN; braucht einen frischen Stack ohne `--demo-accounts`). Die vier
-  Prüfskripte enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
+  und EN; braucht einen frischen Stack ohne `--demo-accounts`) und
+  `reference-index-check.mjs` (T-143: Referenzindex im Gesamtwert-Diagramm;
+  Abweisung, Fremdwährungshinweis, normierte Linie je Zeitraum, Entfernen).
+  Die fünf Prüfskripte enden mit Exit-Code 1 bei Abweichung. Der Aufruf steht
   jeweils im Kopfkommentar. Eine neue StockInfo-Route braucht einen
   sichtbaren Schritt, der sie aufruft; sonst schlägt die Routenabdeckung fehl.
 - **Container:** `docker/browser-check.sh` startet zwei Wegwerf-Container

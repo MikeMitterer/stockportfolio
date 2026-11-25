@@ -34,8 +34,16 @@ export interface HistorySeries {
 
 const EMPTY: HistorySeries = { points: [], loading: false, error: null, fetchedAt: null }
 
+/**
+ * Was einen Verlauf bestimmt: das Papier und, bei Positionen, ihre Gruppe.
+ *
+ * Ohne Gruppe geht auch ein Papier, das nicht im Depot liegt — etwa der
+ * Referenzindex des Gesamtwert-Diagramms (T-143).
+ */
+export type HistorySubject = Pick<Position, 'isin' | 'symbol'> & Partial<Pick<Position, 'group'>>
+
 /** Schlüssel im Zwischenspeicher — Papier und Zeitraum. */
-export function historyKey(position: Position, period: Period): string {
+export function historyKey(position: HistorySubject, period: Period): string {
   return `${position.isin ?? position.symbol}::${period}`
 }
 
@@ -55,7 +63,7 @@ export const useHistoryStore = defineStore('history', () => {
   const series = ref<Map<string, HistorySeries>>(new Map())
 
   /** Verlauf zu einer Position und einem Zeitraum; nie `undefined`. */
-  function get(position: Position, period: Period): HistorySeries {
+  function get(position: HistorySubject, period: Period): HistorySeries {
     return series.value.get(historyKey(position, period)) ?? EMPTY
   }
 
@@ -77,7 +85,7 @@ export const useHistoryStore = defineStore('history', () => {
    */
   async function ensure(
     client: StockInfoClient | null,
-    position: Position,
+    position: HistorySubject,
     period: Period,
   ): Promise<void> {
     // Cash hat keinen Kurs und damit keinen Verlauf.
@@ -123,7 +131,7 @@ export const useHistoryStore = defineStore('history', () => {
    */
   async function fetchSeries(
     client: StockInfoClient,
-    position: Position,
+    position: HistorySubject,
     period: Period,
     stored: HistoryEntry | null,
   ): Promise<void> {

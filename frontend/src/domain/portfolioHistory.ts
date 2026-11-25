@@ -134,3 +134,53 @@ export function truthStart(snapshots: ValueSnapshot[]): string | null {
   if (snapshots.length === 0) return null
   return snapshots.reduce((first, snapshot) => (snapshot.date < first.date ? snapshot : first)).date
 }
+
+/**
+ * Vergleichslinie eines Referenzindex, auf die gezeigte Depotlinie normiert (T-143).
+ *
+ * Euro-Beträge und Indexpunkte lassen sich nicht nebeneinanderstellen. Die
+ * Linie beginnt deshalb am ersten gemeinsamen Tag auf der Höhe des Depots und
+ * folgt danach prozentual dem Index: Liegt sie über der Depotlinie, lief der
+ * Index im gezeigten Zeitraum besser. Wechselt der Zeitraum, wechselt der
+ * Starttag und mit ihm die Normierung.
+ *
+ * Notiert der Index am Starttag nicht (anderer Börsenkalender), gilt sein
+ * letzter Kurs davor — sonst begänne die Linie einen Tag später auf einer
+ * anderen Höhe als das Depot. Beginnt der Index erst nach dem Depot, setzt die
+ * Linie dort ein, auf der Höhe des Depots an diesem Tag.
+ *
+ * @param depot Gezeigte Depotlinie, aufsteigend nach Datum.
+ * @param index Kursverlauf des Index, aufsteigend nach Datum, in der Währung des Depots.
+ * @returns Indexpunkte im Zeitraum der Depotlinie; leer, wenn es keinen
+ *   gemeinsamen Zeitraum, keinen brauchbaren Startkurs oder keinen Indexkurs
+ *   nach dem Start gibt.
+ */
+export function referenceLine(depot: HistoryPoint[], index: HistoryPoint[]): HistoryPoint[] {
+  if (depot.length === 0 || index.length === 0) return []
+
+  const end = depot[depot.length - 1]!.date
+  const start = depot[0]!.date > index[0]!.date ? depot[0]!.date : index[0]!.date
+  if (start > end) return []
+
+  const depotAtStart = lastOnOrBefore(depot, start)
+  const indexAtStart = lastOnOrBefore(index, start)
+  if (!depotAtStart || !indexAtStart || !(indexAtStart.close > 0)) return []
+
+  const factor = depotAtStart.close / indexAtStart.close
+  const line = index
+    .filter((point) => point.date > start && point.date <= end)
+    .map((point) => ({ date: point.date, close: point.close * factor }))
+  // Ohne einen Indexkurs nach dem Start bliebe ein einzelner Punkt — keine Linie.
+  if (line.length === 0) return []
+  return [{ date: start, close: depotAtStart.close }, ...line]
+}
+
+/** Letzter Punkt bis einschließlich `date`; die Punkte sind aufsteigend sortiert. */
+function lastOnOrBefore(points: HistoryPoint[], date: string): HistoryPoint | null {
+  let found: HistoryPoint | null = null
+  for (const point of points) {
+    if (point.date > date) break
+    found = point
+  }
+  return found
+}
