@@ -175,8 +175,13 @@ export function referenceLine(depot: HistoryPoint[], index: HistoryPoint[]): His
   return [{ date: start, close: depotAtStart.close }, ...line]
 }
 
-/** Letzter Punkt bis einschließlich `date`; die Punkte sind aufsteigend sortiert. */
-function lastOnOrBefore(points: HistoryPoint[], date: string): HistoryPoint | null {
+/**
+ * Letzter Punkt bis einschließlich `date`; die Punkte sind aufsteigend sortiert.
+ *
+ * Gemeinsame Regel für Lücken im Kursverlauf: Normierung der Vergleichslinie
+ * und der Wert im Tooltip des Diagramms nehmen beide den letzten Kurs davor.
+ */
+export function lastOnOrBefore(points: HistoryPoint[], date: string): HistoryPoint | null {
   let found: HistoryPoint | null = null
   for (const point of points) {
     if (point.date > date) break

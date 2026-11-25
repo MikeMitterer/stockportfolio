@@ -5,7 +5,7 @@ import { NButton, NButtonGroup, NTooltip } from 'naive-ui'
 import { useIsCompact } from '@mmit/ux-foundation'
 import { money, percentSigned, shortDate } from '@/domain/formatters'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
-import { referenceLine, withinDays } from '@/domain/portfolioHistory'
+import { lastOnOrBefore, referenceLine, withinDays } from '@/domain/portfolioHistory'
 import type { HistoryPoint } from '@/domain/sparkline'
 import type { ChartReference } from '@/composables/useReferenceIndex'
 
@@ -256,13 +256,8 @@ const hoveredPoint = computed(() => {
  */
 function referenceChangeAt(date: string): number | null {
   const line = shownReference.value
-  if (line.length === 0 || date < line[0]!.date) return null
-  let current = line[0]!
-  for (const point of line) {
-    if (point.date > date) break
-    current = point
-  }
-  return changeFrom(current.close, line[0]!.close)
+  const current = lastOnOrBefore(line, date)
+  return current ? changeFrom(current.close, line[0]!.close) : null
 }
 
 function onMove(event: MouseEvent): void {
