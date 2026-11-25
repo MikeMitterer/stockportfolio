@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
-import local_test_stack
-from local_test_stack import (
+from teststack import stack
+from teststack.stack import (
     process_identity,
     remove_data,
     request,
@@ -60,9 +60,9 @@ def test_outdated_stockinfo_python_is_rejected_before_start(tmp_path: Path) -> N
     outdated.chmod(0o755)
 
     with pytest.raises(RuntimeError, match="make setup"):
-        local_test_stack.require_minimum_python(outdated)
+        stack.require_minimum_python(outdated)
 
-    local_test_stack.require_minimum_python(Path(sys.executable))
+    stack.require_minimum_python(Path(sys.executable))
 
 
 def test_stops_own_child_process(own_process: subprocess.Popen[bytes]) -> None:
@@ -157,7 +157,7 @@ def test_unreadable_state_file_is_reported_and_kept(tmp_path: Path, monkeypatch:
 def test_request_refuses_non_http_urls_without_opening_them(url: str, monkeypatch: pytest.MonkeyPatch) -> None:
     """request() lehnt alles außer http(s) ab, bevor eine Verbindung entsteht (bandit B310)."""
     opened: list[object] = []
-    monkeypatch.setattr(local_test_stack, "urlopen", lambda *args, **kwargs: opened.append(args))
+    monkeypatch.setattr(stack, "urlopen", lambda *args, **kwargs: opened.append(args))
 
     with pytest.raises(ValueError, match="Only http"):
         request(url)

@@ -39,7 +39,8 @@ from fastapi.responses import JSONResponse, Response
 from stockinfo_plugin.types import NotFound
 from tests.boundaries import EmptyEtfEnricher
 
-FIXTURES = Path(__file__).resolve().parent / "fixtures"
+# Testkurse und Demo-Details liegen in scripts/fixtures/, neben dem Paket.
+FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 
 BASE = {
     "identity": {"kind": "listed", "ticker": "EUNL", "mic": "XETR", "isin": "IE00B4L5Y983"},

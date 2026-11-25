@@ -237,7 +237,9 @@ api/                 Konto-API (Node, SQLite)
   src/persistence/   SQLite-Zugriff
   src/stockinfo/     Weiterleitung an StockInfo mit Freigabeliste
 docker/              Dockerfile, Build-, Smoke- und Browserprüfung, Docker-Hub-README
-scripts/             Teststack mit StockInfo-Testdaten
+scripts/             aufrufbare Skripte: test-stack.py (Teststack), dev-stack.sh (make dev-up)
+  teststack/         Hilfsmodule des Teststacks, nur importiert; Übersetzungen in locale/
+  fixtures/          Testkurse und Demo-Details des Teststacks
   tests/             pytest-Tests der Teststack-Skripte
 unraid/              Unraid-Anleitung
 ```

@@ -24,8 +24,8 @@ from types import FrameType
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from terminal_style import print_message
-from test_state import OwnedStateFile
+from teststack.state import OwnedStateFile
+from teststack.terminal_style import print_message
 
 API_PORT = 8080
 FRONTEND_PORT = 5175
@@ -36,7 +36,7 @@ STOCKINFO_CORS_ORIGIN = "http://cors-not-used.invalid"
 QUOTE_PATH = "/quote/IE00B4L5Y983"
 # Devisenweg der USD-Positionen; brach unbemerkt mit StockInfo T-94.
 FX_PATH = "/fx?base=USD&quote=EUR"
-PYPROJECT = Path(__file__).resolve().parent.parent / "pyproject.toml"
+PYPROJECT = Path(__file__).resolve().parents[2] / "pyproject.toml"
 
 
 def minimum_python(pyproject: Path) -> tuple[int, ...]:

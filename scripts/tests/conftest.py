@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 SCRIPTS = Path(__file__).resolve().parent.parent
-# Die Skripte importieren sich gegenseitig über ihren Ordner, nicht als Paket.
+# Wie test-stack.py: scripts/ im Suchpfad, die Hilfsmodule kommen aus dem Paket teststack.
 sys.path.insert(0, str(SCRIPTS))
 
 

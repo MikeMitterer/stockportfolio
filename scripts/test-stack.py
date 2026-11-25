@@ -63,9 +63,9 @@ from pathlib import Path
 from types import FrameType
 from typing import Any
 
-from local_test_stack import process_identity, run_stack_cli, translate
-from terminal_style import HelpFormatter, has_theme, print_message
-from test_state import OwnedStateFile
+from teststack.stack import process_identity, run_stack_cli, translate
+from teststack.state import OwnedStateFile
+from teststack.terminal_style import HelpFormatter, has_theme, print_message
 
 
 class ScriptArgumentParser(argparse.ArgumentParser):
@@ -231,7 +231,8 @@ def start_server(args: argparse.Namespace, script_path: Path, state_path: Path) 
 
     # Erst jetzt: Beide Importe laden StockInfos App samt Einstellungen.
     import uvicorn
-    from stockinfo_fixture_app import FixtureConfig, create_fixture_app
+
+    from teststack.fixture_app import FixtureConfig, create_fixture_app
 
     app = create_fixture_app(FixtureConfig(data_dir, origin, args.demo_details, detail_fixtures))
 
