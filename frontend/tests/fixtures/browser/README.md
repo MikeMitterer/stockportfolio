@@ -12,7 +12,7 @@ Backup und werden beim Öffnen frisch geladen.
    über die Konto-API ab:
 
    ```bash
-   .venv/bin/python scripts/stockinfo-test-server.py --stack --run \
+   scripts/test-stack.py --stack --run \
      --stockinfo-root ../StockInfo --demo-accounts \
      --detail-fixtures frontend/tests/fixtures/stockinfo --demo-details
    ```

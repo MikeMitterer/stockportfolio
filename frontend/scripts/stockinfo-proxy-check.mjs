@@ -31,7 +31,7 @@
 // direkt. Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
 // Gegen den Teststack (Vite auf 127.0.0.1:5175):
-//   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
+//   scripts/test-stack.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
 //   npm --prefix frontend run check:stockinfo-proxy -- <data_dir>/demo-accounts.json
 // Gegen einen Container ruft `docker/browser-check.sh` das Skript mit
 // STOCKPORTFOLIO_ORIGIN und STOCKINFO_URL auf, einmal davon mit `--unreachable`.

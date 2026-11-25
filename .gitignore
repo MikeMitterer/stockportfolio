@@ -70,7 +70,7 @@ docker/logs/
 # Claude Code (lokale Werkzeug-Konfiguration)
 .claude/
 .overmind.sock
-# Marke von make dev-up: StockInfo wurde von hier gestartet (scripts/dev-stockinfo.sh)
+# Marke von make dev-up: StockInfo wurde von hier gestartet (scripts/dev-stack.sh)
 /.dev-stockinfo
 /_tickets/
 /.worktrees/

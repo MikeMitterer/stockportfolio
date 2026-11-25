@@ -14,7 +14,7 @@
 # Voraussetzung: laufender Teststack (StockInfo-Testdienst auf 8899) und ein
 # Image aus `make build`. Aufruf aus dem Repository-Root:
 #
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+#   scripts/test-stack.py --stack --run --stockinfo-root ../StockInfo
 #   ./docker/browser-check.sh [image]        # Vorgabe: mangolila/stockportfolio:latest
 #
 # Alles, was der Lauf anlegt, räumt er am Ende selbst wieder ab.

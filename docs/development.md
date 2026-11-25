@@ -45,7 +45,7 @@ beschreibt der [Docker-Guide](../docker/README.md).
 
 ```bash
 make setup                 # npm-Pakete, Python-venv, Werkzeuge in .tools/, Git-Hooks
-cp .env.example .env       # STOCKINFO_API_URL anpassen
+cp .env.example .env       # STOCKINFO_API_URL anpassen, DEV_STOCKINFO wählen
 make dev-up                # App, Konto-API und StockInfo; make hints nennt die Adressen
 ```
 
@@ -95,14 +95,28 @@ einen Port ändert, ändert ihn nur an seiner Stelle.
 Hauptcheckout, also `../StockInfo`, auch wenn du in einem Worktree unter
 `.worktrees/` arbeitest; `STOCKINFO_ROOT` nennt einen anderen Ort. Antwortet
 StockInfo schon unter seiner Adresse, etwa weil du dort gerade arbeitest, wird
-es mitbenutzt. Die Konto-API spricht im Dev-Stack immer dieses lokale
-StockInfo an; `STOCKINFO_API_URL` aus `.env` gilt nur für Starts ohne
-`make dev-up`. `make hints` nennt die Adressen aller Dienste des Stacks: App,
+es mitbenutzt. Die Konto-API spricht im Dev-Stack dieses lokale StockInfo
+an; `STOCKINFO_API_URL` aus `.env` gilt dann nur für Starts ohne
+`make dev-up`.
+
+Welches StockInfo `make dev-up` verwendet, legt `DEV_STOCKINFO` in `.env`
+fest (Vorlage: `.env.example`):
+
+| `DEV_STOCKINFO` | StockInfo im Dev-Stack |
+|---|---|
+| `local` (Vorgabe, auch ohne Eintrag) | startet StockInfo aus `../StockInfo` oder benutzt ein laufendes mit |
+| `remote` | startet kein StockInfo; die Konto-API spricht das installierte unter `STOCKINFO_API_URL` an, etwa auf Unraid |
+
+Mit `remote` prüft `make dev-up` vorher dessen `/health` und bricht ab, wenn
+es nicht antwortet; `make dev-down` lässt es unberührt. `make hints` nennt dann
+dieselbe Adresse für StockInfo-API und Dashboard, weil der Container beides
+ausliefert. `make hints` nennt die Adressen aller Dienste des Stacks: App,
 Konto-API, StockInfo-API samt API-Doku und StockInfo-Dashboard.
 
 Antwortet StockInfo nach 60 Sekunden nicht, bricht `make dev-up` ab und nennt
 die Befehle für StockInfos Logs und Einrichtung. Den Ablauf übernimmt
-`scripts/dev-stockinfo.sh` (`--help` zeigt die Optionen).
+`scripts/dev-stack.sh` (`--help` zeigt die Optionen); der Teststack für
+Browserprüfungen ist davon getrennt `scripts/test-stack.py`.
 
 **Einrichtungscode:** Solange es kein Admin-Konto gibt, gibt die API bei jedem
 Start einen neuen Code nach `StockPortfolio setup code:` aus. Unter
@@ -255,13 +269,17 @@ Freigabeliste weiter, nur für angemeldete Konten, ohne Cookies und mit
 
 ## Teststack für Browserprüfungen
 
-Der Teststack startet StockInfos Routen mit temporären Testkursen, die eigene
-Konto-API und Vite gemeinsam. Er berührt keine echten Daten.
+Der Teststack `scripts/test-stack.py` startet StockInfos Routen mit
+temporären Testkursen, die eigene Konto-API und Vite gemeinsam. Er berührt
+keine echten Daten und verwendet immer die lokalen Testkurse, auch wenn
+`make dev-up` auf `DEV_STOCKINFO=remote` steht; die Prüfskripte verlassen sich
+auf sie. Das Skript startet sich selbst mit `.venv/bin/python`, ein
+vorangestelltes Python ist nicht nötig.
 
 ```bash
-.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
-.venv/bin/python scripts/stockinfo-test-server.py --stack --status
-.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
+scripts/test-stack.py --stack --run --stockinfo-root ../StockInfo
+scripts/test-stack.py --stack --status
+scripts/test-stack.py --stack --stop
 ```
 
 Hilfe und Meldungen gestaltet das Paket `cli_theme` (CLITheme), das
@@ -305,7 +323,7 @@ voraus, bricht aber ohne Vorprüfung mit einem SyntaxError ab. Nur den
 StockInfo-Testserver ohne Stack startest du direkt mit StockInfos Python:
 
 ```bash
-../StockInfo/.venv/bin/python scripts/stockinfo-test-server.py --run --stockinfo-root ../StockInfo
+../StockInfo/.venv/bin/python scripts/test-stack.py --run --stockinfo-root ../StockInfo
 ```
 
 ## Browserprüfungen

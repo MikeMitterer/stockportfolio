@@ -1,6 +1,6 @@
 """StockInfos echte App mit Testkursen, Testquellen und Fehlerszenarien (T-129).
 
-Nur im StockInfo-Kindprozess importieren, nachdem `stockinfo-test-server.py`
+Nur im StockInfo-Kindprozess importieren, nachdem `test-stack.py`
 StockInfos Repository auf `sys.path` gesetzt und `DATABASE_PATH` und
 `CORS_ORIGINS` gesetzt hat: Die Importe unten laden StockInfos `app` samt
 Einstellungen.

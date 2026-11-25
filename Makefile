@@ -32,9 +32,9 @@ REQUIRE_STARTER = command -v devtools >/dev/null || { \
 	echo "  ✗ devtools fehlt: einmal je Rechner in der DevTools-Arbeitskopie make install" >&2; exit 1; }
 
 # Die Konto-API liest .env selbst (npm run dev); das Makefile braucht daraus nur die Adresse
-# für info und hints.
+# für info und hints und für dev-up die Wahl des StockInfo (DEV_STOCKINFO, T-148).
 -include .env
-export STOCKINFO_API_URL
+export STOCKINFO_API_URL DEV_STOCKINFO
 
 # Werkzeuge aus .tools/ dieses Checkouts vorn im PATH; ein global installiertes ProjectTools
 # zählt nicht. BashLib für help, info, hints, version, tags und docker/build.sh: Ein von außen
@@ -99,10 +99,10 @@ override API_PORT      = $(eval override API_PORT := $$(call dev_port,api))$(API
 unexport FRONTEND_PORT API_PORT
 # Adressen der StockInfo-Dienste, die dev-up startet oder mitbenutzt (T-147); das Skript fragt
 # dev-ports im StockInfo-Repository und gibt nur http://127.0.0.1:<Ziffern> aus.
-NO_STOCKINFO   := ? (StockInfo nicht gefunden: STOCKINFO_ROOT setzen)
+NO_STOCKINFO   := ? (Grund: scripts/dev-stack.sh --address)
 # Angezeigt mit localhost wie App und Konto-API; die Konto-API selbst bekommt 127.0.0.1.
 stockinfo_url   = $(or $(subst //127.0.0.1:,//localhost:,$(shell $(TOOL_ENV); \
-	scripts/dev-stockinfo.sh --address $(1) 2>/dev/null)),$(NO_STOCKINFO))
+	scripts/dev-stack.sh --address $(1) 2>/dev/null)),$(NO_STOCKINFO))
 override STOCKINFO_BACKEND_URL   = $(eval override STOCKINFO_BACKEND_URL := $$(call stockinfo_url,backend))$(STOCKINFO_BACKEND_URL)
 override STOCKINFO_DASHBOARD_URL = $(eval override STOCKINFO_DASHBOARD_URL := $$(call stockinfo_url,dashboard))$(STOCKINFO_DASHBOARD_URL)
 unexport STOCKINFO_BACKEND_URL STOCKINFO_DASHBOARD_URL
@@ -131,6 +131,7 @@ info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
 	@printMakeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
 	@printMakeValue PYTHON_BOOTSTRAP  "$${PYTHON_BOOTSTRAP:-python$(PYTHON_MIN)}"
 	@printMakeValue STOCKINFO_API_URL "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
+	@printMakeValue DEV_STOCKINFO     "$${DEV_STOCKINFO:-local}  (dev-up: local | remote)"
 	@printMakeValue PLATFORM          "$${PLATFORM}  (build: x86 | arm)"
 	@printMakeValue TARGET            "$${TARGET:-dockerhub}  (push: dockerhub | ghcr | ecr)"
 	@printMakeHeading "Werkzeuge (.dev-tools.conf.sh)"
@@ -153,7 +154,7 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 	@printMakeValue   "Letzter Release"   '$(RELEASE_TAG)'
 	@printMakeValue   "Docker Hub"        "https://hub.docker.com/r/mangolila/stockportfolio"
 	@printMakeValue   "StockInfo ohne dev-up" "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
-	@printMakeHeading "URLs (nach make dev-up)"
+	@printMakeHeading "URLs (nach make dev-up, StockInfo $${DEV_STOCKINFO:-local})"
 	@printMakeValue   "App"               '$(call dev_url,FRONTEND_PORT)'
 	@printMakeValue   "Konto-API"         '$(call dev_url,API_PORT)'
 	@printMakeValue   "StockInfo-API"     '$(STOCKINFO_BACKEND_URL)'
@@ -162,7 +163,8 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 	@printMakeHeading "Im Alltag"
 	@printMakeValue   "Vor dem Commit"    "make test"
 	@printMakeValue   "Stack hängt"       "make dev-down; danach make dev-up"
-	@printMakeValue   "Teststack"         ".venv/bin/python scripts/stockinfo-test-server.py --stack --run"
+	@printMakeValue   "Teststack"         "scripts/test-stack.py --stack --run"
+	@printMakeValue   "StockInfo auf Unraid" "DEV_STOCKINFO=remote in .env, dann make dev-up"
 	@printMakeValue   "Image für ARM"     "make build PLATFORM=arm"
 	@printMakeValue   "Anderes Push-Ziel" "make push TARGET=ghcr"
 	@echo
@@ -279,20 +281,21 @@ export STOCKPORTFOLIO_DATA_DIR
 # Ein belegter Port bricht den Start ab, statt dass eine App still auf einen anderen ausweicht.
 # dev-ports (ProjectTools) ist Voraussetzung (makefile-conventions): Procfile.dev fragt damit die
 # Ports beim Start ab, ohne es fehlt Vite das Proxy-Ziel. StockInfo startet und stoppt
-# scripts/dev-stockinfo.sh über StockInfos eigenes dev-up/dev-down; ein schon laufendes bleibt
+# scripts/dev-stack.sh über StockInfos eigenes dev-up/dev-down; ein schon laufendes bleibt
 # unberührt. Die Konto-API bekommt dessen Adresse, die Vorrang vor der Datei-Vorgabe hat (T-147).
+# Mit DEV_STOCKINFO=remote startet kein StockInfo; dann gilt STOCKINFO_API_URL (T-148).
 .PHONY: dev-up dev-down
 dev-up: require-tools ## App, Konto-API und StockInfo laufen im Hintergrund (Overmind)
 	@command -v overmind >/dev/null || { echo "  ✗ overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
 	@command -v tmux >/dev/null || { echo "  ✗ tmux fehlt; tmux installieren." >&2; exit 1; }
 	@dev-ports --check
-	@scripts/dev-stockinfo.sh --up
-	@ADDRESS=$$(scripts/dev-stockinfo.sh --address) && \
+	@scripts/dev-stack.sh --up
+	@ADDRESS=$$(scripts/dev-stack.sh --address) && \
 		STOCKINFO_API_URL="$$ADDRESS" OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
 
 dev-down: require-tools ## Dev-Stack samt von dev-up gestartetem StockInfo gestoppt, Ports frei
 	-@overmind quit 2>/dev/null || true
-	@scripts/dev-stockinfo.sh --down
+	@scripts/dev-stack.sh --down
 	@dev-ports --kill
 
 # Setzt den Checkout zurück; danach verlangen die Prüfziele wieder make setup.

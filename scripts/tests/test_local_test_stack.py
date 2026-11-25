@@ -22,7 +22,7 @@ from local_test_stack import (
 )
 
 SCRIPTS = Path(__file__).resolve().parent.parent
-SERVER_SCRIPT = SCRIPTS / "stockinfo-test-server.py"
+SERVER_SCRIPT = SCRIPTS / "test-stack.py"
 
 
 def is_running(process: subprocess.Popen[bytes]) -> bool:
@@ -163,3 +163,20 @@ def test_request_refuses_non_http_urls_without_opening_them(url: str, monkeypatc
         request(url)
 
     assert opened == []
+
+
+def test_script_runs_directly_with_the_project_venv(tmp_path: Path) -> None:
+    """Direkt aus einem fremden Ordner aufrufbar, ohne ein Python aus PATH (T-148)."""
+    # /usr/bin/python3 ist unter macOS 3.9 und könnte das Skript nicht einmal parsen.
+    result = subprocess.run(
+        [str(SERVER_SCRIPT), "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+        cwd=tmp_path,
+        env={"PATH": "/usr/bin:/bin", "NO_COLOR": "1", "TMPDIR": str(tmp_path)},
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "--stack" in result.stdout

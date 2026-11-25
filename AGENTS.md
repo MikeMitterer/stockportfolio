@@ -109,11 +109,14 @@ Projekts.
 Lokal gegen den Dienst entwickeln: `make dev-up` startet hier Vite, Konto-API
 und über StockInfos eigenes `make dev-up` auch StockInfo (T-147); ein schon
 laufendes StockInfo wird mitbenutzt. Die Konto-API spricht dann das lokale
-StockInfo an, Adressen mit `make hints`. Details in der
-[Entwicklerdoku](docs/development.md#stockinfo-im-dev-stack).
+StockInfo an, Adressen mit `make hints`. Mit `DEV_STOCKINFO=remote` in `.env`
+startet `make dev-up` kein StockInfo und verwendet das installierte unter
+`STOCKINFO_API_URL` (T-148). Den Ablauf übernimmt `scripts/dev-stack.sh`.
+Details in der [Entwicklerdoku](docs/development.md#stockinfo-im-dev-stack).
 
 Die gehostete Instanz steht unter `https://stockinfo.int.mikemitterer.at`; sie
-ist die Vorgabe aus `.env.example` für Starts ohne `make dev-up`.
+ist die Vorgabe aus `.env.example` für Starts ohne `make dev-up` und für
+`make dev-up` mit `DEV_STOCKINFO=remote`.
 
 [↑ Übersicht](#übersicht)
 
@@ -272,21 +275,24 @@ ein gutes Ergebnis zu erkennen ist, auch wo kein Werkzeug misst, steht im
 [Qualitätsprofil](docs/quality-profile.md); der Qualitätslauf am Sprintende
 prüft den Code dagegen.
 
-Für reproduzierbare Browserprüfungen startet
-`scripts/stockinfo-test-server.py --stack` StockInfos vorhandene Routen mit
-temporären Kursen, die eigene Konto-API und Vite gemeinsam. `make setup`
+Für reproduzierbare Browserprüfungen startet der Teststack
+`scripts/test-stack.py --stack` StockInfos vorhandene Routen mit
+temporären Kursen, die eigene Konto-API und Vite gemeinsam. Er ist nicht der
+Dev-Stack von `make dev-up` und verwendet immer die lokalen Testkurse, auf die
+sich die Prüfskripte verlassen. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit der Python-Mindestversion aus
 `requires-python` in `pyproject.toml` (derzeit 3.14, wie StockInfo) und installiert
 dort die Pakete aus `requirements-dev.txt`, darunter die gepinnten Prüfwerkzeuge
 (ruff, bandit, pip-audit). Vor dem Anlegen prüft Setup die
 Python-Version; eine bestehende `.venv` mit älterem Python legt es neu an. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
-Aus diesem Repository aufrufen:
+Das Skript startet sich selbst mit `.venv/bin/python` und lässt sich deshalb
+direkt aufrufen:
 
 ```bash
-.venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
-.venv/bin/python scripts/stockinfo-test-server.py --stack --status
-.venv/bin/python scripts/stockinfo-test-server.py --stack --stop
+scripts/test-stack.py --stack --run --stockinfo-root ../StockInfo
+scripts/test-stack.py --stack --status
+scripts/test-stack.py --stack --stop
 ```
 
 Der StockInfo-Kindprozess verwendet weiterhin `<stockinfo-root>/.venv/bin/python`; `make setup` verändert
@@ -334,7 +340,7 @@ Skripten je Ticket** (Mike, 2026-10-02). Keine Kopie außerhalb des Repos
 und kein Wegwerf-Skript, das nach dem Ticket verloren geht.
 
 - **Umgebung:** der Teststack aus [Bauen und prüfen](#bauen-und-prüfen)
-  (`scripts/stockinfo-test-server.py --stack`), nie die Arbeitsdaten.
+  (`scripts/test-stack.py --stack`), nie die Arbeitsdaten.
 - **Vorhandene Abläufe:** Playwright-Skripte unter `frontend/scripts/`,
   derzeit `live-sync-smoke.mjs` (Live-Abgleich zwischen zwei Browsern),
   `capture-screenshots.mjs` (Bilder für die Anleitungen) und

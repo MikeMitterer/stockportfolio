@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
-# dev-stockinfo.sh — StockInfo-Backend für den Dev-Stack starten und stoppen
+# dev-stack.sh — StockInfo für den Dev-Stack von make dev-up bereitstellen
 #
-# make dev-up und make dev-down rufen es auf (T-147). StockInfo startet über
+# make dev-up und make dev-down rufen es auf (T-147). Welches StockInfo die
+# Konto-API anspricht, legt DEV_STOCKINFO in .env fest (T-148):
+#   local   StockInfo aus dem Nachbar-Repository (Vorgabe)
+#   remote  das installierte StockInfo unter STOCKINFO_API_URL, etwa auf Unraid
+# Der Teststack für Browserprüfungen ist scripts/test-stack.py.
+#
+# Lokal startet StockInfo über
 # sein eigenes `make dev-up`; Befehl und Port stehen nur dort (Procfile.dev,
 # gelesen mit dev-ports). Antwortet StockInfo schon, etwa weil dort gerade
 # gearbeitet wird, bleibt es unberührt: --up benutzt es mit, --down beendet es
@@ -14,12 +20,12 @@
 # einen anderen Ort.
 #
 # Verwendung:
-#   scripts/dev-stockinfo.sh [--up|--down|--address [DIENST]] [--help]
+#   scripts/dev-stack.sh [--up|--down|--address [DIENST]] [--help]
 #   make dev-up
 #   make dev-down
 #
 # Optionen:
-#   --up        StockInfo starten oder ein laufendes mitbenutzen
+#   --up        StockInfo starten oder ein laufendes mitbenutzen; remote nur prüfen
 #   --down      StockInfo stoppen, sofern --up es gestartet hat
 #   --address   Adresse eines StockInfo-Dienstes ausgeben (backend, dashboard)
 #------------------------------------------------------------------------------
@@ -43,7 +49,7 @@ usage() {
     echo
     echo "Usage: ${APPNAME} [ options ]"
     echo
-    printThemeOption -u --up "StockInfo läuft danach; ein schon laufendes wird mitbenutzt"
+    printThemeOption -u --up "StockInfo läuft danach; ein schon laufendes wird mitbenutzt, remote nur geprüft"
     printThemeOption -d --down "StockInfo gestoppt, wenn --up es gestartet hat; sonst unberührt"
     printThemeOption -a --address DIENST "Adresse von StockInfo zeigen: backend (Vorgabe), dashboard"
     printThemeOption -h --help "Diese Hilfe anzeigen"
@@ -53,6 +59,7 @@ usage() {
     printThemeExample "${APPNAME} --up" "Nur StockInfo starten"
     printThemeExample "${APPNAME} --address dashboard" "Wo das StockInfo-Dashboard läuft"
     printThemeExample "STOCKINFO_ROOT=~/src/StockInfo ${APPNAME} --up" "StockInfo aus anderem Ordner"
+    printThemeExample "DEV_STOCKINFO=remote ${APPNAME} --up" "Installiertes StockInfo aus STOCKINFO_API_URL"
     echo
 }
 
@@ -66,6 +73,42 @@ fail() {
     done
     echo >&2
     exit 1
+}
+
+# Wert aus der Umgebung (make exportiert ihn aus .env), sonst aus .env dieses
+# Checkouts; $1 Name. Gelesen wird nur die Zeile NAME=…, nichts ausgeführt.
+configValue() {
+    local -r NAME="${1}"
+    if [[ -n "${!NAME:-}" ]]; then
+        printf '%s\n' "${!NAME}"
+        return
+    fi
+    local FILE
+    FILE="$(git rev-parse --show-toplevel)/.env"
+    [[ -r "${FILE}" ]] || return 0
+    sed -n "s/^${NAME}=//p" "${FILE}" | tail -n 1 | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/"
+}
+
+# local oder remote aus DEV_STOCKINFO; ohne Angabe local.
+stockinfoSource() {
+    local SOURCE
+    SOURCE="$(configValue DEV_STOCKINFO)"
+    case "${SOURCE:-local}" in
+        local | remote) printf '%s\n' "${SOURCE:-local}" ;;
+        *) fail "DEV_STOCKINFO=${SOURCE} ist unbekannt" "Erlaubt sind local und remote (.env, Vorlage: .env.example)" ;;
+    esac
+}
+
+# Adresse des installierten StockInfo; der Container liefert API und Dashboard
+# unter derselben Adresse.
+remoteAddress() {
+    local URL
+    URL="$(configValue STOCKINFO_API_URL)"
+    if [[ ! "${URL}" =~ ^https?://[^/]+ ]]; then
+        fail "DEV_STOCKINFO=remote braucht STOCKINFO_API_URL mit einer http(s)-Adresse" \
+            "In .env eintragen (Vorlage: .env.example) oder DEV_STOCKINFO=local setzen"
+    fi
+    printf '%s\n' "${URL%/}"
 }
 
 # StockInfo neben dem Hauptcheckout: Das gemeinsame .git liegt auch für einen
@@ -121,8 +164,24 @@ markerFile() {
     printf '%s\n' "$(git rev-parse --show-toplevel)/.dev-stockinfo"
 }
 
+useRemoteStockInfo() {
+    local ADDRESS
+    ADDRESS="$(remoteAddress)"
+    if ! isHealthy "${ADDRESS}"; then
+        fail "StockInfo antwortet nicht unter ${ADDRESS}/health" \
+            "Läuft der Dienst? Sonst DEV_STOCKINFO=local in .env setzen"
+    fi
+    printThemeStatus "✓" "StockInfo unter ${ADDRESS} wird verwendet (DEV_STOCKINFO=remote)" OK
+    echo
+}
+
 startStockInfo() {
-    local ROOT ADDRESS
+    local SOURCE ROOT ADDRESS
+    SOURCE="$(stockinfoSource)"
+    if [[ "${SOURCE}" == remote ]]; then
+        useRemoteStockInfo
+        return
+    fi
     ROOT="$(stockinfoRoot)"
     requireRoot "${ROOT}"
     ADDRESS="$(serviceAddress "${ROOT}" backend)"
@@ -165,6 +224,12 @@ showAddress() {
     local -r SERVICE="${1:-backend}"
     local ROOT
     [[ "${SERVICE}" =~ ^[a-z][a-z0-9-]*$ ]] || fail "Unbekannter Dienst: ${SERVICE}" "Erlaubt etwa: backend, dashboard"
+    local SOURCE
+    SOURCE="$(stockinfoSource)"
+    if [[ "${SOURCE}" == remote ]]; then
+        remoteAddress
+        return
+    fi
     ROOT="$(stockinfoRoot)"
     requireRoot "${ROOT}"
     serviceAddress "${ROOT}" "${SERVICE}"
