@@ -97,7 +97,8 @@ Hauptcheckout, also `../StockInfo`, auch wenn du in einem Worktree unter
 StockInfo schon unter seiner Adresse, etwa weil du dort gerade arbeitest, wird
 es mitbenutzt. Die Konto-API spricht im Dev-Stack immer dieses lokale
 StockInfo an; `STOCKINFO_API_URL` aus `.env` gilt nur für Starts ohne
-`make dev-up`. `make hints` nennt die Adresse.
+`make dev-up`. `make hints` nennt die Adressen aller Dienste des Stacks: App,
+Konto-API, StockInfo-API samt API-Doku und StockInfo-Dashboard.
 
 Antwortet StockInfo nach 60 Sekunden nicht, bricht `make dev-up` ab und nennt
 die Befehle für StockInfos Logs und Einrichtung. Den Ablauf übernimmt

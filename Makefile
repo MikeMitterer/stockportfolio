@@ -97,12 +97,15 @@ dev_url      = $(if $($(1)),http://localhost:$($(1)),$(NO_DEV_PORTS))
 override FRONTEND_PORT = $(eval override FRONTEND_PORT := $$(call dev_port,frontend))$(FRONTEND_PORT)
 override API_PORT      = $(eval override API_PORT := $$(call dev_port,api))$(API_PORT)
 unexport FRONTEND_PORT API_PORT
-# Adresse des StockInfo-Backends, das dev-up startet oder mitbenutzt (T-147); das Skript fragt
+# Adressen der StockInfo-Dienste, die dev-up startet oder mitbenutzt (T-147); das Skript fragt
 # dev-ports im StockInfo-Repository und gibt nur http://127.0.0.1:<Ziffern> aus.
-NO_STOCKINFO := ? (StockInfo nicht gefunden: STOCKINFO_ROOT setzen)
-override STOCKINFO_DEV_URL = $(eval override STOCKINFO_DEV_URL := $$(or $$(shell $$(TOOL_ENV); \
-	scripts/dev-stockinfo.sh --address 2>/dev/null),$(NO_STOCKINFO)))$(STOCKINFO_DEV_URL)
-unexport STOCKINFO_DEV_URL
+NO_STOCKINFO   := ? (StockInfo nicht gefunden: STOCKINFO_ROOT setzen)
+# Angezeigt mit localhost wie App und Konto-API; die Konto-API selbst bekommt 127.0.0.1.
+stockinfo_url   = $(or $(subst //127.0.0.1:,//localhost:,$(shell $(TOOL_ENV); \
+	scripts/dev-stockinfo.sh --address $(1) 2>/dev/null)),$(NO_STOCKINFO))
+override STOCKINFO_BACKEND_URL   = $(eval override STOCKINFO_BACKEND_URL := $$(call stockinfo_url,backend))$(STOCKINFO_BACKEND_URL)
+override STOCKINFO_DASHBOARD_URL = $(eval override STOCKINFO_DASHBOARD_URL := $$(call stockinfo_url,dashboard))$(STOCKINFO_DASHBOARD_URL)
+unexport STOCKINFO_BACKEND_URL STOCKINFO_DASHBOARD_URL
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
 
@@ -153,7 +156,9 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 	@printMakeHeading "URLs (nach make dev-up)"
 	@printMakeValue   "App"               '$(call dev_url,FRONTEND_PORT)'
 	@printMakeValue   "Konto-API"         '$(call dev_url,API_PORT)'
-	@printMakeValue   "StockInfo"         '$(STOCKINFO_DEV_URL)'
+	@printMakeValue   "StockInfo-API"     '$(STOCKINFO_BACKEND_URL)'
+	@printMakeValue   "StockInfo-API-Doku" '$(if $(filter http%,$(STOCKINFO_BACKEND_URL)),$(STOCKINFO_BACKEND_URL)/docs,$(NO_STOCKINFO))'
+	@printMakeValue   "StockInfo-Dashboard" '$(STOCKINFO_DASHBOARD_URL)'
 	@printMakeHeading "Im Alltag"
 	@printMakeValue   "Vor dem Commit"    "make test"
 	@printMakeValue   "Stack hängt"       "make dev-down; danach make dev-up"

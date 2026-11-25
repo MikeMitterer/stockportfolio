@@ -14,14 +14,14 @@
 # einen anderen Ort.
 #
 # Verwendung:
-#   scripts/dev-stockinfo.sh [--up|--down|--address] [--help]
+#   scripts/dev-stockinfo.sh [--up|--down|--address [DIENST]] [--help]
 #   make dev-up
 #   make dev-down
 #
 # Optionen:
 #   --up        StockInfo starten oder ein laufendes mitbenutzen
 #   --down      StockInfo stoppen, sofern --up es gestartet hat
-#   --address   Adresse des lokalen StockInfo-Backends ausgeben
+#   --address   Adresse eines StockInfo-Dienstes ausgeben (backend, dashboard)
 #------------------------------------------------------------------------------
 set -euo pipefail
 
@@ -45,12 +45,13 @@ usage() {
     echo
     printThemeOption -u --up "StockInfo läuft danach; ein schon laufendes wird mitbenutzt"
     printThemeOption -d --down "StockInfo gestoppt, wenn --up es gestartet hat; sonst unberührt"
-    printThemeOption -a --address "Adresse des lokalen StockInfo zeigen, etwa für die Konto-API"
+    printThemeOption -a --address DIENST "Adresse von StockInfo zeigen: backend (Vorgabe), dashboard"
     printThemeOption -h --help "Diese Hilfe anzeigen"
     printThemeHeading "Hints"
     printThemeExample "make dev-up" "App, Konto-API und StockInfo starten"
     printThemeExample "make dev-down" "Alles wieder stoppen"
     printThemeExample "${APPNAME} --up" "Nur StockInfo starten"
+    printThemeExample "${APPNAME} --address dashboard" "Wo das StockInfo-Dashboard läuft"
     printThemeExample "STOCKINFO_ROOT=~/src/StockInfo ${APPNAME} --up" "StockInfo aus anderem Ordner"
     echo
 }
@@ -87,11 +88,12 @@ requireRoot() {
     fi
 }
 
-backendAddress() {
-    local -r ROOT="${1}"
+# Adresse eines Prozesses aus StockInfos Procfile.dev; $1 Repository, $2 Prozessname.
+serviceAddress() {
+    local -r ROOT="${1}" SERVICE="${2}"
     local PORT
-    PORT="$(cd "${ROOT}" && dev-ports --port-of backend | grep -xE '[0-9]+')" ||
-        fail "Port des StockInfo-Backends unbekannt" "Nachsehen: cd '${ROOT}' && dev-ports --list"
+    PORT="$(cd "${ROOT}" && dev-ports --port-of "${SERVICE}" 2>/dev/null | grep -xE '[0-9]+')" ||
+        fail "Port des StockInfo-Dienstes ${SERVICE} unbekannt" "Nachsehen: cd '${ROOT}' && dev-ports --list"
     printf 'http://127.0.0.1:%s\n' "${PORT}"
 }
 
@@ -123,7 +125,7 @@ startStockInfo() {
     local ROOT ADDRESS
     ROOT="$(stockinfoRoot)"
     requireRoot "${ROOT}"
-    ADDRESS="$(backendAddress "${ROOT}")"
+    ADDRESS="$(serviceAddress "${ROOT}" backend)"
     if isHealthy "${ADDRESS}"; then
         printThemeStatus "✓" "StockInfo läuft schon unter ${ADDRESS} und wird mitbenutzt" OK
         echo
@@ -158,11 +160,14 @@ stopStockInfo() {
     rm -f "${MARKER}"
 }
 
+# $1 Prozessname aus StockInfos Procfile.dev, Vorgabe backend.
 showAddress() {
+    local -r SERVICE="${1:-backend}"
     local ROOT
+    [[ "${SERVICE}" =~ ^[a-z][a-z0-9-]*$ ]] || fail "Unbekannter Dienst: ${SERVICE}" "Erlaubt etwa: backend, dashboard"
     ROOT="$(stockinfoRoot)"
     requireRoot "${ROOT}"
-    backendAddress "${ROOT}"
+    serviceAddress "${ROOT}" "${SERVICE}"
 }
 
 if [[ $# -eq 0 ]]; then
@@ -173,7 +178,7 @@ fi
 case "${1}" in
     -u | --up) startStockInfo ;;
     -d | --down) stopStockInfo ;;
-    -a | --address) showAddress ;;
+    -a | --address) showAddress "${2:-}" ;;
     -h | --help) usage ;;
     *)
         printThemeStatus "✗" "Unbekannte Option: ${1}" ERR >&2
