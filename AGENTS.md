@@ -307,7 +307,9 @@ diesen Stack mit `--demo-accounts`:
 Er ordnet zwei Fenster 50:50 auf dem Hauptbildschirm an, links bleiben 100
 Pixel frei, und lässt die Fenster bis Enter offen.
 
-Der Start meldet `127.0.0.1:5175`, `:8080` und `:8899`, prüft Health,
+Der Start meldet `127.0.0.1:5185`, `:8090` und `:8899` (eigene Ports aus
+`scripts/teststack/ports.json`, getrennt von `make dev-up`; beide Stacks
+laufen nebeneinander, T-150), prüft Health,
 Testkurs und die StockInfo-Weiterleitung über Vite zur Konto-API. Optionale
 synthetische Konten entstehen mit `--demo-accounts` nur im temporären
 Testverzeichnis. Ohne diese Option steht der einmalige Setup-Code im dortigen

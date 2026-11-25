@@ -31,8 +31,9 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { chromium } from 'playwright-core'
+import { testStackOrigin } from './teststack/address.mjs'
 
-const origin = 'http://127.0.0.1:5175'
+const origin = testStackOrigin
 const chromePath =
   process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const viewport = { width: 1440, height: 1000 }

@@ -11,7 +11,8 @@
 #   2. STOCKINFO_API_URL zeigt auf einen Namen, der nicht auflöst: Der Server
 #      meldet 502 stockinfo_unreachable, die Oberfläche sagt das.
 #
-# Voraussetzung: laufender Teststack (StockInfo-Testdienst auf 8899) und ein
+# Voraussetzung: laufender Teststack (StockInfo-Testdienst, Port aus
+# scripts/teststack/ports.json) und ein
 # Image aus `make build`. Aufruf aus dem Repository-Root:
 #
 #   scripts/test-stack.py --stack --run --stockinfo-root ../StockInfo
@@ -26,7 +27,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly ROOT
 readonly PORT=18091
 readonly ORIGIN="http://127.0.0.1:${PORT}"
-readonly STOCKINFO_PORT="${STOCKINFO_PORT:-8899}"
+# Port des StockInfo-Testdiensts aus der einzigen Quelle des Teststacks.
+STOCKINFO_PORT="${STOCKINFO_PORT:-$(node -p "require('${ROOT}/scripts/teststack/ports.json').stockinfo")}"
+readonly STOCKINFO_PORT
 readonly REACHABLE_URL="http://host.docker.internal:${STOCKINFO_PORT}"
 readonly MISSING_URL="http://stockinfo-missing.invalid:8000"
 readonly USERNAME="browser-admin"

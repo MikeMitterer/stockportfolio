@@ -289,8 +289,11 @@ Hilfe und Meldungen gestaltet das Paket `cli_theme` (CLITheme), das
 Farben und Abstände folgen dem gewählten Theme (`clitheme use`). Ohne das
 Paket laufen die Skripte ohne Farben weiter.
 
-Der Start kehrt zurück, sobald Vite (`127.0.0.1:5175`), Konto-API
-(`127.0.0.1:8080`) und StockInfo-Testserver (`127.0.0.1:8899`) bereit sind.
+Der Start kehrt zurück, sobald Vite (`127.0.0.1:5185`), Konto-API
+(`127.0.0.1:8090`) und StockInfo-Testserver (`127.0.0.1:8899`) bereit sind.
+Die Ports stehen nur in `scripts/teststack/ports.json`; die Prüfskripte unter
+`frontend/scripts/` lesen sie von dort. Sie unterscheiden sich von denen aus
+`make dev-up`, deshalb laufen Dev-Stack und Teststack nebeneinander.
 Er prüft Health, einen Testkurs und die Weiterleitung über Vite zur Konto-API.
 Ohne weitere Option steht der Einrichtungscode im ausgegebenen API-Log.
 
@@ -306,9 +309,9 @@ liefert der Testserver Randfälle: Kryptopaar, OTC-Anleihe, mehrdeutiges Symbol,
 Pence-Listing und Listing ohne ISIN.
 
 Stop entfernt Testkonten und temporäre Datenbanken. `.env`, `.local-data`,
-Makefiles und StockInfo-Dateien bleiben unverändert. Die Ports 5175 und 8080
-sind fest, weil Vites Proxy sie erwartet. Ein Portkonflikt bricht den Start
-ab; fremde Prozesse werden nicht beendet. Liegt StockInfo nicht neben diesem
+Makefiles und StockInfo-Dateien bleiben unverändert. Ein Portkonflikt bricht
+den Start ab; fremde Prozesse werden nicht beendet, `dev-ports --status
+--port <port>` zeigt, wer den Port belegt. Liegt StockInfo nicht neben diesem
 Repository, braucht `--stockinfo-root` einen absoluten Pfad.
 
 Das Verhalten der Teststack-Skripte prüfen pytest-Tests unter
@@ -347,7 +350,8 @@ im Kopfkommentar. Prüfskripte enden mit Exit-Code 1 bei Abweichung.
 `check:demo-data` und `check:stockinfo-proxy` erreichen StockInfo unter
 `STOCKINFO_URL` (Vorgabe `http://127.0.0.1:8899`, der Test-StockInfo des
 Teststacks). `check:stockinfo-proxy` öffnet StockPortfolio unter
-`STOCKPORTFOLIO_ORIGIN` (Vorgabe `http://127.0.0.1:5175`, der Vite-Server).
+`STOCKPORTFOLIO_ORIGIN` (Vorgabe `http://127.0.0.1:5185`, der Vite-Server des
+Teststacks). Beide Vorgaben kommen aus `scripts/teststack/ports.json`.
 
 Beispiel:
 

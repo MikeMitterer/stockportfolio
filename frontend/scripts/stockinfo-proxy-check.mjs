@@ -30,14 +30,15 @@
 // In beiden Fällen fragt der Browser nur StockPortfolio an, nie StockInfo
 // direkt. Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
-// Gegen den Teststack (Vite auf 127.0.0.1:5175):
+// Gegen den Teststack (Adressen aus scripts/teststack/ports.json):
 //   scripts/test-stack.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
 //   npm --prefix frontend run check:stockinfo-proxy -- <data_dir>/demo-accounts.json
 // Gegen einen Container ruft `docker/browser-check.sh` das Skript mit
 // STOCKPORTFOLIO_ORIGIN und STOCKINFO_URL auf, einmal davon mit `--unreachable`.
 //
-// Umgebung: STOCKPORTFOLIO_ORIGIN (Vorgabe http://127.0.0.1:5175),
-// STOCKINFO_URL = Adresse, die der Server nutzt (Vorgabe http://127.0.0.1:8899).
+// Umgebung: STOCKPORTFOLIO_ORIGIN (Vorgabe: Vite des Teststacks),
+// STOCKINFO_URL = Adresse, die der Server nutzt (Vorgabe: StockInfo des
+// Teststacks).
 // Die Konten-Datei hat die Form von demo-accounts.json; verwendet wird `admin`.
 // Deutsche Oberfläche; der Browser läuft sichtbar auf dem Hauptmonitor, links
 // bleiben 100 px frei.
@@ -46,9 +47,10 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright-core'
+import { testStackOrigin, testStackStockInfoUrl } from './teststack/address.mjs'
 
-const origin = process.env.STOCKPORTFOLIO_ORIGIN ?? 'http://127.0.0.1:5175'
-const stockInfoUrl = process.env.STOCKINFO_URL ?? 'http://127.0.0.1:8899'
+const origin = process.env.STOCKPORTFOLIO_ORIGIN ?? testStackOrigin
+const stockInfoUrl = process.env.STOCKINFO_URL ?? testStackStockInfoUrl
 const chromePath =
   process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const viewport = { width: 1440, height: 1000 }

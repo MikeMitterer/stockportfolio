@@ -180,3 +180,21 @@ def test_script_runs_directly_with_the_project_venv(tmp_path: Path) -> None:
 
     assert result.returncode == 0, result.stderr
     assert "--stack" in result.stdout
+
+
+def test_test_stack_ports_differ_from_the_dev_stack() -> None:
+    """Teststack und make dev-up laufen nebeneinander: keine gemeinsamen Ports (T-150)."""
+    project_root = SCRIPTS.parent
+    result = subprocess.run(
+        [str(project_root / ".tools/bin/dev-ports"), "--list"],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=30,
+        cwd=project_root,
+        env={**os.environ, "NO_COLOR": "1"},
+    )
+    dev_ports = {int(line.split()[1]) for line in result.stdout.splitlines() if line.split()[1:2] != ["-"]}
+
+    assert dev_ports, result.stdout
+    assert dev_ports.isdisjoint({stack.API_PORT, stack.FRONTEND_PORT})
