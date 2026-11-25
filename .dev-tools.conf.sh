@@ -11,8 +11,9 @@
 # make info zeigt ihn.
 
 # DevTools selbst: Das Makefile ruft das einmal je Rechner installierte devtools auf (Starter);
-# ist es älter als DEVTOOLS_TAG, gibt es an diesen Tag aus DEVTOOLS_SOURCE weiter.
-DEVTOOLS_TAG=v0.7.0+261119.1249.b3946
+# ist es älter als DEVTOOLS_TAG, gibt es an diesen Tag aus DEVTOOLS_SOURCE weiter. Ab v0.11.0
+# kennt devtools tstamp auch allowScripts (Einrichtungsstempel der npm-Pakete im Makefile).
+DEVTOOLS_TAG=v0.11.0+261125.1212.dc0c4
 DEVTOOLS_SOURCE=git+https://github.com/MikeMitterer/python-devtools.git
 
 # ProjectTools (docs-check, repo-status, changelog, repo-info, tag-version, dev-ports,

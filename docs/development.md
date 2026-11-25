@@ -54,7 +54,11 @@ npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
 und bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
 Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
 wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
-zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Prüfziele wie
+zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Die npm-Pakete
+installiert es nur neu, wenn sich in `package.json` oder `package-lock.json`
+Abhängigkeiten oder Skriptfreigaben (`allowScripts`) ändern; eine neue Version
+allein, etwa nach `make tag-patch`, zählt nicht. Den Abgleich schreibt
+`devtools tstamp` nach `.stamps/`. Prüfziele wie
 `make test` richten nichts selbst ein: Fehlt etwas oder ist es veraltet,
 brechen sie ab und nennen `make setup`. `make info` zeigt den Werkzeugstand.
 Auch `make dev-up` und `make dev-down` setzen die Werkzeuge voraus.
