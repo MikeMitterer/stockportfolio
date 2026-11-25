@@ -59,6 +59,8 @@ docker/logs/
 
 # Entwicklungswerkzeuge aus make setup (devtools --project install)
 .tools/
+# Abhängigkeitsstempel der npm-Pakete (devtools tstamp im Makefile)
+.stamps/
 
 # Cache
 .cache/

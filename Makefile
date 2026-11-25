@@ -61,7 +61,8 @@ VENV := .venv
 PYTHON := $(VENV)/bin/python
 
 # Was setup herstellt und require-setup prüft: npm-Pakete beider Teilprojekte, die .venv und
-# die Werkzeuge in .tools/. Jeder Stempel entsteht neu, sobald seine Quelldatei neuer ist.
+# die Werkzeuge in .tools/. Jeder Stempel entsteht neu, sobald seine Quelldatei neuer ist; bei
+# den npm-Paketen ist das der Abhängigkeitsstempel in .stamps/ (siehe Setup).
 TOOLS_STAMP := $(TOOLS_DIR)/.installed
 # Der Stempel der .venv trägt die Mindestversion im Namen: Steigt sie, fehlt er, require-setup
 # verlangt make setup, und setup ersetzt eine .venv mit älterem Python.
@@ -172,12 +173,26 @@ setup: ## Bereit zum Entwickeln: npm-Pakete, .venv, Werkzeuge in .tools/
 
 # Stempelregeln: nur setup und build erreichen sie; neu, sobald die Lock- bzw. Config-Datei
 # neuer ist.
-# Neu auch bei geändertem Manifest: `npm install-scripts approve/deny` schreibt nur package.json.
+#
+# npm-Pakete hängen nicht direkt an package.json: Dort steht die Version, und jedes Release
+# machte die Einrichtung sonst veraltet. devtools tstamp schreibt je Teilprojekt die
+# Abhängigkeiten ohne Version nach .stamps/, und nur, wenn sie sich ändern — mit allowScripts,
+# das `npm install-scripts approve/deny` allein in package.json schreibt. Beim Einlesen, damit
+# make -q (require-setup) den neuen Stand sieht; in .stamps/, weil npm ci node_modules/ löscht.
+NPM_DIRS := frontend api
+$(shell for dir in $(NPM_DIRS); do \
+	devtools tstamp .stamps/$$dir.dependencies $$dir/package.json $$dir/package-lock.json; \
+	done 2>/dev/null)
+
 # Vorher Node und npm gegen `engines` prüfen; npm selbst meldet eine Unterschreitung nur.
-%/node_modules/.installed: %/package-lock.json %/package.json
+%/node_modules/.installed: .stamps/%.dependencies
 	@node scripts/check-engines.mjs "$*"
 	@npm ci --prefix "$*" --no-audit --no-fund
 	@touch "$@"
+
+# Fehlt der Stempel (etwa ohne devtools beim Einlesen), legt diese Regel ihn an.
+.stamps/%.dependencies:
+	@$(REQUIRE_STARTER); devtools tstamp "$@" "$*/package.json" "$*/package-lock.json"
 
 # Eine .venv mit älterem Python wird mit --clear neu angelegt; sie ist ein Erzeugnis von setup.
 # Über devtools exec: Mit rechnerlokaler Zuordnung kommen Git-Abhängigkeiten (CLITheme) aus den
@@ -240,7 +255,7 @@ clean: ## Erzeugte Dateien, .venv und .tools/ entfernt; .env und Daten bleiben
 	@npm --prefix frontend run clean
 	@npm --prefix api run clean
 	@rm -rf dist coverage .vite .eslintcache tsconfig.tsbuildinfo scripts/__pycache__ \
-		$(VENV) $(TOOLS_DIR) frontend/node_modules/.installed api/node_modules/.installed
+		$(VENV) $(TOOLS_DIR) .stamps frontend/node_modules/.installed api/node_modules/.installed
 	@echo "  ✓ aufgeräumt"
 
 # ─── Prüfen ──────────────────────────────────────────────────────────────────
