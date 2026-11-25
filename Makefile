@@ -97,6 +97,15 @@ dev_url      = $(if $($(1)),http://localhost:$($(1)),$(NO_DEV_PORTS))
 override FRONTEND_PORT = $(eval override FRONTEND_PORT := $$(call dev_port,frontend))$(FRONTEND_PORT)
 override API_PORT      = $(eval override API_PORT := $$(call dev_port,api))$(API_PORT)
 unexport FRONTEND_PORT API_PORT
+# Adressen der StockInfo-Dienste, die dev-up startet oder mitbenutzt (T-147); das Skript fragt
+# dev-ports im StockInfo-Repository und gibt nur http://127.0.0.1:<Ziffern> aus.
+NO_STOCKINFO   := ? (StockInfo nicht gefunden: STOCKINFO_ROOT setzen)
+# Angezeigt mit localhost wie App und Konto-API; die Konto-API selbst bekommt 127.0.0.1.
+stockinfo_url   = $(or $(subst //127.0.0.1:,//localhost:,$(shell $(TOOL_ENV); \
+	scripts/dev-stockinfo.sh --address $(1) 2>/dev/null)),$(NO_STOCKINFO))
+override STOCKINFO_BACKEND_URL   = $(eval override STOCKINFO_BACKEND_URL := $$(call stockinfo_url,backend))$(STOCKINFO_BACKEND_URL)
+override STOCKINFO_DASHBOARD_URL = $(eval override STOCKINFO_DASHBOARD_URL := $$(call stockinfo_url,dashboard))$(STOCKINFO_DASHBOARD_URL)
+unexport STOCKINFO_BACKEND_URL STOCKINFO_DASHBOARD_URL
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
 
@@ -143,10 +152,13 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 	@printMakeValue   "Repository"        '$(REPO_URL)'
 	@printMakeValue   "Letzter Release"   '$(RELEASE_TAG)'
 	@printMakeValue   "Docker Hub"        "https://hub.docker.com/r/mangolila/stockportfolio"
-	@printMakeValue   "StockInfo"         "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
+	@printMakeValue   "StockInfo ohne dev-up" "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
 	@printMakeHeading "URLs (nach make dev-up)"
 	@printMakeValue   "App"               '$(call dev_url,FRONTEND_PORT)'
 	@printMakeValue   "Konto-API"         '$(call dev_url,API_PORT)'
+	@printMakeValue   "StockInfo-API"     '$(STOCKINFO_BACKEND_URL)'
+	@printMakeValue   "StockInfo-API-Doku" '$(if $(filter http%,$(STOCKINFO_BACKEND_URL)),$(STOCKINFO_BACKEND_URL)/docs,$(NO_STOCKINFO))'
+	@printMakeValue   "StockInfo-Dashboard" '$(STOCKINFO_DASHBOARD_URL)'
 	@printMakeHeading "Im Alltag"
 	@printMakeValue   "Vor dem Commit"    "make test"
 	@printMakeValue   "Stack hängt"       "make dev-down; danach make dev-up"
@@ -266,16 +278,21 @@ export STOCKPORTFOLIO_DATA_DIR
 
 # Ein belegter Port bricht den Start ab, statt dass eine App still auf einen anderen ausweicht.
 # dev-ports (ProjectTools) ist Voraussetzung (makefile-conventions): Procfile.dev fragt damit die
-# Ports beim Start ab, ohne es fehlt Vite das Proxy-Ziel.
+# Ports beim Start ab, ohne es fehlt Vite das Proxy-Ziel. StockInfo startet und stoppt
+# scripts/dev-stockinfo.sh über StockInfos eigenes dev-up/dev-down; ein schon laufendes bleibt
+# unberührt. Die Konto-API bekommt dessen Adresse, die Vorrang vor der Datei-Vorgabe hat (T-147).
 .PHONY: dev-up dev-down
-dev-up: require-tools ## Vite und Konto-API laufen im Hintergrund (Overmind)
+dev-up: require-tools ## App, Konto-API und StockInfo laufen im Hintergrund (Overmind)
 	@command -v overmind >/dev/null || { echo "  ✗ overmind fehlt; overmind und tmux installieren." >&2; exit 1; }
 	@command -v tmux >/dev/null || { echo "  ✗ tmux fehlt; tmux installieren." >&2; exit 1; }
 	@dev-ports --check
-	@OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
+	@scripts/dev-stockinfo.sh --up
+	@ADDRESS=$$(scripts/dev-stockinfo.sh --address) && \
+		STOCKINFO_API_URL="$$ADDRESS" OVERMIND_SKIP_ENV=1 overmind start -D -N -f Procfile.dev
 
-dev-down: require-tools ## Dev-Stack gestoppt, Ports frei
+dev-down: require-tools ## Dev-Stack samt von dev-up gestartetem StockInfo gestoppt, Ports frei
 	-@overmind quit 2>/dev/null || true
+	@scripts/dev-stockinfo.sh --down
 	@dev-ports --kill
 
 # Setzt den Checkout zurück; danach verlangen die Prüfziele wieder make setup.

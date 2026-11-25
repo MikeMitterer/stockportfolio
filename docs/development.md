@@ -38,14 +38,15 @@ beschreibt der [Docker-Guide](../docker/README.md).
   oder PyPI veröffentlicht sind, holt DevTools sie über seine rechnerlokale
   Zuordnung aus den lokalen Repos.
 - Overmind und tmux für den Dev-Stack (macOS: `brew install overmind tmux`)
-- eine erreichbare StockInfo-Instanz; `make dev-up` startet sie **nicht**
+- das StockInfo-Repository, eingerichtet mit dessen `make setup`; `make dev-up`
+  startet es mit ([StockInfo im Dev-Stack](#stockinfo-im-dev-stack))
 
 ## Einrichten und starten
 
 ```bash
 make setup                 # npm-Pakete, Python-venv, Werkzeuge in .tools/, Git-Hooks
 cp .env.example .env       # STOCKINFO_API_URL anpassen
-make dev-up                # Vite und Konto-API; make hints nennt die Adressen
+make dev-up                # App, Konto-API und StockInfo; make hints nennt die Adressen
 ```
 
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
@@ -87,14 +88,31 @@ Vite das Proxy-Ziel (`VITE_DEV_API_TARGET`) und der Konto-API die Herkunft der
 App (`STOCKPORTFOLIO_PUBLIC_ORIGIN`); `make hints` nennt die Adressen. Wer
 einen Port ändert, ändert ihn nur an seiner Stelle.
 
+### StockInfo im Dev-Stack
+
+`make dev-up` startet auch das StockInfo-Backend, über StockInfos eigenes
+`make dev-up` (Backend und Dashboard). Gesucht wird es neben dem
+Hauptcheckout, also `../StockInfo`, auch wenn du in einem Worktree unter
+`.worktrees/` arbeitest; `STOCKINFO_ROOT` nennt einen anderen Ort. Antwortet
+StockInfo schon unter seiner Adresse, etwa weil du dort gerade arbeitest, wird
+es mitbenutzt. Die Konto-API spricht im Dev-Stack immer dieses lokale
+StockInfo an; `STOCKINFO_API_URL` aus `.env` gilt nur für Starts ohne
+`make dev-up`. `make hints` nennt die Adressen aller Dienste des Stacks: App,
+Konto-API, StockInfo-API samt API-Doku und StockInfo-Dashboard.
+
+Antwortet StockInfo nach 60 Sekunden nicht, bricht `make dev-up` ab und nennt
+die Befehle für StockInfos Logs und Einrichtung. Den Ablauf übernimmt
+`scripts/dev-stockinfo.sh` (`--help` zeigt die Optionen).
+
 **Einrichtungscode:** Solange es kein Admin-Konto gibt, gibt die API bei jedem
 Start einen neuen Code nach `StockPortfolio setup code:` aus. Unter
 `make dev-up` liest du ihn mit `overmind connect api` (verlassen mit Ctrl-B,
 dann D); `overmind echo` zeigt nur neue Ausgaben und verpasst den Code.
 
 **Stoppen:** `make dev-down` beendet den Stack und gibt seine Ports frei. Nach einem Absturz räumt es auch Overmind- und tmux-Reste und eine
-veraltete `.overmind.sock` auf. Prozesse anderer Projekte, etwa StockInfo oder
-Docker, bleiben unberührt. Ein zweiter Aufruf ohne Stack endet mit 0.
+veraltete `.overmind.sock` auf. StockInfo stoppt es nur, wenn `make dev-up`
+es gestartet hat; ein vorher schon laufendes bleibt stehen. Andere Prozesse,
+etwa Docker, bleiben unberührt. Ein zweiter Aufruf ohne Stack endet mit 0.
 
 **Einzeln starten:** jeweils aus dem Projekt-Root, denn `dev-ports` findet
 `Procfile.dev` nur dort. Nur Vite; ohne `VITE_DEV_API_TARGET` bricht der Start
