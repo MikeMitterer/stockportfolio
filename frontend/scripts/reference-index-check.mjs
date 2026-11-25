@@ -23,7 +23,7 @@
 // Bei jeder Abweichung endet das Skript mit Exit-Code 1.
 //
 // Voraussetzung:
-//   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
+//   scripts/test-stack.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
 //   npm --prefix frontend run check:reference-index -- <data_dir>/demo-accounts.json [Bildordner]
 //
 // Ohne Bildordner entstehen keine Bilder. Deutsche Oberfläche; der Browser

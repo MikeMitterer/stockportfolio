@@ -12,7 +12,7 @@
 // bei jeder Abweichung mit Exit-Code 1.
 //
 // Voraussetzung ist der lokale Teststack mit synthetischen Konten:
-//   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
+//   scripts/test-stack.py --stack --run --demo-accounts --stockinfo-root ../StockInfo
 //   npm --prefix frontend run check:notice-texts -- <data_dir>/demo-accounts.json [Bildordner]
 //
 // Ohne Bildordner entstehen keine Bilder. Der Browser läuft sichtbar auf dem

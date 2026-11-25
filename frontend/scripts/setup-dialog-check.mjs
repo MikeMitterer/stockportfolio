@@ -9,7 +9,7 @@
 //
 // Voraussetzung ist der Teststack ohne synthetische Konten, damit der
 // Einrichtungsdialog erscheint:
-//   .venv/bin/python scripts/stockinfo-test-server.py --stack --run --stockinfo-root ../StockInfo
+//   scripts/test-stack.py --stack --run --stockinfo-root ../StockInfo
 //   npm --prefix frontend run check:setup-dialog
 //
 // Der Browser läuft sichtbar auf dem Hauptmonitor; links bleiben 100 px frei.

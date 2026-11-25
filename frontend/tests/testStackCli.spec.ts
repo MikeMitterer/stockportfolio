@@ -9,7 +9,7 @@ import { PROJECT_ROOT } from './helpers/projectRoot'
  */
 function runCli(args: string[], withTheme: boolean) {
   const python = resolve(PROJECT_ROOT, '.venv/bin/python')
-  const script = resolve(PROJECT_ROOT, 'scripts/stockinfo-test-server.py')
+  const script = resolve(PROJECT_ROOT, 'scripts/test-stack.py')
   return spawnSync(python, [...(withTheme ? [] : ['-S']), script, ...args], {
     cwd: PROJECT_ROOT,
     encoding: 'utf8',

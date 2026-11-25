@@ -1,15 +1,18 @@
-#!/usr/bin/env python3
+#!/bin/sh
 # ------------------------------------------------------------------------------
-# stockinfo-test-server.py — StockInfo-Testkurse und lokalen Browserstack starten
+# test-stack.py — Teststack für Browserprüfungen: StockInfo mit Testkursen,
+# Konto-API und Vite mit temporären Daten
 #
-# Der Stack läuft mit StockPortfolios Python-Umgebung und temporären Daten;
-# sein StockInfo-Kindprozess verwendet StockInfos Python-Umgebung. Ohne
-# --stack benötigt der Einzelserver direkt StockInfos Python-Umgebung.
+# Nicht der Dev-Stack: Der läuft mit `make dev-up` (scripts/dev-stack.sh) auf
+# den Arbeitsdaten. Direkt aufgerufen läuft das Skript mit StockPortfolios
+# .venv (siehe unten); sein StockInfo-Kindprozess verwendet StockInfos
+# Python-Umgebung. Ohne --stack benötigt der Einzelserver direkt StockInfos
+# Python-Umgebung.
 #
 # Verwendung:
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --run
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --status
-#   .venv/bin/python scripts/stockinfo-test-server.py --stack --stop
+#   scripts/test-stack.py --stack --run
+#   scripts/test-stack.py --stack --status
+#   scripts/test-stack.py --stack --stop
 #
 # Optionen:
 #   -r | --run              Testserver beziehungsweise Stack starten
@@ -23,28 +26,29 @@
 #   -f | --detail-fixtures  Detail-Fixtures angeben
 #   -D | --demo-details     Lesbare Instrumente und Detailwerte verwenden
 #   -h | --help             Diese Hilfe anzeigen; auch ohne Argumente
+#
+# Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle: Die
+# App-Routen, QuoteService, CachedQuoteService und SQLite-Persistenz bleiben
+# unverändert. Nur externe Quellen und der produktive Start-Scheduler werden
+# für die reproduzierbare Browserprüfung ersetzt. Fehlantworten werden getrennt
+# über eine ausdrücklich bezeichnete Test-Middleware eingespeist.
+#
+# StockInfo-only: direkt StockInfos Python, --stockinfo-root PFAD und optional
+# --port. Ganzer Stack: zusätzlich --stack; --demo-accounts legt auf Wunsch zwei
+# synthetische Konten an. --stack --status prüft Prozesse, Endpunkte, Kurs und
+# die StockInfo-Weiterleitung der Konto-API; StockInfo läuft dort ohne CORS für
+# den Browser. --stack --stop entfernt eigene Prozesse und temporäre
+# Kontodaten. Ohne --stack beendet --stop nur den StockInfo-Testserver, während
+# Konto-API und Vite weiterlaufen können. Port, PID, Prozessstart und
+# Scriptpfad werden im temporären Benutzerverzeichnis vermerkt. Ein fremder
+# Portbesitzer wird niemals gesucht oder beendet. Das Script benötigt ps für
+# die Prozessidentität.
 # ------------------------------------------------------------------------------
-"""Echter StockInfo-Server mit temporärer Datenbank und lokaler Testquelle.
-
-Der Stack startet mit StockPortfolios Python-Umgebung. Sein StockInfo-
-Kindprozess nutzt StockInfos Python-Umgebung und einen temporären Arbeitsordner.
-Die App-Routen, QuoteService, CachedQuoteService und SQLite-Persistenz bleiben
-unverändert. Nur externe Quellen und der produktive Start-Scheduler werden
-für die reproduzierbare Browserprüfung ersetzt. Fehlantworten werden getrennt
-über eine ausdrücklich bezeichnete Test-Middleware eingespeist.
-
-StockInfo-only: direkt StockInfos Python, --stockinfo-root PFAD und optional --port.
-Ganzer Stack: zusätzlich --stack; --demo-accounts legt auf Wunsch zwei
-synthetische Konten an. --stack --status prüft Prozesse, Endpunkte, Kurs und
-die StockInfo-Weiterleitung der Konto-API; StockInfo läuft dort ohne CORS für
-den Browser. --stack --stop entfernt eigene Prozesse und temporäre Kontodaten. Ohne
---stack beendet --stop nur den StockInfo-Testserver, während Konto-API und Vite
-weiterlaufen können. Port, PID, Prozessstart und Scriptpfad werden im
-temporären Benutzerverzeichnis vermerkt. Ein fremder Portbesitzer wird niemals
-gesucht oder beendet. Das Script benötigt ps für die Prozessidentität.
-"""
-
-from __future__ import annotations
+# Direkt aufgerufen startet sh das Skript mit StockPortfolios .venv neu (T-148):
+# Ein System-Python ist zu alt, um es überhaupt zu parsen. Für Python ist die
+# folgende Zeile ein String (deshalb stehen Erklärungen hier als Kommentar und
+# nicht als Docstring), für sh ein exec.
+''''[ -x "$(dirname -- "$0")/../.venv/bin/python" ] || { echo "Missing .venv/bin/python; run make setup" >&2; exit 127; }; exec "$(dirname -- "$0")/../.venv/bin/python" "$0" "$@" # '''  # fmt: skip
 
 import argparse
 import atexit
