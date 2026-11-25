@@ -46,8 +46,15 @@ export PATH := $(WORKSPACE)/$(TOOLS_DIR)/bin:$(PATH)
 ifndef BASH_LIBS
 BASH_LIBS = $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/bashlib-path 2>/dev/null)
 BASHLIB_FROM_TOOLS := yes
+BASHLIB_MISSING := BashLib fehlt in $(TOOLS_DIR)/: make setup
+else
+BASHLIB_MISSING := BASH_LIBS zeigt nicht auf BashLib: anpassen oder unset BASH_LIBS, dann gilt die aus $(TOOLS_DIR)/
 endif
 export BASH_LIBS
+# Erste Rezeptzeile von help, info und hints: Ohne BashLib nennt es Grund und Befehl, statt dass
+# make.lib.sh still fehlt und „Kommando nicht gefunden“ folgt. Anders als require-bash-libs
+# richtet es nicht ein: Für eine Hilfe liefe sonst das ganze setup.
+BASHLIB_LOADED = test -r "$${BASH_LIBS}/make.lib.sh" || { echo "  ✗ $(BASHLIB_MISSING)" >&2; exit 1; }
 
 # Mindestversion von Python, gelesen aus `requires-python = ">=X.Y"` in pyproject.toml, der
 # einzigen Quelle. Leer, wenn die Zeile anders aussieht; setup bricht dann mit Meldung ab.
@@ -103,11 +110,13 @@ help info hints: export BASH_ENV := $${BASH_LIBS}/make.lib.sh
 # steht in frontend/package.json, darum läuft es dort. Targets stehen nur in diesem Makefile.
 .PHONY: help
 help: ## Verfügbare Befehle anzeigen
+	@$(BASHLIB_LOADED)
 	@showMakeHeader "$${PROJECT_NAME}"
 	@cd frontend && showMakeTargets "$${WORKSPACE}/Makefile"
 
 .PHONY: info
 info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
+	@$(BASHLIB_LOADED)
 	@echo
 	@printMakeValue WORKSPACE         "$${WORKSPACE}"
 	@printMakeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
@@ -129,6 +138,7 @@ RELEASE_TAG  = $(eval RELEASE_TAG := $(or $(shell repo-info --release-tag 2>/dev
 # Links, URLs und Tipps für den Alltag; das Einrichten beschreibt docs/development.md.
 .PHONY: hints
 hints: ## Links, URLs und Tipps für die tägliche Arbeit
+	@$(BASHLIB_LOADED)
 	@printMakeHeading "Links"
 	@printMakeValue   "Repository"        '$(REPO_URL)'
 	@printMakeValue   "Letzter Release"   '$(RELEASE_TAG)'
@@ -150,16 +160,22 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 # Ohne `##`, vor allen Targets, die BashLib laden (version, tags, tag-*, docker/build.sh): Fehlt
 # BashLib (frischer Klon) oder ist .tools/ älter als .dev-tools.conf.sh, läuft make setup; fehlt
 # es danach weiter, bricht es mit Grund ab. Ein von außen gesetztes BASH_LIBS prüft es nur auf
-# Lesbarkeit. Als Vorbedingung, damit das Target danach BASH_LIBS neu ermittelt. Die Prüfung
-# nach setup fragt bashlib-path direkt: BASH_LIBS dieses Targets steht schon fest. Bewusst ohne
-# BashLib-Ausgabe: Es meldet gerade, dass sie fehlt.
+# Lesbarkeit und bricht ohne setup ab: setup brächte BashLib nur nach .tools/, das Target läse
+# weiter BASH_LIBS. Als Vorbedingung, damit das Target danach BASH_LIBS neu ermittelt. Die
+# Prüfung nach setup fragt bashlib-path direkt: BASH_LIBS dieses Targets steht schon fest.
+# Bewusst ohne BashLib-Ausgabe: Es meldet gerade, dass sie fehlt.
 .PHONY: require-bash-libs
 require-bash-libs:
-	@{ test -r "$${BASH_LIBS}/version.lib.sh" $(if $(BASHLIB_FROM_TOOLS),&& \
-		$(MAKE) --no-print-directory --question $(TOOLS_STAMP) 2>/dev/null); } || \
+ifdef BASHLIB_FROM_TOOLS
+	@{ test -r "$${BASH_LIBS}/version.lib.sh" && \
+		$(MAKE) --no-print-directory --question $(TOOLS_STAMP) 2>/dev/null; } || \
 		{ $(MAKE) --no-print-directory setup && \
 		test -r "$$("$${WORKSPACE}/$(TOOLS_DIR)/bin/bashlib-path")/version.lib.sh"; } || { \
 		echo "  ✗ BashLib fehlt auch nach make setup ($(TOOLS_DIR)/bin/bashlib-path)" >&2; exit 1; }
+else
+	@test -r "$${BASH_LIBS}/version.lib.sh" || { \
+		echo "  ✗ $(BASHLIB_MISSING)" >&2; echo "    BASH_LIBS=$${BASH_LIBS}" >&2; exit 1; }
+endif
 
 # Ohne `##`: verlangt ProjectTools in .tools/ in Mindestversion. Fehlt es oder ist es zu alt,
 # läuft zuerst make setup; scheitert die Prüfung danach, nennt devtools den Grund.

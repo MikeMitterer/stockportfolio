@@ -60,9 +60,14 @@ Abhängigkeiten oder Skriptfreigaben (`allowScripts`) ändern; eine neue Version
 allein, etwa nach `make tag-patch`, zählt nicht. Den Abgleich schreibt
 `devtools tstamp` nach `.stamps/`. Fehlt etwas oder ist es
 veraltet, rufen Prüfziele wie `make test` zuerst selbst `make setup` auf,
-ebenso Ziele, die BashLib oder ProjectTools brauchen (`make build`,
-`make version`, `make docs-check` …); ein frischer Klon kommt so auch ohne
-vorheriges `make setup` durch. Eingerichtet wird dabei nur über `make setup`. `make info` zeigt den Werkzeugstand.
+ebenso die Docker- und Versionsziele und Ziele mit ProjectTools
+(`make build`, `make version`, `make docs-check` …); `make check` kommt so
+auch in einem frischen Klon ohne vorheriges `make setup` durch. Eingerichtet
+wird dabei nur über `make setup`. Ausgenommen sind `make help`, `make info`
+und `make hints`: Sie richten nichts ein und nennen ohne BashLib
+`make setup`. Ein von außen gesetztes `BASH_LIBS` gilt vor dem aus
+`.tools/`; zeigt es nicht auf BashLib, brechen die Ziele mit diesem Hinweis
+ab, statt einzurichten. `make info` zeigt den Werkzeugstand.
 Auch `make dev-up` und `make dev-down` setzen die Werkzeuge voraus.
 
 **Python-Mindestversion:** Sie steht nur in `requires-python` in
