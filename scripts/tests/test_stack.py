@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -198,3 +200,33 @@ def test_test_stack_ports_differ_from_the_dev_stack() -> None:
 
     assert dev_ports, result.stdout
     assert dev_ports.isdisjoint({stack.API_PORT, stack.FRONTEND_PORT})
+
+
+def answer_like_a_running_stack(price: float, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ersetzt request(): StockInfo, Konto-API und Vite antworten wie ein laufender Stack."""
+
+    def fake_request(url: str, *_args: object, **_kwargs: object) -> tuple[int, dict[str, str], bytes]:
+        if url.endswith(stack.QUOTE_PATH):
+            return 200, {}, json.dumps({"price": price}).encode()
+        if url.endswith(stack.FX_PATH):
+            return 200, {}, json.dumps({"rate": 0.8}).encode()
+        if url.endswith("/api/setup/status"):
+            return 200, {}, json.dumps({"required": True}).encode()
+        if url.endswith("/api/stockinfo/health"):
+            raise RuntimeError(f"{url} returned HTTP 401")
+        return 200, {}, b"{}"
+
+    monkeypatch.setattr(stack, "request", fake_request)
+
+
+def test_status_stays_ready_after_a_quote_refresh(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Nach „Aktualisieren“ liefert die Testquelle Preis + 1; der Status bleibt bereit (T-151)."""
+    answer_like_a_running_stack(129.7, monkeypatch)
+
+    stack.check_stack(stack.STOCKINFO_PORT, expect_initial_data=False)
+
+    # Der Start verlangt weiter die bekannten Testdaten.
+    with pytest.raises(RuntimeError, match=re.escape(stack.translate("The known StockInfo test quote is missing"))):
+        stack.check_stack(stack.STOCKINFO_PORT, expect_initial_data=True)
+    answer_like_a_running_stack(128.7, monkeypatch)
+    stack.check_stack(stack.STOCKINFO_PORT, expect_initial_data=True)
