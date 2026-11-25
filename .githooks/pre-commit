@@ -36,7 +36,8 @@ without_git() {
         -u GIT_COMMON_DIR "$@"
 }
 
-# Ohne ProjectTools in .tools/ nur warnen, mit dem Grund von devtools und dem nächsten
+# require-tools richtet fehlende oder veraltete Werkzeuge mit make setup ein. Lässt sich
+# ProjectTools so nicht einrichten, nur warnen, mit dem Grund von devtools und dem nächsten
 # Schritt: make test bleibt die harte Grenze, ein Commit soll nicht daran scheitern.
 if ! REASON="$(without_git make --no-print-directory -s require-tools 2>&1)"; then
     echo "  ⚠ Doku nicht geprüft: ProjectTools fehlt oder ist zu alt"

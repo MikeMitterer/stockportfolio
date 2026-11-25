@@ -38,14 +38,23 @@ export STOCKINFO_API_URL
 
 # Werkzeuge aus .tools/ dieses Checkouts vorn im PATH; ein global installiertes ProjectTools
 # zählt nicht. BashLib für help, info, hints, version, tags und docker/build.sh: Ein von außen
-# gesetztes BASH_LIBS geht vor, sonst die aus .tools/.
+# gesetztes BASH_LIBS geht vor, sonst die aus .tools/. Mit = statt :=: make ermittelt den Wert je
+# Target neu, und ein Target nach require-bash-libs (make setup) sieht BashLib aus .tools/ im
+# selben Lauf.
 TOOLS_DIR := .tools
 export PATH := $(WORKSPACE)/$(TOOLS_DIR)/bin:$(PATH)
 ifndef BASH_LIBS
-BASH_LIBS := $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/bashlib-path 2>/dev/null)
-BASHLIB_FROM_TOOLS := $(if $(BASH_LIBS),yes)
+BASH_LIBS = $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/bashlib-path 2>/dev/null)
+BASHLIB_FROM_TOOLS := yes
+BASHLIB_MISSING := BashLib fehlt in $(TOOLS_DIR)/: make setup
+else
+BASHLIB_MISSING := BASH_LIBS zeigt nicht auf BashLib: anpassen oder unset BASH_LIBS, dann gilt die aus $(TOOLS_DIR)/
 endif
 export BASH_LIBS
+# Erste Rezeptzeile von help, info und hints: Ohne BashLib nennt es Grund und Befehl, statt dass
+# make.lib.sh still fehlt und „Kommando nicht gefunden“ folgt. Anders als require-bash-libs
+# richtet es nicht ein: Für eine Hilfe liefe sonst das ganze setup.
+BASHLIB_LOADED = test -r "$${BASH_LIBS}/make.lib.sh" || { echo "  ✗ $(BASHLIB_MISSING)" >&2; exit 1; }
 
 # Mindestversion von Python, gelesen aus `requires-python = ">=X.Y"` in pyproject.toml, der
 # einzigen Quelle. Leer, wenn die Zeile anders aussieht; setup bricht dann mit Meldung ab.
@@ -101,11 +110,13 @@ help info hints: export BASH_ENV := $${BASH_LIBS}/make.lib.sh
 # steht in frontend/package.json, darum läuft es dort. Targets stehen nur in diesem Makefile.
 .PHONY: help
 help: ## Verfügbare Befehle anzeigen
+	@$(BASHLIB_LOADED)
 	@showMakeHeader "$${PROJECT_NAME}"
 	@cd frontend && showMakeTargets "$${WORKSPACE}/Makefile"
 
 .PHONY: info
 info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
+	@$(BASHLIB_LOADED)
 	@echo
 	@printMakeValue WORKSPACE         "$${WORKSPACE}"
 	@printMakeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
@@ -127,6 +138,7 @@ RELEASE_TAG  = $(eval RELEASE_TAG := $(or $(shell repo-info --release-tag 2>/dev
 # Links, URLs und Tipps für den Alltag; das Einrichten beschreibt docs/development.md.
 .PHONY: hints
 hints: ## Links, URLs und Tipps für die tägliche Arbeit
+	@$(BASHLIB_LOADED)
 	@printMakeHeading "Links"
 	@printMakeValue   "Repository"        '$(REPO_URL)'
 	@printMakeValue   "Letzter Release"   '$(RELEASE_TAG)'
@@ -143,29 +155,42 @@ hints: ## Links, URLs und Tipps für die tägliche Arbeit
 	@printMakeValue   "Anderes Push-Ziel" "make push TARGET=ghcr"
 	@echo
 
-# ─── Precheck ────────────────────────────────────────────────────────────────
+# ─── Voraussetzungen ─────────────────────────────────────────────────────────
 
-# Ohne `##`: läuft vor version, tags, require-tools und require-setup. Verlangt BashLib, aus
-# .tools/ in der Mindestversion aus .dev-tools.conf.sh; ein von außen gesetztes BASH_LIBS prüft
-# es nur auf Lesbarkeit. Bewusst ohne BashLib-Ausgabe: precheck meldet gerade, dass sie fehlt.
-.PHONY: precheck
-precheck:
-	@if [[ ! -r "$${BASH_LIBS:-}/version.lib.sh" ]]; then \
-		echo "  ✗ BashLib fehlt (BASH_LIBS oder .tools/): make setup" >&2; \
-		exit 1; \
-	elif [[ -n '$(BASHLIB_FROM_TOOLS)' ]]; then $(REQUIRE_STARTER); $(DEV_TOOLS) check bashlib; fi
+# Ohne `##`, vor allen Targets, die BashLib laden (version, tags, tag-*, docker/build.sh): Fehlt
+# BashLib (frischer Klon) oder ist .tools/ älter als .dev-tools.conf.sh, läuft make setup; fehlt
+# es danach weiter, bricht es mit Grund ab. Ein von außen gesetztes BASH_LIBS prüft es nur auf
+# Lesbarkeit und bricht ohne setup ab: setup brächte BashLib nur nach .tools/, das Target läse
+# weiter BASH_LIBS. Als Vorbedingung, damit das Target danach BASH_LIBS neu ermittelt. Die
+# Prüfung nach setup fragt bashlib-path direkt: BASH_LIBS dieses Targets steht schon fest.
+# Bewusst ohne BashLib-Ausgabe: Es meldet gerade, dass sie fehlt.
+.PHONY: require-bash-libs
+require-bash-libs:
+ifdef BASHLIB_FROM_TOOLS
+	@{ test -r "$${BASH_LIBS}/version.lib.sh" && \
+		$(MAKE) --no-print-directory --question $(TOOLS_STAMP) 2>/dev/null; } || \
+		{ $(MAKE) --no-print-directory setup && \
+		test -r "$$("$${WORKSPACE}/$(TOOLS_DIR)/bin/bashlib-path")/version.lib.sh"; } || { \
+		echo "  ✗ BashLib fehlt auch nach make setup ($(TOOLS_DIR)/bin/bashlib-path)" >&2; exit 1; }
+else
+	@test -r "$${BASH_LIBS}/version.lib.sh" || { \
+		echo "  ✗ $(BASHLIB_MISSING)" >&2; echo "    BASH_LIBS=$${BASH_LIBS}" >&2; exit 1; }
+endif
 
-# Ohne `##`: verlangt ProjectTools in .tools/ in Mindestversion; devtools nennt sonst den Grund.
+# Ohne `##`: verlangt ProjectTools in .tools/ in Mindestversion. Fehlt es oder ist es zu alt,
+# läuft zuerst make setup; scheitert die Prüfung danach, nennt devtools den Grund.
 .PHONY: require-tools
-require-tools: precheck
-	@$(REQUIRE_STARTER); $(DEV_TOOLS) check projecttools
+require-tools: require-bash-libs
+	@$(REQUIRE_STARTER); $(DEV_TOOLS) check projecttools >/dev/null 2>&1 || \
+		$(MAKE) --no-print-directory setup
+	@$(DEV_TOOLS) check projecttools
 
 # ─── Setup ───────────────────────────────────────────────────────────────────
 
 ##@ Setup
 
 # setup ist der einzige Weg, einen Checkout einzurichten, auch als worktree_setup im
-# Prüf-Worktree. Prüfziele richten nichts selbst ein, sie hängen an require-setup.
+# Prüf-Worktree. Prüfziele hängen an require-setup, das bei Bedarf make setup aufruft.
 .PHONY: setup require-setup
 setup: ## Bereit zum Entwickeln: npm-Pakete, .venv, Werkzeuge in .tools/
 	@git config core.hooksPath .githooks   # pre-commit: make docs-check
@@ -216,9 +241,13 @@ $(TOOLS_STAMP): .dev-tools.conf.sh
 	@$(REQUIRE_STARTER); $(DEV_TOOLS) install
 	@touch "$@"
 
-# Ohne Hilfeeintrag: meldet eine fehlende oder veraltete Einrichtung, statt sie nachzuholen.
-require-setup: precheck
-	@source "$${BASH_LIBS}/make.lib.sh" && requireMakeSetup --hooks .githooks --make "$(MAKE)" $(SETUP_STAMPS)
+# Ohne Hilfeeintrag: Fehlt die Einrichtung oder ist sie veraltet (Stempel oder core.hooksPath),
+# läuft make setup; sonst nichts. Braucht kein BashLib, das erst mit setup kommt. Scheitert
+# setup, bricht das Target mit dessen Meldung ab.
+require-setup:
+	@{ $(MAKE) --no-print-directory --question $(SETUP_STAMPS) && \
+		[[ "$$(git config core.hooksPath)" == .githooks ]]; } 2>/dev/null || \
+		$(MAKE) --no-print-directory setup
 
 # ─── Status ──────────────────────────────────────────────────────────────────
 
@@ -354,23 +383,20 @@ STRICT ?= 2
 DOCKER_README_REF ?= master
 export PLATFORM STRICT DOCKER_README_REF
 
-# docker/build.sh braucht BashLib und dockerhub-readme aus .tools/; die Ziele holen sie nach.
-# BASH_LIBS aus dem Kopf ist leer, wenn $(TOOLS_STAMP) die Werkzeuge erst in diesem Lauf
-# installiert; darum liest das Rezept es dann aus .tools/.
-DOCKER_BUILD = BASH_LIBS="$${BASH_LIBS:-$$($(TOOLS_DIR)/bin/bashlib-path)}" ./docker/build.sh
-
+# docker/build.sh lädt BashLib, push ruft dazu dockerhub-readme aus .tools/ auf; require-bash-libs
+# und require-tools richten beides bei Bedarf mit make setup ein.
 .PHONY: build push docker-images docker-samples
-build: $(TOOLS_STAMP) ## Image lokal gebaut (PLATFORM=x86|arm, Default x86)
-	@$(DOCKER_BUILD) --build "$${PLATFORM}"
+build: require-bash-libs ## Image lokal gebaut (PLATFORM=x86|arm, Default x86)
+	@./docker/build.sh --build "$${PLATFORM}"
 
-push: $(TOOLS_STAMP) ## Geprüfter Build veröffentlicht, danach README (TARGET=dockerhub)
-	@$(DOCKER_BUILD) --push
+push: require-bash-libs require-tools ## Geprüfter Build veröffentlicht, danach README (TARGET=dockerhub)
+	@./docker/build.sh --push
 
-docker-images: $(TOOLS_STAMP) ## Lokale Images des Projekts anzeigen
-	@$(DOCKER_BUILD) --images
+docker-images: require-bash-libs ## Lokale Images des Projekts anzeigen
+	@./docker/build.sh --images
 
-docker-samples: $(TOOLS_STAMP) ## Beispiel-`docker run`-Kommandos zeigen
-	@$(DOCKER_BUILD) --samples
+docker-samples: require-bash-libs ## Beispiel-`docker run`-Kommandos zeigen
+	@./docker/build.sh --samples
 
 # ─── Versionierung ───────────────────────────────────────────────────────────
 
@@ -378,12 +404,12 @@ docker-samples: $(TOOLS_STAMP) ## Beispiel-`docker run`-Kommandos zeigen
 
 # Die Version steht in frontend/package.json; version und tag-version lesen sie dort.
 .PHONY: version tags changelog
-version: precheck ## Version aus frontend/package.json und letzter Release-Tag
+version: require-bash-libs ## Version aus frontend/package.json und letzter Release-Tag
 	@echo
 	@source "$${BASH_LIBS}/make.lib.sh" && showProjectVersion auto frontend
 	@echo
 
-tags: precheck ## Letzte zehn Release-Tags mit Nachricht anzeigen
+tags: require-bash-libs ## Letzte zehn Release-Tags mit Nachricht anzeigen
 	@echo
 	@source "$${BASH_LIBS}/make.lib.sh" && showReleaseTags 10
 	@echo
@@ -405,9 +431,10 @@ tag-patch: ## Patch {patch}, Fehler behoben  [MSG="..."]
 # Version in frontend/package.json heben und lokal taggen, CHANGELOG.md committen, Stufe
 # vorspulen; alles nur lokal, veröffentlicht wird mit git push --follow-tags. Prüfung und
 # Ablauf stehen nur in tag-version (ProjectTools). changelog nennt bei Erfolg den absoluten
-# Pfad der Datei, darum ohne stdout; Fehler kommen über stderr. require-tools (mit precheck):
-# ohne ProjectTools oder BashLib bricht ein Release vor dem Bump ab, nicht erst nach dem Tag.
-tag-major tag-minor tag-patch: require-tools
+# Pfad der Datei, darum ohne stdout; Fehler kommen über stderr. require-bash-libs und
+# require-tools: Lässt sich BashLib oder ProjectTools nicht einrichten, bricht ein Release vor
+# dem Bump ab, nicht erst nach dem Tag.
+tag-major tag-minor tag-patch: require-bash-libs require-tools
 	@cd frontend && tag-version "$(patsubst tag-%,%,$@)" --message "$${MSG:-}"
 	@LANGUAGE="$${CHANGELOG_LANGUAGE}" changelog --commit >/dev/null
 	@tag-version --fast-forward

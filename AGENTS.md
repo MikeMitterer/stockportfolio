@@ -256,8 +256,10 @@ make push           # geprüftes Image veröffentlichen, danach Hub-README
 `make hints` zeigt Links, URLs und Tipps, `make help` alle Ziele.
 `make setup` ist der einzige Einrichtungsweg, auch für die Workspaces und
 den Prüf-Worktree der Abnahme (agent-lessons, Schlüssel `worktree_setup`);
-Prüfziele wie `make test` richten nichts selbst ein und nennen bei fehlender
-oder veralteter Einrichtung `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
+fehlt die Einrichtung oder ist sie veraltet, rufen Prüfziele wie `make test`,
+Docker- und Versionsziele und Ziele mit ProjectTools zuerst selbst
+`make setup` auf. Nur `make help`, `make info` und `make hints` richten
+nichts ein; ohne BashLib nennen sie `make setup`. Die gemeinsamen Werkzeuge (ProjectTools, BashLib)
 kommen in der Version aus `.dev-tools.conf.sh` nach `.tools/`, nicht als
 Links. Das
 Root-Makefile bildet nur Abläufe des Gesamtprojekts ab. Unter Entwicklung
@@ -471,8 +473,8 @@ mit `docs-check --ack <datei>` quittiert und `.docs-check.ack`
 mitcommittet; ungesehen quittieren ist kein Weg, eine Meldung loszuwerden. Es
 läuft vor jedem Commit (`.githooks/pre-commit`) und prüft dort genau den
 vorgemerkten Stand; ein Link auf eine nicht versionierte Datei fällt deshalb
-auf. Fehlen der Starter `devtools` oder ProjectTools in `.tools/`, warnt der
-Hook nur und lässt den Commit durch; das ist keine bestandene Doku-Prüfung,
+auf. Fehlt der Starter `devtools` oder lässt sich ProjectTools auch mit
+`make setup` nicht in `.tools/` einrichten, warnt der Hook nur und lässt den Commit durch; das ist keine bestandene Doku-Prüfung,
 `make test` bleibt die harte Grenze. `--no-verify` nur im Notfall und mit Begründung im Bericht.
 Welche Dokumente und Begriffe, steht in `.docs-check.conf.sh`; eine neue
 Doku-Regel dieser Art kommt dort mit hinein.

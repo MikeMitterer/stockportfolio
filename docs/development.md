@@ -58,9 +58,16 @@ zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Die npm-Pakete
 installiert es nur neu, wenn sich in `package.json` oder `package-lock.json`
 Abhängigkeiten oder Skriptfreigaben (`allowScripts`) ändern; eine neue Version
 allein, etwa nach `make tag-patch`, zählt nicht. Den Abgleich schreibt
-`devtools tstamp` nach `.stamps/`. Prüfziele wie
-`make test` richten nichts selbst ein: Fehlt etwas oder ist es veraltet,
-brechen sie ab und nennen `make setup`. `make info` zeigt den Werkzeugstand.
+`devtools tstamp` nach `.stamps/`. Fehlt etwas oder ist es
+veraltet, rufen Prüfziele wie `make test` zuerst selbst `make setup` auf,
+ebenso die Docker- und Versionsziele und Ziele mit ProjectTools
+(`make build`, `make version`, `make docs-check` …); `make check` kommt so
+auch in einem frischen Klon ohne vorheriges `make setup` durch. Eingerichtet
+wird dabei nur über `make setup`. Ausgenommen sind `make help`, `make info`
+und `make hints`: Sie richten nichts ein und nennen ohne BashLib
+`make setup`. Ein von außen gesetztes `BASH_LIBS` gilt vor dem aus
+`.tools/`; zeigt es nicht auf BashLib, brechen die Ziele mit diesem Hinweis
+ab, statt einzurichten. `make info` zeigt den Werkzeugstand.
 Auch `make dev-up` und `make dev-down` setzen die Werkzeuge voraus.
 
 **Python-Mindestversion:** Sie steht nur in `requires-python` in
@@ -141,8 +148,8 @@ ist, fasst das [Qualitätsprofil](quality-profile.md#messbare-grenzen) zusammen.
 `make docs-check` liest seine Dokumentliste, Pflichtdateien und verbotenen
 Begriffe aus `.docs-check.conf.sh`. Es läuft auch vor jedem Commit
 (`.githooks/pre-commit`, eingerichtet von `make setup`) und bricht ihn bei
-Problemen ab. Fehlen der Starter oder ProjectTools in `.tools/`, warnt der
-Hook nur („Doku nicht geprüft“) und lässt den Commit durch; ein solcher Commit
+Problemen ab. Fehlt der Starter oder lässt sich ProjectTools auch mit
+`make setup` nicht in `.tools/` einrichten, warnt der Hook nur („Doku nicht geprüft“) und lässt den Commit durch; ein solcher Commit
 gilt nicht als geprüft, `make test` bleibt die harte Grenze. Der Hook prüft genau den vorgemerkten Stand, nicht den
 Arbeitsbaum: Nicht vorgemerkte Änderungen zählen nicht, und ein Link auf eine
 Datei, die nicht in git liegt, ist ein Problem. Jede Umgebungsvariable, die der Code unter `api/src`,
