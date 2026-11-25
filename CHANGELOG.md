@@ -2,6 +2,29 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.9.1+261125.1338.18333 — 2026-11-25
+
+Referenzindex als normierte Vergleichslinie im Gesamtwert-Diagramm; make setup hängt an den Abhängigkeiten statt an der Version, ein frischer Klon richtet sich bei make check selbst ein
+
+### Features
+
+- Referenzindex als Vergleichslinie im Gesamtwert-Diagramm (`24b2ae0`)
+
+### Fixes
+
+- falsches BASH\_LIBS und Hilfe ohne BashLib klar melden (T-146 R1) (`88cb70f`)
+
+### Other changes
+
+- Tooltip des Referenzindex über lastOnOrBefore (R1-F1) (`e763645`)
+- npm-Stempel an den Abhängigkeiten statt an der Version (`a224a01`)
+- frischer Klon richtet sich selbst ein (T-146) (`26e0ad1`)
+
+### Documentation
+
+- Screenshot-Hinweise nach T-143 quittiert (`8d5e29e`)
+- Hinweise nach T-143 Runde 1 quittiert (`60eeb38`)
+
 ## v0.9.0+261123.1340.3d334 — 2026-11-23
 
 StockPortfolio kennt alle Fehlerkennungen von StockInfo in DE und EN; Ports des Dev-Stacks nur noch in Procfile.dev und Vite-Konfiguration, dev-ports nennt sie
