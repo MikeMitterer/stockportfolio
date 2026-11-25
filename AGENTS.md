@@ -106,16 +106,14 @@ Projekts.
   liefern ihre Feldschlüssel für den Dublettenabgleich. Der
   Generationsauftrag aus T-35 bleibt im Backlog.
 
-Lokal gegen den Dienst entwickeln — im StockInfo-Repo das Backend starten, hier
-den Dev-Server:
-
-```bash
-make dev          # in StockInfo: Backend auf http://localhost:8000, Swagger unter /docs
-make dev-up       # in StockPortfolio: Vite und Konto-API, Adressen mit make hints
-```
+Lokal gegen den Dienst entwickeln: `make dev-up` startet hier Vite, Konto-API
+und über StockInfos eigenes `make dev-up` auch StockInfo (T-147); ein schon
+laufendes StockInfo wird mitbenutzt. Die Konto-API spricht dann das lokale
+StockInfo an, Adressen mit `make hints`. Details in der
+[Entwicklerdoku](docs/development.md#stockinfo-im-dev-stack).
 
 Die gehostete Instanz steht unter `https://stockinfo.int.mikemitterer.at`; sie
-ist die Vorgabe aus `.env.example`.
+ist die Vorgabe aus `.env.example` für Starts ohne `make dev-up`.
 
 [↑ Übersicht](#übersicht)
 
@@ -243,8 +241,8 @@ Kein Test greift auf echten Speicher oder das Netz zu.
 
 ```bash
 make setup      # npm-Pakete, .venv und Werkzeuge in .tools/ einrichten
-make dev-up     # Vite und Konto-API über Overmind im Hintergrund starten
-make dev-down   # Dev-Stack stoppen, Reste aufräumen, seine Ports freigeben
+make dev-up     # Vite, Konto-API und StockInfo im Hintergrund starten
+make dev-down   # Dev-Stack samt selbst gestartetem StockInfo stoppen, Ports freigeben
 make check      # lint, typecheck, format-check und test für TS, Python und Bash
 make security   # gitleaks über die Git-History, bandit für Python
 make test       # Doku, Frontend-, API- und Python-Tests, einmalig
