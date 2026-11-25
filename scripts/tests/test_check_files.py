@@ -77,7 +77,8 @@ def test_git_failure_stops_with_its_exit_code(tmp_path: Path) -> None:
         (["--nope"], "--nope"),
         (["--", "echo"], "--python"),
         (["--python", "--shell", "--", "echo"], "--python"),
-        (["--python"], "--"),
+        (["--python"], "--python -- .venv/bin/ruff check"),
+        (["--shell"], "--shell -- shellcheck"),
     ],
 )
 def test_wrong_call_names_the_next_step(args: list[str], message: str, repo: Path) -> None:
@@ -92,7 +93,8 @@ def test_wrong_call_names_the_next_step(args: list[str], message: str, repo: Pat
 
 def test_each_checks_every_file_and_fails_at_the_end(repo: Path) -> None:
     """--each bricht nicht bei der ersten Fundstelle ab: alle Dateien laufen, danach Exit 1."""
-    (repo / "tool.sh").write_text("if\n")
+    # Die kaputte Datei steht vorn: Ein Abbruch nach der ersten Fundstelle ließe tool.sh aus.
+    (repo / ".githooks/pre-commit").write_text("if\n")
 
     result = run(["--shell", "--each", "--", "bash", "-c", 'echo "checked $0"; bash -n "$0"'], repo)
 

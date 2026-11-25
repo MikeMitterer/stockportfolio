@@ -72,6 +72,14 @@ listFiles() {
     esac
 }
 
+# Typischer Prüfbefehl der Sprache $1, für Beispiele in Meldungen.
+exampleCommand() {
+    case "${1}" in
+        python) echo ".venv/bin/ruff check" ;;
+        shell) echo "shellcheck" ;;
+    esac
+}
+
 # Ruft den Befehl je Datei auf; prüft alle und meldet am Ende, ob eine scheiterte.
 runEach() {
     local -n FILES_REF="${1}"
@@ -113,7 +121,7 @@ done
 readonly KIND EACH
 
 [[ -n "${KIND}" ]] || fail "Welche Dateien? --python oder --shell angeben" "Hilfe: ${APPNAME} --help"
-[[ $# -gt 0 ]] || fail "Kein Befehl nach --" "Beispiel: ${APPNAME} --${KIND} -- shellcheck" "Hilfe: ${APPNAME} --help"
+[[ $# -gt 0 ]] || fail "Kein Befehl nach --" "Beispiel: ${APPNAME} --${KIND} -- $(exampleCommand "${KIND}")" "Hilfe: ${APPNAME} --help"
 
 LIST="$(mktemp)"
 readonly LIST
