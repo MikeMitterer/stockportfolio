@@ -63,7 +63,7 @@ from pathlib import Path
 from types import FrameType
 from typing import Any
 
-from teststack.stack import process_identity, run_stack_cli, translate
+from teststack.stack import STOCKINFO_PORT, process_identity, run_stack_cli, translate
 from teststack.state import OwnedStateFile
 from teststack.terminal_style import HelpFormatter, has_theme, print_message
 
@@ -119,7 +119,13 @@ def parse_args(argv: list[str]) -> tuple[argparse.Namespace, argparse.ArgumentPa
         action="store_true",
         help=translate("Create synthetic accounts in the temporary stack."),
     )
-    options.add_argument("-p", "--port", type=int, default=8899, help=translate("StockInfo test port (default: 8899)."))
+    options.add_argument(
+        "-p",
+        "--port",
+        type=int,
+        default=STOCKINFO_PORT,
+        help=translate("StockInfo test port (default: {port}).").format(port=STOCKINFO_PORT),
+    )
     options.add_argument("-o", "--origin", help=translate("Allowed browser origin for CORS."))
     options.add_argument("-f", "--detail-fixtures", type=Path, help=translate("Directory with detail fixtures."))
     options.add_argument(

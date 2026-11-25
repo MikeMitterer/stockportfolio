@@ -17,7 +17,7 @@ Backup und werden beim Öffnen frisch geladen.
      --detail-fixtures frontend/tests/fixtures/stockinfo --demo-details
    ```
 
-2. In einem frischen Browserkontext `http://127.0.0.1:5175/` öffnen und mit
+2. In einem frischen Browserkontext `http://127.0.0.1:5185/` öffnen und mit
    einem Konto aus der gemeldeten `demo-accounts.json` anmelden.
 
 3. Unter **Einstellungen → Backup → Backup einspielen** die JSON-Datei wählen

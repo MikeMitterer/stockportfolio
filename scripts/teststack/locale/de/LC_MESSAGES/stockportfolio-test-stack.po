@@ -33,8 +33,8 @@ msgstr "StockInfo-Repository (für einzelnen Serverstart erforderlich)."
 msgid "Create synthetic accounts in the temporary stack."
 msgstr "Synthetische Konten im temporären Stack anlegen."
 
-msgid "StockInfo test port (default: 8899)."
-msgstr "StockInfo-Testport (Vorgabe: 8899)."
+msgid "StockInfo test port (default: {port})."
+msgstr "StockInfo-Testport (Vorgabe: {port})."
 
 msgid "Allowed browser origin for CORS."
 msgstr "Erlaubte Browser-Herkunft für CORS."

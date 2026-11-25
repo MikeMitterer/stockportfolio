@@ -16,7 +16,7 @@
 //      bewusst nicht: Ein echter Kursabruf ersetzt im Teststack die
 //      Demo-Detailwerte durch leere Werte.
 //   5. Die Statusseite nennt die StockInfo-Adresse, die der Server nutzt
-//      (Umgebungsvariable STOCKINFO_URL, Vorgabe http://127.0.0.1:8899), und meldet den
+//      (Umgebungsvariable STOCKINFO_URL, Vorgabe: StockInfo des Teststacks), und meldet den
 //      Dienst als erreichbar.
 //   6. Der Browser fragt während des ganzen Laufs nur StockPortfolio an, nie
 //      StockInfo direkt (T-82: Weiterleitung über den eigenen Server).
@@ -32,8 +32,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright-core'
+import { testStackOrigin, testStackStockInfoUrl } from './teststack/address.mjs'
 
-const origin = 'http://127.0.0.1:5175'
+const origin = testStackOrigin
 const chromePath =
   process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const viewport = { width: 1440, height: 1000 }
@@ -42,7 +43,7 @@ const fixtureDir = resolve(scriptDir, '../../scripts/fixtures')
 const backupPath = resolve(scriptDir, '../tests/fixtures/browser/demo-details.backup.json')
 const credentialsPath = process.argv[2]
 const imageDir = process.argv[3] ? resolve(process.argv[3]) : undefined
-const stockInfoUrl = process.env.STOCKINFO_URL ?? 'http://127.0.0.1:8899'
+const stockInfoUrl = process.env.STOCKINFO_URL ?? testStackStockInfoUrl
 if (!credentialsPath) {
   console.error(
     'Aufruf: npm --prefix frontend run check:demo-data -- <data_dir>/demo-accounts.json [Bildordner]',

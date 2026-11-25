@@ -27,8 +27,13 @@ from urllib.request import Request, urlopen
 from teststack.state import OwnedStateFile
 from teststack.terminal_style import print_message
 
-API_PORT = 8080
-FRONTEND_PORT = 5175
+# Einzige Quelle der Teststack-Ports, auch für die Prüfskripte unter
+# frontend/scripts/ und docker/browser-check.sh. Sie unterscheiden sich von
+# denen aus make dev-up, damit beide Stacks nebeneinander laufen (T-150).
+PORTS = json.loads((Path(__file__).resolve().parent / "ports.json").read_text())
+API_PORT: int = PORTS["api"]
+FRONTEND_PORT: int = PORTS["frontend"]
+STOCKINFO_PORT: int = PORTS["stockinfo"]
 FRONTEND_ORIGIN = f"http://127.0.0.1:{FRONTEND_PORT}"
 # StockInfo erlaubt im Stack bewusst eine fremde Herkunft: Der Browser fragt
 # StockInfo seit T-82 über den eigenen Server ab und braucht kein CORS dort.
