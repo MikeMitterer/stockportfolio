@@ -5,8 +5,9 @@ import { NButton, NButtonGroup, NTooltip } from 'naive-ui'
 import { useIsCompact } from '@mmit/ux-foundation'
 import { money, percentSigned, shortDate } from '@/domain/formatters'
 import { changeFrom, extent, indexAtRatio, niceTicks, tickIndices } from '@/domain/chart'
-import { withinDays } from '@/domain/portfolioHistory'
+import { lastOnOrBefore, referenceLine, withinDays } from '@/domain/portfolioHistory'
 import type { HistoryPoint } from '@/domain/sparkline'
+import type { ChartReference } from '@/composables/useReferenceIndex'
 
 /**
  * Wertverlauf des Depots — die ausführliche Ansicht.
@@ -15,6 +16,10 @@ import type { HistoryPoint } from '@/domain/sparkline'
  * was tatsächlich dastand, und stehen kräftig; der **Rückblick** rechnet den
  * heutigen Bestand gegen alte Kurse und steht blass dahinter. Ohne diesen
  * Unterschied sähe eine gerechnete Kurve so verlässlich aus wie eine gemessene.
+ *
+ * Ist ein Referenzindex gesetzt, kommt eine dritte Linie dazu (T-143): der
+ * Index, am ersten gezeigten Tag auf den Depotwert normiert. Ohne Index bleibt
+ * das Diagramm, wie es war — auch ohne Legende.
  */
 const props = defineProps<{
   currency?: string
@@ -26,6 +31,10 @@ const props = defineProps<{
   truthFrom: string | null
   /** Solange die Kurse geholt werden — „lädt" ist nicht „gibt es nicht". */
   loading?: boolean
+  /** Referenzindex mit Verlauf in Depotwährung; fehlt er, gibt es keine Vergleichslinie. */
+  reference?: ChartReference | null
+  /** Warum keine Vergleichslinie entsteht, etwa wegen einer anderen Währung. */
+  referenceNote?: string | null
 }>()
 
 const { t } = useI18n()
@@ -117,7 +126,33 @@ const axisPoints = computed(() =>
     : shownSnapshots.value,
 )
 
-const bounds = computed(() => extent([...shownBacktest.value, ...shownSnapshots.value]))
+/**
+ * Vergleichslinie, normiert auf die Linie, die die Achse trägt.
+ *
+ * Deren erster Tag ist der erste sichtbare Tag des Ausschnitts; wechselt der
+ * Zeitraum, beginnt der Vergleich neu.
+ */
+const shownReference = computed(() =>
+  props.reference ? referenceLine(axisPoints.value, props.reference.points) : [],
+)
+
+/**
+ * Hinweis statt Vergleichslinie.
+ *
+ * Neben dem Grund von außen (Währung, kein Verlauf) gibt es einen, den nur
+ * das Diagramm kennt: Der Index hat einen Verlauf, aber keinen im gezeigten
+ * Zeitraum.
+ */
+const referenceHint = computed(() => {
+  if (props.referenceNote) return props.referenceNote
+  if (props.reference && props.reference.points.length > 0 && shownReference.value.length === 0)
+    return t('referenceIndex.noOverlap', { name: props.reference.name })
+  return null
+})
+
+const bounds = computed(() =>
+  extent([...shownBacktest.value, ...shownSnapshots.value, ...shownReference.value]),
+)
 
 const ticks = computed(() => (bounds.value ? niceTicks(bounds.value.min, bounds.value.max, 4) : []))
 
@@ -153,6 +188,7 @@ function path(points: HistoryPoint[]): string {
 
 const backtestPath = computed(() => path(shownBacktest.value))
 const snapshotPath = computed(() => path(shownSnapshots.value))
+const referencePath = computed(() => path(shownReference.value))
 
 const timeTicks = computed(() =>
   tickIndices(axisPoints.value.length, 5).map((index) => axisPoints.value[index]!),
@@ -205,8 +241,24 @@ const hoveredPoint = computed(() => {
   const point = axisPoints.value[hovered.value]
   if (!point) return null
   const first = axisPoints.value[0]!.close
-  return { ...point, change: changeFrom(point.close, first) }
+  return {
+    ...point,
+    change: changeFrom(point.close, first),
+    reference: referenceChangeAt(point.date),
+  }
 })
+
+/**
+ * Veränderung des Index vom Beginn des Ausschnitts bis zu einem Tag.
+ *
+ * Fehlt der Index an diesem Tag, gilt sein letzter Kurs davor; vor seinem
+ * Beginn gibt es keinen Wert.
+ */
+function referenceChangeAt(date: string): number | null {
+  const line = shownReference.value
+  const current = lastOnOrBefore(line, date)
+  return current ? changeFrom(current.close, line[0]!.close) : null
+}
 
 function onMove(event: MouseEvent): void {
   const box = (event.currentTarget as SVGElement).getBoundingClientRect()
@@ -332,6 +384,12 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
           :d="snapshotPath"
           class="value-chart__line value-chart__line--snapshot"
         />
+        <!-- Vergleich: eigener Ton, damit er sich von beiden Depotlinien abhebt. -->
+        <path
+          v-if="referencePath"
+          :d="referencePath"
+          class="value-chart__line value-chart__line--reference"
+        />
 
         <line
           v-if="hoveredPoint"
@@ -360,8 +418,33 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
         >
           {{ percentSigned(hoveredPoint.change) }}
         </div>
+        <div v-if="hoveredPoint.reference !== null" class="value-chart__tip-reference tabular-nums">
+          {{ reference?.name }}: {{ percentSigned(hoveredPoint.reference) }}
+        </div>
       </div>
     </div>
+
+    <!--
+      Legende nur mit Vergleichslinie: Ohne sie erklärt die Bildunterschrift die
+      beiden Depotlinien, und das Diagramm bleibt, wie es war. Genannt wird nur,
+      was als Linie zu sehen ist — ein einzelner Tageswert ist keine.
+    -->
+    <ul v-if="referencePath" class="value-chart__legend">
+      <li v-if="shownSnapshots.length > 1" class="value-chart__legend-item">
+        <span class="value-chart__swatch value-chart__swatch--snapshot" />
+        {{ t('referenceIndex.legendSnapshots') }}
+      </li>
+      <li v-if="shownBacktest.length > 1" class="value-chart__legend-item">
+        <span class="value-chart__swatch value-chart__swatch--backtest" />
+        {{ t('referenceIndex.legendBacktest') }}
+      </li>
+      <li class="value-chart__legend-item">
+        <span class="value-chart__swatch value-chart__swatch--reference" />
+        {{ t('referenceIndex.legendReference', { name: reference?.name }) }}
+      </li>
+    </ul>
+
+    <p v-if="referenceHint" class="value-chart__note">{{ referenceHint }}</p>
 
     <p class="value-chart__caption">{{ caption }}</p>
   </div>
@@ -427,6 +510,44 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
       stroke: token(--accent);
       stroke-width: 2;
     }
+
+    &--reference {
+      stroke: token(--text-secondary);
+      stroke-width: 1.5;
+    }
+  }
+
+  &__legend {
+    @include row(var(--space-4));
+
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.6875rem;
+  }
+
+  &__legend-item {
+    @include row(var(--space-1));
+  }
+
+  /* Kurzes Linienstück in Farbe und Strich der zugehörigen Linie. */
+  &__swatch {
+    width: 1.25rem;
+    height: 0;
+    border-top: 2px solid token(--accent);
+
+    &--backtest {
+      border-top: 1.25px dashed token(--text-muted, 0.55);
+    }
+
+    &--reference {
+      border-top: 1.5px solid token(--text-secondary);
+    }
+  }
+
+  &__note {
+    font-size: 0.6875rem;
   }
 
   &__cursor {
@@ -453,7 +574,8 @@ const formatMoney = (value: number) => money(value, props.currency ?? 'EUR')
   }
 
   &__tip-date,
-  &__tip-change {
+  &__tip-change,
+  &__tip-reference {
     font-size: 0.6875rem;
   }
 

@@ -24,6 +24,24 @@ afterEach(async () => {
 })
 
 describe('withDefaults', () => {
+  it('übernimmt einen gespeicherten Referenzindex und verwirft einen unvollständigen', () => {
+    const index = {
+      isin: 'IE00BK5BQT80',
+      symbol: 'VWCE.DE',
+      name: 'FTSE All-World',
+      currency: 'EUR',
+    }
+
+    expect(withDefaults({ referenceIndex: index }).referenceIndex).toEqual(index)
+    // Aus einem Backup oder einer fremden Fassung: ohne Währung keine Linie.
+    const broken = {
+      symbol: 'VWCE.DE',
+      name: 'FTSE All-World',
+    } as unknown as Settings['referenceIndex']
+    expect(withDefaults({ referenceIndex: broken }).referenceIndex).toBeNull()
+    expect(withDefaults({}).referenceIndex).toBeNull()
+  })
+
   it('ergänzt fehlende Verweise', () => {
     const stored: Partial<Settings> = {
       activePortfolioId: 'p1',

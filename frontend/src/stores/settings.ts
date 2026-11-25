@@ -7,7 +7,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { consola } from 'consola'
 import { createSettingsRepository } from '@/data/repository'
-import type { Bands, ExternalLink, Settings } from '@/types/portfolio'
+import type { Bands, ExternalLink, ReferenceIndex, Settings } from '@/types/portfolio'
 
 /**
  * Voreingestellte externe Verweise.
@@ -66,6 +66,9 @@ export function defaultSettings(activePortfolioId: string): Settings {
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: defaultLinks(),
+    // Keiner: Welcher Index als Maßstab taugt, hängt am Depot und seinem Markt.
+    // Eine fest verdrahtete ISIN wäre eine Annahme über beides.
+    referenceIndex: null,
     ui: {
       // Lang genug zum Lesen, kurz genug, um beim Tippen nicht zu stören.
       notificationSeconds: 8,
@@ -95,11 +98,30 @@ export function withDefaults(stored: Partial<Settings>): Settings {
     minTradeSize: stored.minTradeSize ?? base.minTradeSize,
     rebalancing: { ...base.rebalancing, ...stored.rebalancing },
     links: stored.links?.length ? stored.links : base.links,
+    referenceIndex: readReferenceIndex(stored.referenceIndex),
     ui: {
       notificationSeconds: stored.ui?.notificationSeconds ?? base.ui.notificationSeconds,
       historyPeriod: stored.ui?.historyPeriod ?? base.ui.historyPeriod,
     },
   }
+}
+
+/**
+ * Liest einen gespeicherten Referenzindex typgeprüft.
+ *
+ * Einstellungen kommen als freies JSON von der Konto-API oder aus einem
+ * Backup. Ein unvollständiger Eintrag gilt als „keiner“, statt das Diagramm
+ * mit einer Linie ohne Namen oder Währung zu versorgen.
+ */
+export function readReferenceIndex(value: unknown): ReferenceIndex | null {
+  if (typeof value !== 'object' || value === null) return null
+  const entry = value as Record<string, unknown>
+  const { isin, symbol, name, currency } = entry
+  if (typeof symbol !== 'string' || !symbol) return null
+  if (typeof name !== 'string' || !name) return null
+  if (typeof currency !== 'string' || !currency) return null
+  if (isin !== null && isin !== undefined && typeof isin !== 'string') return null
+  return { isin: isin || null, symbol, name, currency }
 }
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -147,6 +169,11 @@ export const useSettingsStore = defineStore('settings', () => {
     await patch({ links: defaultLinks() })
   }
 
+  /** Setzt oder entfernt (`null`) den Referenzindex. */
+  async function setReferenceIndex(referenceIndex: ReferenceIndex | null): Promise<void> {
+    await patch({ referenceIndex })
+  }
+
   /** Übernimmt einzelne Felder und schreibt sie durch. */
   async function patch(changes: Partial<Settings>): Promise<void> {
     settings.value = { ...settings.value, ...changes }
@@ -173,6 +200,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setActivePortfolio,
     setLinks,
     resetLinks,
+    setReferenceIndex,
   }
 })
 

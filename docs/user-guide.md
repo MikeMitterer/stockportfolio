@@ -199,6 +199,17 @@ gestrichelte Rückschau bewertet die **heutigen Bestände** zu früheren Kursen;
 sie ist keine historische Wertentwicklung. Die Aufzeichnung beginnt, sobald du
 die App nutzt. Tageswerte sind Teil des Backups.
 
+**Referenzindex:** Unter _Einstellungen → Daten_ legst du per ISIN oder Ticker
+ein Vergleichspapier fest, etwa einen ETF auf den FTSE All-World. Es muss in
+StockInfo aufgenommen sein, aber nicht im Depot liegen; unbekannte oder
+mehrdeutige Eingaben werden abgewiesen. Voreingestellt ist keiner. Der
+Wertverlauf zeigt den Index dann als eigene Linie mit Legende: Sie beginnt am
+ersten gezeigten Tag beim Depotwert und folgt danach dem Index. Liegt sie über
+der Depotlinie, lief der Index im gewählten Zeitraum besser; mit dem Zeitraum
+wechselt der Starttag. Notiert der Index in einer anderen Währung als das
+Depot oder liefert StockInfo keinen Verlauf, erscheint ein Hinweis statt der
+Linie. Die kleine Linie in der Gesamtwert-Kachel bleibt ohne Vergleich.
+
 Die kleine Linie in jeder Zeile zeigt, ob der Kurs von oben oder von unten
 kommt. Ihren Zeitraum (ein Monat, eine Woche oder ein Tag) wählst du unter
 _Einstellungen → Daten_. „Ein Tag“ zeigt keine Linie, sondern die Veränderung
@@ -228,7 +239,8 @@ Position von 100 $ ein Wert von 80 €. Pence-Kurse (`GBp`) werden zuerst durch
   Summen und Trades heraus. Unvollständige Bewertungen überschreiben keine
   Tageswerte.
 - **Historische Rückschau:** Wo historische Wechselkurse nötig wären, ist sie
-  mit Erklärung ausgeblendet, weil StockInfo keine liefert.
+  mit Erklärung ausgeblendet, weil StockInfo keine liefert. Dasselbe gilt für
+  einen Referenzindex in fremder Währung.
 
 Die Kurswährung sagt nichts über das Währungsrisiko: Ein in Euro notierter
 MSCI World hält trotzdem Werte in anderen Währungen. Dieses Risiko berechnet

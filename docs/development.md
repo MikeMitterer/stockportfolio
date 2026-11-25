@@ -293,6 +293,7 @@ im Kopfkommentar. Prüfskripte enden mit Exit-Code 1 bei Abweichung.
 | `check:demo-data` | lesbare Demodaten aus `--demo-details` |
 | `check:stockinfo-proxy` | Weiterleitung an StockInfo: jede freigegebene Route, 401 ohne Sitzung, 404 außerhalb der Liste |
 | `check:setup-dialog` | Info-Fenster am Einrichtungscode (braucht einen frischen Stack ohne `--demo-accounts`) |
+| `check:reference-index` | Referenzindex: Abweisung, Fremdwährungshinweis, Speichern, normierte Linie je Zeitraum, Entfernen (braucht `--demo-accounts`, ohne `--demo-details`) |
 
 `check:demo-data` und `check:stockinfo-proxy` erreichen StockInfo unter
 `STOCKINFO_URL` (Vorgabe `http://127.0.0.1:8899`, der Test-StockInfo des

@@ -53,6 +53,7 @@ export function makeSettings(overrides: Partial<Settings> = {}): Settings {
     rebalancing: { trigger: 'bands', intervalMonths: 12 },
     refresh: { autoOnLoad: true, staleAfterMinutes: 60 },
     links: [],
+    referenceIndex: null,
     ui: { notificationSeconds: 0, historyPeriod: 'month' },
     ...overrides,
   }

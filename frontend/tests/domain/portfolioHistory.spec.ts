@@ -9,6 +9,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildBacktest,
+  referenceLine,
   snapshotPoints,
   truthStart,
   withinDays,
@@ -208,5 +209,66 @@ describe('truthStart', () => {
 
   it('ist ohne Schnappschüsse leer', () => {
     expect(truthStart([])).toBeNull()
+  })
+})
+
+describe('referenceLine', () => {
+  const depot = [
+    { date: '2026-03-02', close: 10000 },
+    { date: '2026-03-03', close: 10200 },
+    { date: '2026-03-04', close: 9900 },
+  ]
+
+  it('beginnt am ersten gezeigten Tag beim Depotwert und folgt dem Index prozentual', () => {
+    const index = [
+      { date: '2026-03-01', close: 90 },
+      { date: '2026-03-02', close: 100 },
+      { date: '2026-03-03', close: 110 },
+      { date: '2026-03-04', close: 105 },
+    ]
+
+    expect(referenceLine(depot, index)).toEqual([
+      { date: '2026-03-02', close: 10000 },
+      { date: '2026-03-03', close: 11000 },
+      { date: '2026-03-04', close: 10500 },
+    ])
+  })
+
+  it('nimmt am Starttag den letzten Indexkurs davor, wenn der Index dort nicht notiert', () => {
+    // Börsenfeiertag des Index: Ohne Fortschreibung begänne die Linie einen Tag
+    // später auf einer anderen Höhe als das Depot.
+    const index = [
+      { date: '2026-03-01', close: 50 },
+      { date: '2026-03-03', close: 55 },
+    ]
+
+    expect(referenceLine(depot, index)).toEqual([
+      { date: '2026-03-02', close: 10000 },
+      { date: '2026-03-03', close: 11000 },
+    ])
+  })
+
+  it('setzt erst ein, wo der Index beginnt, auf der Höhe des Depots an diesem Tag', () => {
+    const index = [
+      { date: '2026-03-03', close: 20 },
+      { date: '2026-03-04', close: 21 },
+    ]
+
+    expect(referenceLine(depot, index)).toEqual([
+      { date: '2026-03-03', close: 10200 },
+      { date: '2026-03-04', close: 10710 },
+    ])
+  })
+
+  it('bleibt leer ohne Überschneidung, ohne Index oder mit einem Kurs von null', () => {
+    expect(referenceLine(depot, [{ date: '2026-04-01', close: 100 }])).toEqual([])
+    expect(referenceLine(depot, [])).toEqual([])
+    expect(referenceLine([], [{ date: '2026-03-02', close: 100 }])).toEqual([])
+    expect(referenceLine(depot, [{ date: '2026-03-02', close: 0 }])).toEqual([])
+  })
+
+  it('bleibt leer, wenn der Index vor dem gezeigten Zeitraum endet', () => {
+    // Sonst bliebe ein einzelner Startpunkt ohne Linie — und kein Hinweis.
+    expect(referenceLine(depot, [{ date: '2026-01-02', close: 100 }])).toEqual([])
   })
 })

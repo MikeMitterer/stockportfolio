@@ -19,6 +19,7 @@
     "check:demo-data": "node scripts/demo-data-check.mjs",
     "check:stockinfo-proxy": "node scripts/stockinfo-proxy-check.mjs",
     "check:setup-dialog": "node scripts/setup-dialog-check.mjs",
+    "check:reference-index": "node scripts/reference-index-check.mjs",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{vue,ts,tsx,css,json}\"",

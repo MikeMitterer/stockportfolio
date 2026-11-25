@@ -203,6 +203,30 @@ export const de = {
       'Dieser Ausschnitt zeigt nur tatsächlich festgehaltene Tageswerte. Dafür braucht es mindestens zwei — aus einem einzigen entsteht keine Linie. Die App hält ab jetzt täglich einen fest.',
   },
 
+  referenceIndex: {
+    heading: 'Referenzindex',
+    hint: 'Vergleichslinie im Gesamtwert-Diagramm, etwa der FTSE All-World. ISIN oder Ticker eines Papiers, das StockInfo kennt — es muss nicht im Depot liegen. Die Linie beginnt am ersten gezeigten Tag beim Depotwert und folgt dann dem Index; liegt sie darüber, lief der Index im Zeitraum besser.',
+    placeholder: 'ISIN oder Ticker, z. B. IE00BK5BQT80',
+    apply: 'Übernehmen',
+    remove: 'Entfernen',
+    none: 'Kein Referenzindex festgelegt.',
+    current: '{name} ({key}, {currency})',
+    noClient: 'Ohne StockInfo-Verbindung lässt sich kein Referenzindex prüfen.',
+    catalogueFailed: 'Der StockInfo-Katalog ließ sich nicht laden: {reason}',
+    empty: 'Bitte eine ISIN oder einen Ticker eingeben.',
+    unknown: '„{query}“ ist in StockInfo nicht bekannt. Das Papier muss dort aufgenommen sein.',
+    ambiguous:
+      'Der Ticker passt zu mehreren Listings ({candidates}). Bitte das vollständige Symbol oder die ISIN angeben.',
+    quote: 'Für das Papier liefert StockInfo keinen Kurs: {reason}',
+    legendSnapshots: 'Depot (festgehalten)',
+    legendBacktest: 'Depot (Rückblick)',
+    legendReference: '{name} (normiert)',
+    currencyMismatch:
+      '{name} notiert in {currency}, das Depot in {base}. Ohne historische Wechselkurse wäre der Vergleich falsch — deshalb keine Vergleichslinie.',
+    noHistory: 'Für {name} liefert StockInfo keinen Kursverlauf — deshalb keine Vergleichslinie.',
+    noOverlap: 'Für {name} gibt es im gezeigten Zeitraum keinen Kursverlauf.',
+  },
+
   seed: {
     portfolioName: 'Mein Depot',
     demoName: 'Beispiel-Depot',
