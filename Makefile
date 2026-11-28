@@ -63,13 +63,18 @@ else
 override CLI_LIBS := $(value CLI_LIBS)
 endif
 export CLI_LIBS
-# Theme einmal je make-Lauf statt je Rezeptzeile; ein geerbter Export gilt.
+# Theme einmal je make-Lauf statt je Rezeptzeile; ein geerbter Export gilt. Exportiert nur mit
+# Inhalt: Leer hieße für cli.lib.sh „ohne Farben“, und fehlt clitheme beim Einlesen (holt es
+# require-cli-libs erst nach), käme der erste Lauf farblos. Ohne Export fragt cli.lib.sh selbst.
 ifndef CLITHEME_EXPORT
 CLITHEME_EXPORT := $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/clitheme export --bash 2>/dev/null)
+ifneq ($(CLITHEME_EXPORT),)
+export CLITHEME_EXPORT
+endif
 else
 override CLITHEME_EXPORT := $(value CLITHEME_EXPORT)
-endif
 export CLITHEME_EXPORT
+endif
 
 # Interpreter für die .venv: python3 aus dem PATH, ein gesetztes PYTHON_BOOTSTRAP geht vor. Python
 # ist Voraussetzung; das Makefile sucht keines. Die Mindestversion steht nur in requires-python
