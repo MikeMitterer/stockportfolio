@@ -54,8 +54,8 @@ make dev-up                # App, Konto-API und StockInfo; make hints nennt die 
 `make setup` ist der einzige Einrichtungsweg. Es installiert die
 npm-Pakete von Frontend und API, legt StockPortfolios `.venv` mit Python
 3.14+ an, installiert dort die gepinnten Pakete aus `requirements-dev.txt`
-und bringt die gemeinsamen Werkzeuge ProjectTools und BashLib in der
-Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
+und bringt die gemeinsamen Werkzeuge ProjectTools, BashLib und CLITheme in
+der Version aus `.dev-tools.conf.sh` nach `.tools/`. Jeder Schritt läuft nur,
 wenn seine Lock- oder Config-Datei neuer ist als die letzte Einrichtung; ein
 zweiter Aufruf dauert deshalb nur Bruchteile einer Sekunde. Die npm-Pakete
 installiert es nur neu, wenn sich in `package.json` oder `package-lock.json`
@@ -63,14 +63,16 @@ Abhängigkeiten oder Skriptfreigaben (`allowScripts`) ändern; eine neue Version
 allein, etwa nach `make tag-patch`, zählt nicht. Den Abgleich schreibt
 `devtools tstamp` nach `.stamps/`. Fehlt etwas oder ist es
 veraltet, rufen Prüfziele wie `make test` zuerst selbst `make setup` auf,
-ebenso die Docker- und Versionsziele und Ziele mit ProjectTools
-(`make build`, `make version`, `make docs-check` …); `make check` kommt so
-auch in einem frischen Klon ohne vorheriges `make setup` durch. Eingerichtet
-wird dabei nur über `make setup`. Ausgenommen sind `make help`, `make info`
-und `make hints`: Sie richten nichts ein und nennen ohne BashLib
+ebenso die Docker- und Versionsziele, Ziele mit ProjectTools und
+`make help`, `make info` und `make hints` (`make build`, `make tag-patch`,
+`make docs-check` …); `make check` kommt so auch in einem frischen Klon ohne
+vorheriges `make setup` durch. Eingerichtet wird dabei nur über
 `make setup`. Ein von außen gesetztes `BASH_LIBS` gilt vor dem aus
 `.tools/`; zeigt es nicht auf BashLib, brechen die Ziele mit diesem Hinweis
-ab, statt einzurichten. `make info` zeigt den Werkzeugstand.
+ab, statt einzurichten. Ebenso geht ein gesetztes `CLI_LIBS` (Bash-Libs von
+CLITheme) vor dem aus `.tools/`. `make help` nennt im Kopf die Version aus
+`frontend/package.json`, `make hints` den letzten Release-Tag, `make info`
+den Werkzeugstand.
 Auch `make dev-up` und `make dev-down` setzen die Werkzeuge voraus.
 
 **Python-Mindestversion:** Sie steht nur in `requires-python` in
@@ -417,7 +419,8 @@ Registry keine Version zeigt, die es im Repository so nicht gibt. Ein nur
 lokal getaggtes Release bricht mit dem Hinweis auf
 `git push --follow-tags origin master` ab. Wurde der Tag nach dem Build
 umgesetzt oder liegt er auf `origin` anders, heißt der Hinweis `make build`. `TARGET=dockerhub` ist Standard; GHCR und ECR sind optional.
-Voraussetzungen: Bash 4+, BashLib, Docker mit buildx, ein Git-Tag und ein
+Voraussetzungen: Bash 5, BashLib und CLITheme (beide über `make setup`),
+Docker mit buildx, ein Git-Tag und ein
 sauberer Arbeitsbaum. `STRICT=2` erlaubt Commits nach dem Tag, `STRICT=1`
 verlangt den getaggten Commit.
 

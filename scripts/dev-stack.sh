@@ -31,16 +31,16 @@
 #------------------------------------------------------------------------------
 set -euo pipefail
 
-BASH_LIBS="${BASH_LIBS:-$(bashlib-path 2>/dev/null || true)}"
-if [[ ! -r "${BASH_LIBS}/tools.lib.sh" ]]; then
-    echo "  ✗ BashLib fehlt: make setup" >&2
+# Ausgabe im CLI-Theme (printTheme…) aus cli.lib.sh von CLITheme; clilib-path kommt mit make setup
+# nach .tools/bin.
+CLI_LIBS="${CLI_LIBS:-$(clilib-path 2>/dev/null || true)}"
+if [[ ! -r "${CLI_LIBS}/cli.lib.sh" ]]; then
+    echo "  ✗ CLITheme fehlt: make setup" >&2
     exit 1
 fi
-# BashLib liegt außerhalb des Repositorys (BASH_LIBS); shellcheck kann ihr nicht folgen.
+# CLITheme liegt außerhalb des Repositorys (CLI_LIBS); shellcheck kann ihr nicht folgen.
 # shellcheck disable=SC1091
-if [[ "${__COLORS_LIB__:=""}" == "" ]]; then . "${BASH_LIBS}/colors.lib.sh"; fi
-# shellcheck disable=SC1091
-if [[ "${__TOOLS_LIB__:=""}" == "" ]]; then . "${BASH_LIBS}/tools.lib.sh"; fi
+if [[ "${__CLITHEME_CLI_LIB__:=""}" == "" ]]; then . "${CLI_LIBS}/cli.lib.sh"; fi
 
 readonly APPNAME="${0##*/}"
 readonly HEALTH_TIMEOUT=60
