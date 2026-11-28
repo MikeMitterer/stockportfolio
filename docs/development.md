@@ -27,9 +27,11 @@ beschreibt der [Docker-Guide](../docker/README.md).
   Freigaben in `allowScripts` nicht: `npm install -g npm@11`
 - Bash 5 vorn im `PATH`; macOS bringt nur Bash 3.2 mit, damit scheitern schon
   `make help` und `make setup` (macOS: `brew install bash`)
-- Python 3.14+ für den Teststack und die Befehle aus `.tools/` (Quelle:
-  `requires-python` in `pyproject.toml`); ruff, bandit, pip-audit und pytest installiert
-  `make setup` gepinnt in die `.venv`
+- Python 3.14+ als `python3` im `PATH` für den Teststack und die Befehle aus
+  `.tools/` (Quelle: `requires-python` in `pyproject.toml`); ruff, bandit,
+  pip-audit und pytest installiert `make setup` gepinnt in die `.venv`. Unter
+  macOS ist `/usr/bin/python3` nur 3.9: den Ordner von Homebrew vor `/usr/bin`
+  stellen, wie es `eval "$(brew shellenv)"` tut
 - shellcheck und gitleaks für `make lint` und `make security`
   (macOS: `brew install shellcheck gitleaks`)
 - pipx und der Starter `devtools`, einmal je Rechner aus der lokalen
@@ -76,10 +78,18 @@ Auch `make dev-up` und `make dev-down` setzen die Werkzeuge voraus.
 **Python-Mindestversion:** Sie steht nur in `requires-python` in
 `pyproject.toml`. Das Makefile, ruff und die Prüfung von StockInfos `.venv`
 im Teststack lesen sie dort; StockInfo verlangt dieselbe. `make setup` nimmt
-`python<Mindestversion>`, `PYTHON_BOOTSTRAP` überschreibt den Interpreter von
-außen. Derselbe Name wählt auch das Python der Befehle aus `.tools/`
-(ProjectTools); ein gesetzter Wert muss deshalb die Mindestversion erfüllen.
-Das Makefile selbst setzt die Variable nicht.
+`python3` aus dem `PATH`, `PYTHON_BOOTSTRAP` überschreibt den Interpreter von
+außen. Ist er älter als die Mindestversion oder fehlt er, bricht `make setup`
+mit Version und Pfad ab, bevor eine `.venv` entsteht. Derselbe Name wählt auch
+das Python der Befehle aus `.tools/` (ProjectTools); ein gesetzter Wert muss
+deshalb die Mindestversion erfüllen. Das Makefile selbst setzt die Variable
+nicht.
+
+**Tote `.venv`:** Startet `.venv/bin/python` nicht mehr, etwa weil Homebrew
+die Python-Version dahinter entfernt hat, gilt die Einrichtung als veraltet,
+auch im Worktree. Prüfziele rufen dann `make setup` auf, und es legt die
+`.venv` neu an; ebenso, wenn ihr Python älter ist als eine gestiegene
+Mindestversion.
 
 **Ports des Dev-Stacks:** Jeder steht nur dort, wo er beim Start wirkt: der
 Port der Konto-API als `PORT=…` in der Zeile `api` von `Procfile.dev`, der

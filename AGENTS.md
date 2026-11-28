@@ -282,8 +282,10 @@ sich die Prüfskripte verlassen. `make setup`
 erstellt dafür StockPortfolios eigene `.venv` mit der Python-Mindestversion aus
 `requires-python` in `pyproject.toml` (derzeit 3.14, wie StockInfo) und installiert
 dort die Pakete aus `requirements-dev.txt`, darunter die gepinnten Prüfwerkzeuge
-(ruff, bandit, pip-audit). Vor dem Anlegen prüft Setup die
-Python-Version; eine bestehende `.venv` mit älterem Python legt es neu an. **Browsertests laufen sichtbar, nicht headless** (Mike,
+(ruff, bandit, pip-audit). Den Interpreter nimmt Setup als `python3` aus dem
+`PATH` (`PYTHON_BOOTSTRAP` geht vor) und prüft ihn vor dem Anlegen; eine
+bestehende `.venv`, deren Python nicht mehr startet oder zu alt ist, legt es
+neu an. **Browsertests laufen sichtbar, nicht headless** (Mike,
 2026-09-30), damit der geprüfte Ablauf im Browserfenster nachvollziehbar ist.
 Das Skript startet sich selbst mit `.venv/bin/python` und lässt sich deshalb
 direkt aufrufen:
