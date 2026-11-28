@@ -37,24 +37,35 @@ REQUIRE_STARTER = command -v devtools >/dev/null || { \
 export STOCKINFO_API_URL DEV_STOCKINFO
 
 # Werkzeuge aus .tools/ dieses Checkouts vorn im PATH; ein global installiertes ProjectTools
-# zählt nicht. BashLib für help, info, hints, version, tags und docker/build.sh: Ein von außen
-# gesetztes BASH_LIBS geht vor, sonst die aus .tools/. Mit = statt :=: make ermittelt den Wert je
-# Target neu, und ein Target nach require-bash-libs (make setup) sieht BashLib aus .tools/ im
-# selben Lauf.
+# zählt nicht. Geerbte Werte unausgewertet ($(value …)): Ein make setup aus einem Target erbt sie,
+# und ein $(…) im Checkout-Pfad liefe sonst als Make-Code (makefile-conventions, Geerbte Werte).
 TOOLS_DIR := .tools
-export PATH := $(WORKSPACE)/$(TOOLS_DIR)/bin:$(PATH)
+export PATH := $(WORKSPACE)/$(TOOLS_DIR)/bin:$(value PATH)
+# BashLib für die Version im Kopf von help, für tag-* und docker/build.sh: Ein von außen gesetztes
+# BASH_LIBS geht vor, sonst die aus .tools/. Mit = statt :=: make ermittelt den Wert je Target neu,
+# und ein Target nach require-bash-libs (make setup) sieht BashLib aus .tools/ im selben Lauf.
 ifndef BASH_LIBS
 BASH_LIBS = $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/bashlib-path 2>/dev/null)
 BASHLIB_FROM_TOOLS := yes
-BASHLIB_MISSING := BashLib fehlt in $(TOOLS_DIR)/: make setup
 else
-BASHLIB_MISSING := BASH_LIBS zeigt nicht auf BashLib: anpassen oder unset BASH_LIBS, dann gilt die aus $(TOOLS_DIR)/
+override BASH_LIBS := $(value BASH_LIBS)
 endif
 export BASH_LIBS
-# Erste Rezeptzeile von help, info und hints: Ohne BashLib nennt es Grund und Befehl, statt dass
-# make.lib.sh still fehlt und „Kommando nicht gefunden“ folgt. Anders als require-bash-libs
-# richtet es nicht ein: Für eine Hilfe liefe sonst das ganze setup.
-BASHLIB_LOADED = test -r "$${BASH_LIBS}/make.lib.sh" || { echo "  ✗ $(BASHLIB_MISSING)" >&2; exit 1; }
+# Bash-Libs von CLITheme (cli.lib.sh, make.lib.sh) für help, info, hints und die Ausgabe der
+# Skripte, ebenso aus .tools/; ein von außen gesetztes CLI_LIBS geht vor.
+ifndef CLI_LIBS
+CLI_LIBS = $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/clilib-path 2>/dev/null)
+else
+override CLI_LIBS := $(value CLI_LIBS)
+endif
+export CLI_LIBS
+# Theme einmal je make-Lauf statt je Rezeptzeile; ein geerbter Export gilt.
+ifndef CLITHEME_EXPORT
+CLITHEME_EXPORT := $(shell $(WORKSPACE_SQ)/$(TOOLS_DIR)/bin/clitheme export --bash 2>/dev/null)
+else
+override CLITHEME_EXPORT := $(value CLITHEME_EXPORT)
+endif
+export CLITHEME_EXPORT
 
 # Mindestversion von Python, gelesen aus `requires-python = ">=X.Y"` in pyproject.toml, der
 # einzigen Quelle. Leer, wenn die Zeile anders aussieht; setup bricht dann mit Meldung ab.
@@ -109,32 +120,34 @@ unexport STOCKINFO_BACKEND_URL STOCKINFO_DASHBOARD_URL
 
 # ─── Hilfe ───────────────────────────────────────────────────────────────────
 
-# help, info und hints geben über BashLib make.lib.sh aus, geladen über BASH_ENV in jede
-# Rezeptzeile; eine Rezeptzeile ergibt eine Ausgabezeile. Bash wertet BASH_ENV aus: darum der
-# Verweis auf BASH_LIBS statt des Pfads, ein $(…) im Checkout-Pfad bleibt Text.
-help info hints: export BASH_ENV := $${BASH_LIBS}/make.lib.sh
+# Liste der Makefiles unausgewertet über die Umgebung (Werte von außen, Standard-Header).
+export HELP_FILES = $(value MAKEFILE_LIST)
+# help, info und hints geben über make.lib.sh von CLITheme (samt cli.lib.sh) aus, geladen über
+# BASH_ENV in jede Rezeptzeile; eine Rezeptzeile ergibt eine Ausgabezeile. Bash wertet BASH_ENV
+# aus: darum der Verweis auf CLI_LIBS statt des Pfads, ein $(…) im Checkout-Pfad bleibt Text.
+# Leer, solange CLITheme in .tools/ fehlt; die Vorbedingungen richten es dann mit make setup ein.
+help info hints: export BASH_ENV := $${CLI_LIBS:+$${CLI_LIBS}/make.lib.sh}
+help info hints: require-bash-libs require-cli-libs
 
 # Eine Beschreibung sagt, was nach dem Ziel anders ist; den Ablauf beschreibt docs/development.md.
-# showMakeTargets füllt {major}, {minor} und {patch} aus der Version im Arbeitsverzeichnis; sie
-# steht in frontend/package.json, darum läuft es dort. Targets stehen nur in diesem Makefile.
+# Kopf mit Projektname und Version (readProjectVersion aus BashLib); die Version steht in
+# frontend/package.json. Targets stehen nur in diesem Makefile.
 .PHONY: help
 help: ## Verfügbare Befehle anzeigen
-	@$(BASHLIB_LOADED)
-	@showMakeHeader "$${PROJECT_NAME}"
-	@cd frontend && showMakeTargets "$${WORKSPACE}/Makefile"
+	@showMakeTargets "$${PROJECT_NAME} $$(source "$${BASH_LIBS}/version.lib.sh" && readProjectVersion auto frontend)" $${HELP_FILES}
 
 .PHONY: info
 info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
-	@$(BASHLIB_LOADED)
 	@echo
-	@printMakeValue WORKSPACE         "$${WORKSPACE}"
-	@printMakeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
-	@printMakeValue PYTHON_BOOTSTRAP  "$${PYTHON_BOOTSTRAP:-python$(PYTHON_MIN)}"
-	@printMakeValue STOCKINFO_API_URL "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
-	@printMakeValue DEV_STOCKINFO     "$${DEV_STOCKINFO:-local}  (dev-up: local | remote)"
-	@printMakeValue PLATFORM          "$${PLATFORM}  (build: x86 | arm)"
-	@printMakeValue TARGET            "$${TARGET:-dockerhub}  (push: dockerhub | ghcr | ecr)"
-	@printMakeHeading "Werkzeuge (.dev-tools.conf.sh)"
+	@printThemeValue WORKSPACE         "$${WORKSPACE}"
+	@printThemeValue BASH_LIBS         "$${BASH_LIBS:-nicht gefunden (make setup)}"
+	@printThemeValue CLI_LIBS          "$${CLI_LIBS:-nicht gefunden (make setup)}"
+	@printThemeValue PYTHON_BOOTSTRAP  "$${PYTHON_BOOTSTRAP:-python$(PYTHON_MIN)}"
+	@printThemeValue STOCKINFO_API_URL "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
+	@printThemeValue DEV_STOCKINFO     "$${DEV_STOCKINFO:-local}  (dev-up: local | remote)"
+	@printThemeValue PLATFORM          "$${PLATFORM}  (build: x86 | arm)"
+	@printThemeValue TARGET            "$${TARGET:-dockerhub}  (push: dockerhub | ghcr | ecr)"
+	@printThemeHeading "Werkzeuge (.dev-tools.conf.sh)"
 	@# devtools rückt um zwei Zeichen ein; fünf mehr stellen die Zeilen unter die Werte oben.
 	@$(REQUIRE_STARTER); set -o pipefail; $(DEV_TOOLS) status 2>/dev/null | sed 's/^/     /' || echo "       Werkzeugstand nicht abrufbar: make setup"
 	@echo
@@ -143,60 +156,68 @@ info: ## Projektpfade, Build-Variablen und Werkzeugstand anzeigen
 # Ausgabe enthält nur erlaubte Zeichen, auch der Ersatz ohne Remote oder Tag. repo-info läuft
 # erst, wenn hints einen Wert braucht, und je Wert nur einmal (eval mit :=).
 NO_REPO_INFO := repo-info fehlt (make setup)
-REPO_URL     = $(eval REPO_URL := $(or $(shell repo-info --url 2>/dev/null),$(NO_REPO_INFO)))$(REPO_URL)
-RELEASE_TAG  = $(eval RELEASE_TAG := $(or $(shell repo-info --release-tag 2>/dev/null),$(NO_REPO_INFO)))$(RELEASE_TAG)
+REPO_URL     = $(eval REPO_URL := $(or $(shell $(TOOL_ENV); repo-info --url 2>/dev/null),$(NO_REPO_INFO)))$(REPO_URL)
+RELEASE_TAG  = $(eval RELEASE_TAG := $(or $(shell $(TOOL_ENV); repo-info --release-tag 2>/dev/null),$(NO_REPO_INFO)))$(RELEASE_TAG)
 # Links, URLs und Tipps für den Alltag; das Einrichten beschreibt docs/development.md.
+# require-tools, weil repo-info aus ProjectTools kommt: Fehlt es, läuft vorher make setup.
 .PHONY: hints
-hints: ## Links, URLs und Tipps für die tägliche Arbeit
-	@$(BASHLIB_LOADED)
-	@printMakeHeading "Links"
-	@printMakeValue   "Repository"        '$(REPO_URL)'
-	@printMakeValue   "Letzter Release"   '$(RELEASE_TAG)'
-	@printMakeValue   "Docker Hub"        "https://hub.docker.com/r/mangolila/stockportfolio"
-	@printMakeValue   "StockInfo ohne dev-up" "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
-	@printMakeHeading "URLs (nach make dev-up, StockInfo $${DEV_STOCKINFO:-local})"
-	@printMakeValue   "App"               '$(call dev_url,FRONTEND_PORT)'
-	@printMakeValue   "Konto-API"         '$(call dev_url,API_PORT)'
-	@printMakeValue   "StockInfo-API"     '$(STOCKINFO_BACKEND_URL)'
-	@printMakeValue   "StockInfo-API-Doku" '$(if $(filter http%,$(STOCKINFO_BACKEND_URL)),$(STOCKINFO_BACKEND_URL)/docs,$(NO_STOCKINFO))'
-	@printMakeValue   "StockInfo-Dashboard" '$(STOCKINFO_DASHBOARD_URL)'
-	@printMakeHeading "Im Alltag"
-	@printMakeValue   "Vor dem Commit"    "make test"
-	@printMakeValue   "Stack hängt"       "make dev-down; danach make dev-up"
-	@printMakeValue   "Teststack"         "scripts/test-stack.py --stack --run"
-	@printMakeValue   "StockInfo auf Unraid" "DEV_STOCKINFO=remote in .env, dann make dev-up"
-	@printMakeValue   "Image für ARM"     "make build PLATFORM=arm"
-	@printMakeValue   "Anderes Push-Ziel" "make push TARGET=ghcr"
+hints: require-tools ## Links, URLs und Tipps für die tägliche Arbeit
+	@printThemeHeading "Links"
+	@printThemeValue   "Repository"        '$(REPO_URL)'
+	@printThemeValue   "Letzter Release"   '$(RELEASE_TAG)'
+	@printThemeValue   "Docker Hub"        "https://hub.docker.com/r/mangolila/stockportfolio"
+	@printThemeValue   "StockInfo ohne dev-up" "$${STOCKINFO_API_URL:-nicht gesetzt (.env)}"
+	@printThemeHeading "URLs (nach make dev-up, StockInfo $${DEV_STOCKINFO:-local})"
+	@printThemeValue   "App"               '$(call dev_url,FRONTEND_PORT)'
+	@printThemeValue   "Konto-API"         '$(call dev_url,API_PORT)'
+	@printThemeValue   "StockInfo-API"     '$(STOCKINFO_BACKEND_URL)'
+	@printThemeValue   "StockInfo-API-Doku" '$(if $(filter http%,$(STOCKINFO_BACKEND_URL)),$(STOCKINFO_BACKEND_URL)/docs,$(NO_STOCKINFO))'
+	@printThemeValue   "StockInfo-Dashboard" '$(STOCKINFO_DASHBOARD_URL)'
+	@printThemeHeading "Im Alltag"
+	@printThemeValue   "Vor dem Commit"    "make test"
+	@printThemeValue   "Stack hängt"       "make dev-down; danach make dev-up"
+	@printThemeValue   "Teststack"         "scripts/test-stack.py --stack --run"
+	@printThemeValue   "StockInfo auf Unraid" "DEV_STOCKINFO=remote in .env, dann make dev-up"
+	@printThemeValue   "Image für ARM"     "make build PLATFORM=arm"
+	@printThemeValue   "Anderes Push-Ziel" "make push TARGET=ghcr"
 	@echo
 
 # ─── Voraussetzungen ─────────────────────────────────────────────────────────
 
-# Ohne `##`, vor allen Targets, die BashLib laden (version, tags, tag-*, docker/build.sh): Fehlt
-# BashLib (frischer Klon) oder ist .tools/ älter als .dev-tools.conf.sh, läuft make setup; fehlt
-# es danach weiter, bricht es mit Grund ab. Ein von außen gesetztes BASH_LIBS prüft es nur auf
-# Lesbarkeit und bricht ohne setup ab: setup brächte BashLib nur nach .tools/, das Target läse
+# Ohne `##`, vor allen Targets, die BashLib laden (help, info, hints, tag-*, docker/build.sh):
+# Fehlt BashLib (frischer Klon) oder ist .tools/ älter als .dev-tools.conf.sh, läuft make setup;
+# fehlt es danach weiter, bricht es mit Grund ab. Ein von außen gesetztes BASH_LIBS prüft es nur
+# auf Lesbarkeit und bricht ohne setup ab: setup brächte BashLib nur nach .tools/, das Target läse
 # weiter BASH_LIBS. Als Vorbedingung, damit das Target danach BASH_LIBS neu ermittelt. Die
 # Prüfung nach setup fragt bashlib-path direkt: BASH_LIBS dieses Targets steht schon fest.
-# Bewusst ohne BashLib-Ausgabe: Es meldet gerade, dass sie fehlt.
-.PHONY: require-bash-libs
+# make setup ohne das BASH_ENV von help, info und hints, das auch für ihre Vorbedingungen gilt.
+.PHONY: require-bash-libs require-cli-libs
 require-bash-libs:
 ifdef BASHLIB_FROM_TOOLS
 	@{ test -r "$${BASH_LIBS}/version.lib.sh" && \
 		$(MAKE) --no-print-directory --question $(TOOLS_STAMP) 2>/dev/null; } || \
-		{ $(MAKE) --no-print-directory setup && \
+		{ env -u BASH_ENV $(MAKE) --no-print-directory setup && \
 		test -r "$$("$${WORKSPACE}/$(TOOLS_DIR)/bin/bashlib-path")/version.lib.sh"; } || { \
 		echo "  ✗ BashLib fehlt auch nach make setup ($(TOOLS_DIR)/bin/bashlib-path)" >&2; exit 1; }
 else
 	@test -r "$${BASH_LIBS}/version.lib.sh" || { \
-		echo "  ✗ $(BASHLIB_MISSING)" >&2; echo "    BASH_LIBS=$${BASH_LIBS}" >&2; exit 1; }
+		echo "  ✗ BASH_LIBS zeigt nicht auf BashLib: anpassen oder unset BASH_LIBS, dann gilt die aus $(TOOLS_DIR)/" >&2; \
+		echo "    BASH_LIBS=$${BASH_LIBS}" >&2; exit 1; }
 endif
+
+# Ohne `##`: dasselbe für die Bash-Libs von CLITheme (clilib-path), über die help, info und hints
+# ausgeben. Fehlt CLITheme, etwa in einem älteren Checkout, holt make setup es nach .tools/.
+require-cli-libs:
+	@test -r "$${CLI_LIBS}/make.lib.sh" || { env -u BASH_ENV $(MAKE) --no-print-directory setup && \
+		test -r "$$("$${WORKSPACE}/$(TOOLS_DIR)/bin/clilib-path")/make.lib.sh"; } || { \
+		echo "  ✗ CLITheme fehlt auch nach make setup ($(TOOLS_DIR)/bin/clilib-path)" >&2; exit 1; }
 
 # Ohne `##`: verlangt ProjectTools in .tools/ in Mindestversion. Fehlt es oder ist es zu alt,
 # läuft zuerst make setup; scheitert die Prüfung danach, nennt devtools den Grund.
 .PHONY: require-tools
 require-tools: require-bash-libs
 	@$(REQUIRE_STARTER); $(DEV_TOOLS) check projecttools >/dev/null 2>&1 || \
-		$(MAKE) --no-print-directory setup
+		env -u BASH_ENV $(MAKE) --no-print-directory setup
 	@$(DEV_TOOLS) check projecttools
 
 # ─── Setup ───────────────────────────────────────────────────────────────────
@@ -422,17 +443,14 @@ docker-samples: require-bash-libs ## Beispiel-`docker run`-Kommandos zeigen
 
 ##@ Versionierung
 
-# Die Version steht in frontend/package.json; version und tag-version lesen sie dort.
-.PHONY: version tags changelog
-version: require-bash-libs ## Version aus frontend/package.json und letzter Release-Tag
-	@echo
-	@source "$${BASH_LIBS}/make.lib.sh" && showProjectVersion auto frontend
-	@echo
+# Die Version steht in frontend/package.json; tag-version liest und hebt sie dort. Sie steht im
+# Kopf von make help, den letzten Release-Tag nennt make hints; eigene Targets version und tags
+# gibt es nicht (versioning-conventions §4).
+.PHONY: changelog precheck
 
-tags: require-bash-libs ## Letzte zehn Release-Tags mit Nachricht anzeigen
-	@echo
-	@source "$${BASH_LIBS}/make.lib.sh" && showReleaseTags 10
-	@echo
+# Ohne `##`: läuft vor tag-*; verlangt BashLib und richtet es über require-bash-libs bei Bedarf
+# mit make setup ein, statt abzubrechen.
+precheck: require-bash-libs
 
 # Sprache von CHANGELOG.md, unabhängig von der Locale der Shell (changelog folgt sonst
 # LANG). Überschreiben: make … CHANGELOG_LANGUAGE=de
@@ -444,17 +462,17 @@ changelog: require-tools ## CHANGELOG.md aus Release-Tags und Commits erzeugen
 
 # Je Target eine Hilfezeile; showMakeTargets liest nur Zeilen mit einem Target.
 .PHONY: tag-major tag-minor tag-patch
-tag-major: ## Major {major}, inkompatibel  [MSG="..."]
-tag-minor: ## Minor {minor}, neue Funktion  [MSG="..."]
-tag-patch: ## Patch {patch}, Fehler behoben  [MSG="..."]
+tag-major: ## Major-Release, inkompatibel  [MSG="..."]
+tag-minor: ## Minor-Release, neue Funktion  [MSG="..."]
+tag-patch: ## Patch-Release, Fehlerbehebung  [MSG="..."]
 
 # Version in frontend/package.json heben und lokal taggen, CHANGELOG.md committen, Stufe
 # vorspulen; alles nur lokal, veröffentlicht wird mit git push --follow-tags. Prüfung und
 # Ablauf stehen nur in tag-version (ProjectTools). changelog nennt bei Erfolg den absoluten
-# Pfad der Datei, darum ohne stdout; Fehler kommen über stderr. require-bash-libs und
-# require-tools: Lässt sich BashLib oder ProjectTools nicht einrichten, bricht ein Release vor
-# dem Bump ab, nicht erst nach dem Tag.
-tag-major tag-minor tag-patch: require-bash-libs require-tools
+# Pfad der Datei, darum ohne stdout; Fehler kommen über stderr. require-tools vor precheck:
+# Lässt sich ProjectTools oder BashLib nicht einrichten, bricht ein Release vor dem Bump ab,
+# nicht erst nach dem Tag.
+tag-major tag-minor tag-patch: require-tools precheck
 	@cd frontend && tag-version "$(patsubst tag-%,%,$@)" --message "$${MSG:-}"
 	@LANGUAGE="$${CHANGELOG_LANGUAGE}" changelog --commit >/dev/null
 	@tag-version --fast-forward

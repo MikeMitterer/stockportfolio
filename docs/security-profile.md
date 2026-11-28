@@ -62,3 +62,17 @@ Routen unter `api/src/routers/`: Sitzungscookie und Token-Tausch in
 ## Zugriffe von außen
 
 ## Ausführung
+
+Angelegt mit T-154; beschreibt das Makefile und die Skripte unter
+`scripts/` und `docker/`.
+
+- **Bash-Libs der Werkzeuge:** `make help`, `make info` und `make hints`
+  laden über `BASH_ENV` in jeder Rezeptzeile `make.lib.sh` von CLITheme aus
+  `CLI_LIBS`; die Version liest `help` mit `version.lib.sh` aus `BASH_LIBS`.
+  `scripts/dev-stack.sh` und `scripts/check-files.sh` binden `cli.lib.sh`
+  aus `CLI_LIBS` ein, `docker/build.sh` BashLib aus `BASH_LIBS`. Beide Orte
+  kommen aus der Umgebung oder aus `.tools/` des Checkouts (`make setup`);
+  wer sie setzen kann, führt damit Code aus.
+- **Geerbte Werte:** `PATH`, `BASH_LIBS`, `CLI_LIBS` und `CLITHEME_EXPORT`
+  übernimmt das Makefile unausgewertet (`$(value …)`), damit ein `$(…)` im
+  Checkout-Pfad kein Make-Code wird.
