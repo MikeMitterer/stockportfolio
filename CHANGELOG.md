@@ -2,6 +2,28 @@
 
 Generated from release tags and Conventional Commits.
 
+## v0.10.0+261128.1707.601ab — 2026-11-28
+
+make dev-up startet auch StockInfo, wahlweise gegen das StockInfo auf Unraid; Teststack mit eigenen Ports neben dem Dev-Stack; make setup baut eine tote .venv nach einem Python-Wechsel neu; help, info und hints über CLITheme, Version im Kopf von make help, version und tags entfallen
+
+### Fixes
+
+- dev-stack.sh nimmt zitierte Werte auch aus der Umgebung (T-148) (`2b74c86`)
+- Teststack-Status bleibt nach „Aktualisieren“ bereit (T-151) (`8c3a321`)
+- check-files.sh nennt ein passendes Beispiel je Sprache (T-152) (`51825e8`)
+- make setup baut eine tote .venv neu, auch im Worktree (T-153) (`d2266a0`)
+- CLITHEME\_EXPORT nur mit Inhalt exportieren (T-155, R1-F1) (`3d50587`)
+
+### Other changes
+
+- dev-up startet auch das StockInfo-Backend (T-147) (`1838015`)
+- hints nennt die Adressen aller Dienste des Dev-Stacks (T-147) (`87c9b8c`)
+- Dev- und Teststack klar benannt, dev-up wahlweise gegen Unraid (T-148) (`d9acb46`)
+- Teststack-Hilfsmodule ins Paket scripts/teststack (T-149) (`d3d8b56`)
+- Teststack mit eigenen Ports neben make dev-up (T-150) (`1db01a7`)
+- check-files.sh nach den Hauskonventionen (T-152) (`3f98249`)
+- Theme-Ausgabe aus CLITheme statt aus BashLib (T-154) (`f41a40c`)
+
 ## v0.9.1+261125.1338.18333 — 2026-11-25
 
 Referenzindex als normierte Vergleichslinie im Gesamtwert-Diagramm; make setup hängt an den Abhängigkeiten statt an der Version, ein frischer Klon richtet sich bei make check selbst ein
